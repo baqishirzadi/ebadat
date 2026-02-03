@@ -1,112 +1,186 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+/**
+ * Explore/About Screen - Converted to Dari
+ * Hidden from tabs but accessible
+ */
 
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+import { StyleSheet, ScrollView, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useApp } from '@/context/AppContext';
+import { Spacing, BorderRadius, Typography } from '@/constants/theme';
+import CenteredText from '@/components/CenteredText';
 
-export default function TabTwoScreen() {
+export default function ExploreScreen() {
+  const { theme } = useApp();
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText
-          type="title"
-          style={{
-            fontFamily: Fonts.rounded,
-          }}>
-          Explore
-        </ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image
-          source={require('@/assets/images/react-logo.png')}
-          style={{ width: 100, height: 100, alignSelf: 'center' }}
-        />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful{' '}
-          <ThemedText type="defaultSemiBold" style={{ fontFamily: Fonts.mono }}>
-            react-native-reanimated
-          </ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <ScrollView 
+      style={[styles.container, { backgroundColor: theme.background }]}
+      contentContainerStyle={styles.content}
+    >
+      {/* Header */}
+      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+        <MaterialIcons name="info" size={36} color="#fff" />
+        <CenteredText style={styles.headerTitle}>درباره اپلیکیشن</CenteredText>
+      </View>
+
+      {/* App Info */}
+      <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <CenteredText style={[styles.cardTitle, { color: theme.text }]}>عبادت</CenteredText>
+        <CenteredText style={[styles.cardText, { color: theme.textSecondary }]}>
+          اپلیکیشن جامع قرآن کریم و اوقات نماز برای مسلمانان افغانستان
+        </CenteredText>
+      </View>
+
+      {/* Features */}
+      <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>ویژگی‌ها</CenteredText>
+        
+        <View style={styles.featureItem}>
+          <MaterialIcons name="menu-book" size={20} color={theme.tint} />
+          <CenteredText style={[styles.featureText, { color: theme.textSecondary }]}>
+            قرآن کریم کامل با ترجمه دری و پشتو
+          </CenteredText>
+        </View>
+
+        <View style={styles.featureItem}>
+          <MaterialIcons name="access-time" size={20} color={theme.tint} />
+          <CenteredText style={[styles.featureText, { color: theme.textSecondary }]}>
+            اوقات نماز حنفی برای شهرهای افغانستان
+          </CenteredText>
+        </View>
+
+        <View style={styles.featureItem}>
+          <MaterialIcons name="explore" size={20} color={theme.tint} />
+          <CenteredText style={[styles.featureText, { color: theme.textSecondary }]}>
+            قبله‌نما با قطب‌نمای دقیق
+          </CenteredText>
+        </View>
+
+        <View style={styles.featureItem}>
+          <MaterialIcons name="bookmark" size={20} color={theme.tint} />
+          <CenteredText style={[styles.featureText, { color: theme.textSecondary }]}>
+            ذخیره نشانه‌ها و ادامه تلاوت
+          </CenteredText>
+        </View>
+
+        <View style={styles.featureItem}>
+          <MaterialIcons name="cloud-off" size={20} color={theme.tint} />
+          <CenteredText style={[styles.featureText, { color: theme.textSecondary }]}>
+            کار می‌کند بدون اینترنت
+          </CenteredText>
+        </View>
+      </View>
+
+      {/* Developer */}
+      <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>سازنده</CenteredText>
+        <CenteredText style={[styles.developerText, { color: theme.textSecondary }]}>
+          این اپلیکیشن برای تسهیل عبادات مردم شریف و مؤمن افغانستان ساخته شده است
+        </CenteredText>
+        <CenteredText style={[styles.developerName, { color: '#D4AF37' }]}>
+          توسط: سیدعبدالباقی ابن سیدعبدالاله (عارف بالله){'\n'}
+          ابن خلیفه صاحب سیدمحمد یتیم شیرزادی (رحمه‌الله)
+        </CenteredText>
+        <CenteredText style={[styles.duaText, { color: theme.tint }]}>
+          انشاءالله قبول درگاه حق تعالی باشد
+        </CenteredText>
+      </View>
+
+      {/* Version */}
+      <View style={styles.versionContainer}>
+        <CenteredText style={[styles.versionText, { color: theme.textSecondary }]}>
+          نسخه ۱.۰.۰
+        </CenteredText>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  content: {
+    paddingBottom: Spacing.xxl,
+  },
+  header: {
+    paddingTop: 60,
+    paddingBottom: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#fff',
+    marginTop: Spacing.sm,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+  },
+  card: {
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.md,
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+  },
+  cardTitle: {
+    fontSize: Typography.ui.title,
+    fontWeight: '700',
+    textAlign: 'center',
+    fontFamily: 'Vazirmatn',
+    marginBottom: Spacing.sm,
+  },
+  cardText: {
+    fontSize: Typography.ui.body,
+    textAlign: 'center',
+    fontFamily: 'Vazirmatn',
+    lineHeight: 24,
+  },
+  sectionTitle: {
+    fontSize: Typography.ui.subtitle,
+    fontWeight: '600',
+fontFamily: 'Vazirmatn',
+    marginBottom: Spacing.md,
+  },
+  featureItem: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  featureText: {
+    flex: 1,
+    fontSize: Typography.ui.body,
+fontFamily: 'Vazirmatn',
+  },
+  developerText: {
+    fontSize: Typography.ui.body,
+    textAlign: 'center',
+    fontFamily: 'Vazirmatn',
+    lineHeight: 24,
+    marginBottom: Spacing.sm,
+  },
+  developerName: {
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    fontFamily: 'Vazirmatn',
+    lineHeight: 20,
+    marginTop: Spacing.sm,
+  },
+  duaText: {
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    fontFamily: 'Vazirmatn',
+    marginTop: Spacing.sm,
+    fontStyle: 'italic',
+  },
+  versionContainer: {
+    alignItems: 'center',
+    marginTop: Spacing.xl,
+  },
+  versionText: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
   },
 });

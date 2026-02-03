@@ -1,0 +1,50 @@
+{
+  "number": 112,
+  "name": "الإخلاص",
+  "name_dari": "اخلاص",
+  "meaning_dari": "خلوص",
+  "revelationType": "مکی",
+  "numberOfAyahs": 4,
+  "ayahs": [
+    {
+      "number": 1,
+      "text": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ قُلْ هُوَ ٱللَّهُ أَحَدٌ",
+      "page": 604,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "(ای پیغمبر)! بگو: او الله یگانه است.",
+      "translation_pashto": "112-1 (اى نبي!) ته (دوى ته) ووایه: شان دا دى چی الله یو دى "
+    },
+    {
+      "number": 2,
+      "text": "ٱللَّهُ ٱلصَّمَدُ",
+      "page": 604,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "(و) الله از هرچیز بی‌نیاز (و برطرف کنندۀ نیازها) است.",
+      "translation_pashto": "112-2 هم دا الله بې نیاز (بې حاجته) دى"
+    },
+    {
+      "number": 3,
+      "text": "لَمْ يَلِدْ وَلَمْ يُولَدْ",
+      "page": 604,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "نه کسی را زاده و نه او زاده شده است.",
+      "translation_pashto": "112-3 نه يې (څوك) زېږولى دى او نه دى (له چا) زېږول شوى دى"
+    },
+    {
+      "number": 4,
+      "text": "وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
+      "page": 604,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "و هیچکس مانند و همتای او نیست.",
+      "translation_pashto": "112-4 او د ده هیڅوك سیال (او) برابر نشته"
+    }
+  ]
+}

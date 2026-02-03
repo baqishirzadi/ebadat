@@ -1,11 +1,16 @@
-import { StyleSheet, Text, type TextProps } from 'react-native';
+/**
+ * ThemedText Component
+ * Text component that automatically uses theme colors
+ */
 
-import { useThemeColor } from '@/hooks/use-theme-color';
+import { StyleSheet, type TextProps } from 'react-native';
+import { useApp } from '@/context/AppContext';
+import CenteredText from '@/components/CenteredText';
 
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'arabic' | 'translation';
 };
 
 export function ThemedText({
@@ -15,17 +20,34 @@ export function ThemedText({
   type = 'default',
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const { theme, state } = useApp();
+  
+  // Get color based on theme
+  let color = theme.text;
+  if (state.preferences.theme === 'night' && darkColor) {
+    color = darkColor;
+  } else if (state.preferences.theme !== 'night' && lightColor) {
+    color = lightColor;
+  }
+  
+  // Arabic and translation types use specific theme colors
+  if (type === 'arabic') {
+    color = theme.arabicText;
+  } else if (type === 'translation') {
+    color = theme.translationText;
+  }
 
   return (
-    <Text
+    <CenteredText
       style={[
         { color },
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
         type === 'subtitle' ? styles.subtitle : undefined,
-        type === 'link' ? styles.link : undefined,
+        type === 'link' ? [styles.link, { color: theme.tint }] : undefined,
+        type === 'arabic' ? styles.arabic : undefined,
+        type === 'translation' ? styles.translation : undefined,
         style,
       ]}
       {...rest}
@@ -55,6 +77,16 @@ const styles = StyleSheet.create({
   link: {
     lineHeight: 30,
     fontSize: 16,
-    color: '#0a7ea4',
+  },
+  arabic: {
+    fontSize: 26,
+    lineHeight: 52,
+writingDirection: 'rtl',
+    fontFamily: 'serif',
+  },
+  translation: {
+    fontSize: 16,
+    lineHeight: 28,
+writingDirection: 'rtl',
   },
 });

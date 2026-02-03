@@ -1,0 +1,923 @@
+{
+  "totalSurahs": 114,
+  "totalAyahs": 6236,
+  "sources": {
+    "arabic": "alquran.cloud (Uthmani)",
+    "dari": "QuranEnc.com - Muhammad Anwar Badakhshani",
+    "pashto": "QuranEnc.com - Abu Zakaria"
+  },
+  "surahs": [
+    {
+      "number": 1,
+      "name": "الفاتحة",
+      "name_dari": "فاتحه",
+      "meaning_dari": "آغازگر",
+      "numberOfAyahs": 7,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 2,
+      "name": "البقرة",
+      "name_dari": "بقره",
+      "meaning_dari": "گاو ماده",
+      "numberOfAyahs": 286,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 3,
+      "name": "آل عمران",
+      "name_dari": "آل عمران",
+      "meaning_dari": "خاندان عمران",
+      "numberOfAyahs": 200,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 4,
+      "name": "النساء",
+      "name_dari": "نساء",
+      "meaning_dari": "زنان",
+      "numberOfAyahs": 176,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 5,
+      "name": "المائدة",
+      "name_dari": "مائده",
+      "meaning_dari": "سفره",
+      "numberOfAyahs": 120,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 6,
+      "name": "الأنعام",
+      "name_dari": "انعام",
+      "meaning_dari": "چهارپایان",
+      "numberOfAyahs": 165,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 7,
+      "name": "الأعراف",
+      "name_dari": "اعراف",
+      "meaning_dari": "بلندی‌ها",
+      "numberOfAyahs": 206,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 8,
+      "name": "الأنفال",
+      "name_dari": "انفال",
+      "meaning_dari": "غنیمت‌ها",
+      "numberOfAyahs": 75,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 9,
+      "name": "التوبة",
+      "name_dari": "توبه",
+      "meaning_dari": "توبه",
+      "numberOfAyahs": 129,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 10,
+      "name": "يونس",
+      "name_dari": "یونس",
+      "meaning_dari": "علیه‌السلام",
+      "numberOfAyahs": 109,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 11,
+      "name": "هود",
+      "name_dari": "هود",
+      "meaning_dari": "علیه‌السلام",
+      "numberOfAyahs": 123,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 12,
+      "name": "يوسف",
+      "name_dari": "یوسف",
+      "meaning_dari": "علیه‌السلام",
+      "numberOfAyahs": 111,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 13,
+      "name": "الرعد",
+      "name_dari": "رعد",
+      "meaning_dari": "رعد",
+      "numberOfAyahs": 43,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 14,
+      "name": "إبراهيم",
+      "name_dari": "ابراهیم",
+      "meaning_dari": "علیه‌السلام",
+      "numberOfAyahs": 52,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 15,
+      "name": "الحجر",
+      "name_dari": "حجر",
+      "meaning_dari": "سنگستان",
+      "numberOfAyahs": 99,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 16,
+      "name": "النحل",
+      "name_dari": "نحل",
+      "meaning_dari": "زنبور عسل",
+      "numberOfAyahs": 128,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 17,
+      "name": "الإسراء",
+      "name_dari": "اسراء",
+      "meaning_dari": "سیر شبانه",
+      "numberOfAyahs": 111,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 18,
+      "name": "الكهف",
+      "name_dari": "کهف",
+      "meaning_dari": "غار",
+      "numberOfAyahs": 110,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 19,
+      "name": "مريم",
+      "name_dari": "مریم",
+      "meaning_dari": "علیها‌السلام",
+      "numberOfAyahs": 98,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 20,
+      "name": "طه",
+      "name_dari": "طه",
+      "meaning_dari": "طه",
+      "numberOfAyahs": 135,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 21,
+      "name": "الأنبياء",
+      "name_dari": "انبیاء",
+      "meaning_dari": "پیامبران",
+      "numberOfAyahs": 112,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 22,
+      "name": "الحج",
+      "name_dari": "حج",
+      "meaning_dari": "حج",
+      "numberOfAyahs": 78,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 23,
+      "name": "المؤمنون",
+      "name_dari": "مؤمنون",
+      "meaning_dari": "مؤمنان",
+      "numberOfAyahs": 118,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 24,
+      "name": "النور",
+      "name_dari": "نور",
+      "meaning_dari": "نور",
+      "numberOfAyahs": 64,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 25,
+      "name": "الفرقان",
+      "name_dari": "فرقان",
+      "meaning_dari": "جداکننده",
+      "numberOfAyahs": 77,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 26,
+      "name": "الشعراء",
+      "name_dari": "شعراء",
+      "meaning_dari": "شاعران",
+      "numberOfAyahs": 227,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 27,
+      "name": "النمل",
+      "name_dari": "نمل",
+      "meaning_dari": "مورچه",
+      "numberOfAyahs": 93,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 28,
+      "name": "القصص",
+      "name_dari": "قصص",
+      "meaning_dari": "داستان‌ها",
+      "numberOfAyahs": 88,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 29,
+      "name": "العنكبوت",
+      "name_dari": "عنکبوت",
+      "meaning_dari": "عنکبوت",
+      "numberOfAyahs": 69,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 30,
+      "name": "الروم",
+      "name_dari": "روم",
+      "meaning_dari": "روم",
+      "numberOfAyahs": 60,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 31,
+      "name": "لقمان",
+      "name_dari": "لقمان",
+      "meaning_dari": "لقمان حکیم",
+      "numberOfAyahs": 34,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 32,
+      "name": "السجدة",
+      "name_dari": "سجده",
+      "meaning_dari": "سجده",
+      "numberOfAyahs": 30,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 33,
+      "name": "الأحزاب",
+      "name_dari": "احزاب",
+      "meaning_dari": "گروه‌ها",
+      "numberOfAyahs": 73,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 34,
+      "name": "سبأ",
+      "name_dari": "سبأ",
+      "meaning_dari": "سبا",
+      "numberOfAyahs": 54,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 35,
+      "name": "فاطر",
+      "name_dari": "فاطر",
+      "meaning_dari": "آفریننده",
+      "numberOfAyahs": 45,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 36,
+      "name": "يس",
+      "name_dari": "یس",
+      "meaning_dari": "یس",
+      "numberOfAyahs": 83,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 37,
+      "name": "الصافات",
+      "name_dari": "صافات",
+      "meaning_dari": "صف‌بندان",
+      "numberOfAyahs": 182,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 38,
+      "name": "ص",
+      "name_dari": "ص",
+      "meaning_dari": "ص",
+      "numberOfAyahs": 88,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 39,
+      "name": "الزمر",
+      "name_dari": "زمر",
+      "meaning_dari": "گروه‌ها",
+      "numberOfAyahs": 75,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 40,
+      "name": "غافر",
+      "name_dari": "غافر",
+      "meaning_dari": "بخشنده",
+      "numberOfAyahs": 85,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 41,
+      "name": "فصلت",
+      "name_dari": "فصلت",
+      "meaning_dari": "تفصیل یافته",
+      "numberOfAyahs": 54,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 42,
+      "name": "الشورى",
+      "name_dari": "شوری",
+      "meaning_dari": "مشورت",
+      "numberOfAyahs": 53,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 43,
+      "name": "الزخرف",
+      "name_dari": "زخرف",
+      "meaning_dari": "زینت",
+      "numberOfAyahs": 89,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 44,
+      "name": "الدخان",
+      "name_dari": "دخان",
+      "meaning_dari": "دود",
+      "numberOfAyahs": 59,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 45,
+      "name": "الجاثية",
+      "name_dari": "جاثیه",
+      "meaning_dari": "زانوزده",
+      "numberOfAyahs": 37,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 46,
+      "name": "الأحقاف",
+      "name_dari": "احقاف",
+      "meaning_dari": "تپه‌های شنی",
+      "numberOfAyahs": 35,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 47,
+      "name": "محمد",
+      "name_dari": "محمد",
+      "meaning_dari": "صلی‌الله‌علیه‌وسلم",
+      "numberOfAyahs": 38,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 48,
+      "name": "الفتح",
+      "name_dari": "فتح",
+      "meaning_dari": "پیروزی",
+      "numberOfAyahs": 29,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 49,
+      "name": "الحجرات",
+      "name_dari": "حجرات",
+      "meaning_dari": "اتاق‌ها",
+      "numberOfAyahs": 18,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 50,
+      "name": "ق",
+      "name_dari": "ق",
+      "meaning_dari": "ق",
+      "numberOfAyahs": 45,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 51,
+      "name": "الذاريات",
+      "name_dari": "ذاریات",
+      "meaning_dari": "پراکنده‌کنندگان",
+      "numberOfAyahs": 60,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 52,
+      "name": "الطور",
+      "name_dari": "طور",
+      "meaning_dari": "کوه طور",
+      "numberOfAyahs": 49,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 53,
+      "name": "النجم",
+      "name_dari": "نجم",
+      "meaning_dari": "ستاره",
+      "numberOfAyahs": 62,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 54,
+      "name": "القمر",
+      "name_dari": "قمر",
+      "meaning_dari": "ماه",
+      "numberOfAyahs": 55,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 55,
+      "name": "الرحمن",
+      "name_dari": "رحمن",
+      "meaning_dari": "بخشنده",
+      "numberOfAyahs": 78,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 56,
+      "name": "الواقعة",
+      "name_dari": "واقعه",
+      "meaning_dari": "رویداد",
+      "numberOfAyahs": 96,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 57,
+      "name": "الحديد",
+      "name_dari": "حدید",
+      "meaning_dari": "آهن",
+      "numberOfAyahs": 29,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 58,
+      "name": "المجادلة",
+      "name_dari": "مجادله",
+      "meaning_dari": "مجادله",
+      "numberOfAyahs": 22,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 59,
+      "name": "الحشر",
+      "name_dari": "حشر",
+      "meaning_dari": "گردآوری",
+      "numberOfAyahs": 24,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 60,
+      "name": "الممتحنة",
+      "name_dari": "ممتحنه",
+      "meaning_dari": "آزموده‌شده",
+      "numberOfAyahs": 13,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 61,
+      "name": "الصف",
+      "name_dari": "صف",
+      "meaning_dari": "صف",
+      "numberOfAyahs": 14,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 62,
+      "name": "الجمعة",
+      "name_dari": "جمعه",
+      "meaning_dari": "جمعه",
+      "numberOfAyahs": 11,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 63,
+      "name": "المنافقون",
+      "name_dari": "منافقون",
+      "meaning_dari": "منافقان",
+      "numberOfAyahs": 11,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 64,
+      "name": "التغابن",
+      "name_dari": "تغابن",
+      "meaning_dari": "زیان‌کاری",
+      "numberOfAyahs": 18,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 65,
+      "name": "الطلاق",
+      "name_dari": "طلاق",
+      "meaning_dari": "طلاق",
+      "numberOfAyahs": 12,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 66,
+      "name": "التحريم",
+      "name_dari": "تحریم",
+      "meaning_dari": "تحریم",
+      "numberOfAyahs": 12,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 67,
+      "name": "الملك",
+      "name_dari": "ملک",
+      "meaning_dari": "فرمانروایی",
+      "numberOfAyahs": 30,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 68,
+      "name": "القلم",
+      "name_dari": "قلم",
+      "meaning_dari": "قلم",
+      "numberOfAyahs": 52,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 69,
+      "name": "الحاقة",
+      "name_dari": "حاقه",
+      "meaning_dari": "حقیقت",
+      "numberOfAyahs": 52,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 70,
+      "name": "المعارج",
+      "name_dari": "معارج",
+      "meaning_dari": "نردبان‌ها",
+      "numberOfAyahs": 44,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 71,
+      "name": "نوح",
+      "name_dari": "نوح",
+      "meaning_dari": "علیه‌السلام",
+      "numberOfAyahs": 28,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 72,
+      "name": "الجن",
+      "name_dari": "جن",
+      "meaning_dari": "جن",
+      "numberOfAyahs": 28,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 73,
+      "name": "المزمل",
+      "name_dari": "مزمل",
+      "meaning_dari": "جامه‌پوشیده",
+      "numberOfAyahs": 20,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 74,
+      "name": "المدثر",
+      "name_dari": "مدثر",
+      "meaning_dari": "پوشیده در لباس",
+      "numberOfAyahs": 56,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 75,
+      "name": "القيامة",
+      "name_dari": "قیامت",
+      "meaning_dari": "قیامت",
+      "numberOfAyahs": 40,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 76,
+      "name": "الإنسان",
+      "name_dari": "انسان",
+      "meaning_dari": "انسان",
+      "numberOfAyahs": 31,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 77,
+      "name": "المرسلات",
+      "name_dari": "مرسلات",
+      "meaning_dari": "فرستادگان",
+      "numberOfAyahs": 50,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 78,
+      "name": "النبأ",
+      "name_dari": "نبأ",
+      "meaning_dari": "خبر بزرگ",
+      "numberOfAyahs": 40,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 79,
+      "name": "النازعات",
+      "name_dari": "نازعات",
+      "meaning_dari": "برکشندگان",
+      "numberOfAyahs": 46,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 80,
+      "name": "عبس",
+      "name_dari": "عبس",
+      "meaning_dari": "چهره درهم کشید",
+      "numberOfAyahs": 42,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 81,
+      "name": "التكوير",
+      "name_dari": "تکویر",
+      "meaning_dari": "درهم پیچیدن",
+      "numberOfAyahs": 29,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 82,
+      "name": "الانفطار",
+      "name_dari": "انفطار",
+      "meaning_dari": "شکافتن",
+      "numberOfAyahs": 19,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 83,
+      "name": "المطففين",
+      "name_dari": "مطففین",
+      "meaning_dari": "کم‌فروشان",
+      "numberOfAyahs": 36,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 84,
+      "name": "الانشقاق",
+      "name_dari": "انشقاق",
+      "meaning_dari": "شکافتن",
+      "numberOfAyahs": 25,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 85,
+      "name": "البروج",
+      "name_dari": "بروج",
+      "meaning_dari": "برج‌ها",
+      "numberOfAyahs": 22,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 86,
+      "name": "الطارق",
+      "name_dari": "طارق",
+      "meaning_dari": "کوبنده شب",
+      "numberOfAyahs": 17,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 87,
+      "name": "الأعلى",
+      "name_dari": "اعلی",
+      "meaning_dari": "برترین",
+      "numberOfAyahs": 19,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 88,
+      "name": "الغاشية",
+      "name_dari": "غاشیه",
+      "meaning_dari": "فراگیرنده",
+      "numberOfAyahs": 26,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 89,
+      "name": "الفجر",
+      "name_dari": "فجر",
+      "meaning_dari": "سپیده‌دم",
+      "numberOfAyahs": 30,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 90,
+      "name": "البلد",
+      "name_dari": "بلد",
+      "meaning_dari": "شهر",
+      "numberOfAyahs": 20,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 91,
+      "name": "الشمس",
+      "name_dari": "شمس",
+      "meaning_dari": "خورشید",
+      "numberOfAyahs": 15,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 92,
+      "name": "الليل",
+      "name_dari": "لیل",
+      "meaning_dari": "شب",
+      "numberOfAyahs": 21,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 93,
+      "name": "الضحى",
+      "name_dari": "ضحی",
+      "meaning_dari": "چاشتگاه",
+      "numberOfAyahs": 11,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 94,
+      "name": "الشرح",
+      "name_dari": "شرح",
+      "meaning_dari": "گشادن سینه",
+      "numberOfAyahs": 8,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 95,
+      "name": "التين",
+      "name_dari": "تین",
+      "meaning_dari": "انجیر",
+      "numberOfAyahs": 8,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 96,
+      "name": "العلق",
+      "name_dari": "علق",
+      "meaning_dari": "خون بسته",
+      "numberOfAyahs": 19,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 97,
+      "name": "القدر",
+      "name_dari": "قدر",
+      "meaning_dari": "شب قدر",
+      "numberOfAyahs": 5,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 98,
+      "name": "البينة",
+      "name_dari": "بینه",
+      "meaning_dari": "دلیل روشن",
+      "numberOfAyahs": 8,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 99,
+      "name": "الزلزلة",
+      "name_dari": "زلزله",
+      "meaning_dari": "زلزله",
+      "numberOfAyahs": 8,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 100,
+      "name": "العاديات",
+      "name_dari": "عادیات",
+      "meaning_dari": "اسبان تازنده",
+      "numberOfAyahs": 11,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 101,
+      "name": "القارعة",
+      "name_dari": "قارعه",
+      "meaning_dari": "کوبنده",
+      "numberOfAyahs": 11,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 102,
+      "name": "التكاثر",
+      "name_dari": "تکاثر",
+      "meaning_dari": "فزون‌طلبی",
+      "numberOfAyahs": 8,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 103,
+      "name": "العصر",
+      "name_dari": "عصر",
+      "meaning_dari": "عصر",
+      "numberOfAyahs": 3,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 104,
+      "name": "الهمزة",
+      "name_dari": "همزه",
+      "meaning_dari": "عیب‌جو",
+      "numberOfAyahs": 9,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 105,
+      "name": "الفيل",
+      "name_dari": "فیل",
+      "meaning_dari": "فیل",
+      "numberOfAyahs": 5,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 106,
+      "name": "قريش",
+      "name_dari": "قریش",
+      "meaning_dari": "قریش",
+      "numberOfAyahs": 4,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 107,
+      "name": "الماعون",
+      "name_dari": "ماعون",
+      "meaning_dari": "نیازهای کوچک",
+      "numberOfAyahs": 7,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 108,
+      "name": "الكوثر",
+      "name_dari": "کوثر",
+      "meaning_dari": "کوثر",
+      "numberOfAyahs": 3,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 109,
+      "name": "الكافرون",
+      "name_dari": "کافرون",
+      "meaning_dari": "کافران",
+      "numberOfAyahs": 6,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 110,
+      "name": "النصر",
+      "name_dari": "نصر",
+      "meaning_dari": "یاری",
+      "numberOfAyahs": 3,
+      "revelationType": "مدنی"
+    },
+    {
+      "number": 111,
+      "name": "المسد",
+      "name_dari": "مسد",
+      "meaning_dari": "ریسمان",
+      "numberOfAyahs": 5,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 112,
+      "name": "الإخلاص",
+      "name_dari": "اخلاص",
+      "meaning_dari": "خلوص",
+      "numberOfAyahs": 4,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 113,
+      "name": "الفلق",
+      "name_dari": "فلق",
+      "meaning_dari": "سپیده‌دم",
+      "numberOfAyahs": 5,
+      "revelationType": "مکی"
+    },
+    {
+      "number": 114,
+      "name": "الناس",
+      "name_dari": "ناس",
+      "meaning_dari": "مردم",
+      "numberOfAyahs": 6,
+      "revelationType": "مکی"
+    }
+  ]
+}
