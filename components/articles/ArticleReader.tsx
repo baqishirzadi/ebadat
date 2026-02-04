@@ -72,6 +72,22 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
 
   const normalizedHtml = html.replace(/<br\s*\/?>/gi, '\n');
 
+  const normalizeParagraph = (text: string) =>
+    text.replace(/\s+/g, ' ').trim();
+
+  const dedupeConsecutive = (items: string[]): string[] => {
+    const result: string[] = [];
+    let last = '';
+    items.forEach((item) => {
+      const normalized = normalizeParagraph(item);
+      if (!normalized) return;
+      if (normalized === last) return;
+      result.push(item);
+      last = normalized;
+    });
+    return result;
+  };
+
   // First, extract all h2 headings with their content
   const h2Regex = /<h2>(.*?)<\/h2>/gi;
   const h2Matches: Array<{ index: number; content: string }> = [];
@@ -126,12 +142,15 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       );
     } else {
       // Parse paragraph content
-      const paragraphs = section.text
+      const paragraphs = dedupeConsecutive(
+        section.text
         .replace(/<h[1-6][^>]*>.*?<\/h[1-6]>/gi, '')
         .split(/<\/p>\s*<p>/gi)
         .map(p => 
-        p.replace(/^<p>|<\/p>$/gi, '').trim()
-      ).filter(p => p.length > 0);
+          p.replace(/^<p>|<\/p>$/gi, '').trim()
+        )
+        .filter(p => p.length > 0)
+      );
 
       paragraphs.forEach((paraHtml) => {
         const paraElements: React.ReactNode[] = [];
@@ -226,10 +245,22 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
     }
   });
 
-  return elements.length > 0 ? elements : [
+  if (elements.length > 0) {
+    return elements;
+  }
+
+  const fallbackPlain = normalizedHtml.replace(/<[^>]*>/g, '');
+  const fallbackParagraphs = dedupeConsecutive(
+    fallbackPlain
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter(Boolean)
+  );
+
+  return [
     <Text key={0} style={[styles.bodyText, { color: '#1a1a1a' }]}>
-      {normalizedHtml.replace(/<[^>]*>/g, '').replace(/\n\n+/g, '\n\n')}
-    </Text>
+      {fallbackParagraphs.join('\n\n')}
+    </Text>,
   ];
 }
 
