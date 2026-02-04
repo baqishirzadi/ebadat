@@ -22,7 +22,7 @@ import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { CategorySelector } from '@/components/dua/CategorySelector';
-import { DuaCategory } from '@/types/dua';
+import { DuaCategory, UserGender } from '@/types/dua';
 import CenteredText from '@/components/CenteredText';
 
 export default function NewDuaRequestScreen() {
@@ -34,11 +34,17 @@ export default function NewDuaRequestScreen() {
   const [message, setMessage] = useState('');
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [gender, setGender] = useState<UserGender | null>(null);
 
   const handleSubmit = async () => {
     // Validation
     if (!category) {
       Alert.alert('خطا', 'لطفاً دسته‌بندی را انتخاب کنید');
+      return;
+    }
+
+    if (!gender) {
+      Alert.alert('خطا', 'لطفاً جنسیت خود را مشخص کنید');
       return;
     }
 
@@ -59,14 +65,14 @@ export default function NewDuaRequestScreen() {
 
     setIsSubmitting(true);
     try {
-      const request = await submitRequest(category, message.trim(), isAnonymous);
+      const request = await submitRequest(category, message.trim(), isAnonymous, gender);
       
       Alert.alert(
         'موفق',
-        'درخواست شما با موفقیت ارسال شد. پاسخ شما در صورت آماده شدن، از طریق اعلان اطلاع‌رسانی خواهد شد.',
+        'درخواست شما با موفقیت ارسال شد. در صورت امکان، پاسخ معنوی خودکار نیز برای شما آماده می‌شود و در جزئیات درخواست قابل مشاهده است.',
         [
           {
-            text: 'باشه',
+            text: 'مشاهده درخواست',
             onPress: () => router.replace(`/dua-request/${request.id}`),
           },
         ]
@@ -99,7 +105,11 @@ export default function NewDuaRequestScreen() {
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
-        <CenteredText style={styles.headerTitle}>درخواست جدید</CenteredText>
+        <View style={styles.headerCenter}>
+          <MaterialIcons name="auto-awesome" size={20} color="#fff" />
+          <CenteredText style={styles.headerTitle}>درخواست دعا</CenteredText>
+          <CenteredText style={styles.headerSubtitle}>با نیت خالص، با دل آرام</CenteredText>
+        </View>
         <View style={styles.headerRight} />
       </View>
 
@@ -110,10 +120,12 @@ export default function NewDuaRequestScreen() {
       >
         {/* Description */}
         <View style={[styles.descriptionCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <MaterialIcons name="info" size={20} color={theme.tint} />
+          <View style={styles.descriptionIcon}>
+            <MaterialIcons name="favorite" size={18} color={theme.tint} />
+          </View>
           <CenteredText style={[styles.descriptionText, { color: theme.textSecondary }]}>
-            درخواست‌های شما با احترام و محرمانگی کامل بررسی می‌شوند.
-            پاسخ‌ها توسط سیدعبدالباقی شیرزادی یا علما و سیدان اهل علم ارائه می‌گردد.
+            درخواست‌تان با امانت و احترام خوانده می‌شود. پاسخ‌ها با رویکرد
+            معنوی و دل‌آگاه، از سوی سیدعبدالباقی شیرزادی آماده می‌گردد.
           </CenteredText>
         </View>
 
@@ -123,6 +135,52 @@ export default function NewDuaRequestScreen() {
             دسته‌بندی
           </CenteredText>
           <CategorySelector selectedCategory={category} onSelect={setCategory} />
+        </View>
+
+        {/* Gender Selection */}
+        <View style={styles.section}>
+          <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
+            جنسیت
+          </CenteredText>
+          <View style={styles.genderRow}>
+            {[
+              { id: 'male' as const, label: 'برادر', icon: 'male' as const },
+              { id: 'female' as const, label: 'خواهر', icon: 'female' as const },
+            ].map((option) => {
+              const selected = gender === option.id;
+              return (
+                <Pressable
+                  key={option.id}
+                  onPress={() => setGender(option.id)}
+                  style={({ pressed }) => [
+                    styles.genderChip,
+                    {
+                      backgroundColor: selected ? `${theme.tint}18` : theme.card,
+                      borderColor: selected ? theme.tint : theme.cardBorder,
+                    },
+                    pressed && styles.buttonPressed,
+                  ]}
+                >
+                  <MaterialIcons
+                    name={option.icon}
+                    size={20}
+                    color={selected ? theme.tint : theme.textSecondary}
+                  />
+                  <CenteredText
+                    style={[
+                      styles.genderText,
+                      { color: selected ? theme.tint : theme.text },
+                    ]}
+                  >
+                    {option.label}
+                  </CenteredText>
+                </Pressable>
+              );
+            })}
+          </View>
+          <CenteredText style={[styles.genderHint, { color: theme.textSecondary }]}>
+            برای پاسخ بهتر، جنسیت خود را مشخص کنید.
+          </CenteredText>
         </View>
 
         {/* Message Input */}
@@ -175,12 +233,12 @@ export default function NewDuaRequestScreen() {
         {/* Submit Button */}
         <Pressable
           onPress={handleSubmit}
-          disabled={isSubmitting || !category || !message.trim()}
+          disabled={isSubmitting || !category || !message.trim() || !gender}
           style={({ pressed }) => [
             styles.submitButton,
             {
               backgroundColor:
-                isSubmitting || !category || !message.trim() ? theme.cardBorder : theme.tint,
+                isSubmitting || !category || !message.trim() || !gender ? theme.cardBorder : theme.tint,
             },
             pressed && styles.buttonPressed,
           ]}
@@ -216,10 +274,20 @@ const styles = StyleSheet.create({
   backButton: {
     padding: Spacing.xs,
   },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 4,
+  },
   headerTitle: {
     fontSize: 24,
     fontWeight: '700',
     color: '#fff',
+    fontFamily: 'Vazirmatn',
+  },
+  headerSubtitle: {
+    fontSize: Typography.ui.caption,
+    color: 'rgba(255,255,255,0.85)',
     fontFamily: 'Vazirmatn',
   },
   headerRight: {
@@ -240,6 +308,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: Spacing.lg,
   },
+  descriptionIcon: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(26, 77, 62, 0.12)',
+  },
   descriptionText: {
     flex: 1,
     fontSize: Typography.ui.caption,
@@ -256,6 +332,31 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
     fontFamily: 'Vazirmatn',
   },
+  genderRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  genderChip: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+  },
+  genderText: {
+    fontSize: Typography.ui.body,
+    fontWeight: '600',
+    fontFamily: 'Vazirmatn',
+  },
+  genderHint: {
+    marginTop: Spacing.xs,
+    fontSize: Typography.ui.caption,
+    textAlign: 'right',
+    fontFamily: 'Vazirmatn',
+  },
   inputContainer: {
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
@@ -266,6 +367,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     minHeight: 150,
     textAlign: 'right',
+    writingDirection: 'rtl',
   },
   characterCount: {
     alignItems: 'flex-end',

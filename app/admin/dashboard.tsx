@@ -22,6 +22,7 @@ import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CenteredText from '@/components/CenteredText';
 import { RequestCard } from '@/components/dua/RequestCard';
+import NetInfo from '@react-native-community/netinfo';
 
 const ADMIN_STORAGE_KEY = '@ebadat/admin_session';
 
@@ -35,6 +36,11 @@ export default function AdminDashboardScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [statusFilter, setStatusFilter] = useState<RequestStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const pendingCount = requests.filter(r => r.status === 'pending').length;
+  const answeredCount = requests.filter(r => r.status === 'answered').length;
+  const closedCount = requests.filter(r => r.status === 'closed').length;
 
   useEffect(() => {
     checkAuth();
@@ -52,10 +58,14 @@ export default function AdminDashboardScreen() {
 
   const checkAuth = async () => {
     try {
-      const session = await AsyncStorage.getItem(ADMIN_STORAGE_KEY);
-      if (!session) {
+      const sessionRaw = await AsyncStorage.getItem(ADMIN_STORAGE_KEY);
+      if (!sessionRaw) {
         router.replace('/admin/login');
         return;
+      }
+      const session = JSON.parse(sessionRaw);
+      if (!session?.pinVerified) {
+        router.replace('/admin/login');
       }
     } catch (error) {
       router.replace('/admin/login');
@@ -64,11 +74,20 @@ export default function AdminDashboardScreen() {
 
   const loadRequests = async () => {
     if (!isSupabaseConfigured()) {
+      setErrorMessage('Supabase تنظیم نشده است. لطفاً تنظیمات را بررسی کنید.');
       setLoading(false);
       return;
     }
 
     try {
+      const netInfo = await NetInfo.fetch();
+      if (!netInfo.isConnected || netInfo.isInternetReachable === false) {
+        setErrorMessage('اتصال اینترنت موجود نیست');
+        setLoading(false);
+        return;
+      }
+
+      setErrorMessage(null);
       const supabase = getSupabaseClient();
       let query = supabase
         .from('dua_requests')
@@ -91,6 +110,7 @@ export default function AdminDashboardScreen() {
         userId: row.user_id,
         category: row.category,
         message: row.message,
+        gender: row.gender || 'unspecified',
         isAnonymous: row.is_anonymous || false,
         status: row.status || 'pending',
         createdAt: row.created_at ? new Date(row.created_at) : new Date(),
@@ -102,7 +122,14 @@ export default function AdminDashboardScreen() {
 
       setRequests(loadedRequests);
     } catch (error) {
-      console.error('Failed to load requests:', error);
+      const message =
+        error instanceof Error && /network request failed|failed to fetch/i.test(error.message)
+          ? 'خطا در اتصال به سرور. لطفاً اینترنت را بررسی کنید.'
+          : 'خطا در بارگذاری درخواست‌ها';
+      setErrorMessage(message);
+      if (__DEV__) {
+        console.warn('Failed to load requests:', error);
+      }
     } finally {
       setLoading(false);
     }
@@ -135,8 +162,6 @@ export default function AdminDashboardScreen() {
 
   const handleLogout = async () => {
     try {
-      const supabase = getSupabaseClient();
-      await supabase.auth.signOut();
       await AsyncStorage.removeItem(ADMIN_STORAGE_KEY);
       router.replace('/admin/login');
     } catch (error) {
@@ -154,7 +179,10 @@ export default function AdminDashboardScreen() {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-          <CenteredText style={styles.headerTitle}>پنل مدیریت</CenteredText>
+          <View style={styles.headerCenter}>
+            <CenteredText style={styles.headerTitle}>پنل مدیریت</CenteredText>
+            <CenteredText style={styles.headerSubtitle}>درخواست‌های دعای خیر و مشورت شرعی</CenteredText>
+          </View>
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.tint} />
@@ -170,8 +198,42 @@ export default function AdminDashboardScreen() {
         <Pressable onPress={handleLogout} style={styles.logoutButton}>
           <MaterialIcons name="logout" size={24} color="#fff" />
         </Pressable>
-        <CenteredText style={styles.headerTitle}>پنل مدیریت</CenteredText>
+        <View style={styles.headerCenter}>
+          <CenteredText style={styles.headerTitle}>پنل مدیریت</CenteredText>
+          <CenteredText style={styles.headerSubtitle}>درخواست‌های دعای خیر و مشورت شرعی</CenteredText>
+        </View>
         <View style={styles.headerRight} />
+      </View>
+
+      {errorMessage && (
+        <View style={[styles.errorBanner, { backgroundColor: theme.backgroundSecondary }]}>
+          <MaterialIcons name="error-outline" size={18} color={theme.textSecondary} />
+          <CenteredText style={[styles.errorText, { color: theme.textSecondary }]}>
+            {errorMessage}
+          </CenteredText>
+        </View>
+      )}
+
+      {/* Summary */}
+      <View style={styles.summaryRow}>
+        <View style={[styles.summaryChip, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          <CenteredText style={[styles.summaryValue, { color: theme.text }]}>
+            {pendingCount}
+          </CenteredText>
+          <CenteredText style={[styles.summaryLabel, { color: theme.textSecondary }]}>در انتظار</CenteredText>
+        </View>
+        <View style={[styles.summaryChip, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          <CenteredText style={[styles.summaryValue, { color: theme.text }]}>
+            {answeredCount}
+          </CenteredText>
+          <CenteredText style={[styles.summaryLabel, { color: theme.textSecondary }]}>پاسخ‌داده‌شده</CenteredText>
+        </View>
+        <View style={[styles.summaryChip, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          <CenteredText style={[styles.summaryValue, { color: theme.text }]}>
+            {closedCount}
+          </CenteredText>
+          <CenteredText style={[styles.summaryLabel, { color: theme.textSecondary }]}>بسته‌شده</CenteredText>
+        </View>
       </View>
 
       {/* Search */}
@@ -179,7 +241,7 @@ export default function AdminDashboardScreen() {
         <MaterialIcons name="search" size={20} color={theme.icon} />
         <TextInput
           style={[styles.searchInput, { color: theme.text }]}
-          placeholder="جستجوی درخواست..."
+          placeholder="جستجوی متن درخواست..."
           placeholderTextColor={theme.textSecondary}
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -245,7 +307,10 @@ export default function AdminDashboardScreen() {
           <View style={styles.emptyContainer}>
             <MaterialIcons name="inbox" size={64} color={theme.textSecondary} />
             <CenteredText style={[styles.emptyText, { color: theme.text }]}>
-              درخواستی یافت نشد
+              درخواستی ثبت نشده است
+            </CenteredText>
+            <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
+              در صورت وجود درخواست جدید، اینجا نمایش داده می‌شود
             </CenteredText>
           </View>
         }
@@ -267,6 +332,10 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.lg,
     paddingHorizontal: Spacing.lg,
   },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+  },
   logoutButton: {
     padding: Spacing.xs,
   },
@@ -276,8 +345,50 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'Vazirmatn',
   },
+  headerSubtitle: {
+    fontSize: Typography.ui.caption,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 2,
+    fontFamily: 'Vazirmatn',
+  },
   headerRight: {
     width: 40,
+  },
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+  },
+  errorText: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+  },
+  summaryRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.md,
+  },
+  summaryChip: {
+    flex: 1,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    paddingVertical: Spacing.sm,
+    alignItems: 'center',
+  },
+  summaryValue: {
+    fontSize: Typography.ui.subtitle,
+    fontWeight: '700',
+    fontFamily: 'Vazirmatn',
+  },
+  summaryLabel: {
+    fontSize: Typography.ui.caption,
+    marginTop: 2,
+    fontFamily: 'Vazirmatn',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -294,7 +405,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   filtersContainer: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
@@ -332,5 +445,11 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.subtitle,
     marginTop: Spacing.md,
     fontFamily: 'Vazirmatn',
+  },
+  emptySubtext: {
+    fontSize: Typography.ui.caption,
+    marginTop: Spacing.sm,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
   },
 });

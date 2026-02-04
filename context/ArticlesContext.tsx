@@ -40,11 +40,6 @@ function articlesReducer(state: ArticlesState, action: ArticlesAction): Articles
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     case 'SET_ARTICLES':
-      // #region agent log
-      const reducerLog = {location:'ArticlesContext.tsx:43',message:'Reducer SET_ARTICLES',data:{articlesCount:action.payload.length,previousCount:state.articles.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
-      console.log('[DEBUG]', JSON.stringify(reducerLog));
-      fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(reducerLog)}).catch(()=>{});
-      // #endregion
       return { ...state, articles: action.payload };
     case 'ADD_ARTICLE':
       return { ...state, articles: [action.payload, ...state.articles] };
@@ -143,23 +138,11 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
       
       console.log(`[Articles] Loaded ${cachedArticles.length} cached articles, ${cachedScholars.length} cached scholars`);
       
-      // #region agent log
-      const cacheLog = {location:'ArticlesContext.tsx:148',message:'Loaded cached data',data:{cachedArticlesCount:cachedArticles.length,cachedScholarsCount:cachedScholars.length,remoteEnabled:articleService.isArticlesRemoteEnabled()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,D'};
-      console.log('[DEBUG]', JSON.stringify(cacheLog));
-      fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(cacheLog)}).catch(()=>{});
-      // #endregion
-      
       dispatch({ type: 'SET_ARTICLES', payload: cachedArticles });
       dispatch({ type: 'SET_SCHOLARS', payload: cachedScholars });
 
       // Sync if online and Supabase is configured (this will update articles if available)
       const netInfo = await NetInfo.fetch();
-      // #region agent log
-      const initLog = {location:'ArticlesContext.tsx:157',message:'Before sync check',data:{isConnected:netInfo.isConnected,remoteEnabled:articleService.isArticlesRemoteEnabled(),cachedArticlesCount:cachedArticles.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,D'};
-      console.log('[DEBUG]', JSON.stringify(initLog));
-      fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(initLog)}).catch(()=>{});
-      // #endregion
-
       if (articleService.isArticlesRemoteEnabled()) {
         if (netInfo.isConnected) {
           console.log('[Articles] Online - syncing articles...');
@@ -182,12 +165,6 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
   }
 
   const refreshArticles = useCallback(async () => {
-    // #region agent log
-    const refreshEntryLog = {location:'ArticlesContext.tsx:181',message:'refreshArticles ENTRY',data:{remoteEnabled:articleService.isArticlesRemoteEnabled()},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,D'};
-    console.log('[DEBUG]', JSON.stringify(refreshEntryLog));
-    fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(refreshEntryLog)}).catch(()=>{});
-    // #endregion
-    
     try {
       if (articleService.isArticlesRemoteEnabled()) {
         console.log('[Articles] Refreshing articles from Supabase...');
@@ -198,21 +175,11 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
       const articles = await articleService.getPublishedArticles({ limitCount: 100 });
       console.log(`[Articles] Loaded ${articles.length} articles`);
       
-      // #region agent log
-      const beforeDispatchLog = {location:'ArticlesContext.tsx:200',message:'BEFORE dispatch SET_ARTICLES',data:{articlesCount:articles.length,firstArticle:articles[0]?{title:articles[0].title,language:articles[0].language,category:articles[0].category}:null},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'};
-      console.log('[DEBUG]', JSON.stringify(beforeDispatchLog));
-      fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(beforeDispatchLog)}).catch(()=>{});
-      // #endregion
-      
       if (articles.length === 0) {
         console.warn('[Articles] No articles found.');
       }
       
       dispatch({ type: 'SET_ARTICLES', payload: articles });
-      
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'ArticlesContext.tsx:193',message:'AFTER dispatch SET_ARTICLES',data:{articlesCount:articles.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-      // #endregion
       
       await articleStorage.cacheArticles(articles);
       dispatch({ type: 'SET_LAST_SYNC', payload: Date.now() });
@@ -220,12 +187,6 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Error refreshing articles:', error);
       const errorMessage = error instanceof Error ? error.message : 'خطا در بارگذاری مقالات از Supabase';
-      
-      // #region agent log
-      const errorLog = {location:'ArticlesContext.tsx:228',message:'refreshArticles ERROR',data:{errorMessage,errorName:error instanceof Error?error.name:undefined},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'};
-      console.log('[DEBUG]', JSON.stringify(errorLog));
-      fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(errorLog)}).catch(()=>{});
-      // #endregion
       
       // Provide more specific error messages
       if (errorMessage.includes('permission') || errorMessage.includes('permission-denied') || errorMessage.includes('RLS')) {

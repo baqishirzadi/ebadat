@@ -6,11 +6,14 @@ export type DuaCategory = 'dua' | 'advice' | 'personal' | 'other';
 
 export type RequestStatus = 'pending' | 'answered' | 'closed';
 
+export type UserGender = 'male' | 'female' | 'unspecified';
+
 export interface DuaRequest {
   id: string;
   userId: string;
   category: DuaCategory;
   message: string;
+  gender?: UserGender;
   isAnonymous: boolean;
   status: RequestStatus;
   createdAt: Date;
@@ -89,5 +92,20 @@ export const STATUS_INFO: Record<RequestStatus, { nameDari: string; namePashto: 
     nameDari: 'بسته شده',
     namePashto: 'تړل شوی',
     color: '#6B7280',
+  },
+};
+
+export const GENDER_INFO: Record<UserGender, { nameDari: string; namePashto: string }> = {
+  male: {
+    nameDari: 'برادر',
+    namePashto: 'ورور',
+  },
+  female: {
+    nameDari: 'خواهر',
+    namePashto: 'خور',
+  },
+  unspecified: {
+    nameDari: 'نامشخص',
+    namePashto: 'نامعلوم',
   },
 };

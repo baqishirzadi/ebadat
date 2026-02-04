@@ -53,12 +53,13 @@ export default function AdhkarScreen() {
       >
         <View style={styles.duaCardContent}>
           <View style={styles.duaIconContainer}>
-            <MaterialIcons name="favorite" size={24} color="#fff" />
+            <Text style={styles.duaEmoji}>🤲</Text>
           </View>
           <View style={styles.duaCardInfo}>
             <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
-            <Text style={styles.duaCardSubtitle}>درخواست دعای خیر و راهنمایی شرعی</Text>
-            <Text style={styles.duaCardSource}>از سیدان عالم و عالمان به از سیدان عالم و عالمان جید</Text>
+            <Text style={styles.duaCardSubtitle}>
+              درخواست دعای خیر و راهنمایی شرعی از سیدان عالم و عالمان جید
+            </Text>
           </View>
         </View>
         <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
@@ -303,6 +304,13 @@ paddingRight: Spacing.sm,
     backgroundColor: 'rgba(255,255,255,0.22)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  duaEmoji: {
+    fontSize: 22,
+    lineHeight: 24,
+    color: '#fff',
+    textAlign: 'center',
+    includeFontPadding: false,
   },
   duaCardInfo: {
     flex: 1,

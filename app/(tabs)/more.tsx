@@ -46,6 +46,7 @@ export default function MoreScreen() {
     { icon: 'calendar-today', label: 'تقویم اسلامی', route: '/calendar', color: '#6366F1' },
     { icon: 'nights-stay', label: 'برنامه رمضان', route: '/ramadan', color: '#8B5CF6' },
     { icon: 'explore', label: 'قبله‌نما', route: '/qibla', color: '#F59E0B' },
+    { icon: 'admin-panel-settings', label: 'پنل مدیریت', route: '/admin/login', color: '#0EA5E9' },
     { icon: 'settings', label: 'تنظیمات', route: '/(tabs)/settings', color: '#64748B' },
   ];
 
@@ -59,6 +60,34 @@ export default function MoreScreen() {
             {formatHijriDate(prayer.hijriDate, 'dari')}
           </CenteredText>
         )}
+      </View>
+
+      {/* Menu */}
+      <View style={styles.section}>
+        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+          منو
+        </CenteredText>
+        <View style={styles.menuList}>
+          {menuItems.map((item, index) => (
+            <Pressable
+              key={index}
+              onPress={() => router.push(item.route as any)}
+              style={({ pressed }) => [
+                styles.menuItem,
+                { backgroundColor: theme.card, borderColor: theme.cardBorder },
+                pressed && styles.menuItemPressed,
+              ]}
+            >
+              <View style={[styles.menuIcon, { backgroundColor: `${item.color}20` }]}>
+                <MaterialIcons name={item.icon as any} size={24} color={item.color} />
+              </View>
+              <CenteredText style={[styles.menuLabel, { color: theme.text }]}>
+                {item.label}
+              </CenteredText>
+              <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
+            </Pressable>
+          ))}
+        </View>
       </View>
 
       {/* Stats Grid */}
@@ -149,34 +178,6 @@ export default function MoreScreen() {
           </View>
         </View>
       )}
-
-      {/* Menu */}
-      <View style={styles.section}>
-        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          منو
-        </CenteredText>
-        <View style={styles.menuList}>
-          {menuItems.map((item, index) => (
-            <Pressable
-              key={index}
-              onPress={() => router.push(item.route as any)}
-              style={({ pressed }) => [
-                styles.menuItem,
-                { backgroundColor: theme.card, borderColor: theme.cardBorder },
-                pressed && styles.menuItemPressed,
-              ]}
-            >
-              <View style={[styles.menuIcon, { backgroundColor: `${item.color}20` }]}>
-                <MaterialIcons name={item.icon as any} size={24} color={item.color} />
-              </View>
-              <CenteredText style={[styles.menuLabel, { color: theme.text }]}>
-                {item.label}
-              </CenteredText>
-              <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
-            </Pressable>
-          ))}
-        </View>
-      </View>
 
       {/* Khatm Counter */}
       <View style={[styles.khatmCard, { backgroundColor: theme.card, borderColor: theme.tint }]}>

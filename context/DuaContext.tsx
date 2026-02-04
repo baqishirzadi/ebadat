@@ -4,10 +4,11 @@
  */
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode } from 'react';
-import { DuaRequest, DuaCategory } from '@/types/dua';
+import { DuaRequest, DuaCategory, UserGender } from '@/types/dua';
 import * as duaService from '@/utils/duaService';
 import * as duaStorage from '@/utils/duaStorage';
 import * as duaSync from '@/utils/duaSync';
+import { askAutonomousDua } from '@/utils/duaAgent';
 
 interface DuaState {
   requests: DuaRequest[];
@@ -55,7 +56,12 @@ const initialState: DuaState = {
 
 interface DuaContextType {
   state: DuaState;
-  submitRequest: (category: DuaCategory, message: string, isAnonymous: boolean) => Promise<DuaRequest>;
+  submitRequest: (
+    category: DuaCategory,
+    message: string,
+    isAnonymous: boolean,
+    gender: UserGender
+  ) => Promise<DuaRequest>;
   refreshRequests: () => Promise<void>;
   getRequestById: (id: string) => Promise<DuaRequest | null>;
   syncPending: () => Promise<void>;
@@ -129,7 +135,12 @@ export function DuaProvider({ children }: { children: ReactNode }) {
   }
 
   const submitRequest = useCallback(
-    async (category: DuaCategory, message: string, isAnonymous: boolean): Promise<DuaRequest> => {
+    async (
+      category: DuaCategory,
+      message: string,
+      isAnonymous: boolean,
+      gender: UserGender
+    ): Promise<DuaRequest> => {
       if (!state.userId) {
         const userId = await duaStorage.getOrCreateUserId();
         dispatch({ type: 'SET_USER_ID', payload: userId });
@@ -143,6 +154,7 @@ export function DuaProvider({ children }: { children: ReactNode }) {
           userId,
           category,
           message,
+          gender,
           isAnonymous,
         });
 
@@ -151,6 +163,31 @@ export function DuaProvider({ children }: { children: ReactNode }) {
 
         // Try to sync if online
         duaSync.syncIfOnline();
+
+        // Try to get an autonomous spiritual reply (best-effort, non-blocking for storage)
+        // Language: use Dari ('fa') as primary app language for now.
+        try {
+          const reply = await askAutonomousDua({
+            message,
+            gender: gender === 'female' ? 'female' : 'male',
+            language: 'fa',
+            requestId: request.id,
+          });
+
+          const answeredRequest: DuaRequest = {
+            ...request,
+            status: 'answered',
+            response: reply,
+            reviewerName: 'سیدعبدالباقی شیرزادی',
+            answeredAt: new Date(),
+          };
+
+          dispatch({ type: 'UPDATE_REQUEST', payload: answeredRequest });
+          await duaStorage.cacheRequest(answeredRequest);
+        } catch (agentError) {
+          // If autonomous dua fails (offline or server error), keep request as pending
+          console.warn('[DuaContext] Autonomous dua failed, keeping request pending:', agentError);
+        }
 
         return request;
       } catch (error) {

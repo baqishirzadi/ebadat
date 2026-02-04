@@ -19,10 +19,11 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { DuaRequest, DUA_CATEGORIES } from '@/types/dua';
+import { DuaRequest, DUA_CATEGORIES, GENDER_INFO, UserGender } from '@/types/dua';
 import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
 import CenteredText from '@/components/CenteredText';
 import { StatusBadge } from '@/components/dua/StatusBadge';
+import { buildDuaResponse, detectLanguage, ensureSignature } from '@/utils/duaAdvisor';
 
 export default function AdminRequestResponseScreen() {
   const { theme } = useApp();
@@ -58,6 +59,7 @@ export default function AdminRequestResponseScreen() {
         userId: data.user_id,
         category: data.category,
         message: data.message,
+        gender: data.gender || 'unspecified',
         isAnonymous: data.is_anonymous || false,
         status: data.status || 'pending',
         createdAt: data.created_at ? new Date(data.created_at) : new Date(),
@@ -90,24 +92,17 @@ export default function AdminRequestResponseScreen() {
     setSubmitting(true);
     try {
       const supabase = getSupabaseClient();
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      
-      if (!currentUser) {
-        Alert.alert('خطا', 'لطفاً دوباره وارد شوید');
-        router.replace('/admin/login');
-        return;
-      }
-
-      // Get reviewer name (you can fetch from admin_users collection)
-      const reviewerName = 'سیدعبدالباقی شیرزادی'; // Default, can be fetched from user profile
+      const language = detectLanguage(request.message);
+      const gender = (request.gender || 'male') as UserGender;
+      const finalResponse = ensureSignature(response.trim(), gender, language);
 
       const { error: updateError } = await supabase
         .from('dua_requests')
         .update({
           status: 'answered',
-          response: response.trim(),
-          reviewer_id: currentUser.id,
-          reviewer_name: reviewerName,
+          response: finalResponse,
+          reviewer_id: null,
+          reviewer_name: 'سیدعبدالباقی شیرزادی',
           answered_at: new Date().toISOString(),
         })
         .eq('id', request.id);
@@ -178,6 +173,7 @@ export default function AdminRequestResponseScreen() {
   }
 
   const category = DUA_CATEGORIES.find((c) => c.id === request.category);
+  const genderLabel = request.gender ? GENDER_INFO[request.gender].nameDari : 'نامشخص';
 
   return (
     <KeyboardAvoidingView
@@ -208,6 +204,20 @@ export default function AdminRequestResponseScreen() {
             </CenteredText>
           </View>
         </View>
+        <View style={styles.metaRow}>
+          <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
+            <MaterialIcons name="person" size={14} color={theme.textSecondary} />
+            <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
+              {`جنسیت: ${genderLabel}`}
+            </CenteredText>
+          </View>
+          <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
+            <MaterialIcons name="schedule" size={14} color={theme.textSecondary} />
+            <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
+              {formatDate(request.createdAt)}
+            </CenteredText>
+          </View>
+        </View>
 
         {/* Request Message */}
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -230,6 +240,45 @@ export default function AdminRequestResponseScreen() {
           <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
             پاسخ
           </CenteredText>
+          <View style={styles.actionRow}>
+            <Pressable
+              onPress={() => {
+                const draft = buildDuaResponse({
+                  message: request.message,
+                  category: request.category,
+                  gender: request.gender || 'male',
+                });
+                setResponse(draft);
+              }}
+              style={({ pressed }) => [
+                styles.actionButton,
+                { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder },
+                pressed && styles.buttonPressed,
+              ]}
+            >
+              <MaterialIcons name="auto-awesome" size={18} color={theme.tint} />
+              <CenteredText style={[styles.actionText, { color: theme.text }]}>
+                پاسخ پیشنهادی
+              </CenteredText>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                const lang = detectLanguage(request.message);
+                const updated = ensureSignature(response || '', request.gender || 'male', lang);
+                setResponse(updated);
+              }}
+              style={({ pressed }) => [
+                styles.actionButton,
+                { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder },
+                pressed && styles.buttonPressed,
+              ]}
+            >
+              <MaterialIcons name="edit" size={18} color={theme.tint} />
+              <CenteredText style={[styles.actionText, { color: theme.text }]}>
+                افزودن امضاء
+              </CenteredText>
+            </Pressable>
+          </View>
           <View style={[styles.inputContainer, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <TextInput
               style={[styles.textInput, { color: theme.text }]}
@@ -324,6 +373,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.md,
   },
+  metaChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.md,
+  },
+  metaText: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+  },
   categoryBadge: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -374,6 +435,26 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.subtitle,
     fontWeight: '600',
     marginBottom: Spacing.md,
+    fontFamily: 'Vazirmatn',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+  },
+  actionText: {
+    fontSize: Typography.ui.caption,
+    fontWeight: '600',
     fontFamily: 'Vazirmatn',
   },
   inputContainer: {

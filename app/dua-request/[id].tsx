@@ -17,7 +17,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { DuaRequest, DUA_CATEGORIES, STATUS_INFO } from '@/types/dua';
+import { DuaRequest, DUA_CATEGORIES, GENDER_INFO, STATUS_INFO } from '@/types/dua';
 import { StatusBadge } from '@/components/dua/StatusBadge';
 import CenteredText from '@/components/CenteredText';
 
@@ -107,6 +107,7 @@ export default function DuaRequestDetailScreen() {
 
   const category = DUA_CATEGORIES.find((c) => c.id === request.category);
   const statusInfo = STATUS_INFO[request.status];
+  const genderLabel = request.gender ? GENDER_INFO[request.gender].nameDari : 'نامشخص';
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -143,6 +144,20 @@ export default function DuaRequestDetailScreen() {
             />
             <CenteredText style={[styles.categoryText, { color: theme.tint }]}>
               {category?.nameDari || 'نامشخص'}
+            </CenteredText>
+          </View>
+        </View>
+        <View style={styles.metaRow}>
+          <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
+            <MaterialIcons name="person" size={14} color={theme.textSecondary} />
+            <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
+              {`جنسیت: ${genderLabel}`}
+            </CenteredText>
+          </View>
+          <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
+            <MaterialIcons name="schedule" size={14} color={theme.textSecondary} />
+            <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
+              {formatDate(request.createdAt)}
             </CenteredText>
           </View>
         </View>
@@ -263,6 +278,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: Spacing.md,
+  },
+  metaChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.md,
+  },
+  metaText: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
   },
   categoryBadge: {
     flexDirection: 'row',

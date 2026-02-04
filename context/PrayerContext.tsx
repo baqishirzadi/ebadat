@@ -24,6 +24,7 @@ import {
   Location as LocationType,
   PrayerTimes,
 } from '@/utils/prayerTimes';
+import { getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useReducer } from 'react';
 import { Platform } from 'react-native';
@@ -209,11 +210,11 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   // Update prayer times when location or settings change
   useEffect(() => {
     if (!state.isLoading) {
-      updatePrayerTimes();
+      void updatePrayerTimes();
       updateQibla();
       updateHijriDate();
     }
-  }, [state.location, state.settings.calculationMethod, state.settings.asrMethod, state.isLoading]);
+  }, [state.location, state.settings.selectedCity, state.settings.calculationMethod, state.settings.asrMethod, state.isLoading]);
 
   // Configure notifications (only for native platforms)
   useEffect(() => {
@@ -371,6 +372,37 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  function toCityKey(selectedCity: string | null): string | undefined {
+    if (!selectedCity) return undefined;
+    if (selectedCity.startsWith('afghanistan_')) return selectedCity;
+    if (AFGHAN_CITIES[selectedCity]) {
+      return `afghanistan_${selectedCity}`;
+    }
+    return undefined;
+  }
+
+  async function loadPrayerTimesFor(
+    location: LocationType,
+    selectedCity: string | null,
+    settings: PrayerSettings
+  ) {
+    try {
+      const cityKey = toCityKey(selectedCity);
+      const result = await getPrayerTimesForDate({ cityKey, location, date: new Date() });
+      dispatch({ type: 'SET_PRAYER_TIMES', payload: result.times });
+      dispatch({ type: 'SET_ERROR', payload: null });
+    } catch (error) {
+      console.error('Failed to load prayer times (agent):', error);
+      const fallback = calculatePrayerTimes(
+        new Date(),
+        location,
+        settings.calculationMethod,
+        settings.asrMethod
+      );
+      dispatch({ type: 'SET_PRAYER_TIMES', payload: fallback });
+    }
+  }
+
   async function loadSavedData() {
     try {
       const [locationJson, settingsJson, adhanPrefs] = await Promise.all([
@@ -394,10 +426,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
       }
 
       dispatch({ type: 'INITIALIZE', payload: { location, settings, adhanPreferences: adhanPrefs, name } });
-      
-      // Calculate prayer times immediately after initialization
-      const times = calculatePrayerTimes(new Date(), location, settings.calculationMethod, settings.asrMethod);
-      dispatch({ type: 'SET_PRAYER_TIMES', payload: times });
+      await loadPrayerTimesFor(location, settings.selectedCity, settings);
       
       const qibla = calculateQibla(location);
       dispatch({ type: 'SET_QIBLA', payload: qibla });
@@ -407,10 +436,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Failed to load prayer data:', error);
       dispatch({ type: 'INITIALIZE', payload: { location: DEFAULT_LOCATION, settings: DEFAULT_SETTINGS, adhanPreferences: DEFAULT_ADHAN_PREFERENCES, name: 'کابل' } });
-      
-      // Calculate with defaults on error
-      const times = calculatePrayerTimes(new Date(), DEFAULT_LOCATION, DEFAULT_SETTINGS.calculationMethod, DEFAULT_SETTINGS.asrMethod);
-      dispatch({ type: 'SET_PRAYER_TIMES', payload: times });
+      await loadPrayerTimesFor(DEFAULT_LOCATION, DEFAULT_SETTINGS.selectedCity, DEFAULT_SETTINGS);
       
       const qibla = calculateQibla(DEFAULT_LOCATION);
       dispatch({ type: 'SET_QIBLA', payload: qibla });
@@ -436,15 +462,9 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     return names[key] || key;
   }
 
-  function updatePrayerTimes() {
-    const times = calculatePrayerTimes(
-      new Date(),
-      state.location,
-      state.settings.calculationMethod,
-      state.settings.asrMethod
-    );
-    dispatch({ type: 'SET_PRAYER_TIMES', payload: times });
-  }
+  const updatePrayerTimes = useCallback(async () => {
+    await loadPrayerTimesFor(state.location, state.settings.selectedCity, state.settings);
+  }, [state.location, state.settings]);
 
   function updateQibla() {
     const qibla = calculateQibla(state.location);
@@ -457,9 +477,9 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   }
 
   const refreshPrayerTimes = useCallback(() => {
-    updatePrayerTimes();
+    void updatePrayerTimes();
     updateHijriDate();
-  }, [state.location, state.settings]);
+  }, [updatePrayerTimes]);
 
   const setCity = useCallback(async (cityKey: string) => {
     const location = AFGHAN_CITIES[cityKey];

@@ -6,11 +6,8 @@
 
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { 
-  calculatePrayerTimesWithAdhan, 
-  CityKey, 
-  PrayerTimesResult 
-} from '@/utils/prayerTimesManager';
+import { CityKey } from '@/utils/prayerTimesManager';
+import { PrayerTimesDisplay, getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
 import { CITIES, ALL_CITIES, searchCities } from '@/utils/cities';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 
@@ -20,7 +17,7 @@ export { CityKey } from '@/utils/prayerTimesManager';
 
 export function usePrayerTimes() {
   const [selectedCity, setSelectedCity] = useState<CityKey>('afghanistan_kabul');
-  const [prayerTimes, setPrayerTimes] = useState<PrayerTimesResult | null>(null);
+  const [prayerTimes, setPrayerTimes] = useState<PrayerTimesDisplay | null>(null);
   const [loading, setLoading] = useState(true);
   const [gpsLoading, setGpsLoading] = useState(false);
 
@@ -31,11 +28,27 @@ export function usePrayerTimes() {
 
   // Recalculate when city changes
   useEffect(() => {
-    if (selectedCity) {
-      const times = calculatePrayerTimesWithAdhan(selectedCity);
-      setPrayerTimes(times);
-      setLoading(false);
-    }
+    let cancelled = false;
+    const loadTimes = async () => {
+      if (!selectedCity) return;
+      setLoading(true);
+      try {
+        const result = await getPrayerTimesForDate({ cityKey: selectedCity, date: new Date() });
+        if (!cancelled) {
+          setPrayerTimes(result.display);
+        }
+      } catch (error) {
+        console.error('Error loading prayer times:', error);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+    loadTimes();
+    return () => {
+      cancelled = true;
+    };
   }, [selectedCity]);
 
   const loadSavedCity = async () => {

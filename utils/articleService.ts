@@ -9,7 +9,7 @@ import * as articleStorage from './articleStorage';
 import { Article, ArticleCategory, ArticleLanguage } from '@/types/articles';
 import articlesSeedData from '@/data/articles-seed.json';
 
-const ENABLE_ARTICLES_REMOTE = false;
+const ENABLE_ARTICLES_REMOTE = true;
 
 export function isArticlesRemoteEnabled(): boolean {
   return ENABLE_ARTICLES_REMOTE && isSupabaseConfigured();

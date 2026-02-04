@@ -34,16 +34,6 @@ export default function ArticlesFeed() {
   const { width } = useWindowDimensions();
 
   useEffect(() => {
-    console.log('[ArticlesFeed] Component mounted, refreshing articles...');
-    console.log('[ArticlesFeed] Current state:', {
-      articlesCount: state.articles.length,
-      isLoading: state.isLoading,
-      isOffline: state.isOffline,
-      scholarsCount: state.scholars.length,
-    });
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'articles/index.tsx:41',message:'ArticlesFeed mounted - calling refreshArticles',data:{articlesCount:state.articles.length,isLoading:state.isLoading,isOffline:state.isOffline},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-    // #endregion
     refreshArticles();
   }, [refreshArticles]);
 
@@ -58,14 +48,6 @@ export default function ArticlesFeed() {
     if (article.language !== selectedLanguage) return false;
     return article.published;
   });
-
-  // #region agent log
-  useEffect(() => {
-    const filterLog = {location:'articles/index.tsx:59',message:'Filtered articles calculation',data:{totalArticles:state.articles.length,filteredCount:filteredArticles.length,selectedLanguage,selectedCategory,articleLanguages:state.articles.map(a=>a.language),articleCategories:state.articles.map(a=>a.category),sampleArticles:state.articles.slice(0,2).map(a=>({title:a.title,language:a.language,category:a.category}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'};
-    console.log('[DEBUG]', JSON.stringify(filterLog));
-    fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(filterLog)}).catch(()=>{});
-  }, [state.articles, filteredArticles, selectedLanguage, selectedCategory]);
-  // #endregion
 
   const handleArticlePress = useCallback(
     (articleId: string) => {
@@ -135,8 +117,19 @@ export default function ArticlesFeed() {
         <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
       </View>
 
+      <CategoryFilter
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+        selectedLanguage={selectedLanguage}
+        onSelectLanguage={setSelectedLanguage}
+      />
+    </Animated.View>
+  );
+
+  const renderListFooter = () => (
+    <View>
       {state.scholars.length > 0 && (
-        <View style={styles.scholarsSection}>
+        <View style={styles.scholarsSectionFooter}>
           <CenteredText style={[styles.scholarsTitle, { color: theme.text }]}>
             علما و نویسندگان
           </CenteredText>
@@ -151,14 +144,8 @@ export default function ArticlesFeed() {
           />
         </View>
       )}
-
-      <CategoryFilter
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-        selectedLanguage={selectedLanguage}
-        onSelectLanguage={setSelectedLanguage}
-      />
-    </Animated.View>
+      <View style={styles.footer} />
+    </View>
   );
 
   return (
@@ -217,6 +204,7 @@ export default function ArticlesFeed() {
           keyExtractor={(item) => item.id}
           renderItem={renderArticle}
           ListHeaderComponent={renderListHeader}
+          ListHeaderComponentStyle={styles.listHeader}
           contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl
@@ -227,7 +215,7 @@ export default function ArticlesFeed() {
             />
           }
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={<View style={styles.footer} />}
+          ListFooterComponent={renderListFooter}
           onScroll={Animated.event(
             [{ nativeEvent: { contentOffset: { y: scrollY } } }],
             { useNativeDriver: true }
@@ -263,6 +251,11 @@ const styles = StyleSheet.create({
   headerWrapper: {
     width: '100%',
     overflow: 'hidden',
+    alignSelf: 'stretch',
+  },
+  listHeader: {
+    marginHorizontal: -Spacing.md,
+    marginTop: -Spacing.md,
   },
   headerPattern: {
     position: 'absolute',
@@ -344,6 +337,11 @@ const styles = StyleSheet.create({
   scholarsSection: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.md,
+    paddingBottom: Spacing.sm,
+  },
+  scholarsSectionFooter: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.lg,
     paddingBottom: Spacing.sm,
   },
   scholarsTitle: {

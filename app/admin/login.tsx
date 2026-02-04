@@ -18,7 +18,6 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CenteredText from '@/components/CenteredText';
 
@@ -29,39 +28,31 @@ export default function AdminLoginScreen() {
   const router = useRouter();
 
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [pin, setPin] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const [showPin, setShowPin] = useState(false);
+
+  const ADMIN_PIN = '0852';
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('خطا', 'لطفاً ایمیل و رمز عبور را وارد کنید');
-      return;
-    }
-
-    if (!isSupabaseConfigured()) {
-      Alert.alert('خطا', 'Supabase تنظیم نشده است. لطفاً تنظیمات را بررسی کنید.');
+    if (!pin.trim()) {
+      Alert.alert('خطا', 'لطفاً کُد PIN را وارد کنید');
       return;
     }
 
     setIsLoading(true);
     try {
-      const supabase = getSupabaseClient();
-      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password,
-      });
-
-      if (authError || !authData.user) {
-        throw authError || new Error('Authentication failed');
+      if (pin.trim() !== ADMIN_PIN) {
+        throw new Error('INVALID_PIN');
       }
-      
-      // Store admin session
-      await AsyncStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify({
-        uid: authData.user.id,
-        email: authData.user.email,
-        timestamp: Date.now(),
-      }));
+
+      await AsyncStorage.setItem(
+        ADMIN_STORAGE_KEY,
+        JSON.stringify({
+          pinVerified: true,
+          timestamp: Date.now(),
+        })
+      );
 
       // Navigate to admin dashboard
       router.replace('/admin/dashboard');
@@ -69,12 +60,8 @@ export default function AdminLoginScreen() {
       console.error('Login error:', error);
       let errorMessage = 'خطا در ورود';
       
-      if (error.message?.includes('Invalid login credentials') || error.message?.includes('invalid')) {
-        errorMessage = 'ایمیل یا رمز عبور اشتباه است';
-      } else if (error.message?.includes('Email not confirmed')) {
-        errorMessage = 'ایمیل تایید نشده است';
-      } else if (error.message?.includes('too many')) {
-        errorMessage = 'تلاش‌های زیاد. لطفاً بعداً تلاش کنید';
+      if (error.message?.includes('INVALID_PIN')) {
+        errorMessage = 'PIN اشتباه است';
       }
       
       Alert.alert('خطا', errorMessage);
@@ -97,39 +84,23 @@ export default function AdminLoginScreen() {
       {/* Login Form */}
       <View style={styles.form}>
         <View style={styles.inputGroup}>
-          <CenteredText style={[styles.label, { color: theme.text }]}>ایمیل</CenteredText>
-          <View style={[styles.inputContainer, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <MaterialIcons name="email" size={20} color={theme.icon} />
-            <TextInput
-              style={[styles.input, { color: theme.text }]}
-              placeholder="ایمیل خود را وارد کنید"
-              placeholderTextColor={theme.textSecondary}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              textAlign="right"
-            />
-          </View>
-        </View>
-
-        <View style={styles.inputGroup}>
-          <CenteredText style={[styles.label, { color: theme.text }]}>رمز عبور</CenteredText>
+          <CenteredText style={[styles.label, { color: theme.text }]}>PIN</CenteredText>
           <View style={[styles.inputContainer, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <MaterialIcons name="lock" size={20} color={theme.icon} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
-              placeholder="رمز عبور خود را وارد کنید"
+              placeholder="PIN را وارد کنید"
               placeholderTextColor={theme.textSecondary}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry={!showPassword}
-              textAlign="right"
+              value={pin}
+              onChangeText={setPin}
+              secureTextEntry={!showPin}
+              keyboardType="number-pad"
+              maxLength={6}
+              textAlign="center"
             />
-            <Pressable onPress={() => setShowPassword(!showPassword)}>
+            <Pressable onPress={() => setShowPin(!showPin)}>
               <MaterialIcons
-                name={showPassword ? 'visibility' : 'visibility-off'}
+                name={showPin ? 'visibility' : 'visibility-off'}
                 size={20}
                 color={theme.icon}
               />
