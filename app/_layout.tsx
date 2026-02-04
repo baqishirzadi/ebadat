@@ -31,6 +31,35 @@ if (!I18nManager.isRTL) {
   // In production, this will work after first install
 }
 
+// ───────────────────────────────────────────────────
+// Global safety for unhandled promise rejections
+// Prevents noisy red-screen when network is offline
+// ───────────────────────────────────────────────────
+const globalAny = globalThis as any;
+if (!globalAny.__EBADAT_UNHANDLED_REJECTION__) {
+  globalAny.__EBADAT_UNHANDLED_REJECTION__ = true;
+  const handler = (reason: any) => {
+    const message =
+      typeof reason?.message === 'string' ? reason.message : String(reason ?? '');
+    if (/network request failed|failed to fetch/i.test(message)) {
+      console.warn('[UnhandledRejection] Network request failed (offline?)');
+      return;
+    }
+    console.warn('[UnhandledRejection]', reason);
+  };
+
+  if (typeof globalAny.process?.on === 'function') {
+    globalAny.process.on('unhandledRejection', handler);
+  } else if (typeof globalAny.addEventListener === 'function') {
+    globalAny.addEventListener('unhandledrejection', (event: any) => {
+      handler(event?.reason);
+      if (typeof event?.preventDefault === 'function') {
+        event.preventDefault();
+      }
+    });
+  }
+}
+
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
 

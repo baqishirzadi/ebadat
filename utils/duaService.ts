@@ -4,15 +4,35 @@
  */
 
 import NetInfo from '@react-native-community/netinfo';
-import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 import { DuaRequest, UserMetadata } from '@/types/dua';
 import * as duaStorage from './duaStorage';
 
 /**
  * Check if online and Supabase is configured
  */
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+const DUA_CLIENT_URL =
+  process.env.EXPO_PUBLIC_DUA_CLIENT_URL ||
+  (SUPABASE_URL ? `${SUPABASE_URL}/functions/v1/dua-client` : '');
+
 function isAvailable(): boolean {
-  return isSupabaseConfigured();
+  return !!DUA_CLIENT_URL;
+}
+
+async function callDuaClient<T>(action: string, payload?: Record<string, unknown>): Promise<T> {
+  if (!DUA_CLIENT_URL) {
+    throw new Error('Dua client function URL not configured');
+  }
+  const response = await fetch(DUA_CLIENT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, ...payload }),
+  });
+  if (!response.ok) {
+    const text = await response.text().catch(() => '');
+    throw new Error(text || 'Dua client request failed');
+  }
+  return (await response.json()) as T;
 }
 
 async function hasNetwork(): Promise<boolean> {
@@ -88,9 +108,7 @@ export async function submitRequest(request: Omit<DuaRequest, 'id' | 'createdAt'
   }
 
   try {
-    const supabase = getSupabaseClient();
     const userId = await duaStorage.getOrCreateUserId();
-    
     const requestData: DuaRequest = {
       ...request,
       userId,
@@ -98,22 +116,12 @@ export async function submitRequest(request: Omit<DuaRequest, 'id' | 'createdAt'
       createdAt: new Date(),
     };
 
-    const rowData = requestToRow(requestData);
-    const { data, error } = await supabase
-      .from('dua_requests')
-      .insert(rowData)
-      .select()
-      .single();
+    const data = await callDuaClient<{ request: any }>('submit', {
+      request: requestToRow(requestData),
+    });
 
-    if (error) {
-      throw error;
-    }
-
-    const submittedRequest = rowToRequest(data);
-
-    // Cache locally
+    const submittedRequest = rowToRequest(data.request);
     await duaStorage.cacheRequest(submittedRequest);
-
     return submittedRequest;
   } catch (error) {
     if (isNetworkError(error) || !(await hasNetwork())) {
@@ -148,26 +156,8 @@ export async function getUserRequests(userId: string): Promise<DuaRequest[]> {
   }
 
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase
-      .from('dua_requests')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(100);
-
-    if (error) {
-      if (!isNetworkError(error)) {
-        console.error('Failed to get user requests:', error);
-      }
-      return userCached;
-    }
-
-    if (!data) {
-      return userCached;
-    }
-
-    const requests = data.map(rowToRequest);
+    const data = await callDuaClient<{ requests: any[] }>('list', { user_id: userId });
+    const requests = (data.requests || []).map(rowToRequest);
 
     // Cache all requests
     for (const request of requests) {
@@ -198,18 +188,12 @@ export async function getRequestById(requestId: string): Promise<DuaRequest | nu
   }
 
   try {
-    const supabase = getSupabaseClient();
-    const { data, error } = await supabase
-      .from('dua_requests')
-      .select('*')
-      .eq('id', requestId)
-      .single();
-
-    if (error || !data) {
-      return null;
-    }
-
-    const request = rowToRequest(data);
+    const data = await callDuaClient<{ request: any }>('get', {
+      id: requestId,
+      user_id: (await duaStorage.getOrCreateUserId()),
+    });
+    if (!data.request) return null;
+    const request = rowToRequest(data.request);
     await duaStorage.cacheRequest(request);
     return request;
   } catch (error) {
@@ -229,37 +213,12 @@ export async function updateUserMetadata(metadata: Partial<UserMetadata>): Promi
   }
 
   try {
-    const supabase = getSupabaseClient();
     const userId = await duaStorage.getOrCreateUserId();
-
-    const updateData: any = {};
-    if (metadata.deviceToken !== undefined) {
-      updateData.device_token = metadata.deviceToken;
-    }
-    if (metadata.notificationEnabled !== undefined) {
-      updateData.notification_enabled = metadata.notificationEnabled;
-    }
-
-    // Try to update existing record
-    const { error: updateError } = await supabase
-      .from('user_metadata')
-      .update(updateData)
-      .eq('user_id', userId);
-
-    // If update fails (record doesn't exist), insert new record
-    if (updateError) {
-      const { error: insertError } = await supabase
-        .from('user_metadata')
-        .insert({
-          user_id: userId,
-          device_token: metadata.deviceToken || null,
-          notification_enabled: metadata.notificationEnabled ?? true,
-        });
-
-      if (insertError) {
-        console.error('Failed to create/update user metadata:', insertError);
-      }
-    }
+    await callDuaClient('metadata', {
+      user_id: userId,
+      device_token: metadata.deviceToken ?? null,
+      notification_enabled: metadata.notificationEnabled ?? true,
+    });
   } catch (error) {
     if (!isNetworkError(error)) {
       console.error('Failed to update user metadata:', error);
@@ -282,22 +241,10 @@ export async function syncPendingRequests(): Promise<void> {
     for (const request of pending) {
       if (queue.includes(request.id)) {
         try {
-          // Try to submit to Supabase
-          const supabase = getSupabaseClient();
-          const rowData = requestToRow(request);
-          
-          const { data, error } = await supabase
-            .from('dua_requests')
-            .insert(rowData)
-            .select()
-            .single();
-
-          if (error) {
-            throw error;
-          }
-
-          // Update local cache with new ID
-          const syncedRequest = rowToRequest(data);
+          const data = await callDuaClient<{ request: any }>('submit', {
+            request: requestToRow(request),
+          });
+          const syncedRequest = rowToRequest(data.request);
           await duaStorage.cacheRequest(syncedRequest);
           await duaStorage.removePendingRequest(request.id);
           await duaStorage.removeFromSyncQueue(request.id);

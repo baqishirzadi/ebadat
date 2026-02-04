@@ -18,11 +18,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { DuaRequest, RequestStatus, STATUS_INFO } from '@/types/dua';
-import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CenteredText from '@/components/CenteredText';
 import { RequestCard } from '@/components/dua/RequestCard';
 import NetInfo from '@react-native-community/netinfo';
+import { fetchAdminRequests } from '@/utils/duaAdmin';
 
 const ADMIN_STORAGE_KEY = '@ebadat/admin_session';
 
@@ -47,9 +47,7 @@ export default function AdminDashboardScreen() {
   }, []);
 
   useEffect(() => {
-    if (isSupabaseConfigured()) {
-      loadRequests();
-    }
+    loadRequests();
   }, [statusFilter]);
 
   useEffect(() => {
@@ -73,12 +71,6 @@ export default function AdminDashboardScreen() {
   };
 
   const loadRequests = async () => {
-    if (!isSupabaseConfigured()) {
-      setErrorMessage('Supabase تنظیم نشده است. لطفاً تنظیمات را بررسی کنید.');
-      setLoading(false);
-      return;
-    }
-
     try {
       const netInfo = await NetInfo.fetch();
       if (!netInfo.isConnected || netInfo.isInternetReachable === false) {
@@ -88,39 +80,14 @@ export default function AdminDashboardScreen() {
       }
 
       setErrorMessage(null);
-      const supabase = getSupabaseClient();
-      let query = supabase
-        .from('dua_requests')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-
-      if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        throw error;
-      }
-
-      const loadedRequests: DuaRequest[] = (data || []).map((row: any) => ({
-        id: row.id,
-        userId: row.user_id,
-        category: row.category,
-        message: row.message,
-        gender: row.gender || 'unspecified',
-        isAnonymous: row.is_anonymous || false,
-        status: row.status || 'pending',
-        createdAt: row.created_at ? new Date(row.created_at) : new Date(),
-        answeredAt: row.answered_at ? new Date(row.answered_at) : undefined,
-        response: row.response || undefined,
-        reviewerId: row.reviewer_id || undefined,
-        reviewerName: row.reviewer_name || undefined,
-      }));
-
-      setRequests(loadedRequests);
+      const loadedRequests = await fetchAdminRequests(statusFilter);
+      setRequests(
+        loadedRequests.map((row) => ({
+          ...row,
+          createdAt: row.createdAt ? new Date(row.createdAt) : new Date(),
+          answeredAt: row.answeredAt ? new Date(row.answeredAt) : undefined,
+        }))
+      );
     } catch (error) {
       const message =
         error instanceof Error && /network request failed|failed to fetch/i.test(error.message)

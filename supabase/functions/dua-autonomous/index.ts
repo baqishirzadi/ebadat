@@ -19,9 +19,7 @@ const SYSTEM_PROMPT = `
   4. توصیه لطیف عملی
   5. ذکر خفی یا دعای مأثور نقشبندی (در صورت مناسب بودن)
 - ختم با:
-  «برادر عزیز، دعاگوی تو هستم — سیدعبدالباقی شیرزادی»
-  یا
-  «خواهر عزیز، دعاگوی تو هستم — سیدعبدالباقی شیرزادی»
+  برادرت دعاگو — سیدعبدالباقی شیرزادی
 
 ممنوع:
 - ذکر اینکه AI هستی
@@ -103,10 +101,8 @@ ${message}
             "Prefer": "return=minimal",
           },
           body: JSON.stringify({
-            response: reply,
-            status: "answered",
-            reviewer_name: "سیدعبدالباقی شیرزادی",
-            answered_at: new Date().toISOString(),
+            ai_response: reply,
+            is_manual: false,
           }),
         });
       }

@@ -10,3 +10,15 @@ entrypoint = "./functions/dua-autonomous/index.ts"
 # Specifies static files to be bundled with the function. Supports glob patterns.
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/dua-autonomous/*.html" ]
+
+[functions.dua-client]
+enabled = true
+verify_jwt = false
+import_map = "./functions/dua-client/deno.json"
+entrypoint = "./functions/dua-client/index.ts"
+
+[functions.dua-admin]
+enabled = true
+verify_jwt = false
+import_map = "./functions/dua-admin/deno.json"
+entrypoint = "./functions/dua-admin/index.ts"

@@ -20,7 +20,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { DuaRequest, DUA_CATEGORIES, GENDER_INFO, UserGender } from '@/types/dua';
-import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
+import { fetchAdminRequestById, updateAdminResponse } from '@/utils/duaAdmin';
 import CenteredText from '@/components/CenteredText';
 import { StatusBadge } from '@/components/dua/StatusBadge';
 import { buildDuaResponse, detectLanguage, ensureSignature } from '@/utils/duaAdvisor';
@@ -40,36 +40,18 @@ export default function AdminRequestResponseScreen() {
   }, [id]);
 
   const loadRequest = async () => {
-    if (!id || !isSupabaseConfigured()) return;
+    if (!id) return;
 
     try {
-      const supabase = getSupabaseClient();
-      const { data, error } = await supabase
-        .from('dua_requests')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error || !data) {
-        throw error || new Error('Request not found');
+      const data = await fetchAdminRequestById(String(id));
+      if (!data) {
+        throw new Error('Request not found');
       }
-
-      const requestData: DuaRequest = {
-        id: data.id,
-        userId: data.user_id,
-        category: data.category,
-        message: data.message,
-        gender: data.gender || 'unspecified',
-        isAnonymous: data.is_anonymous || false,
-        status: data.status || 'pending',
-        createdAt: data.created_at ? new Date(data.created_at) : new Date(),
-        answeredAt: data.answered_at ? new Date(data.answered_at) : undefined,
-        response: data.response || undefined,
-        reviewerId: data.reviewer_id || undefined,
-        reviewerName: data.reviewer_name || undefined,
-      };
-
-      setRequest(requestData);
+      setRequest({
+        ...data,
+        createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+        answeredAt: data.answeredAt ? new Date(data.answeredAt) : undefined,
+      });
       if (data.response) {
         setResponse(data.response);
       }
@@ -87,29 +69,18 @@ export default function AdminRequestResponseScreen() {
       return;
     }
 
-    if (!request || !isSupabaseConfigured()) return;
+    if (!request) return;
 
     setSubmitting(true);
     try {
-      const supabase = getSupabaseClient();
       const language = detectLanguage(request.message);
       const gender = (request.gender || 'male') as UserGender;
       const finalResponse = ensureSignature(response.trim(), gender, language);
-
-      const { error: updateError } = await supabase
-        .from('dua_requests')
-        .update({
-          status: 'answered',
-          response: finalResponse,
-          reviewer_id: null,
-          reviewer_name: 'سیدعبدالباقی شیرزادی',
-          answered_at: new Date().toISOString(),
-        })
-        .eq('id', request.id);
-
-      if (updateError) {
-        throw updateError;
-      }
+      await updateAdminResponse({
+        id: request.id,
+        response: finalResponse,
+        reviewerName: 'سیدعبدالباقی شیرزادی',
+      });
 
       // Notification will be sent automatically by Edge Function when record is updated
       // If Edge Functions are not deployed, notification will be sent via client-side fallback

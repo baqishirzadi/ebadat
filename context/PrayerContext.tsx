@@ -210,7 +210,9 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   // Update prayer times when location or settings change
   useEffect(() => {
     if (!state.isLoading) {
-      void updatePrayerTimes();
+      updatePrayerTimes().catch((error) => {
+        console.warn('updatePrayerTimes failed:', error);
+      });
       updateQibla();
       updateHijriDate();
     }
@@ -477,7 +479,9 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   }
 
   const refreshPrayerTimes = useCallback(() => {
-    void updatePrayerTimes();
+    updatePrayerTimes().catch((error) => {
+      console.warn('updatePrayerTimes failed:', error);
+    });
     updateHijriDate();
   }, [updatePrayerTimes]);
 

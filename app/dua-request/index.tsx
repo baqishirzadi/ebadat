@@ -82,7 +82,9 @@ export default function DuaRequestsScreen() {
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
-        <CenteredText style={styles.headerTitle}>دعای خیر و مشورت شرعی</CenteredText>
+        <View pointerEvents="none" style={styles.headerTitleContainer}>
+          <CenteredText style={styles.headerTitle}>دعای خیر و مشورت شرعی</CenteredText>
+        </View>
         <Pressable
           onPress={() => router.push('/dua-request/new')}
           style={styles.newButtonHeader}
@@ -146,6 +148,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    position: 'relative',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -161,6 +164,16 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#fff',
     fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+  },
+  headerTitleContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   newButtonHeader: {
     padding: Spacing.xs,

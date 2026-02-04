@@ -5,6 +5,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 import { getCity, City } from '@/utils/cities';
 import {
   calculatePrayerTimes,
@@ -72,6 +73,17 @@ type CachePayload = {
     }
   >;
 };
+
+async function isOnline(): Promise<boolean> {
+  try {
+    const netInfo = await NetInfo.fetch();
+    if (!netInfo.isConnected) return false;
+    if (netInfo.isInternetReachable === false) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 function getDateKey(date: Date): string {
   const y = date.getFullYear();
@@ -396,10 +408,14 @@ async function ensureCache(cityKey: string, city: City, date: Date): Promise<Cac
     }
   }
 
+  const online = await isOnline();
   for (const monthKey of neededMonths) {
     const [year, month] = monthKey.split('-').map((v) => parseInt(v, 10));
     const monthDate = new Date(year, month - 1, 1);
     try {
+      if (!online) {
+        break;
+      }
       const monthDays = await fetchAlAdhanMonth(city, monthDate);
       monthDays.forEach((day) => {
         cityCache.days[day.date] = day;
