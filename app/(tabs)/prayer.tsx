@@ -12,6 +12,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 
@@ -77,6 +78,7 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
 
 export default function NamazScreen() {
   const { theme } = useApp();
+  const router = useRouter();
   const { 
     prayerTimes, 
     selectedCity, 
@@ -269,6 +271,29 @@ export default function NamazScreen() {
             نماز عصر طبق مذهب حنفی محاسبه شده است
           </CenteredText>
         </View>
+
+        {/* Dua Request Card (same as Adhkar) */}
+        <Pressable
+          onPress={() => router.push('/dua-request')}
+          style={({ pressed }) => [
+            styles.duaCard,
+            { backgroundColor: theme.tint, shadowColor: theme.tint },
+            pressed && styles.duaCardPressed,
+          ]}
+        >
+          <View style={styles.duaCardContent}>
+            <View style={styles.duaIconContainer}>
+              <Text style={styles.duaEmoji}>🤲</Text>
+            </View>
+            <View style={styles.duaCardInfo}>
+              <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
+              <Text style={styles.duaCardSubtitle}>
+                درخواست دعای خیر و راهنمایی شرعی از سیدان عالم و عالمان جید
+              </Text>
+            </View>
+          </View>
+          <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
+        </Pressable>
       </ScrollView>
 
       {/* City Selection Modal */}
@@ -595,6 +620,54 @@ const styles = StyleSheet.create({
   },
   noteText: {
     fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+  },
+  duaCard: {
+    marginTop: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  duaCardPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.99 }],
+  },
+  duaCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    flex: 1,
+  },
+  duaIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  duaEmoji: {
+    fontSize: 22,
+  },
+  duaCardInfo: {
+    flex: 1,
+  },
+  duaCardTitle: {
+    fontSize: Typography.ui.body,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 4,
+    fontFamily: 'Vazirmatn',
+  },
+  duaCardSubtitle: {
+    fontSize: Typography.ui.caption,
+    color: 'rgba(255,255,255,0.85)',
     fontFamily: 'Vazirmatn',
   },
 });

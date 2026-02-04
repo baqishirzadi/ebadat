@@ -8,6 +8,7 @@ import {
   View,
   StyleSheet,
   ScrollView,
+  Text,
   TextInput,
   Pressable,
   Switch,
@@ -125,80 +126,16 @@ export default function NewDuaRequestScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Description */}
-        <View style={[styles.descriptionCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <View style={styles.descriptionIcon}>
-            <MaterialIcons name="favorite" size={18} color={theme.tint} />
-          </View>
-          <CenteredText style={[styles.descriptionText, { color: theme.textSecondary }]}>
-            درخواست‌تان با امانت و احترام خوانده می‌شود. پاسخ‌ها با رویکرد
-            معنوی و دل‌آگاه، از سوی سیدعبدالباقی شیرزادی آماده می‌گردد.
-          </CenteredText>
-        </View>
-
-        {/* Category Selection */}
-        <View style={styles.section}>
-          <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
-            دسته‌بندی
-          </CenteredText>
-          <CategorySelector selectedCategory={category} onSelect={setCategory} />
-        </View>
-
-        {/* Gender Selection */}
-        <View style={styles.section}>
-          <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
-            جنسیت
-          </CenteredText>
-          <View style={styles.genderRow}>
-            {[
-              { id: 'male' as const, label: 'برادر', icon: 'male' as const },
-              { id: 'female' as const, label: 'خواهر', icon: 'female' as const },
-            ].map((option) => {
-              const selected = gender === option.id;
-              return (
-                <Pressable
-                  key={option.id}
-                  onPress={() => setGender(option.id)}
-                  style={({ pressed }) => [
-                    styles.genderChip,
-                    {
-                      backgroundColor: selected ? `${theme.tint}18` : theme.card,
-                      borderColor: selected ? theme.tint : theme.cardBorder,
-                    },
-                    pressed && styles.buttonPressed,
-                  ]}
-                >
-                  <MaterialIcons
-                    name={option.icon}
-                    size={20}
-                    color={selected ? theme.tint : theme.textSecondary}
-                  />
-                  <CenteredText
-                    style={[
-                      styles.genderText,
-                      { color: selected ? theme.tint : theme.text },
-                    ]}
-                  >
-                    {option.label}
-                  </CenteredText>
-                </Pressable>
-              );
-            })}
-          </View>
-          <CenteredText style={[styles.genderHint, { color: theme.textSecondary }]}>
-            برای پاسخ بهتر، جنسیت خود را مشخص کنید.
-          </CenteredText>
-        </View>
-
         {/* Message Input */}
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
-            متن درخواست
+            پیام شما
           </CenteredText>
-          <View style={[styles.inputContainer, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          <View style={[styles.inputWrapper, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <View style={[styles.inputPattern, { borderColor: `${theme.tint}15` }]} />
             <TextInput
               style={[styles.textInput, { color: theme.text }]}
-              placeholder="درخواست خود را به تفصیل بنویسید..."
+              placeholder="پیام خود را به زبان دری یا پشتو بنویسید..."
               placeholderTextColor={theme.textSecondary}
               value={message}
               onChangeText={setMessage}
@@ -214,6 +151,55 @@ export default function NewDuaRequestScreen() {
               </CenteredText>
             </View>
           </View>
+        </View>
+
+        {/* Category + Gender Row */}
+        <View style={styles.section}>
+          <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
+            نوع درخواست
+          </CenteredText>
+          <CategorySelector selectedCategory={category} onSelect={setCategory} />
+        </View>
+
+        <View style={styles.section}>
+          <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
+            جنسیت
+          </CenteredText>
+          <View style={styles.genderRow}>
+            {[
+              { id: 'male' as const, label: 'برادر', emoji: '👨' },
+              { id: 'female' as const, label: 'خواهر', emoji: '🧕' },
+            ].map((option) => {
+              const selected = gender === option.id;
+              return (
+                <Pressable
+                  key={option.id}
+                  onPress={() => setGender(option.id)}
+                  style={({ pressed }) => [
+                    styles.genderChip,
+                    {
+                      backgroundColor: selected ? `${theme.tint}18` : theme.card,
+                      borderColor: selected ? theme.tint : theme.cardBorder,
+                    },
+                    pressed && styles.buttonPressed,
+                  ]}
+                >
+                  <Text style={styles.genderEmoji}>{option.emoji}</Text>
+                  <CenteredText
+                    style={[
+                      styles.genderText,
+                      { color: selected ? theme.tint : theme.text },
+                    ]}
+                  >
+                    {option.label}
+                  </CenteredText>
+                </Pressable>
+              );
+            })}
+          </View>
+          <CenteredText style={[styles.genderHint, { color: theme.textSecondary }]}>
+            برای پاسخ بهتر، جنسیت خود را مشخص کنید.
+          </CenteredText>
         </View>
 
         {/* Anonymity Toggle */}
@@ -306,42 +292,21 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: Spacing.md,
   },
-  descriptionCard: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
-    padding: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    marginBottom: Spacing.lg,
-  },
-  descriptionIcon: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(26, 77, 62, 0.12)',
-  },
-  descriptionText: {
-    flex: 1,
-    fontSize: Typography.ui.caption,
-    lineHeight: 20,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'right',
-  },
   section: {
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   sectionTitle: {
     fontSize: Typography.ui.subtitle,
     fontWeight: '600',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
     fontFamily: 'Vazirmatn',
   },
   genderRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
+  },
+  genderEmoji: {
+    fontSize: 18,
   },
   genderChip: {
     flex: 1,
@@ -364,15 +329,26 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     fontFamily: 'Vazirmatn',
   },
-  inputContainer: {
+  inputWrapper: {
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    padding: Spacing.md,
+    padding: Spacing.sm,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  inputPattern: {
+    position: 'absolute',
+    top: Spacing.sm,
+    right: Spacing.sm,
+    left: Spacing.sm,
+    bottom: Spacing.sm,
+    borderWidth: 1,
+    borderRadius: BorderRadius.md,
   },
   textInput: {
     fontSize: Typography.ui.body,
     fontFamily: 'Vazirmatn',
-    minHeight: 150,
+    minHeight: 120,
     textAlign: 'right',
     writingDirection: 'rtl',
   },
@@ -388,10 +364,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: Spacing.md,
+    padding: Spacing.sm,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.md,
   },
   anonymityContent: {
     flexDirection: 'row',
@@ -418,9 +394,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    padding: Spacing.md,
+    padding: Spacing.sm,
     borderRadius: BorderRadius.lg,
-    marginTop: Spacing.md,
+    marginTop: Spacing.sm,
   },
   submitButtonText: {
     color: '#fff',
@@ -432,6 +408,6 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   bottomPadding: {
-    height: Spacing.xxl,
+    height: Spacing.lg,
   },
 });
