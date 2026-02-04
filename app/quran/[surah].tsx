@@ -137,9 +137,8 @@ export default function QuranReaderScreen() {
       headerStyle: { backgroundColor: theme.surahHeader },
       headerTintColor: '#fff',
       headerTitleStyle: {
-        fontFamily: 'QuranFont',
+        fontFamily: 'ScheherazadeNew',
         fontSize: 22,
-        fontWeight: '600',
       },
       headerTitleAlign: 'center',
       headerLeft: () => (

@@ -24,6 +24,7 @@ import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { CategorySelector } from '@/components/dua/CategorySelector';
 import { DuaCategory, UserGender } from '@/types/dua';
 import CenteredText from '@/components/CenteredText';
+import NetInfo from '@react-native-community/netinfo';
 
 export default function NewDuaRequestScreen() {
   const { theme } = useApp();
@@ -66,10 +67,16 @@ export default function NewDuaRequestScreen() {
     setIsSubmitting(true);
     try {
       const request = await submitRequest(category, message.trim(), isAnonymous, gender);
-      
+
+      const netInfo = await NetInfo.fetch();
+      const isOffline = !netInfo.isConnected || netInfo.isInternetReachable === false;
+      const successMessage = isOffline
+        ? 'درخواست شما ثبت شد، اما شما آفلاین هستید. پاسخ پس از اتصال به اینترنت دریافت می‌شود.'
+        : 'درخواست شما با موفقیت ارسال شد. در صورت امکان، پاسخ معنوی خودکار نیز برای شما آماده می‌شود و در جزئیات درخواست قابل مشاهده است.';
+
       Alert.alert(
         'موفق',
-        'درخواست شما با موفقیت ارسال شد. در صورت امکان، پاسخ معنوی خودکار نیز برای شما آماده می‌شود و در جزئیات درخواست قابل مشاهده است.',
+        successMessage,
         [
           {
             text: 'مشاهده درخواست',
