@@ -28,6 +28,31 @@ const SYSTEM_PROMPT = `
 - زبان غیر از زبان کاربر
 `;
 
+function buildFallbackReply(gender: string, language: string): string {
+  const isPashto = language === "ps" || language === "pashto";
+  const isFemale = gender === "female";
+
+  if (isPashto) {
+    const salutation = isFemale ? "خور ګرانې، زړه دې ارام شه." : "ورور ګران، زړه دې ارام شه.";
+    const duaArabic = "اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُورًا وَطُمَأْنِينَةً، وَاشْرَحْ صَدْرِي، وَيَسِّرْ أَمْرِي";
+    const duaMeaning = "یا الله! زما په زړه کې رڼا او سکون واچوه، زما سینه خلاصه کړه او کار مې اسانه کړه.";
+    const dhikr = "یوازې څو شېبې په زړه کې «یا سلام» او «یا لطیف» ووایه.";
+    const closing = isFemale
+      ? "خور عزیز، دعاگوی تو هستم — سیدعبدالباقی شیرزادی"
+      : "برادر عزیز، دعاگوی تو هستم — سیدعبدالباقی شیرزادی";
+    return `${salutation}\n\n${duaArabic}\n${duaMeaning}\n\n${dhikr}\n\n${closing}`;
+  }
+
+  const salutation = isFemale ? "خواهر عزیز، دل‌ات آرام باد." : "برادر عزیز، دل‌ات آرام باد.";
+  const duaArabic = "اللَّهُمَّ اجْعَلْ فِي قَلْبِي نُورًا وَطُمَأْنِينَةً، وَاشْرَحْ صَدْرِي، وَيَسِّرْ أَمْرِي";
+  const duaMeaning = "خدایا در دل من نور و آرامش قرار بده، سینه‌ام را گشاده گردان و کارم را آسان کن.";
+  const dhikr = "چند دقیقه با آرامش «یا سلام» و «یا لطیف» را در دل تکرار کن.";
+  const closing = isFemale
+    ? "خواهر عزیز، دعاگوی تو هستم — سیدعبدالباقی شیرزادی"
+    : "برادر عزیز، دعاگوی تو هستم — سیدعبدالباقی شیرزادی";
+  return `${salutation}\n\n${duaArabic}\n${duaMeaning}\n\n${dhikr}\n\n${closing}`;
+}
+
 serve(async (req) => {
   try {
     const OPENAI_API_KEY =
@@ -57,32 +82,47 @@ serve(async (req) => {
       });
     }
 
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-5.2-mini",
-        temperature: 0.6,
-        messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          {
-            role: "user",
-            content: `
+    let reply = "";
+    try {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${OPENAI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          temperature: 0.6,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            {
+              role: "user",
+              content: `
 جنسیت: ${gender}
 زبان: ${language}
 درخواست:
 ${message}
 `,
-          },
-        ],
-      }),
-    });
+            },
+          ],
+          max_tokens: 350,
+        }),
+      });
 
-    const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content ?? "خطا در تولید پاسخ";
+      if (!res.ok) {
+        const errText = await res.text().catch(() => "");
+        console.error("OpenAI error:", res.status, errText);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        reply = data?.choices?.[0]?.message?.content || "";
+      }
+    } catch (error) {
+      console.error("OpenAI fetch failed:", error);
+    }
+
+    if (!reply || reply.trim().length < 8) {
+      reply = buildFallbackReply(gender, language);
+    }
 
     // ذخیره پاسخ در دیتابیس اگر request_id داده شده
     if (request_id) {
@@ -101,6 +141,10 @@ ${message}
             "Prefer": "return=minimal",
           },
           body: JSON.stringify({
+            status: "answered",
+            response: reply,
+            reviewer_name: "سیدعبدالباقی شیرزادی",
+            answered_at: new Date().toISOString(),
             ai_response: reply,
             is_manual: false,
           }),

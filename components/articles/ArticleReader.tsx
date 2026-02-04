@@ -73,7 +73,12 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
   const normalizedHtml = html.replace(/<br\s*\/?>/gi, '\n');
 
   const normalizeParagraph = (text: string) =>
-    text.replace(/\s+/g, ' ').trim();
+    text
+      .replace(/[\u064B-\u065F]/g, '') // remove Arabic diacritics
+      .replace(/[^\dA-Za-z\u0600-\u06FF]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
 
   const dedupeConsecutive = (items: string[]): string[] => {
     const result: string[] = [];
@@ -86,6 +91,21 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       last = normalized;
     });
     return result;
+  };
+
+  const seenParagraphs = new Set<string>();
+  const shouldSkipParagraph = (text: string): boolean => {
+    const normalized = normalizeParagraph(text);
+    if (!normalized) return true;
+    // Only de-duplicate meaningful paragraphs (avoid short phrases)
+    if (normalized.length < 40) {
+      return false;
+    }
+    if (seenParagraphs.has(normalized)) {
+      return true;
+    }
+    seenParagraphs.add(normalized);
+    return false;
   };
 
   // First, extract all h2 headings with their content
@@ -153,6 +173,9 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       );
 
       paragraphs.forEach((paraHtml) => {
+        if (shouldSkipParagraph(paraHtml)) {
+          return;
+        }
         const paraElements: React.ReactNode[] = [];
         let paraKey = 0;
         
@@ -259,7 +282,9 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
 
   return [
     <Text key={0} style={[styles.bodyText, { color: '#1a1a1a' }]}>
-      {fallbackParagraphs.join('\n\n')}
+      {fallbackParagraphs
+        .filter((p) => !shouldSkipParagraph(p))
+        .join('\n\n')}
     </Text>,
   ];
 }
