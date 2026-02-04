@@ -21,6 +21,7 @@ interface MushafViewProps {
   onAyahChange?: (surah: number, ayah: number) => void;
   onPlayAyah?: (surah: number, ayah: number) => void;
   currentlyPlaying?: { surah: number; ayah: number } | null;
+  onPageChange?: (page: number) => void;
 }
 
 // Arabic number conversion
@@ -55,6 +56,7 @@ export function MushafView({
   onAyahChange,
   onPlayAyah,
   currentlyPlaying,
+  onPageChange,
 }: MushafViewProps) {
   const { theme, state } = useApp();
   const { updatePosition } = useReadingPosition();
@@ -128,10 +130,13 @@ export function MushafView({
           page,
         });
 
+        // Notify parent component about page change
+        onPageChange?.(page);
+
         onAyahChange?.(surahNumber, firstVisible.number);
       }
     },
-    [surahNumber, updatePosition, onAyahChange, getPage]
+    [surahNumber, updatePosition, onAyahChange, onPageChange, getPage]
   );
 
   const viewabilityConfig = useRef({

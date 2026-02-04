@@ -3,13 +3,13 @@
  * Updated with Islamic-themed icons and RTL support
  */
 
+import { HapticTab } from '@/components/haptic-tab';
+import { useApp } from '@/context/AppContext';
+import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs, useSegments } from 'expo-router';
 import React, { useMemo } from 'react';
 import { I18nManager, Platform } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { HapticTab } from '@/components/haptic-tab';
-import { useApp } from '@/context/AppContext';
 
 // Enable RTL for Arabic/Dari/Pashto
 if (!I18nManager.isRTL) {
@@ -30,7 +30,10 @@ export default function TabLayout() {
       path.includes('quran/') ||
       path.includes('adhkar/') ||
       path.includes('prayer-learning') ||
-      path.includes('articles/') // Hide footer when reading articles
+      path.includes('articles/') || // Hide footer when reading articles
+      path.includes('dua-request/') ||
+      path.includes('scholar/') ||
+      path.includes('admin/')
     );
   }, [segments]);
 
@@ -117,21 +120,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="prayer-learning"
-        options={{
-          title: 'آموزش',
-          tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name="school"
-              size={focused ? 28 : 24}
-              color={color}
-            />
-          ),
-        }}
-      />
-      {/* Hide bookmarks from tabs - moved to More */}
-      <Tabs.Screen name="bookmarks" options={{ href: null }} />
-      <Tabs.Screen
         name="more"
         options={{
           title: 'بیشتر',
@@ -144,7 +132,10 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* Hide explore and settings from tabs */}
+      
+      {/* Hidden routes - accessible via navigation but not in tab bar */}
+      <Tabs.Screen name="prayer-learning" options={{ href: null }} />
+      <Tabs.Screen name="bookmarks" options={{ href: null }} />
       <Tabs.Screen name="explore" options={{ href: null }} />
       <Tabs.Screen name="settings" options={{ href: null }} />
     </Tabs>

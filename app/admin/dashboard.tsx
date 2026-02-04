@@ -18,17 +18,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { DuaRequest, RequestStatus, STATUS_INFO } from '@/types/dua';
-import { getFirestoreDB, isFirebaseConfigured } from '@/utils/firebase';
-import {
-  collection,
-  getDocs,
-  query,
-  orderBy,
-  where,
-  limit,
-} from 'firebase/firestore';
+import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getFirebaseAuth, signOut } from 'firebase/auth';
 import CenteredText from '@/components/CenteredText';
 import { RequestCard } from '@/components/dua/RequestCard';
 
@@ -50,7 +41,7 @@ export default function AdminDashboardScreen() {
   }, []);
 
   useEffect(() => {
-    if (isFirebaseConfigured()) {
+    if (isSupabaseConfigured()) {
       loadRequests();
     }
   }, [statusFilter]);
@@ -72,42 +63,42 @@ export default function AdminDashboardScreen() {
   };
 
   const loadRequests = async () => {
-    if (!isFirebaseConfigured()) {
+    if (!isSupabaseConfigured()) {
       setLoading(false);
       return;
     }
 
     try {
-      const db = getFirestoreDB();
-      let q = query(
-        collection(db, 'dua_requests'),
-        orderBy('createdAt', 'desc'),
-        limit(100)
-      );
+      const supabase = getSupabaseClient();
+      let query = supabase
+        .from('dua_requests')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(100);
 
       if (statusFilter !== 'all') {
-        q = query(q, where('status', '==', statusFilter));
+        query = query.eq('status', statusFilter);
       }
 
-      const snapshot = await getDocs(q);
-      const loadedRequests: DuaRequest[] = [];
+      const { data, error } = await query;
 
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        loadedRequests.push({
-          id: doc.id,
-          userId: data.userId,
-          category: data.category,
-          message: data.message,
-          isAnonymous: data.isAnonymous || false,
-          status: data.status || 'pending',
-          createdAt: data.createdAt?.toDate() || new Date(),
-          answeredAt: data.answeredAt?.toDate(),
-          response: data.response,
-          reviewerId: data.reviewerId,
-          reviewerName: data.reviewerName,
-        });
-      });
+      if (error) {
+        throw error;
+      }
+
+      const loadedRequests: DuaRequest[] = (data || []).map((row: any) => ({
+        id: row.id,
+        userId: row.user_id,
+        category: row.category,
+        message: row.message,
+        isAnonymous: row.is_anonymous || false,
+        status: row.status || 'pending',
+        createdAt: row.created_at ? new Date(row.created_at) : new Date(),
+        answeredAt: row.answered_at ? new Date(row.answered_at) : undefined,
+        response: row.response || undefined,
+        reviewerId: row.reviewer_id || undefined,
+        reviewerName: row.reviewer_name || undefined,
+      }));
 
       setRequests(loadedRequests);
     } catch (error) {
@@ -144,8 +135,8 @@ export default function AdminDashboardScreen() {
 
   const handleLogout = async () => {
     try {
-      const auth = getFirebaseAuth();
-      await signOut(auth);
+      const supabase = getSupabaseClient();
+      await supabase.auth.signOut();
       await AsyncStorage.removeItem(ADMIN_STORAGE_KEY);
       router.replace('/admin/login');
     } catch (error) {

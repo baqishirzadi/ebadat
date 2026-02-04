@@ -1,41 +1,65 @@
 /**
  * Dua Request Notifications
- * Handles push notifications for request responses
+ * Handles push notifications for request responses using Supabase
  */
 
 import { Platform } from 'react-native';
-import { getFirestoreDB, isFirebaseConfigured } from './firebase';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import * as duaStorage from './duaStorage';
+import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 
 // Conditional import - only load on native platforms, not in Expo Go
+// We also need to completely skip ALL notification logic in Expo Go (SDK 53+),
+// because remote push is not supported there and calling expo-notifications APIs
+// like getExpoPushTokenAsync will crash the app.
 let Notifications: typeof import('expo-notifications') | null = null;
+
+// Runtime detection for Expo Go using appOwnership and executionEnvironment.
+// This is synchronous so we can guard all notification calls at runtime.
+const isExpoGo = (): boolean => {
+  try {
+    const Constants = require('expo-constants').default;
+    return (
+      Constants.appOwnership === 'expo' ||
+      Constants.executionEnvironment === Constants.ExecutionEnvironment?.StoreClient
+    );
+  } catch {
+    return false;
+  }
+};
 
 /**
  * Send notification to user when their request is answered
- * This is called from Cloud Function or admin interface
+ * This is called from Edge Function or admin interface
  */
 export async function sendNotificationToUser(userId: string, requestId: string): Promise<void> {
-  if (!isFirebaseConfigured()) {
-    console.warn('Firebase not configured, skipping notification');
+  // Skip all notification work in Expo Go (no remote push support)
+  if (isExpoGo()) {
+    console.log('Skipping sendNotificationToUser: Expo Go detected (no remote push)');
+    return;
+  }
+
+  if (!isSupabaseConfigured()) {
+    console.warn('Supabase not configured, skipping notification');
     return;
   }
 
   try {
-    const db = getFirestoreDB();
+    const supabase = getSupabaseClient();
     
     // Get user metadata to find device token
-    const userRef = doc(db, 'users', userId);
-    const userSnap = await getDoc(userRef);
+    const { data: userData, error: userError } = await supabase
+      .from('user_metadata')
+      .select('device_token, notification_enabled')
+      .eq('user_id', userId)
+      .single();
     
-    if (!userSnap.exists()) {
+    if (userError || !userData) {
       console.warn('User not found for notification');
       return;
     }
 
-    const userData = userSnap.data();
-    const deviceToken = userData.deviceToken;
-    const notificationEnabled = userData.notificationEnabled !== false; // Default to true
+    const deviceToken = userData.device_token;
+    const notificationEnabled = userData.notification_enabled !== false; // Default to true
 
     if (!deviceToken || !notificationEnabled) {
       console.log('User has no device token or notifications disabled');
@@ -43,15 +67,16 @@ export async function sendNotificationToUser(userId: string, requestId: string):
     }
 
     // Get request details
-    const requestRef = doc(db, 'dua_requests', requestId);
-    const requestSnap = await getDoc(requestRef);
+    const { data: requestData, error: requestError } = await supabase
+      .from('dua_requests')
+      .select('*')
+      .eq('id', requestId)
+      .single();
     
-    if (!requestSnap.exists()) {
+    if (requestError || !requestData) {
       console.warn('Request not found');
       return;
     }
-
-    const requestData = requestSnap.data();
 
     // Load Notifications module if not already loaded
     if (!Notifications) {
@@ -68,7 +93,7 @@ export async function sendNotificationToUser(userId: string, requestId: string):
     }
 
     // Send notification via Expo Notifications
-    // Note: For production, you'd use FCM directly or a Cloud Function
+    // Note: For production, you'd use Supabase Edge Functions or Expo Push API
     // For now, we'll schedule a local notification
     await Notifications.scheduleNotificationAsync({
       content: {
@@ -99,26 +124,10 @@ export async function registerDeviceToken(userId: string): Promise<void> {
     return; // Notifications not supported on web
   }
 
-  // Check if running in Expo Go (SDK 53+ doesn't support remote push)
-  // Multiple detection methods for reliability
-  let isExpoGo = false;
-  try {
-    const Constants = await import('expo-constants');
-    const executionEnv = Constants.default.executionEnvironment;
-    // StoreClient = Expo Go, Bare = development build, Standalone = production build
-    isExpoGo = executionEnv === Constants.ExecutionEnvironment.StoreClient;
-    // Also check appOwnership - Expo Go has 'expo' ownership
-    const appOwnership = Constants.default.appOwnership || 'unknown';
-    if (appOwnership === 'expo') {
-      isExpoGo = true;
-    }
-  } catch (error) {
-    // Silently handle detection errors
-  }
-
-  if (isExpoGo) {
-    console.log('Skipping notification registration: Expo Go detected (remote push not supported in SDK 53+)');
-    return; // Remote push notifications not supported in Expo Go SDK 53+
+  // Skip ALL registration logic in Expo Go – remote push is not supported there
+  if (isExpoGo()) {
+    console.log('Skipping notification registration: Expo Go detected (no remote push)');
+    return;
   }
 
   // Load Notifications module if not already loaded
@@ -153,7 +162,16 @@ export async function registerDeviceToken(userId: string): Promise<void> {
     }
 
     if (!projectId) {
-      projectId = process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID;
+      // Try to get from Supabase URL (extract project ref)
+      const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;
+      if (supabaseUrl) {
+        // Supabase URL format: https://<project-ref>.supabase.co
+        const match = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/);
+        if (match) {
+          // Use Supabase project ref as fallback (though Expo Push needs EAS projectId)
+          console.warn('Using Supabase project ref, but Expo Push requires EAS projectId');
+        }
+      }
     }
 
     if (!projectId || projectId === 'your-project-id') {
@@ -169,12 +187,19 @@ export async function registerDeviceToken(userId: string): Promise<void> {
         projectId,
       });
     } catch (pushTokenError: any) {
+      const errorMsg = pushTokenError?.message || '';
+      const isFirebaseError = errorMsg.includes('Firebase');
+      const isExpoGoError = errorMsg.includes('remote notifications') || errorMsg.includes('Expo Go');
+      
       // If this is an Expo Go error (remote push not supported), fail silently
-      const errorMessage = pushTokenError?.message || '';
-      if (errorMessage.includes('remote notifications') || 
-          errorMessage.includes('Expo Go') ||
-          errorMessage.includes('VALIDATION_ERROR')) {
+      if (isExpoGoError || errorMsg.includes('VALIDATION_ERROR')) {
         console.log('Skipping notification registration: Remote push not supported in Expo Go');
+        return;
+      }
+      
+      // If Firebase error, also fail silently (we're using Supabase now)
+      if (isFirebaseError) {
+        console.log('Skipping notification registration: Firebase not configured (using Supabase)');
         return;
       }
       
@@ -185,38 +210,40 @@ export async function registerDeviceToken(userId: string): Promise<void> {
     // Save locally
     await duaStorage.saveDeviceToken(token.data);
 
-    // Update in Firestore
-    if (isFirebaseConfigured()) {
+    // Update in Supabase
+    if (isSupabaseConfigured()) {
       try {
-        const db = getFirestoreDB();
-        const userRef = doc(db, 'users', userId);
+        const supabase = getSupabaseClient();
         
-        // Try to update, create if doesn't exist
-        try {
-          await updateDoc(userRef, {
-            deviceToken: token.data,
-            notificationEnabled: true,
-          });
-        } catch (updateError: any) {
-          // Document doesn't exist, create it
-          if (updateError.code === 'not-found') {
-            const { setDoc } = await import('firebase/firestore');
-            await setDoc(userRef, {
-              id: userId,
-              deviceToken: token.data,
-              notificationEnabled: true,
-              createdAt: serverTimestamp(),
+        // Try to update existing record
+        const { error: updateError } = await supabase
+          .from('user_metadata')
+          .update({
+            device_token: token.data,
+            notification_enabled: true,
+          })
+          .eq('user_id', userId);
+
+        // If update fails (record doesn't exist), insert new record
+        if (updateError) {
+          const { error: insertError } = await supabase
+            .from('user_metadata')
+            .insert({
+              user_id: userId,
+              device_token: token.data,
+              notification_enabled: true,
             });
-          } else {
-            throw updateError;
+
+          if (insertError) {
+            console.error('Failed to create/update user metadata with device token:', insertError);
           }
         }
-      } catch (firestoreError) {
-        console.error('Failed to update Firestore with device token:', firestoreError);
+      } catch (supabaseError: any) {
+        console.error('Failed to update Supabase with device token:', supabaseError);
         // Continue anyway - token is saved locally
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Failed to register device token:', error);
   }
 }
@@ -229,6 +256,12 @@ export async function setupNotificationListener(
 ): Promise<() => void> {
   if (Platform.OS === 'web') {
     return () => {}; // Notifications not supported on web
+  }
+
+  // Skip listener registration entirely in Expo Go to avoid SDK 53 crashes
+  if (isExpoGo()) {
+    console.log('Skipping notification listeners: Expo Go detected (no remote push)');
+    return () => {};
   }
 
   // Load Notifications module if not already loaded
@@ -250,7 +283,8 @@ export async function setupNotificationListener(
     const { type, requestId } = notification.request.content.data || {};
     if (type === 'dua_response' && requestId) {
       console.log('Dua response notification received:', requestId);
-      onNotificationReceived(requestId);
+      // requestId comes from notification data (string in our payload), but TS sees it as unknown
+      onNotificationReceived(String(requestId));
     }
   });
 
@@ -259,7 +293,7 @@ export async function setupNotificationListener(
     const { type, requestId } = response.notification.request.content.data || {};
     if (type === 'dua_response' && requestId) {
       console.log('Dua response notification tapped:', requestId);
-      onNotificationReceived(requestId);
+      onNotificationReceived(String(requestId));
     }
   });
 

@@ -1,18 +1,9 @@
 /**
  * Analytics Service
- * Tracks article views, reading progress, bookmarks, and shares
+ * Tracks article views, reading progress, bookmarks, and shares using Supabase
  */
 
-import { getFirestoreDB, isFirebaseConfigured } from './firebase';
-import {
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  increment as firestoreIncrement,
-  serverTimestamp,
-} from 'firebase/firestore';
+import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 import { ArticleAnalytics } from '@/types/analytics';
 import * as articleStorage from './articleStorage';
 
@@ -20,47 +11,51 @@ import * as articleStorage from './articleStorage';
  * Track article view
  */
 export async function trackArticleView(articleId: string, userId?: string): Promise<void> {
-  if (!isFirebaseConfigured()) {
+  if (!isSupabaseConfigured()) {
     return;
   }
 
   try {
-    const db = getFirestoreDB();
-    const analyticsRef = doc(db, 'article_analytics', articleId);
-
-    // Get or create analytics document
-    const analyticsSnap = await getDoc(analyticsRef);
+    const supabase = getSupabaseClient();
     
-    if (analyticsSnap.exists()) {
+    // Check if analytics record exists
+    const { data: existing } = await supabase
+      .from('article_analytics')
+      .select('*')
+      .eq('article_id', articleId)
+      .single();
+
+    if (existing) {
       // Update existing
       const updateData: any = {
-        views: firestoreIncrement(1),
-        lastViewedAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        views: (existing.views || 0) + 1,
+        last_viewed_at: new Date().toISOString(),
       };
 
       // Track unique reader if userId provided
       if (userId) {
-        // Check if this is a unique reader
         // For simplicity, we'll just increment uniqueReaders
         // In production, you'd maintain a list of unique user IDs
-        updateData.uniqueReaders = firestoreIncrement(1);
+        updateData.unique_readers = (existing.unique_readers || 0) + 1;
       }
 
-      await updateDoc(analyticsRef, updateData);
+      await supabase
+        .from('article_analytics')
+        .update(updateData)
+        .eq('article_id', articleId);
     } else {
       // Create new
-      await setDoc(analyticsRef, {
-        articleId,
-        views: 1,
-        uniqueReaders: userId ? 1 : 0,
-        readingCompletion: 0,
-        bookmarks: 0,
-        shares: 0,
-        lastViewedAt: serverTimestamp(),
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+      await supabase
+        .from('article_analytics')
+        .insert({
+          article_id: articleId,
+          views: 1,
+          unique_readers: userId ? 1 : 0,
+          reading_completion: 0,
+          bookmarks: 0,
+          shares: 0,
+          last_viewed_at: new Date().toISOString(),
+        });
     }
   } catch (error) {
     console.error('Error tracking article view:', error);
@@ -74,7 +69,7 @@ export async function trackReadingProgress(
   articleId: string,
   progressPercentage: number
 ): Promise<void> {
-  if (!isFirebaseConfigured()) {
+  if (!isSupabaseConfigured()) {
     // Still save locally
     await articleStorage.saveReadingProgress(articleId, progressPercentage);
     return;
@@ -84,34 +79,39 @@ export async function trackReadingProgress(
     // Save locally first
     await articleStorage.saveReadingProgress(articleId, progressPercentage);
 
-    const db = getFirestoreDB();
-    const analyticsRef = doc(db, 'article_analytics', articleId);
-
-    const analyticsSnap = await getDoc(analyticsRef);
+    const supabase = getSupabaseClient();
     
-    if (analyticsSnap.exists()) {
+    // Check if analytics record exists
+    const { data: existing } = await supabase
+      .from('article_analytics')
+      .select('reading_completion')
+      .eq('article_id', articleId)
+      .single();
+
+    if (existing) {
       // Update reading completion (use highest percentage)
-      const current = analyticsSnap.data();
-      const currentCompletion = current.readingCompletion || 0;
+      const currentCompletion = existing.reading_completion || 0;
       
       if (progressPercentage > currentCompletion) {
-        await updateDoc(analyticsRef, {
-          readingCompletion: progressPercentage,
-          updatedAt: serverTimestamp(),
-        });
+        await supabase
+          .from('article_analytics')
+          .update({
+            reading_completion: progressPercentage,
+          })
+          .eq('article_id', articleId);
       }
     } else {
       // Create new
-      await setDoc(analyticsRef, {
-        articleId,
-        views: 0,
-        uniqueReaders: 0,
-        readingCompletion: progressPercentage,
-        bookmarks: 0,
-        shares: 0,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+      await supabase
+        .from('article_analytics')
+        .insert({
+          article_id: articleId,
+          views: 0,
+          unique_readers: 0,
+          reading_completion: progressPercentage,
+          bookmarks: 0,
+          shares: 0,
+        });
     }
   } catch (error) {
     console.error('Error tracking reading progress:', error);
@@ -122,32 +122,39 @@ export async function trackReadingProgress(
  * Track bookmark
  */
 export async function trackBookmark(articleId: string, isBookmarked: boolean): Promise<void> {
-  if (!isFirebaseConfigured()) {
+  if (!isSupabaseConfigured()) {
     return;
   }
 
   try {
-    const db = getFirestoreDB();
-    const analyticsRef = doc(db, 'article_analytics', articleId);
-
-    const analyticsSnap = await getDoc(analyticsRef);
+    const supabase = getSupabaseClient();
     
-    if (analyticsSnap.exists()) {
-      await updateDoc(analyticsRef, {
-        bookmarks: firestoreIncrement(isBookmarked ? 1 : -1),
-        updatedAt: serverTimestamp(),
-      });
+    // Check if analytics record exists
+    const { data: existing } = await supabase
+      .from('article_analytics')
+      .select('bookmarks')
+      .eq('article_id', articleId)
+      .single();
+
+    if (existing) {
+      const newBookmarkCount = Math.max(0, (existing.bookmarks || 0) + (isBookmarked ? 1 : -1));
+      await supabase
+        .from('article_analytics')
+        .update({
+          bookmarks: newBookmarkCount,
+        })
+        .eq('article_id', articleId);
     } else {
-      await setDoc(analyticsRef, {
-        articleId,
-        views: 0,
-        uniqueReaders: 0,
-        readingCompletion: 0,
-        bookmarks: isBookmarked ? 1 : 0,
-        shares: 0,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+      await supabase
+        .from('article_analytics')
+        .insert({
+          article_id: articleId,
+          views: 0,
+          unique_readers: 0,
+          reading_completion: 0,
+          bookmarks: isBookmarked ? 1 : 0,
+          shares: 0,
+        });
     }
   } catch (error) {
     console.error('Error tracking bookmark:', error);
@@ -158,32 +165,38 @@ export async function trackBookmark(articleId: string, isBookmarked: boolean): P
  * Track share
  */
 export async function trackShare(articleId: string): Promise<void> {
-  if (!isFirebaseConfigured()) {
+  if (!isSupabaseConfigured()) {
     return;
   }
 
   try {
-    const db = getFirestoreDB();
-    const analyticsRef = doc(db, 'article_analytics', articleId);
-
-    const analyticsSnap = await getDoc(analyticsRef);
+    const supabase = getSupabaseClient();
     
-    if (analyticsSnap.exists()) {
-      await updateDoc(analyticsRef, {
-        shares: firestoreIncrement(1),
-        updatedAt: serverTimestamp(),
-      });
+    // Check if analytics record exists
+    const { data: existing } = await supabase
+      .from('article_analytics')
+      .select('shares')
+      .eq('article_id', articleId)
+      .single();
+
+    if (existing) {
+      await supabase
+        .from('article_analytics')
+        .update({
+          shares: (existing.shares || 0) + 1,
+        })
+        .eq('article_id', articleId);
     } else {
-      await setDoc(analyticsRef, {
-        articleId,
-        views: 0,
-        uniqueReaders: 0,
-        readingCompletion: 0,
-        bookmarks: 0,
-        shares: 1,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
+      await supabase
+        .from('article_analytics')
+        .insert({
+          article_id: articleId,
+          views: 0,
+          unique_readers: 0,
+          reading_completion: 0,
+          bookmarks: 0,
+          shares: 1,
+        });
     }
   } catch (error) {
     console.error('Error tracking share:', error);
@@ -194,30 +207,32 @@ export async function trackShare(articleId: string): Promise<void> {
  * Get article analytics
  */
 export async function getArticleAnalytics(articleId: string): Promise<ArticleAnalytics | null> {
-  if (!isFirebaseConfigured()) {
+  if (!isSupabaseConfigured()) {
     return null;
   }
 
   try {
-    const db = getFirestoreDB();
-    const analyticsRef = doc(db, 'article_analytics', articleId);
-    const analyticsSnap = await getDoc(analyticsRef);
+    const supabase = getSupabaseClient();
+    const { data, error } = await supabase
+      .from('article_analytics')
+      .select('*')
+      .eq('article_id', articleId)
+      .single();
 
-    if (!analyticsSnap.exists()) {
+    if (error || !data) {
       return null;
     }
 
-    const data = analyticsSnap.data();
     return {
       articleId,
       views: data.views || 0,
-      uniqueReaders: data.uniqueReaders || 0,
-      readingCompletion: data.readingCompletion || 0,
+      uniqueReaders: data.unique_readers || 0,
+      readingCompletion: data.reading_completion || 0,
       bookmarks: data.bookmarks || 0,
       shares: data.shares || 0,
-      lastViewedAt: data.lastViewedAt?.toDate(),
-      createdAt: data.createdAt?.toDate() || new Date(),
-      updatedAt: data.updatedAt?.toDate() || new Date(),
+      lastViewedAt: data.last_viewed_at ? new Date(data.last_viewed_at) : undefined,
+      createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+      updatedAt: data.updated_at ? new Date(data.updated_at) : new Date(),
     };
   } catch (error) {
     console.error('Error getting article analytics:', error);

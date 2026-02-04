@@ -1,11 +1,10 @@
 /**
  * Article Notifications
- * Handles push notifications for article publications
+ * Handles push notifications for article publications using Supabase
  */
 
 import { Platform } from 'react-native';
-import { getFirestoreDB, isFirebaseConfigured } from './firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 
 // Conditional import - only load on native platforms, not in Expo Go
 let Notifications: typeof import('expo-notifications') | null = null;
@@ -43,8 +42,8 @@ export async function notifyArticlePublished(
     return { success: true, sentCount: 0 };
   }
 
-  if (!isFirebaseConfigured()) {
-    return { success: false, sentCount: 0, error: 'Firebase not configured' };
+  if (!isSupabaseConfigured()) {
+    return { success: false, sentCount: 0, error: 'Supabase not configured' };
   }
 
   // Load Notifications module if not already loaded
@@ -62,31 +61,33 @@ export async function notifyArticlePublished(
   }
 
   try {
-    // Get all user device tokens
-    const db = getFirestoreDB();
-    const usersRef = collection(db, 'users');
-    const q = query(
-      usersRef,
-      where('deviceToken', '!=', null),
-      where('notificationEnabled', '==', true)
-    );
+    // Get all user device tokens from Supabase
+    const supabase = getSupabaseClient();
+    const { data: users, error } = await supabase
+      .from('user_metadata')
+      .select('device_token')
+      .not('device_token', 'is', null)
+      .eq('notification_enabled', true);
 
-    const snapshot = await getDocs(q);
-    const deviceTokens: string[] = [];
+    if (error) {
+      console.error('Error fetching user tokens:', error);
+      return { success: false, sentCount: 0, error: error.message };
+    }
 
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      if (data.deviceToken && data.notificationEnabled !== false) {
-        deviceTokens.push(data.deviceToken);
-      }
-    });
+    if (!users || users.length === 0) {
+      return { success: true, sentCount: 0 };
+    }
+
+    const deviceTokens = users
+      .map((u) => u.device_token)
+      .filter((token): token is string => !!token);
 
     if (deviceTokens.length === 0) {
       return { success: true, sentCount: 0 };
     }
 
     // Send notifications
-    // Note: In production, you'd use Expo Push Notification API or FCM
+    // Note: In production, you'd use Expo Push Notification API or Supabase Edge Functions
     // For now, we'll schedule local notifications as a fallback
     // In a real implementation, you'd batch send via Expo Push API
 
@@ -110,11 +111,10 @@ export async function notifyArticlePublished(
     });
 
     // Update article with notification sent status
-    const { updateDoc, doc } = await import('firebase/firestore');
-    const articleRef = doc(db, 'articles', articleId);
-    await updateDoc(articleRef, {
-      notificationSent: true,
-    });
+    await supabase
+      .from('articles')
+      .update({ notification_sent: true })
+      .eq('id', articleId);
 
     return { success: true, sentCount: deviceTokens.length };
   } catch (error) {
@@ -158,8 +158,8 @@ export async function sendBroadcastNotification(
     return { success: true, sentCount: 0 };
   }
 
-  if (!isFirebaseConfigured()) {
-    return { success: false, sentCount: 0, error: 'Firebase not configured' };
+  if (!isSupabaseConfigured()) {
+    return { success: false, sentCount: 0, error: 'Supabase not configured' };
   }
 
   // Load Notifications module if not already loaded
@@ -177,23 +177,25 @@ export async function sendBroadcastNotification(
   }
 
   try {
-    const db = getFirestoreDB();
-    const usersRef = collection(db, 'users');
-    const q = query(
-      usersRef,
-      where('deviceToken', '!=', null),
-      where('notificationEnabled', '==', true)
-    );
+    const supabase = getSupabaseClient();
+    const { data: users, error } = await supabase
+      .from('user_metadata')
+      .select('device_token')
+      .not('device_token', 'is', null)
+      .eq('notification_enabled', true);
 
-    const snapshot = await getDocs(q);
-    const deviceTokens: string[] = [];
+    if (error) {
+      console.error('Error fetching user tokens:', error);
+      return { success: false, sentCount: 0, error: error.message };
+    }
 
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      if (data.deviceToken && data.notificationEnabled !== false) {
-        deviceTokens.push(data.deviceToken);
-      }
-    });
+    if (!users || users.length === 0) {
+      return { success: true, sentCount: 0 };
+    }
+
+    const deviceTokens = users
+      .map((u) => u.device_token)
+      .filter((token): token is string => !!token);
 
     if (deviceTokens.length === 0) {
       return { success: true, sentCount: 0 };

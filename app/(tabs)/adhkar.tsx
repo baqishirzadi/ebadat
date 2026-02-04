@@ -42,6 +42,28 @@ export default function AdhkarScreen() {
         <Text style={styles.headerSubtitle}>یادآوری‌های روزانه</Text>
       </View>
 
+      {/* Dua Request Section - با دیزاین زیبا و هماهنگ */}
+      <Pressable
+        onPress={() => router.push('/dua-request')}
+        style={({ pressed }) => [
+          styles.duaCard,
+          { backgroundColor: theme.tint, shadowColor: theme.tint },
+          pressed && styles.duaCardPressed,
+        ]}
+      >
+        <View style={styles.duaCardContent}>
+          <View style={styles.duaIconContainer}>
+            <MaterialIcons name="favorite" size={24} color="#fff" />
+          </View>
+          <View style={styles.duaCardInfo}>
+            <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
+            <Text style={styles.duaCardSubtitle}>درخواست دعای خیر و راهنمایی شرعی</Text>
+            <Text style={styles.duaCardSource}>از سیدان عالم و عالمان به از سیدان عالم و عالمان جید</Text>
+          </View>
+        </View>
+        <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
+      </Pressable>
+
       {/* Featured Section */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
@@ -248,6 +270,62 @@ paddingRight: Spacing.sm,
   counterSubtitle: {
     fontSize: Typography.ui.caption,
     color: 'rgba(255,255,255,0.8)',
+  },
+  duaCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.md,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    elevation: 3,
+    shadowColor: '#D4AF37',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  duaCardPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
+  duaCardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    flex: 1,
+  },
+  duaIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  duaCardInfo: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  duaCardTitle: {
+    fontSize: Typography.ui.body,
+    fontWeight: '700',
+    color: '#fff',
+    marginBottom: 2,
+    textAlign: 'center',
+  },
+  duaCardSubtitle: {
+    fontSize: Typography.ui.caption,
+    color: 'rgba(255,255,255,0.85)',
+    textAlign: 'center',
+  },
+  duaCardSource: {
+    fontSize: Typography.ui.caption,
+    color: 'rgba(255,255,255,0.7)',
+    marginTop: 2,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   bottomPadding: {
     height: 120,

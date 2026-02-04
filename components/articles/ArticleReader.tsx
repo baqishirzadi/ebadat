@@ -1,75 +1,336 @@
 /**
  * Article Reader Component
- * Displays article content with proper typography
+ * Beautiful Islamic-themed article display with HTML parsing
  */
 
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
 import { Article, ARTICLE_CATEGORIES } from '@/types/articles';
 import { Spacing, Typography, BorderRadius } from '@/constants/theme';
-import { CategoryBadge } from './CategoryBadge';
 import CenteredText from '@/components/CenteredText';
-import { ScholarCard } from './ScholarCard';
 
 interface ArticleReaderProps {
   article: Article;
 }
 
+// Category-specific color schemes
+const CATEGORY_COLORS: Record<string, { primary: string; secondary: string; accent: string; gradient: string[] }> = {
+  iman: {
+    primary: '#1B5E20', // Deep green
+    secondary: '#2E7D32',
+    accent: '#D4AF37', // Gold
+    gradient: ['#1B5E20', '#2E7D32', '#388E3C'],
+  },
+  salah: {
+    primary: '#1565C0', // Blue
+    secondary: '#1976D2',
+    accent: '#B0BEC5', // Silver
+    gradient: ['#1565C0', '#1976D2', '#1E88E5'],
+  },
+  akhlaq: {
+    primary: '#6A1B9A', // Purple
+    secondary: '#7B1FA2',
+    accent: '#D4AF37', // Gold
+    gradient: ['#6A1B9A', '#7B1FA2', '#8E24AA'],
+  },
+  anxiety: {
+    primary: '#0277BD', // Soft blue
+    secondary: '#0288D1',
+    accent: '#B3E5FC',
+    gradient: ['#0277BD', '#0288D1', '#03A9F4'],
+  },
+  dua: {
+    primary: '#00838F', // Teal
+    secondary: '#0097A7',
+    accent: '#B2EBF2',
+    gradient: ['#00838F', '#0097A7', '#00ACC1'],
+  },
+  tazkiyah: {
+    primary: '#5D4037', // Brown
+    secondary: '#6D4C41',
+    accent: '#FFB74D', // Amber
+    gradient: ['#5D4037', '#6D4C41', '#795548'],
+  },
+  rizq: {
+    primary: '#2E7D32', // Green
+    secondary: '#388E3C',
+    accent: '#C8E6C9',
+    gradient: ['#2E7D32', '#388E3C', '#43A047'],
+  },
+};
+
+/**
+ * Parse HTML and convert to React Native components
+ * Simple and robust parser for h2, p, strong, em tags
+ */
+function parseHTML(html: string, categoryColor: string, themeText: string): React.ReactNode[] {
+  const elements: React.ReactNode[] = [];
+  let key = 0;
+
+  const normalizedHtml = html.replace(/<br\s*\/?>/gi, '\n');
+
+  // First, extract all h2 headings with their content
+  const h2Regex = /<h2>(.*?)<\/h2>/gi;
+  const h2Matches: Array<{ index: number; content: string }> = [];
+  let h2Match;
+  
+  while ((h2Match = h2Regex.exec(normalizedHtml)) !== null) {
+    h2Matches.push({
+      index: h2Match.index,
+      content: h2Match[1].replace(/<[^>]*>/g, '').trim(), // Strip inner tags
+    });
+  }
+
+  // Split HTML by h2 tags
+  let processedHtml = normalizedHtml;
+  const sections: Array<{ type: 'heading' | 'content'; text: string }> = [];
+  
+  let lastIndex = 0;
+  h2Matches.forEach((h2) => {
+    // Content before heading
+    if (h2.index > lastIndex) {
+      const content = processedHtml.substring(lastIndex, h2.index).trim();
+      if (content) {
+        sections.push({ type: 'content', text: content });
+      }
+    }
+    
+    // Heading
+    sections.push({ type: 'heading', text: h2.content });
+    
+    lastIndex = h2Regex.lastIndex;
+  });
+  
+  // Remaining content
+  if (lastIndex < processedHtml.length) {
+    const content = processedHtml.substring(lastIndex).trim();
+    if (content) {
+      sections.push({ type: 'content', text: content });
+    }
+  }
+
+  // Process sections
+  sections.forEach((section) => {
+    if (section.type === 'heading') {
+      elements.push(
+        <View key={key++} style={styles.headingContainer}>
+          <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
+          <Text style={[styles.heading, { color: categoryColor }]}>
+            {section.text}
+          </Text>
+          <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
+        </View>
+      );
+    } else {
+      // Parse paragraph content
+      const paragraphs = section.text
+        .replace(/<h[1-6][^>]*>.*?<\/h[1-6]>/gi, '')
+        .split(/<\/p>\s*<p>/gi)
+        .map(p => 
+        p.replace(/^<p>|<\/p>$/gi, '').trim()
+      ).filter(p => p.length > 0);
+
+      paragraphs.forEach((paraHtml) => {
+        const paraElements: React.ReactNode[] = [];
+        let paraKey = 0;
+        
+        // Process text with inline tags
+        const textParts: React.ReactNode[] = [];
+        let currentText = '';
+        let inStrong = false;
+        let inEm = false;
+
+        // Simple state machine for parsing
+        const cleanedParaHtml = paraHtml.replace(/<(?!\/?(strong|em)\b)[^>]+>/gi, '');
+        const tagRegex = /<\/?(strong|em|p)>/gi;
+        let lastPos = 0;
+        let tagMatch;
+        
+        while ((tagMatch = tagRegex.exec(cleanedParaHtml)) !== null) {
+          // Text before tag
+          if (tagMatch.index > lastPos) {
+            const text = cleanedParaHtml.substring(lastPos, tagMatch.index);
+            if (text.trim()) {
+              if (inStrong) {
+                textParts.push(
+                  <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
+                    {text}
+                  </Text>
+                );
+              } else if (inEm) {
+                textParts.push(
+                  <Text key={paraKey++} style={[styles.emText, { color: themeText }]}>
+                    {text}
+                  </Text>
+                );
+              } else {
+                textParts.push(text);
+              }
+            }
+          }
+          
+          // Handle tag
+          const tagName = tagMatch[1].toLowerCase();
+          const isClosing = tagMatch[0].startsWith('</');
+          
+          if (tagName === 'strong') {
+            inStrong = !isClosing;
+          } else if (tagName === 'em') {
+            inEm = !isClosing;
+          }
+          
+          lastPos = tagMatch.index + tagMatch[0].length;
+        }
+        
+        // Remaining text
+        if (lastPos < cleanedParaHtml.length) {
+          const text = cleanedParaHtml.substring(lastPos).trim();
+          if (text) {
+            if (inStrong) {
+              textParts.push(
+                <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
+                  {text}
+                </Text>
+              );
+            } else if (inEm) {
+              textParts.push(
+                <Text key={paraKey++} style={[styles.emText, { color: themeText }]}>
+                  {text}
+                </Text>
+              );
+            } else {
+              textParts.push(text);
+            }
+          }
+        }
+        
+        if (textParts.length > 0) {
+          paraElements.push(
+            <Text key={paraKey++} style={[styles.paragraphText, { color: themeText }]}>
+              {textParts}
+            </Text>
+          );
+        }
+        
+        if (paraElements.length > 0) {
+          elements.push(
+            <View key={key++} style={styles.paragraph}>
+              {paraElements}
+            </View>
+          );
+        }
+      });
+    }
+  });
+
+  return elements.length > 0 ? elements : [
+    <Text key={0} style={[styles.bodyText, { color: '#1a1a1a' }]}>
+      {normalizedHtml.replace(/<[^>]*>/g, '').replace(/\n\n+/g, '\n\n')}
+    </Text>
+  ];
+}
+
 export function ArticleReader({ article }: ArticleReaderProps) {
   const { theme } = useApp();
   const category = ARTICLE_CATEGORIES[article.category];
+  const categoryColors = CATEGORY_COLORS[article.category] || CATEGORY_COLORS.iman;
 
-  // Render article body with proper paragraph formatting
-  const renderBody = () => {
-    // Split by double newlines for paragraphs
-    const paragraphs = article.body.split(/\n\n+/).filter(p => p.trim().length > 0);
-    
-    return paragraphs.map((paragraph, index) => {
-      // Split single newlines within paragraph for line breaks
-      const lines = paragraph.trim().split('\n').filter(l => l.trim().length > 0);
-      
-      return (
-        <View key={index} style={styles.paragraph}>
-          {lines.map((line, lineIndex) => (
-            <CenteredText
-              key={lineIndex}
-              style={[styles.bodyText, { color: theme.text }]}
-            >
-              {line.trim()}
-            </CenteredText>
-          ))}
-        </View>
-      );
-    });
-  };
+  // Parse HTML body
+  const bodyElements = parseHTML(article.body, categoryColors.primary, theme.text);
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-        <CategoryBadge category={article.category} />
-        <CenteredText style={styles.title}>{article.title}</CenteredText>
-        <View style={styles.meta}>
-          <CenteredText style={styles.metaText}>
-            {article.authorName} • {article.readingTimeEstimate} دقیقه
-          </CenteredText>
+      {/* Decorative Header with Gradient */}
+      <LinearGradient
+        colors={categoryColors.gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerGradient}
+      >
+        <View style={[styles.headerFrame, { borderColor: `${categoryColors.accent}60` }]}>
+          <View style={[styles.headerFrameInner, { borderColor: `${categoryColors.accent}30` }]}>
+            <View style={styles.headerContent}>
+              <View style={styles.ornamentRow}>
+                <View style={[styles.ornamentLine, { backgroundColor: categoryColors.accent }]} />
+                <View
+                  style={[
+                    styles.headerBadge,
+                    {
+                      backgroundColor: 'rgba(255,255,255,0.16)',
+                      borderColor: categoryColors.accent,
+                    },
+                  ]}
+                >
+                  <MaterialIcons name={category.icon as any} size={16} color="#fff" />
+                  <Text style={styles.headerBadgeText}>{category.nameDari}</Text>
+                </View>
+                <View style={[styles.ornamentLine, { backgroundColor: categoryColors.accent }]} />
+              </View>
+              
+              <CenteredText style={styles.title}>{article.title}</CenteredText>
+              
+              <View style={styles.meta}>
+                <View style={[styles.metaItem, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                  <Text style={styles.metaText}>{article.authorName}</Text>
+                </View>
+                <View style={[styles.metaItem, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
+                  <Text style={styles.metaText}>{article.readingTimeEstimate} دقیقه</Text>
+                </View>
+              </View>
+            </View>
+          </View>
         </View>
-      </View>
+      </LinearGradient>
 
-      {/* Content */}
+      {/* Content with Islamic Design */}
       <View style={[styles.content, { backgroundColor: theme.background }]}>
-        {renderBody()}
+        {/* Decorative Side Borders */}
+        <View style={[styles.sideBorder, { borderColor: categoryColors.primary + '20' }]} />
+
+        <View style={styles.contentFrame}>
+          <View style={[styles.contentCorner, styles.cornerTopLeft, { borderColor: `${categoryColors.primary}40` }]} />
+          <View style={[styles.contentCorner, styles.cornerTopRight, { borderColor: `${categoryColors.primary}40` }]} />
+          <View style={[styles.contentCorner, styles.cornerBottomLeft, { borderColor: `${categoryColors.primary}40` }]} />
+          <View style={[styles.contentCorner, styles.cornerBottomRight, { borderColor: `${categoryColors.primary}40` }]} />
+
+          <View style={[styles.contentSeparator, { backgroundColor: `${categoryColors.primary}50` }]} />
+          <View style={styles.contentInner}>
+            {bodyElements.length > 0 ? (
+              bodyElements
+            ) : (
+              // Fallback: render as plain text if parsing fails
+              <Text style={[styles.bodyText, { color: theme.text }]}>
+                {article.body.replace(/<[^>]*>/g, '').replace(/\n\n+/g, '\n\n')}
+              </Text>
+            )}
+          </View>
+        </View>
+
+        <View style={[styles.sideBorder, { borderColor: categoryColors.primary + '20' }]} />
       </View>
 
-      {/* Author Bio Section */}
-      <View style={[styles.authorSection, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-        <CenteredText style={[styles.authorTitle, { color: theme.text }]}>
-          درباره نویسنده
-        </CenteredText>
-        <CenteredText style={[styles.authorName, { color: theme.tint }]}>
+      {/* Author Bio Section with Islamic Design */}
+      <View style={[styles.authorSection, { 
+        backgroundColor: theme.card, 
+        borderColor: categoryColors.primary + '40',
+        borderTopColor: categoryColors.accent + '60',
+      }]}>
+        <View style={[styles.authorHeader, { borderBottomColor: categoryColors.primary + '30' }]}>
+          <Text style={[styles.authorTitle, { color: categoryColors.primary }]}>
+            درباره نویسنده
+          </Text>
+        </View>
+        <Text style={[styles.authorName, { color: theme.text }]}>
           {article.authorName}
-        </CenteredText>
+        </Text>
+        {category.bio && (
+          <Text style={[styles.authorBio, { color: theme.textSecondary }]}>
+            {category.nameDari}
+          </Text>
+        )}
       </View>
     </View>
   );
@@ -79,57 +340,259 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    padding: Spacing.lg,
+  headerGradient: {
     paddingTop: 80,
     paddingBottom: Spacing.xl,
+    position: 'relative',
+  },
+  headerFrame: {
+    marginHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    padding: 8,
+  },
+  headerFrameInner: {
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    paddingVertical: Spacing.lg,
+  },
+  headerContent: {
+    paddingHorizontal: Spacing.lg,
+    alignItems: 'center',
+  },
+  ornamentRow: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+    alignSelf: 'stretch',
+  },
+  ornamentLine: {
+    height: 2,
+    borderRadius: 1,
+    flex: 1,
+    opacity: 0.7,
+  },
+  headerBadge: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    minHeight: 30,
+  },
+  headerBadgeText: {
+    fontSize: 12,
+    color: '#fff',
+    fontFamily: 'Vazirmatn',
+    fontWeight: '600',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
+    lineHeight: 18,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: '#fff',
     marginTop: Spacing.md,
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.md,
     fontFamily: 'Vazirmatn',
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   meta: {
-    marginTop: Spacing.sm,
+    flexDirection: 'row-reverse',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    flexWrap: 'wrap',
+    gap: Spacing.md,
+    marginTop: Spacing.md,
+  },
+  metaItem: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.md,
+    minHeight: 30,
+    justifyContent: 'center',
+    marginBottom: Spacing.xs,
   },
   metaText: {
     fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
+    color: '#fff',
     fontFamily: 'Vazirmatn',
+    fontWeight: '500',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   content: {
-    padding: Spacing.lg,
+    flex: 1,
+    flexDirection: 'row-reverse',
     paddingTop: Spacing.xl,
   },
-  paragraph: {
-    marginBottom: Spacing.lg,
+  sideBorder: {
+    width: 4,
+    borderLeftWidth: 2,
+    borderRightWidth: 2,
+    marginVertical: Spacing.lg,
   },
-  bodyText: {
-    fontSize: 18,
-    lineHeight: 32,
-    marginBottom: Spacing.sm,
+  contentFrame: {
+    flex: 1,
+    marginHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.xl,
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.xl,
+    alignItems: 'center',
+  },
+  contentCorner: {
+    position: 'absolute',
+    width: 16,
+    height: 16,
+    borderColor: '#000',
+    opacity: 0.7,
+  },
+  cornerTopLeft: {
+    top: 6,
+    left: 6,
+    borderTopWidth: 2,
+    borderLeftWidth: 2,
+    borderTopLeftRadius: 6,
+  },
+  cornerTopRight: {
+    top: 6,
+    right: 6,
+    borderTopWidth: 2,
+    borderRightWidth: 2,
+    borderTopRightRadius: 6,
+  },
+  cornerBottomLeft: {
+    bottom: 6,
+    left: 6,
+    borderBottomWidth: 2,
+    borderLeftWidth: 2,
+    borderBottomLeftRadius: 6,
+  },
+  cornerBottomRight: {
+    bottom: 6,
+    right: 6,
+    borderBottomWidth: 2,
+    borderRightWidth: 2,
+    borderBottomRightRadius: 6,
+  },
+  contentSeparator: {
+    height: 1,
+    width: '60%',
+    marginBottom: Spacing.lg,
+    opacity: 0.4,
+  },
+  contentInner: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  paragraph: {
+    marginBottom: Spacing.md,
+    paddingVertical: Spacing.xs,
+    width: '100%',
+  },
+  paragraphText: {
+    fontSize: 19,
+    lineHeight: 38,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
+    marginBottom: Spacing.xs,
+    letterSpacing: 0.3,
+    writingDirection: 'rtl',
+  },
+  bodyText: {
+    fontSize: 19,
+    lineHeight: 38,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    letterSpacing: 0.3,
+    writingDirection: 'rtl',
+  },
+  headingContainer: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    marginVertical: Spacing.md,
+    marginHorizontal: Spacing.lg,
+    paddingVertical: Spacing.xs,
+  },
+  headingLine: {
+    flex: 1,
+    height: 3,
+    borderRadius: 2,
+    opacity: 0.4,
+  },
+  heading: {
+    fontSize: 26,
+    fontWeight: '700',
+    fontFamily: 'Vazirmatn',
+    marginHorizontal: Spacing.md,
+    textAlign: 'center',
+    letterSpacing: 0.5,
+    writingDirection: 'rtl',
+  },
+  strongText: {
+    fontWeight: '700',
+    fontSize: 19,
+    letterSpacing: 0.3,
+    writingDirection: 'rtl',
+  },
+  emText: {
+    fontStyle: 'italic',
+    fontSize: 19,
+    letterSpacing: 0.3,
+    writingDirection: 'rtl',
   },
   authorSection: {
     margin: Spacing.lg,
+    marginTop: Spacing.xl,
     padding: Spacing.lg,
     borderRadius: BorderRadius.lg,
-    borderWidth: 1,
+    borderWidth: 2,
+    borderTopWidth: 4,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  authorHeader: {
+    borderBottomWidth: 1,
+    paddingBottom: Spacing.sm,
+    marginBottom: Spacing.md,
+    width: '100%',
     alignItems: 'center',
   },
   authorTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: Spacing.sm,
-    fontFamily: 'Vazirmatn',
-  },
-  authorName: {
     fontSize: 18,
     fontWeight: '700',
     fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  authorName: {
+    fontSize: 20,
+    fontWeight: '700',
+    fontFamily: 'Vazirmatn',
+    marginBottom: Spacing.xs,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  authorBio: {
+    fontSize: 14,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
 });

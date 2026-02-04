@@ -7,8 +7,8 @@
 ## 📁 ساختار فایل‌ها
 
 ### Backend/Service Layer
-- `utils/firebase.ts` - تنظیمات Firebase
-- `utils/duaService.ts` - API calls به Firestore
+- `utils/supabase.ts` - تنظیمات Supabase
+- `utils/duaService.ts` - API calls به Supabase PostgreSQL
 - `utils/duaStorage.ts` - ذخیره‌سازی محلی (AsyncStorage)
 - `utils/duaSync.ts` - مدیریت همگام‌سازی آفلاین
 - `utils/duaNotifications.ts` - مدیریت اعلان‌ها
@@ -31,52 +31,41 @@
 ### Context
 - `context/DuaContext.tsx` - مدیریت state سراسری
 
-### Firebase Functions
-- `functions/index.js` - Cloud Functions برای اعلان‌ها
+### Supabase Edge Functions
+- `supabase/functions/` - Edge Functions برای اعلان‌ها (اختیاری)
 
 ## 🚀 مراحل راه‌اندازی
 
-### 1. تنظیم Firebase
+### 1. تنظیم Supabase
 
-مراحل کامل در فایل `FIREBASE_SETUP.md` آمده است:
+مراحل کامل در فایل `SUPABASE_SETUP.md` آمده است:
 
-1. ایجاد پروژه Firebase
-2. افزودن اپلیکیشن Android
-3. تنظیم Firestore Database
-4. تنظیم Security Rules
-5. دریافت Firebase Config
-6. ایجاد حساب Admin
+1. ایجاد پروژه Supabase
+2. اجرای Database Migration
+3. تنظیم Row Level Security (RLS) Policies
+4. دریافت Supabase Config
+5. ایجاد حساب Admin
 
 ### 2. تنظیم Environment Variables
 
-در `app.json` یا `.env` اضافه کنید:
+در فایل `.env` اضافه کنید:
 
-```json
-{
-  "expo": {
-    "extra": {
-      "firebase": {
-        "apiKey": "your-api-key",
-        "authDomain": "your-project.firebaseapp.com",
-        "projectId": "your-project-id",
-        "storageBucket": "your-project.appspot.com",
-        "messagingSenderId": "your-sender-id",
-        "appId": "your-app-id"
-      }
-    }
-  }
-}
+```env
+EXPO_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 
-یا در `utils/firebase.ts` مستقیماً وارد کنید.
+این مقادیر را از Supabase Dashboard > Project Settings > API دریافت کنید.
 
-### 3. Deploy Cloud Functions (اختیاری)
+### 3. Deploy Edge Functions (اختیاری)
+
+برای اعلان‌های push، می‌توانید Supabase Edge Functions را deploy کنید:
 
 ```bash
-cd functions
-npm install
-firebase deploy --only functions
+supabase functions deploy send-notification
 ```
+
+یا از Expo Push Notification API استفاده کنید.
 
 ## 📱 استفاده
 
@@ -121,7 +110,7 @@ firebase deploy --only functions
 
 - درخواست‌ها فقط برای کاربر و مدیر قابل مشاهده هستند
 - هیچ درخواستی به صورت عمومی نمایش داده نمی‌شود
-- Admin authentication با Firebase Auth
+- Admin authentication با Supabase Auth
 - Rate limiting (حداکثر 3 درخواست در روز)
 
 ## 📴 آفلاین
@@ -134,7 +123,7 @@ firebase deploy --only functions
 ## 🔔 اعلان‌ها
 
 - اعلان‌ها از طریق Expo Notifications ارسال می‌شوند
-- برای production، Cloud Functions اعلان را ارسال می‌کند
+- برای production، Supabase Edge Functions یا Expo Push API اعلان را ارسال می‌کند
 - کاربر می‌تواند اعلان‌ها را در تنظیمات غیرفعال کند
 
 ## 🎨 طراحی
@@ -161,11 +150,11 @@ firebase deploy --only functions
 - [x] Sync manager
 - [x] Notification system
 - [x] Admin interface
-- [x] Security rules (در FIREBASE_SETUP.md)
+- [x] Security rules (RLS Policies در SUPABASE_SETUP.md)
 - [x] Error handling
 - [x] TypeScript types
-- [ ] Firebase project setup (نیاز به تنظیم دستی)
-- [ ] Cloud Functions deploy (اختیاری)
+- [ ] Supabase project setup (نیاز به تنظیم دستی)
+- [ ] Edge Functions deploy (اختیاری)
 - [ ] Admin accounts creation (نیاز به تنظیم دستی)
 
 ## 🐛 Debugging

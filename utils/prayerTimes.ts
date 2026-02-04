@@ -144,8 +144,29 @@ function computeTime(
 ): number {
   const D = cos(angle) - sin(latitude) * sin(declination);
   const N = cos(latitude) * cos(declination);
-  const t = acos(D / N) / 15;
-  return time + (direction === 'ccw' ? -t : t);
+  
+  // Handle edge cases: N cannot be zero, and ratio must be in [-1, 1] for acos
+  if (Math.abs(N) < 0.0001) {
+    console.warn(`[computeTime] N is too small (${N}), using fallback calculation`);
+    // Fallback: return a reasonable time based on direction
+    return direction === 'ccw' ? time - 1 : time + 1;
+  }
+  
+  const ratio = D / N;
+  
+  // Clamp ratio to valid range for acos [-1, 1]
+  const clampedRatio = Math.max(-1, Math.min(1, ratio));
+  
+  const t = acos(clampedRatio) / 15;
+  const result = time + (direction === 'ccw' ? -t : t);
+  
+  // Final safety check: if result is NaN, return a fallback
+  if (isNaN(result)) {
+    console.warn(`[computeTime] Result is NaN, using fallback. Input: angle=${angle}, time=${time}, lat=${latitude}, dec=${declination}`);
+    return direction === 'ccw' ? time - 1 : time + 1;
+  }
+  
+  return result;
 }
 
 // Main prayer times calculation
@@ -189,37 +210,108 @@ export function calculatePrayerTimes(
   const maghribTime = computeTime(maghribAngle, dhuhrTime, 'cw', latitude, declination);
 
   // Isha
-  const ishaTime = params.ishaAngle > 0
-    ? computeTime(params.ishaAngle, dhuhrTime, 'cw', latitude, declination)
-    : maghribTime + 1.5; // 90 minutes after Maghrib (Umm Al-Qura method)
+  let ishaTime: number;
+  if (params.ishaAngle > 0) {
+    ishaTime = computeTime(params.ishaAngle, dhuhrTime, 'cw', latitude, declination);
+  } else {
+    // 90 minutes after Maghrib (Umm Al-Qura method)
+    ishaTime = isNaN(maghribTime) ? dhuhrTime + 7.5 : maghribTime + 1.5;
+  }
 
-  // Midnight
-  const midnightTime = params.midnight === 'Jafari'
-    ? maghribTime + (fajrTime + 24 - maghribTime) / 2
-    : (maghribTime + fajrTime + 24) / 2;
+  // Midnight - validate inputs before calculation
+  let midnightTime: number;
+  if (isNaN(fajrTime) || isNaN(maghribTime)) {
+    console.warn(`[calculatePrayerTimes] fajrTime or maghribTime is NaN, using fallback for midnight`);
+    midnightTime = dhuhrTime + 12; // Fallback: 12 hours after dhuhr
+  } else {
+    midnightTime = params.midnight === 'Jafari'
+      ? maghribTime + (fajrTime + 24 - maghribTime) / 2
+      : (maghribTime + fajrTime + 24) / 2;
+  }
 
-  // Qiyam (last third of night)
-  const nightDuration = fajrTime + 24 - maghribTime;
-  const qiyamTime = fajrTime - nightDuration / 3;
+  // Qiyam (last third of night) - validate inputs before calculation
+  let qiyamTime: number;
+  if (isNaN(fajrTime) || isNaN(maghribTime)) {
+    console.warn(`[calculatePrayerTimes] fajrTime or maghribTime is NaN, using fallback for qiyam`);
+    qiyamTime = dhuhrTime + 8; // Fallback: 8 hours after dhuhr
+  } else {
+    const nightDuration = fajrTime + 24 - maghribTime;
+    qiyamTime = fajrTime - nightDuration / 3;
+  }
 
   // Convert to Date objects
   const toDate = (hours: number): Date => {
-    const h = Math.floor(hours);
-    const m = Math.floor((hours - h) * 60);
+    // Early return if hours is NaN
+    if (isNaN(hours)) {
+      console.warn(`[toDate] hours is NaN, using fallback (noon)`);
+      const fallback = new Date(date);
+      fallback.setHours(12, 0, 0, 0);
+      return fallback;
+    }
+    
+    // Normalize hours to 0-24 range (handle negative and > 24)
+    let normalizedHours = hours;
+    let dayOffset = 0;
+    
+    // Handle negative hours (previous day)
+    if (normalizedHours < 0) {
+      dayOffset = Math.floor(normalizedHours / 24) - 1;
+      normalizedHours = normalizedHours - (dayOffset * 24);
+    }
+    
+    // Handle hours > 24 (next day)
+    if (normalizedHours >= 24) {
+      dayOffset = Math.floor(normalizedHours / 24);
+      normalizedHours = normalizedHours % 24;
+    }
+    
+    const h = Math.floor(normalizedHours);
+    const m = Math.floor((normalizedHours - h) * 60);
     const result = new Date(date);
+    
+    // Set the date first, then adjust for day offset
+    if (dayOffset !== 0) {
+      result.setDate(result.getDate() + dayOffset);
+    }
+    
+    // Set hours and minutes
     result.setHours(h, m, 0, 0);
+    
+    // Validate the resulting date
+    if (isNaN(result.getTime())) {
+      // Fallback: use current date/time if invalid
+      console.warn(`Invalid date created from hours: ${hours}, using fallback`);
+      return new Date(date.getTime() + (hours * 60 * 60 * 1000));
+    }
+    
     return result;
   };
 
+  
+  // Normalize times before converting to Date (handle > 24 and < 0)
+  const normalizeTime = (hours: number): number => {
+    if (isNaN(hours)) {
+      console.warn(`[normalizeTime] Input is NaN, using fallback`);
+      return 12; // Fallback to noon
+    }
+    if (hours < 0) {
+      return hours + 24;
+    }
+    if (hours >= 24) {
+      return hours - 24;
+    }
+    return hours;
+  };
+  
   return {
-    fajr: toDate(fajrTime),
-    sunrise: toDate(sunriseTime),
-    dhuhr: toDate(dhuhrTime),
-    asr: toDate(asrTime),
-    maghrib: toDate(maghribTime),
-    isha: toDate(ishaTime),
-    midnight: toDate(midnightTime > 24 ? midnightTime - 24 : midnightTime),
-    qiyam: toDate(qiyamTime > 24 ? qiyamTime - 24 : qiyamTime),
+    fajr: toDate(normalizeTime(fajrTime)),
+    sunrise: toDate(normalizeTime(sunriseTime)),
+    dhuhr: toDate(normalizeTime(dhuhrTime)),
+    asr: toDate(normalizeTime(asrTime)),
+    maghrib: toDate(normalizeTime(maghribTime)),
+    isha: toDate(normalizeTime(ishaTime)),
+    midnight: toDate(normalizeTime(midnightTime)),
+    qiyam: toDate(normalizeTime(qiyamTime)),
   };
 }
 

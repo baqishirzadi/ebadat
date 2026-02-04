@@ -1,10 +1,8 @@
 /**
  * Scholar Analytics
- * Calculate and aggregate analytics for scholars
+ * Calculate and aggregate analytics for scholars using Supabase
  */
 
-import { getFirestoreDB, isFirebaseConfigured } from './firebase';
-import { collection, query, where, getDocs } from 'firebase/firestore';
 import { ScholarStats, ArticleStats } from '@/types/analytics';
 import { getScholarArticles } from './articleService';
 import { getArticleAnalytics } from './analyticsService';

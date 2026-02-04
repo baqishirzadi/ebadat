@@ -4,9 +4,9 @@
  * No English - All Arabic/Dari
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useLayoutEffect } from 'react';
 import { View, StyleSheet, StatusBar, BackHandler, Platform, ToastAndroid } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
@@ -21,6 +21,7 @@ export default function QuranReaderScreen() {
     ayah?: string;
   }>();
   const router = useRouter();
+  const navigation = useNavigation();
   const { theme, state } = useApp();
   const { getSurah, getNextAyah } = useQuranData();
 
@@ -96,6 +97,7 @@ export default function QuranReaderScreen() {
     setCurrentlyPlaying(null);
   }, []);
 
+
   // Navigate to next surah
   const goToNextSurah = useCallback(() => {
     if (surahNumber < 114) {
@@ -121,60 +123,62 @@ export default function QuranReaderScreen() {
     );
   }
 
-  // Get Arabic surah name - NO ENGLISH
-  const headerTitle = surahNameData 
+  // Get Arabic surah name with current page - NO ENGLISH
+  const surahName = surahNameData 
     ? `سورة ${surahNameData.arabic}` 
     : `سوره ${toArabicNumerals(surahNumber)}`;
+  
+  const headerTitle = surahName;
+
+  // Update header dynamically when title or page changes
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: headerTitle,
+      headerStyle: { backgroundColor: theme.surahHeader },
+      headerTintColor: '#fff',
+      headerTitleStyle: {
+        fontFamily: 'QuranFont',
+        fontSize: 22,
+        fontWeight: '600',
+      },
+      headerTitleAlign: 'center',
+      headerLeft: () => (
+        <MaterialIcons
+          name="arrow-forward"
+          size={24}
+          color="#fff"
+          style={{ marginRight: 16 }}
+          onPress={() => router.back()}
+        />
+      ),
+      headerRight: () => (
+        <View style={styles.headerRight}>
+          {surahNumber > 1 && (
+            <MaterialIcons
+              name="chevron-right"
+              size={28}
+              color="#fff"
+              onPress={goToPrevSurah}
+            />
+          )}
+          {surahNumber < 114 && (
+            <MaterialIcons
+              name="chevron-left"
+              size={28}
+              color="#fff"
+              onPress={goToNextSurah}
+            />
+          )}
+        </View>
+      ),
+    });
+  }, [headerTitle, theme.surahHeader, surahNumber, navigation, router, goToPrevSurah, goToNextSurah]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <StatusBar
         barStyle={state.preferences.theme === 'night' ? 'light-content' : 'dark-content'}
         backgroundColor={theme.background}
-      />
-      
-      {/* Custom Header - Arabic Only */}
-      <Stack.Screen
-        options={{
-          title: headerTitle,
-          headerStyle: { backgroundColor: theme.surahHeader },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontFamily: 'QuranFont',
-            fontSize: 22,
-            fontWeight: '600',
-          },
-          headerTitleAlign: 'center',
-          headerLeft: () => (
-            <MaterialIcons
-              name="arrow-forward"
-              size={24}
-              color="#fff"
-              style={{ marginRight: 16 }}
-              onPress={() => router.back()}
-            />
-          ),
-          headerRight: () => (
-            <View style={styles.headerRight}>
-              {surahNumber > 1 && (
-                <MaterialIcons
-                  name="chevron-right"
-                  size={28}
-                  color="#fff"
-                  onPress={goToPrevSurah}
-                />
-              )}
-              {surahNumber < 114 && (
-                <MaterialIcons
-                  name="chevron-left"
-                  size={28}
-                  color="#fff"
-                  onPress={goToNextSurah}
-                />
-              )}
-            </View>
-          ),
-        }}
       />
 
       {/* Mushaf View */}

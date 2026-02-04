@@ -1,43 +1,87 @@
 /**
  * Scholar Service
- * CRUD operations for scholars
+ * CRUD operations for scholars using Supabase
+ * Falls back to local JSON file if Supabase is not available
  */
 
-import { getFirestoreDB, isFirebaseConfigured } from './firebase';
-import { doc, getDoc, setDoc, updateDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 import { Scholar } from '@/types/articles';
+import articlesSeedData from '@/data/articles-seed.json';
+
+const ENABLE_SCHOLARS_REMOTE = false;
+
+export function isScholarsRemoteEnabled(): boolean {
+  return ENABLE_SCHOLARS_REMOTE && isSupabaseConfigured();
+}
+
+/**
+ * Helper function to convert Supabase row to Scholar
+ */
+function rowToScholar(row: any): Scholar {
+  return {
+    id: row.id,
+    email: row.email || '',
+    fullName: row.full_name || '',
+    bio: row.bio || '',
+    photoUrl: row.photo_url,
+    verified: row.verified || false,
+    role: 'scholar',
+    createdAt: row.created_at ? new Date(row.created_at) : new Date(),
+  };
+}
 
 /**
  * Get scholar by ID
  */
 export async function getScholarById(scholarId: string): Promise<Scholar | null> {
-  if (!isFirebaseConfigured()) {
-    return null;
+  // Try Supabase first
+  if (isScholarsRemoteEnabled()) {
+    try {
+      const supabase = getSupabaseClient();
+      const { data, error } = await supabase
+        .from('scholars')
+        .select('*')
+        .eq('id', scholarId)
+        .single();
+
+      if (!error && data) {
+        return rowToScholar(data);
+      }
+    } catch (error) {
+      // Fall through to local data
+    }
   }
 
+  // Fallback to local JSON file
+  const scholars = loadScholarsFromLocal();
+  return scholars.find(s => s.id === scholarId) || null;
+}
+
+/**
+ * Load scholars from local JSON file
+ */
+function loadScholarsFromLocal(): Scholar[] {
   try {
-    const db = getFirestoreDB();
-    const scholarRef = doc(db, 'scholars', scholarId);
-    const scholarSnap = await getDoc(scholarRef);
+    const now = new Date();
+    const scholars: Scholar[] = articlesSeedData.scholars
+      .filter(s => s.verified)
+      .map((scholarData) => ({
+        id: scholarData.id,
+        email: scholarData.email,
+        fullName: scholarData.fullName,
+        bio: scholarData.bio,
+        photoUrl: undefined,
+        verified: scholarData.verified,
+        role: 'scholar' as const,
+        createdAt: now,
+      }))
+      .sort((a, b) => a.fullName.localeCompare(b.fullName));
 
-    if (!scholarSnap.exists()) {
-      return null;
-    }
-
-    const data = scholarSnap.data();
-    return {
-      id: scholarSnap.id,
-      email: data.email || '',
-      fullName: data.fullName || '',
-      bio: data.bio || '',
-      photoUrl: data.photoUrl,
-      verified: data.verified || false,
-      role: 'scholar',
-      createdAt: data.createdAt?.toDate() || new Date(),
-    };
+    console.log(`[Scholars] Loaded ${scholars.length} scholars from local JSON file`);
+    return scholars;
   } catch (error) {
-    console.error('Error getting scholar:', error);
-    return null;
+    console.error('Error loading scholars from local file:', error);
+    return [];
   }
 }
 
@@ -45,63 +89,62 @@ export async function getScholarById(scholarId: string): Promise<Scholar | null>
  * Get all verified scholars
  */
 export async function getAllScholars(): Promise<Scholar[]> {
-  if (!isFirebaseConfigured()) {
-    return [];
+  // Try Supabase first
+  if (isScholarsRemoteEnabled()) {
+    try {
+      const supabase = getSupabaseClient();
+      const { data, error } = await supabase
+        .from('scholars')
+        .select('*')
+        .eq('verified', true)
+        .order('full_name', { ascending: true });
+
+      if (error) {
+        console.warn('[Scholars] Supabase error, falling back to local data:', error.message);
+        // Fall through to local data
+      } else if (data && data.length > 0) {
+        return data.map(rowToScholar);
+      }
+    } catch (error) {
+      console.warn('[Scholars] Supabase failed, falling back to local data:', error);
+      // Fall through to local data
+    }
   }
 
-  try {
-    const db = getFirestoreDB();
-    const scholarsRef = collection(db, 'scholars');
-    const q = query(scholarsRef, where('verified', '==', true));
-    const snapshot = await getDocs(q);
-
-    const scholars: Scholar[] = [];
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      scholars.push({
-        id: docSnap.id,
-        email: data.email || '',
-        fullName: data.fullName || '',
-        bio: data.bio || '',
-        photoUrl: data.photoUrl,
-        verified: data.verified || false,
-        role: 'scholar',
-        createdAt: data.createdAt?.toDate() || new Date(),
-      });
-    });
-
-    return scholars.sort((a, b) => a.fullName.localeCompare(b.fullName));
-  } catch (error) {
-    console.error('Error getting all scholars:', error);
-    return [];
-  }
+  // Fallback to local JSON file
+  return loadScholarsFromLocal();
 }
 
 /**
  * Create or update scholar profile
  */
 export async function upsertScholar(scholar: Omit<Scholar, 'createdAt'>): Promise<void> {
-  if (!isFirebaseConfigured()) {
-    throw new Error('Firebase not configured');
+  if (!isScholarsRemoteEnabled()) {
+    throw new Error('Scholars remote source disabled');
   }
 
   try {
-    const db = getFirestoreDB();
-    const scholarRef = doc(db, 'scholars', scholar.id);
+    const supabase = getSupabaseClient();
     
-    await setDoc(
-      scholarRef,
-      {
-        email: scholar.email,
-        fullName: scholar.fullName,
-        bio: scholar.bio,
-        photoUrl: scholar.photoUrl || null,
-        verified: scholar.verified,
-        role: 'scholar',
-        updatedAt: new Date(),
-      },
-      { merge: true }
-    );
+    const scholarData = {
+      id: scholar.id,
+      email: scholar.email,
+      full_name: scholar.fullName,
+      bio: scholar.bio,
+      photo_url: scholar.photoUrl || null,
+      verified: scholar.verified,
+      role: 'scholar',
+    };
+
+    // Use upsert (insert or update)
+    const { error } = await supabase
+      .from('scholars')
+      .upsert(scholarData, { onConflict: 'id' });
+
+    if (error) {
+      console.error('Error upserting scholar:', error);
+      throw error;
+    }
   } catch (error) {
     console.error('Error upserting scholar:', error);
     throw error;

@@ -4,16 +4,17 @@
  * All text in Dari/Arabic - No English
  */
 
-import React, { useState, useMemo, useCallback } from 'react';
-import { View, StyleSheet, TextInput, Pressable, Text } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, useAnimatedScrollHandler, interpolate } from 'react-native-reanimated';
+import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { useApp, useReadingPosition } from '@/context/AppContext';
+import { SURAH_NAMES, SurahNameData, toArabicNumerals } from '@/data/surahNames';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useApp, useReadingPosition } from '@/context/AppContext';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { StatusBar } from 'expo-status-bar';
+import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import Animated, { interpolate, useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchButton } from './SearchButton';
-import { SURAH_NAMES, toArabicNumerals, SurahNameData } from '@/data/surahNames';
-import { DuaFeatureTile } from '@/components/dua/FeatureTile';
 
 interface SurahItemProps {
   surah: SurahNameData;
@@ -34,13 +35,31 @@ const SurahItem = React.memo(function SurahItem({
       style={({ pressed }) => [
         styles.surahItem,
         {
-          backgroundColor: isLastRead ? `${theme.playing}15` : theme.card,
+          backgroundColor: theme.card,
           borderColor: isLastRead ? theme.playing : theme.cardBorder,
         },
-        pressed && styles.surahItemPressed,
+        pressed && {
+          ...styles.surahItemPressed,
+          backgroundColor: theme.card, // Keep background visible when pressed
+        },
       ]}
     >
-      {/* Meta Info - Left side before number */}
+      {/* Surah Number - Right side */}
+      <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
+        <Text style={styles.numberText}>{toArabicNumerals(surah.number)}</Text>
+      </View>
+
+      {/* Surah Info - Center */}
+      <View style={styles.infoContainer}>
+        <Text style={[styles.arabicName, { color: theme.text }]}>
+          سوره {surah.arabic}
+        </Text>
+        <Text style={[styles.dariName, { color: theme.textSecondary }]}>
+          {surah.dari} ({surah.meaning})
+        </Text>
+      </View>
+
+      {/* Metadata - Left side (۷ آیت مکی) */}
       <View style={styles.metaContainer}>
         <View style={styles.metaRow}>
           <MaterialIcons
@@ -54,21 +73,6 @@ const SurahItem = React.memo(function SurahItem({
         </View>
         <Text style={[styles.ayahCount, { color: theme.textSecondary }]}>
           {toArabicNumerals(surah.ayahCount)} آیات
-        </Text>
-      </View>
-
-      {/* Surah Number */}
-      <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-        <Text style={styles.numberText}>{toArabicNumerals(surah.number)}</Text>
-      </View>
-
-      {/* Surah Info - Right aligned */}
-      <View style={styles.infoContainer}>
-        <Text style={[styles.arabicName, { color: theme.text }]}>
-          سورة {surah.arabic}
-        </Text>
-        <Text style={[styles.dariName, { color: theme.textSecondary }]}>
-          {surah.dari} ({surah.meaning})
         </Text>
       </View>
 
@@ -89,8 +93,24 @@ export function SurahList() {
   const { theme } = useApp();
   const { position } = useReadingPosition();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState('');
   const scrollY = useSharedValue(0);
+  const headerPaddingTopSV = useSharedValue(0);
+  
+  // State for current visible surah (no longer used for header)
+  
+  // Measure actual header height once - use ref to track if measured, state to trigger update
+  const headerHeightRef = useRef<number | null>(null);
+  const [headerHeight, setHeaderHeight] = useState<number | null>(null);
+  
+  const handleHeaderLayout = useCallback((event: any) => {
+    const { height } = event.nativeEvent.layout;
+    if (height > 0 && headerHeightRef.current === null) {
+      headerHeightRef.current = height;
+      setHeaderHeight(height); // Update state once to trigger FlatList padding update
+    }
+  }, []);
 
   // Filter surahs based on search
   const filteredSurahs = useMemo(() => {
@@ -126,51 +146,65 @@ export function SurahList() {
     [position.surahNumber, handleSurahPress]
   );
 
-  // Animated header styles - fade out and collapse height on scroll
+  // Track which surah is currently visible in view
+  const handleViewableItemsChanged = useCallback(
+    ({ viewableItems }: { viewableItems: { item: SurahNameData; index: number }[] }) => {
+      // No-op for now; header is static
+    },
+    []
+  );
+
+  const viewabilityConfig = useRef({
+    itemVisiblePercentThreshold: 50,
+    minimumViewTime: 300,
+  });
+
+  const headerCollapseProgress = useDerivedValue(() => {
+    return Math.min(scrollY.value / 140, 1);
+  });
+
+  // Animated header styles - container collapses to remove empty space
   const headerAnimatedStyle = useAnimatedStyle(() => {
-    const opacity = Math.max(0, Math.min(1, 1 - scrollY.value / 50));
-    const translateY = Math.min(0, -scrollY.value / 2.5);
-    const maxHeight = interpolate(scrollY.value, [0, 50], [200, 0], 'clamp');
-    const isHidden = opacity < 0.01;
+    const opacity = interpolate(scrollY.value, [0, 50], [1, 0], 'clamp');
+    const translateY = interpolate(scrollY.value, [0, 50], [0, -20], 'clamp');
     
     return {
       opacity,
       transform: [{ translateY }],
-      maxHeight,
-      overflow: 'hidden' as const,
-      pointerEvents: isHidden ? ('none' as const) : ('auto' as const),
     };
   });
 
-  // Continue card animated style - fade out and collapse height
+  // Continue card animated style - only opacity and translateY
   const continueCardAnimatedStyle = useAnimatedStyle(() => {
-    const opacity = Math.max(0, Math.min(1, 1 - scrollY.value / 50));
-    const translateY = Math.min(0, -scrollY.value / 2.5);
-    const maxHeight = interpolate(scrollY.value, [0, 80], [150, 0], 'clamp');
-    const isHidden = opacity < 0.01;
+    const opacity = interpolate(scrollY.value, [0, 80], [1, 0], 'clamp');
+    const translateY = interpolate(scrollY.value, [0, 80], [0, -20], 'clamp');
     
     return {
       opacity,
       transform: [{ translateY }],
-      maxHeight,
-      overflow: 'hidden' as const,
-      pointerEvents: isHidden ? ('none' as const) : ('auto' as const),
     };
   });
 
-  // Search bar animated style - fade out and collapse height
+  // Search bar animated style - only opacity and translateY
   const searchBarAnimatedStyle = useAnimatedStyle(() => {
-    const opacity = Math.max(0, Math.min(1, 1 - scrollY.value / 50));
-    const translateY = Math.min(0, -scrollY.value / 2.5);
-    const maxHeight = interpolate(scrollY.value, [0, 100], [60, 0], 'clamp');
-    const isHidden = opacity < 0.01;
+    const opacity = interpolate(scrollY.value, [0, 100], [1, 0], 'clamp');
+    const translateY = interpolate(scrollY.value, [0, 100], [0, -20], 'clamp');
     
     return {
       opacity,
       transform: [{ translateY }],
-      maxHeight,
-      overflow: 'hidden' as const,
-      pointerEvents: isHidden ? ('none' as const) : ('auto' as const),
+    };
+  });
+
+  const headerSpacerAnimatedStyle = useAnimatedStyle(() => {
+    const height = headerPaddingTopSV.value * (1 - headerCollapseProgress.value);
+    return { height };
+  });
+
+  const headerContainerAnimatedStyle = useAnimatedStyle(() => {
+    const translateY = -headerPaddingTopSV.value * headerCollapseProgress.value;
+    return {
+      transform: [{ translateY }],
     };
   });
 
@@ -180,86 +214,108 @@ export function SurahList() {
     },
   });
 
-  // Debug: Log when scroll handler is initialized
-  React.useEffect(() => {
-    console.log('[SurahList] Scroll handler initialized, animations should work');
-    console.log('[SurahList] scrollY shared value:', scrollY.value);
-  }, []);
+  // Use measured header height or fallback until measurement completes
+  const headerPaddingTop = headerHeight !== null 
+    ? headerHeight 
+    : insets.top + 300; // Fallback until measurement completes
+
+  useEffect(() => {
+    headerPaddingTopSV.value = headerPaddingTop;
+  }, [headerPaddingTop, headerPaddingTopSV]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header - Animated */}
-      <Animated.View style={[styles.header, { backgroundColor: theme.surahHeader }, headerAnimatedStyle]}>
-        <Text style={styles.headerTitle}>القرآن الکریم</Text>
-        <Text style={styles.headerSubtitle}>
-          {toArabicNumerals(114)} سوره • {toArabicNumerals(6236)} آیات
-        </Text>
-      </Animated.View>
-
-      {/* Continue Reading Card - Animated */}
-      {position.surahNumber > 0 && (
-        <Animated.View style={continueCardAnimatedStyle}>
-          <Pressable
-            onPress={handleContinueReading}
-            style={({ pressed }) => [
-              styles.continueCard,
-              { backgroundColor: theme.card, borderColor: theme.playing },
-              pressed && styles.continueCardPressed,
-            ]}
-          >
-            <View style={styles.continueContent}>
-              <MaterialIcons name="bookmark" size={24} color={theme.playing} />
-              <View style={styles.continueInfo}>
-                <Text style={[styles.continueTitle, { color: theme.text }]}>
-                  ادامه تلاوت
-                </Text>
-                <Text style={[styles.continueDetails, { color: theme.textSecondary }]}>
-                  سوره {toArabicNumerals(position.surahNumber)} • آیه {toArabicNumerals(position.ayahNumber)}
-                </Text>
-              </View>
-            </View>
-            <MaterialIcons name="play-circle-filled" size={40} color={theme.playing} />
-          </Pressable>
+      <StatusBar style="light" backgroundColor={theme.surahHeader} />
+      {/* Absolutely positioned header container - does NOT affect layout flow */}
+      <Animated.View 
+        style={[
+          styles.headerContainer,
+          { 
+            backgroundColor: theme.surahHeader, // Green background extends behind status bar
+            paddingTop: insets.top, // Extend behind status bar
+          },
+          headerContainerAnimatedStyle,
+        ]}
+        onLayout={handleHeaderLayout}
+        pointerEvents="box-none" // Allow touches to pass through when hidden
+      >
+        {/* Header - Animated */}
+        <Animated.View style={[styles.header, { backgroundColor: theme.surahHeader }, headerAnimatedStyle]}>
+          <Text style={styles.headerTitle}>القرآن الکریم</Text>
+          <Text style={styles.headerSubtitle}>
+            {toArabicNumerals(114)} سوره • {toArabicNumerals(6236)} آیات
+          </Text>
         </Animated.View>
-      )}
 
-      {/* Dua Request Feature Tile */}
-      <View style={styles.featureTileContainer}>
-        <DuaFeatureTile />
-      </View>
-
-      {/* Search Bar - Animated */}
-      <Animated.View style={searchBarAnimatedStyle}>
-        <View style={[styles.searchContainer, { backgroundColor: theme.backgroundSecondary }]}>
-          <MaterialIcons name="search" size={20} color={theme.icon} />
-          <TextInput
-            style={[styles.searchInput, { color: theme.text }]}
-            placeholder="جستجوی سوره..."
-            placeholderTextColor={theme.textSecondary}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            textAlign="center"
-          />
-          {searchQuery.length > 0 && (
-            <Pressable onPress={() => setSearchQuery('')}>
-              <MaterialIcons name="close" size={20} color={theme.icon} />
+        {/* Continue Reading Card - Animated */}
+        {position.surahNumber > 0 && (
+          <Animated.View style={continueCardAnimatedStyle}>
+            <Pressable
+              onPress={handleContinueReading}
+              style={({ pressed }) => [
+                styles.continueCard,
+                { backgroundColor: theme.card, borderColor: theme.playing },
+                pressed && styles.continueCardPressed,
+              ]}
+            >
+              <View style={styles.continueContent}>
+                <MaterialIcons name="bookmark" size={24} color={theme.playing} />
+                <View style={styles.continueInfo}>
+                  <Text style={[styles.continueTitle, { color: theme.text }]}>
+                    ادامه تلاوت
+                  </Text>
+                  <Text style={[styles.continueDetails, { color: theme.textSecondary }]}>
+                    سوره {toArabicNumerals(position.surahNumber)} • آیه {toArabicNumerals(position.ayahNumber)}
+                  </Text>
+                </View>
+              </View>
+              <MaterialIcons name="play-circle-filled" size={40} color={theme.playing} />
             </Pressable>
-          )}
-        </View>
+          </Animated.View>
+        )}
+
+        {/* Search Bar - Animated */}
+        <Animated.View style={searchBarAnimatedStyle}>
+          <View style={[styles.searchContainer, { backgroundColor: theme.backgroundSecondary }]}>
+            <MaterialIcons name="search" size={20} color={theme.icon} />
+            <TextInput
+              style={[styles.searchInput, { color: theme.text }]}
+              placeholder="جستجوی سوره..."
+              placeholderTextColor={theme.textSecondary}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              textAlign="center"
+            />
+            {searchQuery.length > 0 && (
+              <Pressable onPress={() => setSearchQuery('')}>
+                <MaterialIcons name="close" size={20} color={theme.icon} />
+              </Pressable>
+            )}
+          </View>
+        </Animated.View>
       </Animated.View>
 
-      {/* Surah List */}
+      {/* FlatList with measured paddingTop - reserves exact space for header */}
       <Animated.FlatList
         data={filteredSurahs}
         keyExtractor={(item) => `surah-${item.number}`}
         renderItem={renderSurah}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
+        ListHeaderComponent={
+          <Animated.View style={[styles.headerSpacer, headerSpacerAnimatedStyle]} />
+        }
+        contentContainerStyle={[
+          styles.listContent,
+        ]}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         onScroll={scrollHandler}
         scrollEventThrottle={16}
+        onViewableItemsChanged={handleViewableItemsChanged}
+        viewabilityConfig={viewabilityConfig.current}
         removeClippedSubviews={false}
         maintainVisibleContentPosition={null}
+        // Prevent iOS from adjusting content inset automatically
+        contentInsetAdjustmentBehavior="never"
       />
 
       {/* Search FAB */}
@@ -271,6 +327,17 @@ export function SurahList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  // Absolutely positioned header container - overlays FlatList
+  headerContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10, // Above FlatList content
+  },
+  headerSpacer: {
+    height: 0,
   },
   header: {
     paddingTop: 60,
@@ -309,10 +376,6 @@ const styles = StyleSheet.create({
   },
   continueCardPressed: {
     opacity: 0.9,
-  },
-  featureTileContainer: {
-    marginHorizontal: Spacing.md,
-    marginBottom: Spacing.sm,
   },
   continueContent: {
     flexDirection: 'row-reverse',
@@ -381,25 +444,25 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
-    alignItems: 'flex-end',
+    alignItems: 'center', // Center-aligned for surah names
     justifyContent: 'center',
   },
   arabicName: {
     fontSize: Typography.ui.title,
     fontWeight: '600',
     fontFamily: 'QuranFont',
-    textAlign: 'right',
+    textAlign: 'center', // Center-aligned text
     width: '100%',
   },
   dariName: {
     fontSize: Typography.ui.caption,
     marginTop: 2,
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
+    textAlign: 'center', // Center-aligned text
     width: '100%',
   },
   metaContainer: {
-    alignItems: 'flex-start',
+    alignItems: 'flex-start', // Left-aligned (metadata is now on left side)
     justifyContent: 'center',
     minWidth: 80,
   },

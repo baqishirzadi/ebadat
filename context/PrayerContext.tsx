@@ -648,7 +648,9 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
       for (const prayer of prayers) {
         const notificationTime = new Date(prayer.time.getTime() - minutesBefore * 60 * 1000);
         
-        if (notificationTime > now) {
+        // Validate date is in valid range (prevent invalid date errors)
+        const maxDate = new Date(now.getFullYear() + 1, 11, 31); // Max 1 year ahead
+        if (notificationTime > now && notificationTime <= maxDate) {
           await NotificationsModule.scheduleNotificationAsync({
             content: {
               title: 'وقت نماز',
@@ -713,6 +715,24 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
       const { adhanPreferences } = state;
       let scheduledCount = 0;
 
+      // Helper function to validate Date objects
+      const isValidDate = (date: Date): boolean => {
+        return date instanceof Date && !isNaN(date.getTime()) && 
+               date.getTime() > 0 && date.getTime() < Number.MAX_SAFE_INTEGER;
+      };
+
+      // Helper function to safely format date for logging
+      const safeDateString = (date: Date): string => {
+        if (!isValidDate(date)) {
+          return 'Invalid Date';
+        }
+        try {
+          return date.toISOString();
+        } catch {
+          return 'Date format error';
+        }
+      };
+
       for (const prayer of prayers) {
         const prayerSettings = adhanPreferences[prayer.key];
         
@@ -722,9 +742,22 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
           continue;
         }
         
+        // Validate prayer time is valid Date before using it
+        if (!isValidDate(prayer.time)) {
+          console.warn(`Invalid date for ${prayer.key}, skipping notification`);
+          continue;
+        }
+        
         // Skip if prayer time has passed
         if (prayer.time <= now) {
-          console.log(`Skipping ${prayer.key}: prayer time has passed (${prayer.time.toISOString()})`);
+          console.log(`Skipping ${prayer.key}: prayer time has passed (${safeDateString(prayer.time)})`);
+          continue;
+        }
+
+        // Validate date is in valid range (prevent invalid date errors)
+        const maxDate = new Date(now.getFullYear() + 1, 11, 31); // Max 1 year ahead
+        if (prayer.time > maxDate) {
+          console.log(`Skipping ${prayer.key}: Date out of valid range (${safeDateString(prayer.time)})`);
           continue;
         }
 
@@ -770,13 +803,15 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         });
         
         scheduledCount++;
-        console.log(`Scheduled ${prayer.key} notification for ${prayer.time.toISOString()} (sound: ${notificationSound})`);
+        console.log(`Scheduled ${prayer.key} notification for ${safeDateString(prayer.time)} (sound: ${notificationSound})`);
 
         // Schedule early reminder if enabled
         if (adhanPreferences.earlyReminder && adhanPreferences.earlyReminderMinutes > 0) {
           const reminderTime = new Date(prayer.time.getTime() - adhanPreferences.earlyReminderMinutes * 60 * 1000);
           
-          if (reminderTime > now) {
+          // Validate reminder date is valid and in valid range
+          const maxDate = new Date(now.getFullYear() + 1, 11, 31); // Max 1 year ahead
+          if (isValidDate(reminderTime) && reminderTime > now && reminderTime <= maxDate) {
             const reminderContent = getEarlyReminderContent(prayer.key, adhanPreferences.earlyReminderMinutes);
             
             await NotificationsModule.scheduleNotificationAsync({

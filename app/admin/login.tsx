@@ -18,8 +18,7 @@ import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { getFirebaseAuth, isFirebaseConfigured } from '@/utils/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CenteredText from '@/components/CenteredText';
 
@@ -40,20 +39,27 @@ export default function AdminLoginScreen() {
       return;
     }
 
-    if (!isFirebaseConfigured()) {
-      Alert.alert('خطا', 'Firebase تنظیم نشده است. لطفاً تنظیمات را بررسی کنید.');
+    if (!isSupabaseConfigured()) {
+      Alert.alert('خطا', 'Supabase تنظیم نشده است. لطفاً تنظیمات را بررسی کنید.');
       return;
     }
 
     setIsLoading(true);
     try {
-      const auth = getFirebaseAuth();
-      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
+      const supabase = getSupabaseClient();
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password: password,
+      });
+
+      if (authError || !authData.user) {
+        throw authError || new Error('Authentication failed');
+      }
       
       // Store admin session
       await AsyncStorage.setItem(ADMIN_STORAGE_KEY, JSON.stringify({
-        uid: userCredential.user.uid,
-        email: userCredential.user.email,
+        uid: authData.user.id,
+        email: authData.user.email,
         timestamp: Date.now(),
       }));
 
@@ -63,13 +69,11 @@ export default function AdminLoginScreen() {
       console.error('Login error:', error);
       let errorMessage = 'خطا در ورود';
       
-      if (error.code === 'auth/invalid-email') {
-        errorMessage = 'ایمیل نامعتبر است';
-      } else if (error.code === 'auth/user-not-found') {
-        errorMessage = 'کاربر یافت نشد';
-      } else if (error.code === 'auth/wrong-password') {
-        errorMessage = 'رمز عبور اشتباه است';
-      } else if (error.code === 'auth/too-many-requests') {
+      if (error.message?.includes('Invalid login credentials') || error.message?.includes('invalid')) {
+        errorMessage = 'ایمیل یا رمز عبور اشتباه است';
+      } else if (error.message?.includes('Email not confirmed')) {
+        errorMessage = 'ایمیل تایید نشده است';
+      } else if (error.message?.includes('too many')) {
         errorMessage = 'تلاش‌های زیاد. لطفاً بعداً تلاش کنید';
       }
       

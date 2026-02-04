@@ -9,17 +9,17 @@ import { SplashScreen, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, I18nManager, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-reanimated';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { SpiritualSplash } from '@/components/SpiritualSplash';
 import { AppProvider, useApp } from '@/context/AppContext';
-import { PrayerProvider } from '@/context/PrayerContext';
-import { StatsProvider } from '@/context/StatsContext';
-import { DuaProvider } from '@/context/DuaContext';
 import { ArticlesProvider } from '@/context/ArticlesContext';
+import { DuaProvider } from '@/context/DuaContext';
+import { PrayerProvider } from '@/context/PrayerContext';
 import { ScholarProvider } from '@/context/ScholarContext';
+import { StatsProvider } from '@/context/StatsContext';
 
 // ═══════════════════════════════════════════════════
 // CRITICAL: Force RTL for Arabic/Dari/Pashto
@@ -92,12 +92,17 @@ function RootLayoutNav() {
         <Stack.Screen name="calendar" options={{ headerShown: true }} />
         <Stack.Screen name="ramadan" options={{ headerShown: true }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'اطلاعات' }} />
-        <Stack.Screen name="dua-request" options={{ headerShown: false }} />
-        <Stack.Screen name="admin" options={{ headerShown: false }} />
-        <Stack.Screen name="articles" options={{ headerShown: false }} />
-        <Stack.Screen name="scholar" options={{ headerShown: false }} />
+        {/* Rely on file-based routing for the rest (dua-request, admin, articles, scholar).
+            Removing explicit Stack.Screen entries prevents \"No route named ...\" warnings
+            when Expo Router regenerates routes. */}
+        {/* <Stack.Screen name="dua-request" options={{ headerShown: false }} /> */}
+        {/* <Stack.Screen name="admin" options={{ headerShown: false }} /> */}
+        {/* <Stack.Screen name="articles" options={{ headerShown: false }} /> */}
+        {/* <Stack.Screen name="scholar" options={{ headerShown: false }} /> */}
       </Stack>
-      <StatusBar style={statusBarStyle} />
+      {/* On Android, fill the area behind the status bar with the same color
+          as the Quran header to avoid any white strip above the header. */}
+      <StatusBar style={statusBarStyle} backgroundColor={theme.surahHeader} />
     </>
   );
 }

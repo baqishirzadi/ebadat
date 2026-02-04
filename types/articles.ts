@@ -83,7 +83,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
 };
 
 export interface Scholar {
-  id: string; // Firebase Auth UID
+  id: string; // Supabase Auth UID or custom ID
   email: string;
   fullName: string;
   bio: string;

@@ -3,24 +3,25 @@
  * Shows featured scholars and latest articles
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View,
   StyleSheet,
   FlatList,
   RefreshControl,
   ActivityIndicator,
+  Animated,
+  useWindowDimensions,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useArticles } from '@/context/ArticlesContext';
 import { Article, Scholar } from '@/types/articles';
-import { Spacing } from '@/constants/theme';
-import { ScholarCarousel } from '@/components/articles/ScholarCarousel';
+import { Spacing, BorderRadius } from '@/constants/theme';
 import { ArticleCard } from '@/components/articles/ArticleCard';
 import { CategoryFilter } from '@/components/articles/CategoryFilter';
 import CenteredText from '@/components/CenteredText';
-import { isFirebaseConfigured } from '@/utils/firebase';
+import { isArticlesRemoteEnabled } from '@/utils/articleService';
 
 export default function ArticlesFeed() {
   const { theme } = useApp();
@@ -29,6 +30,8 @@ export default function ArticlesFeed() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<'dari' | 'pashto'>('dari');
   const [refreshing, setRefreshing] = useState(false);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const { width } = useWindowDimensions();
 
   useEffect(() => {
     console.log('[ArticlesFeed] Component mounted, refreshing articles...');
@@ -38,6 +41,9 @@ export default function ArticlesFeed() {
       isOffline: state.isOffline,
       scholarsCount: state.scholars.length,
     });
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'articles/index.tsx:41',message:'ArticlesFeed mounted - calling refreshArticles',data:{articlesCount:state.articles.length,isLoading:state.isLoading,isOffline:state.isOffline},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+    // #endregion
     refreshArticles();
   }, [refreshArticles]);
 
@@ -52,6 +58,14 @@ export default function ArticlesFeed() {
     if (article.language !== selectedLanguage) return false;
     return article.published;
   });
+
+  // #region agent log
+  useEffect(() => {
+    const filterLog = {location:'articles/index.tsx:59',message:'Filtered articles calculation',data:{totalArticles:state.articles.length,filteredCount:filteredArticles.length,selectedLanguage,selectedCategory,articleLanguages:state.articles.map(a=>a.language),articleCategories:state.articles.map(a=>a.category),sampleArticles:state.articles.slice(0,2).map(a=>({title:a.title,language:a.language,category:a.category}))},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'};
+    console.log('[DEBUG]', JSON.stringify(filterLog));
+    fetch('http://127.0.0.1:7242/ingest/1c660e1a-f615-4adb-8f31-171e0c14ddc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(filterLog)}).catch(()=>{});
+  }, [state.articles, filteredArticles, selectedLanguage, selectedCategory]);
+  // #endregion
 
   const handleArticlePress = useCallback(
     (articleId: string) => {
@@ -71,29 +85,84 @@ export default function ArticlesFeed() {
     [isBookmarked, handleArticlePress]
   );
 
-  return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-        <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
-        <CenteredText style={styles.headerSubtitle}>
-          مقالات و نوشته‌های علما
+  const numColumns = width >= 420 ? 3 : 2;
+
+  const renderScholar = useCallback(
+    ({ item }: { item: Scholar }) => (
+      <View style={[styles.scholarCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <CenteredText style={[styles.scholarName, { color: theme.text }]} numberOfLines={2}>
+          {item.fullName}
         </CenteredText>
       </View>
+    ),
+    [theme]
+  );
 
-      {/* Featured Scholars Carousel */}
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 120],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, 180],
+    outputRange: [1, 0.6],
+    extrapolate: 'clamp',
+  });
+
+  const renderListHeader = () => (
+    <Animated.View
+      style={[
+        styles.headerWrapper,
+        {
+          opacity: headerOpacity,
+          transform: [{ scaleY: headerHeight }],
+        },
+      ]}
+    >
+      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+        <View style={styles.headerPattern} pointerEvents="none">
+          <View style={[styles.patternLine, styles.patternLine1]} />
+          <View style={[styles.patternLine, styles.patternLine2]} />
+          <View style={[styles.patternLine, styles.patternLine3]} />
+          <View style={[styles.patternLine, styles.patternLine4]} />
+          <View style={[styles.patternCorner, styles.patternTopLeft]} />
+          <View style={[styles.patternCorner, styles.patternTopRight]} />
+          <View style={[styles.patternCorner, styles.patternBottomLeft]} />
+          <View style={[styles.patternCorner, styles.patternBottomRight]} />
+        </View>
+        <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
+        <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
+      </View>
+
       {state.scholars.length > 0 && (
-        <ScholarCarousel scholars={state.scholars} />
+        <View style={styles.scholarsSection}>
+          <CenteredText style={[styles.scholarsTitle, { color: theme.text }]}>
+            علما و نویسندگان
+          </CenteredText>
+          <FlatList
+            data={state.scholars}
+            keyExtractor={(item) => item.id}
+            renderItem={renderScholar}
+            numColumns={numColumns}
+            scrollEnabled={false}
+            columnWrapperStyle={styles.scholarRow}
+            contentContainerStyle={styles.scholarsGrid}
+          />
+        </View>
       )}
 
-      {/* Category Filter */}
       <CategoryFilter
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
         selectedLanguage={selectedLanguage}
         onSelectLanguage={setSelectedLanguage}
       />
+    </Animated.View>
+  );
 
+  return (
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Articles List */}
       {state.isLoading && state.articles.length === 0 ? (
         <View style={styles.loadingContainer}>
@@ -104,14 +173,25 @@ export default function ArticlesFeed() {
         </View>
       ) : filteredArticles.length === 0 ? (
         <View style={styles.emptyContainer}>
-          {!isFirebaseConfigured() ? (
+          {!isArticlesRemoteEnabled() ? (
             <>
               <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-                Firebase تنظیم نشده است
+                مقالات به حالت نمایشی فعال است
               </CenteredText>
               <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
-                لطفاً تنظیمات Firebase را بررسی کنید
+                فعلاً فقط مقالات محلی نمایش داده می‌شوند
               </CenteredText>
+            </>
+          ) : state.error ? (
+            <>
+              <CenteredText style={[styles.emptyText, { color: theme.error || '#F44336' }]}>
+                {state.error}
+              </CenteredText>
+              {state.articles.length > 0 && (
+                <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary, marginTop: 8 }]}>
+                  نمایش داده‌های ذخیره شده محلی
+                </CenteredText>
+              )}
             </>
           ) : state.articles.length === 0 && !state.isLoading ? (
             <>
@@ -119,7 +199,10 @@ export default function ArticlesFeed() {
                 مقاله‌ای یافت نشد
               </CenteredText>
               <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
-                برای اضافه کردن مقالات، اسکریپت seedArticles.js را اجرا کنید
+                مقالات در Supabase وجود ندارند
+              </CenteredText>
+              <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary, marginTop: 8 }]}>
+                برای اضافه کردن مقالات، راهنمای ADD_ARTICLES.md را ببینید
               </CenteredText>
             </>
           ) : (
@@ -129,10 +212,11 @@ export default function ArticlesFeed() {
           )}
         </View>
       ) : (
-        <FlatList
+        <Animated.FlatList
           data={filteredArticles}
           keyExtractor={(item) => item.id}
           renderItem={renderArticle}
+          ListHeaderComponent={renderListHeader}
           contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl
@@ -144,6 +228,11 @@ export default function ArticlesFeed() {
           }
           showsVerticalScrollIndicator={false}
           ListFooterComponent={<View style={styles.footer} />}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true }
+          )}
+          scrollEventThrottle={16}
         />
       )}
 
@@ -168,18 +257,124 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.lg,
     paddingHorizontal: Spacing.lg,
     alignItems: 'center',
+    width: '100%',
+    overflow: 'hidden',
+  },
+  headerWrapper: {
+    width: '100%',
+    overflow: 'hidden',
+  },
+  headerPattern: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: 0.12,
+  },
+  patternLine: {
+    position: 'absolute',
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.35)',
+    width: '120%',
+    left: '-10%',
+  },
+  patternLine1: {
+    top: 20,
+    transform: [{ rotate: '12deg' }],
+  },
+  patternLine2: {
+    top: 60,
+    transform: [{ rotate: '12deg' }],
+  },
+  patternLine3: {
+    top: 100,
+    transform: [{ rotate: '12deg' }],
+  },
+  patternLine4: {
+    top: 140,
+    transform: [{ rotate: '12deg' }],
+  },
+  patternCorner: {
+    position: 'absolute',
+    width: 18,
+    height: 18,
+    borderColor: 'rgba(255,255,255,0.35)',
+  },
+  patternTopLeft: {
+    top: 12,
+    left: 12,
+    borderTopWidth: 1,
+    borderLeftWidth: 1,
+  },
+  patternTopRight: {
+    top: 12,
+    right: 12,
+    borderTopWidth: 1,
+    borderRightWidth: 1,
+  },
+  patternBottomLeft: {
+    bottom: 12,
+    left: 12,
+    borderBottomWidth: 1,
+    borderLeftWidth: 1,
+  },
+  patternBottomRight: {
+    bottom: 12,
+    right: 12,
+    borderBottomWidth: 1,
+    borderRightWidth: 1,
   },
   headerTitle: {
     fontSize: 32,
     fontWeight: '700',
     color: '#fff',
     fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   headerSubtitle: {
     fontSize: 14,
     color: 'rgba(255,255,255,0.8)',
     marginTop: Spacing.xs,
     fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  scholarsSection: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.sm,
+  },
+  scholarsTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: Spacing.sm,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  scholarsGrid: {
+    paddingBottom: Spacing.sm,
+  },
+  scholarRow: {
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  scholarCard: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  scholarName: {
+    fontSize: 11,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   loadingContainer: {
     flex: 1,
@@ -190,6 +385,8 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     fontSize: 14,
     fontFamily: 'Vazirmatn',
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
   emptyContainer: {
     flex: 1,
@@ -201,11 +398,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Vazirmatn',
     marginBottom: Spacing.xs,
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
   emptySubtext: {
     fontSize: 14,
     fontFamily: 'Vazirmatn',
     marginTop: Spacing.xs,
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
   listContent: {
     padding: Spacing.md,
@@ -225,5 +426,7 @@ const styles = StyleSheet.create({
   offlineText: {
     fontSize: 12,
     fontFamily: 'Vazirmatn',
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
 });

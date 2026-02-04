@@ -3,7 +3,7 @@
  * Handles offline-to-online synchronization
  */
 
-import { isFirebaseConfigured } from './firebase';
+import { isSupabaseConfigured } from './supabase';
 import * as duaService from './duaService';
 import * as duaStorage from './duaStorage';
 
@@ -11,12 +11,12 @@ let syncInProgress = false;
 let syncListeners: Array<() => void> = [];
 
 /**
- * Check if device is online (simplified - checks if Firebase is configured and available)
+ * Check if device is online (simplified - checks if Supabase is configured and available)
  */
 export async function isOnline(): Promise<boolean> {
-  // Simple check: if Firebase is configured, assume we can try to sync
+  // Simple check: if Supabase is configured, assume we can try to sync
   // Actual network check happens when making the API call
-  return isFirebaseConfigured();
+  return isSupabaseConfigured();
 }
 
 /**

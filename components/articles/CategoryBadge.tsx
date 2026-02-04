@@ -37,7 +37,7 @@ export function CategoryBadge({ category }: CategoryBadgeProps) {
 
 const styles = StyleSheet.create({
   badge: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     gap: 4,
     paddingHorizontal: Spacing.sm,
@@ -49,5 +49,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     fontFamily: 'Vazirmatn',
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
 });

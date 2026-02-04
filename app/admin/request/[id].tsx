@@ -20,8 +20,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { DuaRequest, DUA_CATEGORIES } from '@/types/dua';
-import { getFirestoreDB, getFirebaseAuth, isFirebaseConfigured } from '@/utils/firebase';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
 import CenteredText from '@/components/CenteredText';
 import { StatusBadge } from '@/components/dua/StatusBadge';
 
@@ -40,31 +39,37 @@ export default function AdminRequestResponseScreen() {
   }, [id]);
 
   const loadRequest = async () => {
-    if (!id || !isFirebaseConfigured()) return;
+    if (!id || !isSupabaseConfigured()) return;
 
     try {
-      const db = getFirestoreDB();
-      const docRef = doc(db, 'dua_requests', id);
-      const docSnap = await getDoc(docRef);
+      const supabase = getSupabaseClient();
+      const { data, error } = await supabase
+        .from('dua_requests')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setRequest({
-          id: docSnap.id,
-          userId: data.userId,
-          category: data.category,
-          message: data.message,
-          isAnonymous: data.isAnonymous || false,
-          status: data.status || 'pending',
-          createdAt: data.createdAt?.toDate() || new Date(),
-          answeredAt: data.answeredAt?.toDate(),
-          response: data.response,
-          reviewerId: data.reviewerId,
-          reviewerName: data.reviewerName,
-        });
-        if (data.response) {
-          setResponse(data.response);
-        }
+      if (error || !data) {
+        throw error || new Error('Request not found');
+      }
+
+      const requestData: DuaRequest = {
+        id: data.id,
+        userId: data.user_id,
+        category: data.category,
+        message: data.message,
+        isAnonymous: data.is_anonymous || false,
+        status: data.status || 'pending',
+        createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+        answeredAt: data.answered_at ? new Date(data.answered_at) : undefined,
+        response: data.response || undefined,
+        reviewerId: data.reviewer_id || undefined,
+        reviewerName: data.reviewer_name || undefined,
+      };
+
+      setRequest(requestData);
+      if (data.response) {
+        setResponse(data.response);
       }
     } catch (error) {
       console.error('Failed to load request:', error);
@@ -80,35 +85,40 @@ export default function AdminRequestResponseScreen() {
       return;
     }
 
-    if (!request || !isFirebaseConfigured()) return;
+    if (!request || !isSupabaseConfigured()) return;
 
     setSubmitting(true);
     try {
-      const auth = getFirebaseAuth();
-      const currentUser = auth.currentUser;
+      const supabase = getSupabaseClient();
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      
       if (!currentUser) {
         Alert.alert('خطا', 'لطفاً دوباره وارد شوید');
         router.replace('/admin/login');
         return;
       }
 
-      const db = getFirestoreDB();
-      const requestRef = doc(db, 'dua_requests', request.id);
-
       // Get reviewer name (you can fetch from admin_users collection)
       const reviewerName = 'سیدعبدالباقی شیرزادی'; // Default, can be fetched from user profile
 
-      await updateDoc(requestRef, {
-        status: 'answered',
-        response: response.trim(),
-        reviewerId: currentUser.uid,
-        reviewerName,
-        answeredAt: serverTimestamp(),
-      });
+      const { error: updateError } = await supabase
+        .from('dua_requests')
+        .update({
+          status: 'answered',
+          response: response.trim(),
+          reviewer_id: currentUser.id,
+          reviewer_name: reviewerName,
+          answered_at: new Date().toISOString(),
+        })
+        .eq('id', request.id);
 
-      // Notification will be sent automatically by Cloud Function when document is updated
-      // If Cloud Functions are not deployed, notification will be sent via client-side fallback
-      console.log('Response saved. Notification will be sent via Cloud Function.');
+      if (updateError) {
+        throw updateError;
+      }
+
+      // Notification will be sent automatically by Edge Function when record is updated
+      // If Edge Functions are not deployed, notification will be sent via client-side fallback
+      console.log('Response saved. Notification will be sent via Edge Function.');
 
       Alert.alert('موفق', 'پاسخ با موفقیت ثبت شد و به کاربر اطلاع داده شد', [
         { text: 'باشه', onPress: () => router.back() },

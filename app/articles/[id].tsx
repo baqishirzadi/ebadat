@@ -10,6 +10,7 @@ import {
   ScrollView,
   Animated,
   ActivityIndicator,
+  Pressable,
 } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -22,12 +23,14 @@ import { ArticleReader } from '@/components/articles/ArticleReader';
 import { BookmarkButton } from '@/components/articles/BookmarkButton';
 import { ShareButton } from '@/components/articles/ShareButton';
 import CenteredText from '@/components/CenteredText';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ArticleReadingScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { theme } = useApp();
   const { toggleBookmark, isBookmarked } = useArticles();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [article, setArticle] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const scrollY = useRef(new Animated.Value(0)).current;
@@ -70,7 +73,7 @@ export default function ArticleReadingScreen() {
   };
 
   const headerOpacity = scrollY.interpolate({
-    inputRange: [0, 50],
+    inputRange: [0, 60],
     outputRange: [1, 0],
     extrapolate: 'clamp',
   });
@@ -102,20 +105,30 @@ export default function ArticleReadingScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen
         options={{
-          headerShown: true,
-          headerStyle: { backgroundColor: theme.surahHeader },
-          headerTintColor: '#fff',
-          headerTitle: '',
-          headerLeft: () => (
-            <MaterialIcons
-              name="arrow-forward"
-              size={24}
-              color="#fff"
-              onPress={() => router.back()}
-            />
-          ),
+          headerShown: false,
         }}
       />
+
+      <Animated.View
+        style={[
+          styles.backButtonContainer,
+          {
+            top: insets.top + Spacing.sm,
+            opacity: headerOpacity,
+          },
+        ]}
+      >
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => [
+            styles.backButton,
+            { backgroundColor: 'rgba(0,0,0,0.25)' },
+            pressed && styles.backButtonPressed,
+          ]}
+        >
+          <MaterialIcons name="arrow-forward" size={22} color="#fff" />
+        </Pressable>
+      </Animated.View>
 
       <Animated.ScrollView
         style={styles.scrollView}
@@ -170,5 +183,22 @@ const styles = StyleSheet.create({
     bottom: 100,
     left: Spacing.lg,
     gap: Spacing.md,
+  },
+  backButtonContainer: {
+    position: 'absolute',
+    right: Spacing.lg,
+    zIndex: 20,
+  },
+  backButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+  },
+  backButtonPressed: {
+    opacity: 0.85,
   },
 });
