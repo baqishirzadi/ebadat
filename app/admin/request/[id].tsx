@@ -47,11 +47,7 @@ export default function AdminRequestResponseScreen() {
       if (!data) {
         throw new Error('Request not found');
       }
-      setRequest({
-        ...data,
-        createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
-        answeredAt: data.answeredAt ? new Date(data.answeredAt) : undefined,
-      });
+      setRequest(data);
       if (data.response) {
         setResponse(data.response);
       }
@@ -91,7 +87,11 @@ export default function AdminRequestResponseScreen() {
       ]);
     } catch (error) {
       console.error('Failed to submit response:', error);
-      Alert.alert('خطا', 'در ثبت پاسخ خطایی رخ داد');
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'در ثبت پاسخ خطایی رخ داد';
+      Alert.alert('خطا', message);
     } finally {
       setSubmitting(false);
     }
@@ -195,7 +195,7 @@ export default function AdminRequestResponseScreen() {
           <View style={styles.cardHeader}>
             <MaterialIcons name="message" size={20} color={theme.tint} />
             <CenteredText style={[styles.cardTitle, { color: theme.text }]}>
-              متن درخواست
+              متن درخواست متقاضی
             </CenteredText>
           </View>
           <CenteredText style={[styles.messageText, { color: theme.text }]}>
@@ -260,7 +260,7 @@ export default function AdminRequestResponseScreen() {
               multiline
               numberOfLines={10}
               textAlignVertical="top"
-              textAlign="right"
+              textAlign="center"
             />
           </View>
         </View>
@@ -340,13 +340,16 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
   metaChip: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
@@ -359,6 +362,7 @@ const styles = StyleSheet.create({
   categoryBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
@@ -392,7 +396,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: Spacing.md,
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
+    textAlign: 'center',
   },
   dateText: {
     fontSize: Typography.ui.caption,
@@ -437,7 +441,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     fontFamily: 'Vazirmatn',
     minHeight: 200,
-    textAlign: 'right',
+    textAlign: 'center',
   },
   submitButton: {
     flexDirection: 'row',

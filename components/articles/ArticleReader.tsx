@@ -65,6 +65,7 @@ const CATEGORY_COLORS: Record<string, { primary: string; secondary: string; acce
 /**
  * Parse HTML and convert to React Native components
  * Simple and robust parser for h2, p, strong, em tags
+ * Fixed to prevent paragraph duplication
  */
 function parseHTML(html: string, categoryColor: string, themeText: string): React.ReactNode[] {
   const elements: React.ReactNode[] = [];
@@ -80,157 +81,75 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       .trim()
       .toLowerCase();
 
-  const dedupeConsecutive = (items: string[]): string[] => {
-    const result: string[] = [];
-    let last = '';
-    items.forEach((item) => {
-      const normalized = normalizeParagraph(item);
-      if (!normalized) return;
-      if (normalized === last) return;
-      result.push(item);
-      last = normalized;
-    });
-    return result;
-  };
-
-  const seenParagraphs = new Set<string>();
-  const shouldSkipParagraph = (text: string): boolean => {
-    const normalized = normalizeParagraph(text);
-    if (!normalized) return true;
-    // Only de-duplicate meaningful paragraphs (avoid short phrases)
-    if (normalized.length < 40) {
-      return false;
-    }
-    if (seenParagraphs.has(normalized)) {
-      return true;
-    }
-    seenParagraphs.add(normalized);
-    return false;
-  };
-
-  // First, extract all h2 headings with their content
+  // Extract all h2 headings and p paragraphs with their positions
+  const items: Array<{ type: 'h2' | 'p'; content: string; position: number }> = [];
+  
+  // Find all h2 headings
   const h2Regex = /<h2>(.*?)<\/h2>/gi;
-  const h2Matches: Array<{ index: number; content: string }> = [];
   let h2Match;
-  
   while ((h2Match = h2Regex.exec(normalizedHtml)) !== null) {
-    h2Matches.push({
-      index: h2Match.index,
+    items.push({
+      type: 'h2',
       content: h2Match[1].replace(/<[^>]*>/g, '').trim(), // Strip inner tags
+      position: h2Match.index,
     });
   }
-
-  // Split HTML by h2 tags
-  let processedHtml = normalizedHtml;
-  const sections: Array<{ type: 'heading' | 'content'; text: string }> = [];
   
-  let lastIndex = 0;
-  h2Matches.forEach((h2) => {
-    // Content before heading
-    if (h2.index > lastIndex) {
-      const content = processedHtml.substring(lastIndex, h2.index).trim();
-      if (content) {
-        sections.push({ type: 'content', text: content });
-      }
-    }
-    
-    // Heading
-    sections.push({ type: 'heading', text: h2.content });
-    
-    lastIndex = h2Regex.lastIndex;
-  });
-  
-  // Remaining content
-  if (lastIndex < processedHtml.length) {
-    const content = processedHtml.substring(lastIndex).trim();
-    if (content) {
-      sections.push({ type: 'content', text: content });
-    }
+  // Find all p paragraphs
+  const pRegex = /<p>(.*?)<\/p>/gi;
+  let pMatch;
+  while ((pMatch = pRegex.exec(normalizedHtml)) !== null) {
+    items.push({
+      type: 'p',
+      content: pMatch[1].trim(), // Keep inner HTML for formatting
+      position: pMatch.index,
+    });
   }
-
-  // Process sections
-  sections.forEach((section) => {
-    if (section.type === 'heading') {
+  
+  // Sort by position to maintain order
+  items.sort((a, b) => a.position - b.position);
+  
+  // Process deduplication
+  const seenParagraphs = new Set<string>();
+  
+  // Process items in order
+  items.forEach((item) => {
+    if (item.type === 'h2') {
+      // Render heading
       elements.push(
         <View key={key++} style={styles.headingContainer}>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
           <Text style={[styles.heading, { color: categoryColor }]}>
-            {section.text}
+            {item.content}
           </Text>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
         </View>
       );
     } else {
-      // Parse paragraph content
-      const paragraphs = dedupeConsecutive(
-        section.text
-        .replace(/<h[1-6][^>]*>.*?<\/h[1-6]>/gi, '')
-        .split(/<\/p>\s*<p>/gi)
-        .map(p => 
-          p.replace(/^<p>|<\/p>$/gi, '').trim()
-        )
-        .filter(p => p.length > 0)
-      );
+      // Process paragraph
+      const normalized = normalizeParagraph(item.content);
+      if (normalized.length < 10) return; // Skip very short paragraphs
+      if (normalized.length >= 40 && seenParagraphs.has(normalized)) return; // Skip duplicates
+      seenParagraphs.add(normalized);
+      
+      // Parse inline formatting (strong, em)
+      const paraElements: React.ReactNode[] = [];
+      let paraKey = 0;
+      const textParts: React.ReactNode[] = [];
+      let inStrong = false;
+      let inEm = false;
 
-      paragraphs.forEach((paraHtml) => {
-        if (shouldSkipParagraph(paraHtml)) {
-          return;
-        }
-        const paraElements: React.ReactNode[] = [];
-        let paraKey = 0;
-        
-        // Process text with inline tags
-        const textParts: React.ReactNode[] = [];
-        let currentText = '';
-        let inStrong = false;
-        let inEm = false;
-
-        // Simple state machine for parsing
-        const cleanedParaHtml = paraHtml.replace(/<(?!\/?(strong|em)\b)[^>]+>/gi, '');
-        const tagRegex = /<\/?(strong|em|p)>/gi;
-        let lastPos = 0;
-        let tagMatch;
-        
-        while ((tagMatch = tagRegex.exec(cleanedParaHtml)) !== null) {
-          // Text before tag
-          if (tagMatch.index > lastPos) {
-            const text = cleanedParaHtml.substring(lastPos, tagMatch.index);
-            if (text.trim()) {
-              if (inStrong) {
-                textParts.push(
-                  <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
-                    {text}
-                  </Text>
-                );
-              } else if (inEm) {
-                textParts.push(
-                  <Text key={paraKey++} style={[styles.emText, { color: themeText }]}>
-                    {text}
-                  </Text>
-                );
-              } else {
-                textParts.push(text);
-              }
-            }
-          }
-          
-          // Handle tag
-          const tagName = tagMatch[1].toLowerCase();
-          const isClosing = tagMatch[0].startsWith('</');
-          
-          if (tagName === 'strong') {
-            inStrong = !isClosing;
-          } else if (tagName === 'em') {
-            inEm = !isClosing;
-          }
-          
-          lastPos = tagMatch.index + tagMatch[0].length;
-        }
-        
-        // Remaining text
-        if (lastPos < cleanedParaHtml.length) {
-          const text = cleanedParaHtml.substring(lastPos).trim();
-          if (text) {
+      // Simple state machine for parsing inline tags
+      const cleanedParaHtml = item.content.replace(/<(?!\/?(strong|em)\b)[^>]+>/gi, '');
+      const tagRegex = /<\/?(strong|em)>/gi;
+      let lastPos = 0;
+      let tagMatch;
+      
+      while ((tagMatch = tagRegex.exec(cleanedParaHtml)) !== null) {
+        // Text before tag
+        if (tagMatch.index > lastPos) {
+          const text = cleanedParaHtml.substring(lastPos, tagMatch.index);
+          if (text.trim()) {
             if (inStrong) {
               textParts.push(
                 <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
@@ -249,22 +168,56 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
           }
         }
         
-        if (textParts.length > 0) {
-          paraElements.push(
-            <Text key={paraKey++} style={[styles.paragraphText, { color: themeText }]}>
-              {textParts}
-            </Text>
-          );
+        // Handle tag
+        const tagName = tagMatch[1].toLowerCase();
+        const isClosing = tagMatch[0].startsWith('</');
+        
+        if (tagName === 'strong') {
+          inStrong = !isClosing;
+        } else if (tagName === 'em') {
+          inEm = !isClosing;
         }
         
-        if (paraElements.length > 0) {
-          elements.push(
-            <View key={key++} style={styles.paragraph}>
-              {paraElements}
-            </View>
-          );
+        lastPos = tagMatch.index + tagMatch[0].length;
+      }
+      
+      // Remaining text
+      if (lastPos < cleanedParaHtml.length) {
+        const text = cleanedParaHtml.substring(lastPos).trim();
+        if (text) {
+          if (inStrong) {
+            textParts.push(
+              <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
+                {text}
+              </Text>
+            );
+          } else if (inEm) {
+            textParts.push(
+              <Text key={paraKey++} style={[styles.emText, { color: themeText }]}>
+                {text}
+              </Text>
+            );
+          } else {
+            textParts.push(text);
+          }
         }
-      });
+      }
+      
+      if (textParts.length > 0) {
+        paraElements.push(
+          <Text key={paraKey++} style={[styles.paragraphText, { color: themeText }]}>
+            {textParts}
+          </Text>
+        );
+      }
+      
+      if (paraElements.length > 0) {
+        elements.push(
+          <View key={key++} style={styles.paragraph}>
+            {paraElements}
+          </View>
+        );
+      }
     }
   });
 
@@ -272,19 +225,16 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
     return elements;
   }
 
+  // Fallback: render as plain text if no structured content found
   const fallbackPlain = normalizedHtml.replace(/<[^>]*>/g, '');
-  const fallbackParagraphs = dedupeConsecutive(
-    fallbackPlain
-      .split(/\n\s*\n/)
-      .map((p) => p.trim())
-      .filter(Boolean)
-  );
+  const fallbackParagraphs = fallbackPlain
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0);
 
   return [
-    <Text key={0} style={[styles.bodyText, { color: '#1a1a1a' }]}>
-      {fallbackParagraphs
-        .filter((p) => !shouldSkipParagraph(p))
-        .join('\n\n')}
+    <Text key={0} style={[styles.bodyText, { color: themeText }]}>
+      {fallbackParagraphs.join('\n\n')}
     </Text>,
   ];
 }

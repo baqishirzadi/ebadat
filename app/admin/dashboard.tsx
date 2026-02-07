@@ -34,7 +34,7 @@ export default function AdminDashboardScreen() {
   const [filteredRequests, setFilteredRequests] = useState<DuaRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<RequestStatus | 'all'>('all');
+  const [statusFilter, setStatusFilter] = useState<RequestStatus | 'all'>('pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -48,6 +48,8 @@ export default function AdminDashboardScreen() {
 
   useEffect(() => {
     loadRequests();
+    const interval = setInterval(loadRequests, 30000);
+    return () => clearInterval(interval);
   }, [statusFilter]);
 
   useEffect(() => {
@@ -81,18 +83,23 @@ export default function AdminDashboardScreen() {
 
       setErrorMessage(null);
       const loadedRequests = await fetchAdminRequests(statusFilter);
-      setRequests(
-        loadedRequests.map((row) => ({
-          ...row,
-          createdAt: row.createdAt ? new Date(row.createdAt) : new Date(),
-          answeredAt: row.answeredAt ? new Date(row.answeredAt) : undefined,
-        }))
-      );
+      setRequests(loadedRequests);
     } catch (error) {
-      const message =
-        error instanceof Error && /network request failed|failed to fetch/i.test(error.message)
-          ? 'خطا در اتصال به سرور. لطفاً اینترنت را بررسی کنید.'
-          : 'خطا در بارگذاری درخواست‌ها';
+      const message = (() => {
+        if (error instanceof Error) {
+          const msg = error.message || '';
+          if (/ADMIN_UNAUTHORIZED/i.test(msg)) {
+            return 'دسترسی غیرمجاز. لطفاً PIN ادمین را بررسی کنید.';
+          }
+          if (/ADMIN_FUNCTION_URL_MISSING/i.test(msg)) {
+            return 'آدرس سرور پنل مدیریت تنظیم نشده است.';
+          }
+          if (/network request failed|failed to fetch/i.test(msg)) {
+            return 'خطا در اتصال به سرور. لطفاً اینترنت را بررسی کنید.';
+          }
+        }
+        return 'خطا در بارگذاری درخواست‌ها';
+      })();
       setErrorMessage(message);
       if (__DEV__) {
         console.warn('Failed to load requests:', error);
@@ -137,9 +144,10 @@ export default function AdminDashboardScreen() {
   };
 
   const renderRequest = ({ item }: { item: DuaRequest }) => (
-    <Pressable onPress={() => router.push(`/admin/request/${item.id}`)}>
-      <RequestCard request={item} />
-    </Pressable>
+    <RequestCard
+      request={item}
+      onPress={() => router.push(`/admin/request/${item.id}`)}
+    />
   );
 
   if (loading) {
@@ -212,7 +220,7 @@ export default function AdminDashboardScreen() {
           placeholderTextColor={theme.textSecondary}
           value={searchQuery}
           onChangeText={setSearchQuery}
-          textAlign="right"
+          textAlign="center"
         />
         {searchQuery.length > 0 && (
           <Pressable onPress={() => setSearchQuery('')}>

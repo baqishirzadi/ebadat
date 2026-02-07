@@ -35,7 +35,7 @@ export default function DuaRequestsScreen() {
   const renderRequest = ({ item }: { item: any }) => <RequestCard request={item} />;
 
   const renderEmpty = () => (
-    <View style={styles.emptyContainer}>
+      <View style={styles.emptyContainer}>
       <MaterialIcons name="inbox" size={64} color={theme.textSecondary} />
       <CenteredText style={[styles.emptyTitle, { color: theme.text }]}>
         درخواستی وجود ندارد
@@ -164,7 +164,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#fff',
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
   },
   headerTitleContainer: {
     position: 'absolute',
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     lineHeight: 20,
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
+    textAlign: 'center',
   },
   listContent: {
     padding: Spacing.md,
@@ -212,9 +211,9 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: Typography.ui.body,
-    textAlign: 'center',
     marginBottom: Spacing.lg,
     fontFamily: 'Vazirmatn',
+    textAlign: 'center',
   },
   newButton: {
     flexDirection: 'row',

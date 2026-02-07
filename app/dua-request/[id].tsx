@@ -3,7 +3,7 @@
  * Shows request details and response (if answered)
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -12,7 +12,7 @@ import {
   Pressable,
   RefreshControl,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
@@ -34,6 +34,13 @@ export default function DuaRequestDetailScreen() {
   useEffect(() => {
     loadRequest();
   }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // Always refresh when screen is focused to get latest admin replies
+      handleRefresh();
+    }, [handleRefresh])
+  );
 
   const loadRequest = async () => {
     if (!id) return;
@@ -275,13 +282,16 @@ const styles = StyleSheet.create({
   },
   metaRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
   metaChip: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
@@ -294,6 +304,7 @@ const styles = StyleSheet.create({
   categoryBadge: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
@@ -316,6 +327,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
     marginBottom: Spacing.md,
+    justifyContent: 'center',
   },
   cardTitle: {
     fontSize: Typography.ui.subtitle,
@@ -327,7 +339,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: Spacing.md,
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
+    textAlign: 'center',
   },
   responseCard: {
     borderWidth: 2,
@@ -337,11 +349,12 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: Spacing.md,
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
+    textAlign: 'center',
   },
   reviewerInfo: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
     marginBottom: Spacing.sm,
   },
@@ -367,7 +380,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     lineHeight: 22,
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
+    textAlign: 'center',
   },
   bottomPadding: {
     height: Spacing.xxl,

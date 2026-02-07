@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SUPABASE_URL =
   Deno.env.get("SUPABASE_URL") ?? Deno.env.get("SB_URL");
@@ -13,21 +14,17 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
-function requireEnv() {
+function getSupabaseClient() {
   if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
     throw new Error("Missing Supabase secrets");
   }
-}
-
-async function supabaseFetch(path: string, init: RequestInit) {
-  requireEnv();
-  return fetch(`${SUPABASE_URL}${path}`, {
-    ...init,
-    headers: {
-      "apikey": SERVICE_ROLE_KEY!,
-      "Authorization": `Bearer ${SERVICE_ROLE_KEY}`,
-      "Content-Type": "application/json",
-      ...init.headers,
+  
+  // Create Supabase client with service role key
+  // Service role key automatically bypasses RLS
+  return createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false,
     },
   });
 }
@@ -40,6 +37,7 @@ serve(async (req) => {
     }
 
     const action = String(body.action);
+    const supabase = getSupabaseClient();
 
     if (action === "submit") {
       const request = body.request;
@@ -47,18 +45,18 @@ serve(async (req) => {
         return jsonResponse({ error: "Invalid request payload" }, 400);
       }
 
-      const res = await supabaseFetch("/rest/v1/dua_requests", {
-        method: "POST",
-        headers: { Prefer: "return=representation" },
-        body: JSON.stringify(request),
-      });
+      const { data, error } = await supabase
+        .from("dua_requests")
+        .insert(request)
+        .select()
+        .single();
 
-      const data = await res.json().catch(() => null);
-      if (!res.ok) {
-        return jsonResponse({ error: data || "Insert failed" }, res.status);
+      if (error) {
+        console.error("Submit error:", error);
+        return jsonResponse({ error: error.message || "Insert failed" }, 500);
       }
 
-      return jsonResponse({ request: Array.isArray(data) ? data[0] : data });
+      return jsonResponse({ request: data });
     }
 
     if (action === "list") {
@@ -67,15 +65,19 @@ serve(async (req) => {
         return jsonResponse({ error: "Missing user_id" }, 400);
       }
 
-      const res = await supabaseFetch(
-        `/rest/v1/dua_requests?user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc&limit=100`,
-        { method: "GET" }
-      );
-      const data = await res.json().catch(() => []);
-      if (!res.ok) {
-        return jsonResponse({ error: data || "Fetch failed" }, res.status);
+      const { data, error } = await supabase
+        .from("dua_requests")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      if (error) {
+        console.error("List error:", error);
+        return jsonResponse({ error: error.message || "Fetch failed" }, 500);
       }
-      return jsonResponse({ requests: data });
+
+      return jsonResponse({ requests: data || [] });
     }
 
     if (action === "get") {
@@ -85,15 +87,19 @@ serve(async (req) => {
         return jsonResponse({ error: "Missing user_id or id" }, 400);
       }
 
-      const res = await supabaseFetch(
-        `/rest/v1/dua_requests?id=eq.${encodeURIComponent(id)}&user_id=eq.${encodeURIComponent(userId)}&limit=1`,
-        { method: "GET" }
-      );
-      const data = await res.json().catch(() => []);
-      if (!res.ok) {
-        return jsonResponse({ error: data || "Fetch failed" }, res.status);
+      const { data, error } = await supabase
+        .from("dua_requests")
+        .select("*")
+        .eq("id", id)
+        .eq("user_id", userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Get error:", error);
+        return jsonResponse({ error: error.message || "Fetch failed" }, 500);
       }
-      return jsonResponse({ request: data?.[0] ?? null });
+
+      return jsonResponse({ request: data ?? null });
     }
 
     if (action === "metadata") {
@@ -101,27 +107,31 @@ serve(async (req) => {
       if (!userId) {
         return jsonResponse({ error: "Missing user_id" }, 400);
       }
+
       const payload = {
         user_id: userId,
         device_token: body.device_token ?? null,
         notification_enabled: body.notification_enabled ?? true,
       };
 
-      const res = await supabaseFetch("/rest/v1/user_metadata", {
-        method: "POST",
-        headers: { Prefer: "resolution=merge-duplicates" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const err = await res.text();
-        return jsonResponse({ error: err || "Metadata update failed" }, res.status);
+      const { error } = await supabase
+        .from("user_metadata")
+        .upsert(payload, { onConflict: "user_id" });
+
+      if (error) {
+        console.error("Metadata error:", error);
+        return jsonResponse({ error: error.message || "Metadata update failed" }, 500);
       }
+
       return jsonResponse({ ok: true });
     }
 
     return jsonResponse({ error: "Unknown action" }, 400);
   } catch (error) {
     console.error("dua-client error:", error);
-    return jsonResponse({ error: "Internal error" }, 500);
+    return jsonResponse({ 
+      error: "Internal error",
+      details: error instanceof Error ? error.message : String(error)
+    }, 500);
   }
 });

@@ -72,8 +72,8 @@ export default function NewDuaRequestScreen() {
       const netInfo = await NetInfo.fetch();
       const isOffline = !netInfo.isConnected || netInfo.isInternetReachable === false;
       const successMessage = isOffline
-        ? 'درخواست شما ثبت شد، اما شما آفلاین هستید. پاسخ پس از اتصال به اینترنت دریافت می‌شود.'
-        : 'درخواست شما با موفقیت ارسال شد. در صورت امکان، پاسخ معنوی خودکار نیز برای شما آماده می‌شود و در جزئیات درخواست قابل مشاهده است.';
+        ? 'درخواست شما ثبت شد، اما شما آفلاین هستید. پس از اتصال به اینترنت و بررسی توسط عالم، پاسخ در بخش جزئیات درخواست نمایش داده می‌شود.'
+        : 'درخواست شما با موفقیت ارسال شد. پس از بررسی توسط عالم، پاسخ در بخش جزئیات همان درخواست قابل مشاهده خواهد بود.';
 
       Alert.alert(
         'موفق',
@@ -326,7 +326,6 @@ const styles = StyleSheet.create({
   genderHint: {
     marginTop: Spacing.xs,
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
     fontFamily: 'Vazirmatn',
   },
   inputWrapper: {
@@ -377,7 +376,7 @@ const styles = StyleSheet.create({
   },
   anonymityText: {
     flex: 1,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   anonymityTitle: {
     fontSize: Typography.ui.body,

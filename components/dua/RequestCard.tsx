@@ -15,9 +15,17 @@ import CenteredText from '@/components/CenteredText';
 
 interface RequestCardProps {
   request: DuaRequest;
+  onPress?: () => void;
+  disableNavigation?: boolean;
+  showArrow?: boolean;
 }
 
-export function RequestCard({ request }: RequestCardProps) {
+export function RequestCard({
+  request,
+  onPress,
+  disableNavigation,
+  showArrow = true,
+}: RequestCardProps) {
   const { theme } = useApp();
   const router = useRouter();
 
@@ -33,16 +41,23 @@ export function RequestCard({ request }: RequestCardProps) {
     });
   };
 
+  const handlePress =
+    onPress ??
+    (disableNavigation
+      ? undefined
+      : () => router.push(`/dua-request/${request.id}`));
+
   return (
     <Pressable
-      onPress={() => router.push(`/dua-request/${request.id}`)}
+      onPress={handlePress}
+      disabled={!handlePress}
       style={({ pressed }) => [
         styles.container,
         {
           backgroundColor: theme.card,
           borderColor: theme.cardBorder,
         },
-        pressed && styles.pressed,
+        pressed && handlePress && styles.pressed,
       ]}
     >
       {/* Header */}
@@ -79,7 +94,14 @@ export function RequestCard({ request }: RequestCardProps) {
       </View>
 
       {/* Arrow */}
-      <MaterialIcons name="chevron-left" size={20} color={theme.icon} style={styles.arrow} />
+      {showArrow && (
+        <MaterialIcons
+          name="chevron-left"
+          size={20}
+          color={theme.icon}
+          style={styles.arrow}
+        />
+      )}
     </Pressable>
   );
 }
@@ -95,14 +117,15 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: Spacing.sm,
+    gap: Spacing.xs,
   },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
   },
   category: {
@@ -113,12 +136,12 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     marginBottom: Spacing.sm,
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
+    textAlign: 'center',
   },
   footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
   },
   date: {
     fontSize: Typography.ui.caption,

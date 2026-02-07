@@ -89,27 +89,29 @@ export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
   fajr: {
     enabled: true,
     playSound: true,
-    selectedVoice: 'barakatullah',
+    // Use Sheikh Ali Ahmed Mulla voice metadata for consistency,
+    // though runtime playback always uses the dedicated Fajr Adhan file.
+    selectedVoice: 'sheikh_ali_ahmed_mulla',
   },
   
   // Others: Silent notifications only (per requirements)
   dhuhr: {
-    enabled: true,
+    enabled: false,
     playSound: false,
     selectedVoice: 'barakatullah',
   },
   asr: {
-    enabled: true,
+    enabled: false,
     playSound: false,
     selectedVoice: 'barakatullah',
   },
   maghrib: {
-    enabled: true,
+    enabled: false,
     playSound: false,
     selectedVoice: 'barakatullah',
   },
   isha: {
-    enabled: true,
+    enabled: false,
     playSound: false,
     selectedVoice: 'barakatullah',
   },
@@ -156,6 +158,10 @@ function migratePreferences(preferences: any): AdhanPreferences {
       };
     }
   }
+
+  // Enforce Fajr default on + sound (critical requirement)
+  migrated.fajr.enabled = true;
+  migrated.fajr.playSound = true;
 
   return migrated;
 }

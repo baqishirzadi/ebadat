@@ -106,6 +106,80 @@ serve(async (req) => {
         const err = await res.text();
         return jsonResponse({ error: err || "Update failed" }, res.status);
       }
+
+      // Best-effort: send push notification to user when request is answered
+      try {
+        // 1) Fetch the updated request to get user_id
+        const reqRes = await supabaseFetch(
+          `/rest/v1/dua_requests?id=eq.${encodeURIComponent(id)}&select=user_id&limit=1`,
+          { method: "GET" }
+        );
+        const reqData = await reqRes.json().catch(() => []);
+        const requestRow = Array.isArray(reqData) ? reqData[0] : null;
+        const userId: string | undefined = requestRow?.user_id;
+
+        if (!reqRes.ok || !userId) {
+          console.warn("dua-admin: could not resolve user_id for notification");
+          return jsonResponse({ ok: true });
+        }
+
+        // 2) Fetch user metadata to get device_token and notification_enabled
+        const metaRes = await supabaseFetch(
+          `/rest/v1/user_metadata?user_id=eq.${encodeURIComponent(
+            userId,
+          )}&select=device_token,notification_enabled&limit=1`,
+          { method: "GET" }
+        );
+        const metaData = await metaRes.json().catch(() => []);
+        const metaRow = Array.isArray(metaData) ? metaData[0] : null;
+        const deviceToken: string | undefined = metaRow?.device_token;
+        const notificationEnabled: boolean =
+          metaRow?.notification_enabled !== false;
+
+        if (!metaRes.ok || !deviceToken || !notificationEnabled) {
+          console.log(
+            "dua-admin: no device token or notifications disabled for user",
+            userId,
+          );
+          return jsonResponse({ ok: true });
+        }
+
+        // 3) Send push notification via Expo Push API
+        const pushRes = await fetch("https://exp.host/--/api/v2/push/send", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            to: deviceToken,
+            title: "پاسخ به درخواست شما",
+            body: "پاسخ به درخواست شما آماده است. برای مشاهده پاسخ، اینجا را بزنید.",
+            sound: "default",
+            data: {
+              type: "dua_response",
+              requestId: id,
+              userId,
+            },
+          }),
+        });
+
+        if (!pushRes.ok) {
+          const pushErr = await pushRes.text().catch(() => "");
+          console.error(
+            "dua-admin: Expo push error",
+            pushRes.status,
+            pushErr?.slice(0, 500),
+          );
+        } else {
+          const result = await pushRes.json().catch(() => null);
+          console.log("dua-admin: Expo push result", result);
+        }
+      } catch (notifyError) {
+        console.error("dua-admin: failed to send notification", notifyError);
+        // Do not fail the admin update if notification sending fails
+      }
+
       return jsonResponse({ ok: true });
     }
 

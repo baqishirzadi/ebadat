@@ -4,12 +4,18 @@
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import Constants from 'expo-constants';
 
 // Supabase configuration
 // For production, these must be set via environment variables (EXPO_PUBLIC_*)
+const extra = (Constants.expoConfig?.extra || Constants.manifest?.extra || {}) as {
+  supabaseUrl?: string;
+  supabaseAnonKey?: string;
+};
+
 const supabaseConfig = {
-  url: process.env.EXPO_PUBLIC_SUPABASE_URL || '',
-  anonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || '',
+  url: process.env.EXPO_PUBLIC_SUPABASE_URL || extra.supabaseUrl || '',
+  anonKey: process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || extra.supabaseAnonKey || '',
 };
 
 let supabaseClient: SupabaseClient | null = null;

@@ -45,9 +45,51 @@ export async function askAutonomousDua(
     });
 
     if (!response.ok) {
-      const text = await response.text().catch(() => '');
-      console.warn('[DuaAgent] Function error', response.status, text);
-      throw new Error('Dua service temporarily unavailable. Please try again.');
+      // Try to parse error response
+      let errorData: any;
+      try {
+        const errorText = await response.text();
+        errorData = JSON.parse(errorText);
+      } catch {
+        // If parsing fails, use generic error
+        errorData = { error: 'Unknown error', details: 'Could not parse error response' };
+      }
+
+      // Log full error details
+      console.warn('[DuaAgent] Function error', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData.error,
+        details: errorData.details,
+        userMessage: errorData.userMessage,
+      });
+
+      // Handle specific error cases
+      if (response.status === 429) {
+        // Quota exceeded - use user-friendly message if available
+        const message = errorData.userMessage || 
+          'سرویس پاسخ خودکار در حال حاضر در دسترس نیست. لطفاً بعداً تلاش کنید.';
+        throw new Error(message);
+      }
+
+      if (response.status === 400) {
+        // Validation error
+        const message = errorData.details || errorData.error || 'درخواست نامعتبر است.';
+        throw new Error(message);
+      }
+
+      if (response.status === 503) {
+        // Service unavailable
+        const message = errorData.details || 'سرویس در حال حاضر در دسترس نیست. لطفاً بعداً تلاش کنید.';
+        throw new Error(message);
+      }
+
+      // For other errors, use userMessage if available, otherwise details, otherwise generic
+      const errorMessage = errorData.userMessage || 
+        errorData.details || 
+        errorData.error || 
+        'سرویس پاسخ خودکار در حال حاضر در دسترس نیست. لطفاً بعداً تلاش کنید.';
+      throw new Error(errorMessage);
     }
 
     const data = (await response.json().catch(() => null)) as
@@ -55,16 +97,22 @@ export async function askAutonomousDua(
       | null;
 
     if (!data || typeof data.reply !== 'string') {
-      throw new Error('Invalid response from dua service.');
+      throw new Error('پاسخ نامعتبر از سرویس دریافت شد.');
     }
 
     return data.reply;
   } catch (error: any) {
-    // Network or other errors
+    // If error already has a message (from above), re-throw it
+    if (error instanceof Error && error.message) {
+      console.warn('[DuaAgent] Error calling dua-autonomous:', error.message);
+      throw error;
+    }
+
+    // Network or other unexpected errors
     const msg =
       typeof error?.message === 'string'
         ? error.message
-        : 'Failed to contact dua service.';
+        : 'ارتباط با سرویس برقرار نشد. لطفاً اتصال اینترنت خود را بررسی کنید.';
     console.warn('[DuaAgent] Error calling dua-autonomous:', msg);
     throw new Error(msg);
   }

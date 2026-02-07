@@ -8,8 +8,6 @@ import { DuaRequest, DuaCategory, UserGender } from '@/types/dua';
 import * as duaService from '@/utils/duaService';
 import * as duaStorage from '@/utils/duaStorage';
 import * as duaSync from '@/utils/duaSync';
-import NetInfo from '@react-native-community/netinfo';
-import { askAutonomousDua } from '@/utils/duaAgent';
 
 interface DuaState {
   requests: DuaRequest[];
@@ -164,41 +162,6 @@ export function DuaProvider({ children }: { children: ReactNode }) {
 
         // Try to sync if online
         duaSync.syncIfOnline();
-
-        // Try to get an autonomous spiritual reply (best-effort, non-blocking for storage)
-        // Language: use Dari ('fa') as primary app language for now.
-        try {
-          const netInfo = await NetInfo.fetch();
-          const isOffline = !netInfo.isConnected || netInfo.isInternetReachable === false;
-          if (isOffline) {
-            // Skip remote call when offline
-            if (__DEV__) {
-              console.warn('[DuaContext] Offline: skipping autonomous dua call');
-            }
-            return request;
-          }
-
-          const reply = await askAutonomousDua({
-            message,
-            gender: gender === 'female' ? 'female' : 'male',
-            language: 'fa',
-            requestId: request.id,
-          });
-
-          const answeredRequest: DuaRequest = {
-            ...request,
-            status: 'answered',
-            response: reply,
-            reviewerName: 'سیدعبدالباقی شیرزادی',
-            answeredAt: new Date(),
-          };
-
-          dispatch({ type: 'UPDATE_REQUEST', payload: answeredRequest });
-          await duaStorage.cacheRequest(answeredRequest);
-        } catch (agentError) {
-          // If autonomous dua fails (offline or server error), keep request as pending
-          console.warn('[DuaContext] Autonomous dua failed, keeping request pending:', agentError);
-        }
 
         return request;
       } catch (error) {

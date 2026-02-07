@@ -6,6 +6,7 @@
 import { Platform } from 'react-native';
 import * as duaStorage from './duaStorage';
 import { getSupabaseClient, isSupabaseConfigured } from './supabase';
+import { updateUserMetadata } from './duaService';
 
 // Conditional import - only load on native platforms, not in Expo Go
 // We also need to completely skip ALL notification logic in Expo Go (SDK 53+),
@@ -210,38 +211,14 @@ export async function registerDeviceToken(userId: string): Promise<void> {
     // Save locally
     await duaStorage.saveDeviceToken(token.data);
 
-    // Update in Supabase
-    if (isSupabaseConfigured()) {
-      try {
-        const supabase = getSupabaseClient();
-        
-        // Try to update existing record
-        const { error: updateError } = await supabase
-          .from('user_metadata')
-          .update({
-            device_token: token.data,
-            notification_enabled: true,
-          })
-          .eq('user_id', userId);
-
-        // If update fails (record doesn't exist), insert new record
-        if (updateError) {
-          const { error: insertError } = await supabase
-            .from('user_metadata')
-            .insert({
-              user_id: userId,
-              device_token: token.data,
-              notification_enabled: true,
-            });
-
-          if (insertError) {
-            console.error('Failed to create/update user metadata with device token:', insertError);
-          }
-        }
-      } catch (supabaseError: any) {
-        console.error('Failed to update Supabase with device token:', supabaseError);
-        // Continue anyway - token is saved locally
-      }
+    // Update via Edge Function (bypasses RLS)
+    try {
+      await updateUserMetadata({
+        deviceToken: token.data,
+        notificationEnabled: true,
+      });
+    } catch (metadataError: any) {
+      console.error('Failed to sync device token via Edge Function:', metadataError);
     }
   } catch (error: any) {
     console.error('Failed to register device token:', error);

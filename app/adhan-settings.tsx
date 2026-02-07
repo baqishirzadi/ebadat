@@ -34,7 +34,7 @@ const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 export default function AdhanSettingsScreen() {
   const { theme } = useApp();
-  const { state, updateAdhanPreferences } = usePrayer();
+  const { state, updateAdhanPreferences, openNotificationSettings } = usePrayer();
   const router = useRouter();
   
   const [isTestingVoice, setIsTestingVoice] = useState<AdhanVoice | null>(null);
@@ -402,6 +402,29 @@ export default function AdhanSettingsScreen() {
           </View>
         )}
 
+        {/* Error Message with Open Settings Button */}
+        {state.error && (
+          <View style={[styles.errorCard, { backgroundColor: '#ffebee', borderColor: '#f44336' }]}>
+            <View style={styles.errorContent}>
+              <MaterialIcons name="error-outline" size={24} color="#f44336" />
+              <Text style={[styles.errorText, { color: '#c62828' }]}>
+                {state.error}
+              </Text>
+            </View>
+            {(state.notificationPermission === 'blocked' || state.notificationPermission === 'denied') && (
+              <Pressable
+                onPress={openNotificationSettings}
+                style={[styles.openSettingsButton, { backgroundColor: '#1a4d3e' }]}
+              >
+                <MaterialIcons name="settings" size={20} color="#fff" />
+                <Text style={styles.openSettingsButtonText}>
+                  باز کردن تنظیمات
+                </Text>
+              </Pressable>
+            )}
+          </View>
+        )}
+
         {/* Info Note */}
         <View style={[styles.infoNote, { backgroundColor: theme.backgroundSecondary }]}>
           <MaterialIcons name="info" size={20} color="#D4AF37" />
@@ -703,5 +726,38 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
+  },
+  errorCard: {
+    margin: Spacing.md,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+  },
+  errorContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  errorText: {
+    flex: 1,
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    lineHeight: 20,
+  },
+  openSettingsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    marginTop: Spacing.xs,
+  },
+  openSettingsButtonText: {
+    fontSize: Typography.ui.body,
+    color: '#fff',
+    fontFamily: 'Vazirmatn',
+    fontWeight: '600',
   },
 });

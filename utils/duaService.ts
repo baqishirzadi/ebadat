@@ -4,15 +4,21 @@
  */
 
 import NetInfo from '@react-native-community/netinfo';
+import Constants from 'expo-constants';
 import { DuaRequest, UserMetadata } from '@/types/dua';
 import * as duaStorage from './duaStorage';
 
 /**
  * Check if online and Supabase is configured
  */
-const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || '';
+const extra = (Constants.expoConfig?.extra || Constants.manifest?.extra || {}) as {
+  supabaseUrl?: string;
+  duaClientUrl?: string;
+};
+const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || extra.supabaseUrl || '';
 const DUA_CLIENT_URL =
   process.env.EXPO_PUBLIC_DUA_CLIENT_URL ||
+  extra.duaClientUrl ||
   (SUPABASE_URL ? `${SUPABASE_URL}/functions/v1/dua-client` : '');
 
 function isAvailable(): boolean {
@@ -21,14 +27,19 @@ function isAvailable(): boolean {
 
 async function callDuaClient<T>(action: string, payload?: Record<string, unknown>): Promise<T> {
   if (!DUA_CLIENT_URL) {
-    throw new Error('Dua client function URL not configured');
+    throw new Error('DUA_CLIENT_URL_MISSING');
   }
+
   const response = await fetch(DUA_CLIENT_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action, ...payload }),
   });
+
   if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('DUA_CLIENT_UNAUTHORIZED');
+    }
     const text = await response.text().catch(() => '');
     throw new Error(text || 'Dua client request failed');
   }
@@ -177,14 +188,10 @@ export async function getUserRequests(userId: string): Promise<DuaRequest[]> {
  * Get request by ID
  */
 export async function getRequestById(requestId: string): Promise<DuaRequest | null> {
-  // Check cache first
   const cached = await duaStorage.getCachedRequestById(requestId);
-  if (cached) {
-    return cached;
-  }
-
-  if (!isAvailable() || !(await hasNetwork())) {
-    return null;
+  const online = isAvailable() && (await hasNetwork());
+  if (!online) {
+    return cached ?? null;
   }
 
   try {
@@ -192,7 +199,7 @@ export async function getRequestById(requestId: string): Promise<DuaRequest | nu
       id: requestId,
       user_id: (await duaStorage.getOrCreateUserId()),
     });
-    if (!data.request) return null;
+    if (!data.request) return cached ?? null;
     const request = rowToRequest(data.request);
     await duaStorage.cacheRequest(request);
     return request;
@@ -200,7 +207,7 @@ export async function getRequestById(requestId: string): Promise<DuaRequest | nu
     if (!isNetworkError(error)) {
       console.error('Failed to get request:', error);
     }
-    return null;
+    return cached ?? null;
   }
 }
 
