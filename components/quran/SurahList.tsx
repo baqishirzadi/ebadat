@@ -218,6 +218,7 @@ export function SurahList() {
                 </Pressable>
               )}
             </View>
+            <View style={styles.headerListSpacer} />
           </View>
         }
         contentContainerStyle={[
@@ -251,6 +252,11 @@ const styles = StyleSheet.create({
   },
   headerWrapper: {
     marginHorizontal: -Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.lg,
+  },
+  headerListSpacer: {
+    height: Spacing.md,
   },
   header: {
     paddingTop: 60,
@@ -326,7 +332,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingHorizontal: Spacing.md,
-    paddingTop: 0,
+    paddingTop: Spacing.md,
     paddingBottom: Spacing.xxl,
   },
   separator: {
@@ -344,6 +350,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+    overflow: 'hidden',
   },
   surahItemPressed: {
     opacity: 0.85,
@@ -473,8 +480,8 @@ const styles = StyleSheet.create({
   },
   continueReading: {
     position: 'absolute',
-    top: -6,
-    right: -6,
+    top: 8,
+    right: 8,
     width: 24,
     height: 24,
     borderRadius: 12,
