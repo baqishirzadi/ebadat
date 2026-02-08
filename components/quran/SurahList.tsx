@@ -159,7 +159,7 @@ export function SurahList() {
   const headerPaddingTop = insets.top;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.surahHeader }]}>
       <StatusBar style="light" backgroundColor={theme.surahHeader} />
       {/* Header is part of the list now */}
 
@@ -218,12 +218,12 @@ export function SurahList() {
                 </Pressable>
               )}
             </View>
-            <View style={styles.headerListSpacer} />
           </View>
         }
         contentContainerStyle={[
           styles.listContent,
         ]}
+        style={[styles.list, { backgroundColor: theme.background }]}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
         scrollEventThrottle={16}
         onViewableItemsChanged={handleViewableItemsChanged}
@@ -254,9 +254,6 @@ const styles = StyleSheet.create({
     marginHorizontal: -Spacing.md,
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.lg,
-  },
-  headerListSpacer: {
-    height: Spacing.md,
   },
   header: {
     paddingTop: 60,
@@ -330,9 +327,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
   },
+  list: {
+    flex: 1,
+  },
   listContent: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.md,
+    paddingTop: 0,
     paddingBottom: Spacing.xxl,
   },
   separator: {
