@@ -49,8 +49,9 @@ export default function NaatNowPlayingScreen() {
         <View style={styles.motif}>
           <MaterialIcons name="auto-awesome" size={32} color="#d4af37" />
         </View>
-        <Text style={styles.title}>{player.current.title}</Text>
-        <Text style={styles.subtitle}>{player.current.reciterName}</Text>
+        <Text style={styles.title}>{player.current.title_fa}</Text>
+        <Text style={styles.psTitle}>{player.current.title_ps}</Text>
+        <Text style={styles.subtitle}>{player.current.reciter_name}</Text>
         {player.current.isDownloaded && <Text style={styles.offlineBadge}>آفلاین</Text>}
       </View>
 
@@ -107,6 +108,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'Amiri',
     fontSize: Typography.ui.display,
+    textAlign: 'center',
+  },
+  psTitle: {
+    marginTop: Spacing.xs,
+    color: '#e1f1ea',
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.body,
     textAlign: 'center',
   },
   subtitle: {

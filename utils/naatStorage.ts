@@ -2,24 +2,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 import { Naat, NaatDraft } from '@/types/naat';
 
-const STORAGE_KEY = '@ebadat/naat_items_v1';
-const NAAT_DIR = `${FileSystem.documentDirectory ?? ''}naat/`;
+const CATALOG_KEY = '@ebadat/naat_catalog_v2';
+const LOCAL_KEY = '@ebadat/naat_local_v2';
+const NAAT_DIR = `${FileSystem.documentDirectory ?? ''}naats/`;
 
-type StoredNaat = Omit<Naat, 'createdAt'> & { createdAt: string };
-
-function serializeNaat(naat: Naat): StoredNaat {
-  return {
-    ...naat,
-    createdAt: naat.createdAt.toISOString(),
+type StoredCatalog = Omit<Naat, 'localFileUri' | 'isDownloaded' | 'downloadProgress' | 'lastPositionMillis'>[];
+type StoredLocal = {
+  [id: string]: {
+    localFileUri?: string;
+    isDownloaded?: boolean;
+    downloadProgress?: number;
+    lastPositionMillis?: number;
+    duration_seconds?: number | null;
+    file_size_mb?: number | null;
   };
-}
-
-function deserializeNaat(naat: StoredNaat): Naat {
-  return {
-    ...naat,
-    createdAt: new Date(naat.createdAt),
-  };
-}
+};
 
 export async function ensureNaatDirectory(): Promise<void> {
   if (!NAAT_DIR) return;
@@ -37,84 +34,90 @@ export function getNaatDirectory(): string {
   return NAAT_DIR;
 }
 
-export async function loadNaats(): Promise<Naat[]> {
+export async function loadCatalog(): Promise<StoredCatalog> {
   try {
-    const raw = await AsyncStorage.getItem(STORAGE_KEY);
+    const raw = await AsyncStorage.getItem(CATALOG_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as StoredNaat[];
-    return parsed.map(deserializeNaat).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return JSON.parse(raw) as StoredCatalog;
   } catch {
     return [];
   }
 }
 
-export async function saveNaats(naats: Naat[]): Promise<void> {
-  const payload = naats.map(serializeNaat);
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+export async function saveCatalog(items: StoredCatalog): Promise<void> {
+  await AsyncStorage.setItem(CATALOG_KEY, JSON.stringify(items));
 }
 
-export async function addNaat(draft: NaatDraft): Promise<Naat> {
-  const naats = await loadNaats();
-  const now = new Date();
-  const naat: Naat = {
-    id: `${now.getTime()}-${Math.random().toString(36).slice(2, 8)}`,
-    title: draft.title.trim(),
-    reciterName: draft.reciterName.trim(),
-    language: draft.language,
-    youtubeUrl: draft.youtubeUrl.trim(),
-    extractedAudioUrl: draft.extractedAudioUrl?.trim() || undefined,
-    duration: undefined,
-    localFileUri: undefined,
-    isDownloaded: false,
-    playCount: 0,
-    createdAt: now,
-  };
-  const updated = [naat, ...naats];
-  await saveNaats(updated);
-  return naat;
+export async function loadLocalMeta(): Promise<StoredLocal> {
+  try {
+    const raw = await AsyncStorage.getItem(LOCAL_KEY);
+    if (!raw) return {};
+    return JSON.parse(raw) as StoredLocal;
+  } catch {
+    return {};
+  }
 }
 
-export async function updateNaat(id: string, patch: Partial<Naat>): Promise<Naat | null> {
-  const naats = await loadNaats();
-  const index = naats.findIndex((n) => n.id === id);
-  if (index === -1) return null;
-  const updated = {
-    ...naats[index],
-    ...patch,
-  };
-  naats[index] = updated;
-  await saveNaats(naats);
-  return updated;
+export async function saveLocalMeta(meta: StoredLocal): Promise<void> {
+  await AsyncStorage.setItem(LOCAL_KEY, JSON.stringify(meta));
 }
 
-export async function deleteNaat(id: string): Promise<void> {
-  const naats = await loadNaats();
-  const next = naats.filter((n) => n.id !== id);
-  await saveNaats(next);
+export function mergeCatalogWithLocal(catalog: StoredCatalog, local: StoredLocal): Naat[] {
+  return catalog.map((item) => {
+    const localMeta = local[item.id] || {};
+    return {
+      ...item,
+      localFileUri: localMeta.localFileUri,
+      isDownloaded: !!localMeta.isDownloaded,
+      downloadProgress: localMeta.downloadProgress,
+      lastPositionMillis: localMeta.lastPositionMillis,
+      duration_seconds: localMeta.duration_seconds ?? item.duration_seconds,
+      file_size_mb: localMeta.file_size_mb ?? item.file_size_mb,
+    };
+  });
 }
 
-export async function incrementPlayCount(id: string): Promise<void> {
-  const naats = await loadNaats();
-  const index = naats.findIndex((n) => n.id === id);
-  if (index === -1) return;
-  naats[index] = { ...naats[index], playCount: (naats[index].playCount || 0) + 1 };
-  await saveNaats(naats);
+export async function upsertLocalMeta(id: string, patch: StoredLocal[string]): Promise<void> {
+  const local = await loadLocalMeta();
+  local[id] = { ...local[id], ...patch };
+  await saveLocalMeta(local);
+}
+
+export async function deleteLocalMeta(id: string): Promise<void> {
+  const local = await loadLocalMeta();
+  if (local[id]) {
+    delete local[id];
+    await saveLocalMeta(local);
+  }
 }
 
 export async function verifyDownloads(): Promise<void> {
-  const naats = await loadNaats();
+  const local = await loadLocalMeta();
   let changed = false;
-  for (let i = 0; i < naats.length; i++) {
-    const naat = naats[i];
-    if (naat.localFileUri) {
-      const info = await FileSystem.getInfoAsync(naat.localFileUri);
+  const ids = Object.keys(local);
+  for (const id of ids) {
+    const meta = local[id];
+    if (meta.localFileUri) {
+      const info = await FileSystem.getInfoAsync(meta.localFileUri);
       if (!info.exists) {
-        naats[i] = { ...naat, localFileUri: undefined, isDownloaded: false };
+        local[id] = { ...meta, localFileUri: undefined, isDownloaded: false };
         changed = true;
       }
     }
   }
   if (changed) {
-    await saveNaats(naats);
+    await saveLocalMeta(local);
   }
+}
+
+export function createDraftPayload(draft: NaatDraft): Partial<Naat> {
+  return {
+    title_fa: draft.title_fa.trim(),
+    title_ps: draft.title_ps.trim(),
+    reciter_name: draft.reciter_name.trim(),
+    description: draft.description?.trim() || null,
+    audio_url: draft.audio_url.trim(),
+    duration_seconds: draft.duration_seconds ?? null,
+    file_size_mb: draft.file_size_mb ?? null,
+  };
 }

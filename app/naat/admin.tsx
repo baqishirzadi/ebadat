@@ -10,46 +10,62 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useNaat } from '@/context/NaatContext';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
-import { NaatLanguage } from '@/types/naat';
+import { NaatDraft } from '@/types/naat';
 
 export default function NaatAdminScreen() {
   const { theme } = useApp();
   const router = useRouter();
-  const { naats, addItem, editItem, removeItem } = useNaat();
+  const { naats, createItem, updateItem, removeItem } = useNaat();
 
-  const [title, setTitle] = useState('');
+  const [titleFa, setTitleFa] = useState('');
+  const [titlePs, setTitlePs] = useState('');
   const [reciterName, setReciterName] = useState('');
-  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [description, setDescription] = useState('');
   const [audioUrl, setAudioUrl] = useState('');
-  const [language, setLanguage] = useState<NaatLanguage>('fa');
+  const [durationSeconds, setDurationSeconds] = useState('');
+  const [fileSizeMb, setFileSizeMb] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const handleAdd = async () => {
-    if (!title.trim() || !reciterName.trim() || !youtubeUrl.trim()) {
+    if (!titleFa.trim() || !titlePs.trim() || !reciterName.trim() || !audioUrl.trim()) {
       Alert.alert('خطا', 'تمام فیلدها ضروری است');
       return;
     }
+    if (!audioUrl.includes('supabase') || !audioUrl.includes('/storage/')) {
+      Alert.alert('خطا', 'لینک باید از Supabase Storage باشد');
+      return;
+    }
     try {
+      const payload: NaatDraft = {
+        title_fa: titleFa,
+        title_ps: titlePs,
+        reciter_name: reciterName,
+        description: description.trim() || undefined,
+        audio_url: audioUrl,
+        duration_seconds: durationSeconds ? Number(durationSeconds) : null,
+        file_size_mb: fileSizeMb ? Number(fileSizeMb) : null,
+      };
       if (editingId) {
-        await editItem(editingId, {
-          title,
-          reciterName,
-          youtubeUrl,
-          language,
-          extractedAudioUrl: audioUrl.trim() || undefined,
-        });
+        await updateItem(editingId, payload);
       } else {
-        await addItem({ title, reciterName, youtubeUrl, language, extractedAudioUrl: audioUrl.trim() || undefined });
+        await createItem(payload);
       }
-      setTitle('');
+      setTitleFa('');
+      setTitlePs('');
       setReciterName('');
-      setYoutubeUrl('');
+      setDescription('');
       setAudioUrl('');
-      setLanguage('fa');
+      setDurationSeconds('');
+      setFileSizeMb('');
       setEditingId(null);
       Alert.alert('موفق', editingId ? 'نعت به‌روزرسانی شد' : 'نعت اضافه شد');
     } catch (error) {
       console.error('Failed to save naat:', error);
+      const message = (error as Error)?.message || '';
+      if (message.includes('supabase-not-configured')) {
+        Alert.alert('خطا', 'اتصال به سرور تنظیم نشده است');
+        return;
+      }
       Alert.alert('خطا', 'ثبت نعت موفق نبود. دوباره تلاش کنید.');
     }
   };
@@ -65,12 +81,23 @@ export default function NaatAdminScreen() {
 
       <ScrollView contentContainerStyle={styles.content}>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          <Text style={[styles.noteText, { color: theme.textSecondary }]}>
+            فقط لینک مستقیم فایل صوتی از Supabase Storage را وارد کنید
+          </Text>
           <TextInput
             style={[styles.input, { color: theme.text, borderColor: theme.cardBorder }]}
-            placeholder="عنوان نعت"
+            placeholder="عنوان نعت (دری)"
             placeholderTextColor={theme.textSecondary}
-            value={title}
-            onChangeText={setTitle}
+            value={titleFa}
+            onChangeText={setTitleFa}
+            textAlign="right"
+          />
+          <TextInput
+            style={[styles.input, { color: theme.text, borderColor: theme.cardBorder }]}
+            placeholder="عنوان نعت (پښتو)"
+            placeholderTextColor={theme.textSecondary}
+            value={titlePs}
+            onChangeText={setTitlePs}
             textAlign="right"
           />
           <TextInput
@@ -83,43 +110,39 @@ export default function NaatAdminScreen() {
           />
           <TextInput
             style={[styles.input, { color: theme.text, borderColor: theme.cardBorder }]}
-            placeholder="لینک یوتیوب"
+            placeholder="توضیحات (اختیاری)"
             placeholderTextColor={theme.textSecondary}
-            value={youtubeUrl}
-            onChangeText={setYoutubeUrl}
+            value={description}
+            onChangeText={setDescription}
             textAlign="right"
           />
           <TextInput
             style={[styles.input, { color: theme.text, borderColor: theme.cardBorder }]}
-            placeholder="لینک صوتی مستقیم (اختیاری)"
+            placeholder="لینک صوتی مستقیم (Supabase Storage)"
             placeholderTextColor={theme.textSecondary}
             value={audioUrl}
             onChangeText={setAudioUrl}
             textAlign="right"
           />
-
-          <View style={styles.languageRow}>
-            {([
-              { key: 'fa', label: 'دری' },
-              { key: 'ps', label: 'پښتو' },
-              { key: 'ar', label: 'عربی' },
-            ] as const).map((item) => (
-              <Pressable
-                key={item.key}
-                onPress={() => setLanguage(item.key)}
-                style={[
-                  styles.langButton,
-                  {
-                    backgroundColor: language === item.key ? theme.tint : theme.backgroundSecondary,
-                    borderColor: theme.cardBorder,
-                  },
-                ]}
-              >
-                <Text style={[styles.langButtonText, { color: language === item.key ? '#fff' : theme.text }]}>
-                  {item.label}
-                </Text>
-              </Pressable>
-            ))}
+          <View style={styles.metaRow}>
+            <TextInput
+              style={[styles.metaInput, { color: theme.text, borderColor: theme.cardBorder }]}
+              placeholder="مدت (ثانیه)"
+              placeholderTextColor={theme.textSecondary}
+              value={durationSeconds}
+              onChangeText={setDurationSeconds}
+              keyboardType="numeric"
+              textAlign="center"
+            />
+            <TextInput
+              style={[styles.metaInput, { color: theme.text, borderColor: theme.cardBorder }]}
+              placeholder="حجم (MB)"
+              placeholderTextColor={theme.textSecondary}
+              value={fileSizeMb}
+              onChangeText={setFileSizeMb}
+              keyboardType="numeric"
+              textAlign="center"
+            />
           </View>
 
           <Pressable onPress={handleAdd} style={[styles.addButton, { backgroundColor: theme.tint }]}>
@@ -130,11 +153,13 @@ export default function NaatAdminScreen() {
             <Pressable
               onPress={() => {
                 setEditingId(null);
-                setTitle('');
+                setTitleFa('');
+                setTitlePs('');
                 setReciterName('');
-                setYoutubeUrl('');
+                setDescription('');
                 setAudioUrl('');
-                setLanguage('fa');
+                setDurationSeconds('');
+                setFileSizeMb('');
               }}
               style={[styles.cancelButton, { borderColor: theme.cardBorder }]}
             >
@@ -152,16 +177,18 @@ export default function NaatAdminScreen() {
             key={naat.id}
             onPress={() => {
               setEditingId(naat.id);
-              setTitle(naat.title);
-              setReciterName(naat.reciterName);
-              setYoutubeUrl(naat.youtubeUrl);
-              setAudioUrl(naat.extractedAudioUrl || '');
-              setLanguage(naat.language);
+              setTitleFa(naat.title_fa);
+              setTitlePs(naat.title_ps);
+              setReciterName(naat.reciter_name);
+              setDescription(naat.description || '');
+              setAudioUrl(naat.audio_url);
+              setDurationSeconds(naat.duration_seconds ? String(naat.duration_seconds) : '');
+              setFileSizeMb(naat.file_size_mb ? String(naat.file_size_mb) : '');
             }}
             style={[styles.row, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <Text style={[styles.rowTitle, { color: theme.text }]} numberOfLines={1}>
-              {naat.title}
+              {naat.title_fa}
             </Text>
             <Pressable
               onPress={(e) => {
@@ -211,6 +238,12 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     marginBottom: Spacing.lg,
   },
+  noteText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
+  },
   input: {
     borderWidth: 1,
     borderRadius: BorderRadius.md,
@@ -218,21 +251,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     marginBottom: Spacing.sm,
   },
-  languageRow: {
+  metaRow: {
     flexDirection: 'row-reverse',
     gap: Spacing.sm,
     marginBottom: Spacing.md,
   },
-  langButton: {
+  metaInput: {
     flex: 1,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.md,
     borderWidth: 1,
-    alignItems: 'center',
-  },
-  langButtonText: {
+    borderRadius: BorderRadius.md,
+    padding: Spacing.sm,
     fontFamily: 'Vazirmatn',
-    fontSize: Typography.ui.caption,
   },
   addButton: {
     flexDirection: 'row-reverse',

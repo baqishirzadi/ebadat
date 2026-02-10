@@ -3,8 +3,8 @@
  * Offline-first, car-friendly listening
  */
 
-import React, { useMemo } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, Text, ActivityIndicator } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { View, StyleSheet, ScrollView, Pressable, Text, ActivityIndicator, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -16,39 +16,69 @@ import { NaatMiniPlayer } from '@/components/naat/NaatMiniPlayer';
 
 const ADMIN_ENABLED = true;
 
+function normalizeText(input: string) {
+  return input
+    .toLowerCase()
+    .replace(/[ًٌٍَُِّْ]/g, '')
+    .replace(/[ي]/g, 'ی')
+    .replace(/[ك]/g, 'ک')
+    .replace(/[ۀة]/g, 'ه')
+    .replace(/[أإآ]/g, 'ا')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export default function NaatScreen() {
   const { theme } = useApp();
   const router = useRouter();
   const { naats, loading, player, play, pause, resume, download } = useNaat();
+  const [query, setQuery] = useState('');
+  const [selectedReciter, setSelectedReciter] = useState('همه');
 
   const progress = useMemo(() => {
     if (!player.current || player.durationMillis <= 0) return 0;
     return player.positionMillis / player.durationMillis;
   }, [player.current, player.durationMillis, player.positionMillis]);
 
+  const reciters = useMemo(() => {
+    const names = Array.from(new Set(naats.map((item) => item.reciter_name).filter(Boolean)));
+    return ['همه', ...names];
+  }, [naats]);
+
+  const filtered = useMemo(() => {
+    const q = normalizeText(query);
+    return naats.filter((item) => {
+      const matchesReciter = selectedReciter === 'همه' || item.reciter_name === selectedReciter;
+      if (!q) return matchesReciter;
+      const hay = normalizeText(`${item.title_fa} ${item.title_ps} ${item.reciter_name}`);
+      return matchesReciter && hay.includes(q);
+    });
+  }, [naats, query, selectedReciter]);
+
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <LinearGradient colors={['#173f33', '#1a4d3e', '#1f6b57']} style={styles.header}>
-        <View style={styles.headerPattern} pointerEvents="none">
-          <View style={styles.patternLine} />
-          <View style={styles.patternLine} />
-          <View style={styles.patternLine} />
-        </View>
-        <View style={styles.headerTopRow}>
-          {ADMIN_ENABLED && (
-            <Pressable onPress={() => router.push('/naat/admin')} style={styles.adminButton}>
-              <MaterialIcons name="settings" size={20} color="#fff" />
-              <Text style={styles.adminText}>مدیریت</Text>
+        <Pressable
+          onLongPress={() => ADMIN_ENABLED && router.push('/naat/admin')}
+          delayLongPress={600}
+          style={styles.headerContent}
+        >
+          <View style={styles.headerTopRow}>
+            <Pressable onPress={() => router.push('/naat/downloads')} style={styles.downloadsButton}>
+              <MaterialIcons name="library-music" size={20} color="#fff" />
+              <Text style={styles.downloadsText}>دانلودها</Text>
             </Pressable>
-          )}
-        </View>
-        <Text style={styles.headerTitle}>نعت و شعر اسلامی</Text>
-        <Text style={styles.headerSubtitle}>ذکر دل، غذای روح</Text>
-        <View style={styles.ornamentRow}>
-          <View style={styles.ornamentLine} />
-          <MaterialIcons name="auto-awesome" size={18} color="#d4af37" />
-          <View style={styles.ornamentLine} />
-        </View>
+          </View>
+          <Text style={styles.headerTitle}>نعت و شعر اسلامی</Text>
+          <Text style={styles.headerSubtitle}>ذکر دل، غذای روح</Text>
+          <View style={styles.motifRow}>
+            <View style={styles.motifDot} />
+            <View style={styles.motifLine} />
+            <MaterialIcons name="auto-awesome" size={18} color="#d4af37" />
+            <View style={styles.motifLine} />
+            <View style={styles.motifDot} />
+          </View>
+        </Pressable>
       </LinearGradient>
 
       {loading ? (
@@ -58,16 +88,51 @@ export default function NaatScreen() {
         </View>
       ) : (
         <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
-          {naats.length === 0 && (
+          <View style={[styles.searchBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <MaterialIcons name="search" size={20} color={theme.textSecondary} />
+            <TextInput
+              style={[styles.searchInput, { color: theme.text }]}
+              placeholder="جستجوی نعت..."
+              placeholderTextColor={theme.textSecondary}
+              value={query}
+              onChangeText={setQuery}
+              textAlign="right"
+            />
+          </View>
+
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.reciterRow}
+          >
+            {reciters.map((reciter) => (
+              <Pressable
+                key={reciter}
+                onPress={() => setSelectedReciter(reciter)}
+                style={[
+                  styles.reciterChip,
+                  {
+                    backgroundColor: selectedReciter === reciter ? theme.tint : theme.backgroundSecondary,
+                    borderColor: theme.cardBorder,
+                  },
+                ]}
+              >
+                <Text style={[styles.reciterText, { color: selectedReciter === reciter ? '#fff' : theme.text }]}>
+                  {reciter}
+                </Text>
+              </Pressable>
+            ))}
+          </ScrollView>
+          {filtered.length === 0 && (
             <View style={[styles.emptyCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
               <Text style={[styles.emptyTitle, { color: theme.text }]}>هیچ نعتی ثبت نشده است</Text>
               <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-                از بخش مدیریت نعت‌ها اضافه کنید
+                برای افزودن، هدر را طولانی لمس کنید
               </Text>
             </View>
           )}
 
-          {naats.map((naat) => (
+          {filtered.map((naat) => (
             <NaatCard
               key={naat.id}
               naat={naat}
@@ -103,27 +168,19 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 28,
     overflow: 'hidden',
   },
-  headerPattern: {
-    position: 'absolute',
-    inset: 0,
-    opacity: 0.08,
-    justifyContent: 'space-evenly',
-  },
-  patternLine: {
-    height: 1,
-    backgroundColor: '#ffffff',
-    marginHorizontal: Spacing.xl,
+  headerContent: {
+    width: '100%',
   },
   headerTopRow: {
     flexDirection: 'row-reverse',
     justifyContent: 'flex-start',
   },
-  adminButton: {
+  downloadsButton: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
     gap: Spacing.xs,
   },
-  adminText: {
+  downloadsText: {
     color: '#fff',
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
@@ -142,21 +199,57 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
   },
-  ornamentRow: {
+  motifRow: {
     marginTop: Spacing.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
   },
-  ornamentLine: {
+  motifLine: {
     height: 1,
     width: 64,
     backgroundColor: 'rgba(212, 175, 55, 0.6)',
   },
+  motifDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(212, 175, 55, 0.8)',
+  },
   listContent: {
     padding: Spacing.lg,
     paddingBottom: 140,
+  },
+  searchBox: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    borderWidth: 1,
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  searchInput: {
+    flex: 1,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'right',
+  },
+  reciterRow: {
+    flexDirection: 'row-reverse',
+    gap: Spacing.sm,
+    paddingBottom: Spacing.md,
+  },
+  reciterChip: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+  },
+  reciterText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
   },
   loading: {
     flex: 1,

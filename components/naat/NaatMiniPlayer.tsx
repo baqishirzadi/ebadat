@@ -21,10 +21,10 @@ export function NaatMiniPlayer({ naat, isPlaying, progress, onPlayPause, onOpen 
       <View style={styles.content}>
         <View style={styles.info}>
           <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
-            {naat.title}
+            {naat.title_fa}
           </Text>
           <Text style={[styles.subtitle, { color: theme.textSecondary }]} numberOfLines={1}>
-            {naat.reciterName}
+            {naat.reciter_name}
           </Text>
         </View>
         <Pressable
