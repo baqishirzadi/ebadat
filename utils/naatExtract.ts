@@ -12,7 +12,7 @@ function getYouTubeId(url: string): string | null {
     if (parsed.searchParams.get('v')) {
       return parsed.searchParams.get('v');
     }
-    const match = parsed.pathname.match(/\\/embed\\/([\\w-]+)/) || parsed.pathname.match(/\\/shorts\\/([\\w-]+)/);
+    const match = parsed.pathname.match(/\/embed\/([\w-]+)/) || parsed.pathname.match(/\/shorts\/([\w-]+)/);
     return match?.[1] ?? null;
   } catch {
     return null;
