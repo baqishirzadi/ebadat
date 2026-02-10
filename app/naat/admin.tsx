@@ -29,23 +29,29 @@ export default function NaatAdminScreen() {
       Alert.alert('خطا', 'تمام فیلدها ضروری است');
       return;
     }
-    if (editingId) {
-      await editItem(editingId, {
-        title,
-        reciterName,
-        youtubeUrl,
-        language,
-        extractedAudioUrl: audioUrl.trim() || undefined,
-      });
-    } else {
-      await addItem({ title, reciterName, youtubeUrl, language, extractedAudioUrl: audioUrl.trim() || undefined });
+    try {
+      if (editingId) {
+        await editItem(editingId, {
+          title,
+          reciterName,
+          youtubeUrl,
+          language,
+          extractedAudioUrl: audioUrl.trim() || undefined,
+        });
+      } else {
+        await addItem({ title, reciterName, youtubeUrl, language, extractedAudioUrl: audioUrl.trim() || undefined });
+      }
+      setTitle('');
+      setReciterName('');
+      setYoutubeUrl('');
+      setAudioUrl('');
+      setLanguage('fa');
+      setEditingId(null);
+      Alert.alert('موفق', editingId ? 'نعت به‌روزرسانی شد' : 'نعت اضافه شد');
+    } catch (error) {
+      console.error('Failed to save naat:', error);
+      Alert.alert('خطا', 'ثبت نعت موفق نبود. دوباره تلاش کنید.');
     }
-    setTitle('');
-    setReciterName('');
-    setYoutubeUrl('');
-    setAudioUrl('');
-    setLanguage('fa');
-    setEditingId(null);
   };
 
   return (
