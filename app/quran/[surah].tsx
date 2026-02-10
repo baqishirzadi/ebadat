@@ -134,7 +134,7 @@ export default function QuranReaderScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       title: headerTitle,
-      headerStyle: { backgroundColor: theme.surahHeader },
+      headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
       headerTintColor: '#fff',
       headerTitleStyle: {
         fontFamily: 'ScheherazadeNew',

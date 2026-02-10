@@ -451,8 +451,9 @@ const styles = StyleSheet.create({
     padding: Spacing.lg,
     paddingTop: 20,
     alignItems: 'center',
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    overflow: 'hidden',
   },
   headerTitle: {
     fontSize: Typography.ui.heading,

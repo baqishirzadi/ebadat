@@ -247,11 +247,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     overflow: 'hidden',
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
   headerWrapper: {
     width: '100%',
     overflow: 'hidden',
     alignSelf: 'stretch',
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
   listHeader: {
     marginHorizontal: -Spacing.md,

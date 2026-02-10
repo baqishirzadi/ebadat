@@ -103,7 +103,7 @@ export default function QiblaScreen() {
         <Stack.Screen
           options={{
             title: 'قبله‌نما',
-            headerStyle: { backgroundColor: theme.surahHeader },
+            headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
             headerTintColor: '#fff',
           }}
         />
@@ -118,7 +118,7 @@ export default function QiblaScreen() {
         <Stack.Screen
           options={{
             title: 'قبله‌نما',
-            headerStyle: { backgroundColor: theme.surahHeader },
+            headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
             headerTintColor: '#fff',
           }}
         />
@@ -138,7 +138,7 @@ export default function QiblaScreen() {
       <Stack.Screen
         options={{
           title: 'قبله‌نما',
-          headerStyle: { backgroundColor: theme.surahHeader },
+          headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
           headerTintColor: '#fff',
         }}
       />

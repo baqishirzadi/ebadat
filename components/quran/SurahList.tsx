@@ -254,6 +254,9 @@ const styles = StyleSheet.create({
     marginHorizontal: -Spacing.md,
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.lg,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    overflow: 'hidden',
   },
   header: {
     paddingTop: 60,
