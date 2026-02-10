@@ -26,8 +26,8 @@ import {
 } from '@/utils/prayerTimes';
 import { getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useReducer } from 'react';
-import { Alert, Linking, Platform } from 'react-native';
+import React, { createContext, ReactNode, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
+import { Alert, Linking, Platform, AppState } from 'react-native';
 
 // Conditional imports - only load on native platforms
 // Skip notifications entirely in Expo Go to avoid SDK 53 error
@@ -485,6 +485,22 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     await loadPrayerTimesFor(state.location, state.settings.selectedCity, state.settings);
   }, [state.location, state.settings]);
 
+  const getDateKey = useCallback((date: Date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }, []);
+
+  const getLocationKey = useCallback(() => {
+    const cityKey = state.settings.selectedCity;
+    if (cityKey) return `city:${cityKey}`;
+    const { latitude, longitude } = state.location;
+    return `gps:${latitude.toFixed(3)},${longitude.toFixed(3)}`;
+  }, [state.location, state.settings.selectedCity]);
+
+  const lastScheduleRef = useRef<{ dateKey: string; locationKey: string } | null>(null);
+
   function updateQibla() {
     const qibla = calculateQibla(state.location);
     dispatch({ type: 'SET_QIBLA', payload: qibla });
@@ -501,6 +517,51 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     });
     updateHijriDate();
   }, [updatePrayerTimes]);
+
+  // Reschedule Adhan notifications on app resume and day change
+  useEffect(() => {
+    let midnightTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const scheduleMidnightRefresh = () => {
+      const now = new Date();
+      const nextMidnight = new Date(now);
+      nextMidnight.setHours(24, 0, 5, 0);
+      const delay = nextMidnight.getTime() - now.getTime();
+      if (delay > 0) {
+        midnightTimeout = setTimeout(async () => {
+          refreshPrayerTimes();
+          try {
+            await scheduleAdhanNotifications();
+          } catch (error) {
+            console.warn('Failed to reschedule at midnight:', error);
+          }
+          scheduleMidnightRefresh();
+        }, delay);
+      }
+    };
+
+    scheduleMidnightRefresh();
+
+    const subscription = AppState.addEventListener('change', async (stateStatus) => {
+      if (stateStatus !== 'active') return;
+      const currentKey = getDateKey(new Date());
+      const locationKey = getLocationKey();
+      const last = lastScheduleRef.current;
+      if (!last || last.dateKey !== currentKey || last.locationKey !== locationKey) {
+        refreshPrayerTimes();
+        try {
+          await scheduleAdhanNotifications();
+        } catch (error) {
+          console.warn('Failed to reschedule on resume:', error);
+        }
+      }
+    });
+
+    return () => {
+      if (midnightTimeout) clearTimeout(midnightTimeout);
+      subscription.remove();
+    };
+  }, [getDateKey, getLocationKey, refreshPrayerTimes, scheduleAdhanNotifications]);
 
   const setCity = useCallback(async (cityKey: string) => {
     const location = AFGHAN_CITIES[cityKey];
@@ -811,23 +872,51 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         }
       }
 
+      const isValidDate = (date: Date): boolean => {
+        return date instanceof Date && !isNaN(date.getTime()) &&
+               date.getTime() > 0 && date.getTime() < Number.MAX_SAFE_INTEGER;
+      };
+
+      const areTimesOrdered = (times: PrayerTimes): boolean => {
+        const ordered = [
+          times.fajr,
+          times.sunrise,
+          times.dhuhr,
+          times.asr,
+          times.maghrib,
+          times.isha,
+        ];
+        if (ordered.some((t) => !isValidDate(t))) return false;
+        for (let i = 1; i < ordered.length; i++) {
+          if (ordered[i].getTime() <= ordered[i - 1].getTime()) return false;
+        }
+        return true;
+      };
+
+      let effectiveTimes = state.prayerTimes;
+      if (!areTimesOrdered(effectiveTimes)) {
+        if (__DEV__) {
+          console.log('Prayer times invalid or unordered. Falling back to local calculation.');
+        }
+        effectiveTimes = calculatePrayerTimes(
+          new Date(),
+          state.location,
+          state.settings.calculationMethod,
+          state.settings.asrMethod
+        );
+      }
+
       const prayers: { key: PrayerName; time: Date }[] = [
-        { key: 'fajr', time: state.prayerTimes.fajr },
-        { key: 'dhuhr', time: state.prayerTimes.dhuhr },
-        { key: 'asr', time: state.prayerTimes.asr },
-        { key: 'maghrib', time: state.prayerTimes.maghrib },
-        { key: 'isha', time: state.prayerTimes.isha },
+        { key: 'fajr', time: effectiveTimes.fajr },
+        { key: 'dhuhr', time: effectiveTimes.dhuhr },
+        { key: 'asr', time: effectiveTimes.asr },
+        { key: 'maghrib', time: effectiveTimes.maghrib },
+        { key: 'isha', time: effectiveTimes.isha },
       ];
 
       const now = new Date();
       const { adhanPreferences } = state;
       let scheduledCount = 0;
-
-      // Helper function to validate Date objects
-      const isValidDate = (date: Date): boolean => {
-        return date instanceof Date && !isNaN(date.getTime()) && 
-               date.getTime() > 0 && date.getTime() < Number.MAX_SAFE_INTEGER;
-      };
 
       // Helper function to safely format date for logging
       const safeDateString = (date: Date): string => {
@@ -859,7 +948,25 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         // If time is already passed today, schedule for next day
         let scheduleTime = new Date(prayer.time);
         if (scheduleTime <= now) {
-          scheduleTime.setDate(scheduleTime.getDate() + 1);
+          const tomorrow = new Date(now);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          try {
+            const cityKey = toCityKey(state.settings.selectedCity);
+            const tomorrowTimes = await getPrayerTimesForDate({
+              cityKey,
+              location: state.location,
+              date: tomorrow,
+            });
+            scheduleTime = new Date(tomorrowTimes.times[prayer.key]);
+          } catch (error) {
+            const fallbackTomorrow = calculatePrayerTimes(
+              tomorrow,
+              state.location,
+              state.settings.calculationMethod,
+              state.settings.asrMethod
+            );
+            scheduleTime = new Date(fallbackTomorrow[prayer.key]);
+          }
         }
         
         // Skip only if adjusted schedule time is still in the past
@@ -879,21 +986,14 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         const content = getNotificationContent(prayer.key, prayerSettings.playSound);
         
         // Determine which channel to use (Android)
-        const channelId = prayerSettings.playSound
-          ? (prayer.key === 'fajr' ? 'adhan-fajr' : 'adhan-regular')
-          : 'prayer-silent';
+        const playSound = prayer.key === 'fajr';
+        const channelId = playSound ? 'adhan-fajr' : 'prayer-silent';
 
         // Determine sound to use
         // For Fajr with sound, use fajr_adhan.mp3, otherwise use barakatullah_salim.mp3 or default
-        let notificationSound: string | boolean | undefined;
-        if (prayerSettings.playSound) {
-          if (prayer.key === 'fajr') {
-            notificationSound = 'fajr_adhan.mp3';
-          } else {
-            notificationSound = 'barakatullah_salim.mp3';
-          }
-        } else {
-          notificationSound = false; // Silent
+        let notificationSound: string | boolean | undefined = false;
+        if (playSound) {
+          notificationSound = 'fajr_adhan.mp3';
         }
 
         // Schedule main notification at prayer time
@@ -909,11 +1009,11 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
             data: {
               prayer: prayer.key,
               type: 'adhan',
-              playSound: prayerSettings.playSound,
+              playSound,
               voice: prayerSettings.selectedVoice,
             },
             ...(Platform.OS === 'android' && { channelId }),
-            ...(Platform.OS === 'android' && prayerSettings.playSound
+            ...(Platform.OS === 'android' && playSound
               ? { priority: NotificationsModule.AndroidNotificationPriority.HIGH }
               : {}),
           },
@@ -924,7 +1024,9 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         });
         
         scheduledCount++;
-        console.log(`Scheduled ${prayer.key} notification for ${safeDateString(scheduleTime)} (sound: ${notificationSound})`);
+        if (__DEV__) {
+          console.log(`Scheduled ${prayer.key} notification for ${safeDateString(scheduleTime)} (sound: ${notificationSound})`);
+        }
 
         // Schedule early reminder if enabled
         if (adhanPreferences.earlyReminder && adhanPreferences.earlyReminderMinutes > 0) {
@@ -959,13 +1061,19 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         }
       }
       
-      console.log(`✅ Adhan notifications scheduled successfully. Total: ${scheduledCount} notifications`);
+      if (__DEV__) {
+        console.log(`✅ Adhan notifications scheduled successfully. Total: ${scheduledCount} notifications`);
+      }
+      lastScheduleRef.current = {
+        dateKey: getDateKey(new Date()),
+        locationKey: getLocationKey(),
+      };
       dispatch({ type: 'SET_ERROR', payload: null }); // Clear any previous errors
     } catch (error) {
       console.error('❌ Adhan notification scheduling error:', error);
       dispatch({ type: 'SET_ERROR', payload: `خطا در زمان‌بندی اعلان‌ها: ${error instanceof Error ? error.message : 'خطای ناشناخته'}` });
     }
-  }, [checkNotificationPermission, state.adhanPreferences, state.prayerTimes]);
+  }, [checkNotificationPermission, state.adhanPreferences, state.prayerTimes, state.location, state.settings, getDateKey, getLocationKey]);
 
   const openNotificationSettings = useCallback(async () => {
     const NotificationsModule = await loadNotificationsIfAvailable();

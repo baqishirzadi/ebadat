@@ -3,7 +3,7 @@
  * Search Quran Arabic text and translations
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { View, StyleSheet, TextInput, FlatList, Pressable, ActivityIndicator, Keyboard } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
@@ -30,28 +30,52 @@ export default function SearchScreen() {
   const [searchMode, setSearchMode] = useState<SearchMode>('arabic');
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState<SearchResult[]>([]);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Perform search
-  const handleSearch = useCallback(() => {
-    if (!query.trim() || query.length < 2) {
+  const runSearch = useCallback((text: string) => {
+    if (!text.trim() || text.length < 2) {
       setResults([]);
+      setIsSearching(false);
       return;
     }
 
     setIsSearching(true);
-    Keyboard.dismiss();
+    const searchResults =
+      searchMode === 'arabic'
+        ? searchArabic(text, 100)
+        : searchTranslation(text, 'both', 100);
 
-    // Small timeout to show loading state
-    setTimeout(() => {
-      const searchResults =
-        searchMode === 'arabic'
-          ? searchArabic(query, 100)
-          : searchTranslation(query, 'both', 100);
-      
-      setResults(searchResults);
+    setResults(searchResults);
+    setIsSearching(false);
+  }, [searchMode, searchArabic, searchTranslation]);
+
+  // Perform search with debounce
+  useEffect(() => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    if (!query.trim() || query.length < 2) {
+      setResults([]);
       setIsSearching(false);
-    }, 100);
-  }, [query, searchMode, searchArabic, searchTranslation]);
+      return;
+    }
+
+    debounceRef.current = setTimeout(() => {
+      runSearch(query);
+    }, 350);
+
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, [query, runSearch]);
+
+  // Manual search (submit button)
+  const handleSearch = useCallback(() => {
+    Keyboard.dismiss();
+    runSearch(query);
+  }, [runSearch, query]);
 
   // Navigate to result
   const handleResultPress = useCallback(

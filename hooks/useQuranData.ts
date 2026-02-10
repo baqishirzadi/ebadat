@@ -34,6 +34,20 @@ const typedMetadata = metadata as {
  * Now uses lazy loading internally for better performance
  */
 export function useQuranData() {
+  const normalizeArabic = useCallback((text: string): string => {
+    if (!text) return '';
+    return text
+      .replace(/[\u064B-\u065F\u0670\u06D6-\u06ED]/g, '') // Remove diacritics
+      .replace(/[إأآا]/g, 'ا')
+      .replace(/[يى]/g, 'ی')
+      .replace(/ك/g, 'ک')
+      .replace(/ة/g, 'ه')
+      .replace(/ؤ/g, 'و')
+      .replace(/ئ/g, 'ی')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
+  }, []);
   // Get surah list from metadata (lightweight)
   const surahList = useMemo(() => {
     return typedMetadata.surahs.map(s => ({
@@ -141,14 +155,16 @@ export function useQuranData() {
     if (!query || query.length < 2) return [];
     
     const results: SearchResult[] = [];
-    const normalizedQuery = query.trim();
+    const normalizedQuery = normalizeArabic(query);
+    if (!normalizedQuery) return [];
 
     for (let i = 1; i <= 114 && results.length < limit; i++) {
       const surahData = getSurahSync(i);
       if (!surahData) continue;
 
       for (const ayah of surahData.ayahs) {
-        if (ayah.text.includes(normalizedQuery)) {
+        const normalizedText = normalizeArabic(ayah.text);
+        if (normalizedText.includes(normalizedQuery)) {
           results.push({
             surahNumber: surahData.number,
             surahName: surahData.name,
@@ -173,7 +189,8 @@ export function useQuranData() {
     if (!query || query.length < 2) return [];
     
     const results: SearchResult[] = [];
-    const normalizedQuery = query.toLowerCase().trim();
+    const normalizedQuery = normalizeArabic(query);
+    if (!normalizedQuery) return [];
 
     for (let i = 1; i <= 114 && results.length < limit; i++) {
       const surahData = getSurahSync(i);
@@ -181,9 +198,9 @@ export function useQuranData() {
 
       for (const ayah of surahData.ayahs) {
         const matchDari = (language === 'dari' || language === 'both') && 
-                          ayah.translation_dari?.toLowerCase().includes(normalizedQuery);
+                          normalizeArabic(ayah.translation_dari || '').includes(normalizedQuery);
         const matchPashto = (language === 'pashto' || language === 'both') && 
-                            ayah.translation_pashto?.toLowerCase().includes(normalizedQuery);
+                            normalizeArabic(ayah.translation_pashto || '').includes(normalizedQuery);
 
         if (matchDari || matchPashto) {
           results.push({
@@ -203,7 +220,7 @@ export function useQuranData() {
     }
     
     return results;
-  }, []);
+  }, [normalizeArabic]);
 
   // Get translation for ayah
   const getTranslation = useCallback((
@@ -218,7 +235,7 @@ export function useQuranData() {
     if (!ayah) return undefined;
 
     return language === 'dari' ? ayah.translation_dari : ayah.translation_pashto;
-  }, []);
+  }, [normalizeArabic]);
 
   // Get next ayah reference
   const getNextAyah = useCallback((surahNumber: number, ayahNumber: number): { surah: number; ayah: number } | null => {
