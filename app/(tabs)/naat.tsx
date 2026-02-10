@@ -28,7 +28,12 @@ export default function NaatScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <LinearGradient colors={['#1a4d3e', '#1f5f4b']} style={styles.header}>
+      <LinearGradient colors={['#173f33', '#1a4d3e', '#1f6b57']} style={styles.header}>
+        <View style={styles.headerPattern} pointerEvents="none">
+          <View style={styles.patternLine} />
+          <View style={styles.patternLine} />
+          <View style={styles.patternLine} />
+        </View>
         <View style={styles.headerTopRow}>
           {ADMIN_ENABLED && (
             <Pressable onPress={() => router.push('/naat/admin')} style={styles.adminButton}>
@@ -39,6 +44,11 @@ export default function NaatScreen() {
         </View>
         <Text style={styles.headerTitle}>نعت و شعر اسلامی</Text>
         <Text style={styles.headerSubtitle}>ذکر دل، غذای روح</Text>
+        <View style={styles.ornamentRow}>
+          <View style={styles.ornamentLine} />
+          <MaterialIcons name="auto-awesome" size={18} color="#d4af37" />
+          <View style={styles.ornamentLine} />
+        </View>
       </LinearGradient>
 
       {loading ? (
@@ -89,6 +99,20 @@ const styles = StyleSheet.create({
     paddingTop: 56,
     paddingBottom: Spacing.xl,
     paddingHorizontal: Spacing.lg,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    overflow: 'hidden',
+  },
+  headerPattern: {
+    position: 'absolute',
+    inset: 0,
+    opacity: 0.08,
+    justifyContent: 'space-evenly',
+  },
+  patternLine: {
+    height: 1,
+    backgroundColor: '#ffffff',
+    marginHorizontal: Spacing.xl,
   },
   headerTopRow: {
     flexDirection: 'row-reverse',
@@ -117,6 +141,18 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
+  },
+  ornamentRow: {
+    marginTop: Spacing.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+  },
+  ornamentLine: {
+    height: 1,
+    width: 64,
+    backgroundColor: 'rgba(212, 175, 55, 0.6)',
   },
   listContent: {
     padding: Spacing.lg,

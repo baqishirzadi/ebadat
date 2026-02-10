@@ -123,10 +123,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="naat"
         options={{
-          title: 'نعت و منقبت',
+          title: 'نعت و شعر',
           tabBarIcon: ({ color, focused }) => (
             <MaterialIcons
-              name="library-music"
+              name="play-circle-filled"
               size={focused ? 28 : 24}
               color={color}
             />

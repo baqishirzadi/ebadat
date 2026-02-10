@@ -24,6 +24,11 @@ export function NaatCard({ naat, onPlay, onDownload }: Props) {
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+      <View style={styles.accentRow}>
+        <View style={[styles.accentLine, { backgroundColor: `${theme.tint}50` }]} />
+        <MaterialIcons name="auto-awesome" size={16} color="#d4af37" />
+        <View style={[styles.accentLine, { backgroundColor: `${theme.tint}50` }]} />
+      </View>
       <View style={styles.headerRow}>
         <View style={[styles.langBadge, { backgroundColor: `${theme.tint}20` }]}>
           <Text style={[styles.langText, { color: theme.tint }]}>{langLabel}</Text>
@@ -78,6 +83,17 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.xl,
     padding: Spacing.md,
     marginBottom: Spacing.md,
+  },
+  accentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  accentLine: {
+    height: 1,
+    width: 48,
   },
   headerRow: {
     flexDirection: 'row-reverse',
