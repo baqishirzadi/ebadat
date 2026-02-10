@@ -17,6 +17,7 @@ import { SpiritualSplash } from '@/components/SpiritualSplash';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { ArticlesProvider } from '@/context/ArticlesContext';
 import { DuaProvider } from '@/context/DuaContext';
+import { NaatProvider } from '@/context/NaatContext';
 import { PrayerProvider } from '@/context/PrayerContext';
 import { ScholarProvider } from '@/context/ScholarContext';
 import { StatsProvider } from '@/context/StatsContext';
@@ -174,11 +175,13 @@ export default function RootLayout() {
           <PrayerProvider>
             <StatsProvider>
               <DuaProvider>
-                <ArticlesProvider>
-                  <ScholarProvider>
-                    <RootLayoutNav />
-                  </ScholarProvider>
-                </ArticlesProvider>
+                <NaatProvider>
+                  <ArticlesProvider>
+                    <ScholarProvider>
+                      <RootLayoutNav />
+                    </ScholarProvider>
+                  </ArticlesProvider>
+                </NaatProvider>
               </DuaProvider>
             </StatsProvider>
           </PrayerProvider>

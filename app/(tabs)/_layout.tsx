@@ -33,7 +33,8 @@ export default function TabLayout() {
       path.includes('articles/') || // Hide footer when reading articles
       path.includes('dua-request/') ||
       path.includes('scholar/') ||
-      path.includes('admin/')
+      path.includes('admin/') ||
+      path.includes('naat/')
     );
   }, [segments]);
 
@@ -113,6 +114,19 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <MaterialIcons
               name="article"
+              size={focused ? 28 : 24}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="naat"
+        options={{
+          title: 'نعت و منقبت',
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialIcons
+              name="library-music"
               size={focused ? 28 : 24}
               color={color}
             />
