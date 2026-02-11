@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Naat, NaatDraft } from '@/types/naat';
 
 const CATALOG_KEY = '@ebadat/naat_catalog_v2';

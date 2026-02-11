@@ -156,6 +156,7 @@ export default function NaatScreen() {
                 <NaatCard
                   naat={item}
                   isActive={isActive}
+                  isPlaying={isActive ? player.isPlaying : false}
                   progress={progress}
                   positionMillis={positionMillis}
                   durationMillis={durationMillis}

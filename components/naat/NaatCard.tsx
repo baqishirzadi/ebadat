@@ -10,6 +10,7 @@ type Props = {
   onPlay: () => void;
   onDownload: () => void;
   isActive?: boolean;
+  isPlaying?: boolean;
   progress?: number;
   positionMillis?: number;
   durationMillis?: number;
@@ -43,6 +44,7 @@ export function NaatCard({
   onPlay,
   onDownload,
   isActive = false,
+  isPlaying = false,
   progress = 0,
   positionMillis = 0,
   durationMillis = 0,
@@ -67,14 +69,14 @@ export function NaatCard({
         onPanResponderGrant: (evt) => {
           if (!trackWidth || !onSeek) return;
           const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
-          const ratio = x / trackWidth;
+          const ratio = 1 - x / trackWidth;
           seekRef.current = ratio;
           onSeek(ratio * durationMillis);
         },
         onPanResponderMove: (evt) => {
           if (!trackWidth || !onSeek) return;
           const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
-          const ratio = x / trackWidth;
+          const ratio = 1 - x / trackWidth;
           seekRef.current = ratio;
           onSeek(ratio * durationMillis);
         },
@@ -103,11 +105,16 @@ export function NaatCard({
             onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
             {...panResponder.panHandlers}
           >
-            <View style={[styles.seekFill, { width: `${Math.min(progress * 100, 100)}%`, backgroundColor: theme.tint }]} />
+            <View
+              style={[
+                styles.seekFill,
+                { width: `${Math.min(progress * 100, 100)}%`, backgroundColor: theme.tint },
+              ]}
+            />
             <View
               style={[
                 styles.seekThumb,
-                { left: `${Math.min(progress * 100, 100)}%`, backgroundColor: theme.tint },
+                { right: `${Math.min(progress * 100, 100)}%`, backgroundColor: theme.tint },
               ]}
             />
           </View>
@@ -155,7 +162,7 @@ export function NaatCard({
               pressed && styles.iconPressed,
             ]}
           >
-            <MaterialIcons name="play-arrow" size={22} color="#fff" />
+            <MaterialIcons name={isActive && isPlaying ? 'pause' : 'play-arrow'} size={22} color="#fff" />
           </Pressable>
         </View>
       </View>
@@ -212,18 +219,26 @@ const styles = StyleSheet.create({
   seekTrack: {
     height: 6,
     borderRadius: BorderRadius.full,
-    overflow: 'hidden',
+    position: 'relative',
   },
   seekFill: {
     height: '100%',
+    position: 'absolute',
+    right: 0,
+    borderRadius: BorderRadius.full,
   },
   seekThumb: {
     position: 'absolute',
-    top: -4,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
-    transform: [{ translateX: -7 }],
+    top: -6,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    transform: [{ translateX: 8 }],
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 3,
   },
   timeRow: {
     marginTop: Spacing.xs,
