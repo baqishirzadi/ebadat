@@ -61,7 +61,7 @@ export function NaatCard({
   const clampedProgress = Math.max(0, Math.min(progress, 1));
   const fillWidth = trackWidth ? trackWidth * clampedProgress : 0;
   const thumbRadius = 8;
-  const thumbRight = Math.max(fillWidth - thumbRadius, 0);
+  const thumbLeft = Math.max(fillWidth - thumbRadius, 0);
 
   const panResponder = useMemo(
     () =>
@@ -73,14 +73,14 @@ export function NaatCard({
         onPanResponderGrant: (evt) => {
           if (!trackWidth || !onSeek) return;
           const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
-          const ratio = 1 - x / trackWidth;
+          const ratio = x / trackWidth;
           seekRef.current = ratio;
           onSeek(ratio * durationMillis);
         },
         onPanResponderMove: (evt) => {
           if (!trackWidth || !onSeek) return;
           const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
-          const ratio = 1 - x / trackWidth;
+          const ratio = x / trackWidth;
           seekRef.current = ratio;
           onSeek(ratio * durationMillis);
         },
@@ -118,7 +118,7 @@ export function NaatCard({
             <View
               style={[
                 styles.seekThumb,
-                { right: thumbRight, backgroundColor: theme.tint },
+                { left: thumbLeft, backgroundColor: theme.tint },
               ]}
             />
           </View>
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   seekFill: {
     height: '100%',
     position: 'absolute',
-    right: 0,
+    left: 0,
     borderRadius: BorderRadius.full,
   },
   seekThumb: {

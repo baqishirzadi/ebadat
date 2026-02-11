@@ -193,6 +193,14 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           );
         }
       } else {
+        const currentStatus = await soundRef.current.getStatusAsync();
+        if (
+          currentStatus.isLoaded &&
+          currentStatus.durationMillis &&
+          currentStatus.positionMillis >= currentStatus.durationMillis - 500
+        ) {
+          await soundRef.current.setPositionAsync(0);
+        }
         await soundRef.current.playAsync();
       }
 
@@ -235,6 +243,14 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
 
   const resume = useCallback(async () => {
     if (soundRef.current) {
+      const status = await soundRef.current.getStatusAsync();
+      if (
+        status.isLoaded &&
+        status.durationMillis &&
+        status.positionMillis >= status.durationMillis - 500
+      ) {
+        await soundRef.current.setPositionAsync(0);
+      }
       await soundRef.current.playAsync();
       setPlayer((prev) => ({ ...prev, isPlaying: true }));
     }
