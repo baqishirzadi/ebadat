@@ -4,32 +4,32 @@
  * All text in Dari - No English
  */
 
-import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  Switch,
-} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+  BorderRadius,
+  DariFontFamily,
+  DariFonts,
+  PashtoFontFamily,
+  PashtoFonts,
+  QuranFontFamily,
+  QuranFonts,
+  Spacing,
+  ThemeMode,
+  Typography,
+} from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { CalculationMethods } from '@/utils/prayerTimes';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
 import {
-  Typography,
-  Spacing,
-  BorderRadius,
-  ThemeMode,
-  QuranFontFamily,
-  DariFontFamily,
-  PashtoFontFamily,
-  QuranFonts,
-  DariFonts,
-  PashtoFonts,
-} from '@/constants/theme';
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+} from 'react-native';
 
 export default function SettingsScreen() {
   const {
@@ -433,7 +433,7 @@ export default function SettingsScreen() {
             توسط:
           </Text>
           <Text style={[styles.creditName, { color: '#D4AF37' }]}>
-            سیدعبدالباقی ابن سیدعبدالاله (عارف بالله)
+            سیدعبدالباقی ابن سیدعبدالاله 
           </Text>
           <Text style={[styles.creditLineage, { color: theme.textSecondary }]}>
             ابن خلیفه صاحب سیدمحمد یتیم شیرزادی (رحمه‌الله)
