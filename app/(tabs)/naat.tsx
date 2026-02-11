@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, Text, ActivityIndicator, TextInput } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable, Text, ActivityIndicator, TextInput, FlatList } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -12,7 +12,6 @@ import { useApp } from '@/context/AppContext';
 import { useNaat } from '@/context/NaatContext';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { NaatCard } from '@/components/naat/NaatCard';
-import { NaatMiniPlayer } from '@/components/naat/NaatMiniPlayer';
 
 const ADMIN_ENABLED = true;
 
@@ -31,14 +30,9 @@ function normalizeText(input: string) {
 export default function NaatScreen() {
   const { theme } = useApp();
   const router = useRouter();
-  const { naats, loading, player, play, pause, resume, download } = useNaat();
+  const { naats, loading, player, play, pause, resume, download, seek } = useNaat();
   const [query, setQuery] = useState('');
   const [selectedReciter, setSelectedReciter] = useState('همه');
-
-  const progress = useMemo(() => {
-    if (!player.current || player.durationMillis <= 0) return 0;
-    return player.positionMillis / player.durationMillis;
-  }, [player.current, player.durationMillis, player.positionMillis]);
 
   const reciters = useMemo(() => {
     const names = Array.from(new Set(naats.map((item) => item.reciter_name).filter(Boolean)));
@@ -57,73 +51,81 @@ export default function NaatScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <LinearGradient colors={['#173f33', '#1a4d3e', '#1f6b57']} style={styles.header}>
-        <Pressable
-          onLongPress={() => ADMIN_ENABLED && router.push('/naat/admin')}
-          delayLongPress={600}
-          style={styles.headerContent}
-        >
-          <View style={styles.headerTopRow}>
-            <Pressable onPress={() => router.push('/naat/downloads')} style={styles.downloadsButton}>
-              <MaterialIcons name="library-music" size={20} color="#fff" />
-              <Text style={styles.downloadsText}>دانلودها</Text>
-            </Pressable>
-          </View>
-          <Text style={styles.headerTitle}>نعت و شعر اسلامی</Text>
-          <Text style={styles.headerSubtitle}>ذکر دل، غذای روح</Text>
-          <View style={styles.motifRow}>
-            <View style={styles.motifDot} />
-            <View style={styles.motifLine} />
-            <MaterialIcons name="auto-awesome" size={18} color="#d4af37" />
-            <View style={styles.motifLine} />
-            <View style={styles.motifDot} />
-          </View>
-        </Pressable>
-      </LinearGradient>
-
       {loading ? (
         <View style={styles.loading}>
           <ActivityIndicator size="large" color={theme.tint} />
           <Text style={[styles.loadingText, { color: theme.textSecondary }]}>در حال بارگذاری...</Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={styles.listContent} showsVerticalScrollIndicator={false}>
-          <View style={[styles.searchBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-            <MaterialIcons name="search" size={20} color={theme.textSecondary} />
-            <TextInput
-              style={[styles.searchInput, { color: theme.text }]}
-              placeholder="جستجوی نعت..."
-              placeholderTextColor={theme.textSecondary}
-              value={query}
-              onChangeText={setQuery}
-              textAlign="right"
-            />
-          </View>
+        <FlatList
+          data={filtered}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContent}
+          ListHeaderComponent={(
+            <View>
+              <LinearGradient colors={['#173f33', '#1a4d3e', '#1f6b57']} style={styles.header}>
+                <Pressable
+                  onLongPress={() => ADMIN_ENABLED && router.push('/naat/admin')}
+                  delayLongPress={600}
+                  style={styles.headerContent}
+                >
+                  <View style={styles.headerTopRow}>
+                    <Pressable onPress={() => router.push('/naat/downloads')} style={styles.downloadsButton}>
+                      <MaterialIcons name="library-music" size={20} color="#fff" />
+                      <Text style={styles.downloadsText}>دانلودها</Text>
+                    </Pressable>
+                  </View>
+                  <Text style={styles.headerTitle}>نعت و شعر اسلامی</Text>
+                  <Text style={styles.headerSubtitle}>ذکر دل، غذای روح</Text>
+                  <View style={styles.motifRow}>
+                    <View style={styles.motifDot} />
+                    <View style={styles.motifLine} />
+                    <MaterialIcons name="auto-awesome" size={18} color="#d4af37" />
+                    <View style={styles.motifLine} />
+                    <View style={styles.motifDot} />
+                  </View>
+                </Pressable>
+              </LinearGradient>
 
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.reciterRow}
-          >
-            {reciters.map((reciter) => (
-              <Pressable
-                key={reciter}
-                onPress={() => setSelectedReciter(reciter)}
-                style={[
-                  styles.reciterChip,
-                  {
-                    backgroundColor: selectedReciter === reciter ? theme.tint : theme.backgroundSecondary,
-                    borderColor: theme.cardBorder,
-                  },
-                ]}
+              <View style={[styles.searchBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+                <MaterialIcons name="search" size={20} color={theme.textSecondary} />
+                <TextInput
+                  style={[styles.searchInput, { color: theme.text }]}
+                  placeholder="جستجوی نعت..."
+                  placeholderTextColor={theme.textSecondary}
+                  value={query}
+                  onChangeText={setQuery}
+                  textAlign="right"
+                />
+              </View>
+
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.reciterRow}
               >
-                <Text style={[styles.reciterText, { color: selectedReciter === reciter ? '#fff' : theme.text }]}>
-                  {reciter}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-          {filtered.length === 0 && (
+                {reciters.map((reciter) => (
+                  <Pressable
+                    key={reciter}
+                    onPress={() => setSelectedReciter(reciter)}
+                    style={[
+                      styles.reciterChip,
+                      {
+                        backgroundColor: selectedReciter === reciter ? theme.tint : theme.backgroundSecondary,
+                        borderColor: theme.cardBorder,
+                      },
+                    ]}
+                  >
+                    <Text style={[styles.reciterText, { color: selectedReciter === reciter ? '#fff' : theme.text }]}>
+                      {reciter}
+                    </Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+          ListEmptyComponent={(
             <View style={[styles.emptyCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
               <Text style={[styles.emptyTitle, { color: theme.text }]}>هیچ نعتی ثبت نشده است</Text>
               <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
@@ -131,25 +133,37 @@ export default function NaatScreen() {
               </Text>
             </View>
           )}
-
-          {filtered.map((naat) => (
-            <NaatCard
-              key={naat.id}
-              naat={naat}
-              onPlay={() => play(naat)}
-              onDownload={() => download(naat)}
-            />
-          ))}
-        </ScrollView>
-      )}
-
-      {player.current && (
-        <NaatMiniPlayer
-          naat={player.current}
-          isPlaying={player.isPlaying}
-          progress={progress}
-          onPlayPause={() => (player.isPlaying ? pause() : resume())}
-          onOpen={() => router.push('/naat/now-playing')}
+          renderItem={({ item }) => {
+            const isActive = player.current?.id === item.id;
+            const durationMillis = isActive
+              ? player.durationMillis || (item.duration_seconds ? item.duration_seconds * 1000 : 0)
+              : 0;
+            const positionMillis = isActive ? player.positionMillis : 0;
+            const progress = durationMillis > 0 ? positionMillis / durationMillis : 0;
+            const canSeek = isActive && durationMillis > 0;
+            return (
+              <NaatCard
+                naat={item}
+                isActive={isActive}
+                progress={progress}
+                positionMillis={positionMillis}
+                durationMillis={durationMillis}
+                onSeek={canSeek ? (millis) => seek(Math.max(0, Math.min(durationMillis, millis))) : undefined}
+                onPlay={() => {
+                  if (isActive) {
+                    if (player.isPlaying) {
+                      pause();
+                    } else {
+                      resume();
+                    }
+                    return;
+                  }
+                  play(item);
+                }}
+                onDownload={() => download(item)}
+              />
+            );
+          }}
         />
       )}
     </View>
@@ -167,6 +181,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
     overflow: 'hidden',
+    marginBottom: Spacing.lg,
   },
   headerContent: {
     width: '100%',
@@ -219,7 +234,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: Spacing.lg,
-    paddingBottom: 140,
+    paddingBottom: Spacing.xxl,
   },
   searchBox: {
     flexDirection: 'row-reverse',

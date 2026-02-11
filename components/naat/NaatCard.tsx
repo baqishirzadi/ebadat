@@ -1,5 +1,5 @@
-import React from 'react';
-import { Pressable, StyleSheet, View, Text } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { Pressable, StyleSheet, View, Text, PanResponder } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Naat } from '@/types/naat';
@@ -9,6 +9,11 @@ type Props = {
   naat: Naat;
   onPlay: () => void;
   onDownload: () => void;
+  isActive?: boolean;
+  progress?: number;
+  positionMillis?: number;
+  durationMillis?: number;
+  onSeek?: (millis: number) => void;
 };
 
 function formatDuration(seconds?: number | string | null) {
@@ -25,13 +30,57 @@ function formatSize(size?: number | string | null) {
   return `${value.toFixed(1)} مگابایت`;
 }
 
-export function NaatCard({ naat, onPlay, onDownload }: Props) {
+function formatTime(millis?: number) {
+  if (!millis || millis <= 0) return '0:00';
+  const totalSeconds = Math.floor(millis / 1000);
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+export function NaatCard({
+  naat,
+  onPlay,
+  onDownload,
+  isActive = false,
+  progress = 0,
+  positionMillis = 0,
+  durationMillis = 0,
+  onSeek,
+}: Props) {
   const { theme } = useApp();
   const downloadLabel = naat.isDownloaded
     ? 'آفلاین'
     : naat.downloadProgress !== undefined
       ? `در حال دانلود ${Math.round(naat.downloadProgress * 100)}٪`
       : 'دانلود نشده';
+  const [trackWidth, setTrackWidth] = useState(0);
+  const seekRef = useRef(0);
+
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => isActive && !!onSeek,
+        onMoveShouldSetPanResponder: () => isActive && !!onSeek,
+        onStartShouldSetPanResponderCapture: () => isActive && !!onSeek,
+        onMoveShouldSetPanResponderCapture: () => isActive && !!onSeek,
+        onPanResponderGrant: (evt) => {
+          if (!trackWidth || !onSeek) return;
+          const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
+          const ratio = x / trackWidth;
+          seekRef.current = ratio;
+          onSeek(ratio * durationMillis);
+        },
+        onPanResponderMove: (evt) => {
+          if (!trackWidth || !onSeek) return;
+          const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
+          const ratio = x / trackWidth;
+          seekRef.current = ratio;
+          onSeek(ratio * durationMillis);
+        },
+      }),
+    [durationMillis, isActive, onSeek, trackWidth],
+  );
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -46,6 +95,28 @@ export function NaatCard({ naat, onPlay, onDownload }: Props) {
 
       <Text style={[styles.subtitle, { color: theme.textSecondary }]}>{naat.title_ps}</Text>
       <Text style={[styles.reciter, { color: theme.textSecondary }]}>{naat.reciter_name}</Text>
+
+      {isActive && durationMillis > 0 && (
+        <View style={styles.seekSection}>
+          <View
+            style={[styles.seekTrack, { backgroundColor: theme.backgroundSecondary }]}
+            onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+            {...panResponder.panHandlers}
+          >
+            <View style={[styles.seekFill, { width: `${Math.min(progress * 100, 100)}%`, backgroundColor: theme.tint }]} />
+            <View
+              style={[
+                styles.seekThumb,
+                { left: `${Math.min(progress * 100, 100)}%`, backgroundColor: theme.tint },
+              ]}
+            />
+          </View>
+          <View style={styles.timeRow}>
+            <Text style={[styles.timeText, { color: theme.textSecondary }]}>{formatTime(positionMillis)}</Text>
+            <Text style={[styles.timeText, { color: theme.textSecondary }]}>{formatTime(durationMillis)}</Text>
+          </View>
+        </View>
+      )}
 
       <View style={styles.footerRow}>
         <View style={styles.metaColumn}>
@@ -133,6 +204,35 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
+  },
+  seekSection: {
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  seekTrack: {
+    height: 6,
+    borderRadius: BorderRadius.full,
+    overflow: 'hidden',
+  },
+  seekFill: {
+    height: '100%',
+  },
+  seekThumb: {
+    position: 'absolute',
+    top: -4,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    transform: [{ translateX: -7 }],
+  },
+  timeRow: {
+    marginTop: Spacing.xs,
+    flexDirection: 'row-reverse',
+    justifyContent: 'space-between',
+  },
+  timeText: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
   },
   footerRow: {
     marginTop: Spacing.md,

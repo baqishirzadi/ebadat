@@ -148,7 +148,9 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     if (!naat.audio_url) {
       throw new Error('no-audio');
     }
-    return { uri: naat.audio_url };
+    const trimmed = naat.audio_url.trim();
+    const safeUrl = trimmed.includes(' ') ? encodeURI(trimmed) : trimmed;
+    return { uri: safeUrl };
   }, []);
 
   const play = useCallback(async (naat: Naat) => {
@@ -261,7 +263,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       await ensureNaatDirectory();
       const source = await resolveAudioSource(naat);
       const dir = getNaatDirectory();
-      const cleanUrl = naat.audio_url.split('?')[0];
+      const cleanUrl = naat.audio_url.trim().split('?')[0];
       const extension = cleanUrl.endsWith('.m4a') ? 'm4a' : 'mp3';
       const target = `${dir}${naat.id}.${extension}`;
       await upsertLocalMeta(naat.id, { downloadProgress: 0 });
@@ -283,6 +285,12 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         },
       );
       const result = await resumable.downloadAsync();
+      if (!result?.uri) {
+        throw new Error('download-empty');
+      }
+      if (result?.status && result.status >= 400) {
+        throw new Error(`download-status-${result.status}`);
+      }
       const info = await FileSystem.getInfoAsync(result?.uri ?? target);
       const sizeMb = info.exists && info.size ? Number((info.size / (1024 * 1024)).toFixed(2)) : undefined;
       let durationSeconds: number | undefined;
@@ -325,8 +333,15 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         Alert.alert('آفلاین', 'ابتدا دانلود نمایید');
         return;
       }
+      if (error?.message === 'no-audio') {
+        Alert.alert('خطا', 'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.');
+        return;
+      }
+      if (__DEV__) {
+        console.log('Naat download failed', error);
+      }
       await upsertLocalMeta(naat.id, { downloadProgress: undefined });
-      Alert.alert('خطا', 'دانلود موفق نبود');
+      Alert.alert('خطا', 'دانلود ناموفق است. لطفاً مطمئن شوید لینک فایل عمومی است.');
     }
   }, [resolveAudioSource]);
 
