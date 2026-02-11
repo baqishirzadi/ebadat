@@ -5,6 +5,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Text, ActivityIndicator, TextInput, FlatList } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -30,6 +31,7 @@ function normalizeText(input: string) {
 export default function NaatScreen() {
   const { theme } = useApp();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { naats, loading, player, play, pause, resume, download, seek } = useNaat();
   const [query, setQuery] = useState('');
   const [selectedReciter, setSelectedReciter] = useState('همه');
@@ -51,6 +53,7 @@ export default function NaatScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.statusFill, { height: insets.top }]} />
       {loading ? (
         <View style={styles.loading}>
           <ActivityIndicator size="large" color={theme.tint} />
@@ -64,7 +67,10 @@ export default function NaatScreen() {
           contentContainerStyle={styles.listContent}
           ListHeaderComponent={(
             <View>
-              <LinearGradient colors={['#173f33', '#1a4d3e', '#1f6b57']} style={styles.header}>
+              <LinearGradient
+                colors={['#173f33', '#1a4d3e', '#1f6b57']}
+                style={[styles.header, { paddingTop: Spacing.xl + insets.top }]}
+              >
                 <Pressable
                   onLongPress={() => ADMIN_ENABLED && router.push('/naat/admin')}
                   delayLongPress={600}
@@ -88,49 +94,53 @@ export default function NaatScreen() {
                 </Pressable>
               </LinearGradient>
 
-              <View style={[styles.searchBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-                <MaterialIcons name="search" size={20} color={theme.textSecondary} />
-                <TextInput
-                  style={[styles.searchInput, { color: theme.text }]}
-                  placeholder="جستجوی نعت..."
-                  placeholderTextColor={theme.textSecondary}
-                  value={query}
-                  onChangeText={setQuery}
-                  textAlign="right"
-                />
-              </View>
+              <View style={styles.headerSection}>
+                <View style={[styles.searchBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+                  <MaterialIcons name="search" size={20} color={theme.textSecondary} />
+                  <TextInput
+                    style={[styles.searchInput, { color: theme.text }]}
+                    placeholder="جستجوی نعت..."
+                    placeholderTextColor={theme.textSecondary}
+                    value={query}
+                    onChangeText={setQuery}
+                    textAlign="right"
+                  />
+                </View>
 
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.reciterRow}
-              >
-                {reciters.map((reciter) => (
-                  <Pressable
-                    key={reciter}
-                    onPress={() => setSelectedReciter(reciter)}
-                    style={[
-                      styles.reciterChip,
-                      {
-                        backgroundColor: selectedReciter === reciter ? theme.tint : theme.backgroundSecondary,
-                        borderColor: theme.cardBorder,
-                      },
-                    ]}
-                  >
-                    <Text style={[styles.reciterText, { color: selectedReciter === reciter ? '#fff' : theme.text }]}>
-                      {reciter}
-                    </Text>
-                  </Pressable>
-                ))}
-              </ScrollView>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.reciterRow}
+                >
+                  {reciters.map((reciter) => (
+                    <Pressable
+                      key={reciter}
+                      onPress={() => setSelectedReciter(reciter)}
+                      style={[
+                        styles.reciterChip,
+                        {
+                          backgroundColor: selectedReciter === reciter ? theme.tint : theme.backgroundSecondary,
+                          borderColor: theme.cardBorder,
+                        },
+                      ]}
+                    >
+                      <Text style={[styles.reciterText, { color: selectedReciter === reciter ? '#fff' : theme.text }]}>
+                        {reciter}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </ScrollView>
+              </View>
             </View>
           )}
           ListEmptyComponent={(
-            <View style={[styles.emptyCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-              <Text style={[styles.emptyTitle, { color: theme.text }]}>هیچ نعتی ثبت نشده است</Text>
-              <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-                برای افزودن، هدر را طولانی لمس کنید
-              </Text>
+            <View style={styles.section}>
+              <View style={[styles.emptyCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+                <Text style={[styles.emptyTitle, { color: theme.text }]}>هیچ نعتی ثبت نشده است</Text>
+                <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
+                  برای افزودن، هدر را طولانی لمس کنید
+                </Text>
+              </View>
             </View>
           )}
           renderItem={({ item }) => {
@@ -142,26 +152,28 @@ export default function NaatScreen() {
             const progress = durationMillis > 0 ? positionMillis / durationMillis : 0;
             const canSeek = isActive && durationMillis > 0;
             return (
-              <NaatCard
-                naat={item}
-                isActive={isActive}
-                progress={progress}
-                positionMillis={positionMillis}
-                durationMillis={durationMillis}
-                onSeek={canSeek ? (millis) => seek(Math.max(0, Math.min(durationMillis, millis))) : undefined}
-                onPlay={() => {
-                  if (isActive) {
-                    if (player.isPlaying) {
-                      pause();
-                    } else {
-                      resume();
+              <View style={styles.section}>
+                <NaatCard
+                  naat={item}
+                  isActive={isActive}
+                  progress={progress}
+                  positionMillis={positionMillis}
+                  durationMillis={durationMillis}
+                  onSeek={canSeek ? (millis) => seek(Math.max(0, Math.min(durationMillis, millis))) : undefined}
+                  onPlay={() => {
+                    if (isActive) {
+                      if (player.isPlaying) {
+                        pause();
+                      } else {
+                        resume();
+                      }
+                      return;
                     }
-                    return;
-                  }
-                  play(item);
-                }}
-                onDownload={() => download(item)}
-              />
+                    play(item);
+                  }}
+                  onDownload={() => download(item)}
+                />
+              </View>
             );
           }}
         />
@@ -174,14 +186,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  statusFill: {
+    backgroundColor: '#173f33',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 2,
+  },
   header: {
-    paddingTop: 56,
+    paddingTop: 0,
     paddingBottom: Spacing.xl,
     paddingHorizontal: Spacing.lg,
     borderBottomLeftRadius: 28,
     borderBottomRightRadius: 28,
     overflow: 'hidden',
-    marginBottom: Spacing.lg,
   },
   headerContent: {
     width: '100%',
@@ -233,8 +252,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(212, 175, 55, 0.8)',
   },
   listContent: {
-    padding: Spacing.lg,
     paddingBottom: Spacing.xxl,
+  },
+  section: {
+    paddingHorizontal: Spacing.lg,
+  },
+  headerSection: {
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.lg,
   },
   searchBox: {
     flexDirection: 'row-reverse',

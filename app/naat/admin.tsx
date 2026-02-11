@@ -25,6 +25,7 @@ export default function NaatAdminScreen() {
   const [durationSeconds, setDurationSeconds] = useState('');
   const [fileSizeMb, setFileSizeMb] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [testingUrl, setTestingUrl] = useState(false);
 
   const handleAdd = async () => {
     if (!titleFa.trim() || !titlePs.trim() || !reciterName.trim() || !audioUrl.trim()) {
@@ -67,6 +68,27 @@ export default function NaatAdminScreen() {
         return;
       }
       Alert.alert('خطا', 'ثبت نعت موفق نبود. دوباره تلاش کنید.');
+    }
+  };
+
+  const handleTestUrl = async () => {
+    const raw = audioUrl.trim();
+    if (!raw) {
+      Alert.alert('خطا', 'لینک صوتی را وارد کنید');
+      return;
+    }
+    const safeUrl = raw.includes(' ') ? encodeURI(raw) : raw;
+    setTestingUrl(true);
+    try {
+      const response = await fetch(safeUrl, { method: 'HEAD' });
+      if (!response.ok) {
+        throw new Error(String(response.status));
+      }
+      Alert.alert('موفق', 'لینک قابل دسترسی و عمومی است');
+    } catch {
+      Alert.alert('خطا', 'لینک قابل دسترسی نیست یا عمومی نیست');
+    } finally {
+      setTestingUrl(false);
     }
   };
 
@@ -124,6 +146,20 @@ export default function NaatAdminScreen() {
             onChangeText={setAudioUrl}
             textAlign="right"
           />
+          <Pressable
+            onPress={handleTestUrl}
+            disabled={testingUrl}
+            style={[
+              styles.testButton,
+              { borderColor: theme.cardBorder },
+              testingUrl && styles.testButtonDisabled,
+            ]}
+          >
+            <MaterialIcons name="link" size={18} color={theme.textSecondary} />
+            <Text style={[styles.testButtonText, { color: theme.textSecondary }]}>
+              {testingUrl ? 'در حال بررسی...' : 'تست لینک'}
+            </Text>
+          </Pressable>
           <View style={styles.metaRow}>
             <TextInput
               style={[styles.metaInput, { color: theme.text, borderColor: theme.cardBorder }]}
@@ -277,6 +313,23 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: '#fff',
     fontFamily: 'Vazirmatn',
+  },
+  testButton: {
+    marginBottom: Spacing.sm,
+    borderWidth: 1,
+    borderRadius: BorderRadius.full,
+    paddingVertical: Spacing.sm,
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+  },
+  testButtonDisabled: {
+    opacity: 0.6,
+  },
+  testButtonText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
   },
   cancelButton: {
     marginTop: Spacing.sm,

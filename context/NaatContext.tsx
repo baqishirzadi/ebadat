@@ -155,6 +155,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
 
   const play = useCallback(async (naat: Naat) => {
     try {
+      await configureNaatAudioMode().catch(() => {});
       const source = await resolveAudioSource(naat);
       const currentId = player.current?.id;
 
@@ -284,7 +285,12 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           );
         },
       );
-      const result = await resumable.downloadAsync();
+      let result;
+      try {
+        result = await resumable.downloadAsync();
+      } catch {
+        result = await FileSystem.downloadAsync(source.uri, target);
+      }
       if (!result?.uri) {
         throw new Error('download-empty');
       }
