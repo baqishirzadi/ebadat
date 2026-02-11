@@ -143,7 +143,7 @@ export default function SearchScreen() {
       <Stack.Screen
         options={{
           title: 'جستجو',
-          headerStyle: { backgroundColor: theme.surahHeader },
+          headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
           headerTintColor: '#fff',
           headerTitleStyle: {
             fontWeight: '600',

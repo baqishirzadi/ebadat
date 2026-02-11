@@ -246,6 +246,9 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 60 : Spacing.lg,
     paddingBottom: Spacing.md,
     paddingHorizontal: Spacing.lg,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    overflow: 'hidden',
   },
   closeButton: {
     width: 40,
