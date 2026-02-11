@@ -117,26 +117,31 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Triggers to automatically update updated_at
+DROP TRIGGER IF EXISTS update_scholars_updated_at ON scholars;
 CREATE TRIGGER update_scholars_updated_at
   BEFORE UPDATE ON scholars
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_articles_updated_at ON articles;
 CREATE TRIGGER update_articles_updated_at
   BEFORE UPDATE ON articles
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_user_metadata_updated_at ON user_metadata;
 CREATE TRIGGER update_user_metadata_updated_at
   BEFORE UPDATE ON user_metadata
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_admin_users_updated_at ON admin_users;
 CREATE TRIGGER update_admin_users_updated_at
   BEFORE UPDATE ON admin_users
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_article_analytics_updated_at ON article_analytics;
 CREATE TRIGGER update_article_analytics_updated_at
   BEFORE UPDATE ON article_analytics
   FOR EACH ROW
@@ -153,35 +158,77 @@ ALTER TABLE article_analytics ENABLE ROW LEVEL SECURITY;
 
 -- Policies for public read access (articles and scholars)
 -- Anyone can read published articles
-CREATE POLICY "Public can read published articles"
-  ON articles FOR SELECT
-  USING (published = true);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'articles' AND policyname = 'Public can read published articles'
+  ) THEN
+    CREATE POLICY "Public can read published articles"
+      ON articles FOR SELECT
+      USING (published = true);
+  END IF;
+END $$;
 
 -- Anyone can read verified scholars
-CREATE POLICY "Public can read verified scholars"
-  ON scholars FOR SELECT
-  USING (verified = true);
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'scholars' AND policyname = 'Public can read verified scholars'
+  ) THEN
+    CREATE POLICY "Public can read verified scholars"
+      ON scholars FOR SELECT
+      USING (verified = true);
+  END IF;
+END $$;
 
 -- Policies for user-specific data (dua_requests, user_metadata)
 -- Users can only see their own requests
-CREATE POLICY "Users can view own dua requests"
-  ON dua_requests FOR SELECT
-  USING (true); -- Will be filtered by application logic based on user_id
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'dua_requests' AND policyname = 'Users can view own dua requests'
+  ) THEN
+    CREATE POLICY "Users can view own dua requests"
+      ON dua_requests FOR SELECT
+      USING (true); -- Will be filtered by application logic based on user_id
+  END IF;
+END $$;
 
 -- Users can insert their own requests
-CREATE POLICY "Users can insert own dua requests"
-  ON dua_requests FOR INSERT
-  WITH CHECK (true); -- Will be validated by application logic
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'dua_requests' AND policyname = 'Users can insert own dua requests'
+  ) THEN
+    CREATE POLICY "Users can insert own dua requests"
+      ON dua_requests FOR INSERT
+      WITH CHECK (true); -- Will be validated by application logic
+  END IF;
+END $$;
 
 -- Users can update their own requests (before answered)
-CREATE POLICY "Users can update own pending requests"
-  ON dua_requests FOR UPDATE
-  USING (status = 'pending'); -- Will be validated by application logic
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'dua_requests' AND policyname = 'Users can update own pending requests'
+  ) THEN
+    CREATE POLICY "Users can update own pending requests"
+      ON dua_requests FOR UPDATE
+      USING (status = 'pending'); -- Will be validated by application logic
+  END IF;
+END $$;
 
 -- Users can manage their own metadata
-CREATE POLICY "Users can manage own metadata"
-  ON user_metadata FOR ALL
-  USING (true); -- Will be filtered by application logic
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE schemaname = 'public' AND tablename = 'user_metadata' AND policyname = 'Users can manage own metadata'
+  ) THEN
+    CREATE POLICY "Users can manage own metadata"
+      ON user_metadata FOR ALL
+      USING (true); -- Will be filtered by application logic
+  END IF;
+END $$;
 
 -- Note: For production, you should implement proper authentication
 -- and use Supabase Auth to enforce RLS policies based on authenticated users.
