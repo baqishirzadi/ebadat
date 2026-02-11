@@ -58,6 +58,10 @@ export function NaatCard({
       : 'دانلود نشده';
   const [trackWidth, setTrackWidth] = useState(0);
   const seekRef = useRef(0);
+  const clampedProgress = Math.max(0, Math.min(progress, 1));
+  const fillWidth = trackWidth ? trackWidth * clampedProgress : 0;
+  const thumbRadius = 8;
+  const thumbRight = Math.max(fillWidth - thumbRadius, 0);
 
   const panResponder = useMemo(
     () =>
@@ -108,13 +112,13 @@ export function NaatCard({
             <View
               style={[
                 styles.seekFill,
-                { width: `${Math.min(progress * 100, 100)}%`, backgroundColor: theme.tint },
+                { width: fillWidth, backgroundColor: theme.tint },
               ]}
             />
             <View
               style={[
                 styles.seekThumb,
-                { right: `${Math.min(progress * 100, 100)}%`, backgroundColor: theme.tint },
+                { right: thumbRight, backgroundColor: theme.tint },
               ]}
             />
           </View>
@@ -233,7 +237,8 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
     borderRadius: 8,
-    transform: [{ translateX: 8 }],
+    borderWidth: 2,
+    borderColor: '#fff',
     shadowColor: '#000',
     shadowOpacity: 0.2,
     shadowRadius: 3,

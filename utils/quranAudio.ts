@@ -200,6 +200,7 @@ export class QuranAudioManager {
     });
 
     try {
+      const localPath = this.getLocalPath(surah, ayah);
       const audioSource = await this.getAudioSource(surah, ayah);
       
       const { sound } = await Audio.Sound.createAsync(
@@ -209,6 +210,11 @@ export class QuranAudioManager {
       );
 
       this.sound = sound;
+
+      // After first listen, cache this ayah for offline use
+      if (audioSource !== localPath) {
+        this.downloadAudio(surah, ayah).catch(() => {});
+      }
     } catch (error) {
       console.log('Play error:', error);
       this.onStatusUpdate?.({
