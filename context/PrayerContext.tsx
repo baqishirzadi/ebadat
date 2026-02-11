@@ -985,15 +985,19 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         // Get notification content
         const content = getNotificationContent(prayer.key, prayerSettings.playSound);
         
-        // Determine which channel to use (Android)
-        const playSound = prayer.key === 'fajr';
-        const channelId = playSound ? 'adhan-fajr' : 'prayer-silent';
+        // Use prayerSettings.playSound (not hardcoded to fajr only)
+        const playSound = prayerSettings.playSound;
+        // Channel: adhan-fajr for Fajr, adhan-regular for Maghrib with sound, prayer-silent for rest
+        const channelId = playSound && prayer.key === 'fajr' ? 'adhan-fajr'
+          : playSound && prayer.key === 'maghrib' ? 'adhan-regular'
+          : 'prayer-silent';
 
-        // Determine sound to use
-        // For Fajr with sound, use fajr_adhan.mp3, otherwise use barakatullah_salim.mp3 or default
+        // Sound file: Fajr → fajr_adhan.mp3, Maghrib → barakatullah_salim.mp3, others silent
         let notificationSound: string | boolean | undefined = false;
-        if (playSound) {
+        if (playSound && prayer.key === 'fajr') {
           notificationSound = 'fajr_adhan.mp3';
+        } else if (playSound && prayer.key === 'maghrib') {
+          notificationSound = 'barakatullah_salim.mp3';
         }
 
         // Schedule main notification at prayer time
@@ -1009,7 +1013,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
             data: {
               prayer: prayer.key,
               type: 'adhan',
-              playSound,
+              playSound, // From prayerSettings
               voice: prayerSettings.selectedVoice,
             },
             ...(Platform.OS === 'android' && { channelId }),

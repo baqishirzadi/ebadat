@@ -15,6 +15,11 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { NaatCard } from '@/components/naat/NaatCard';
 
 const ADMIN_ENABLED = true;
+const HEADER_TITLE = 'نعت و مناجات — یادگار لنگر شیرزاد';
+const HEADER_DESCRIPTION =
+  'این بخش الهام‌گرفته از محافل نعت، ذکر و خدمت در لنگر شیرزاد است؛\n' +
+  'جایی که به برکت خلیفه صاحب سید عبدالباقی جان (رح)، سال‌ها دل‌ها با نام رسول‌الله ﷺ زنده شده‌اند.\n' +
+  'این صداها ادامه همان راه‌اند — برای آرامش دل‌ها و یاد خدا.';
 
 function normalizeText(input: string) {
   return input
@@ -82,8 +87,8 @@ export default function NaatScreen() {
                       <Text style={styles.downloadsText}>دانلودها</Text>
                     </Pressable>
                   </View>
-                  <Text style={styles.headerTitle}>نعت و شعر اسلامی</Text>
-                  <Text style={styles.headerSubtitle}>ذکر دل، غذای روح</Text>
+                  <Text style={styles.headerTitle}>{HEADER_TITLE}</Text>
+                  <Text style={styles.headerDescription}>{HEADER_DESCRIPTION}</Text>
                   <View style={styles.motifRow}>
                     <View style={styles.motifDot} />
                     <View style={styles.motifLine} />
@@ -221,21 +226,24 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   headerTitle: {
-    marginTop: Spacing.lg,
+    marginTop: Spacing.md,
     color: '#fff',
-    fontSize: Typography.ui.display,
+    fontSize: Typography.ui.title,
     fontFamily: 'Amiri',
     textAlign: 'center',
+    lineHeight: 40,
   },
-  headerSubtitle: {
+  headerDescription: {
     marginTop: Spacing.xs,
     color: '#e2f1ea',
-    fontSize: Typography.ui.body,
+    fontSize: Typography.ui.caption,
+    lineHeight: 22,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
+    paddingHorizontal: Spacing.sm,
   },
   motifRow: {
-    marginTop: Spacing.md,
+    marginTop: Spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

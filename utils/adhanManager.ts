@@ -81,37 +81,38 @@ export interface AdhanPreferences {
   globalVoice: AdhanVoice;
 }
 
-// Default settings - Fajr with sound, others silent
+// Default settings - Fajr and Maghrib with sound, Dhuhr/Asr/Isha silent
 export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
   masterEnabled: true,
   
-  // Fajr: Full Adhan with sound (per requirements)
+  // Fajr: Full Adhan with sound
   fajr: {
     enabled: true,
     playSound: true,
-    // Use Sheikh Ali Ahmed Mulla voice metadata for consistency,
-    // though runtime playback always uses the dedicated Fajr Adhan file.
     selectedVoice: 'sheikh_ali_ahmed_mulla',
   },
   
-  // Others: Silent notifications only (per requirements)
+  // Dhuhr, Asr, Isha: Silent reminders only
   dhuhr: {
-    enabled: false,
+    enabled: true,
     playSound: false,
     selectedVoice: 'barakatullah',
   },
   asr: {
-    enabled: false,
+    enabled: true,
     playSound: false,
     selectedVoice: 'barakatullah',
   },
+  
+  // Maghrib: Adhan with Barakatullah Salim sound
   maghrib: {
-    enabled: false,
-    playSound: false,
+    enabled: true,
+    playSound: true,
     selectedVoice: 'barakatullah',
   },
+  
   isha: {
-    enabled: false,
+    enabled: true,
     playSound: false,
     selectedVoice: 'barakatullah',
   },
@@ -159,9 +160,17 @@ function migratePreferences(preferences: any): AdhanPreferences {
     }
   }
 
-  // Enforce Fajr default on + sound (critical requirement)
+  // Enforce Fajr and Maghrib with sound; Dhuhr/Asr/Isha enabled but silent
   migrated.fajr.enabled = true;
   migrated.fajr.playSound = true;
+  migrated.maghrib.enabled = true;
+  migrated.maghrib.playSound = true;
+  migrated.dhuhr.enabled = true;
+  migrated.dhuhr.playSound = false;
+  migrated.asr.enabled = true;
+  migrated.asr.playSound = false;
+  migrated.isha.enabled = true;
+  migrated.isha.playSound = false;
 
   return migrated;
 }
