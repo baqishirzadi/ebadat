@@ -6,7 +6,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useApp } from '@/context/AppContext';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius, PashtoFonts } from '@/constants/theme';
+import type { PashtoFontFamily } from '@/types/quran';
 
 interface PrayerTextBlockProps {
   arabic?: string;
@@ -25,7 +26,8 @@ export function PrayerTextBlock({
   instructionPashto,
   showBothLanguages = true,
 }: PrayerTextBlockProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
 
   return (
     <View style={[styles.container, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -47,7 +49,7 @@ export function PrayerTextBlock({
             </Text>
           )}
           {showBothLanguages && instructionPashto && (
-            <Text style={[styles.instructionText, { color: theme.textSecondary, fontFamily: 'NotoNastaliqUrdu', lineHeight: 42 }]}>
+            <Text style={[styles.instructionText, { color: theme.textSecondary, fontFamily: pashtoFontFamily, lineHeight: 42 }]}>
               📌 {instructionPashto}
             </Text>
           )}
@@ -74,7 +76,7 @@ export function PrayerTextBlock({
             <View style={[styles.languageTag, { backgroundColor: '#FF7043' }]}>
               <Text style={styles.languageTagText}>پښتو</Text>
             </View>
-            <Text style={[styles.translationText, { color: theme.text, fontFamily: 'NotoNastaliqUrdu', lineHeight: 42 }]}>
+            <Text style={[styles.translationText, { color: theme.text, fontFamily: pashtoFontFamily, lineHeight: 42 }]}>
               {translationPashto}
             </Text>
           </View>

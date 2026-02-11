@@ -30,8 +30,8 @@ export default function AdhkarScreen() {
     router.push(`/adhkar/${categoryId}`);
   };
 
-  // Featured adhkar for quick access
-  const featuredCategories = ['morning', 'evening', 'afterPrayer'];
+  // Featured adhkar - four in one row
+  const featuredCategories = ['morning', 'evening', 'afterPrayer', 'beginner'];
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -42,33 +42,10 @@ export default function AdhkarScreen() {
         <Text style={styles.headerSubtitle}>یادآوری‌های روزانه</Text>
       </View>
 
-      {/* Dua Request Section - با دیزاین زیبا و هماهنگ */}
-      <Pressable
-        onPress={() => router.push('/dua-request')}
-        style={({ pressed }) => [
-          styles.duaCard,
-          { backgroundColor: theme.tint, shadowColor: theme.tint },
-          pressed && styles.duaCardPressed,
-        ]}
-      >
-        <View style={styles.duaCardContent}>
-          <View style={styles.duaIconContainer}>
-            <Text style={styles.duaEmoji}>🤲</Text>
-          </View>
-          <View style={styles.duaCardInfo}>
-            <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
-            <Text style={styles.duaCardSubtitle}>
-              درخواست دعای خیر و راهنمایی شرعی از سیدان عالم و عالمان جید
-            </Text>
-          </View>
-        </View>
-        <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
-      </Pressable>
-
-      {/* Featured Section */}
+      {/* Featured Adhkar Section */}
       <View style={styles.section}>
         <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          پرکاربرد
+          اذکار پرکاربرد
         </Text>
         <View style={styles.featuredGrid}>
           {categories
@@ -83,8 +60,8 @@ export default function AdhkarScreen() {
                   pressed && styles.cardPressed,
                 ]}
               >
-                <MaterialIcons name={category.icon as any} size={32} color="#fff" />
-                <Text style={styles.featuredTitle}>{category.nameDari}</Text>
+                <MaterialIcons name={category.icon as any} size={28} color="#fff" />
+                <Text style={styles.featuredTitle} numberOfLines={2}>{category.nameDari}</Text>
                 <Text style={styles.featuredCount}>
                   {(adhkarData.adhkar as Record<string, unknown[]>)[category.id]?.length || 0} ذکر
                 </Text>
@@ -146,6 +123,29 @@ export default function AdhkarScreen() {
         <MaterialIcons name="chevron-left" size={28} color="rgba(255,255,255,0.8)" />
       </Pressable>
 
+      {/* Dua Request Section - below counter */}
+      <Pressable
+        onPress={() => router.push('/dua-request')}
+        style={({ pressed }) => [
+          styles.duaCard,
+          { backgroundColor: theme.tint, shadowColor: theme.tint, marginTop: Spacing.lg },
+          pressed && styles.duaCardPressed,
+        ]}
+      >
+        <View style={styles.duaCardContent}>
+          <View style={styles.duaIconContainer}>
+            <Text style={styles.duaEmoji}>🤲</Text>
+          </View>
+          <View style={styles.duaCardInfo}>
+            <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
+            <Text style={styles.duaCardSubtitle}>
+              درخواست دعای خیر و راهنمایی شرعی از سیدان عالم و عالمان جید
+            </Text>
+          </View>
+        </View>
+        <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
+      </Pressable>
+
       <View style={styles.bottomPadding} />
     </ScrollView>
   );
@@ -192,13 +192,16 @@ paddingRight: Spacing.sm,
   },
   featuredCard: {
     flex: 1,
-    padding: Spacing.lg,
+    flexBasis: 0,
+    minWidth: 0,
+    minHeight: 88,
+    padding: Spacing.md,
     borderRadius: BorderRadius.xl,
     alignItems: 'center',
     gap: Spacing.sm,
   },
   featuredTitle: {
-    fontSize: Typography.ui.body,
+    fontSize: 12,
     fontWeight: '600',
     color: '#fff',
     textAlign: 'center',

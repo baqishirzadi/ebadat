@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, Text, ActivityIndicator, TextInput, FlatList } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable, Text, ActivityIndicator, TextInput, FlatList, Modal, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -15,6 +15,7 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { NaatCard } from '@/components/naat/NaatCard';
 
 const ADMIN_ENABLED = true;
+const NAAT_ADMIN_PIN = '0852';
 const HEADER_TITLE = 'نعت و مناجات — یادگار لنگر شیرزاد';
 const HEADER_DESCRIPTION =
   'این بخش الهام‌گرفته از محافل نعت، ذکر و خدمت در لنگر شیرزاد است؛\n' +
@@ -40,6 +41,8 @@ export default function NaatScreen() {
   const { naats, loading, player, play, pause, resume, download, seek } = useNaat();
   const [query, setQuery] = useState('');
   const [selectedReciter, setSelectedReciter] = useState('همه');
+  const [showNaatAdminPinModal, setShowNaatAdminPinModal] = useState(false);
+  const [naatAdminPin, setNaatAdminPin] = useState('');
 
   const reciters = useMemo(() => {
     const names = Array.from(new Set(naats.map((item) => item.reciter_name).filter(Boolean)));
@@ -55,6 +58,21 @@ export default function NaatScreen() {
       return matchesReciter && hay.includes(q);
     });
   }, [naats, query, selectedReciter]);
+
+  const handleNaatAdminPinSubmit = () => {
+    if (naatAdminPin.trim() === NAAT_ADMIN_PIN) {
+      setShowNaatAdminPinModal(false);
+      setNaatAdminPin('');
+      router.push('/naat/admin');
+    } else {
+      Alert.alert('خطا', 'PIN اشتباه است');
+    }
+  };
+
+  const closeNaatAdminPinModal = () => {
+    setShowNaatAdminPinModal(false);
+    setNaatAdminPin('');
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -77,7 +95,7 @@ export default function NaatScreen() {
                 style={[styles.header, { paddingTop: Spacing.xl + insets.top }]}
               >
                 <Pressable
-                  onLongPress={() => ADMIN_ENABLED && router.push('/naat/admin')}
+                  onLongPress={() => ADMIN_ENABLED && setShowNaatAdminPinModal(true)}
                   delayLongPress={600}
                   style={styles.headerContent}
                 >
@@ -184,6 +202,45 @@ export default function NaatScreen() {
           }}
         />
       )}
+
+      {/* Naat Admin PIN Modal */}
+      <Modal
+        visible={showNaatAdminPinModal}
+        transparent
+        animationType="fade"
+        onRequestClose={closeNaatAdminPinModal}
+      >
+        <View style={styles.pinModalOverlay}>
+          <View style={[styles.pinModalContent, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <Text style={[styles.pinModalTitle, { color: theme.text }]}>ورود به مدیریت نعت</Text>
+            <TextInput
+              style={[styles.pinModalInput, { color: theme.text, borderColor: theme.cardBorder }]}
+              placeholder="PIN را وارد کنید"
+              placeholderTextColor={theme.textSecondary}
+              value={naatAdminPin}
+              onChangeText={setNaatAdminPin}
+              secureTextEntry
+              keyboardType="number-pad"
+              maxLength={4}
+              textAlign="center"
+            />
+            <View style={styles.pinModalButtons}>
+              <Pressable
+                onPress={handleNaatAdminPinSubmit}
+                style={[styles.pinModalButton, styles.pinModalButtonPrimary, { backgroundColor: theme.tint }]}
+              >
+                <Text style={styles.pinModalButtonText}>تأیید</Text>
+              </Pressable>
+              <Pressable
+                onPress={closeNaatAdminPinModal}
+                style={[styles.pinModalButton, styles.pinModalButtonSecondary, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
+              >
+                <Text style={[styles.pinModalButtonTextSecondary, { color: theme.text }]}>انصراف</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -325,5 +382,58 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
+  },
+  pinModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Spacing.lg,
+  },
+  pinModalContent: {
+    width: '100%',
+    maxWidth: 320,
+    padding: Spacing.xl,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+  },
+  pinModalTitle: {
+    fontSize: Typography.ui.title,
+    fontWeight: '700',
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    marginBottom: Spacing.lg,
+  },
+  pinModalInput: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.subtitle,
+    borderWidth: 1,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    marginBottom: Spacing.lg,
+  },
+  pinModalButtons: {
+    flexDirection: 'column',
+    gap: Spacing.sm,
+  },
+  pinModalButton: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    alignItems: 'center',
+  },
+  pinModalButtonPrimary: {},
+  pinModalButtonSecondary: {
+    borderWidth: 1,
+  },
+  pinModalButtonText: {
+    color: '#fff',
+    fontSize: Typography.ui.body,
+    fontWeight: '600',
+    fontFamily: 'Vazirmatn',
+  },
+  pinModalButtonTextSecondary: {
+    fontSize: Typography.ui.body,
+    fontWeight: '600',
+    fontFamily: 'Vazirmatn',
   },
 });

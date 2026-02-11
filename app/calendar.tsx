@@ -1,10 +1,10 @@
 /**
  * Islamic Calendar Screen
- * Shows Hijri calendar with special days
+ * Shows Hijri Qamari (lunar) and Hijri Shamsi (solar) calendars with distinct themes
  */
 
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, Pressable, Switch } from 'react-native';
 import { Stack } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -15,8 +15,23 @@ import {
   HIJRI_MONTHS,
   SPECIAL_DAYS,
 } from '@/utils/islamicCalendar';
+import {
+  gregorianToAfghanSolarHijri,
+  formatAfghanSolarHijriDate,
+  AFGHAN_SOLAR_MONTHS,
+  getShamsiMonthLength,
+} from '@/utils/afghanSolarHijri';
+import {
+  loadCalendarNotificationPreferences,
+  saveCalendarNotificationPreferences,
+  scheduleCalendarNotifications,
+} from '@/utils/calendarNotifications';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+
+// Theme colors for each calendar type
+const QAMARI_COLOR = '#16a34a';
+const SHAMSI_COLOR = '#D4AF37';
 
 // Arabic number conversion
 const toArabicNumber = (num: number): string => {
@@ -24,18 +39,49 @@ const toArabicNumber = (num: number): string => {
   return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
 };
 
+type CalendarMode = 'qamari' | 'shamsi';
+
 export default function CalendarScreen() {
   const { theme } = useApp();
   const { state } = usePrayer();
   const today = new Date();
   const todayHijri = state.hijriDate || gregorianToHijri(today);
+  const todayShamsi = gregorianToAfghanSolarHijri(today);
+
+  const [mode, setMode] = useState<CalendarMode>('qamari');
   const [selectedMonth, setSelectedMonth] = useState(todayHijri.month - 1);
+  const [calendarNotifEnabled, setCalendarNotifEnabled] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(false);
 
-  const monthInfo = HIJRI_MONTHS[selectedMonth];
-  const specialDaysInMonth = SPECIAL_DAYS.filter(day => day.month === selectedMonth + 1);
+  // Sync selected month when switching modes
+  useEffect(() => {
+    if (mode === 'qamari') setSelectedMonth(todayHijri.month - 1);
+    else setSelectedMonth(todayShamsi.month - 1);
+  }, [mode, todayHijri.month, todayShamsi.month]);
 
-  // Generate days for the month (simplified - just show 30 days)
-  const daysInMonth = 30;
+  useEffect(() => {
+    loadCalendarNotificationPreferences().then((p) => setCalendarNotifEnabled(p.enabled));
+  }, []);
+
+  const handleCalendarNotifToggle = async (value: boolean) => {
+    setNotifLoading(true);
+    setCalendarNotifEnabled(value);
+    await saveCalendarNotificationPreferences({ enabled: value });
+    await scheduleCalendarNotifications(value);
+    setNotifLoading(false);
+  };
+
+  const monthInfo = mode === 'qamari'
+    ? HIJRI_MONTHS[selectedMonth]
+    : AFGHAN_SOLAR_MONTHS[selectedMonth];
+  const specialDaysInMonth = mode === 'qamari'
+    ? SPECIAL_DAYS.filter(day => day.month === selectedMonth + 1)
+    : [];
+  const daysInMonth = mode === 'qamari'
+    ? 30
+    : getShamsiMonthLength(mode === 'shamsi' ? todayShamsi.year : 1404, selectedMonth + 1);
+
+  const accentColor = mode === 'qamari' ? QAMARI_COLOR : SHAMSI_COLOR;
   const weekDays = ['شن', 'جم', 'پن', 'چه', 'سه', 'دو', 'یک'];
 
   return (
@@ -48,13 +94,56 @@ export default function CalendarScreen() {
         }}
       />
 
-      {/* Current Date */}
-      <View style={[styles.todayCard, { backgroundColor: theme.tint }]}>
+      {/* Tab: Qamari / Shamsi */}
+      <View style={[styles.tabRow, { backgroundColor: theme.backgroundSecondary }]}>
+        <Pressable
+          onPress={() => setMode('qamari')}
+          style={[
+            styles.tab,
+            mode === 'qamari' && { backgroundColor: QAMARI_COLOR },
+            mode === 'qamari' && styles.tabShadow,
+          ]}
+        >
+          <CenteredText style={[styles.tabText, { color: mode === 'qamari' ? '#fff' : theme.text }]}>
+            هجری قمری
+          </CenteredText>
+        </Pressable>
+        <Pressable
+          onPress={() => setMode('shamsi')}
+          style={[
+            styles.tab,
+            mode === 'shamsi' && { backgroundColor: SHAMSI_COLOR },
+            mode === 'shamsi' && styles.tabShadow,
+          ]}
+        >
+          <CenteredText style={[styles.tabText, { color: mode === 'shamsi' ? '#fff' : theme.text }]}>
+            هجری شمسی
+          </CenteredText>
+        </Pressable>
+      </View>
+
+      {/* Today Card - both dates, accent by mode */}
+      <View style={[
+        styles.todayCard,
+        { backgroundColor: accentColor },
+        mode === 'qamari' ? styles.todayCardQamari : styles.todayCardShamsi,
+      ]}>
         <CenteredText style={styles.todayLabel}>امروز</CenteredText>
         <CenteredText style={styles.todayDate}>
-          {formatHijriDate(todayHijri, 'dari')}
+          {mode === 'qamari'
+            ? formatHijriDate(todayHijri, 'dari')
+            : formatAfghanSolarHijriDate(todayShamsi, 'dari')}
         </CenteredText>
-        <CenteredText style={styles.todayYear}>{toArabicNumber(todayHijri.year)} هجری قمری</CenteredText>
+        <CenteredText style={styles.todayYear}>
+          {mode === 'qamari'
+            ? `${toArabicNumber(todayHijri.year)} هجری قمری`
+            : `${toArabicNumber(todayShamsi.year)} هجری شمسی`}
+        </CenteredText>
+        <CenteredText style={styles.todaySecondary}>
+          {mode === 'qamari'
+            ? formatAfghanSolarHijriDate(todayShamsi, 'dari') + ' شمسی'
+            : formatHijriDate(todayHijri, 'dari') + ' قمری'}
+        </CenteredText>
       </View>
 
       {/* Month Selector */}
@@ -69,9 +158,11 @@ export default function CalendarScreen() {
           <CenteredText style={[styles.monthNameDari, { color: theme.text }]}>
             {monthInfo.dari}
           </CenteredText>
-          <CenteredText style={[styles.monthNameArabic, { color: theme.textSecondary }]}>
-            {monthInfo.arabic}
-          </CenteredText>
+          {mode === 'qamari' ? (
+            <CenteredText style={[styles.monthNameArabic, { color: theme.textSecondary }]}>
+              {HIJRI_MONTHS[selectedMonth].arabic}
+            </CenteredText>
+          ) : null}
         </View>
         <Pressable
           onPress={() => setSelectedMonth(prev => (prev + 1) % 12)}
@@ -82,7 +173,11 @@ export default function CalendarScreen() {
       </View>
 
       {/* Calendar Grid */}
-      <View style={[styles.calendarCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+      <View style={[
+        styles.calendarCard,
+        { backgroundColor: theme.card, borderColor: theme.cardBorder },
+        mode === 'qamari' ? styles.calendarCardQamari : styles.calendarCardShamsi,
+      ]}>
         {/* Week Header */}
         <View style={styles.weekHeader}>
           {weekDays.map((day, index) => (
@@ -98,31 +193,33 @@ export default function CalendarScreen() {
         <View style={styles.daysGrid}>
           {[...Array(daysInMonth)].map((_, i) => {
             const dayNum = i + 1;
-            const isToday = todayHijri.month === selectedMonth + 1 && todayHijri.day === dayNum;
-            const specialDay = SPECIAL_DAYS.find(
-              d => d.month === selectedMonth + 1 && d.day === dayNum
-            );
+            const isTodayCell = mode === 'qamari'
+              ? todayHijri.month === selectedMonth + 1 && todayHijri.day === dayNum
+              : todayShamsi.month === selectedMonth + 1 && todayShamsi.day === dayNum;
+            const specialDay = mode === 'qamari'
+              ? SPECIAL_DAYS.find(d => d.month === selectedMonth + 1 && d.day === dayNum)
+              : null;
 
             return (
               <View
                 key={i}
                 style={[
                   styles.dayCell,
-                  isToday && { backgroundColor: theme.tint },
-                  specialDay && !isToday && { backgroundColor: `${theme.tint}15` },
+                  isTodayCell && { backgroundColor: accentColor },
+                  specialDay && !isTodayCell && { backgroundColor: `${accentColor}20` },
                 ]}
               >
                 <CenteredText
                   style={[
                     styles.dayNumber,
-                    { color: isToday ? '#fff' : theme.text },
-                    specialDay && !isToday && { color: theme.tint },
+                    { color: isTodayCell ? '#fff' : theme.text },
+                    specialDay && !isTodayCell && { color: accentColor },
                   ]}
                 >
                   {toArabicNumber(dayNum)}
                 </CenteredText>
                 {specialDay && (
-                  <View style={[styles.dayDot, { backgroundColor: isToday ? '#fff' : theme.tint }]} />
+                  <View style={[styles.dayDot, { backgroundColor: isTodayCell ? '#fff' : accentColor }]} />
                 )}
               </View>
             );
@@ -130,7 +227,31 @@ export default function CalendarScreen() {
         </View>
       </View>
 
-      {/* Special Days in Month */}
+      {/* Notification Toggle - Qamari only */}
+      <View style={[styles.section, styles.notifSection]}>
+        <View style={[styles.notifCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          <View style={styles.notifRow}>
+            <MaterialIcons name="notifications" size={24} color={calendarNotifEnabled ? QAMARI_COLOR : theme.icon} />
+            <View style={styles.notifTextWrap}>
+              <CenteredText style={[styles.notifTitle, { color: theme.text }]}>
+                اعلان مناسبت‌های قمری
+              </CenteredText>
+              <CenteredText style={[styles.notifDesc, { color: theme.textSecondary }]}>
+                نیم روز قبل از هر مناسبت مهم
+              </CenteredText>
+            </View>
+            <Switch
+              disabled={notifLoading}
+              value={calendarNotifEnabled}
+              onValueChange={handleCalendarNotifToggle}
+              trackColor={{ false: theme.cardBorder, true: `${QAMARI_COLOR}60` }}
+              thumbColor={calendarNotifEnabled ? QAMARI_COLOR : theme.icon}
+            />
+          </View>
+        </View>
+      </View>
+
+      {/* Special Days in Month - Qamari only */}
       {specialDaysInMonth.length > 0 && (
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
@@ -141,7 +262,7 @@ export default function CalendarScreen() {
               key={index}
               style={[styles.specialDayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
             >
-              <View style={[styles.specialDayDate, { backgroundColor: theme.tint }]}>
+              <View style={[styles.specialDayDate, { backgroundColor: QAMARI_COLOR }]}>
                 <CenteredText style={styles.specialDayNum}>{toArabicNumber(day.day)}</CenteredText>
               </View>
               <View style={styles.specialDayInfo}>
@@ -186,7 +307,7 @@ export default function CalendarScreen() {
               <View style={styles.worshipList}>
                 {day.worshipDari.map((worship, i) => (
                   <View key={i} style={styles.worshipItem}>
-                    <MaterialIcons name="check-circle" size={16} color={theme.tint} />
+                    <MaterialIcons name="check-circle" size={16} color={QAMARI_COLOR} />
                     <CenteredText style={[styles.worshipText, { color: theme.text }]}>
                       {worship}
                     </CenteredText>
@@ -207,12 +328,57 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  tabRow: {
+    flexDirection: 'row',
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.md,
+    padding: 4,
+    borderRadius: BorderRadius.lg,
+    gap: 4,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabShadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  tabText: {
+    fontSize: Typography.ui.body,
+    fontWeight: '600',
+  },
   todayCard: {
     marginHorizontal: Spacing.md,
     marginTop: Spacing.md,
     padding: Spacing.lg,
     borderRadius: BorderRadius.xl,
     alignItems: 'center',
+  },
+  todayCardQamari: {
+    shadowColor: QAMARI_COLOR,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  todayCardShamsi: {
+    shadowColor: SHAMSI_COLOR,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  todaySecondary: {
+    fontSize: Typography.ui.caption,
+    color: 'rgba(255,255,255,0.85)',
+    marginTop: Spacing.xs,
   },
   todayLabel: {
     fontSize: Typography.ui.caption,
@@ -262,6 +428,20 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
   },
+  calendarCardQamari: {
+    shadowColor: QAMARI_COLOR,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  calendarCardShamsi: {
+    shadowColor: SHAMSI_COLOR,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
+  },
   weekHeader: {
     flexDirection: 'row',
     marginBottom: Spacing.sm,
@@ -299,6 +479,33 @@ const styles = StyleSheet.create({
   section: {
     marginTop: Spacing.xl,
     paddingHorizontal: Spacing.md,
+  },
+  notifSection: {
+    marginTop: Spacing.lg,
+  },
+  notifCard: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+  },
+  notifRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  notifTextWrap: {
+    flex: 1,
+    alignItems: 'flex-end',
+  },
+  notifTitle: {
+    fontSize: Typography.ui.body,
+    fontWeight: '600',
+    textAlign: 'right',
+  },
+  notifDesc: {
+    fontSize: Typography.ui.caption,
+    marginTop: 2,
+    textAlign: 'right',
   },
   sectionTitle: {
     fontSize: Typography.ui.caption,

@@ -107,6 +107,16 @@ export function gregorianToAfghanSolarHijri(date: Date): AfghanSolarHijriDate {
 }
 
 /**
+ * Get number of days in a Solar Hijri month (1-12)
+ */
+export function getShamsiMonthLength(year: number, month: number): number {
+  const cyclePosition = (year - 1) % 33;
+  const isLeapYear = [1, 5, 9, 13, 17, 22, 26, 30].includes(cyclePosition);
+  const lengths = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, isLeapYear ? 30 : 29];
+  return lengths[month - 1] ?? 30;
+}
+
+/**
  * Format Afghan Solar Hijri date for display
  */
 export function formatAfghanSolarHijriDate(

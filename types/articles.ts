@@ -13,7 +13,8 @@ export type ArticleCategory =
   | 'anxiety' // اضطراب
   | 'rizq' // رزق
   | 'dua' // دعا
-  | 'tazkiyah'; // تزکیه
+  | 'tazkiyah' // تزکیه
+  | 'asma_husna'; // اسماء الحسنی
 
 export interface ArticleCategoryInfo {
   id: ArticleCategory;
@@ -79,6 +80,13 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     namePashto: 'تزکیه',
     icon: 'spa',
     color: '#795548',
+  },
+  asma_husna: {
+    id: 'asma_husna',
+    nameDari: 'اسماء الحسنی',
+    namePashto: 'اسماء الحسنی',
+    icon: 'self-improvement',
+    color: '#009688',
   },
 };
 

@@ -60,6 +60,12 @@ const CATEGORY_COLORS: Record<string, { primary: string; secondary: string; acce
     accent: '#C8E6C9',
     gradient: ['#2E7D32', '#388E3C', '#43A047'],
   },
+  asma_husna: {
+    primary: '#00695C', // Teal green
+    secondary: '#00796B',
+    accent: '#D4AF37', // Gold
+    gradient: ['#005B4F', '#00695C', '#00796B'],
+  },
 };
 
 /**

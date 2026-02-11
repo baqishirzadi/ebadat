@@ -7,7 +7,8 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Text, Modal, BackHandler } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius, PashtoFonts } from '@/constants/theme';
+import type { PashtoFontFamily } from '@/types/quran';
 import { PrayerTextBlock, PrayerStepGuide } from '@/components/prayer';
 import { DuaFeatureTile } from '@/components/dua/FeatureTile';
 import CenteredText from '@/components/CenteredText';
@@ -59,7 +60,8 @@ const iconMap: Record<string, IconName> = {
 };
 
 export default function PrayerLearningScreen() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
 
@@ -144,7 +146,7 @@ export default function PrayerLearningScreen() {
             <Text style={[styles.categoryTitle, { color: theme.text }]}>
               {category.title_dari}
             </Text>
-            <Text style={[styles.categoryTitlePashto, { color: theme.textSecondary }]}>
+            <Text style={[styles.categoryTitlePashto, { color: theme.textSecondary, fontFamily: pashtoFontFamily }]}>
               {category.title_pashto}
             </Text>
             <View style={[styles.sectionCount, { backgroundColor: category.color }]}>
@@ -207,9 +209,9 @@ export default function PrayerLearningScreen() {
                 <Text style={[styles.sectionTitle, { color: theme.text }]}>
                   {section.title_dari}
                 </Text>
-                <Text style={[styles.sectionTitlePashto, { color: theme.textSecondary }]}>
-                  {section.title_pashto}
-                </Text>
+<Text style={[styles.sectionTitlePashto, { color: theme.textSecondary, fontFamily: pashtoFontFamily }]}>
+                {section.title_pashto}
+              </Text>
               </View>
               <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
             </Pressable>
@@ -253,7 +255,7 @@ export default function PrayerLearningScreen() {
                       <Text style={styles.langBadgeText}>پښتو</Text>
                     </View>
                   </View>
-                  <Text style={[styles.contentText, { color: theme.text, fontFamily: 'NotoNastaliqUrdu', lineHeight: 42 }]}>
+                  <Text style={[styles.contentText, { color: theme.text, fontFamily: pashtoFontFamily, lineHeight: 42 }]}>
                     {currentSection.content_pashto}
                   </Text>
                 </>
@@ -276,7 +278,7 @@ export default function PrayerLearningScreen() {
                       {item.dari}
                     </Text>
                     {item.pashto && (
-                      <Text style={[styles.itemTextPashto, { color: theme.textSecondary }]}>
+                      <Text style={[styles.itemTextPashto, { color: theme.textSecondary, fontFamily: pashtoFontFamily }]}>
                         {item.pashto}
                       </Text>
                     )}
@@ -321,7 +323,7 @@ export default function PrayerLearningScreen() {
                       <View style={[styles.stepBullet, { backgroundColor: currentCategory?.color || theme.tint }]}>
                         <Text style={styles.stepBulletText}>{index + 1}</Text>
                       </View>
-                      <Text style={[styles.stepText, { color: theme.text, fontFamily: 'NotoNastaliqUrdu', lineHeight: 38 }]}>{step}</Text>
+                      <Text style={[styles.stepText, { color: theme.text, fontFamily: pashtoFontFamily, lineHeight: 38 }]}>{step}</Text>
                     </View>
                   ))}
                 </View>
@@ -350,7 +352,7 @@ export default function PrayerLearningScreen() {
                 >
                   <View style={[styles.prayerHeader, { backgroundColor: currentCategory.color }]}>
                     <Text style={styles.prayerName}>{prayer.name_dari}</Text>
-                    <Text style={styles.prayerNamePashto}>{prayer.name_pashto}</Text>
+                    <Text style={[styles.prayerNamePashto, { fontFamily: pashtoFontFamily }]}>{prayer.name_pashto}</Text>
                   </View>
                   <View style={styles.prayerDetails}>
                     <View style={styles.prayerRow}>
@@ -520,7 +522,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     marginTop: 2,
-    fontFamily: 'NotoNastaliqUrdu', lineHeight: 42,
+    lineHeight: 42,
   },
   sectionCount: {
     position: 'absolute',
@@ -588,7 +590,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
   sectionCard: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
@@ -596,9 +598,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   sectionNumber: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: Spacing.md,
@@ -622,7 +624,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     marginTop: 2,
-    fontFamily: 'NotoNastaliqUrdu', lineHeight: 42,
+    lineHeight: 42,
   },
   sectionDetailHeader: {
     paddingTop: 60,
@@ -657,7 +659,7 @@ const styles = StyleSheet.create({
   },
   contentText: {
     fontSize: Typography.ui.body,
-    textAlign: 'center',
+    textAlign: 'right',
     writingDirection: 'rtl',
     lineHeight: 28,
   },
@@ -668,14 +670,14 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   itemRow: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     padding: Spacing.md,
     alignItems: 'flex-start',
   },
   itemNumber: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: Spacing.sm,
@@ -690,16 +692,16 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: Typography.ui.body,
-    textAlign: 'center',
+    textAlign: 'right',
     writingDirection: 'rtl',
     lineHeight: 26,
   },
   itemTextPashto: {
     fontSize: Typography.ui.caption,
-    textAlign: 'center',
+    textAlign: 'right',
     writingDirection: 'rtl',
     marginTop: 4,
-    fontFamily: 'NotoNastaliqUrdu', lineHeight: 42,
+    lineHeight: 42,
   },
   prayersContainer: {
     gap: Spacing.md,
@@ -721,7 +723,7 @@ const styles = StyleSheet.create({
   prayerNamePashto: {
     color: 'rgba(255,255,255,0.8)',
     fontSize: Typography.ui.caption,
-    fontFamily: 'NotoNastaliqUrdu', lineHeight: 42,
+    lineHeight: 42,
   },
   prayerDetails: {
     padding: Spacing.md,
@@ -804,18 +806,19 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   stepItem: {
-    flexDirection: 'column',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     marginBottom: Spacing.md,
     paddingHorizontal: Spacing.sm,
+    justifyContent: 'center',
   },
   stepBullet: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: Spacing.xs,
+    marginLeft: Spacing.sm,
   },
   stepBulletText: {
     color: '#fff',
@@ -824,8 +827,9 @@ const styles = StyleSheet.create({
   },
   stepText: {
     fontSize: Typography.ui.body,
-    textAlign: 'center',
+    textAlign: 'right',
     writingDirection: 'rtl',
     lineHeight: 28,
+    flex: 1,
   },
 });

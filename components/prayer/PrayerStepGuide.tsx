@@ -6,7 +6,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useApp } from '@/context/AppContext';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius, PashtoFonts } from '@/constants/theme';
+import type { PashtoFontFamily } from '@/types/quran';
 
 interface Step {
   number: number;
@@ -28,8 +29,9 @@ export function PrayerStepGuide({
   steps,
   showBothLanguages = true,
 }: PrayerStepGuideProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
   const color = theme.tint;
+  const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
 
   return (
     <View style={styles.container}>
@@ -52,7 +54,7 @@ export function PrayerStepGuide({
               </Text>
             )}
             {showBothLanguages && (step.title_pashto || step.pashto) && (
-              <Text style={[styles.stepTitlePashto, { color: theme.textSecondary }]}>
+              <Text style={[styles.stepTitlePashto, { color: theme.textSecondary, fontFamily: pashtoFontFamily }]}>
                 {step.title_pashto || step.pashto}
               </Text>
             )}
@@ -73,7 +75,7 @@ export function PrayerStepGuide({
                 <View style={[styles.langIndicator, { backgroundColor: '#FF7043' }]}>
                   <Text style={styles.langIndicatorText}>پښتو</Text>
                 </View>
-                <Text style={[styles.descriptionText, { color: theme.text, fontFamily: 'NotoNastaliqUrdu', lineHeight: 42 }]}>
+                <Text style={[styles.descriptionText, { color: theme.text, fontFamily: pashtoFontFamily, lineHeight: 42 }]}>
                   {step.description_pashto}
                 </Text>
               </View>
@@ -90,17 +92,18 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
   stepCard: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     marginBottom: Spacing.md,
     overflow: 'hidden',
   },
   stepNumber: {
-    width: 40,
+    width: 44,
+    minHeight: 44,
     alignItems: 'center',
-    justifyContent: 'flex-start',
-    paddingTop: Spacing.md,
+    justifyContent: 'center',
+    paddingVertical: Spacing.md,
   },
   stepNumberText: {
     color: '#fff',
@@ -122,7 +125,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     textAlign: 'center',
     writingDirection: 'rtl',
-    fontFamily: 'NotoNastaliqUrdu', lineHeight: 42,
+    lineHeight: 42,
     marginBottom: Spacing.sm,
   },
   descriptionBlock: {

@@ -13,6 +13,10 @@ import {
   PrayerName,
   saveAdhanPreferences
 } from '@/utils/adhanManager';
+import {
+  loadCalendarNotificationPreferences,
+  scheduleCalendarNotifications,
+} from '@/utils/calendarNotifications';
 import { gregorianToHijri, HijriDate } from '@/utils/islamicCalendar';
 import {
   AFGHAN_CITIES,
@@ -339,6 +343,17 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     }
   }, [state.prayerTimes, state.adhanPreferences, scheduleAdhanNotifications]);
 
+  // Schedule calendar (Qamari) notifications when app has loaded
+  useEffect(() => {
+    if (!state.isLoading) {
+      loadCalendarNotificationPreferences().then((prefs) => {
+        scheduleCalendarNotifications(prefs.enabled).catch((err) => {
+          if (__DEV__) console.warn('Calendar notification schedule:', err);
+        });
+      });
+    }
+  }, [state.isLoading]);
+
   async function configureAndroidNotificationChannels(NotificationsModule: typeof import('expo-notifications')) {
     if (Platform.OS !== 'android') return;
     
@@ -385,6 +400,15 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         sound: undefined,
         enableVibrate: true,
         showBadge: false,
+      });
+
+      // Channel for calendar (Qamari) event notifications
+      await NotificationsModule.setNotificationChannelAsync('calendar-qamari', {
+        name: 'مناسبت‌های قمری',
+        importance: NotificationsModule.AndroidImportance.DEFAULT,
+        vibrationPattern: [0, 100],
+        enableVibrate: true,
+        showBadge: true,
       });
     } catch (error) {
       console.error('Failed to configure notification channels:', error);

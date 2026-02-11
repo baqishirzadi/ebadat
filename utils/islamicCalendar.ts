@@ -353,3 +353,25 @@ export function formatHijriDate(hijri: HijriDate, language: 'arabic' | 'dari' | 
   
   return `${hijri.day} ${monthName} ${hijri.year}`;
 }
+
+/**
+ * Convert Hijri date to Gregorian date.
+ * Uses linear search: iterates through Gregorian dates and matches via gregorianToHijri.
+ * Search range: -90 to +420 days from today (covers previous, current, and next Hijri year).
+ */
+export function hijriToGregorian(hijriYear: number, hijriMonth: number, hijriDay: number): Date | null {
+  const base = new Date();
+  base.setHours(0, 0, 0, 0);
+
+  for (let offset = -90; offset <= 420; offset++) {
+    const d = new Date(base);
+    d.setDate(d.getDate() + offset);
+
+    const h = gregorianToHijri(d);
+    if (h.year === hijriYear && h.month === hijriMonth && h.day === hijriDay) {
+      return d;
+    }
+  }
+
+  return null;
+}
