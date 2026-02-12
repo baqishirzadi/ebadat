@@ -11,7 +11,7 @@ import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useStats } from '@/context/StatsContext';
 import { usePrayer } from '@/context/PrayerContext';
-import { formatHijriDate, getUpcomingSpecialDays, hijriToGregorian } from '@/utils/islamicCalendar';
+import { formatHijriDate, getUpcomingSpecialDays, hijriToGregorian, HIJRI_MONTHS } from '@/utils/islamicCalendar';
 import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
@@ -211,6 +211,9 @@ export default function MoreScreen() {
                   {/* Date badge on left (last in RTL row so appears on left) */}
                   <View style={[styles.upcomingDate, { backgroundColor: theme.tint }]}>
                     <CenteredText style={styles.upcomingDay}>{toArabicNumber(day.day)}</CenteredText>
+                    <CenteredText style={styles.upcomingMonth} numberOfLines={1}>
+                      {HIJRI_MONTHS[day.month - 1]?.arabic ?? ''}
+                    </CenteredText>
                   </View>
                 </View>
               );
@@ -376,16 +379,23 @@ paddingRight: Spacing.sm,
     gap: Spacing.md,
   },
   upcomingDate: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 56,
+    minHeight: 56,
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingVertical: 4,
   },
   upcomingDay: {
     fontSize: Typography.ui.subtitle,
     fontWeight: '700',
     color: '#fff',
+  },
+  upcomingMonth: {
+    fontSize: 9,
+    color: 'rgba(255,255,255,0.95)',
+    marginTop: 1,
+    writingDirection: 'rtl',
   },
   upcomingInfo: {
     flex: 1,
@@ -394,14 +404,20 @@ paddingRight: Spacing.sm,
   upcomingName: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
   upcomingDesc: {
     fontSize: Typography.ui.caption,
     marginTop: 2,
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
   upcomingShamsi: {
     fontSize: 11,
     marginTop: 4,
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
   menuList: {
     gap: Spacing.sm,
