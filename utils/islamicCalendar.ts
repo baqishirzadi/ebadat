@@ -306,6 +306,16 @@ export function getUpcomingSpecialDays(hijriDate: HijriDate, count: number = 5):
   return upcoming;
 }
 
+/** Returns the first special day strictly after the given Hijri date (for next-event reminder). */
+export function getNextSpecialDay(hijriDate: HijriDate): SpecialDay | null {
+  for (const day of SPECIAL_DAYS) {
+    if (day.month > hijriDate.month || (day.month === hijriDate.month && day.day > hijriDate.day)) {
+      return day;
+    }
+  }
+  return SPECIAL_DAYS[0] ?? null; // wrap to next year
+}
+
 // Check if today is a recommended fasting day
 export function isFastingDay(date: Date): { isFasting: boolean; reason?: string; reasonDari?: string; reasonPashto?: string } {
   const hijri = gregorianToHijri(date);

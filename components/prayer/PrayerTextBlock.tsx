@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 50,
     writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   instructionContainer: {
     padding: Spacing.md,
@@ -115,6 +116,7 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
     marginBottom: Spacing.xs,
     fontStyle: 'italic',
+    includeFontPadding: false,
   },
   translationsContainer: {
     padding: Spacing.md,
@@ -140,6 +142,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     lineHeight: 28,
+    includeFontPadding: false,
   },
 });
 

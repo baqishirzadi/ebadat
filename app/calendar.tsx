@@ -14,12 +14,15 @@ import {
   formatHijriDate,
   HIJRI_MONTHS,
   SPECIAL_DAYS,
+  hijriToGregorian,
+  getNextSpecialDay,
 } from '@/utils/islamicCalendar';
 import {
   gregorianToAfghanSolarHijri,
   formatAfghanSolarHijriDate,
   AFGHAN_SOLAR_MONTHS,
   getShamsiMonthLength,
+  shamsiToGregorian,
 } from '@/utils/afghanSolarHijri';
 import {
   loadCalendarNotificationPreferences,
@@ -50,14 +53,21 @@ export default function CalendarScreen() {
 
   const [mode, setMode] = useState<CalendarMode>('qamari');
   const [selectedMonth, setSelectedMonth] = useState(todayHijri.month - 1);
+  const [displayYearHijri, setDisplayYearHijri] = useState(todayHijri.year);
+  const [displayYearShamsi, setDisplayYearShamsi] = useState(todayShamsi.year);
   const [calendarNotifEnabled, setCalendarNotifEnabled] = useState(false);
   const [notifLoading, setNotifLoading] = useState(false);
 
-  // Sync selected month when switching modes
+  // Sync selected month and year when switching modes
   useEffect(() => {
-    if (mode === 'qamari') setSelectedMonth(todayHijri.month - 1);
-    else setSelectedMonth(todayShamsi.month - 1);
-  }, [mode, todayHijri.month, todayShamsi.month]);
+    if (mode === 'qamari') {
+      setSelectedMonth(todayHijri.month - 1);
+      setDisplayYearHijri(todayHijri.year);
+    } else {
+      setSelectedMonth(todayShamsi.month - 1);
+      setDisplayYearShamsi(todayShamsi.year);
+    }
+  }, [mode, todayHijri.month, todayHijri.year, todayShamsi.month, todayShamsi.year]);
 
   useEffect(() => {
     loadCalendarNotificationPreferences().then((p) => setCalendarNotifEnabled(p.enabled));
@@ -79,10 +89,32 @@ export default function CalendarScreen() {
     : [];
   const daysInMonth = mode === 'qamari'
     ? 30
-    : getShamsiMonthLength(mode === 'shamsi' ? todayShamsi.year : 1404, selectedMonth + 1);
+    : getShamsiMonthLength(displayYearShamsi, selectedMonth + 1);
 
   const accentColor = mode === 'qamari' ? QAMARI_COLOR : SHAMSI_COLOR;
   const weekDays = ['شن', 'جم', 'پن', 'چه', 'سه', 'دو', 'یک'];
+
+  // Compute offset for first day of month (week starts Saturday in Dari)
+  // JS getDay: 0=Sun, 1=Mon, ..., 6=Sat. Our columns: 0=شن, 6=یک
+  const firstDayOffset = (() => {
+    if (mode === 'qamari') {
+      const d = hijriToGregorian(displayYearHijri, selectedMonth + 1, 1);
+      return d ? (6 - d.getDay() + 7) % 7 : 0;
+    }
+    const d = shamsiToGregorian(displayYearShamsi, selectedMonth + 1, 1);
+    return d ? (6 - d.getDay() + 7) % 7 : 0;
+  })();
+
+  // Special days to show: future/today in month, or next upcoming if all past
+  const specialDaysInMonthRaw = mode === 'qamari'
+    ? SPECIAL_DAYS.filter(d => d.month === selectedMonth + 1)
+    : [];
+  const futureInMonth = specialDaysInMonthRaw.filter(
+    d => d.month > todayHijri.month || (d.month === todayHijri.month && d.day >= todayHijri.day)
+  );
+  const specialDaysToShow = futureInMonth.length > 0
+    ? futureInMonth
+    : (mode === 'qamari' ? [getNextSpecialDay(todayHijri)].filter(Boolean) : []);
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -149,7 +181,16 @@ export default function CalendarScreen() {
       {/* Month Selector */}
       <View style={styles.monthSelector}>
         <Pressable
-          onPress={() => setSelectedMonth(prev => (prev - 1 + 12) % 12)}
+          onPress={() => {
+            setSelectedMonth(prev => {
+              const next = (prev - 1 + 12) % 12;
+              if (prev === 0 && next === 11) {
+                if (mode === 'qamari') setDisplayYearHijri(y => y - 1);
+                else setDisplayYearShamsi(y => y - 1);
+              }
+              return next;
+            });
+          }}
           style={[styles.monthArrow, { backgroundColor: theme.card }]}
         >
           <MaterialIcons name="chevron-right" size={28} color={theme.icon} />
@@ -165,21 +206,31 @@ export default function CalendarScreen() {
           ) : null}
         </View>
         <Pressable
-          onPress={() => setSelectedMonth(prev => (prev + 1) % 12)}
+          onPress={() => {
+            setSelectedMonth(prev => {
+              const next = (prev + 1) % 12;
+              if (prev === 11 && next === 0) {
+                if (mode === 'qamari') setDisplayYearHijri(y => y + 1);
+                else setDisplayYearShamsi(y => y + 1);
+              }
+              return next;
+            });
+          }}
           style={[styles.monthArrow, { backgroundColor: theme.card }]}
         >
           <MaterialIcons name="chevron-left" size={28} color={theme.icon} />
         </Pressable>
       </View>
 
-      {/* Calendar Grid */}
+      {/* Calendar Grid - LTR to ensure correct column alignment (Sat-Sun) */}
       <View style={[
         styles.calendarCard,
+        styles.calendarCardLTR,
         { backgroundColor: theme.card, borderColor: theme.cardBorder },
         mode === 'qamari' ? styles.calendarCardQamari : styles.calendarCardShamsi,
       ]}>
-        {/* Week Header */}
-        <View style={styles.weekHeader}>
+        {/* Week Header - explicit LTR for correct column alignment */}
+        <View style={[styles.weekHeader, styles.gridLTR]}>
           {weekDays.map((day, index) => (
             <View key={index} style={styles.weekDay}>
               <CenteredText style={[styles.weekDayText, { color: theme.textSecondary }]}>
@@ -189,41 +240,67 @@ export default function CalendarScreen() {
           ))}
         </View>
 
-        {/* Days Grid */}
+        {/* Days Grid - explicit row-based layout for correct column alignment */}
         <View style={styles.daysGrid}>
-          {[...Array(daysInMonth)].map((_, i) => {
-            const dayNum = i + 1;
-            const isTodayCell = mode === 'qamari'
-              ? todayHijri.month === selectedMonth + 1 && todayHijri.day === dayNum
-              : todayShamsi.month === selectedMonth + 1 && todayShamsi.day === dayNum;
-            const specialDay = mode === 'qamari'
-              ? SPECIAL_DAYS.find(d => d.month === selectedMonth + 1 && d.day === dayNum)
-              : null;
+          {(() => {
+            const totalCells = Math.ceil((firstDayOffset + daysInMonth) / 7) * 7;
+            const numRows = totalCells / 7;
+            const rows: React.ReactNode[] = [];
+            for (let r = 0; r < numRows; r++) {
+              const cells: React.ReactNode[] = [];
+              for (let c = 0; c < 7; c++) {
+                const index = r * 7 + c;
+                const dayNum = index >= firstDayOffset && index < firstDayOffset + daysInMonth
+                  ? index - firstDayOffset + 1
+                  : null;
+                const isTodayCell = dayNum !== null && (mode === 'qamari'
+                  ? todayHijri.month === selectedMonth + 1 && todayHijri.day === dayNum
+                  : todayShamsi.month === selectedMonth + 1 && todayShamsi.day === dayNum);
+                const specialDay = dayNum !== null && mode === 'qamari'
+                  ? SPECIAL_DAYS.find(d => d.month === selectedMonth + 1 && d.day === dayNum)
+                  : null;
+                const isPastSpecial = specialDay && (
+                  selectedMonth + 1 < todayHijri.month ||
+                  (selectedMonth + 1 === todayHijri.month && dayNum! < todayHijri.day)
+                );
+                const showSpecialHighlight = specialDay && !isPastSpecial;
 
-            return (
-              <View
-                key={i}
-                style={[
-                  styles.dayCell,
-                  isTodayCell && { backgroundColor: accentColor },
-                  specialDay && !isTodayCell && { backgroundColor: `${accentColor}20` },
-                ]}
-              >
-                <CenteredText
-                  style={[
-                    styles.dayNumber,
-                    { color: isTodayCell ? '#fff' : theme.text },
-                    specialDay && !isTodayCell && { color: accentColor },
-                  ]}
-                >
-                  {toArabicNumber(dayNum)}
-                </CenteredText>
-                {specialDay && (
-                  <View style={[styles.dayDot, { backgroundColor: isTodayCell ? '#fff' : accentColor }]} />
-                )}
-              </View>
-            );
-          })}
+                cells.push(
+                  <View
+                    key={c}
+                    style={[
+                      styles.dayCell,
+                      isTodayCell && { backgroundColor: accentColor },
+                      showSpecialHighlight && !isTodayCell && { backgroundColor: `${accentColor}20` },
+                    ]}
+                  >
+                    {dayNum !== null ? (
+                      <>
+                        <CenteredText
+                          style={[
+                            styles.dayNumber,
+                            { color: isTodayCell ? '#fff' : theme.text },
+                            showSpecialHighlight && !isTodayCell && { color: accentColor },
+                          ]}
+                        >
+                          {toArabicNumber(dayNum)}
+                        </CenteredText>
+                        {showSpecialHighlight && (
+                          <View style={[styles.dayDot, { backgroundColor: isTodayCell ? '#fff' : accentColor }]} />
+                        )}
+                      </>
+                    ) : null}
+                  </View>
+                );
+              }
+              rows.push(
+                <View key={r} style={[styles.daysRow, styles.gridLTR]}>
+                  {cells}
+                </View>
+              );
+            }
+            return rows;
+          })()}
         </View>
       </View>
 
@@ -252,12 +329,12 @@ export default function CalendarScreen() {
       </View>
 
       {/* Special Days in Month - Qamari only */}
-      {specialDaysInMonth.length > 0 && (
+      {specialDaysToShow.length > 0 && (
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-            مناسبت‌های {monthInfo.dari}
+            {futureInMonth.length > 0 ? `مناسبت‌های ${monthInfo.dari}` : 'مناسبت مهم بعدی'}
           </CenteredText>
-          {specialDaysInMonth.map((day, index) => (
+          {specialDaysToShow.map((day, index) => (
             <View
               key={index}
               style={[styles.specialDayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
@@ -268,6 +345,7 @@ export default function CalendarScreen() {
               <View style={styles.specialDayInfo}>
                 <CenteredText style={[styles.specialDayName, { color: theme.text }]}>
                   {day.nameDari}
+                  {day.month !== selectedMonth + 1 && ` (${HIJRI_MONTHS[day.month - 1].dari})`}
                 </CenteredText>
                 <CenteredText style={[styles.specialDayDesc, { color: theme.textSecondary }]} numberOfLines={2}>
                   {day.descriptionDari}
@@ -291,12 +369,12 @@ export default function CalendarScreen() {
       )}
 
       {/* Worship Guide */}
-      {specialDaysInMonth.length > 0 && (
+      {specialDaysToShow.length > 0 && (
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
             راهنمای عبادت
           </CenteredText>
-          {specialDaysInMonth.slice(0, 3).map((day, index) => (
+          {specialDaysToShow.slice(0, 3).map((day, index) => (
             <View
               key={index}
               style={[styles.worshipCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
@@ -428,6 +506,16 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
   },
+  calendarCardLTR: {
+    direction: 'ltr' as const,
+  },
+  gridLTR: {
+    direction: 'ltr' as const,
+  },
+  daysRow: {
+    flexDirection: 'row',
+    width: '100%',
+  },
   calendarCardQamari: {
     shadowColor: QAMARI_COLOR,
     shadowOffset: { width: 0, height: 2 },
@@ -449,6 +537,7 @@ const styles = StyleSheet.create({
   weekDay: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
     paddingVertical: Spacing.sm,
   },
   weekDayText: {
@@ -456,11 +545,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   daysGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    gap: 0,
   },
   dayCell: {
-    width: `${100 / 7}%`,
+    flex: 1,
     aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',

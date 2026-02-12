@@ -148,6 +148,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     lineHeight: 26,
+    includeFontPadding: false,
   },
 });
 

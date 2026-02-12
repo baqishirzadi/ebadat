@@ -12,6 +12,11 @@ import { useApp } from '@/context/AppContext';
 import { useStats } from '@/context/StatsContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import {
+  RAMADAN_DAILY_MAP,
+  RAMADAN_SMALL_GOALS,
+  RAMADAN_SUHOOR_IFTAAR_TIPS,
+} from '@/constants/ramadanContent';
 
 // Arabic number conversion
 const toArabicNumber = (num: number): string => {
@@ -244,10 +249,125 @@ export default function RamadanScreen() {
       <View style={[styles.tipsCard, { backgroundColor: `${theme.tint}10`, borderColor: theme.tint }]}>
         <MaterialIcons name="lightbulb" size={24} color={theme.tint} />
         <View style={styles.tipsContent}>
-          <CenteredText style={[styles.tipsTitle, { color: theme.tint }]}>نکته</CenteredText>
+          <CenteredText style={[styles.tipsTitle, { color: theme.tint }]}>نکته روز</CenteredText>
+          <CenteredText style={[styles.tipsTitlePashto, { color: theme.tint }]}>د نن ګټوره مشوره</CenteredText>
           <CenteredText style={[styles.tipsText, { color: theme.text }]}>
             برای ختم قرآن در رمضان، هر روز حدود ۲۰ صفحه (یک جز) تلاوت کنید.
           </CenteredText>
+          <CenteredText style={[styles.tipsTextPashto, { color: theme.textSecondary }]}>
+            د قرآن ختم لپاره هره ورځ شاوخوا ۲۰ مخه (یو جزء) په دوامداره ډول تلاوت کړئ.
+          </CenteredText>
+        </View>
+      </View>
+
+      {/* Daily Map Section */}
+      <View style={styles.section}>
+        <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>نقشه روز رمضان</CenteredText>
+        <CenteredText style={[styles.sectionTitlePashto, { color: theme.textSecondary }]}>
+          د رمضان د ورځې ساده نقشه
+        </CenteredText>
+        <View style={[styles.infoSectionCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          {RAMADAN_DAILY_MAP.map((item, index) => (
+            <View
+              key={item.id}
+              style={[
+                styles.infoRow,
+                index > 0 && { borderTopWidth: 1, borderTopColor: theme.cardBorder },
+              ]}
+            >
+              <View style={[styles.infoIcon, { backgroundColor: `${theme.tint}18` }]}>
+                <MaterialIcons name={item.icon} size={20} color={theme.tint} />
+              </View>
+              <View style={styles.infoContent}>
+                <CenteredText style={[styles.infoTitle, { color: theme.text }]}>
+                  {item.dariTitle}
+                </CenteredText>
+                <CenteredText style={[styles.infoText, { color: theme.textSecondary }]}>
+                  {item.dariText}
+                </CenteredText>
+                <CenteredText style={[styles.infoTitlePashto, { color: theme.text }]}>
+                  {item.pashtoTitle}
+                </CenteredText>
+                <CenteredText style={[styles.infoTextPashto, { color: theme.textSecondary }]}>
+                  {item.pashtoText}
+                </CenteredText>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Suhoor and Iftar Tips */}
+      <View style={styles.section}>
+        <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>نکات کاربردی سحری و افطار</CenteredText>
+        <CenteredText style={[styles.sectionTitlePashto, { color: theme.textSecondary }]}>
+          د پشمني او افطار عملي سپارښتنې
+        </CenteredText>
+        <View style={[styles.infoSectionCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          {RAMADAN_SUHOOR_IFTAAR_TIPS.map((item, index) => (
+            <View
+              key={item.id}
+              style={[
+                styles.infoRow,
+                index > 0 && { borderTopWidth: 1, borderTopColor: theme.cardBorder },
+              ]}
+            >
+              <View style={[styles.infoIcon, { backgroundColor: `${theme.tint}18` }]}>
+                <MaterialIcons name={item.icon} size={20} color={theme.tint} />
+              </View>
+              <View style={styles.infoContent}>
+                <CenteredText style={[styles.infoTitle, { color: theme.text }]}>
+                  {item.dariTitle}
+                </CenteredText>
+                <CenteredText style={[styles.infoText, { color: theme.textSecondary }]}>
+                  {item.dariText}
+                </CenteredText>
+                <CenteredText style={[styles.infoTitlePashto, { color: theme.text }]}>
+                  {item.pashtoTitle}
+                </CenteredText>
+                <CenteredText style={[styles.infoTextPashto, { color: theme.textSecondary }]}>
+                  {item.pashtoText}
+                </CenteredText>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      {/* Small Goals */}
+      <View style={styles.section}>
+        <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>هدف‌های کوچک روزانه</CenteredText>
+        <CenteredText style={[styles.sectionTitlePashto, { color: theme.textSecondary }]}>
+          د ورځې کوچني هدفونه
+        </CenteredText>
+        <View style={[styles.infoSectionCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          {RAMADAN_SMALL_GOALS.map((item, index) => (
+            <View
+              key={item.id}
+              style={[
+                styles.infoRow,
+                index > 0 && { borderTopWidth: 1, borderTopColor: theme.cardBorder },
+              ]}
+            >
+              <View style={[styles.infoIcon, { backgroundColor: `${theme.tint}18` }]}>
+                <MaterialIcons name={item.icon} size={20} color={theme.tint} />
+              </View>
+              <View style={styles.infoContent}>
+                <CenteredText style={[styles.infoTitle, { color: theme.text }]}>
+                  {item.dariTitle}
+                </CenteredText>
+                <CenteredText style={[styles.infoText, { color: theme.textSecondary }]}>
+                  {item.dariText}
+                </CenteredText>
+                <CenteredText style={[styles.infoTitlePashto, { color: theme.text }]}>
+                  {item.pashtoTitle}
+                </CenteredText>
+                <CenteredText style={[styles.infoTextPashto, { color: theme.textSecondary }]}>
+                  {item.pashtoText}
+                </CenteredText>
+              </View>
+            </View>
+          ))}
         </View>
       </View>
 
@@ -409,13 +529,96 @@ const styles = StyleSheet.create({
   tipsTitle: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
+    marginBottom: 2,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
+  },
+  tipsTitlePashto: {
+    fontSize: Typography.ui.caption,
     marginBottom: Spacing.xs,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   tipsText: {
     fontSize: Typography.ui.caption,
-    lineHeight: 20,
+    lineHeight: 22,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
+  },
+  tipsTextPashto: {
+    fontSize: Typography.ui.caption,
+    lineHeight: 36,
+    marginTop: Spacing.xs,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
+  },
+  sectionTitlePashto: {
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    marginBottom: Spacing.sm,
+    includeFontPadding: false,
+  },
+  infoSectionCard: {
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    padding: Spacing.md,
+    gap: Spacing.sm,
+  },
+  infoIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  infoContent: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  infoTitle: {
+    fontSize: Typography.ui.body,
+    fontWeight: '700',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
+  },
+  infoText: {
+    marginTop: Spacing.xs,
+    fontSize: Typography.ui.caption,
+    lineHeight: 22,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
+  },
+  infoTitlePashto: {
+    marginTop: Spacing.sm,
+    fontSize: Typography.ui.caption,
+    fontWeight: '700',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    lineHeight: 34,
+    includeFontPadding: false,
+  },
+  infoTextPashto: {
+    marginTop: 2,
+    fontSize: Typography.ui.caption,
+    lineHeight: 34,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   bottomPadding: {
-    height: 40,
+    height: 56,
   },
 });

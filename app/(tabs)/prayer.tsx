@@ -1,11 +1,8 @@
-import React, { useState, useCallback } from 'react';
-import { usePrayerTimes, CityKey } from '@/hooks/usePrayerTimes';
-import CenteredText from '@/components/CenteredText';
-import { 
-  View, 
-  StyleSheet, 
-  ScrollView, 
-  TouchableOpacity, 
+import React, { useState, useCallback, useEffect, useRef } from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
   ActivityIndicator,
   Pressable,
   Text,
@@ -13,16 +10,23 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import CenteredText from '@/components/CenteredText';
+import { CitySelectorModal } from '@/components/prayer';
 import { useApp } from '@/context/AppContext';
+import { usePrayer } from '@/context/PrayerContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { usePrayerTimes } from '@/hooks/usePrayerTimes';
+import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
+import { getCity, getImportantCities } from '@/utils/cities';
+import { gregorianToHijri } from '@/utils/islamicCalendar';
+import { RamadanFeatureTile } from '@/components/ramadan/RamadanFeatureTile';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GOLD = '#D4AF37';
 const GOLD_LIGHT = '#E8D48A';
-import { getCity, getImportantCities } from '@/utils/cities';
-import { CitySelectorModal } from '@/components/prayer';
-import { gregorianToHijri, formatHijriDate } from '@/utils/islamicCalendar';
-import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
+
+// Afghan cities supported by PrayerContext.setCity (short keys)
+const PRAYER_CONTEXT_AFGHAN_KEYS = ['kabul', 'herat', 'mazar', 'kandahar', 'jalalabad', 'kunduz', 'ghazni', 'bamiyan', 'farah', 'badakhshan'];
 
 // Prayer name translations to Dari
 const PRAYER_NAMES_DARI: Record<string, string> = {
@@ -34,10 +38,34 @@ const PRAYER_NAMES_DARI: Record<string, string> = {
   'عشاء': 'خفتن',
 };
 
+// Emojis for each prayer (common in Islamic apps: moon=dawn/night, sun=noon, sunset=maghrib)
+const PRAYER_EMOJIS: Record<string, string> = {
+  'فجر': '🌙',   // قمر - قبل از طلوع
+  'طلوع': '🌅',  // طلوع آفتاب
+  'ظهر': '☀️',   // ظهر - آفتاب وسط آسمان
+  'عصر': '🌤️',   // عصر - بعدازظهر
+  'مغرب': '🌇',  // غروب آفتاب
+  'عشاء': '🌙',  // عشا - شب
+};
+
+// Gregorian month names in Dari (جنوری، فبروری، مارچ ...)
+const GREGORIAN_MONTHS_DARI = [
+  'جنوری', 'فبروری', 'مارچ', 'اپریل', 'می', 'جون',
+  'جولای', 'اگست', 'سپتمبر', 'اکتوبر', 'نومبر', 'دسمبر',
+];
+
 // Convert to Persian/Dari numerals
 function toPersianNumerals(num: number): string {
   const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
   return num.toString().split('').map(d => persianDigits[parseInt(d)]).join('');
+}
+
+// Format Gregorian date with Dari month name (e.g. ۱۲ فبروری ۲۰۲۶)
+function formatGregorianWithDariMonth(date: Date): string {
+  const day = date.getDate();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  return `${toPersianNumerals(day)} ${GREGORIAN_MONTHS_DARI[month]} ${toPersianNumerals(year)}`;
 }
 
 // Format triple date: Hijri Qamari → Hijri Shamsi → Miladi
@@ -50,8 +78,8 @@ function formatTripleDate(date: Date): string {
   const hijriShamsi = gregorianToAfghanSolarHijri(date);
   const hijriShamsiFormatted = formatAfghanSolarHijriDateWithPersianNumerals(hijriShamsi, 'dari');
   
-  // Miladi (Gregorian)
-  const miladiFormatted = date.toLocaleDateString('fa-AF');
+  // Miladi (Gregorian) - با نام ماه به دری
+  const miladiFormatted = formatGregorianWithDariMonth(date);
   
   return `${hijriQamariFormatted} → ${hijriShamsiFormatted} → ${miladiFormatted}`;
 }
@@ -79,6 +107,7 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
 export default function NamazScreen() {
   const { theme } = useApp();
   const router = useRouter();
+  const { setCity, setCustomLocation } = usePrayer();
   const { 
     prayerTimes, 
     selectedCity, 
@@ -91,6 +120,42 @@ export default function NamazScreen() {
 
   const selectedCityData = getCity(selectedCity);
   const importantCities = getImportantCities();
+
+  // Sync city to PrayerContext so adhan notifications use the same location
+  const syncCityToPrayerContext = useCallback(async (cityKey: string) => {
+    if (cityKey.startsWith('afghanistan_')) {
+      const shortKey = cityKey.replace('afghanistan_', '');
+      if (PRAYER_CONTEXT_AFGHAN_KEYS.includes(shortKey)) {
+        await setCity(shortKey);
+        return;
+      }
+    }
+    const city = getCity(cityKey);
+    if (city) {
+      await setCustomLocation(
+        { latitude: city.lat, longitude: city.lon, altitude: city.altitude || 0, timezone: city.timezone },
+        city.name
+      );
+    }
+  }, [setCity, setCustomLocation]);
+
+  const handleCityChange = useCallback(async (cityKey: string) => {
+    await changeCity(cityKey);
+    await syncCityToPrayerContext(cityKey);
+  }, [changeCity, syncCityToPrayerContext]);
+
+  // Sync city to PrayerContext when it changes (so adhan notifications match displayed times)
+  // Use ref to avoid infinite loop: syncCityToPrayerContext must NOT be in deps because
+  // setCity/setCustomLocation change when PrayerContext re-renders, causing syncCityToPrayerContext
+  // to change, which would re-trigger this effect and loop.
+  const lastSyncedCityRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!loading && selectedCity && selectedCity !== lastSyncedCityRef.current) {
+      lastSyncedCityRef.current = selectedCity;
+      syncCityToPrayerContext(selectedCity).catch(() => {});
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- syncCityToPrayerContext omitted to prevent infinite loop
+  }, [loading, selectedCity]);
 
   if (loading || !prayerTimes) {
     return (
@@ -127,7 +192,17 @@ export default function NamazScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Compact City Selector */}
+        {/* Header - هم‌وزن با دیگر تب‌ها */}
+        <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+          <MaterialIcons name="schedule" size={40} color="#fff" />
+          <CenteredText style={styles.headerTitle}>اوقات نماز</CenteredText>
+          <CenteredText style={styles.headerSubtitle}>
+            {selectedCityData?.name || 'کابل'}
+          </CenteredText>
+        </View>
+
+        {/* Content with horizontal padding */}
+        <View style={styles.contentWrapper}>
         <View style={[styles.cityHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
           <View style={styles.cityInfo}>
             <MaterialIcons name="location-on" size={20} color={theme.tint} />
@@ -175,7 +250,7 @@ export default function NamazScreen() {
                   <Pressable
                     key={key}
                     onPress={() => {
-                      changeCity(key);
+                      handleCityChange(key);
                       setShowQuickCities(false);
                     }}
                     style={({ pressed }) => [
@@ -251,17 +326,17 @@ export default function NamazScreen() {
             </View>
 
             {/* Prayer Times */}
-            <PrayerTimeRow name="فجر" dariName={PRAYER_NAMES_DARI['فجر']} time={prayerTimes.fajr} theme={theme} />
+            <PrayerTimeRow name="فجر" emoji={PRAYER_EMOJIS['فجر']} dariName={PRAYER_NAMES_DARI['فجر']} time={prayerTimes.fajr} theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="طلوع" dariName={PRAYER_NAMES_DARI['طلوع']} time={prayerTimes.sunrise} secondary theme={theme} />
+            <PrayerTimeRow name="طلوع" emoji={PRAYER_EMOJIS['طلوع']} dariName={PRAYER_NAMES_DARI['طلوع']} time={prayerTimes.sunrise} secondary theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="ظهر" dariName={PRAYER_NAMES_DARI['ظهر']} time={prayerTimes.dhuhr} theme={theme} />
+            <PrayerTimeRow name="ظهر" emoji={PRAYER_EMOJIS['ظهر']} dariName={PRAYER_NAMES_DARI['ظهر']} time={prayerTimes.dhuhr} theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="عصر" dariName={PRAYER_NAMES_DARI['عصر']} time={prayerTimes.asr} theme={theme} />
+            <PrayerTimeRow name="عصر" emoji={PRAYER_EMOJIS['عصر']} dariName={PRAYER_NAMES_DARI['عصر']} time={prayerTimes.asr} theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="مغرب" dariName={PRAYER_NAMES_DARI['مغرب']} time={prayerTimes.maghrib} theme={theme} />
+            <PrayerTimeRow name="مغرب" emoji={PRAYER_EMOJIS['مغرب']} dariName={PRAYER_NAMES_DARI['مغرب']} time={prayerTimes.maghrib} theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="عشاء" dariName={PRAYER_NAMES_DARI['عشاء']} time={prayerTimes.isha} theme={theme} />
+            <PrayerTimeRow name="عشاء" emoji={PRAYER_EMOJIS['عشاء']} dariName={PRAYER_NAMES_DARI['عشاء']} time={prayerTimes.isha} theme={theme} />
           </View>
         </View>
 
@@ -294,6 +369,9 @@ export default function NamazScreen() {
           </View>
           <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
         </Pressable>
+
+        <RamadanFeatureTile style={styles.ramadanCard} variant="compact" />
+        </View>
       </ScrollView>
 
       {/* City Selection Modal */}
@@ -301,7 +379,7 @@ export default function NamazScreen() {
         visible={showCityModal}
         selectedCity={selectedCity}
         onSelectCity={(cityKey) => {
-          changeCity(cityKey);
+          handleCityChange(cityKey);
           setShowCityModal(false);
         }}
         onClose={() => setShowCityModal(false)}
@@ -310,23 +388,28 @@ export default function NamazScreen() {
   );
 }
 
-function PrayerTimeRow({ 
-  name, 
+function PrayerTimeRow({
+  name,
+  emoji,
   dariName,
-  time, 
+  time,
   secondary = false,
   theme,
-}: { 
-  name: string; 
+}: {
+  name: string;
+  emoji?: string;
   dariName?: string;
-  time: string; 
+  time: string;
   secondary?: boolean;
   theme: any;
 }) {
   return (
     <View style={[styles.timeRow, secondary && styles.timeRowSecondary]}>
+      <View style={styles.emojiContainer}>
+        <Text style={styles.emojiText}>{emoji || ''}</Text>
+      </View>
       <View style={styles.prayerNameContainer}>
-        <Text style={[styles.prayerName, { color: theme.text }]}>
+        <Text style={[styles.prayerName, { color: theme.text }]} numberOfLines={1}>
           {name}
           {dariName && (
             <Text style={[styles.prayerNameDari, { color: theme.textSecondary }]}>
@@ -335,7 +418,9 @@ function PrayerTimeRow({
           )}
         </Text>
       </View>
-      <CenteredText style={[styles.prayerTime, { color: theme.tint }]}>{time}</CenteredText>
+      <View style={styles.timeContainer}>
+        <Text style={[styles.prayerTime, { color: theme.tint }]}>{time}</Text>
+      </View>
     </View>
   );
 }
@@ -348,7 +433,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: Spacing.md,
     paddingBottom: Spacing.xxl,
   },
   loading: {
@@ -356,11 +440,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  header: {
+    paddingTop: 60,
+    paddingBottom: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    alignItems: 'center',
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    overflow: 'hidden',
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#fff',
+    marginTop: Spacing.sm,
+  },
+  headerSubtitle: {
+    fontSize: Typography.ui.body,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: Spacing.xs,
+  },
+  contentWrapper: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+  },
   cityHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: Spacing.md,
+    padding: Spacing.sm,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     marginBottom: Spacing.sm,
@@ -473,7 +581,7 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   timesContainer: {
-    padding: Spacing.lg,
+    padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 2,
     position: 'relative',
@@ -553,13 +661,13 @@ const styles = StyleSheet.create({
     height: 1,
   },
   dateContainer: {
-    marginBottom: Spacing.lg,
-    paddingVertical: Spacing.sm,
+    marginBottom: Spacing.sm,
+    paddingVertical: Spacing.xs,
   },
   decorativeLine: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: Spacing.sm,
+    marginVertical: Spacing.xs,
     width: '100%',
   },
   lineLeft: {
@@ -576,43 +684,58 @@ const styles = StyleSheet.create({
   },
   prayerDivider: {
     height: 1,
-    marginVertical: Spacing.xs,
+    marginVertical: 2,
     marginHorizontal: Spacing.md,
   },
   date: {
-    fontSize: Typography.ui.subtitle,
+    fontSize: Typography.ui.body,
     fontWeight: '700',
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.sm,
     fontFamily: 'Vazirmatn',
   },
   timeRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 4,
+    gap: Spacing.md,
   },
   timeRowSecondary: {
     opacity: 0.7,
   },
+  timeContainer: {
+    minWidth: 78,
+    alignItems: 'center',
+  },
   prayerNameContainer: {
-    flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
+    minWidth: 90,
   },
   prayerName: {
     fontSize: Typography.ui.body,
     fontWeight: '500',
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   prayerNameDari: {
     fontSize: Typography.ui.body,
     fontWeight: '400',
     fontFamily: 'Vazirmatn',
   },
+  emojiContainer: {
+    width: 28,
+    alignItems: 'center',
+  },
+  emojiText: {
+    fontSize: 20,
+  },
   prayerTime: {
     fontSize: Typography.ui.subtitle,
     fontWeight: '700',
-    flex: 1,
     fontFamily: 'Vazirmatn',
+    textAlign: 'center',
   },
   note: {
     padding: Spacing.md,
@@ -669,5 +792,9 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     color: 'rgba(255,255,255,0.85)',
     fontFamily: 'Vazirmatn',
+  },
+  ramadanCard: {
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
 });

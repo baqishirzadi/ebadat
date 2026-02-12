@@ -13,6 +13,9 @@
 - ✅ Articles index default export اضافه شد
 - ✅ Expo Go notification errors برطرف شدند
 
+### همگام‌سازی شهر
+- ✅ تب نماز و PrayerContext: هنگام تغییر شهر در تب اوقات نماز، مکان اذان به‌روز می‌شود
+
 ## ✅ مشکلات برطرف شده
 
 ### 1. Firebase Configuration
@@ -65,11 +68,12 @@ EXPO_PUBLIC_FIREBASE_APP_ID=...
 - Version string (`1.0.0`) را طبق semantic versioning به‌روزرسانی کنید
 
 ### 3. Testing Checklist
-- [ ] تست در Expo Go
-- [ ] تست در development build
+- [ ] تست در Expo Go (ذکر: اذان/نوتیفیکیشن در Expo Go کار نمی‌کند)
+- [ ] تست در **development build** (الزامی برای اذان و نوتیفیکیشن‌ها)
 - [ ] تست در production build
 - [ ] تست offline functionality
-- [ ] تست notifications
+- [ ] تست اذان (صبح/مغرب با صدا، سایر بی‌صدا)
+- [ ] تست نوتیفیکیشن تقویم قمری
 - [ ] تست location permissions
 - [ ] تست در دستگاه‌های مختلف Android
 - [ ] تست در iOS (اگر iOS build می‌کنید)

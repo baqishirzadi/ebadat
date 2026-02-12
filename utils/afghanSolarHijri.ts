@@ -136,6 +136,27 @@ function toPersianNumerals(num: number): string {
 }
 
 /**
+ * Convert Afghan Solar Hijri (Shamsi) date to Gregorian.
+ * Uses linear search similar to hijriToGregorian.
+ */
+export function shamsiToGregorian(shamsiYear: number, shamsiMonth: number, shamsiDay: number): Date | null {
+  const base = new Date();
+  base.setHours(0, 0, 0, 0);
+
+  for (let offset = -400; offset <= 400; offset++) {
+    const d = new Date(base);
+    d.setDate(d.getDate() + offset);
+
+    const s = gregorianToAfghanSolarHijri(d);
+    if (s.year === shamsiYear && s.month === shamsiMonth && s.day === shamsiDay) {
+      return d;
+    }
+  }
+
+  return null;
+}
+
+/**
  * Format date with Persian numerals
  */
 export function formatAfghanSolarHijriDateWithPersianNumerals(

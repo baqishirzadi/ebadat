@@ -11,7 +11,8 @@ import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useStats } from '@/context/StatsContext';
 import { usePrayer } from '@/context/PrayerContext';
-import { formatHijriDate, getUpcomingSpecialDays } from '@/utils/islamicCalendar';
+import { formatHijriDate, getUpcomingSpecialDays, hijriToGregorian } from '@/utils/islamicCalendar';
+import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
 import {
@@ -30,6 +31,22 @@ const toArabicNumber = (num: number): string => {
   const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
   return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
 };
+
+// Weekday names in Dari (JS getDay: 0=Sun, 1=Mon, ..., 6=Sat)
+const WEEKDAY_DARI = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+
+/** Get Shamsi date and weekday string for a Hijri event (e.g. "۲۲ حمل ۱۴۰۴ • شنبه") */
+function getShamsiAndWeekday(
+  hijriYear: number,
+  hijriMonth: number,
+  hijriDay: number
+): string | null {
+  const greg = hijriToGregorian(hijriYear, hijriMonth, hijriDay);
+  if (!greg) return null;
+  const shamsi = gregorianToAfghanSolarHijri(greg);
+  const weekday = WEEKDAY_DARI[greg.getDay()];
+  return `${formatAfghanSolarHijriDateWithPersianNumerals(shamsi, 'dari')} • ${weekday}`;
+}
 
 export default function MoreScreen() {
   const { theme } = useApp();
@@ -154,37 +171,50 @@ export default function MoreScreen() {
         </View>
       </View>
 
-      {/* Upcoming Islamic Days */}
-      {upcomingDays.length > 0 && (
+      {/* Upcoming Islamic Days - numbers left, texts right, with Shamsi date + weekday */}
+      {upcomingDays.length > 0 && prayer.hijriDate && (
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
             مناسبت‌های آینده
           </CenteredText>
           <View style={styles.upcomingList}>
-            {upcomingDays.map((day, index) => (
-              <View
-                key={index}
-                style={[styles.upcomingCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
-              >
-                <View style={[styles.upcomingDate, { backgroundColor: theme.tint }]}>
-                  <CenteredText style={styles.upcomingDay}>{toArabicNumber(day.day)}</CenteredText>
+            {upcomingDays.map((day, index) => {
+              const hijriYear = day.month >= prayer.hijriDate!.month
+                ? prayer.hijriDate!.year
+                : prayer.hijriDate!.year + 1;
+              const shamsiWeekday = getShamsiAndWeekday(hijriYear, day.month, day.day);
+              return (
+                <View
+                  key={index}
+                  style={[styles.upcomingCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+                >
+                  {/* Text block on right (first in RTL row so appears on right) */}
+                  <View style={styles.upcomingInfo}>
+                    <CenteredText style={[styles.upcomingName, { color: theme.text }]}>
+                      {day.nameDari}
+                    </CenteredText>
+                    <CenteredText style={[styles.upcomingDesc, { color: theme.textSecondary }]} numberOfLines={1}>
+                      {day.descriptionDari}
+                    </CenteredText>
+                    {shamsiWeekday && (
+                      <CenteredText style={[styles.upcomingShamsi, { color: theme.textSecondary }]}>
+                        {shamsiWeekday}
+                      </CenteredText>
+                    )}
+                  </View>
+                  {day.isFasting && (
+                    <MaterialIcons name="restaurant" size={20} color={theme.bookmark} />
+                  )}
+                  {day.isEid && (
+                    <MaterialIcons name="celebration" size={20} color="#F59E0B" />
+                  )}
+                  {/* Date badge on left (last in RTL row so appears on left) */}
+                  <View style={[styles.upcomingDate, { backgroundColor: theme.tint }]}>
+                    <CenteredText style={styles.upcomingDay}>{toArabicNumber(day.day)}</CenteredText>
+                  </View>
                 </View>
-                <View style={styles.upcomingInfo}>
-                  <CenteredText style={[styles.upcomingName, { color: theme.text }]}>
-                    {day.nameDari}
-                  </CenteredText>
-                  <CenteredText style={[styles.upcomingDesc, { color: theme.textSecondary }]} numberOfLines={1}>
-                    {day.descriptionDari}
-                  </CenteredText>
-                </View>
-                {day.isFasting && (
-                  <MaterialIcons name="restaurant" size={20} color={theme.bookmark} />
-                )}
-                {day.isEid && (
-                  <MaterialIcons name="celebration" size={20} color="#F59E0B" />
-                )}
-              </View>
-            ))}
+              );
+            })}
           </View>
         </View>
       )}
@@ -368,6 +398,10 @@ paddingRight: Spacing.sm,
   upcomingDesc: {
     fontSize: Typography.ui.caption,
     marginTop: 2,
+  },
+  upcomingShamsi: {
+    fontSize: 11,
+    marginTop: 4,
   },
   menuList: {
     gap: Spacing.sm,

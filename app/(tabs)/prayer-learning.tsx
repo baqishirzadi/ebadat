@@ -11,6 +11,7 @@ import { Typography, Spacing, BorderRadius, PashtoFonts } from '@/constants/them
 import type { PashtoFontFamily } from '@/types/quran';
 import { PrayerTextBlock, PrayerStepGuide } from '@/components/prayer';
 import { DuaFeatureTile } from '@/components/dua/FeatureTile';
+import { RamadanFeatureTile } from '@/components/ramadan/RamadanFeatureTile';
 import CenteredText from '@/components/CenteredText';
 import { useFocusEffect } from 'expo-router';
 
@@ -116,14 +117,6 @@ export default function PrayerLearningScreen() {
         </CenteredText>
       </View>
 
-      {/* Dua Request Feature Tile */}
-      <View style={styles.duaTileContainer}>
-        {(() => {
-          console.log('[PrayerLearning] Rendering DuaFeatureTile');
-          return <DuaFeatureTile />;
-        })()}
-      </View>
-
       {/* Categories Grid */}
       <View style={styles.categoriesContainer}>
         {prayerData.categories.map((category) => (
@@ -166,6 +159,12 @@ export default function PrayerLearningScreen() {
         <Text style={[styles.attributionText, { color: theme.textSecondary }]}>
           منبع: کتب معتبر فقه حنفی
         </Text>
+      </View>
+
+      {/* Dua Request Feature Tile */}
+      <View style={styles.duaTileContainer}>
+        <DuaFeatureTile />
+        <RamadanFeatureTile style={styles.ramadanTile} />
       </View>
     </ScrollView>
   );
@@ -480,6 +479,9 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     marginBottom: Spacing.sm,
   },
+  ramadanTile: {
+    marginTop: Spacing.sm,
+  },
   backButton: {
     position: 'absolute',
     right: Spacing.md,
@@ -659,9 +661,10 @@ const styles = StyleSheet.create({
   },
   contentText: {
     fontSize: Typography.ui.body,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
     lineHeight: 28,
+    includeFontPadding: false,
   },
   itemsBlock: {
     borderRadius: BorderRadius.lg,
@@ -672,7 +675,7 @@ const styles = StyleSheet.create({
   itemRow: {
     flexDirection: 'row-reverse',
     padding: Spacing.md,
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   itemNumber: {
     width: 32,
@@ -689,19 +692,22 @@ const styles = StyleSheet.create({
   },
   itemContent: {
     flex: 1,
+    alignItems: 'center',
   },
   itemText: {
     fontSize: Typography.ui.body,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
     lineHeight: 26,
+    includeFontPadding: false,
   },
   itemTextPashto: {
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
     marginTop: 4,
     lineHeight: 42,
+    includeFontPadding: false,
   },
   prayersContainer: {
     gap: Spacing.md,
@@ -730,30 +736,44 @@ const styles = StyleSheet.create({
   },
   prayerRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingVertical: Spacing.xs,
+    gap: Spacing.sm,
   },
   prayerLabel: {
     fontSize: Typography.ui.body,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   prayerValue: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   totalRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: Spacing.sm,
     marginTop: Spacing.sm,
     borderRadius: BorderRadius.sm,
+    gap: Spacing.sm,
   },
   totalLabel: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   totalValue: {
     fontSize: Typography.ui.subtitle,
     fontWeight: '700',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   prayerNotes: {
     fontSize: Typography.ui.caption,
@@ -827,9 +847,10 @@ const styles = StyleSheet.create({
   },
   stepText: {
     fontSize: Typography.ui.body,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
     lineHeight: 28,
     flex: 1,
+    includeFontPadding: false,
   },
 });
