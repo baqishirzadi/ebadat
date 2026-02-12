@@ -14,7 +14,7 @@
       "supabaseUrl": "https://igsmyoghkkyetsyqbqlm.supabase.co",
       "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlnc215b2doa2t5ZXRzeXFicWxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NjAxNzAsImV4cCI6MjA4NTMzNjE3MH0.zml0JOZenwBARf_AX9T1lY0R2cnDN2aRHiJZyu_Xcz8",
       "eas": {
-        "projectId": "d82ba8c7-721e-471b-92c7-ca216e32f86c"
+        "projectId": "e114c255-a536-442c-853f-4f62efb37c6b"
       }
     },
     "locales": {
@@ -120,6 +120,7 @@
     },
     "description": "اپلیکیشن جامع عبادت - قرآن کریم کامل با ترجمه دری و پشتو، اوقات نماز حنفی، قبله نما، اذکار روزانه",
     "githubUrl": "https://github.com/afghandev/ebadat",
-    "primaryColor": "#1a4d3e"
+    "primaryColor": "#1a4d3e",
+    "owner": "afghan.dev"
   }
 }
