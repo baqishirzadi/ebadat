@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { Pressable, StyleSheet, View, Text, PanResponder } from 'react-native';
+import { Pressable, StyleSheet, View, Text, PanResponder, I18nManager } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Naat } from '@/types/naat';
@@ -73,14 +73,16 @@ export function NaatCard({
         onPanResponderGrant: (evt) => {
           if (!trackWidth || !onSeek) return;
           const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
-          const ratio = x / trackWidth;
+          let ratio = x / trackWidth;
+          if (I18nManager.isRTL) ratio = 1 - ratio;
           seekRef.current = ratio;
           onSeek(ratio * durationMillis);
         },
         onPanResponderMove: (evt) => {
           if (!trackWidth || !onSeek) return;
           const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
-          const ratio = x / trackWidth;
+          let ratio = x / trackWidth;
+          if (I18nManager.isRTL) ratio = 1 - ratio;
           seekRef.current = ratio;
           onSeek(ratio * durationMillis);
         },
