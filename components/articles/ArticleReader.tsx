@@ -9,7 +9,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
 import { Article, ARTICLE_CATEGORIES } from '@/types/articles';
-import { Spacing, Typography, BorderRadius } from '@/constants/theme';
+import { Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
 
 interface ArticleReaderProps {
@@ -261,9 +261,16 @@ export function ArticleReader({ article }: ArticleReaderProps) {
   const { theme } = useApp();
   const category = ARTICLE_CATEGORIES[article.category];
   const categoryColors = CATEGORY_COLORS[article.category] || CATEGORY_COLORS.iman;
+  const bodyForRender =
+    article.category === 'asma_husna'
+      ? article.body.replace(
+          /<p>\s*(?:<em>)?\s*(?:نویسنده:|لیکوال:)[\s\S]*?(?:<\/em>)?\s*<\/p>/gi,
+          ''
+        )
+      : article.body;
 
   // Parse HTML body
-  const bodyElements = parseHTML(article.body, categoryColors.primary, theme.text);
+  const bodyElements = parseHTML(bodyForRender, categoryColors.primary, theme.text);
 
   return (
     <View style={styles.container}>
@@ -327,7 +334,7 @@ export function ArticleReader({ article }: ArticleReaderProps) {
             ) : (
               // Fallback: render as plain text if parsing fails
               <Text style={[styles.bodyText, { color: theme.text }]}>
-                {article.body.replace(/<[^>]*>/g, '').replace(/\n\n+/g, '\n\n')}
+                {bodyForRender.replace(/<[^>]*>/g, '').replace(/\n\n+/g, '\n\n')}
               </Text>
             )}
           </View>
@@ -337,24 +344,21 @@ export function ArticleReader({ article }: ArticleReaderProps) {
       </View>
 
       {/* Author Bio Section with Islamic Design */}
-      <View style={[styles.authorSection, { 
-        backgroundColor: theme.card, 
-        borderColor: categoryColors.primary + '40',
-        borderTopColor: categoryColors.accent + '60',
-      }]}>
+      <View
+        style={[
+          styles.authorSection,
+          {
+            backgroundColor: theme.card,
+            borderColor: categoryColors.primary + '40',
+            borderTopColor: categoryColors.accent + '60',
+          },
+        ]}
+      >
         <View style={[styles.authorHeader, { borderBottomColor: categoryColors.primary + '30' }]}>
-          <Text style={[styles.authorTitle, { color: categoryColors.primary }]}>
-            درباره نویسنده
-          </Text>
+          <Text style={[styles.authorTitle, { color: categoryColors.primary }]}>درباره نویسنده</Text>
         </View>
-        <Text style={[styles.authorName, { color: theme.text }]}>
-          {article.authorName}
-        </Text>
-        {category.bio && (
-          <Text style={[styles.authorBio, { color: theme.textSecondary }]}>
-            {category.nameDari}
-          </Text>
-        )}
+        <Text style={[styles.authorName, { color: theme.text }]}>{article.authorName}</Text>
+        <Text style={[styles.authorBio, { color: theme.textSecondary }]}>{category.nameDari}</Text>
       </View>
     </View>
   );
