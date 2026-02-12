@@ -14,6 +14,16 @@ import { usePrayer } from '@/context/PrayerContext';
 import { formatHijriDate, getUpcomingSpecialDays } from '@/utils/islamicCalendar';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import {
+  ABOUT_CREATOR_DARI_CREATOR_LABEL,
+  ABOUT_CREATOR_DARI_CREATOR_NAME,
+  ABOUT_CREATOR_DARI_PARAGRAPHS,
+  ABOUT_CREATOR_DARI_TITLE,
+  ABOUT_CREATOR_PASHTO_CREATOR_LABEL,
+  ABOUT_CREATOR_PASHTO_CREATOR_NAME,
+  ABOUT_CREATOR_PASHTO_PARAGRAPHS,
+  ABOUT_CREATOR_PASHTO_TITLE,
+} from '@/constants/aboutCreatorContent';
 
 // Arabic number conversion
 const toArabicNumber = (num: number): string => {
@@ -186,6 +196,50 @@ export default function MoreScreen() {
           <CenteredText style={[styles.khatmLabel, { color: theme.textSecondary }]}>ختم قرآن</CenteredText>
           <CenteredText style={[styles.khatmValue, { color: theme.text }]}>
             {toArabicNumber(stats.overall.khatmCount)} بار
+          </CenteredText>
+        </View>
+      </View>
+
+      {/* Creator Section */}
+      <View style={styles.section}>
+        <View style={[styles.creatorCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          <View style={styles.creatorHeader}>
+            <MaterialIcons name="favorite" size={20} color="#D4AF37" />
+            <CenteredText style={[styles.creatorTitle, { color: '#D4AF37' }]}>
+              {ABOUT_CREATOR_DARI_TITLE}
+            </CenteredText>
+          </View>
+
+          {ABOUT_CREATOR_DARI_PARAGRAPHS.map((paragraph, index) => (
+            <CenteredText key={`dari-${index}`} style={[styles.creatorParagraph, { color: theme.textSecondary }]}>
+              {paragraph}
+            </CenteredText>
+          ))}
+
+          <CenteredText style={[styles.creatorLabel, { color: theme.text }]}>
+            {ABOUT_CREATOR_DARI_CREATOR_LABEL}
+          </CenteredText>
+          <CenteredText style={[styles.creatorNameDari, { color: '#D4AF37' }]}>
+            {ABOUT_CREATOR_DARI_CREATOR_NAME}
+          </CenteredText>
+
+          <View style={[styles.creatorDivider, { backgroundColor: theme.divider }]} />
+
+          <CenteredText style={[styles.creatorTitle, { color: '#0F766E' }]}>
+            {ABOUT_CREATOR_PASHTO_TITLE}
+          </CenteredText>
+
+          {ABOUT_CREATOR_PASHTO_PARAGRAPHS.map((paragraph, index) => (
+            <CenteredText key={`pashto-${index}`} style={[styles.creatorParagraph, { color: theme.textSecondary }]}>
+              {paragraph}
+            </CenteredText>
+          ))}
+
+          <CenteredText style={[styles.creatorLabel, { color: theme.text }]}>
+            {ABOUT_CREATOR_PASHTO_CREATOR_LABEL}
+          </CenteredText>
+          <CenteredText style={[styles.creatorNamePashto, { color: '#0F766E' }]}>
+            {ABOUT_CREATOR_PASHTO_CREATOR_NAME}
           </CenteredText>
         </View>
       </View>
@@ -364,5 +418,61 @@ paddingRight: Spacing.sm,
   },
   bottomPadding: {
     height: 120,
+  },
+  creatorCard: {
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    padding: Spacing.lg,
+    alignItems: 'center',
+  },
+  creatorHeader: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    marginBottom: Spacing.md,
+  },
+  creatorTitle: {
+    fontSize: Typography.ui.subtitle,
+    fontWeight: '700',
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+  },
+  creatorParagraph: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    lineHeight: 30,
+    textAlign: 'center',
+    marginBottom: Spacing.sm,
+  },
+  creatorLabel: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '700',
+    textAlign: 'center',
+    marginTop: Spacing.xs,
+  },
+  creatorNameDari: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'NotoNastaliqUrdu',
+    lineHeight: 38,
+    textAlign: 'center',
+    marginTop: Spacing.xs,
+    includeFontPadding: false,
+    writingDirection: 'rtl',
+  },
+  creatorNamePashto: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'NotoNastaliqUrdu',
+    lineHeight: 38,
+    textAlign: 'center',
+    marginTop: Spacing.xs,
+    includeFontPadding: false,
+    writingDirection: 'rtl',
+  },
+  creatorDivider: {
+    width: '70%',
+    height: 1,
+    marginVertical: Spacing.md,
   },
 });

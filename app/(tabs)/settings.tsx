@@ -414,37 +414,6 @@ export default function SettingsScreen() {
         </Text>
       </View>
 
-      {/* Developer Credit Section */}
-      <View style={[styles.creditSection, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-        <View style={styles.creditHeader}>
-          <MaterialIcons name="favorite" size={20} color="#D4AF37" />
-          <Text style={[styles.creditTitle, { color: theme.text }]}>درباره سازنده</Text>
-        </View>
-        
-        <View style={styles.creditContent}>
-          <Text style={[styles.creditIntro, { color: theme.textSecondary }]}>
-            این اپلیکیشن برای تسهیل عبادات{'\n'}
-            مردم شریف و مؤمن افغانستان ساخته شده است
-          </Text>
-          
-          <View style={[styles.creditDivider, { backgroundColor: theme.divider }]} />
-          
-          <Text style={[styles.creditDeveloper, { color: theme.text }]}>
-            توسط:
-          </Text>
-          <Text style={[styles.creditName, { color: '#D4AF37' }]}>
-            سیدعبدالباقی ابن سیدعبدالاله 
-          </Text>
-          <Text style={[styles.creditLineage, { color: theme.textSecondary }]}>
-            ابن خلیفه صاحب سیدمحمد یتیم شیرزادی (رحمه‌الله)
-          </Text>
-          
-          <Text style={[styles.creditDua, { color: theme.textSecondary }]}>
-            انشاءالله قبول درگاه حق تعالی باشد
-          </Text>
-        </View>
-      </View>
-
       {/* App Version */}
       <Text style={[styles.versionText, { color: theme.textSecondary }]}>
         نسخه ۱.۰.۰
@@ -576,71 +545,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     marginTop: 2,
     textAlign: 'left',
-  },
-  creditSection: {
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  creditHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Spacing.md,
-    gap: Spacing.sm,
-  },
-  creditTitle: {
-    fontSize: Typography.ui.subtitle,
-    fontWeight: '600',
-    textAlign: 'center',
-    fontFamily: 'Vazirmatn',
-  },
-  creditContent: {
-    padding: Spacing.md,
-    paddingTop: 0,
-    alignItems: 'center',
-  },
-  creditIntro: {
-    fontSize: Typography.ui.body,
-    textAlign: 'center',
-    lineHeight: 24,
-    fontFamily: 'Vazirmatn',
-  },
-  creditDivider: {
-    width: 60,
-    height: 1,
-    marginVertical: Spacing.md,
-    alignSelf: 'center',
-  },
-  creditDeveloper: {
-    fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    fontFamily: 'Vazirmatn',
-  },
-  creditName: {
-    fontSize: Typography.ui.body,
-    fontWeight: '600',
-    textAlign: 'center',
-    marginTop: 4,
-    fontFamily: 'NotoNastaliqUrdu',
-    lineHeight: 36,
-  },
-  creditLineage: {
-    fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    marginTop: 2,
-    fontFamily: 'NotoNastaliqUrdu',
-    lineHeight: 32,
-  },
-  creditDua: {
-    fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    marginTop: Spacing.md,
-    fontStyle: 'italic',
-    fontFamily: 'NotoNastaliqUrdu',
-    lineHeight: 32,
   },
   versionText: {
     fontSize: Typography.ui.caption,

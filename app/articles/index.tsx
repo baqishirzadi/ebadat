@@ -25,6 +25,24 @@ import { isArticlesRemoteEnabled } from '@/utils/articleService';
 
 const PINNED_SCHOLARS: Scholar[] = [
   {
+    id: 'pinned_khwaja_abdullah_ansari',
+    fullName: 'خواجه عبدالله انصاری (رح)',
+    email: 'khwaja.ansari@local',
+    bio: 'از بزرگان مناجات و سلوک در مکتب هرات',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+  {
+    id: 'pinned_abdulrahman_jami',
+    fullName: 'عبدالرحمن جامی (رح)',
+    email: 'abdulrahman.jami@local',
+    bio: 'از بزرگان ادب عرفانی، نفحات الانس و اخلاق تربیتی',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+  {
     id: 'pinned_imam_ghazali',
     fullName: 'امام ابوحامد غزالی (رح)',
     email: 'imam.ghazali@local',
