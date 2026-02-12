@@ -87,6 +87,16 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       .trim()
       .toLowerCase();
 
+  const normalizeInlineText = (raw: string): string => {
+    const hasLeadingSpace = /^\s/.test(raw);
+    const hasTrailingSpace = /\s$/.test(raw);
+    const core = raw.replace(/\s+/g, ' ').trim();
+
+    if (!core) return '';
+
+    return `${hasLeadingSpace ? ' ' : ''}${core}${hasTrailingSpace ? ' ' : ''}`;
+  };
+
   // Extract all h2 headings and p paragraphs with their positions
   const items: Array<{ type: 'h2' | 'p'; content: string; position: number }> = [];
   
@@ -104,10 +114,10 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
   // Find all p paragraphs
   const pRegex = /<p>(.*?)<\/p>/gi;
   let pMatch;
-  while ((pMatch = pRegex.exec(normalizedHtml)) !== null) {
+      while ((pMatch = pRegex.exec(normalizedHtml)) !== null) {
     items.push({
       type: 'p',
-      content: pMatch[1].trim(), // Keep inner HTML for formatting
+      content: pMatch[1], // Keep inner HTML and boundary spaces for formatting
       position: pMatch.index,
     });
   }
@@ -155,21 +165,22 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
         // Text before tag
         if (tagMatch.index > lastPos) {
           const text = cleanedParaHtml.substring(lastPos, tagMatch.index);
-          if (text.trim()) {
+          const normalizedText = normalizeInlineText(text);
+          if (normalizedText) {
             if (inStrong) {
               textParts.push(
                 <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
-                  {text}
+                  {normalizedText}
                 </Text>
               );
             } else if (inEm) {
               textParts.push(
                 <Text key={paraKey++} style={[styles.emText, { color: themeText }]}>
-                  {text}
+                  {normalizedText}
                 </Text>
               );
             } else {
-              textParts.push(text);
+              textParts.push(normalizedText);
             }
           }
         }
@@ -189,22 +200,23 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       
       // Remaining text
       if (lastPos < cleanedParaHtml.length) {
-        const text = cleanedParaHtml.substring(lastPos).trim();
-        if (text) {
+        const text = cleanedParaHtml.substring(lastPos);
+        const normalizedText = normalizeInlineText(text);
+        if (normalizedText) {
           if (inStrong) {
             textParts.push(
               <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
-                {text}
+                {normalizedText}
               </Text>
             );
           } else if (inEm) {
             textParts.push(
               <Text key={paraKey++} style={[styles.emText, { color: themeText }]}>
-                {text}
+                {normalizedText}
               </Text>
             );
           } else {
-            textParts.push(text);
+            textParts.push(normalizedText);
           }
         }
       }
