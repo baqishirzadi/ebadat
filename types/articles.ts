@@ -85,7 +85,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'asma_husna',
     nameDari: 'اسماء الحسنی',
     namePashto: 'اسماء الحسنی',
-    icon: 'brightness-7',
+    icon: 'vpn-key',
     color: '#009688',
   },
 };

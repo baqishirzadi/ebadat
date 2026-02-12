@@ -23,6 +23,27 @@ import { CategoryFilter } from '@/components/articles/CategoryFilter';
 import CenteredText from '@/components/CenteredText';
 import { isArticlesRemoteEnabled } from '@/utils/articleService';
 
+const PINNED_SCHOLARS: Scholar[] = [
+  {
+    id: 'pinned_imam_ghazali',
+    fullName: 'امام ابوحامد غزالی (رح)',
+    email: 'imam.ghazali@local',
+    bio: 'از بزرگان تربیت نفس و اخلاق اسلامی',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+  {
+    id: 'pinned_imam_razi',
+    fullName: 'امام فخرالدین رازی (رح)',
+    email: 'imam.razi@local',
+    bio: 'از بزرگان تفسیر، کلام و تدبر قرآنی',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+];
+
 export default function ArticlesFeed() {
   const { theme } = useApp();
   const { state, refreshArticles, syncArticles, isBookmarked } = useArticles();
@@ -48,6 +69,21 @@ export default function ArticlesFeed() {
     if (article.language !== selectedLanguage) return false;
     return article.published;
   });
+
+  const displayScholars = useMemo(() => {
+    const seenNames = new Set<string>();
+    const normalizedName = (value: string) =>
+      value.replace(/\s+/g, ' ').trim().toLowerCase();
+
+    const merged = [...PINNED_SCHOLARS, ...state.scholars].filter((scholar) => {
+      const key = normalizedName(scholar.fullName);
+      if (seenNames.has(key)) return false;
+      seenNames.add(key);
+      return true;
+    });
+
+    return merged;
+  }, [state.scholars]);
 
   const handleArticlePress = useCallback(
     (articleId: string) => {
@@ -128,13 +164,13 @@ export default function ArticlesFeed() {
 
   const renderListFooter = () => (
     <View>
-      {state.scholars.length > 0 && (
+      {displayScholars.length > 0 && (
         <View style={styles.scholarsSectionFooter}>
           <CenteredText style={[styles.scholarsTitle, { color: theme.text }]}>
             علما و نویسندگان
           </CenteredText>
           <FlatList
-            data={state.scholars}
+            data={displayScholars}
             keyExtractor={(item) => item.id}
             renderItem={renderScholar}
             numColumns={numColumns}
