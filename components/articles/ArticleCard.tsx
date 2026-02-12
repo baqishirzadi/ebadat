@@ -7,9 +7,9 @@ import React from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { Article, ARTICLE_CATEGORIES } from '@/types/articles';
+import { Article } from '@/types/articles';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import CenteredText from '@/components/CenteredText';
+import { CenteredText } from '@/components/CenteredText';
 import { CategoryBadge } from './CategoryBadge';
 
 interface ArticleCardProps {
@@ -20,7 +20,6 @@ interface ArticleCardProps {
 
 export function ArticleCard({ article, isBookmarked, onPress }: ArticleCardProps) {
   const { theme } = useApp();
-  const category = ARTICLE_CATEGORIES[article.category];
 
   return (
     <View
@@ -76,37 +75,11 @@ export function ArticleCard({ article, isBookmarked, onPress }: ArticleCardProps
                 {article.readingTimeEstimate} دقیقه
               </CenteredText>
             </View>
-            <View style={styles.metaRow}>
-              <MaterialIcons name="visibility" size={14} color={theme.textSecondary} />
-              <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
-                {article.viewCount}
-              </CenteredText>
-            </View>
           </View>
-
-          {/* Date */}
-          {article.publishedAt && (
-            <CenteredText style={[styles.date, { color: theme.textSecondary }]}>
-              {formatDate(article.publishedAt)}
-            </CenteredText>
-          )}
         </Pressable>
       </View>
     </View>
   );
-}
-
-function formatDate(date: Date): string {
-  const now = new Date();
-  const diff = now.getTime() - date.getTime();
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-  if (days === 0) return 'امروز';
-  if (days === 1) return 'دیروز';
-  if (days < 7) return `${days} روز پیش`;
-  if (days < 30) return `${Math.floor(days / 7)} هفته پیش`;
-  if (days < 365) return `${Math.floor(days / 30)} ماه پیش`;
-  return `${Math.floor(days / 365)} سال پیش`;
 }
 
 const styles = StyleSheet.create({
@@ -154,7 +127,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'stretch',
     gap: Spacing.md,
-    marginBottom: Spacing.xs,
+    marginBottom: 0,
   },
   metaRow: {
     flexDirection: 'row-reverse',
@@ -163,13 +136,6 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  date: {
-    fontSize: Typography.ui.caption,
-    marginTop: Spacing.xs,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
     writingDirection: 'rtl',
