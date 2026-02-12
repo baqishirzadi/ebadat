@@ -140,7 +140,7 @@ export default function AdhkarScreen() {
           <View style={styles.duaCardInfo}>
             <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
             <Text style={styles.duaCardSubtitle}>
-              درخواست دعای خیر و راهنمایی شرعی از سیدان عالم و عالمان جید
+              درخواست دعای خیر و راهنمایی شرعی؛ با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
             </Text>
           </View>
         </View>

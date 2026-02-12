@@ -38,7 +38,7 @@ export function DuaFeatureTile() {
           دعای خیر و مشورت شرعی
         </CenteredText>
         <CenteredText style={[styles.description, { color: theme.textSecondary }]} numberOfLines={2}>
-          درخواست دعای خیر و راهنمایی شرعی
+          درخواست دعای خیر و راهنمایی شرعی؛ با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
         </CenteredText>
       </View>
 

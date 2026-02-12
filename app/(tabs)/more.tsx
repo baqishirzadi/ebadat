@@ -222,15 +222,15 @@ export default function MoreScreen() {
         </View>
       )}
 
-      {/* Khatm Counter */}
+      {/* Khatm Counter - icon left, text centered */}
       <View style={[styles.khatmCard, { backgroundColor: theme.card, borderColor: theme.tint }]}>
-        <MaterialIcons name="auto-stories" size={32} color={theme.tint} />
         <View style={styles.khatmInfo}>
           <CenteredText style={[styles.khatmLabel, { color: theme.textSecondary }]}>ختم قرآن</CenteredText>
           <CenteredText style={[styles.khatmValue, { color: theme.text }]}>
             {toArabicNumber(stats.overall.khatmCount)} بار
           </CenteredText>
         </View>
+        <MaterialIcons name="auto-stories" size={32} color={theme.tint} />
       </View>
 
       {/* Creator Section */}
@@ -399,24 +399,24 @@ paddingRight: Spacing.sm,
   },
   upcomingInfo: {
     flex: 1,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   upcomingName: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   upcomingDesc: {
     fontSize: Typography.ui.caption,
     marginTop: 2,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   upcomingShamsi: {
     fontSize: 11,
     marginTop: 4,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   menuList: {
@@ -457,14 +457,16 @@ paddingRight: Spacing.sm,
   },
   khatmInfo: {
     flex: 1,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   khatmLabel: {
     fontSize: Typography.ui.caption,
+    textAlign: 'center',
   },
   khatmValue: {
     fontSize: Typography.ui.title,
     fontWeight: '700',
+    textAlign: 'center',
   },
   bottomPadding: {
     height: 120,
