@@ -85,7 +85,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'asma_husna',
     nameDari: 'اسماء الحسنی',
     namePashto: 'اسماء الحسنی',
-    icon: 'self-improvement',
+    icon: 'brightness-7',
     color: '#009688',
   },
 };
