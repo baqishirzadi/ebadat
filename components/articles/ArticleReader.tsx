@@ -272,9 +272,14 @@ export function ArticleReader({ article }: ArticleReaderProps) {
   const { theme } = useApp();
   const category = ARTICLE_CATEGORIES[article.category];
   const categoryColors = CATEGORY_COLORS[article.category] || CATEGORY_COLORS.iman;
+  const isPashtoArticle = article.language === 'pashto';
   const authorSectionTitle = DERIVED_WORKS_AUTHOR_IDS.has(article.authorId)
-    ? 'برگرفته از آثارِ'
-    : 'درباره نویسنده';
+    ? isPashtoArticle
+      ? 'له آثارو اخیستل شوی'
+      : 'برگرفته از آثارِ'
+    : isPashtoArticle
+      ? 'د لیکوال په اړه'
+      : 'درباره نویسنده';
   const bodyForRender =
     article.category === 'asma_husna'
       ? article.body.replace(
