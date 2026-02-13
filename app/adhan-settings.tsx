@@ -14,6 +14,7 @@ import {
   Switch,
   ActivityIndicator,
   Alert,
+  Platform,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, Stack } from 'expo-router';
@@ -433,6 +434,16 @@ export default function AdhanSettingsScreen() {
             برای سایر نمازها می‌توانید صدا را فعال کنید.
           </Text>
         </View>
+
+        {/* Battery optimization tip for Android - critical for sound when app is closed */}
+        {Platform.OS === 'android' && (
+          <View style={[styles.infoNote, { backgroundColor: theme.backgroundSecondary, marginTop: Spacing.sm }]}>
+            <MaterialIcons name="battery-charging-full" size={20} color="#D4AF37" />
+            <Text style={[styles.infoNoteText, { color: theme.textSecondary }]}>
+              اگر صدای اذان هنگام بسته بودن اپ پخش نمی‌شود، در تنظیمات دستگاه «بهینه‌سازی باتری» را برای این اپ غیرفعال کنید.
+            </Text>
+          </View>
+        )}
 
         <View style={styles.bottomPadding} />
       </ScrollView>

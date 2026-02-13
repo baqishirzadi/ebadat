@@ -4,13 +4,14 @@
  */
 
 import { StyleSheet, ScrollView, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { Spacing, BorderRadius, Typography } from '@/constants/theme';
+import { Spacing, BorderRadius, Typography, NAAT_GRADIENT } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
 
 export default function ExploreScreen() {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
 
   return (
     <ScrollView 
@@ -18,10 +19,13 @@ export default function ExploreScreen() {
       contentContainerStyle={styles.content}
     >
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
+        style={styles.header}
+      >
         <MaterialIcons name="info" size={36} color="#fff" />
         <CenteredText style={styles.headerTitle}>درباره اپلیکیشن</CenteredText>
-      </View>
+      </LinearGradient>
 
       {/* App Info */}
       <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>

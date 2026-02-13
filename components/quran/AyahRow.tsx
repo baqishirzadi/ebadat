@@ -15,6 +15,7 @@ import { useApp, useBookmarks } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
+import { stripQuranicMarks } from '@/utils/quranText';
 import CenteredText from '@/components/CenteredText';
 
 interface AyahRowProps {
@@ -145,7 +146,7 @@ export const AyahRow = memo(function AyahRow({
             },
           ]}
         >
-          {stripBismillah(ayah.text, surahNumber, ayah.number)}
+          {stripBismillah(stripQuranicMarks(ayah.text, quranFont), surahNumber, ayah.number)}
         </CenteredText>
       </View>
 

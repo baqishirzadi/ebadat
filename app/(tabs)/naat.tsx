@@ -11,7 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useNaat } from '@/context/NaatContext';
-import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography, NAAT_GRADIENT } from '@/constants/theme';
 import { NaatCard } from '@/components/naat/NaatCard';
 
 const ADMIN_ENABLED = true;
@@ -35,7 +35,9 @@ function normalizeText(input: string) {
 }
 
 export default function NaatScreen() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const themeMode = state.preferences.theme;
+  const headerGradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { naats, loading, player, play, pause, resume, download, seek } = useNaat();
@@ -76,7 +78,7 @@ export default function NaatScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={[styles.statusFill, { height: insets.top }]} />
+      <View style={[styles.statusFill, { height: insets.top, backgroundColor: headerGradient[0] }]} />
       {loading ? (
         <View style={styles.loading}>
           <ActivityIndicator size="large" color={theme.tint} />
@@ -91,7 +93,7 @@ export default function NaatScreen() {
           ListHeaderComponent={(
             <View>
               <LinearGradient
-                colors={['#173f33', '#1a4d3e', '#1f6b57']}
+                colors={headerGradient}
                 style={[styles.header, { paddingTop: Spacing.xl + insets.top }]}
               >
                 <Pressable
@@ -101,18 +103,18 @@ export default function NaatScreen() {
                 >
                   <View style={styles.headerTopRow}>
                     <Pressable onPress={() => router.push('/naat/downloads')} style={styles.downloadsButton}>
-                      <MaterialIcons name="library-music" size={20} color="#fff" />
-                      <Text style={styles.downloadsText}>دانلودها</Text>
+                      <MaterialIcons name="library-music" size={20} color={theme.surahHeaderText} />
+                      <Text style={[styles.downloadsText, { color: theme.surahHeaderText }]}>دانلودها</Text>
                     </Pressable>
                   </View>
-                  <Text style={styles.headerTitle}>{HEADER_TITLE}</Text>
-                  <Text style={styles.headerDescription}>{HEADER_DESCRIPTION}</Text>
+                  <Text style={[styles.headerTitle, { color: theme.surahHeaderText }]}>{HEADER_TITLE}</Text>
+                  <Text style={[styles.headerDescription, { color: theme.surahHeaderText }]}>{HEADER_DESCRIPTION}</Text>
                   <View style={styles.motifRow}>
-                    <View style={styles.motifDot} />
-                    <View style={styles.motifLine} />
-                    <MaterialIcons name="auto-awesome" size={18} color="#d4af37" />
-                    <View style={styles.motifLine} />
-                    <View style={styles.motifDot} />
+                    <View style={[styles.motifDot, { backgroundColor: theme.bookmark }]} />
+                    <View style={[styles.motifLine, { backgroundColor: theme.bookmark }]} />
+                    <MaterialIcons name="auto-awesome" size={18} color={theme.bookmark} />
+                    <View style={[styles.motifLine, { backgroundColor: theme.bookmark }]} />
+                    <View style={[styles.motifDot, { backgroundColor: theme.bookmark }]} />
                   </View>
                 </Pressable>
               </LinearGradient>
@@ -250,7 +252,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusFill: {
-    backgroundColor: '#173f33',
     position: 'absolute',
     top: 0,
     left: 0,
@@ -278,13 +279,11 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
   },
   downloadsText: {
-    color: '#fff',
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
   },
   headerTitle: {
     marginTop: Spacing.md,
-    color: '#fff',
     fontSize: Typography.ui.title,
     fontFamily: 'Amiri',
     textAlign: 'center',
@@ -292,7 +291,6 @@ const styles = StyleSheet.create({
   },
   headerDescription: {
     marginTop: Spacing.xs,
-    color: '#e2f1ea',
     fontSize: Typography.ui.caption,
     lineHeight: 22,
     fontFamily: 'Vazirmatn',
@@ -309,13 +307,11 @@ const styles = StyleSheet.create({
   motifLine: {
     height: 1,
     width: 64,
-    backgroundColor: 'rgba(212, 175, 55, 0.6)',
   },
   motifDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: 'rgba(212, 175, 55, 0.8)',
   },
   listContent: {
     paddingBottom: Spacing.xxl,

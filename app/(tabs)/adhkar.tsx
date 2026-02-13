@@ -6,9 +6,10 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
 import { RamadanFeatureTile } from '@/components/ramadan/RamadanFeatureTile';
 import adhkarData from '@/data/adhkar.json';
 
@@ -23,7 +24,7 @@ interface AdhkarCategory {
 }
 
 export default function AdhkarScreen() {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
   const router = useRouter();
   const categories = adhkarData.categories as AdhkarCategory[];
 
@@ -37,11 +38,14 @@ export default function AdhkarScreen() {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
+        style={styles.header}
+      >
         <MaterialIcons name="auto-awesome" size={36} color="#fff" />
         <Text style={styles.headerTitle}>اذکار</Text>
         <Text style={styles.headerSubtitle}>یادآوری‌های روزانه</Text>
-      </View>
+      </LinearGradient>
 
       {/* Featured Adhkar Section */}
       <View style={styles.section}>

@@ -5,11 +5,13 @@
 
 import React, { useCallback } from 'react';
 import { View, StyleSheet, FlatList, Pressable, Alert } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp, useBookmarks } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
+import { stripQuranicMarks } from '@/utils/quranText';
 import { Bookmark } from '@/types/quran';
 import CenteredText from '@/components/CenteredText';
 
@@ -30,7 +32,7 @@ const formatDate = (timestamp: number): string => {
 };
 
 export default function BookmarksScreen() {
-  const { theme } = useApp();
+  const { theme, themeMode, state } = useApp();
   const { bookmarks, removeBookmark } = useBookmarks();
   const { getSurah, getAyah } = useQuranData();
   const router = useRouter();
@@ -94,7 +96,7 @@ export default function BookmarksScreen() {
               style={[styles.ayahPreview, { color: theme.arabicText }]}
               numberOfLines={2}
             >
-              {ayah.text}
+              {stripQuranicMarks(ayah.text, state.preferences.quranFont)}
             </CenteredText>
 
             <View style={styles.footerRow}>
@@ -119,7 +121,7 @@ export default function BookmarksScreen() {
         </Pressable>
       );
     },
-    [theme, getSurah, getAyah, handleBookmarkPress, handleDeleteBookmark]
+    [theme, state.preferences.quranFont, getSurah, getAyah, handleBookmarkPress, handleDeleteBookmark]
   );
 
   const sortedBookmarks = [...bookmarks].sort((a, b) => b.timestamp - a.timestamp);
@@ -127,7 +129,10 @@ export default function BookmarksScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
+        style={styles.header}
+      >
         <MaterialIcons name="bookmark" size={36} color="#fff" />
         <CenteredText style={styles.headerTitle}>نشانه‌ها</CenteredText>
         <CenteredText style={styles.headerSubtitle}>
@@ -135,7 +140,7 @@ export default function BookmarksScreen() {
             ? `${toArabicNumber(bookmarks.length)} نشانه ذخیره شده`
             : 'هیچ نشانه‌ای ذخیره نشده'}
         </CenteredText>
-      </View>
+      </LinearGradient>
 
       {bookmarks.length === 0 ? (
         <View style={styles.emptyContainer}>

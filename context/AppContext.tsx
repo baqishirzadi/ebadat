@@ -182,6 +182,7 @@ const initialState: AppState = {
 interface AppContextType {
   state: AppState;
   theme: ThemeColors;
+  themeMode: ThemeMode;
   
   // Theme actions
   setTheme: (theme: ThemeMode) => void;
@@ -348,6 +349,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const contextValue: AppContextType = {
     state,
     theme,
+    themeMode: state.preferences.theme,
     setTheme,
     setQuranFont,
     setDariFont,

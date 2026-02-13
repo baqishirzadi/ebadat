@@ -846,6 +846,11 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     try {
       console.log('Starting Adhan notification scheduling...');
       
+      // Ensure Android channels exist before scheduling (critical for sound when app is killed)
+      if (Platform.OS === 'android') {
+        await configureAndroidNotificationChannels(NotificationsModule);
+      }
+      
       // Check current permission status
       const currentStatus = await checkNotificationPermission();
       dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: currentStatus });
@@ -1011,16 +1016,17 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         
         // Use prayerSettings.playSound (not hardcoded to fajr only)
         const playSound = prayerSettings.playSound;
-        // Channel: adhan-fajr for Fajr, adhan-regular for Maghrib with sound, prayer-silent for rest
+        // Channel: adhan-fajr for Fajr, adhan-regular for all other prayers with sound
         const channelId = playSound && prayer.key === 'fajr' ? 'adhan-fajr'
-          : playSound && prayer.key === 'maghrib' ? 'adhan-regular'
+          : playSound ? 'adhan-regular'
           : 'prayer-silent';
 
-        // Sound file: Fajr → fajr_adhan.mp3, Maghrib → barakatullah_salim.mp3, others silent
+        // Sound: Fajr → fajr_adhan.mp3, others with sound → barakatullah_salim.mp3
+        // Use base filename (expo-notifications resolves to res/raw)
         let notificationSound: string | boolean | undefined = false;
         if (playSound && prayer.key === 'fajr') {
           notificationSound = 'fajr_adhan.mp3';
-        } else if (playSound && prayer.key === 'maghrib') {
+        } else if (playSound) {
           notificationSound = 'barakatullah_salim.mp3';
         }
 

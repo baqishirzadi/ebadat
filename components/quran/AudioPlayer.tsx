@@ -16,6 +16,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { useApp } from '@/context/AppContext';
+import { useNaat } from '@/context/NaatContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import {
   getQuranAudioManager,
@@ -57,6 +58,7 @@ export function AudioPlayer({
   onClose,
 }: AudioPlayerProps) {
   const { theme } = useApp();
+  const { stop: stopNaat } = useNaat();
   const audioManagerRef = useRef<QuranAudioManager | null>(null);
   
   const [audioStatus, setAudioStatus] = useState<AudioStatus>({
@@ -111,12 +113,16 @@ export function AudioPlayer({
     }
   }, [repeatMode, onAyahComplete]);
 
-  // Play ayah when surah/ayah changes
+  // Play ayah when surah/ayah changes - stop Naat first so only Quran plays
   useEffect(() => {
-    if (audioManagerRef.current) {
-      audioManagerRef.current.playAyah(surahNumber, ayahNumber);
-    }
-  }, [surahNumber, ayahNumber]);
+    const startQuranPlayback = async () => {
+      await stopNaat();
+      if (audioManagerRef.current) {
+        audioManagerRef.current.playAyah(surahNumber, ayahNumber);
+      }
+    };
+    startQuranPlayback();
+  }, [surahNumber, ayahNumber, stopNaat]);
 
   // Cleanup only on unmount
   useEffect(() => {

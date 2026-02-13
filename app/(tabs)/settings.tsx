@@ -8,6 +8,7 @@ import {
   BorderRadius,
   DariFontFamily,
   DariFonts,
+  NAAT_GRADIENT,
   PashtoFontFamily,
   PashtoFonts,
   QuranFontFamily,
@@ -20,6 +21,7 @@ import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { CalculationMethods } from '@/utils/prayerTimes';
 import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -85,10 +87,13 @@ export default function SettingsScreen() {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[state.preferences.theme] ?? NAAT_GRADIENT.light}
+        style={styles.header}
+      >
         <MaterialIcons name="settings" size={36} color="#fff" />
         <Text style={styles.headerTitle}>تنظیمات</Text>
-      </View>
+      </LinearGradient>
 
       {/* Theme Settings */}
       <Pressable
@@ -148,7 +153,7 @@ export default function SettingsScreen() {
         <View style={styles.sectionInfo}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>خط قرآن</Text>
           <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
-            {QuranFonts[state.preferences.quranFont]?.displayNameDari || 'امیری نسخ'}
+            {QuranFonts[state.preferences.quranFont]?.displayNameDari || 'نسخ کلاسیک'}
           </Text>
         </View>
         <MaterialIcons
@@ -172,7 +177,7 @@ export default function SettingsScreen() {
               <View style={styles.fontPreview}>
                 <Text style={[
                   styles.fontSample, 
-                  { color: theme.text, fontFamily: f.id === 'amiriQuran' ? 'QuranFont' : 'ScheherazadeNew' }
+                  { color: theme.text, fontFamily: QuranFonts[f.id]?.name || 'ScheherazadeNew' }
                 ]}>
                   {f.sample}
                 </Text>

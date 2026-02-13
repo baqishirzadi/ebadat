@@ -4,12 +4,13 @@
  * All text in Dari/Arabic - No English
  */
 
-import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography, NAAT_GRADIENT } from '@/constants/theme';
 import { useApp, useReadingPosition } from '@/context/AppContext';
 import { SURAH_NAMES, SurahNameData, toArabicNumerals } from '@/data/surahNames';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated from 'react-native-reanimated';
@@ -102,7 +103,7 @@ const SurahItem = React.memo(function SurahItem({
 });
 
 export function SurahList() {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
   const { position } = useReadingPosition();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -159,8 +160,8 @@ export function SurahList() {
   const headerPaddingTop = insets.top;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.surahHeader }]}>
-      <StatusBar style="light" backgroundColor={theme.surahHeader} />
+    <View style={[styles.container, { backgroundColor: (NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light)[0] }]}>
+      <StatusBar style="light" backgroundColor={(NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light)[0]} />
       {/* Header is part of the list now */}
 
       {/* FlatList with measured paddingTop - reserves exact space for header */}
@@ -170,8 +171,11 @@ export function SurahList() {
         renderItem={renderSurah}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
-          <View style={[styles.headerWrapper, { backgroundColor: theme.surahHeader }]}>
-            <View style={[styles.header, { backgroundColor: theme.surahHeader, paddingTop: headerPaddingTop }]}>
+          <LinearGradient
+            colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
+            style={styles.headerWrapper}
+          >
+            <View style={[styles.header, { paddingTop: headerPaddingTop }]}>
               <Text style={styles.headerTitle}>القرآن الکریم</Text>
               <Text style={styles.headerSubtitle}>
                 {toArabicNumerals(114)} سوره • {toArabicNumerals(6236)} آیات
@@ -218,7 +222,7 @@ export function SurahList() {
                 </Pressable>
               )}
             </View>
-          </View>
+          </LinearGradient>
         }
         contentContainerStyle={[
           styles.listContent,

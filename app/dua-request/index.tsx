@@ -5,17 +5,18 @@
 
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
 import { RequestCard } from '@/components/dua/RequestCard';
 import CenteredText from '@/components/CenteredText';
 
 export default function DuaRequestsScreen() {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
   const { state, refreshRequests, syncPending } = useDua();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -78,7 +79,10 @@ export default function DuaRequestsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
+        style={styles.header}
+      >
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
@@ -91,7 +95,7 @@ export default function DuaRequestsScreen() {
         >
           <MaterialIcons name="add" size={24} color="#fff" />
         </Pressable>
-      </View>
+      </LinearGradient>
 
       {/* Description */}
       <View style={[styles.description, { backgroundColor: theme.backgroundSecondary }]}>

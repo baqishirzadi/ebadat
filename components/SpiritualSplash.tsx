@@ -6,6 +6,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
 import Animated, {
   useAnimatedStyle,
@@ -74,10 +75,13 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
 };
 
 export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
+  const insets = useSafeAreaInsets();
   const [phrase] = useState(() => PHRASES[Math.floor(Math.random() * PHRASES.length)]);
   
   const opacity = useSharedValue(0);
   const frameScale = useSharedValue(0.9);
+  const appNameOpacity = useSharedValue(0);
+  const appNameScale = useSharedValue(0.95);
   const arabicOpacity = useSharedValue(0);
   const translationOpacity = useSharedValue(0);
   const creditOpacity = useSharedValue(0);
@@ -86,14 +90,19 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   useEffect(() => {
     // Animate in sequence
     opacity.value = withTiming(1, { duration: 500, easing: Easing.out(Easing.cubic) });
+    appNameOpacity.value = withDelay(100, withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) }));
+    appNameScale.value = withDelay(100, withSequence(
+      withTiming(1.05, { duration: 400, easing: Easing.out(Easing.cubic) }),
+      withTiming(1, { duration: 200 })
+    ));
     frameScale.value = withSequence(
-      withDelay(200, withTiming(1.02, { duration: 400, easing: Easing.out(Easing.cubic) })),
+      withDelay(300, withTiming(1.02, { duration: 400, easing: Easing.out(Easing.cubic) })),
       withTiming(1, { duration: 200 })
     );
-    glowOpacity.value = withDelay(300, withTiming(1, { duration: 600 }));
-    arabicOpacity.value = withDelay(400, withTiming(1, { duration: 500 }));
-    translationOpacity.value = withDelay(700, withTiming(1, { duration: 500 }));
-    creditOpacity.value = withDelay(1000, withTiming(1, { duration: 600 }));
+    glowOpacity.value = withDelay(400, withTiming(1, { duration: 600 }));
+    arabicOpacity.value = withDelay(500, withTiming(1, { duration: 500 }));
+    translationOpacity.value = withDelay(800, withTiming(1, { duration: 500 }));
+    creditOpacity.value = withDelay(1100, withTiming(1, { duration: 600 }));
 
     // Fade out and complete
     const timeout = setTimeout(() => {
@@ -132,15 +141,26 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
     opacity: creditOpacity.value,
   }));
 
+  const appNameStyle = useAnimatedStyle(() => ({
+    opacity: appNameOpacity.value,
+    transform: [{ scale: appNameScale.value }],
+  }));
+
   return (
-    <Animated.View style={[styles.container, containerStyle]}>
+    <Animated.View style={[styles.container, containerStyle, { paddingTop: Math.max(48, insets.top + 12), paddingBottom: Math.max(16, insets.bottom + 8) }]}>
       {/* Gradient Background */}
       <LinearGradient
-        colors={['#0d2920', '#1a4d3e', '#0d3025']}
+        colors={['#0a1f18', '#1a4d3e', '#0d2a20']}
         style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       />
+
+      {/* App Name - Prominent at top */}
+      <Animated.View style={[styles.appNameSection, appNameStyle]}>
+        <Text style={styles.appName}>عبادت</Text>
+        <Text style={styles.appSubtitle}>قرآن کریم و اوقات نماز</Text>
+      </Animated.View>
 
       {/* Subtle geometric pattern */}
       <View style={styles.patternContainer}>
@@ -207,26 +227,23 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
         </View>
       </Animated.View>
 
-      {/* App Name */}
-      <Animated.View style={[styles.footer, translationStyle]}>
-        <CenteredText style={styles.appName}>عبادت</CenteredText>
-        <CenteredText style={styles.appSubtitle}>قرآن کریم و اوقات نماز</CenteredText>
-      </Animated.View>
-
       {/* Developer Credit */}
       <Animated.View style={[styles.creditContainer, creditStyle]}>
-        <CenteredText style={styles.creditIntro}>
-          این اپلیکیشن برای تسهیل عبادات{'\n'}
-          مردم شریف و مؤمن افغانستان ساخته شده است
-        </CenteredText>
-        <View style={styles.creditDivider} />
-        <CenteredText style={styles.creditDeveloper}>
-          توسط: سیدعبدالباقی ابن سیدعبدالاله (عارف بالله){'\n'}
-          ابن خلیفه صاحب سیدمحمد یتیم شیرزادی (رحمه‌الله)
-        </CenteredText>
-        <CenteredText style={styles.creditDua}>
-          انشاءالله قبول درگاه حق تعالی باشد
-        </CenteredText>
+        <View style={styles.creditCard}>
+          <CenteredText style={styles.creditIntro}>
+            برای تسهیل عبادات مردم شریف افغانستان
+          </CenteredText>
+          <View style={styles.creditDivider} />
+          <CenteredText style={styles.creditDeveloper}>
+            سیدعبدالباقی ابن سیدعبدالاله (عارف بالله)
+          </CenteredText>
+          <CenteredText style={styles.creditLineage}>
+            ابن خلیفه صاحب سیدمحمد یتیم شیرزادی (رحمه‌الله)
+          </CenteredText>
+          <CenteredText style={styles.creditDua}>
+            انشاءالله قبول درگاه حق تعالی باشد
+          </CenteredText>
+        </View>
       </Animated.View>
     </Animated.View>
   );
@@ -239,8 +256,9 @@ const GOLD_DARK = '#B8960C';
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 16,
     zIndex: 1000,
   },
   patternContainer: {
@@ -256,9 +274,12 @@ const styles = StyleSheet.create({
     borderColor: GOLD,
   },
   frameContainer: {
+    flex: 1,
     width: SCREEN_WIDTH - 48,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 24,
+    minHeight: 0,
   },
   frameGlow: {
     position: 'absolute',
@@ -276,11 +297,12 @@ const styles = StyleSheet.create({
   },
   frame: {
     width: '100%',
+    maxWidth: SCREEN_WIDTH - 48,
     backgroundColor: 'rgba(13, 41, 32, 0.95)',
     borderRadius: 16,
     borderWidth: 2,
     borderColor: GOLD,
-    padding: 24,
+    padding: 20,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -378,7 +400,8 @@ const styles = StyleSheet.create({
   },
   frameContent: {
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
   },
   starDecoration: {
     color: GOLD,
@@ -386,19 +409,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   arabicText: {
-    fontSize: 32,
+    fontSize: 28,
     color: '#fff',
-    fontFamily: 'AmiriQuran',
+    fontFamily: 'QuranFont',
     textAlign: 'center',
-    lineHeight: 70,
+    lineHeight: 58,
     writingDirection: 'rtl',
     paddingHorizontal: 8,
-    paddingVertical: 16,
+    paddingVertical: 8,
   },
   decorativeLine: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 16,
+    marginVertical: 12,
     width: '80%',
   },
   lineLeft: {
@@ -437,56 +460,83 @@ const styles = StyleSheet.create({
     fontFamily: 'NotoNastaliqUrdu',
     writingDirection: 'rtl',
   },
-  footer: {
-    position: 'absolute',
-    bottom: 120,
+  appNameSection: {
     alignItems: 'center',
+    paddingHorizontal: 24,
+    marginBottom: 12,
+    flexShrink: 0,
   },
   appName: {
-    fontSize: 24,
+    fontSize: 48,
     color: '#fff',
-    fontWeight: '600',
-    fontFamily: 'Vazirmatn',
+    fontFamily: 'ScheherazadeNew',
+    textAlign: 'center',
+    letterSpacing: 2,
+    textShadowColor: 'rgba(212, 175, 55, 0.4)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 12,
+    writingDirection: 'rtl',
   },
   appSubtitle: {
-    fontSize: 13,
-    color: 'rgba(255,255,255,0.6)',
-    marginTop: 4,
+    fontSize: 14,
+    color: GOLD_LIGHT,
+    marginTop: 8,
     fontFamily: 'Vazirmatn',
+    letterSpacing: 0.5,
+    opacity: 0.95,
   },
   creditContainer: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-    left: 16,
+    marginHorizontal: 20,
+    marginTop: 16,
     alignItems: 'center',
+    flexShrink: 0,
+  },
+  creditCard: {
+    backgroundColor: 'rgba(13, 41, 32, 0.9)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: `${GOLD}40`,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    width: '100%',
   },
   creditIntro: {
-    fontSize: 10,
-    color: GOLD,
-    lineHeight: 16,
+    fontSize: 11,
+    color: `${GOLD_LIGHT}cc`,
+    lineHeight: 18,
     fontFamily: 'Vazirmatn',
     writingDirection: 'rtl',
     textAlign: 'center',
   },
   creditDivider: {
-    width: 60,
+    width: 48,
     height: 1,
-    backgroundColor: `${GOLD}40`,
-    marginVertical: 6,
+    backgroundColor: `${GOLD}50`,
+    marginVertical: 10,
   },
   creditDeveloper: {
-    fontSize: 9,
-    color: 'rgba(212, 175, 55, 0.7)',
-    lineHeight: 14,
+    fontSize: 13,
+    color: GOLD_LIGHT,
+    lineHeight: 22,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '600',
+    writingDirection: 'rtl',
+    textAlign: 'center',
+  },
+  creditLineage: {
+    fontSize: 11,
+    color: `${GOLD}cc`,
+    lineHeight: 18,
+    marginTop: 4,
     fontFamily: 'Vazirmatn',
     writingDirection: 'rtl',
     textAlign: 'center',
   },
   creditDua: {
-    fontSize: 9,
-    color: 'rgba(212, 175, 55, 0.5)',
-    marginTop: 4,
+    fontSize: 10,
+    color: `${GOLD}99`,
+    marginTop: 8,
     fontFamily: 'Vazirmatn',
     fontStyle: 'italic',
     writingDirection: 'rtl',

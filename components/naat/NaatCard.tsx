@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react';
 import { Pressable, StyleSheet, View, Text, PanResponder, I18nManager } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -57,11 +57,26 @@ export function NaatCard({
       ? `در حال دانلود ${Math.round(naat.downloadProgress * 100)}٪`
       : 'دانلود نشده';
   const [trackWidth, setTrackWidth] = useState(0);
-  const seekRef = useRef(0);
-  const clampedProgress = Math.max(0, Math.min(progress, 1));
+  const [seekingRatio, setSeekingRatio] = useState<number | null>(null);
+  useEffect(() => {
+    if (!isActive) setSeekingRatio(null);
+  }, [isActive]);
+  const displayProgress = seekingRatio !== null ? seekingRatio : Math.max(0, Math.min(progress, 1));
+  const clampedProgress = Math.max(0, Math.min(displayProgress, 1));
   const fillWidth = trackWidth ? trackWidth * clampedProgress : 0;
   const thumbRadius = 8;
   const thumbLeft = Math.max(fillWidth - thumbRadius, 0);
+
+  const computeRatio = useCallback(
+    (locationX: number) => {
+      if (!trackWidth) return 0;
+      const x = Math.max(0, Math.min(trackWidth, locationX));
+      let ratio = x / trackWidth;
+      if (I18nManager.isRTL) ratio = 1 - ratio;
+      return ratio;
+    },
+    [trackWidth],
+  );
 
   const panResponder = useMemo(
     () =>
@@ -72,30 +87,32 @@ export function NaatCard({
         onMoveShouldSetPanResponderCapture: () => isActive && !!onSeek,
         onPanResponderGrant: (evt) => {
           if (!trackWidth || !onSeek) return;
-          const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
-          let ratio = x / trackWidth;
-          if (I18nManager.isRTL) ratio = 1 - ratio;
-          seekRef.current = ratio;
+          const ratio = computeRatio(evt.nativeEvent.locationX);
+          setSeekingRatio(ratio);
           onSeek(ratio * durationMillis);
         },
         onPanResponderMove: (evt) => {
           if (!trackWidth || !onSeek) return;
-          const x = Math.max(0, Math.min(trackWidth, evt.nativeEvent.locationX));
-          let ratio = x / trackWidth;
-          if (I18nManager.isRTL) ratio = 1 - ratio;
-          seekRef.current = ratio;
+          const ratio = computeRatio(evt.nativeEvent.locationX);
+          setSeekingRatio(ratio);
           onSeek(ratio * durationMillis);
         },
+        onPanResponderRelease: () => {
+          setSeekingRatio(null);
+        },
+        onPanResponderTerminate: () => {
+          setSeekingRatio(null);
+        },
       }),
-    [durationMillis, isActive, onSeek, trackWidth],
+    [durationMillis, isActive, onSeek, trackWidth, computeRatio],
   );
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
       <View style={styles.accentRow}>
-        <View style={[styles.accentLine, { backgroundColor: `${theme.tint}50` }]} />
-        <MaterialIcons name="auto-awesome" size={16} color="#d4af37" />
-        <View style={[styles.accentLine, { backgroundColor: `${theme.tint}50` }]} />
+        <View style={[styles.accentLine, { backgroundColor: `${theme.bookmark}80` }]} />
+        <MaterialIcons name="auto-awesome" size={16} color={theme.bookmark} />
+        <View style={[styles.accentLine, { backgroundColor: `${theme.bookmark}80` }]} />
       </View>
       <View style={styles.headerRow}>
         <Text style={[styles.title, { color: theme.text }]}>{naat.title_fa}</Text>
@@ -114,18 +131,29 @@ export function NaatCard({
             <View
               style={[
                 styles.seekFill,
-                { width: fillWidth, backgroundColor: theme.tint },
+                {
+                  width: fillWidth,
+                  backgroundColor: theme.tint,
+                  ...(I18nManager.isRTL ? { right: 0 } : { left: 0 }),
+                },
               ]}
             />
             <View
               style={[
                 styles.seekThumb,
-                { left: thumbLeft, backgroundColor: theme.tint },
+                {
+                  backgroundColor: theme.tint,
+                  ...(I18nManager.isRTL
+                    ? { left: trackWidth - fillWidth - thumbRadius, right: undefined }
+                    : { left: thumbLeft }),
+                },
               ]}
             />
           </View>
           <View style={styles.timeRow}>
-            <Text style={[styles.timeText, { color: theme.textSecondary }]}>{formatTime(positionMillis)}</Text>
+            <Text style={[styles.timeText, { color: theme.textSecondary }]}>
+              {formatTime(seekingRatio !== null ? seekingRatio * durationMillis : positionMillis)}
+            </Text>
             <Text style={[styles.timeText, { color: theme.textSecondary }]}>{formatTime(durationMillis)}</Text>
           </View>
         </View>
@@ -230,7 +258,6 @@ const styles = StyleSheet.create({
   seekFill: {
     height: '100%',
     position: 'absolute',
-    left: 0,
     borderRadius: BorderRadius.full,
   },
   seekThumb: {

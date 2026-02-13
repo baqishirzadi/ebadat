@@ -7,13 +7,14 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useStats } from '@/context/StatsContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatHijriDate, getUpcomingSpecialDays, hijriToGregorian, HIJRI_MONTHS } from '@/utils/islamicCalendar';
 import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
 import {
   ABOUT_CREATOR_DARI_CREATOR_LABEL,
@@ -49,7 +50,7 @@ function getShamsiAndWeekday(
 }
 
 export default function MoreScreen() {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
   const { state: stats } = useStats();
   const { state: prayer } = usePrayer();
   const router = useRouter();
@@ -80,14 +81,17 @@ export default function MoreScreen() {
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
+        style={styles.header}
+      >
         <CenteredText style={styles.headerTitle}>بیشتر</CenteredText>
         {prayer.hijriDate && (
           <CenteredText style={styles.headerDate}>
             {formatHijriDate(prayer.hijriDate, 'dari')}
           </CenteredText>
         )}
-      </View>
+      </LinearGradient>
 
       {/* Menu */}
       <View style={styles.section}>

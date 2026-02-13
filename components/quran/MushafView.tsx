@@ -13,6 +13,7 @@ import { SurahHeader } from './SurahHeader';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { Surah, Ayah } from '@/types/quran';
+import { stripQuranicMarks } from '@/utils/quranText';
 import CenteredText from '@/components/CenteredText';
 
 interface MushafViewProps {
@@ -85,13 +86,13 @@ export function MushafView({
         flatListRef.current?.scrollToIndex({
           index,
           animated: true,
-          viewPosition: 0.3,
+          viewPosition: 0, // Top of ayah at top - Quran text (Arabic) has priority over translation
         });
       }, 300);
     }
   }, [surah, initialAyah]);
 
-  // Auto-scroll to currently playing ayah
+  // Auto-scroll to currently playing ayah - prioritize Quran text over translation
   useEffect(() => {
     if (
       surah &&
@@ -101,16 +102,14 @@ export function MushafView({
       flatListRef.current
     ) {
       const index = currentlyPlaying.ayah - 1;
-      // Small delay to ensure FlatList is ready
       setTimeout(() => {
         try {
           flatListRef.current?.scrollToIndex({
             index,
             animated: true,
-            viewPosition: 0.3, // Show ayah at 30% from top
+            viewPosition: 0, // Top of ayah at top - Arabic text fully visible first, translation below
           });
         } catch (error) {
-          // If scrollToIndex fails (e.g., index out of bounds), use scrollToOffset as fallback
           console.warn('Failed to scroll to index, using fallback:', error);
         }
       }, 100);
@@ -248,7 +247,7 @@ export function MushafView({
                       },
                     ]}
                   >
-                    {stripBismillah(ayah.text, surahNumber, ayah.number)}
+                    {stripBismillah(stripQuranicMarks(ayah.text, quranFont), surahNumber, ayah.number)}
                     <CenteredText style={[styles.ayahEndMark, { color: theme.ayahNumber }]}>
                       {' '}﴿{toArabicNumber(ayah.number)}﴾{' '}
                     </CenteredText>
@@ -260,7 +259,7 @@ export function MushafView({
         )}
       />
     );
-  }, [surah, surahNumber, theme, fontFamily, arabicFontSize, currentlyPlaying, handlePlayAyah]);
+  }, [surah, surahNumber, theme, fontFamily, arabicFontSize, quranFont, currentlyPlaying, handlePlayAyah]);
 
   if (isLoading) {
     return (
@@ -300,6 +299,7 @@ export function MushafView({
               flatListRef.current?.scrollToIndex({
                 index: info.index,
                 animated: true,
+                viewPosition: 0,
               });
             }, 100);
           }}

@@ -17,18 +17,19 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
 import { CategorySelector } from '@/components/dua/CategorySelector';
 import { DuaCategory, UserGender } from '@/types/dua';
 import CenteredText from '@/components/CenteredText';
 import NetInfo from '@react-native-community/netinfo';
 
 export default function NewDuaRequestScreen() {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
   const { submitRequest } = useDua();
   const router = useRouter();
 
@@ -109,7 +110,10 @@ export default function NewDuaRequestScreen() {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
+        style={styles.header}
+      >
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
@@ -119,7 +123,7 @@ export default function NewDuaRequestScreen() {
           <CenteredText style={styles.headerSubtitle}>با نیت خالص، با دل آرام</CenteredText>
         </View>
         <View style={styles.headerRight} />
-      </View>
+      </LinearGradient>
 
       <ScrollView
         style={styles.scrollView}

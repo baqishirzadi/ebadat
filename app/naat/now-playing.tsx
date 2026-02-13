@@ -2,14 +2,14 @@
  * Na't Now Playing Screen
  */
 
-import React, { useMemo } from 'react';
-import { View, StyleSheet, Text, Pressable } from 'react-native';
+import React, { useMemo, useState, useCallback } from 'react';
+import { View, StyleSheet, Text, Pressable, PanResponder, I18nManager } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useNaat } from '@/context/NaatContext';
-import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography, NAAT_GRADIENT } from '@/constants/theme';
 
 function formatTime(millis: number) {
   const totalSeconds = Math.floor(millis / 1000);
@@ -19,14 +19,54 @@ function formatTime(millis: number) {
 }
 
 export default function NaatNowPlayingScreen() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
   const router = useRouter();
   const { player, pause, resume, seek } = useNaat();
+  const themeMode = state.preferences.theme;
+  const gradientColors = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
 
   const progress = useMemo(() => {
     if (!player.current || player.durationMillis <= 0) return 0;
     return player.positionMillis / player.durationMillis;
   }, [player]);
+
+  const [seekingRatio, setSeekingRatio] = useState<number | null>(null);
+  const [trackWidth, setTrackWidth] = useState(0);
+  const displayProgress = seekingRatio !== null ? seekingRatio : Math.max(0, Math.min(progress, 1));
+
+  const computeRatio = useCallback(
+    (locationX: number) => {
+      if (!trackWidth) return 0;
+      const x = Math.max(0, Math.min(trackWidth, locationX));
+      let ratio = x / trackWidth;
+      if (I18nManager.isRTL) ratio = 1 - ratio;
+      return ratio;
+    },
+    [trackWidth],
+  );
+
+  const panResponder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: (evt) => {
+          if (!trackWidth) return;
+          const ratio = computeRatio(evt.nativeEvent.locationX);
+          setSeekingRatio(ratio);
+          seek(ratio * player.durationMillis);
+        },
+        onPanResponderMove: (evt) => {
+          if (!trackWidth) return;
+          const ratio = computeRatio(evt.nativeEvent.locationX);
+          setSeekingRatio(ratio);
+          seek(ratio * player.durationMillis);
+        },
+        onPanResponderRelease: () => setSeekingRatio(null),
+        onPanResponderTerminate: () => setSeekingRatio(null),
+      }),
+    [trackWidth, computeRatio, player.durationMillis, seek],
+  );
 
   if (!player.current) {
     return (
@@ -40,33 +80,52 @@ export default function NaatNowPlayingScreen() {
   }
 
   return (
-    <LinearGradient colors={['#0f3a2f', '#1a4d3e', '#1f6b57']} style={styles.container}>
+    <LinearGradient colors={gradientColors} style={styles.container}>
       <Pressable onPress={() => router.back()} style={styles.backButton}>
-        <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+        <MaterialIcons name="arrow-forward" size={24} color={theme.surahHeaderText} />
       </Pressable>
 
       <View style={styles.center}>
-        <View style={styles.motif}>
-          <MaterialIcons name="auto-awesome" size={32} color="#d4af37" />
+        <View style={[styles.motif, { backgroundColor: theme.surahHeader, borderColor: theme.bookmark }]}>
+          <MaterialIcons name="auto-awesome" size={32} color={theme.bookmark} />
         </View>
-        <Text style={styles.title}>{player.current.title_fa}</Text>
-        <Text style={styles.psTitle}>{player.current.title_ps}</Text>
-        <Text style={styles.subtitle}>{player.current.reciter_name}</Text>
-        {player.current.isDownloaded && <Text style={styles.offlineBadge}>آفلاین</Text>}
+        <Text style={[styles.title, { color: theme.surahHeaderText }]}>{player.current.title_fa}</Text>
+        <Text style={[styles.psTitle, { color: theme.surahHeaderText }]}>{player.current.title_ps}</Text>
+        <Text style={[styles.subtitle, { color: theme.surahHeaderText }]}>{player.current.reciter_name}</Text>
+        {player.current.isDownloaded && <Text style={[styles.offlineBadge, { color: theme.bookmark }]}>آفلاین</Text>}
       </View>
 
       <View style={styles.controls}>
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: `${Math.min(progress * 100, 100)}%` }]} />
+        <View
+          style={[styles.progressBar, { backgroundColor: `${theme.surahHeaderText}20` }]}
+          onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+          {...panResponder.panHandlers}
+        >
+          <View
+            style={[
+              styles.progressFill,
+              {
+                width: `${Math.min(displayProgress * 100, 100)}%`,
+                backgroundColor: theme.bookmark,
+                ...(I18nManager.isRTL ? { right: 0 } : { left: 0 }),
+              },
+            ]}
+          />
         </View>
         <View style={styles.timeRow}>
-          <Text style={styles.timeText}>{formatTime(player.positionMillis)}</Text>
-          <Text style={styles.timeText}>{formatTime(player.durationMillis)}</Text>
+          <Text style={[styles.timeText, { color: theme.surahHeaderText }]}>
+            {formatTime(
+              seekingRatio !== null ? seekingRatio * player.durationMillis : player.positionMillis,
+            )}
+          </Text>
+          <Text style={[styles.timeText, { color: theme.surahHeaderText }]}>
+            {formatTime(player.durationMillis)}
+          </Text>
         </View>
 
         <Pressable
           onPress={() => (player.isPlaying ? pause() : resume())}
-          style={styles.playButton}
+          style={[styles.playButton, { backgroundColor: theme.bookmark }]}
         >
           <MaterialIcons name={player.isPlaying ? 'pause' : 'play-arrow'} size={42} color="#1a4d3e" />
         </Pressable>
@@ -97,36 +156,30 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#1a4d3e',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#d4af37',
     marginBottom: Spacing.md,
   },
   title: {
-    color: '#fff',
     fontFamily: 'Amiri',
     fontSize: Typography.ui.display,
     textAlign: 'center',
   },
   psTitle: {
     marginTop: Spacing.xs,
-    color: '#e1f1ea',
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     textAlign: 'center',
   },
   subtitle: {
     marginTop: Spacing.xs,
-    color: '#e1f1ea',
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     textAlign: 'center',
   },
   offlineBadge: {
     marginTop: Spacing.sm,
-    color: '#d4af37',
     fontFamily: 'Vazirmatn',
   },
   controls: {
@@ -134,13 +187,13 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 6,
-    backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: BorderRadius.full,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#d4af37',
+    position: 'absolute',
+    borderRadius: BorderRadius.full,
   },
   timeRow: {
     flexDirection: 'row-reverse',
@@ -148,7 +201,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
   },
   timeText: {
-    color: '#e1f1ea',
     fontFamily: 'Vazirmatn',
   },
   playButton: {
@@ -157,7 +209,6 @@ const styles = StyleSheet.create({
     height: 86,
     borderRadius: 43,
     alignSelf: 'center',
-    backgroundColor: '#d4af37',
     alignItems: 'center',
     justifyContent: 'center',
   },

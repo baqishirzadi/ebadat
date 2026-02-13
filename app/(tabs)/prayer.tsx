@@ -12,7 +12,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CenteredText from '@/components/CenteredText';
 import { CitySelectorModal } from '@/components/prayer';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
+import { NAAT_GRADIENT } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
@@ -105,7 +107,7 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
 };
 
 export default function NamazScreen() {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
   const router = useRouter();
   const { setCity, setCustomLocation } = usePrayer();
   const { 
@@ -193,13 +195,16 @@ export default function NamazScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header - هم‌وزن با دیگر تب‌ها */}
-        <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+        <LinearGradient
+          colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
+          style={styles.header}
+        >
           <MaterialIcons name="schedule" size={40} color="#fff" />
           <CenteredText style={styles.headerTitle}>اوقات نماز</CenteredText>
           <CenteredText style={styles.headerSubtitle}>
             {selectedCityData?.name || 'کابل'}
           </CenteredText>
-        </View>
+        </LinearGradient>
 
         {/* Content with horizontal padding */}
         <View style={styles.contentWrapper}>

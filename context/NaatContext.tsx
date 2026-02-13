@@ -38,7 +38,7 @@ type NaatContextValue = {
   pause: () => Promise<void>;
   resume: () => Promise<void>;
   stop: () => Promise<void>;
-  seek: (millis: number) => Promise<void>;
+  seek: (millis: number) => void;
   download: (naat: Naat) => Promise<void>;
 };
 
@@ -183,6 +183,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
             durationMillis: status.durationMillis ?? prev.durationMillis,
           }));
         });
+        sound.setStatusAsync({ progressUpdateIntervalMillis: 250 }).catch(() => {});
         soundRef.current = sound;
         if (status?.isLoaded && status.durationMillis && status.durationMillis > 0) {
           const seconds = Math.floor(status.durationMillis / 1000);
@@ -265,11 +266,14 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     setPlayer({ current: null, isPlaying: false, positionMillis: 0, durationMillis: 0 });
   }, []);
 
-  const seek = useCallback(async (millis: number) => {
+  const seek = useCallback((millis: number) => {
     if (soundRef.current) {
-      await soundRef.current.setPositionAsync(millis);
+      const dur = player.durationMillis || 0;
+      const clamped = dur > 0 ? Math.max(0, Math.min(millis, dur)) : Math.max(0, millis);
+      setPlayer((prev) => ({ ...prev, positionMillis: clamped }));
+      soundRef.current.setPositionAsync(clamped).catch(() => {});
     }
-  }, []);
+  }, [player.durationMillis]);
 
   const download = useCallback(async (naat: Naat) => {
     try {

@@ -39,113 +39,118 @@ export interface ThemeColors {
   tabBarBorder: string;
 }
 
-// Light theme - Classic cream/white
+// Naat header green palette (primary app color)
+const NAAT_GREEN = '#1a4d3e';
+const NAAT_GREEN_DARK = '#173f33';
+const NAAT_GREEN_LIGHT = '#1f6b57';
+
+// Light theme - Naat green as primary
 const lightTheme: ThemeColors = {
   text: '#1a1a1a',
   textSecondary: '#666666',
   background: '#fefefe',
   backgroundSecondary: '#f8f5f0',
-  tint: '#1e6f5c',
+  tint: NAAT_GREEN,
   icon: '#687076',
   tabIconDefault: '#687076',
-  tabIconSelected: '#1e6f5c',
+  tabIconSelected: NAAT_GREEN,
   
   arabicText: '#000000',
   translationText: '#333333',
-  ayahNumber: '#1e6f5c',
-  surahHeader: '#1e6f5c',
+  ayahNumber: NAAT_GREEN,
+  surahHeader: NAAT_GREEN,
   surahHeaderText: '#ffffff',
-  bismillah: '#1e6f5c',
+  bismillah: NAAT_GREEN,
   
   card: '#ffffff',
   cardBorder: '#e8e4df',
   divider: '#e0dcd7',
   bookmark: '#d4af37',
-  playing: '#1e6f5c',
+  playing: NAAT_GREEN,
   
   tabBar: '#ffffff',
   tabBarBorder: '#e0dcd7',
 };
 
-// Night mode - True black with light gray text (AMOLED friendly)
+// Night mode - Naat green accent on dark (AMOLED friendly)
 const nightTheme: ThemeColors = {
   text: '#c9c9c9',
   textSecondary: '#888888',
   background: '#000000',
   backgroundSecondary: '#0a0a0a',
-  tint: '#5db075',
+  tint: NAAT_GREEN_LIGHT,
   icon: '#888888',
   tabIconDefault: '#666666',
-  tabIconSelected: '#5db075',
+  tabIconSelected: NAAT_GREEN_LIGHT,
   
   arabicText: '#d4d4d4',
   translationText: '#a8a8a8',
-  ayahNumber: '#5db075',
-  surahHeader: '#141414',
+  ayahNumber: NAAT_GREEN_LIGHT,
+  surahHeader: NAAT_GREEN_DARK,
   surahHeaderText: '#c9c9c9',
-  bismillah: '#5db075',
+  bismillah: NAAT_GREEN_LIGHT,
   
   card: '#0d0d0d',
   cardBorder: '#1a1a1a',
   divider: '#1f1f1f',
   bookmark: '#d4af37',
-  playing: '#5db075',
+  playing: NAAT_GREEN_LIGHT,
   
   tabBar: '#000000',
   tabBarBorder: '#1a1a1a',
 };
 
-// Turquoise Blue - Calm ocean theme
+// Turquoise - Naat green primary (unified with Naat header)
 const turquoiseTheme: ThemeColors = {
   text: '#1a3a3a',
   textSecondary: '#4a6a6a',
   background: '#e8f5f5',
   backgroundSecondary: '#d0ebeb',
-  tint: '#008b8b',
+  tint: NAAT_GREEN,
   icon: '#5a8a8a',
   tabIconDefault: '#5a8a8a',
-  tabIconSelected: '#008b8b',
+  tabIconSelected: NAAT_GREEN,
   
   arabicText: '#0a2a2a',
   translationText: '#2a4a4a',
-  ayahNumber: '#008b8b',
-  surahHeader: '#008b8b',
+  ayahNumber: NAAT_GREEN,
+  surahHeader: NAAT_GREEN,
   surahHeaderText: '#ffffff',
-  bismillah: '#006666',
+  bismillah: NAAT_GREEN_DARK,
   
   card: '#f0fafa',
   cardBorder: '#b8d8d8',
   divider: '#c8e8e8',
   bookmark: '#d4af37',
-  playing: '#008b8b',
+  playing: NAAT_GREEN,
   
   tabBar: '#e0f0f0',
   tabBarBorder: '#b8d8d8',
 };
 
-// Light Olive Green - Serene nature theme
+// Olive - Naat green primary (unified with Naat header)
 const oliveTheme: ThemeColors = {
   text: '#2a3a2a',
   textSecondary: '#5a6a5a',
   background: '#f5f8f0',
   backgroundSecondary: '#e8ede0',
-  tint: '#6b8e23',
+  tint: NAAT_GREEN,
   icon: '#7a8a6a',
   tabIconDefault: '#7a8a6a',
-  tabIconSelected: '#6b8e23',
+  tabIconSelected: NAAT_GREEN,
   
   arabicText: '#1a2a1a',
   translationText: '#3a4a3a',
-  ayahNumber: '#6b8e23',
-  surahHeader: '#6b8e23',
+  ayahNumber: NAAT_GREEN,
+  surahHeader: NAAT_GREEN,
   surahHeaderText: '#ffffff',
-  bismillah: '#556b2f',
+  bismillah: NAAT_GREEN_DARK,
   
   card: '#fafcf5',
   cardBorder: '#d0dab8',
   divider: '#dce6c8',
   bookmark: '#d4af37',
-  playing: '#6b8e23',
+  playing: NAAT_GREEN,
   
   tabBar: '#f0f5e8',
   tabBarBorder: '#d0dab8',
@@ -156,6 +161,14 @@ export const Themes: Record<ThemeMode, ThemeColors> = {
   night: nightTheme,
   turquoise: turquoiseTheme,
   olive: oliveTheme,
+};
+
+/** Naat header gradient colors - use for headers across the app */
+export const NAAT_GRADIENT: Record<ThemeMode, [string, string, string]> = {
+  light: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
+  night: ['#0a0a0a', '#141414', '#1a1a1a'],
+  turquoise: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
+  olive: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
 };
 
 // Legacy Colors export for backwards compatibility
@@ -204,8 +217,8 @@ export const QuranFonts: Record<QuranFontFamily, {
   },
   amiriQuran: {
     name: 'QuranFont',
-    displayName: 'Amiri Naskh',
-    displayNameDari: 'امیری نسخ',
+    displayName: 'نسخ کلاسیک',
+    displayNameDari: 'نسخ کلاسیک',
   },
   scheherazade: {
     name: 'ScheherazadeNew',

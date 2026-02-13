@@ -5,9 +5,10 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Text, Modal, BackHandler } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
-import { Typography, Spacing, BorderRadius, PashtoFonts } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius, PashtoFonts, NAAT_GRADIENT } from '@/constants/theme';
 import type { PashtoFontFamily } from '@/types/quran';
 import { PrayerTextBlock, PrayerStepGuide } from '@/components/prayer';
 import { DuaFeatureTile } from '@/components/dua/FeatureTile';
@@ -109,13 +110,16 @@ export default function PrayerLearningScreen() {
   const renderCategoryList = () => (
     <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[state.preferences.theme] ?? NAAT_GRADIENT.light}
+        style={styles.header}
+      >
         <MaterialIcons name="mosque" size={40} color="#fff" />
         <CenteredText style={styles.headerTitle}>آموزش نماز</CenteredText>
         <CenteredText style={styles.headerSubtitle}>
           طبق مذهب امام ابو حنیفه رحمه‌الله
         </CenteredText>
-      </View>
+      </LinearGradient>
 
       {/* Categories Grid */}
       <View style={styles.categoriesContainer}>

@@ -13,17 +13,36 @@ import {
   Animated,
   useWindowDimensions,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useArticles } from '@/context/ArticlesContext';
 import { Article, Scholar } from '@/types/articles';
-import { Spacing, BorderRadius } from '@/constants/theme';
+import { Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
 import { ArticleCard } from '@/components/articles/ArticleCard';
 import { CategoryFilter } from '@/components/articles/CategoryFilter';
 import CenteredText from '@/components/CenteredText';
 import { isArticlesRemoteEnabled } from '@/utils/articleService';
 
 const PINNED_SCHOLARS: Scholar[] = [
+  {
+    id: 'pinned_mawlana_jalaluddin_balkhi',
+    fullName: 'مولانا جلال‌الدین محمد بلخی (رح)',
+    email: 'mawlana.balkhi@local',
+    bio: 'صاحب مثنوی معنوی و از بلندترین قله‌های عرفان و ادب اسلامی',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+  {
+    id: 'pinned_sayyid_jamaluddin_afghani',
+    fullName: 'سید جمال‌الدین افغانی (رح)',
+    email: 'jamaluddin.afghani@local',
+    bio: 'پیشگام بیداری فکری امت و اصلاح اجتماعی در عصر جدید',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
   {
     id: 'pinned_khwaja_abdullah_ansari',
     fullName: 'خواجه عبدالله انصاری (رح)',
@@ -34,28 +53,64 @@ const PINNED_SCHOLARS: Scholar[] = [
     createdAt: new Date('2000-01-01T00:00:00.000Z'),
   },
   {
+    id: 'pinned_ahmad_shah_abdali',
+    fullName: 'احمد شاه ابدالی (احمدشاه بابا)',
+    email: 'ahmad.shah.abdali@local',
+    bio: 'بنیان‌گذار دولت درانی و حامی نهادهای دینی حنفی',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+  {
+    id: 'pinned_shah_waliullah_dehlawi',
+    fullName: 'شاه ولی‌الله دهلوی (رح)',
+    email: 'shah.waliullah@local',
+    bio: 'از قله‌های اصلاح فقهی و حدیثی در شبه‌قاره',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+  {
+    id: 'pinned_mirza_abdulqadir_bidel',
+    fullName: 'میرزا عبدالقادر بیدل (رح)',
+    email: 'bidel@local',
+    bio: 'شاعر و عارف برجسته سبک هندی با اثر عمیق در فرهنگ افغانستان',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+  {
+    id: 'pinned_sheikh_sanai_ghaznavi',
+    fullName: 'شیخ سنایی غزنوی (رح)',
+    email: 'sanai@local',
+    bio: 'پیشگام شعر عرفانی و صاحب حدیقةالحقیقه',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+  {
     id: 'pinned_abdulrahman_jami',
     fullName: 'عبدالرحمن جامی (رح)',
     email: 'abdulrahman.jami@local',
-    bio: 'از بزرگان ادب عرفانی، نفحات الانس و اخلاق تربیتی',
+    bio: 'صاحب نفحات الانس و از چهره‌های اثرگذار عرفان خراسان',
     verified: true,
     role: 'scholar',
     createdAt: new Date('2000-01-01T00:00:00.000Z'),
   },
   {
-    id: 'pinned_imam_ghazali',
-    fullName: 'امام ابوحامد غزالی (رح)',
-    email: 'imam.ghazali@local',
-    bio: 'از بزرگان تربیت نفس و اخلاق اسلامی',
+    id: 'pinned_imam_abu_hanifa',
+    fullName: 'امام ابوحنیفه (رح)',
+    email: 'imam.abu.hanifa@local',
+    bio: 'بنیان‌گذار فقه حنفی و ستون فقهی جهان اسلام شرقی',
     verified: true,
     role: 'scholar',
     createdAt: new Date('2000-01-01T00:00:00.000Z'),
   },
   {
-    id: 'pinned_imam_razi',
-    fullName: 'امام فخرالدین رازی (رح)',
-    email: 'imam.razi@local',
-    bio: 'از بزرگان تفسیر، کلام و تدبر قرآنی',
+    id: 'pinned_sheikh_ahmad_sirhindi',
+    fullName: 'شیخ احمد سرهندی (رح)',
+    email: 'ahmad.sirhindi@local',
+    bio: 'مجدد الف ثانی و اصلاح‌گر نسبت شریعت و طریقت',
     verified: true,
     role: 'scholar',
     createdAt: new Date('2000-01-01T00:00:00.000Z'),
@@ -63,7 +118,7 @@ const PINNED_SCHOLARS: Scholar[] = [
 ];
 
 export default function ArticlesFeed() {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
   const { state, refreshArticles, syncArticles, isBookmarked } = useArticles();
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -156,7 +211,10 @@ export default function ArticlesFeed() {
         },
       ]}
     >
-      <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
+        style={styles.header}
+      >
         <View style={styles.headerPattern} pointerEvents="none">
           <View style={[styles.patternLine, styles.patternLine1]} />
           <View style={[styles.patternLine, styles.patternLine2]} />
@@ -169,7 +227,7 @@ export default function ArticlesFeed() {
         </View>
         <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
         <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
-      </View>
+      </LinearGradient>
 
       <CategoryFilter
         selectedCategory={selectedCategory}
