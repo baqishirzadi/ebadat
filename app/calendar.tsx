@@ -92,17 +92,19 @@ export default function CalendarScreen() {
     : getShamsiMonthLength(displayYearShamsi, selectedMonth + 1);
 
   const accentColor = mode === 'qamari' ? QAMARI_COLOR : SHAMSI_COLOR;
-  const weekDays = ['شن', 'جم', 'پن', 'چه', 'سه', 'دو', 'یک'];
+  // Persian/Afghan week order: شن (Sat), یک (Sun), دو (Mon), سه (Tue), چه (Wed), پن (Thu), جم (Fri)
+  // JS getDay: 0=Sun, 1=Mon, ..., 6=Sat → columns: 0=Sat, 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri
+  const weekDays = ['شن', 'یک', 'دو', 'سه', 'چه', 'پن', 'جم'];
 
   // Compute offset for first day of month (week starts Saturday in Dari)
-  // JS getDay: 0=Sun, 1=Mon, ..., 6=Sat. Our columns: 0=شن, 6=یک
+  // columnIndex = (getDay() + 1) % 7 maps Sat→0, Sun→1, ..., Fri→6
   const firstDayOffset = (() => {
     if (mode === 'qamari') {
       const d = hijriToGregorian(displayYearHijri, selectedMonth + 1, 1);
-      return d ? (6 - d.getDay() + 7) % 7 : 0;
+      return d ? (d.getDay() + 1) % 7 : 0;
     }
     const d = shamsiToGregorian(displayYearShamsi, selectedMonth + 1, 1);
-    return d ? (6 - d.getDay() + 7) % 7 : 0;
+    return d ? (d.getDay() + 1) % 7 : 0;
   })();
 
   // Special days to show: future/today in month, or next upcoming if all past

@@ -16,6 +16,17 @@ interface ArticleReaderProps {
   article: Article;
 }
 
+const DERIVED_WORKS_AUTHOR_IDS = new Set([
+  'mawlana_jalaluddin_balkhi',
+  'sayyid_jamaluddin_afghani',
+  'ahmad_shah_abdali',
+  'shah_waliullah_dehlawi',
+  'mirza_abdulqadir_bidel',
+  'sheikh_sanai_ghaznavi',
+  'imam_abu_hanifa',
+  'sheikh_ahmad_sirhindi',
+]);
+
 // Category-specific color schemes
 const CATEGORY_COLORS: Record<string, { primary: string; secondary: string; accent: string; gradient: string[] }> = {
   iman: {
@@ -261,6 +272,9 @@ export function ArticleReader({ article }: ArticleReaderProps) {
   const { theme } = useApp();
   const category = ARTICLE_CATEGORIES[article.category];
   const categoryColors = CATEGORY_COLORS[article.category] || CATEGORY_COLORS.iman;
+  const authorSectionTitle = DERIVED_WORKS_AUTHOR_IDS.has(article.authorId)
+    ? 'برگرفته از آثارِ'
+    : 'درباره نویسنده';
   const bodyForRender =
     article.category === 'asma_husna'
       ? article.body.replace(
@@ -355,7 +369,7 @@ export function ArticleReader({ article }: ArticleReaderProps) {
         ]}
       >
         <View style={[styles.authorHeader, { borderBottomColor: categoryColors.primary + '30' }]}>
-          <Text style={[styles.authorTitle, { color: categoryColors.primary }]}>درباره نویسنده</Text>
+          <Text style={[styles.authorTitle, { color: categoryColors.primary }]}>{authorSectionTitle}</Text>
         </View>
         <Text style={[styles.authorName, { color: theme.text }]}>{article.authorName}</Text>
         <Text style={[styles.authorBio, { color: theme.textSecondary }]}>{category.nameDari}</Text>
