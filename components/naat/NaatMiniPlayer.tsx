@@ -1,12 +1,9 @@
 import React from 'react';
-import { Pressable, StyleSheet, View, Text, I18nManager } from 'react-native';
+import { Pressable, StyleSheet, View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { Naat } from '@/types/naat';
-
-const getPhysicalStartStyle = (offset = 0) =>
-  I18nManager.isRTL && I18nManager.doLeftAndRightSwapInRTL ? { right: offset } : { left: offset };
 
 type Props = {
   naat: Naat;
@@ -25,7 +22,7 @@ export function NaatMiniPlayer({ naat, isPlaying, progress, onPlayPause, onOpen 
         <View
           style={[
             styles.progressFill,
-            { width: `${clampedProgress * 100}%`, backgroundColor: theme.tint, ...getPhysicalStartStyle(0) },
+            { width: `${clampedProgress * 100}%`, backgroundColor: theme.tint, left: 0 },
           ]}
         />
       </View>

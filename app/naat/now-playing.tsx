@@ -19,8 +19,6 @@ function formatTime(millis: number) {
 }
 
 const SEEK_THROTTLE_MS = 70;
-const getPhysicalStartStyle = (offset = 0) =>
-  I18nManager.isRTL && I18nManager.doLeftAndRightSwapInRTL ? { right: offset } : { left: offset };
 
 export default function NaatNowPlayingScreen() {
   const { theme, state } = useApp();
@@ -56,7 +54,8 @@ export default function NaatNowPlayingScreen() {
       const effectiveWidth = width || trackWidth;
       if (!effectiveWidth) return 0;
       const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
-      return x / effectiveWidth;
+      const rawRatio = x / effectiveWidth;
+      return I18nManager.isRTL ? 1 - rawRatio : rawRatio;
     },
     [trackWidth],
   );
@@ -155,7 +154,7 @@ export default function NaatNowPlayingScreen() {
               {
                 width: `${Math.min(displayProgress * 100, 100)}%`,
                 backgroundColor: theme.bookmark,
-                ...getPhysicalStartStyle(0),
+                left: 0,
               },
             ]}
           />
