@@ -291,8 +291,13 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   }, [resolveAudioSource]);
 
   const pause = useCallback(async () => {
-    await TrackPlayer.pause();
-    setPlayer((prev) => ({ ...prev, isPlaying: false }));
+    try {
+      await TrackPlayer.pause();
+      setPlayer((prev) => ({ ...prev, isPlaying: false }));
+    } catch (err) {
+      if (__DEV__) console.warn('TrackPlayer pause:', err);
+      setPlayer((prev) => ({ ...prev, isPlaying: false }));
+    }
   }, []);
 
   const resume = useCallback(async () => {
@@ -310,7 +315,11 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const stop = useCallback(async () => {
-    await TrackPlayer.reset();
+    try {
+      await TrackPlayer.reset();
+    } catch (err) {
+      if (__DEV__) console.warn('TrackPlayer reset:', err);
+    }
     currentNaatRef.current = null;
     setPlayer({ current: null, isPlaying: false, positionMillis: 0, durationMillis: 0 });
   }, []);

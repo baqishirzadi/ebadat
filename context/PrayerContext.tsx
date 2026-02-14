@@ -364,7 +364,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         importance: NotificationsModule.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#1a4d3e',
-        sound: 'fajr_adhan.mp3',
+        sound: 'fajr_adhan',
         enableVibrate: true,
         showBadge: true,
       });
@@ -375,7 +375,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         importance: NotificationsModule.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#1a4d3e',
-        sound: 'barakatullah_salim.mp3',
+        sound: 'barakatullah_salim',
         enableVibrate: true,
         showBadge: true,
       });
@@ -1021,13 +1021,13 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
           : playSound ? 'adhan-regular'
           : 'prayer-silent';
 
-        // Sound: Fajr → fajr_adhan.mp3, others with sound → barakatullah_salim.mp3
-        // Use base filename (expo-notifications resolves to res/raw)
+        // Sound: Fajr → fajr_adhan, others with sound → barakatullah_salim
+        // Use filename without extension (Android res/raw resource naming)
         let notificationSound: string | boolean | undefined = false;
         if (playSound && prayer.key === 'fajr') {
-          notificationSound = 'fajr_adhan.mp3';
+          notificationSound = 'fajr_adhan';
         } else if (playSound) {
-          notificationSound = 'barakatullah_salim.mp3';
+          notificationSound = 'barakatullah_salim';
         }
 
         // Schedule main notification at prayer time
@@ -1040,6 +1040,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
             title: content.title,
             body: content.body,
             sound: notificationSound, // Sound file name or false for silent
+            ...(Platform.OS === 'android' && playSound && { vibrate: [] }),
             data: {
               prayer: prayer.key,
               type: 'adhan',
