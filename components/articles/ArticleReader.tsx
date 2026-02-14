@@ -16,17 +16,6 @@ interface ArticleReaderProps {
   article: Article;
 }
 
-const DERIVED_WORKS_AUTHOR_IDS = new Set([
-  'mawlana_jalaluddin_balkhi',
-  'sayyid_jamaluddin_afghani',
-  'ahmad_shah_abdali',
-  'shah_waliullah_dehlawi',
-  'mirza_abdulqadir_bidel',
-  'sheikh_sanai_ghaznavi',
-  'imam_abu_hanifa',
-  'sheikh_ahmad_sirhindi',
-]);
-
 // Category-specific color schemes
 const CATEGORY_COLORS: Record<string, { primary: string; secondary: string; accent: string; gradient: string[] }> = {
   iman: {
@@ -88,7 +77,7 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
   const elements: React.ReactNode[] = [];
   let key = 0;
 
-  const normalizedHtml = html.replace(/<br\s*\/?>/gi, '\n');
+  const normalizedHtml = html.replace(/<br\s*\/?>/gi, ' — ');
 
   const normalizeParagraph = (text: string) =>
     text
@@ -168,6 +157,14 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
 
       // Simple state machine for parsing inline tags
       const cleanedParaHtml = item.content.replace(/<(?!\/?(strong|em)\b)[^>]+>/gi, '');
+      const rawParagraphText = cleanedParaHtml
+        .replace(/<\/?(strong|em)>/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+      const isQuoteLikeParagraph =
+        /«[^»]+»/.test(rawParagraphText) ||
+        /\((?:پشتو|پښتو)\s*:/.test(rawParagraphText) ||
+        /(?:نقل‌قول|نقل قول|بیت|قول)\s*:/.test(rawParagraphText);
       const tagRegex = /<\/?(strong|em)>/gi;
       let lastPos = 0;
       let tagMatch;
@@ -234,7 +231,16 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       
       if (textParts.length > 0) {
         paraElements.push(
-          <Text key={paraKey++} style={[styles.paragraphText, { color: themeText }]}>
+          <Text
+            key={paraKey++}
+            style={[
+              isQuoteLikeParagraph ? styles.poetryLineText : styles.paragraphText,
+              { color: themeText },
+            ]}
+            numberOfLines={isQuoteLikeParagraph ? 1 : undefined}
+            adjustsFontSizeToFit={isQuoteLikeParagraph}
+            minimumFontScale={isQuoteLikeParagraph ? 0.68 : undefined}
+          >
             {textParts}
           </Text>
         );
@@ -273,13 +279,9 @@ export function ArticleReader({ article }: ArticleReaderProps) {
   const category = ARTICLE_CATEGORIES[article.category];
   const categoryColors = CATEGORY_COLORS[article.category] || CATEGORY_COLORS.iman;
   const isPashtoArticle = article.language === 'pashto';
-  const authorSectionTitle = DERIVED_WORKS_AUTHOR_IDS.has(article.authorId)
-    ? isPashtoArticle
-      ? 'له آثارو اخیستل شوی'
-      : 'برگرفته از آثارِ'
-    : isPashtoArticle
-      ? 'د لیکوال په اړه'
-      : 'درباره نویسنده';
+  const authorSectionTitle = isPashtoArticle
+    ? 'له آثارو او مکتب څخه را اخیستل شوی'
+    : 'برگرفته از آثار و مکتبِ';
   const bodyForRender =
     article.category === 'asma_husna'
       ? article.body.replace(
@@ -557,6 +559,15 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
     letterSpacing: 0.3,
     writingDirection: 'rtl',
+  },
+  poetryLineText: {
+    fontSize: 17,
+    lineHeight: 30,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    letterSpacing: 0.2,
+    writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   bodyText: {
     fontSize: 19,

@@ -13,7 +13,7 @@ import { useQuranData } from '@/hooks/useQuranData';
 import { MushafView, AudioPlayer } from '@/components/quran';
 import { Spacing } from '@/constants/theme';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
-import CenteredText from '@/components/CenteredText';
+import AppCenteredText from '@/components/CenteredText';
 
 export default function QuranReaderScreen() {
   const { surah: surahParam, ayah: ayahParam } = useLocalSearchParams<{
@@ -36,7 +36,6 @@ export default function QuranReaderScreen() {
     ayah: number;
   } | null>(null);
   const [shouldGoBack, setShouldGoBack] = useState(false);
-  const [backPressCount, setBackPressCount] = useState(0);
 
   // Handle navigation when surah not found - use useEffect to avoid setState during render
   useEffect(() => {
@@ -112,28 +111,18 @@ export default function QuranReaderScreen() {
     }
   }, [surahNumber, router]);
 
-  // Show loading or return null if no surah
-  if (!surah || shouldGoBack) {
-    return (
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <CenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>
-          در حال بارگذاری...
-        </CenteredText>
-      </View>
-    );
-  }
-
-  // Get Arabic surah name with current page - NO ENGLISH
-  const surahName = surahNameData 
-    ? `سورة ${surahNameData.arabic}` 
-    : `سوره ${toArabicNumerals(surahNumber)}`;
-  
-  const headerTitle = surahName;
-
   // Update header dynamically when title or page changes
   useLayoutEffect(() => {
+    if (!surah || shouldGoBack) {
+      return;
+    }
+
+    const surahName = surahNameData
+      ? `سورة ${surahNameData.arabic}`
+      : `سوره ${toArabicNumerals(surahNumber)}`;
+
     navigation.setOptions({
-      title: headerTitle,
+      title: surahName,
       headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
       headerTintColor: '#fff',
       headerTitleStyle: {
@@ -171,7 +160,18 @@ export default function QuranReaderScreen() {
         </View>
       ),
     });
-  }, [headerTitle, theme.surahHeader, surahNumber, navigation, router, goToPrevSurah, goToNextSurah]);
+  }, [surah, shouldGoBack, surahNameData, surahNumber, theme.surahHeader, navigation, router, goToPrevSurah, goToNextSurah]);
+
+  // Show loading or return null if no surah
+  if (!surah || shouldGoBack) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <AppCenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>
+          در حال بارگذاری...
+        </AppCenteredText>
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>

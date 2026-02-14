@@ -24,6 +24,7 @@ const TARGET_AUTHOR_IDS = new Set([
   'sheikh_ahmad_jam',
   'nurul_mashayekh_mujaddidi',
   'shah_foulad_kabuli',
+  'amir_ali_shir_navai',
 ]);
 
 const INCLUDE_ASMA_HUSNA = true;

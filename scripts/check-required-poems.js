@@ -27,6 +27,10 @@ const REQUIRED_SNIPPETS = [
     authorId: 'khwaja_muhammad_parsa',
     phrases: ['در نهان دل، ذکرِ بی‌صدا'],
   },
+  {
+    authorId: 'amir_ali_shir_navai',
+    phrases: ['آدمی را آدمیت ادب است و وفا'],
+  },
 ];
 
 const failures = [];

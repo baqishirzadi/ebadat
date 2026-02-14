@@ -45,6 +45,15 @@ const PINNED_SCHOLARS: Scholar[] = [
     createdAt: new Date('2000-01-01T00:00:00.000Z'),
   },
   {
+    id: 'pinned_amir_ali_shir_navai',
+    fullName: 'امیرعلی‌شیر نوایی (رح)',
+    email: 'amir.ali.shir.navai@local',
+    bio: 'ادیب و شاعر بزرگ هراتی با تأکید بر ادب، خدمت و کرامت انسان',
+    verified: true,
+    role: 'scholar',
+    createdAt: new Date('2000-01-01T00:00:00.000Z'),
+  },
+  {
     id: 'pinned_khwaja_abdullah_ansari',
     fullName: 'خواجه عبدالله انصاری (رح)',
     email: 'khwaja.ansari@local',
@@ -209,6 +218,7 @@ interface ScholarFilter {
 const PINNED_SCHOLAR_FILTERS: Record<string, { authorIds?: string[]; authorNames?: string[] }> = {
   pinned_imam_abu_hanifa: { authorIds: ['imam_abu_hanifa'] },
   pinned_mawlana_jalaluddin_balkhi: { authorIds: ['mawlana_jalaluddin_balkhi'] },
+  pinned_amir_ali_shir_navai: { authorIds: ['amir_ali_shir_navai'] },
   pinned_khwaja_abdullah_ansari: { authorIds: ['khwaja_abdullah_ansari'] },
   pinned_abdulrahman_jami: { authorIds: ['abdulrahman_jami'] },
   pinned_shah_waliullah_dehlawi: { authorIds: ['shah_waliullah_dehlawi'] },
