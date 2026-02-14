@@ -28,7 +28,7 @@ const TARGET_AUTHOR_IDS = new Set([
 
 const isTargetPashto = (article) =>
   article.language === 'pashto' &&
-  (TARGET_AUTHOR_IDS.has(article.authorId) || article.category === 'asma_husna');
+  TARGET_AUTHOR_IDS.has(article.authorId);
 
 const hasPersianQuote = (body) => /«[^»\n]{6,}»/.test(body);
 const hasPashtoMeaning = (body) => /(مانا|ژباړه|په\s*پښتو|يعنې|یعنې)/.test(body);

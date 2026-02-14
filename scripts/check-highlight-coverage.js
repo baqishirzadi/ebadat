@@ -26,8 +26,10 @@ const TARGET_AUTHOR_IDS = new Set([
   'shah_foulad_kabuli',
 ]);
 
+const INCLUDE_ASMA_HUSNA = true;
+
 const isTarget = (article) =>
-  TARGET_AUTHOR_IDS.has(article.authorId) || article.category === 'asma_husna';
+  TARGET_AUTHOR_IDS.has(article.authorId) || (INCLUDE_ASMA_HUSNA && article.category === 'asma_husna');
 
 const targets = seed.articles.filter(isTarget);
 const outOfRange = targets
@@ -47,4 +49,5 @@ if (outOfRange.length > 0) {
   process.exit(1);
 }
 
-console.log(`✅ Highlight coverage OK (${targets.length} target articles).`);
+const asmaCount = targets.filter((article) => article.category === 'asma_husna').length;
+console.log(`✅ Highlight coverage OK (${targets.length} target articles, ${asmaCount} asma_husna).`);

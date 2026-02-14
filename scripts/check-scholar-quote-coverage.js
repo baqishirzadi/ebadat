@@ -26,8 +26,7 @@ const TARGET_AUTHOR_IDS = new Set([
   'shah_foulad_kabuli',
 ]);
 
-const isTarget = (article) =>
-  TARGET_AUTHOR_IDS.has(article.authorId) || article.category === 'asma_husna';
+const isTarget = (article) => TARGET_AUTHOR_IDS.has(article.authorId);
 
 const hasQuote = (body) =>
   /«[^»]{6,}»/.test(body) ||
