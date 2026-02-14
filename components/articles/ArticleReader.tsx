@@ -279,14 +279,29 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
   ];
 }
 
+const AUTHOR_IDS_USE_WRITER_LABEL: string[] = [
+  'sayyid_abdul_ilah_shirzadi',
+  'sayyid_abdullah_shirzadi',
+  'mufti_fayz_muhammad_usmani',
+  'mufti_abdul_salam_abid',
+  'mufti_fazlullah_noori',
+  'mawlana_fazlur_rahman_ansari',
+  'mufti_mohammad_sarwar_rasooli',
+];
+
 export function ArticleReader({ article }: ArticleReaderProps) {
   const { theme } = useApp();
   const category = ARTICLE_CATEGORIES[article.category];
   const categoryColors = CATEGORY_COLORS[article.category] || CATEGORY_COLORS.iman;
   const isPashtoArticle = article.language === 'pashto';
-  const authorSectionTitle = isPashtoArticle
-    ? 'له آثارو او مکتب څخه را اخیستل شوی'
-    : 'برگرفته از آثار و مکتبِ';
+  const useWriterLabel = article.authorId && AUTHOR_IDS_USE_WRITER_LABEL.includes(article.authorId);
+  const authorSectionTitle = useWriterLabel
+    ? isPashtoArticle
+      ? 'ليکوال'
+      : 'نویسنده'
+    : isPashtoArticle
+      ? 'له آثارو او مکتب څخه را اخیستل شوی'
+      : 'برگرفته از آثار و مکتبِ';
   const bodyForRender =
     article.category === 'asma_husna'
       ? article.body.replace(
