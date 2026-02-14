@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   Animated,
   useWindowDimensions,
+  Pressable,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -198,12 +199,44 @@ const PINNED_SCHOLARS: Scholar[] = [
   },
 ];
 
+interface ScholarFilter {
+  scholarId: string;
+  scholarName: string;
+  authorIds: string[];
+  authorNames: string[];
+}
+
+const PINNED_SCHOLAR_FILTERS: Record<string, { authorIds?: string[]; authorNames?: string[] }> = {
+  pinned_imam_abu_hanifa: { authorIds: ['imam_abu_hanifa'] },
+  pinned_mawlana_jalaluddin_balkhi: { authorIds: ['mawlana_jalaluddin_balkhi'] },
+  pinned_khwaja_abdullah_ansari: { authorIds: ['khwaja_abdullah_ansari'] },
+  pinned_abdulrahman_jami: { authorIds: ['abdulrahman_jami'] },
+  pinned_shah_waliullah_dehlawi: { authorIds: ['shah_waliullah_dehlawi'] },
+  pinned_sheikh_ahmad_sirhindi: { authorIds: ['sheikh_ahmad_sirhindi'] },
+  pinned_khwaja_baqi_billah: { authorIds: ['khwaja_baqi_billah'] },
+  pinned_sayyid_jamaluddin_afghani: { authorIds: ['sayyid_jamaluddin_afghani'] },
+  pinned_ahmad_shah_abdali: { authorIds: ['ahmad_shah_abdali'] },
+  pinned_sheikh_sanai_ghaznavi: { authorIds: ['sheikh_sanai_ghaznavi'] },
+  pinned_mirza_abdulqadir_bidel: { authorIds: ['mirza_abdulqadir_bidel'] },
+  pinned_abu_saeed_abolkhair: { authorIds: ['abu_saeed_abolkhair'] },
+  pinned_abulhasan_kharqani: { authorIds: ['abulhasan_kharqani'] },
+  pinned_khwaja_muhammad_parsa: { authorIds: ['khwaja_muhammad_parsa'] },
+  pinned_sheikh_ahmad_jam: { authorIds: ['sheikh_ahmad_jam'] },
+  pinned_nurul_mashayekh_mujaddidi: { authorIds: ['nurul_mashayekh_mujaddidi'] },
+  pinned_shah_foulad_kabuli: { authorIds: ['shah_foulad_kabuli'] },
+  pinned_imam_ghazali: { authorNames: ['امام ابوحامد غزالی (رح)'] },
+  pinned_imam_fakhr_razi: { authorNames: ['امام فخرالدین رازی (رح)'] },
+};
+
+const normalizeName = (value?: string) => (value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+
 export default function ArticlesFeed() {
   const { theme, themeMode } = useApp();
   const { state, refreshArticles, syncArticles, isBookmarked } = useArticles();
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<'dari' | 'pashto'>('dari');
+  const [selectedScholar, setSelectedScholar] = useState<ScholarFilter | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
   const { width } = useWindowDimensions();
@@ -218,11 +251,23 @@ export default function ArticlesFeed() {
     setRefreshing(false);
   }, [syncArticles]);
 
-  const filteredArticles = state.articles.filter((article) => {
-    if (selectedCategory && article.category !== selectedCategory) return false;
-    if (article.language !== selectedLanguage) return false;
-    return article.published;
-  });
+  const filteredArticles = useMemo(
+    () =>
+      state.articles.filter((article) => {
+        if (selectedCategory && article.category !== selectedCategory) return false;
+        if (article.language !== selectedLanguage) return false;
+        if (!article.published) return false;
+
+        if (!selectedScholar) return true;
+
+        const byId = selectedScholar.authorIds.includes(article.authorId);
+        const byName = selectedScholar.authorNames.some(
+          (name) => normalizeName(name) === normalizeName(article.authorName)
+        );
+        return byId || byName;
+      }),
+    [selectedCategory, selectedLanguage, selectedScholar, state.articles]
+  );
 
   const displayScholars = useMemo(() => {
     const seenNames = new Set<string>();
@@ -246,6 +291,21 @@ export default function ArticlesFeed() {
     [router]
   );
 
+  const handleScholarPress = useCallback((scholar: Scholar) => {
+    setSelectedScholar((prev) => {
+      if (prev?.scholarId === scholar.id) return null;
+
+      const pinnedMap = PINNED_SCHOLAR_FILTERS[scholar.id];
+      const filter: ScholarFilter = {
+        scholarId: scholar.id,
+        scholarName: scholar.fullName,
+        authorIds: pinnedMap?.authorIds ?? [scholar.id],
+        authorNames: pinnedMap?.authorNames ?? [scholar.fullName],
+      };
+      return filter;
+    });
+  }, []);
+
   const renderArticle = useCallback(
     ({ item }: { item: Article }) => (
       <ArticleCard
@@ -261,13 +321,26 @@ export default function ArticlesFeed() {
 
   const renderScholar = useCallback(
     ({ item }: { item: Scholar }) => (
-      <View style={[styles.scholarCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+      <Pressable
+        onPress={() => handleScholarPress(item)}
+        style={[
+          styles.scholarCard,
+          {
+            backgroundColor: theme.card,
+            borderColor: theme.cardBorder,
+          },
+          selectedScholar?.scholarId === item.id && {
+            borderColor: theme.tint,
+            backgroundColor: `${theme.tint}14`,
+          },
+        ]}
+      >
         <CenteredText style={[styles.scholarName, { color: theme.text }]} numberOfLines={2}>
           {item.fullName}
         </CenteredText>
-      </View>
+      </Pressable>
     ),
-    [theme]
+    [handleScholarPress, selectedScholar?.scholarId, theme]
   );
 
   const headerOpacity = scrollY.interpolate({
@@ -316,6 +389,20 @@ export default function ArticlesFeed() {
         selectedLanguage={selectedLanguage}
         onSelectLanguage={setSelectedLanguage}
       />
+
+      {selectedScholar && (
+        <View style={[styles.scholarFilterBanner, { backgroundColor: theme.card, borderColor: theme.tint }]}>
+          <CenteredText style={[styles.scholarFilterText, { color: theme.text }]}>
+            فیلتر عالم فعال است: {selectedScholar.scholarName}
+          </CenteredText>
+          <Pressable
+            onPress={() => setSelectedScholar(null)}
+            style={[styles.clearScholarFilterButton, { backgroundColor: theme.tint }]}
+          >
+            <CenteredText style={styles.clearScholarFilterText}>حذف فیلتر</CenteredText>
+          </Pressable>
+        </View>
+      )}
     </Animated.View>
   );
 
@@ -364,7 +451,7 @@ export default function ArticlesFeed() {
             </>
           ) : state.error ? (
             <>
-              <CenteredText style={[styles.emptyText, { color: theme.error || '#F44336' }]}>
+              <CenteredText style={[styles.emptyText, { color: '#F44336' }]}>
                 {state.error}
               </CenteredText>
               {state.articles.length > 0 && (
@@ -570,6 +657,35 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
     writingDirection: 'rtl',
+  },
+  scholarFilterBanner: {
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  scholarFilterText: {
+    fontSize: 12,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  clearScholarFilterButton: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+    borderRadius: BorderRadius.full,
+  },
+  clearScholarFilterText: {
+    fontSize: 12,
+    fontFamily: 'Vazirmatn',
+    color: '#fff',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    fontWeight: '600',
   },
   loadingContainer: {
     flex: 1,
