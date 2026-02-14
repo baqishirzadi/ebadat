@@ -4,17 +4,24 @@ An SSH key was generated for this project. To enable `git push`:
 
 ## 1. Add the key to GitHub
 
-The public key has been copied to your clipboard. If not, run:
+Run this command and copy the **entire single line** (from `ssh-ed25519` to `ebadat-github`):
+
 ```bash
-cat ~/.ssh/id_ed25519_ebadat.pub
+cat ~/.ssh/id_ed25519_github.pub
+```
+
+Your public key:
+```
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO82WXYpSlDvNmKFrVFcShtZVcf+m4xvSOBJ+MBZ1xUO ebadat-github
 ```
 
 Then:
-1. Go to https://github.com/settings/keys
-2. Click "New SSH key"
-3. Title: `EbadatApp` (or any name)
-4. Paste the key (Cmd+V)
-5. Click "Add SSH key"
+1. Go to https://github.com/settings/ssh/new
+2. Title: `EbadatApp` (or any name)
+3. Paste the key - one line only, no extra spaces or newlines
+4. Click "Add SSH key"
+
+**Important**: Use the public key (`.pub` file), NOT the private key. The public key starts with `ssh-ed25519`.
 
 ## 2. Push
 
