@@ -161,8 +161,9 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
         .replace(/<\/?(strong|em)>/gi, '')
         .replace(/\s+/g, ' ')
         .trim();
-      const isQuoteLikeParagraph =
-        /«[^»]+»/.test(rawParagraphText) ||
+      const isPoetryParagraph = /«[^»]+»/.test(rawParagraphText);
+      const isMeaningParagraph =
+        /(?:د بیت معنی|د شعر معنی|د نقل قول معنی|معنی په پښتو|د مانا|په پښتو)/.test(rawParagraphText) ||
         /\((?:پشتو|پښتو)\s*:/.test(rawParagraphText) ||
         /(?:نقل‌قول|نقل قول|بیت|قول)\s*:/.test(rawParagraphText);
       const tagRegex = /<\/?(strong|em)>/gi;
@@ -234,12 +235,13 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
           <Text
             key={paraKey++}
             style={[
-              isQuoteLikeParagraph ? styles.poetryLineText : styles.paragraphText,
+              isPoetryParagraph
+                ? styles.poetryLineText
+                : isMeaningParagraph
+                  ? styles.poetryMeaningText
+                  : styles.paragraphText,
               { color: themeText },
             ]}
-            numberOfLines={isQuoteLikeParagraph ? 1 : undefined}
-            adjustsFontSizeToFit={isQuoteLikeParagraph}
-            minimumFontScale={isQuoteLikeParagraph ? 0.68 : undefined}
           >
             {textParts}
           </Text>
@@ -561,8 +563,18 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
   },
   poetryLineText: {
+    fontSize: 19,
+    lineHeight: 34,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    marginBottom: Spacing.xs,
+    letterSpacing: 0.25,
+    writingDirection: 'rtl',
+    includeFontPadding: false,
+  },
+  poetryMeaningText: {
     fontSize: 17,
-    lineHeight: 30,
+    lineHeight: 32,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
     letterSpacing: 0.2,

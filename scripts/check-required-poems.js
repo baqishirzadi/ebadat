@@ -31,6 +31,14 @@ const REQUIRED_SNIPPETS = [
     authorId: 'amir_ali_shir_navai',
     phrases: ['آدمی را آدمیت ادب است و وفا'],
   },
+  {
+    authorId: 'mirza_abdulqadir_bidel',
+    phrases: ['تا نگردی آشنا، زین پرده رمزی نشنوی'],
+  },
+  {
+    authorId: 'khwaja_abdullah_ansari',
+    phrases: ['دلِ پراکندهٔ ما را به یاد خود جمع کن', 'توبهٔ ما را صادق گردان'],
+  },
 ];
 
 const failures = [];

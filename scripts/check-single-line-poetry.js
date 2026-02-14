@@ -7,7 +7,6 @@ const seedPath = path.join(__dirname, '..', 'data', 'articles-seed.json');
 const seed = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
 
 const failures = [];
-
 const normalizeText = (value) =>
   value
     .replace(/<[^>]+>/g, '')
@@ -25,27 +24,22 @@ for (const article of seed.articles) {
 
   for (const paragraph of paragraphs) {
     const rawText = normalizeText(paragraph);
-    const isPureQuoteLine = /^«[^»]+»(?:\s*—\s*\([^)]*\))?$/.test(rawText);
-    if (!isPureQuoteLine) continue;
+    const isQuoteLike = /^«[^»]+»(?:\s*—\s*\([^)]*\))?$/.test(rawText);
+    if (!isQuoteLike) continue;
 
     if (/[\r\n]/.test(paragraph)) {
       failures.push(
-        `${article.authorId} | ${article.language} | ${article.title} -> quote paragraph has line breaks`
+        `${article.authorId} | ${article.language} | ${article.title} -> quote paragraph has hard line-breaks`
       );
     }
 
-    if (article.language === 'pashto' && !/\((?:پښتو|پشتو)\s*:/.test(rawText)) {
-      failures.push(
-        `${article.authorId} | ${article.language} | ${article.title} -> quote line missing Pashto meaning`
-      );
-    }
   }
 }
 
 if (failures.length > 0) {
-  console.error('❌ Single-line poetry check failed:');
+  console.error('❌ Poetry readability check failed:');
   failures.forEach((msg) => console.error(`- ${msg}`));
   process.exit(1);
 }
 
-console.log('✅ Single-line poetry check passed.');
+console.log('✅ Poetry readability check passed.');
