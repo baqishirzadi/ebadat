@@ -162,6 +162,7 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
         .replace(/\s+/g, ' ')
         .trim();
       const isPoetryParagraph = /«[^»]+»/.test(rawParagraphText);
+      const isNumberedListParagraph = /^[0-9۰-۹]{1,2}[.)]\s*/.test(rawParagraphText);
       const isMeaningParagraph =
         /(?:د بیت معنی|د شعر معنی|د نقل قول معنی|معنی په پښتو|د مانا|په پښتو)/.test(rawParagraphText) ||
         /\((?:پشتو|پښتو)\s*:/.test(rawParagraphText) ||
@@ -237,6 +238,8 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
             style={[
               isPoetryParagraph
                 ? styles.poetryLineText
+                : isNumberedListParagraph
+                  ? styles.numberedListText
                 : isMeaningParagraph
                   ? styles.poetryMeaningText
                   : styles.paragraphText,
@@ -577,6 +580,16 @@ const styles = StyleSheet.create({
     lineHeight: 32,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
+    letterSpacing: 0.2,
+    writingDirection: 'rtl',
+    includeFontPadding: false,
+  },
+  numberedListText: {
+    fontSize: 18,
+    lineHeight: 30,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    marginBottom: 6,
     letterSpacing: 0.2,
     writingDirection: 'rtl',
     includeFontPadding: false,

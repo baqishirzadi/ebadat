@@ -13,8 +13,29 @@ const normalizeText = (value) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+const bannedPlaceholders = [
+  'در روایت‌ها آمده که این عبارت',
+  'در روایت ها آمده که این عبارت',
+  'په روایتونو کې راغلي چې دا عبارت',
+];
+const placeholderTargetAuthors = new Set([
+  'abu_saeed_abolkhair',
+  'sheikh_ahmad_sirhindi',
+  'imam_abu_hanifa',
+]);
+
 for (const article of seed.articles) {
   const body = article.body || '';
+
+  if (placeholderTargetAuthors.has(article.authorId)) {
+    for (const phrase of bannedPlaceholders) {
+      if (body.includes(phrase)) {
+        failures.push(
+          `${article.authorId} | ${article.language} | ${article.title} -> contains placeholder phrase: ${phrase}`
+        );
+      }
+    }
+  }
 
   if (/<br\s*\/?>/i.test(body)) {
     failures.push(`${article.authorId} | ${article.language} | ${article.title} -> contains <br> in body`);

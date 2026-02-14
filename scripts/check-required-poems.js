@@ -39,6 +39,18 @@ const REQUIRED_SNIPPETS = [
     authorId: 'khwaja_abdullah_ansari',
     phrases: ['دلِ پراکندهٔ ما را به یاد خود جمع کن', 'توبهٔ ما را صادق گردان'],
   },
+  {
+    authorId: 'abu_saeed_abolkhair',
+    phrases: ['گزیده ۲۵ سخن منقول از سنت ابو سعید', 'هر که او بیدارتر، پردردتر'],
+  },
+  {
+    authorId: 'sheikh_ahmad_sirhindi',
+    phrases: ['۲۵ گفتار برگزیده از روح مکتوبات امام ربانی'],
+  },
+  {
+    authorId: 'imam_abu_hanifa',
+    phrases: ['هذا رأينا وهو أحسن ما قدرنا عليه'],
+  },
 ];
 
 const failures = [];
