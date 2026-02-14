@@ -2,8 +2,8 @@
  * Na't Now Playing Screen
  */
 
-import React, { useMemo, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, Pressable, PanResponder } from 'react-native';
+import React, { useMemo, useState, useCallback, useRef } from 'react';
+import { View, StyleSheet, Text, Pressable, PanResponder, I18nManager } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -17,6 +17,10 @@ function formatTime(millis: number) {
   const s = totalSeconds % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
 }
+
+const SEEK_THROTTLE_MS = 70;
+const getPhysicalStartStyle = (offset = 0) =>
+  I18nManager.isRTL && I18nManager.doLeftAndRightSwapInRTL ? { right: offset } : { left: offset };
 
 export default function NaatNowPlayingScreen() {
   const { theme, state } = useApp();
@@ -32,15 +36,40 @@ export default function NaatNowPlayingScreen() {
 
   const [seekingRatio, setSeekingRatio] = useState<number | null>(null);
   const [trackWidth, setTrackWidth] = useState(0);
+  const trackRef = useRef<View>(null);
+  const trackMetricsRef = useRef({ left: 0, width: 0 });
+  const seekRatioRef = useRef<number | null>(null);
+  const lastSeekAtRef = useRef(0);
   const displayProgress = seekingRatio !== null ? seekingRatio : Math.max(0, Math.min(progress, 1));
 
+  const updateTrackMetrics = useCallback(() => {
+    trackRef.current?.measureInWindow((x, _y, width) => {
+      if (!width) return;
+      trackMetricsRef.current = { left: x, width };
+      setTrackWidth(width);
+    });
+  }, []);
+
   const computeRatio = useCallback(
-    (locationX: number) => {
-      if (!trackWidth) return 0;
-      const x = Math.max(0, Math.min(trackWidth, locationX));
-      return x / trackWidth;
+    (pageX: number) => {
+      const { left, width } = trackMetricsRef.current;
+      const effectiveWidth = width || trackWidth;
+      if (!effectiveWidth) return 0;
+      const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
+      return x / effectiveWidth;
     },
     [trackWidth],
+  );
+
+  const commitSeek = useCallback(
+    (ratio: number, force = false) => {
+      if (player.durationMillis <= 0) return;
+      const now = Date.now();
+      if (!force && now - lastSeekAtRef.current < SEEK_THROTTLE_MS) return;
+      lastSeekAtRef.current = now;
+      seek(ratio * player.durationMillis);
+    },
+    [player.durationMillis, seek],
   );
 
   const panResponder = useMemo(
@@ -49,21 +78,36 @@ export default function NaatNowPlayingScreen() {
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
         onPanResponderGrant: (evt) => {
-          if (!trackWidth) return;
-          const ratio = computeRatio(evt.nativeEvent.locationX);
+          if (!trackWidth || player.durationMillis <= 0) return;
+          updateTrackMetrics();
+          const ratio = computeRatio(evt.nativeEvent.pageX);
+          seekRatioRef.current = ratio;
           setSeekingRatio(ratio);
-          seek(ratio * player.durationMillis);
+          commitSeek(ratio, true);
         },
         onPanResponderMove: (evt) => {
-          if (!trackWidth) return;
-          const ratio = computeRatio(evt.nativeEvent.locationX);
+          if (!trackWidth || player.durationMillis <= 0) return;
+          const ratio = computeRatio(evt.nativeEvent.pageX);
+          seekRatioRef.current = ratio;
           setSeekingRatio(ratio);
-          seek(ratio * player.durationMillis);
+          commitSeek(ratio, false);
         },
-        onPanResponderRelease: () => setSeekingRatio(null),
-        onPanResponderTerminate: () => setSeekingRatio(null),
+        onPanResponderRelease: () => {
+          if (seekRatioRef.current !== null) {
+            commitSeek(seekRatioRef.current, true);
+          }
+          seekRatioRef.current = null;
+          setSeekingRatio(null);
+        },
+        onPanResponderTerminate: () => {
+          if (seekRatioRef.current !== null) {
+            commitSeek(seekRatioRef.current, true);
+          }
+          seekRatioRef.current = null;
+          setSeekingRatio(null);
+        },
       }),
-    [trackWidth, computeRatio, player.durationMillis, seek],
+    [trackWidth, computeRatio, player.durationMillis, updateTrackMetrics, commitSeek],
   );
 
   if (!player.current) {
@@ -95,8 +139,14 @@ export default function NaatNowPlayingScreen() {
 
       <View style={styles.controls}>
         <View
+          ref={trackRef}
           style={[styles.progressBar, { backgroundColor: `${theme.surahHeaderText}20` }]}
-          onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+          onLayout={(e) => {
+            const width = e.nativeEvent.layout.width;
+            trackMetricsRef.current.width = width;
+            setTrackWidth(width);
+            requestAnimationFrame(updateTrackMetrics);
+          }}
           {...panResponder.panHandlers}
         >
           <View
@@ -105,7 +155,7 @@ export default function NaatNowPlayingScreen() {
               {
                 width: `${Math.min(displayProgress * 100, 100)}%`,
                 backgroundColor: theme.bookmark,
-                left: 0,
+                ...getPhysicalStartStyle(0),
               },
             ]}
           />
@@ -187,6 +237,7 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: BorderRadius.full,
     overflow: 'hidden',
+    direction: 'ltr',
   },
   progressFill: {
     height: '100%',

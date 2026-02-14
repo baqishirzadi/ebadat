@@ -3,7 +3,7 @@ import { Alert } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Audio } from 'expo-av';
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, { AppKilledPlaybackBehavior, Capability } from 'react-native-track-player';
 import { Naat, NaatDraft } from '@/types/naat';
 import {
   createDraftPayload,
@@ -103,13 +103,38 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (playerSetup) return;
     playerSetup = true;
-    TrackPlayer.setupPlayer({
-      autoHandleInterruptions: true,
-      autoUpdateMetadata: true,
-    }).catch((err) => {
-      if (__DEV__) console.warn('TrackPlayer setup:', err);
-      playerSetup = false;
-    });
+    (async () => {
+      try {
+        await TrackPlayer.setupPlayer({
+          autoHandleInterruptions: true,
+          autoUpdateMetadata: true,
+        });
+        await TrackPlayer.updateOptions({
+          capabilities: [
+            Capability.Play,
+            Capability.Pause,
+            Capability.Stop,
+            Capability.SeekTo,
+            Capability.JumpForward,
+            Capability.JumpBackward,
+          ],
+          compactCapabilities: [
+            Capability.Play,
+            Capability.Pause,
+            Capability.SeekTo,
+          ],
+          progressUpdateEventInterval: 1,
+          forwardJumpInterval: 15,
+          backwardJumpInterval: 15,
+          android: {
+            appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+          },
+        });
+      } catch (err) {
+        if (__DEV__) console.warn('TrackPlayer setup:', err);
+        playerSetup = false;
+      }
+    })();
     return () => {
       // Don't destroy - playback service keeps running
     };

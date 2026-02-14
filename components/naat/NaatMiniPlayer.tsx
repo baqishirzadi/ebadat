@@ -1,9 +1,12 @@
 import React from 'react';
-import { Pressable, StyleSheet, View, Text } from 'react-native';
+import { Pressable, StyleSheet, View, Text, I18nManager } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { Naat } from '@/types/naat';
+
+const getPhysicalStartStyle = (offset = 0) =>
+  I18nManager.isRTL && I18nManager.doLeftAndRightSwapInRTL ? { right: offset } : { left: offset };
 
 type Props = {
   naat: Naat;
@@ -15,9 +18,17 @@ type Props = {
 
 export function NaatMiniPlayer({ naat, isPlaying, progress, onPlayPause, onOpen }: Props) {
   const { theme } = useApp();
+  const clampedProgress = Math.max(0, Math.min(progress, 1));
   return (
     <Pressable onPress={onOpen} style={[styles.container, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-      <View style={[styles.progress, { width: `${Math.min(progress * 100, 100)}%`, backgroundColor: theme.tint }]} />
+      <View style={[styles.progressTrack, { backgroundColor: `${theme.tint}20` }]}>
+        <View
+          style={[
+            styles.progressFill,
+            { width: `${clampedProgress * 100}%`, backgroundColor: theme.tint, ...getPhysicalStartStyle(0) },
+          ]}
+        />
+      </View>
       <View style={styles.content}>
         <View style={styles.info}>
           <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
@@ -51,8 +62,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: 'hidden',
   },
-  progress: {
+  progressTrack: {
     height: 3,
+    direction: 'ltr',
+    position: 'relative',
+  },
+  progressFill: {
+    height: 3,
+    position: 'absolute',
   },
   content: {
     flexDirection: 'row-reverse',

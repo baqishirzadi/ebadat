@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react';
-import { Pressable, StyleSheet, View, Text, PanResponder } from 'react-native';
+import { Pressable, StyleSheet, View, Text, PanResponder, I18nManager } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Naat } from '@/types/naat';
@@ -39,6 +39,10 @@ function formatTime(millis?: number) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
+const SEEK_THROTTLE_MS = 70;
+const getPhysicalStartStyle = (offset = 0) =>
+  I18nManager.isRTL && I18nManager.doLeftAndRightSwapInRTL ? { right: offset } : { left: offset };
+
 export function NaatCard({
   naat,
   onPlay,
@@ -58,6 +62,10 @@ export function NaatCard({
       : 'دانلود نشده';
   const [trackWidth, setTrackWidth] = useState(0);
   const [seekingRatio, setSeekingRatio] = useState<number | null>(null);
+  const trackRef = useRef<View>(null);
+  const trackMetricsRef = useRef({ left: 0, width: 0 });
+  const seekRatioRef = useRef<number | null>(null);
+  const lastSeekAtRef = useRef(0);
   useEffect(() => {
     if (!isActive) setSeekingRatio(null);
   }, [isActive]);
@@ -65,15 +73,36 @@ export function NaatCard({
   const clampedProgress = Math.max(0, Math.min(displayProgress, 1));
   const fillWidth = trackWidth ? trackWidth * clampedProgress : 0;
   const thumbRadius = 8;
-  const thumbLeft = Math.max(fillWidth - thumbRadius, 0);
+  const thumbOffset = Math.max(0, Math.min(Math.max(trackWidth - thumbRadius * 2, 0), fillWidth - thumbRadius));
+
+  const updateTrackMetrics = useCallback(() => {
+    trackRef.current?.measureInWindow((x, _y, width) => {
+      if (!width) return;
+      trackMetricsRef.current = { left: x, width };
+      setTrackWidth(width);
+    });
+  }, []);
 
   const computeRatio = useCallback(
-    (locationX: number) => {
-      if (!trackWidth) return 0;
-      const x = Math.max(0, Math.min(trackWidth, locationX));
-      return x / trackWidth;
+    (pageX: number) => {
+      const { left, width } = trackMetricsRef.current;
+      const effectiveWidth = width || trackWidth;
+      if (!effectiveWidth) return 0;
+      const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
+      return x / effectiveWidth;
     },
     [trackWidth],
+  );
+
+  const commitSeek = useCallback(
+    (ratio: number, force = false) => {
+      if (!onSeek || durationMillis <= 0) return;
+      const now = Date.now();
+      if (!force && now - lastSeekAtRef.current < SEEK_THROTTLE_MS) return;
+      lastSeekAtRef.current = now;
+      onSeek(ratio * durationMillis);
+    },
+    [durationMillis, onSeek],
   );
 
   const panResponder = useMemo(
@@ -84,25 +113,36 @@ export function NaatCard({
         onStartShouldSetPanResponderCapture: () => isActive && !!onSeek,
         onMoveShouldSetPanResponderCapture: () => isActive && !!onSeek,
         onPanResponderGrant: (evt) => {
-          if (!trackWidth || !onSeek) return;
-          const ratio = computeRatio(evt.nativeEvent.locationX);
+          if (!trackWidth || !onSeek || durationMillis <= 0) return;
+          updateTrackMetrics();
+          const ratio = computeRatio(evt.nativeEvent.pageX);
+          seekRatioRef.current = ratio;
           setSeekingRatio(ratio);
-          onSeek(ratio * durationMillis);
+          commitSeek(ratio, true);
         },
         onPanResponderMove: (evt) => {
-          if (!trackWidth || !onSeek) return;
-          const ratio = computeRatio(evt.nativeEvent.locationX);
+          if (!trackWidth || !onSeek || durationMillis <= 0) return;
+          const ratio = computeRatio(evt.nativeEvent.pageX);
+          seekRatioRef.current = ratio;
           setSeekingRatio(ratio);
-          onSeek(ratio * durationMillis);
+          commitSeek(ratio, false);
         },
         onPanResponderRelease: () => {
+          if (seekRatioRef.current !== null) {
+            commitSeek(seekRatioRef.current, true);
+          }
+          seekRatioRef.current = null;
           setSeekingRatio(null);
         },
         onPanResponderTerminate: () => {
+          if (seekRatioRef.current !== null) {
+            commitSeek(seekRatioRef.current, true);
+          }
+          seekRatioRef.current = null;
           setSeekingRatio(null);
         },
       }),
-    [durationMillis, isActive, onSeek, trackWidth, computeRatio],
+    [durationMillis, isActive, onSeek, trackWidth, computeRatio, updateTrackMetrics, commitSeek],
   );
 
   return (
@@ -122,8 +162,14 @@ export function NaatCard({
       {isActive && durationMillis > 0 && (
         <View style={styles.seekSection}>
           <View
+            ref={trackRef}
             style={[styles.seekTrack, { backgroundColor: theme.backgroundSecondary }]}
-            onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)}
+            onLayout={(e) => {
+              const width = e.nativeEvent.layout.width;
+              trackMetricsRef.current.width = width;
+              setTrackWidth(width);
+              requestAnimationFrame(updateTrackMetrics);
+            }}
             {...panResponder.panHandlers}
           >
             <View
@@ -132,7 +178,7 @@ export function NaatCard({
                 {
                   width: fillWidth,
                   backgroundColor: theme.tint,
-                  left: 0,
+                  ...getPhysicalStartStyle(0),
                 },
               ]}
             />
@@ -141,7 +187,7 @@ export function NaatCard({
                 styles.seekThumb,
                 {
                   backgroundColor: theme.tint,
-                  left: thumbLeft,
+                  ...getPhysicalStartStyle(thumbOffset),
                 },
               ]}
             />
@@ -250,6 +296,7 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: BorderRadius.full,
     position: 'relative',
+    direction: 'ltr',
   },
   seekFill: {
     height: '100%',
