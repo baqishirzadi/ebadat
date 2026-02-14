@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react';
-import { Pressable, StyleSheet, View, Text, PanResponder, I18nManager } from 'react-native';
+import { Pressable, StyleSheet, View, Text, PanResponder } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Naat } from '@/types/naat';
@@ -71,9 +71,7 @@ export function NaatCard({
     (locationX: number) => {
       if (!trackWidth) return 0;
       const x = Math.max(0, Math.min(trackWidth, locationX));
-      let ratio = x / trackWidth;
-      if (I18nManager.isRTL) ratio = 1 - ratio;
-      return ratio;
+      return x / trackWidth;
     },
     [trackWidth],
   );
@@ -134,7 +132,7 @@ export function NaatCard({
                 {
                   width: fillWidth,
                   backgroundColor: theme.tint,
-                  ...(I18nManager.isRTL ? { right: 0 } : { left: 0 }),
+                  left: 0,
                 },
               ]}
             />
@@ -143,9 +141,7 @@ export function NaatCard({
                 styles.seekThumb,
                 {
                   backgroundColor: theme.tint,
-                  ...(I18nManager.isRTL
-                    ? { left: trackWidth - fillWidth - thumbRadius, right: undefined }
-                    : { left: thumbLeft }),
+                  left: thumbLeft,
                 },
               ]}
             />

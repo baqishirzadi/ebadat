@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useArticles } from '@/context/ArticlesContext';
-import { Article, Scholar } from '@/types/articles';
+import { Article, Scholar, ARTICLE_CATEGORIES } from '@/types/articles';
 import { Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
 import { ArticleCard } from '@/components/articles/ArticleCard';
 import { CategoryFilter } from '@/components/articles/CategoryFilter';
@@ -279,6 +279,27 @@ export default function ArticlesFeed() {
     [selectedCategory, selectedLanguage, selectedScholar, state.articles]
   );
 
+  const displayArticles = useMemo(() => {
+    if (filteredArticles.length > 0) return filteredArticles;
+    if (selectedScholar && filteredArticles.length === 0) {
+      const scholarOnly = state.articles.filter((a) => {
+        if (!a.published || a.language !== selectedLanguage) return false;
+        const byId = selectedScholar.authorIds.includes(a.authorId);
+        const byName = selectedScholar.authorNames.some(
+          (n) => normalizeName(n) === normalizeName(a.authorName)
+        );
+        return byId || byName;
+      });
+      if (scholarOnly.length > 0) return scholarOnly;
+    }
+    return filteredArticles;
+  }, [filteredArticles, selectedScholar, selectedLanguage, state.articles]);
+
+  const isShowingScholarFallback =
+    filteredArticles.length === 0 &&
+    selectedScholar != null &&
+    displayArticles.length > 0;
+
   const displayScholars = useMemo(() => {
     const seenNames = new Set<string>();
     const normalizedName = (value: string) =>
@@ -413,7 +434,58 @@ export default function ArticlesFeed() {
           </Pressable>
         </View>
       )}
+
+      {isShowingScholarFallback && selectedCategory && (
+        <View style={[styles.scholarFallbackBanner, { backgroundColor: `${theme.tint}18`, borderColor: theme.tint }]}>
+          <CenteredText style={[styles.scholarFallbackText, { color: theme.text }]}>
+            این عالم در {ARTICLE_CATEGORIES[selectedCategory].nameDari} مقاله‌ای ندارد؛ مقالات او در سایر دسته‌ها:
+          </CenteredText>
+        </View>
+      )}
     </Animated.View>
+  );
+
+  const renderStaticHeader = () => (
+    <View style={styles.headerWrapper}>
+      <LinearGradient
+        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
+        style={styles.header}
+      >
+        <View style={styles.headerPattern} pointerEvents="none">
+          <View style={[styles.patternLine, styles.patternLine1]} />
+          <View style={[styles.patternLine, styles.patternLine2]} />
+          <View style={[styles.patternLine, styles.patternLine3]} />
+          <View style={[styles.patternLine, styles.patternLine4]} />
+          <View style={[styles.patternCorner, styles.patternTopLeft]} />
+          <View style={[styles.patternCorner, styles.patternTopRight]} />
+          <View style={[styles.patternCorner, styles.patternBottomLeft]} />
+          <View style={[styles.patternCorner, styles.patternBottomRight]} />
+        </View>
+        <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
+        <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
+      </LinearGradient>
+
+      <CategoryFilter
+        selectedCategory={selectedCategory}
+        onSelectCategory={setSelectedCategory}
+        selectedLanguage={selectedLanguage}
+        onSelectLanguage={setSelectedLanguage}
+      />
+
+      {selectedScholar && (
+        <View style={[styles.scholarFilterBanner, { backgroundColor: theme.card, borderColor: theme.tint }]}>
+          <CenteredText style={[styles.scholarFilterText, { color: theme.text }]}>
+            فیلتر عالم فعال است: {selectedScholar.scholarName}
+          </CenteredText>
+          <Pressable
+            onPress={() => setSelectedScholar(null)}
+            style={[styles.clearScholarFilterButton, { backgroundColor: theme.tint }]}
+          >
+            <CenteredText style={styles.clearScholarFilterText}>حذف فیلتر</CenteredText>
+          </Pressable>
+        </View>
+      )}
+    </View>
   );
 
   const renderListFooter = () => (
@@ -448,49 +520,62 @@ export default function ArticlesFeed() {
             در حال بارگذاری...
           </CenteredText>
         </View>
-      ) : filteredArticles.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          {!isArticlesRemoteEnabled() ? (
-            <>
-              <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-                مقالات به حالت نمایشی فعال است
-              </CenteredText>
-              <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
-                فعلاً فقط مقالات محلی نمایش داده می‌شوند
-              </CenteredText>
-            </>
-          ) : state.error ? (
-            <>
-              <CenteredText style={[styles.emptyText, { color: '#F44336' }]}>
-                {state.error}
-              </CenteredText>
-              {state.articles.length > 0 && (
-                <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary, marginTop: 8 }]}>
-                  نمایش داده‌های ذخیره شده محلی
+      ) : displayArticles.length === 0 ? (
+        <View style={styles.emptyStateWrapper}>
+          {renderStaticHeader()}
+          <View style={styles.emptyContainer}>
+            {!isArticlesRemoteEnabled() ? (
+              <>
+                <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
+                  مقالات به حالت نمایشی فعال است
                 </CenteredText>
-              )}
-            </>
-          ) : state.articles.length === 0 && !state.isLoading ? (
-            <>
-              <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-                مقاله‌ای یافت نشد
-              </CenteredText>
-              <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
-                مقالات در Supabase وجود ندارند
-              </CenteredText>
-              <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary, marginTop: 8 }]}>
-                برای اضافه کردن مقالات، راهنمای ADD_ARTICLES.md را ببینید
-              </CenteredText>
-            </>
-          ) : (
-            <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-              مقاله‌ای با فیلتر انتخابی یافت نشد
-            </CenteredText>
-          )}
+                <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
+                  فعلاً فقط مقالات محلی نمایش داده می‌شوند
+                </CenteredText>
+              </>
+            ) : state.error ? (
+              <>
+                <CenteredText style={[styles.emptyText, { color: '#F44336' }]}>
+                  {state.error}
+                </CenteredText>
+                {state.articles.length > 0 && (
+                  <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary, marginTop: 8 }]}>
+                    نمایش داده‌های ذخیره شده محلی
+                  </CenteredText>
+                )}
+              </>
+            ) : state.articles.length === 0 && !state.isLoading ? (
+              <>
+                <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
+                  مقاله‌ای یافت نشد
+                </CenteredText>
+                <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
+                  مقالات در Supabase وجود ندارند
+                </CenteredText>
+                <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary, marginTop: 8 }]}>
+                  برای اضافه کردن مقالات، راهنمای ADD_ARTICLES.md را ببینید
+                </CenteredText>
+              </>
+            ) : (
+              <>
+                <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
+                  مقاله‌ای با فیلتر انتخابی یافت نشد
+                </CenteredText>
+                {selectedScholar && (
+                  <Pressable
+                    onPress={() => setSelectedScholar(null)}
+                    style={[styles.clearScholarFilterButton, { backgroundColor: theme.tint, marginTop: Spacing.md }]}
+                  >
+                    <CenteredText style={styles.clearScholarFilterText}>حذف فیلتر عالم</CenteredText>
+                  </Pressable>
+                )}
+              </>
+            )}
+          </View>
         </View>
       ) : (
         <Animated.FlatList
-          data={filteredArticles}
+          data={displayArticles}
           keyExtractor={(item) => item.id}
           renderItem={renderArticle}
           ListHeaderComponent={renderListHeader}
@@ -697,6 +782,21 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
     fontWeight: '600',
   },
+  scholarFallbackBanner: {
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    alignItems: 'center',
+  },
+  scholarFallbackText: {
+    fontSize: 12,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -708,6 +808,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'right',
     writingDirection: 'rtl',
+  },
+  emptyStateWrapper: {
+    flex: 1,
   },
   emptyContainer: {
     flex: 1,

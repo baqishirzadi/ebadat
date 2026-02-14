@@ -3,7 +3,7 @@
  */
 
 import React, { useMemo, useState, useCallback } from 'react';
-import { View, StyleSheet, Text, Pressable, PanResponder, I18nManager } from 'react-native';
+import { View, StyleSheet, Text, Pressable, PanResponder } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -38,9 +38,7 @@ export default function NaatNowPlayingScreen() {
     (locationX: number) => {
       if (!trackWidth) return 0;
       const x = Math.max(0, Math.min(trackWidth, locationX));
-      let ratio = x / trackWidth;
-      if (I18nManager.isRTL) ratio = 1 - ratio;
-      return ratio;
+      return x / trackWidth;
     },
     [trackWidth],
   );
@@ -107,7 +105,7 @@ export default function NaatNowPlayingScreen() {
               {
                 width: `${Math.min(displayProgress * 100, 100)}%`,
                 backgroundColor: theme.bookmark,
-                ...(I18nManager.isRTL ? { right: 0 } : { left: 0 }),
+                left: 0,
               },
             ]}
           />
