@@ -18,13 +18,15 @@ export function NaatMiniPlayer({ naat, isPlaying, progress, onPlayPause, onOpen 
   const clampedProgress = Math.max(0, Math.min(progress, 1));
   return (
     <Pressable onPress={onOpen} style={[styles.container, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-      <View style={[styles.progressTrack, { backgroundColor: `${theme.tint}20` }]}>
-        <View
-          style={[
-            styles.progressFill,
-            { width: `${clampedProgress * 100}%`, backgroundColor: theme.tint, left: 0 },
-          ]}
-        />
+      <View style={{ direction: 'ltr', width: '100%' }}>
+        <View style={[styles.progressTrack, { backgroundColor: `${theme.tint}20` }]}>
+          <View
+            style={[
+              styles.progressFill,
+              { width: `${clampedProgress * 100}%`, backgroundColor: theme.tint, left: 0 },
+            ]}
+          />
+        </View>
       </View>
       <View style={styles.content}>
         <View style={styles.info}>

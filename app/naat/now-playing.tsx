@@ -3,7 +3,7 @@
  */
 
 import React, { useMemo, useState, useCallback, useRef } from 'react';
-import { View, StyleSheet, Text, Pressable, PanResponder } from 'react-native';
+import { View, StyleSheet, Text, Pressable, PanResponder, I18nManager } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -54,7 +54,8 @@ export default function NaatNowPlayingScreen() {
       const effectiveWidth = width || trackWidth;
       if (!effectiveWidth) return 0;
       const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
-      return x / effectiveWidth;
+      const rawRatio = x / effectiveWidth;
+      return I18nManager.isRTL ? 1 - rawRatio : rawRatio;
     },
     [trackWidth],
   );
@@ -136,27 +137,29 @@ export default function NaatNowPlayingScreen() {
       </View>
 
       <View style={styles.controls}>
-        <View
-          ref={trackRef}
-          style={[styles.progressBar, { backgroundColor: `${theme.surahHeaderText}20` }]}
-          onLayout={(e) => {
-            const width = e.nativeEvent.layout.width;
-            trackMetricsRef.current.width = width;
-            setTrackWidth(width);
-            requestAnimationFrame(updateTrackMetrics);
-          }}
-          {...panResponder.panHandlers}
-        >
+        <View style={{ direction: 'ltr', width: '100%' }}>
           <View
-            style={[
-              styles.progressFill,
-              {
-                width: `${Math.min(displayProgress * 100, 100)}%`,
-                backgroundColor: theme.bookmark,
-                left: 0,
-              },
-            ]}
-          />
+            ref={trackRef}
+            style={[styles.progressBar, { backgroundColor: `${theme.surahHeaderText}20` }]}
+            onLayout={(e) => {
+              const width = e.nativeEvent.layout.width;
+              trackMetricsRef.current.width = width;
+              setTrackWidth(width);
+              requestAnimationFrame(updateTrackMetrics);
+            }}
+            {...panResponder.panHandlers}
+          >
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${Math.min(displayProgress * 100, 100)}%`,
+                  backgroundColor: theme.bookmark,
+                  left: 0,
+                },
+              ]}
+            />
+          </View>
         </View>
         <View style={styles.timeRow}>
           <Text style={[styles.timeText, { color: theme.surahHeaderText }]}>

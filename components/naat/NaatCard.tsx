@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react';
-import { Pressable, StyleSheet, View, Text, PanResponder } from 'react-native';
+import { Pressable, StyleSheet, View, Text, PanResponder, I18nManager } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Naat } from '@/types/naat';
@@ -87,7 +87,8 @@ export function NaatCard({
       const effectiveWidth = width || trackWidth;
       if (!effectiveWidth) return 0;
       const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
-      return x / effectiveWidth;
+      const rawRatio = x / effectiveWidth;
+      return I18nManager.isRTL ? 1 - rawRatio : rawRatio;
     },
     [trackWidth],
   );
@@ -159,9 +160,10 @@ export function NaatCard({
 
       {isActive && durationMillis > 0 && (
         <View style={styles.seekSection}>
-          <View
-            ref={trackRef}
-            style={[styles.seekTrack, { backgroundColor: theme.backgroundSecondary }]}
+          <View style={{ direction: 'ltr', width: '100%' }}>
+            <View
+              ref={trackRef}
+              style={[styles.seekTrack, { backgroundColor: theme.backgroundSecondary }]}
             onLayout={(e) => {
               const width = e.nativeEvent.layout.width;
               trackMetricsRef.current.width = width;
@@ -189,6 +191,7 @@ export function NaatCard({
                 },
               ]}
             />
+          </View>
           </View>
           <View style={styles.timeRow}>
             <Text style={[styles.timeText, { color: theme.textSecondary }]}>
