@@ -78,7 +78,7 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   const insets = useSafeAreaInsets();
   const [phrase] = useState(() => PHRASES[Math.floor(Math.random() * PHRASES.length)]);
   
-  const opacity = useSharedValue(0);
+  const opacity = useSharedValue(1); // Start visible so no blank screen when native splash hides (EAS/physical devices)
   const frameScale = useSharedValue(0.9);
   const appNameOpacity = useSharedValue(0);
   const appNameScale = useSharedValue(0.95);
@@ -88,8 +88,7 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   const glowOpacity = useSharedValue(0);
 
   useEffect(() => {
-    // Animate in sequence
-    opacity.value = withTiming(1, { duration: 500, easing: Easing.out(Easing.cubic) });
+    // Animate in sequence (container stays visible from frame 0 for EAS/physical devices)
     appNameOpacity.value = withDelay(100, withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) }));
     appNameScale.value = withDelay(100, withSequence(
       withTiming(1.05, { duration: 400, easing: Easing.out(Easing.cubic) }),
