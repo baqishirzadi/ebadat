@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global __dirname */
 
 const fs = require('fs');
 const path = require('path');
@@ -49,7 +50,7 @@ const REQUIRED_SNIPPETS = [
   },
   {
     authorId: 'abu_saeed_abolkhair',
-    phrases: ['گزیده ۲۵ سخن منقول از سنت ابو سعید', 'هر که او بیدارتر، پردردتر'],
+    phrases: ['گزیده ۲۵ سخن از سنت ابو سعید', 'هر که او بیدارتر، پردردتر'],
   },
   {
     authorId: 'sheikh_ahmad_sirhindi',

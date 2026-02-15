@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useCallback, useEffect, useLayoutEffect } from 'react';
-import { View, StyleSheet, StatusBar, BackHandler, Platform, ToastAndroid } from 'react-native';
+import { View, StyleSheet, StatusBar, BackHandler, Platform, ToastAndroid, Text, Pressable } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -122,40 +122,50 @@ export default function QuranReaderScreen() {
       : `سوره ${toArabicNumerals(surahNumber)}`;
 
     navigation.setOptions({
-      title: surahName,
+      headerTitle: () => (
+        <Text
+          style={{
+            color: '#fff',
+            fontFamily: 'ScheherazadeNew',
+            fontSize: 22,
+            textAlign: 'center',
+          }}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {surahName}
+        </Text>
+      ),
       headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
       headerTintColor: '#fff',
-      headerTitleStyle: {
-        fontFamily: 'ScheherazadeNew',
-        fontSize: 22,
+      headerTitleContainerStyle: {
+        flex: 1,
+        minWidth: 120,
+        justifyContent: 'center',
       },
-      headerTitleAlign: 'center',
+      headerLeftContainerStyle: { minWidth: 48 },
+      headerRightContainerStyle: { minWidth: 80 },
       headerLeft: () => (
-        <MaterialIcons
-          name="arrow-forward"
-          size={24}
-          color="#fff"
-          style={{ marginRight: 16 }}
-          onPress={() => router.back()}
-        />
+        <Pressable onPress={() => router.back()} hitSlop={8}>
+          <MaterialIcons
+            name="arrow-forward"
+            size={24}
+            color="#fff"
+            style={{ marginRight: 16 }}
+          />
+        </Pressable>
       ),
       headerRight: () => (
         <View style={styles.headerRight}>
           {surahNumber > 1 && (
-            <MaterialIcons
-              name="chevron-right"
-              size={28}
-              color="#fff"
-              onPress={goToPrevSurah}
-            />
+            <Pressable onPress={goToPrevSurah} hitSlop={8}>
+              <MaterialIcons name="chevron-right" size={28} color="#fff" />
+            </Pressable>
           )}
           {surahNumber < 114 && (
-            <MaterialIcons
-              name="chevron-left"
-              size={28}
-              color="#fff"
-              onPress={goToNextSurah}
-            />
+            <Pressable onPress={goToNextSurah} hitSlop={8}>
+              <MaterialIcons name="chevron-left" size={28} color="#fff" />
+            </Pressable>
           )}
         </View>
       ),

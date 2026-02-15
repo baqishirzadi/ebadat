@@ -135,11 +135,7 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       elements.push(
         <View key={key++} style={styles.headingContainer}>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
-          <Text
-            style={[styles.heading, { color: categoryColor }]}
-            numberOfLines={2}
-            ellipsizeMode="tail"
-          >
+          <Text style={[styles.heading, { color: categoryColor }]}>
             {item.content}
           </Text>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
@@ -632,7 +628,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.xs,
   },
   headingLine: {
-    width: 28,
+    width: 20,
     height: 2,
     borderRadius: 2,
     opacity: 0.6,

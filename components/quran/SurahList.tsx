@@ -17,7 +17,9 @@ import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchButton } from './SearchButton';
 
-const SURAH_ITEM_HEIGHT = 90;
+const ITEM_HEIGHT = 96;
+const SEPARATOR_HEIGHT = Spacing.md;
+const TOTAL_ROW_HEIGHT = ITEM_HEIGHT + SEPARATOR_HEIGHT;
 
 interface SurahItemProps {
   surah: SurahNameData;
@@ -47,19 +49,13 @@ const SurahItem = React.memo(function SurahItem({
         },
       ]}
     >
-      {/* RTL order: Quran (right) | Meta | Number (left) */}
-      {/* Surah Info - Quran name on right in RTL */}
-      <View style={styles.infoContainer}>
-        <Text style={[styles.arabicName, { color: theme.text }]}>
-          سوره {surah.arabic}
-        </Text>
-        <Text style={[styles.dariName, { color: theme.textSecondary }]}>
-          {surah.dari} ({surah.meaning})
-        </Text>
+      {/* Chevron - right */}
+      <View style={{ flexShrink: 0 }}>
+        <MaterialIcons name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'} size={24} color={theme.icon} />
       </View>
 
-      {/* Metadata - مکی/مدنی، تعداد آیات */}
-      <View style={styles.metaContainer}>
+      {/* Meta - right of center */}
+      <View style={[styles.metaContainer, { flexShrink: 0 }]}>
         <View style={styles.metaRow}>
           <MaterialIcons
             name={surah.revelationType === 'مکی' ? 'brightness-5' : 'brightness-2'}
@@ -75,8 +71,22 @@ const SurahItem = React.memo(function SurahItem({
         </Text>
       </View>
 
-      {/* Surah Number - left in RTL */}
-      <View style={styles.islamicBadgeContainer}>
+      {/* Surah name - center (flex: 1, text centered) */}
+      <View style={styles.infoContainer}>
+        <Text style={[styles.arabicName, { color: theme.text }]}>
+          سوره {surah.arabic}
+        </Text>
+        <Text
+          style={[styles.dariName, { color: theme.textSecondary }]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
+          {surah.dari} ({surah.meaning})
+        </Text>
+      </View>
+
+      {/* Number badge - left */}
+      <View style={[styles.islamicBadgeContainer, { flexShrink: 0 }]}>
         <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
         <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
         <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
@@ -88,15 +98,12 @@ const SurahItem = React.memo(function SurahItem({
         <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
       </View>
 
-      {/* Continue Reading Badge */}
+      {/* Continue Reading Badge - absolute */}
       {isLastRead && (
         <View style={[styles.continueReading, { backgroundColor: theme.playing }]}>
           <MaterialIcons name="play-arrow" size={14} color="#fff" />
         </View>
       )}
-
-      {/* Chevron */}
-      <MaterialIcons name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'} size={24} color={theme.icon} />
     </Pressable>
   );
 });
@@ -232,16 +239,18 @@ export function SurahList() {
         onViewableItemsChanged={handleViewableItemsChanged}
         viewabilityConfig={viewabilityConfig.current}
         removeClippedSubviews={false}
-        overScrollMode="never"
-        bounces={false}
         initialNumToRender={15}
         maxToRenderPerBatch={10}
         windowSize={10}
-        getItemLayout={(_, index) => ({
-          length: SURAH_ITEM_HEIGHT + Spacing.md,
-          offset: (SURAH_ITEM_HEIGHT + Spacing.md) * index,
-          index,
-        })}
+        getItemLayout={(_, index) =>
+          index < 0
+            ? { index: 0, length: 0, offset: 0 }
+            : {
+                length: TOTAL_ROW_HEIGHT,
+                offset: TOTAL_ROW_HEIGHT * index,
+                index,
+              }
+        }
         updateCellsBatchingPeriod={50}
         maintainVisibleContentPosition={null}
         // Prevent iOS from adjusting content inset automatically
@@ -352,6 +361,7 @@ const styles = StyleSheet.create({
   surahItem: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
+    minHeight: ITEM_HEIGHT,
     padding: Spacing.lg,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,

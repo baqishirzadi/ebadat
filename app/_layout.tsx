@@ -139,10 +139,14 @@ export default function RootLayout() {
       } catch (error) {
         console.error('Error loading fonts:', error);
         setFontError(error instanceof Error ? error.message : 'Font loading failed');
-        // Still allow app to load with system fonts
         setFontsLoaded(true);
       } finally {
-        SplashScreen.hideAsync();
+        // Delay hide until React has painted the first frame (prevents white flash on release builds)
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            SplashScreen.hideAsync();
+          });
+        });
       }
     }
 
@@ -152,7 +156,7 @@ export default function RootLayout() {
   if (!fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#1e6f5c" />
+        <ActivityIndicator size="large" color="#ffffff" />
         <Text style={styles.loadingText}>در حال بارگذاری...</Text>
       </View>
     );
@@ -186,12 +190,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fefefe',
+    backgroundColor: '#1a4d3e',
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#666',
+    color: 'rgba(255,255,255,0.9)',
     textAlign: 'center',
   },
 });
