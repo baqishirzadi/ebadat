@@ -2,6 +2,7 @@
  * Quran Audio Manager
  * Handles audio playback with dual reciters: Ghamidi & Muaiqly
  * Uses EveryAyah.com for high-quality audio
+ * Preloads next ayah for gapless playback on small surahs (e.g. Al-Fatiha)
  */
 
 import { Audio, AVPlaybackStatus } from 'expo-av';
@@ -12,6 +13,7 @@ import {
   getInfoAsync,
   downloadAsync,
 } from 'expo-file-system/legacy';
+import metadata from '@/data/metadata.json';
 
 // ═══════════════════════════════════════════════════
 // RECITER CONFIGURATION
@@ -53,12 +55,24 @@ const AUDIO_DIRECTORY = `${documentDirectory}quran_audio/`;
 // Small surahs to cache for offline use
 const SMALL_SURAHS = [1, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114];
 
+// Surah -> ayah count for preload logic
+const SURAH_AYAH_COUNTS: Record<number, number> = (metadata as { surahs: { number: number; numberOfAyahs: number }[] }).surahs.reduce(
+  (acc, s) => {
+    acc[s.number] = s.numberOfAyahs;
+    return acc;
+  },
+  {} as Record<number, number>
+);
+
 // ═══════════════════════════════════════════════════
 // AUDIO MANAGER CLASS
 // ═══════════════════════════════════════════════════
 
 export class QuranAudioManager {
   private sound: Audio.Sound | null = null;
+  private preloadedSound: Audio.Sound | null = null;
+  private preloadedSurah: number | null = null;
+  private preloadedAyah: number | null = null;
   private currentReciter: ReciterId = 'ghamidi';
   private isPlaying: boolean = false;
   private playbackSpeed: number = 1.0;
@@ -187,8 +201,41 @@ export class QuranAudioManager {
     }
   };
 
-  // Play a single ayah
+  // Play a single ayah (uses preloaded sound when available for gapless playback)
   async playAyah(surah: number, ayah: number): Promise<void> {
+    // Fast path: use preloaded sound if it matches the requested ayah
+    if (this.preloadedSurah === surah && this.preloadedAyah === ayah && this.preloadedSound) {
+      try {
+        if (this.sound) {
+          await this.sound.unloadAsync();
+          this.sound = null;
+        }
+        this.sound = this.preloadedSound;
+        this.preloadedSound = null;
+        this.preloadedSurah = null;
+        this.preloadedAyah = null;
+
+        this.onStatusUpdate?.({
+          isPlaying: false,
+          isLoading: false,
+          position: 0,
+          duration: 0,
+          isBuffering: false,
+        });
+
+        await this.sound.setRateAsync(this.playbackSpeed, true);
+        await this.sound.playAsync();
+
+        // Preload next ayah in background
+        this.preloadAyah(surah, ayah);
+      } catch (error) {
+        console.log('Play preloaded error:', error);
+        this.sound = null;
+        await this.playAyah(surah, ayah);
+      }
+      return;
+    }
+
     await this.unload();
 
     this.onStatusUpdate?.({
@@ -215,6 +262,9 @@ export class QuranAudioManager {
       if (audioSource !== localPath) {
         this.downloadAudio(surah, ayah).catch(() => {});
       }
+
+      // Preload next ayah for gapless transition
+      this.preloadAyah(surah, ayah);
     } catch (error) {
       console.log('Play error:', error);
       this.onStatusUpdate?.({
@@ -281,12 +331,55 @@ export class QuranAudioManager {
     }
   }
 
-  // Unload audio
+  // Unload audio (current and preloaded)
   async unload(): Promise<void> {
     if (this.sound) {
       await this.sound.unloadAsync();
       this.sound = null;
     }
+    if (this.preloadedSound) {
+      await this.preloadedSound.unloadAsync();
+      this.preloadedSound = null;
+      this.preloadedSurah = null;
+      this.preloadedAyah = null;
+    }
+  }
+
+  // Clear only preloaded (e.g. when reciter changes)
+  private async clearPreloaded(): Promise<void> {
+    if (this.preloadedSound) {
+      await this.preloadedSound.unloadAsync();
+      this.preloadedSound = null;
+      this.preloadedSurah = null;
+      this.preloadedAyah = null;
+    }
+  }
+
+  // Preload next ayah in background for gapless playback
+  private preloadAyah(surah: number, ayah: number): void {
+    const totalAyahs = SURAH_AYAH_COUNTS[surah];
+    if (!totalAyahs || ayah >= totalAyahs) return;
+
+    const nextAyah = ayah + 1;
+    // Skip if already preloaded
+    if (this.preloadedSurah === surah && this.preloadedAyah === nextAyah) return;
+
+    this.clearPreloaded().then(() => {
+      this.getAudioSource(surah, nextAyah)
+        .then((audioSource) =>
+          Audio.Sound.createAsync(
+            { uri: audioSource },
+            { shouldPlay: false, rate: this.playbackSpeed, shouldCorrectPitch: true },
+            this.handlePlaybackStatus
+          )
+        )
+        .then(({ sound }) => {
+          this.preloadedSound = sound;
+          this.preloadedSurah = surah;
+          this.preloadedAyah = nextAyah;
+        })
+        .catch(() => {});
+    });
   }
 
   // Seek to position
@@ -340,6 +433,7 @@ export class QuranAudioManager {
   async setReciter(reciter: ReciterId): Promise<void> {
     this.currentReciter = reciter;
     await AsyncStorage.setItem(RECITER_STORAGE_KEY, reciter);
+    await this.clearPreloaded();
   }
 
   // Get current reciter
