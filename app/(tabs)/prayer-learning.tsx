@@ -298,6 +298,33 @@ export default function PrayerLearningScreen() {
             />
           )}
 
+          {/* Janazah quick jump: Method -> Dua */}
+          {currentCategory.id === 'janazah' && currentSection.id === 'janazah_method' && (
+            <Pressable
+              onPress={() => setSelectedSection('janazah_dua')}
+              style={({ pressed }) => [
+                styles.janazahJumpCard,
+                { backgroundColor: theme.card, borderColor: theme.cardBorder },
+                pressed && styles.cardPressed,
+              ]}
+            >
+              <View style={styles.janazahJumpContent}>
+                <Text style={[styles.janazahJumpTitle, { color: theme.text }]}>
+                  مشاهده دعای نماز جنازه
+                </Text>
+                <Text
+                  style={[
+                    styles.janazahJumpSubtitle,
+                    { color: theme.textSecondary, fontFamily: pashtoFontFamily },
+                  ]}
+                >
+                  د جنازې د لمانځه دعا وګورئ
+                </Text>
+              </View>
+              <MaterialIcons name="arrow-back" size={22} color={theme.tint} />
+            </Pressable>
+          )}
+
           {/* Steps (Dari/Pashto string arrays) */}
           {(currentSection.steps_dari || currentSection.steps_pashto) && (
             <View style={[styles.stepsBlock, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -856,5 +883,32 @@ const styles = StyleSheet.create({
     lineHeight: 28,
     flex: 1,
     includeFontPadding: false,
+  },
+  janazahJumpCard: {
+    marginBottom: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    padding: Spacing.md,
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  janazahJumpContent: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: Spacing.sm,
+  },
+  janazahJumpTitle: {
+    fontSize: Typography.ui.subtitle,
+    fontWeight: '600',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  janazahJumpSubtitle: {
+    marginTop: 4,
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    lineHeight: 38,
   },
 });
