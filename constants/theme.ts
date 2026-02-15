@@ -106,23 +106,23 @@ const turquoiseTheme: ThemeColors = {
   textSecondary: '#4a6a6a',
   background: '#e8f5f5',
   backgroundSecondary: '#d0ebeb',
-  tint: NAAT_GREEN,
+  tint: '#008b8b',
   icon: '#5a8a8a',
   tabIconDefault: '#5a8a8a',
-  tabIconSelected: NAAT_GREEN,
+  tabIconSelected: '#008b8b',
   
   arabicText: '#0a2a2a',
   translationText: '#2a4a4a',
-  ayahNumber: NAAT_GREEN,
-  surahHeader: NAAT_GREEN,
+  ayahNumber: '#008b8b',
+  surahHeader: '#008b8b',
   surahHeaderText: '#ffffff',
-  bismillah: NAAT_GREEN_DARK,
+  bismillah: '#006666',
   
   card: '#f0fafa',
   cardBorder: '#b8d8d8',
   divider: '#c8e8e8',
   bookmark: '#d4af37',
-  playing: NAAT_GREEN,
+  playing: '#008b8b',
   
   tabBar: '#e0f0f0',
   tabBarBorder: '#b8d8d8',
@@ -134,23 +134,23 @@ const oliveTheme: ThemeColors = {
   textSecondary: '#5a6a5a',
   background: '#f5f8f0',
   backgroundSecondary: '#e8ede0',
-  tint: NAAT_GREEN,
+  tint: '#6b8e23',
   icon: '#7a8a6a',
   tabIconDefault: '#7a8a6a',
-  tabIconSelected: NAAT_GREEN,
+  tabIconSelected: '#6b8e23',
   
   arabicText: '#1a2a1a',
   translationText: '#3a4a3a',
-  ayahNumber: NAAT_GREEN,
-  surahHeader: NAAT_GREEN,
+  ayahNumber: '#6b8e23',
+  surahHeader: '#6b8e23',
   surahHeaderText: '#ffffff',
-  bismillah: NAAT_GREEN_DARK,
+  bismillah: '#556b2f',
   
   card: '#fafcf5',
   cardBorder: '#d0dab8',
   divider: '#dce6c8',
   bookmark: '#d4af37',
-  playing: NAAT_GREEN,
+  playing: '#6b8e23',
   
   tabBar: '#f0f5e8',
   tabBarBorder: '#d0dab8',
@@ -167,8 +167,8 @@ export const Themes: Record<ThemeMode, ThemeColors> = {
 export const NAAT_GRADIENT: Record<ThemeMode, [string, string, string]> = {
   light: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
   night: ['#0a0a0a', '#141414', '#1a1a1a'],
-  turquoise: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
-  olive: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
+  turquoise: ['#006666', '#008b8b', '#1aa3a3'],
+  olive: ['#556b2f', '#6b8e23', '#88a946'],
 };
 
 // Legacy Colors export for backwards compatibility
@@ -330,4 +330,3 @@ export const RTLStyles = {
   textAlign: 'right' as const,
   writingDirection: 'rtl' as const,
 };
-

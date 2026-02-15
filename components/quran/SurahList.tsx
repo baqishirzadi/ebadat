@@ -12,7 +12,8 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View, I18nManager } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View, I18nManager } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchButton } from './SearchButton';
 
@@ -38,34 +39,21 @@ const SurahItem = React.memo(function SurahItem({
         styles.surahItem,
         {
           backgroundColor: theme.card,
-          borderColor: theme.cardBorder,
+          borderColor: isLastRead ? theme.playing : theme.cardBorder,
         },
-        isLastRead && { backgroundColor: `${theme.playing}14` },
         pressed && {
           ...styles.surahItemPressed,
-          backgroundColor: isLastRead ? `${theme.playing}1f` : theme.card, // Keep background visible when pressed
+          backgroundColor: theme.card, // Keep background visible when pressed
         },
       ]}
     >
-      {isLastRead && (
-        <View style={[styles.lastReadIndicator, { backgroundColor: theme.playing }]} />
-      )}
-
       {/* RTL order: Quran (right) | Meta | Number (left) */}
       {/* Surah Info - Quran name on right in RTL */}
       <View style={styles.infoContainer}>
-        <Text
-          style={[styles.arabicName, { color: theme.text }]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
+        <Text style={[styles.arabicName, { color: theme.text }]}>
           سوره {surah.arabic}
         </Text>
-        <Text
-          style={[styles.dariName, { color: theme.textSecondary }]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
+        <Text style={[styles.dariName, { color: theme.textSecondary }]}>
           {surah.dari} ({surah.meaning})
         </Text>
       </View>
@@ -176,7 +164,7 @@ export function SurahList() {
       {/* Header is part of the list now */}
 
       {/* FlatList with measured paddingTop - reserves exact space for header */}
-      <FlatList
+      <Animated.FlatList
         data={filteredSurahs}
         keyExtractor={(item) => `surah-${item.number}`}
         renderItem={renderSurah}
@@ -364,7 +352,6 @@ const styles = StyleSheet.create({
   surahItem: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
-    height: SURAH_ITEM_HEIGHT,
     padding: Spacing.lg,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
@@ -374,16 +361,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    position: 'relative',
-  },
-  lastReadIndicator: {
-    position: 'absolute',
-    left: 0,
-    top: 12,
-    bottom: 12,
-    width: 4,
-    borderTopRightRadius: 3,
-    borderBottomRightRadius: 3,
+    overflow: 'hidden',
   },
   surahItemPressed: {
     opacity: 0.85,
