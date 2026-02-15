@@ -22,16 +22,6 @@ import { PrayerProvider } from '@/context/PrayerContext';
 import { ScholarProvider } from '@/context/ScholarContext';
 import { StatsProvider } from '@/context/StatsContext';
 
-// ═══════════════════════════════════════════════════
-// CRITICAL: Force RTL for Arabic/Dari/Pashto
-// ═══════════════════════════════════════════════════
-if (!I18nManager.isRTL) {
-  I18nManager.allowRTL(true);
-  I18nManager.forceRTL(true);
-  // Note: App needs to be restarted for RTL to take full effect
-  // In production, this will work after first install
-}
-
 // ───────────────────────────────────────────────────
 // Global safety for unhandled promise rejections
 // Prevents noisy red-screen when network is offline

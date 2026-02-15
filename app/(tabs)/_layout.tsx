@@ -8,14 +8,8 @@ import { useApp } from '@/context/AppContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs, useSegments } from 'expo-router';
 import React, { useMemo } from 'react';
-import { I18nManager, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-// Enable RTL for Arabic/Dari/Pashto
-if (!I18nManager.isRTL) {
-  I18nManager.allowRTL(true);
-  I18nManager.forceRTL(true);
-}
 
 export default function TabLayout() {
   const { theme } = useApp();
@@ -40,6 +34,7 @@ export default function TabLayout() {
 
   const tabBarStyle = useMemo(() => {
     const baseStyle = {
+      direction: 'rtl' as const,
       backgroundColor: theme.tabBar,
       borderTopColor: theme.tabBarBorder,
       paddingBottom: Platform.OS === 'ios' ? Math.max(insets.bottom, 20) : insets.bottom + 12,
