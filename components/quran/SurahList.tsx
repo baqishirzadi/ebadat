@@ -12,10 +12,12 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View, I18nManager } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchButton } from './SearchButton';
+
+const SURAH_ITEM_HEIGHT = 90;
 
 interface SurahItemProps {
   surah: SurahNameData;
@@ -45,24 +47,8 @@ const SurahItem = React.memo(function SurahItem({
         },
       ]}
     >
-      {/* Surah Number - Right side with Islamic decorative pattern */}
-      <View style={styles.islamicBadgeContainer}>
-        {/* Outer decorative ring */}
-        <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
-        {/* Middle decorative ring */}
-        <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
-        {/* Central circle with number */}
-        <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <Text style={styles.numberText}>{toArabicNumerals(surah.number)}</Text>
-        </View>
-        {/* Corner decorations */}
-        <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerBottomLeft, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
-      </View>
-
-      {/* Surah Info - Center */}
+      {/* RTL order: Quran (right) | Meta | Number (left) */}
+      {/* Surah Info - Quran name on right in RTL */}
       <View style={styles.infoContainer}>
         <Text style={[styles.arabicName, { color: theme.text }]}>
           سوره {surah.arabic}
@@ -72,7 +58,7 @@ const SurahItem = React.memo(function SurahItem({
         </Text>
       </View>
 
-      {/* Metadata - Left side (۷ آیت مکی) */}
+      {/* Metadata - مکی/مدنی، تعداد آیات */}
       <View style={styles.metaContainer}>
         <View style={styles.metaRow}>
           <MaterialIcons
@@ -89,6 +75,19 @@ const SurahItem = React.memo(function SurahItem({
         </Text>
       </View>
 
+      {/* Surah Number - left in RTL */}
+      <View style={styles.islamicBadgeContainer}>
+        <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
+        <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
+          <Text style={styles.numberText}>{toArabicNumerals(surah.number)}</Text>
+        </View>
+        <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerBottomLeft, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
+      </View>
+
       {/* Continue Reading Badge */}
       {isLastRead && (
         <View style={[styles.continueReading, { backgroundColor: theme.playing }]}>
@@ -97,7 +96,7 @@ const SurahItem = React.memo(function SurahItem({
       )}
 
       {/* Chevron */}
-      <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
+      <MaterialIcons name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'} size={24} color={theme.icon} />
     </Pressable>
   );
 });
@@ -232,12 +231,17 @@ export function SurahList() {
         scrollEventThrottle={16}
         onViewableItemsChanged={handleViewableItemsChanged}
         viewabilityConfig={viewabilityConfig.current}
-        removeClippedSubviews={false}
+        removeClippedSubviews={true}
         overScrollMode="never"
         bounces={false}
-        initialNumToRender={10}
+        initialNumToRender={15}
         maxToRenderPerBatch={10}
-        windowSize={21}
+        windowSize={10}
+        getItemLayout={(_, index) => ({
+          length: SURAH_ITEM_HEIGHT + Spacing.md,
+          offset: (SURAH_ITEM_HEIGHT + Spacing.md) * index,
+          index,
+        })}
         updateCellsBatchingPeriod={50}
         maintainVisibleContentPosition={null}
         // Prevent iOS from adjusting content inset automatically

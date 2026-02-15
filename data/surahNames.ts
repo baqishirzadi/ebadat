@@ -4,6 +4,8 @@
  * Prophet names include "حضرت ... علیه‌السلام"
  */
 
+import { toArabicNumerals as toArabicNumeralsUtil } from '@/utils/numbers';
+
 export interface SurahNameData {
   number: number;
   arabic: string;
@@ -14,11 +16,8 @@ export interface SurahNameData {
   juz: number[];
 }
 
-// Convert number to Arabic/Farsi numerals
-export function toArabicNumerals(num: number): string {
-  const arabicNumerals = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-}
+/** Re-export for backward compatibility */
+export const toArabicNumerals = toArabicNumeralsUtil;
 
 // Complete list of 114 Surahs with Dari names and meanings
 export const SURAH_NAMES: SurahNameData[] = [

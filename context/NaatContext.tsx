@@ -1,9 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, AppState } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Audio } from 'expo-av';
-import TrackPlayer, { AppKilledPlaybackBehavior, Capability } from 'react-native-track-player';
+import TrackPlayer, { AppKilledPlaybackBehavior, Capability, Event, State, type AddTrack } from 'react-native-track-player';
 import { Naat, NaatDraft } from '@/types/naat';
 import {
   createDraftPayload,
@@ -53,18 +53,41 @@ export function useNaat() {
 }
 
 let playerSetup = false;
+const TRACK_POLL_INTERVAL_MS = 250;
+
+function normalizeAudioUrl(url: string): string {
+  const trimmed = url.trim();
+  return trimmed.includes(' ') ? encodeURI(trimmed) : trimmed;
+}
+
+function getTrackId(track: unknown): string | null {
+  if (!track) return null;
+  if (typeof track === 'string' || typeof track === 'number') {
+    return String(track);
+  }
+  if (typeof track === 'object' && 'id' in track) {
+    const id = (track as { id?: string | number | null }).id;
+    if (id !== undefined && id !== null) {
+      return String(id);
+    }
+  }
+  return null;
+}
 
 export function NaatProvider({ children }: { children: React.ReactNode }) {
   const [naats, setNaats] = useState<Naat[]>([]);
   const [loading, setLoading] = useState(true);
+  const [playerReady, setPlayerReady] = useState(false);
   const [player, setPlayer] = useState<PlayerState>({
     current: null,
     isPlaying: false,
     positionMillis: 0,
     durationMillis: 0,
   });
+  const activeTrackId = player.current?.id;
 
   const currentNaatRef = useRef<Naat | null>(null);
+  const naatsRef = useRef<Naat[]>([]);
   const lastSavedPosition = useRef<number>(0);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -72,9 +95,11 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     await ensureNaatDirectory();
     await verifyDownloads();
+
     const cachedCatalog = await loadCatalog();
     const localMeta = await loadLocalMeta();
     let catalog = cachedCatalog;
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = getSupabaseClient();
@@ -82,14 +107,16 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           .from('naats')
           .select('*')
           .order('created_at', { ascending: false });
+
         if (!error && data) {
           catalog = data as Naat[];
           await saveCatalog(catalog);
         }
       } catch {
-        // keep cached
+        // keep cached catalog
       }
     }
+
     const merged = mergeCatalogWithLocal(catalog, localMeta);
     setNaats(merged);
     setLoading(false);
@@ -99,78 +126,265 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     refresh().catch(() => setLoading(false));
   }, [refresh]);
 
+  useEffect(() => {
+    naatsRef.current = naats;
+  }, [naats]);
+
+  const findNaatByTrack = useCallback((track: unknown): Naat | null => {
+    const trackId = getTrackId(track);
+    if (!trackId) return null;
+    return naatsRef.current.find((item) => item.id === trackId) ?? null;
+  }, []);
+
+  const syncPlayerSnapshot = useCallback(async (activeTrackOverride?: unknown) => {
+    try {
+      const activeTrack = activeTrackOverride ?? (await TrackPlayer.getActiveTrack());
+      const activeNaat = findNaatByTrack(activeTrack);
+      const playbackState = await TrackPlayer.getPlaybackState();
+
+      if (!activeNaat) {
+        currentNaatRef.current = null;
+        setPlayer((prev) => ({
+          ...prev,
+          current: null,
+          isPlaying: playbackState.state === State.Playing,
+          positionMillis: 0,
+          durationMillis: 0,
+        }));
+        return;
+      }
+
+      currentNaatRef.current = activeNaat;
+      const progress = await TrackPlayer.getProgress();
+      const positionMillis = Math.floor(progress.position * 1000);
+      const durationMillis = progress.duration > 0
+        ? Math.floor(progress.duration * 1000)
+        : (activeNaat.duration_seconds ?? 0) * 1000;
+
+      setPlayer((prev) => ({
+        ...prev,
+        current: activeNaat,
+        isPlaying: playbackState.state === State.Playing,
+        positionMillis,
+        durationMillis: durationMillis || prev.durationMillis,
+      }));
+    } catch {
+      // ignore if player is not ready yet
+    }
+  }, [findNaatByTrack]);
+
+  const getLocalUriIfExists = useCallback(async (naat: Naat): Promise<string | null> => {
+    if (!naat.localFileUri) return null;
+    try {
+      const info = await FileSystem.getInfoAsync(naat.localFileUri);
+      return info.exists ? naat.localFileUri : null;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const resolveAudioSource = useCallback(async (naat: Naat): Promise<{ uri: string; isOffline: boolean }> => {
+    const localUri = await getLocalUriIfExists(naat);
+    const netInfo = await NetInfo.fetch();
+    const isOffline = !netInfo.isConnected || netInfo.isInternetReachable === false;
+
+    if (localUri) {
+      return { uri: localUri, isOffline };
+    }
+
+    if (isOffline) {
+      throw new Error('offline');
+    }
+
+    if (!naat.audio_url?.trim()) {
+      throw new Error('no-audio');
+    }
+
+    return { uri: normalizeAudioUrl(naat.audio_url), isOffline };
+  }, [getLocalUriIfExists]);
+
+  const buildQueueTracks = useCallback(async (
+    selectedNaat: Naat,
+    selectedUri: string,
+    isOffline: boolean,
+  ): Promise<AddTrack[]> => {
+    const sourceList = naatsRef.current.length > 0 ? naatsRef.current : [selectedNaat];
+    const tracks: AddTrack[] = [];
+    const seen = new Set<string>();
+
+    for (const item of sourceList) {
+      if (!item.id || seen.has(item.id)) {
+        continue;
+      }
+
+      let uri: string | null = null;
+
+      if (item.id === selectedNaat.id) {
+        uri = selectedUri;
+      } else {
+        const localUri = await getLocalUriIfExists(item);
+        if (localUri) {
+          uri = localUri;
+        } else if (!isOffline && item.audio_url?.trim()) {
+          uri = normalizeAudioUrl(item.audio_url);
+        }
+      }
+
+      if (!uri) {
+        continue;
+      }
+
+      tracks.push({
+        id: item.id,
+        url: uri,
+        title: item.title_fa || item.title_ps || 'نعت',
+        artist: item.reciter_name || undefined,
+        duration: item.duration_seconds && item.duration_seconds > 0 ? item.duration_seconds : undefined,
+      });
+
+      seen.add(item.id);
+    }
+
+    if (!seen.has(selectedNaat.id)) {
+      tracks.unshift({
+        id: selectedNaat.id,
+        url: selectedUri,
+        title: selectedNaat.title_fa || selectedNaat.title_ps || 'نعت',
+        artist: selectedNaat.reciter_name || undefined,
+        duration: selectedNaat.duration_seconds && selectedNaat.duration_seconds > 0
+          ? selectedNaat.duration_seconds
+          : undefined,
+      });
+    }
+
+    return tracks;
+  }, [getLocalUriIfExists]);
+
   // Setup TrackPlayer once
   useEffect(() => {
     if (playerSetup) return;
     playerSetup = true;
+
     (async () => {
       try {
         await TrackPlayer.setupPlayer({
           autoHandleInterruptions: true,
           autoUpdateMetadata: true,
         });
+
         await TrackPlayer.updateOptions({
           capabilities: [
             Capability.Play,
             Capability.Pause,
             Capability.Stop,
             Capability.SeekTo,
-            Capability.JumpForward,
-            Capability.JumpBackward,
+            Capability.SkipToNext,
+            Capability.SkipToPrevious,
           ],
           compactCapabilities: [
             Capability.Play,
             Capability.Pause,
-            Capability.SeekTo,
+            Capability.SkipToNext,
           ],
           progressUpdateEventInterval: 1,
-          forwardJumpInterval: 15,
-          backwardJumpInterval: 15,
           android: {
             appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
           },
         });
+
+        setPlayerReady(true);
+        await syncPlayerSnapshot();
       } catch (err) {
         if (__DEV__) console.warn('TrackPlayer setup:', err);
         playerSetup = false;
+        setPlayerReady(false);
       }
     })();
-    return () => {
-      // Don't destroy - playback service keeps running
-    };
-  }, []);
 
-  // Poll progress when playing
+    return () => {
+      // Keep player alive for background service
+    };
+  }, [syncPlayerSnapshot]);
+
   useEffect(() => {
+    if (!playerReady) return;
+    syncPlayerSnapshot().catch(() => {});
+  }, [playerReady, naats, syncPlayerSnapshot]);
+
+  useEffect(() => {
+    if (!playerReady) return;
+    const subscription = AppState.addEventListener('change', (status) => {
+      if (status === 'active') {
+        syncPlayerSnapshot().catch(() => {});
+      }
+    });
+    return () => subscription.remove();
+  }, [playerReady, syncPlayerSnapshot]);
+
+  // Keep context state synced when track changes from notification / lockscreen
+  useEffect(() => {
+    if (!playerReady) return;
+
+    const activeTrackSub = TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, async (event) => {
+      const nextNaat = findNaatByTrack(event.track);
+      currentNaatRef.current = nextNaat;
+      lastSavedPosition.current = 0;
+      await syncPlayerSnapshot(event.track);
+    });
+
+    const playbackStateSub = TrackPlayer.addEventListener(Event.PlaybackState, (event) => {
+      setPlayer((prev) => ({
+        ...prev,
+        isPlaying: event.state === State.Playing,
+      }));
+    });
+
+    return () => {
+      activeTrackSub.remove();
+      playbackStateSub.remove();
+    };
+  }, [playerReady, findNaatByTrack, syncPlayerSnapshot]);
+
+  // Poll progress while a track is active
+  useEffect(() => {
+    if (!playerReady || !activeTrackId) {
+      return;
+    }
+
     const poll = async () => {
       try {
+        const activeTrack = await TrackPlayer.getActiveTrack();
+        const resolvedNaat = findNaatByTrack(activeTrack) ?? currentNaatRef.current;
+        if (!resolvedNaat) return;
+
+        currentNaatRef.current = resolvedNaat;
+
         const progress = await TrackPlayer.getProgress();
         const state = await TrackPlayer.getPlaybackState();
-        const activeTrack = await TrackPlayer.getActiveTrack();
-        const naat = currentNaatRef.current;
-        if (!naat || activeTrack?.id !== naat.id) return;
 
         const positionMillis = Math.floor(progress.position * 1000);
-        const durationMillis = progress.duration > 0 ? Math.floor(progress.duration * 1000) : 0;
+        const durationMillis = progress.duration > 0
+          ? Math.floor(progress.duration * 1000)
+          : (resolvedNaat.duration_seconds ?? 0) * 1000;
 
         if (positionMillis - lastSavedPosition.current > 5000) {
           lastSavedPosition.current = positionMillis;
-          upsertLocalMeta(naat.id, { lastPositionMillis: positionMillis }).catch(() => {});
+          upsertLocalMeta(resolvedNaat.id, { lastPositionMillis: positionMillis }).catch(() => {});
         }
 
         setPlayer((prev) => ({
           ...prev,
-          current: naat,
-          isPlaying: state.state === 'playing',
+          current: resolvedNaat,
+          isPlaying: state.state === State.Playing,
           positionMillis,
           durationMillis: durationMillis || prev.durationMillis,
         }));
 
-        if (durationMillis > 0 && !naat.duration_seconds) {
+        if (durationMillis > 0 && !resolvedNaat.duration_seconds) {
           const seconds = Math.floor(durationMillis / 1000);
-          await upsertLocalMeta(naat.id, { duration_seconds: seconds });
+          await upsertLocalMeta(resolvedNaat.id, { duration_seconds: seconds });
           setNaats((prev) =>
-            prev.map((item) => (item.id === naat.id ? { ...item, duration_seconds: seconds } : item)),
+            prev.map((item) => (item.id === resolvedNaat.id ? { ...item, duration_seconds: seconds } : item)),
           );
         }
       } catch {
@@ -178,17 +392,16 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    if (currentNaatRef.current) {
-      progressIntervalRef.current = setInterval(poll, 250);
-      poll();
-    }
+    progressIntervalRef.current = setInterval(poll, TRACK_POLL_INTERVAL_MS);
+    poll();
+
     return () => {
       if (progressIntervalRef.current) {
         clearInterval(progressIntervalRef.current);
         progressIntervalRef.current = null;
       }
     };
-  }, [player.current?.id]);
+  }, [playerReady, activeTrackId, findNaatByTrack]);
 
   const createItem = useCallback(async (draft: NaatDraft) => {
     if (!isSupabaseConfigured()) {
@@ -222,50 +435,25 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     await refresh();
   }, [refresh]);
 
-  const resolveAudioSource = useCallback(async (naat: Naat): Promise<{ uri: string }> => {
-    if (naat.localFileUri) {
-      const info = await FileSystem.getInfoAsync(naat.localFileUri);
-      if (info.exists) {
-        return { uri: naat.localFileUri };
-      }
-    }
-
-    const netInfo = await NetInfo.fetch();
-    const isOffline = !netInfo.isConnected || netInfo.isInternetReachable === false;
-    if (isOffline) {
-      throw new Error('offline');
-    }
-
-    if (!naat.audio_url) {
-      throw new Error('no-audio');
-    }
-    const trimmed = naat.audio_url.trim();
-    const safeUrl = trimmed.includes(' ') ? encodeURI(trimmed) : trimmed;
-    return { uri: safeUrl };
-  }, []);
-
   const play = useCallback(async (naat: Naat) => {
     try {
-      const source = await resolveAudioSource(naat);
-      const currentId = currentNaatRef.current?.id;
-
-      if (currentId && currentId !== naat.id) {
-        await TrackPlayer.reset();
+      if (!playerReady) {
+        await syncPlayerSnapshot();
       }
 
-      const initialPosition = (naat.lastPositionMillis ?? 0) / 1000;
-      const track = {
-        id: naat.id,
-        url: source.uri,
-        title: naat.title_fa,
-        artist: naat.reciter_name,
-        duration: naat.duration_seconds ?? 0,
-      };
+      const { uri, isOffline } = await resolveAudioSource(naat);
+      const queueTracks = await buildQueueTracks(naat, uri, isOffline);
+      const selectedIndex = queueTracks.findIndex((track) => String(track.id) === naat.id);
 
-      await TrackPlayer.load(track);
-      if (initialPosition > 0) {
-        await TrackPlayer.seekTo(initialPosition);
+      if (!queueTracks.length || selectedIndex < 0) {
+        throw new Error('no-audio');
       }
+
+      const initialPosition = Math.max(0, (naat.lastPositionMillis ?? 0) / 1000);
+
+      await TrackPlayer.reset();
+      await TrackPlayer.add(queueTracks);
+      await TrackPlayer.skip(selectedIndex, initialPosition > 0 ? initialPosition : undefined);
       await TrackPlayer.play();
 
       currentNaatRef.current = naat;
@@ -286,9 +474,12 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         Alert.alert('خطا', 'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.');
         return;
       }
+      if (__DEV__) {
+        console.warn('TrackPlayer play error:', error);
+      }
       Alert.alert('خطا', 'پخش نعت ممکن نیست');
     }
-  }, [resolveAudioSource]);
+  }, [playerReady, syncPlayerSnapshot, resolveAudioSource, buildQueueTracks]);
 
   const pause = useCallback(async () => {
     try {

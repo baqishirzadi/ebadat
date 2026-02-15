@@ -11,6 +11,7 @@ import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
 import { TranslationLanguage } from '@/types/quran';
+import { toArabicNumerals } from '@/utils/numbers';
 
 interface SurahHeaderProps {
   number: number;
@@ -21,12 +22,6 @@ interface SurahHeaderProps {
   onPlayPress?: () => void;
   onInfoPress?: () => void;
 }
-
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
 
 export const SurahHeader = memo(function SurahHeader({
   number,
@@ -60,7 +55,7 @@ export const SurahHeader = memo(function SurahHeader({
         {/* Surah Number */}
         <View style={[styles.numberBadge, { backgroundColor: `${theme.surahHeaderText}20` }]}>
           <CenteredText style={[styles.numberText, { color: theme.surahHeaderText }]}>
-            {toArabicNumber(number)}
+            {toArabicNumerals(number)}
           </CenteredText>
         </View>
 
@@ -74,7 +69,7 @@ export const SurahHeader = memo(function SurahHeader({
           <View style={[styles.metaItem, { backgroundColor: `${theme.surahHeaderText}20` }]}>
             <MaterialIcons name="format-list-numbered" size={14} color={theme.surahHeaderText} />
             <CenteredText style={[styles.metaText, { color: theme.surahHeaderText }]}>
-              {toArabicNumber(ayahCount)} آیه
+              {toArabicNumerals(ayahCount)} آیه
             </CenteredText>
           </View>
           <View style={[styles.metaItem, { backgroundColor: `${theme.surahHeaderText}20` }]}>

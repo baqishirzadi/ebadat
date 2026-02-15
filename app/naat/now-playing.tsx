@@ -3,7 +3,7 @@
  */
 
 import React, { useMemo, useState, useCallback, useRef } from 'react';
-import { View, StyleSheet, Text, Pressable, PanResponder, I18nManager } from 'react-native';
+import { View, StyleSheet, Text, Pressable, PanResponder } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -54,8 +54,7 @@ export default function NaatNowPlayingScreen() {
       const effectiveWidth = width || trackWidth;
       if (!effectiveWidth) return 0;
       const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
-      const rawRatio = x / effectiveWidth;
-      return I18nManager.isRTL ? 1 - rawRatio : rawRatio;
+      return x / effectiveWidth;
     },
     [trackWidth],
   );

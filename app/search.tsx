@@ -12,12 +12,7 @@ import { useQuranData } from '@/hooks/useQuranData';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { SearchResult } from '@/types/quran';
 import CenteredText from '@/components/CenteredText';
-
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
+import { toArabicNumerals } from '@/utils/numbers';
 
 type SearchMode = 'arabic' | 'translation';
 
@@ -102,7 +97,7 @@ export default function SearchScreen() {
           </CenteredText>
           <View style={[styles.ayahBadge, { backgroundColor: theme.ayahNumber }]}>
             <CenteredText style={styles.ayahBadgeText}>
-              {toArabicNumber(item.ayahNumber)}
+              {toArabicNumerals(item.ayahNumber)}
             </CenteredText>
           </View>
         </View>
@@ -129,7 +124,7 @@ export default function SearchScreen() {
 
         <View style={styles.resultFooter}>
           <CenteredText style={[styles.surahNumber, { color: theme.textSecondary }]}>
-            سوره {toArabicNumber(item.surahNumber)}
+            سوره {toArabicNumerals(item.surahNumber)}
           </CenteredText>
           <MaterialIcons name="chevron-left" size={20} color={theme.icon} />
         </View>
@@ -248,7 +243,7 @@ export default function SearchScreen() {
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={
             <CenteredText style={[styles.resultsCount, { color: theme.textSecondary }]}>
-              {toArabicNumber(results.length)} نتیجه یافت شد
+              {toArabicNumerals(results.length)} نتیجه یافت شد
             </CenteredText>
           }
           ItemSeparatorComponent={() => <View style={styles.separator} />}

@@ -15,6 +15,7 @@ import { getQuranFontFamily } from '@/hooks/useFonts';
 import { Surah, Ayah } from '@/types/quran';
 import { stripQuranicMarks } from '@/utils/quranText';
 import CenteredText from '@/components/CenteredText';
+import { toArabicNumerals } from '@/utils/numbers';
 
 interface MushafViewProps {
   surahNumber: number;
@@ -24,12 +25,6 @@ interface MushafViewProps {
   currentlyPlaying?: { surah: number; ayah: number } | null;
   onPageChange?: (page: number) => void;
 }
-
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
 
 // Regex pattern to match Bismillah structure: بِسْمِ followed by 3 word groups (الله, الرحمن, الرحيم)
 // Pattern matches: بِسْمِ + [word1] + [word2] + [word3] + space, then captures the actual ayah content
@@ -217,10 +212,10 @@ export function MushafView({
           <View style={[styles.mushafPage, { width: Dimensions.get('window').width }]}>
             <View style={[styles.pageHeader, { borderBottomColor: theme.divider }]}>
               <CenteredText style={[styles.pageNumber, { color: theme.textSecondary }]}>
-                {toArabicNumber(item.page)}
+                {toArabicNumerals(item.page)}
               </CenteredText>
               <CenteredText style={[styles.juzNumber, { color: theme.textSecondary }]}>
-                الجزء {toArabicNumber(item.ayahs[0]?.juz || 1)}
+                الجزء {toArabicNumerals(item.ayahs[0]?.juz || 1)}
               </CenteredText>
             </View>
             <View style={styles.ayahsContainer}>
@@ -249,7 +244,7 @@ export function MushafView({
                   >
                     {stripBismillah(stripQuranicMarks(ayah.text, quranFont), surahNumber, ayah.number)}
                     <CenteredText style={[styles.ayahEndMark, { color: theme.ayahNumber }]}>
-                      {' '}﴿{toArabicNumber(ayah.number)}﴾{' '}
+                      {' '}﴿{toArabicNumerals(ayah.number)}﴾{' '}
                     </CenteredText>
                   </CenteredText>
                 </Pressable>
@@ -294,6 +289,10 @@ export function MushafView({
           viewabilityConfig={viewabilityConfig.current}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
+          initialNumToRender={8}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          removeClippedSubviews={true}
           onScrollToIndexFailed={(info) => {
             setTimeout(() => {
               flatListRef.current?.scrollToIndex({

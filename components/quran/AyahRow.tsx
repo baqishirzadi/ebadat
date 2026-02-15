@@ -17,6 +17,7 @@ import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/ho
 import { Ayah } from '@/types/quran';
 import { stripQuranicMarks } from '@/utils/quranText';
 import CenteredText from '@/components/CenteredText';
+import { toArabicNumerals } from '@/utils/numbers';
 
 interface AyahRowProps {
   ayah: Ayah;
@@ -49,12 +50,6 @@ function stripBismillah(text: string, surahNumber: number, ayahNumber: number): 
   // Return original if pattern doesn't match (safety fallback)
   return text;
 }
-
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
 
 export const AyahRow = memo(function AyahRow({
   ayah,
@@ -131,7 +126,7 @@ export const AyahRow = memo(function AyahRow({
     >
       {/* Ayah Number Badge */}
       <View style={[styles.ayahBadge, { backgroundColor: theme.ayahNumber }]}>
-        <Text style={styles.ayahNumber}>{toArabicNumber(ayah.number)}</Text>
+        <Text style={styles.ayahNumber}>{toArabicNumerals(ayah.number)}</Text>
       </View>
 
       {/* Arabic Text - CENTERED (Bismillah stripped from ayah 1 since it's in header) */}
@@ -192,7 +187,7 @@ export const AyahRow = memo(function AyahRow({
 
         <View style={styles.metaInfo}>
           <Text style={[styles.metaText, { color: theme.textSecondary }]}>
-            صفحه {toArabicNumber(ayah.page)} • جز {toArabicNumber(ayah.juz)}
+            صفحه {toArabicNumerals(ayah.page)} • جز {toArabicNumerals(ayah.juz)}
           </Text>
         </View>
       </View>

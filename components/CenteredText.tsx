@@ -21,6 +21,7 @@ export function CenteredText(props: TextProps) {
 const styles = StyleSheet.create({
   centered: {
     textAlign: 'center',
+    writingDirection: 'rtl',
     // Note: width: '100%' was removed because it breaks flex layouts
   },
 });

@@ -27,6 +27,7 @@ import {
   PLAYBACK_SPEEDS,
   REPEAT_MODES,
 } from '@/utils/quranAudio';
+import { toArabicNumerals, toArabicNumeralsString } from '@/utils/numbers';
 
 interface AudioPlayerProps {
   surahNumber: number;
@@ -36,18 +37,13 @@ interface AudioPlayerProps {
   onClose?: () => void;
 }
 
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
-
 // Format time in mm:ss with Arabic numerals
 const formatTime = (milliseconds: number): string => {
   const totalSeconds = Math.floor(milliseconds / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-  return `${toArabicNumber(minutes)}:${seconds.toString().padStart(2, '0').split('').map(d => toArabicNumber(parseInt(d))).join('')}`;
+  const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  return toArabicNumeralsString(timeStr);
 };
 
 export function AudioPlayer({
@@ -230,7 +226,7 @@ export function AudioPlayer({
           </Pressable>
           
           <CenteredText style={[styles.ayahInfo, { color: theme.textSecondary }]}>
-            آیه {toArabicNumber(ayahNumber)}
+            آیه {toArabicNumerals(ayahNumber)}
           </CenteredText>
           
           <CenteredText style={[styles.timeText, { color: theme.textSecondary }]}>

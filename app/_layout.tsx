@@ -110,7 +110,7 @@ function RootLayoutNav() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: theme.background },
-          animation: 'slide_from_left', // RTL animation
+          animation: I18nManager.isRTL ? 'slide_from_right' : 'slide_from_left',
         }}
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

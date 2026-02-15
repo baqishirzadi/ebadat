@@ -18,14 +18,9 @@ import { useApp } from '@/context/AppContext';
 import { useStats } from '@/context/StatsContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import { toArabicNumerals } from '@/utils/numbers';
 
 const { width } = Dimensions.get('window');
-
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
 
 // Common dhikr options
 const DHIKR_OPTIONS = [
@@ -132,7 +127,7 @@ export default function CounterScreen() {
             >
               <CenteredText style={[styles.optionArabic, { color: theme.text }]}>{dhikr.arabic}</CenteredText>
               <CenteredText style={[styles.optionTarget, { color: theme.textSecondary }]}>
-                هدف: {toArabicNumber(dhikr.target)}
+                هدف: {toArabicNumerals(dhikr.target)}
               </CenteredText>
             </Pressable>
           ))}
@@ -142,14 +137,14 @@ export default function CounterScreen() {
       {/* Counter Display */}
       <View style={styles.counterSection}>
         <Animated.Text style={[styles.counterText, { color: theme.text }, counterStyle]}>
-          {toArabicNumber(count)}
+          {toArabicNumerals(count)}
         </Animated.Text>
         <CenteredText style={[styles.targetText, { color: theme.textSecondary }]}>
-          / {toArabicNumber(selectedDhikr.target)}
+          / {toArabicNumerals(selectedDhikr.target)}
         </CenteredText>
         {rounds > 0 && (
           <CenteredText style={[styles.roundsText, { color: theme.tint }]}>
-            {toArabicNumber(rounds)} دور کامل
+            {toArabicNumerals(rounds)} دور کامل
           </CenteredText>
         )}
       </View>

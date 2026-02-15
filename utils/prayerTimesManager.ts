@@ -71,20 +71,16 @@ function format12Hour(date: Date): string {
   return `${hours}:${minutesStr} ${ampm}`;
 }
 
-// Convert to Arabic/Persian numerals
-function toArabicNumerals(str: string): string {
-  const arabicNumerals = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-  return str.replace(/[0-9]/g, d => arabicNumerals[parseInt(d)]);
-}
+import { toArabicNumeralsString } from './numbers';
 
-// Fallback times for Kabul (in case calculation fails)
+// Fallback times for Kabul (Arabic-Indic numerals)
 const FALLBACK_TIMES: PrayerTimesResult = {
-  fajr: '۵:۳۰ AM',
-  sunrise: '۷:۰۰ AM',
-  dhuhr: '۱۲:۱۵ PM',
-  asr: '۳:۴۵ PM',
-  maghrib: '۶:۰۰ PM',
-  isha: '۷:۳۰ PM',
+  fajr: '٥:٣٠ AM',
+  sunrise: '٧:٠٠ AM',
+  dhuhr: '١٢:١٥ PM',
+  asr: '٣:٤٥ PM',
+  maghrib: '٦:٠٠ PM',
+  isha: '٧:٣٠ PM',
   date: new Date().toLocaleDateString('fa-AF'),
 };
 
@@ -137,12 +133,12 @@ export function calculatePrayerTimesWithAdhan(
     const prayerTimes = new PrayerTimes(coordinates, date, params);
     
     return {
-      fajr: toArabicNumerals(format12Hour(prayerTimes.fajr)),
-      sunrise: toArabicNumerals(format12Hour(prayerTimes.sunrise)),
-      dhuhr: toArabicNumerals(format12Hour(prayerTimes.dhuhr)),
-      asr: toArabicNumerals(format12Hour(prayerTimes.asr)), // Hanafi Asr (later)
-      maghrib: toArabicNumerals(format12Hour(prayerTimes.maghrib)),
-      isha: toArabicNumerals(format12Hour(prayerTimes.isha)),
+      fajr: toArabicNumeralsString(format12Hour(prayerTimes.fajr)),
+      sunrise: toArabicNumeralsString(format12Hour(prayerTimes.sunrise)),
+      dhuhr: toArabicNumeralsString(format12Hour(prayerTimes.dhuhr)),
+      asr: toArabicNumeralsString(format12Hour(prayerTimes.asr)), // Hanafi Asr (later)
+      maghrib: toArabicNumeralsString(format12Hour(prayerTimes.maghrib)),
+      isha: toArabicNumeralsString(format12Hour(prayerTimes.isha)),
       date: date.toLocaleDateString('fa-AF'),
     };
   } catch (error) {

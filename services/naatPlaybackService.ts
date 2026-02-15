@@ -55,13 +55,27 @@ export async function NaatPlaybackService() {
       if (__DEV__) console.warn('RemoteJumpBackward:', err);
     }
   });
-  TrackPlayer.addEventListener(Event.RemoteNext, () => {
-    // Naat has no queue - no-op or could add "next naat" in future
+  TrackPlayer.addEventListener(Event.RemoteNext, async () => {
+    try {
+      await TrackPlayer.skipToNext();
+    } catch (err) {
+      if (__DEV__) console.warn('RemoteNext:', err);
+    }
   });
   TrackPlayer.addEventListener(Event.RemotePrevious, async () => {
     try {
-      await TrackPlayer.seekTo(0);
+      const progress = await TrackPlayer.getProgress();
+      if (progress.position > 3) {
+        await TrackPlayer.seekTo(0);
+        return;
+      }
+      await TrackPlayer.skipToPrevious();
     } catch (err) {
+      try {
+        await TrackPlayer.seekTo(0);
+      } catch {
+        // ignore fallback failure
+      }
       if (__DEV__) console.warn('RemotePrevious:', err);
     }
   });

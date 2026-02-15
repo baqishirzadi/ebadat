@@ -26,12 +26,7 @@ import {
   ABOUT_CREATOR_PASHTO_PARAGRAPHS,
   ABOUT_CREATOR_PASHTO_TITLE,
 } from '@/constants/aboutCreatorContent';
-
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
+import { toArabicNumerals } from '@/utils/numbers';
 
 // Weekday names in Dari (JS getDay: 0=Sun, 1=Mon, ..., 6=Sat)
 const WEEKDAY_DARI = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
@@ -136,7 +131,7 @@ export default function MoreScreen() {
                 <MaterialIcons name={stat.icon as any} size={24} color={stat.color} />
               </View>
               <CenteredText style={[styles.statValue, { color: theme.text }]}>
-                {toArabicNumber(stat.value)}
+                {toArabicNumerals(stat.value)}
               </CenteredText>
               <CenteredText style={[styles.statLabel, { color: theme.textSecondary }]}>
                 {stat.label}
@@ -155,21 +150,21 @@ export default function MoreScreen() {
           <View style={styles.todayRow}>
             <CenteredText style={[styles.todayLabel, { color: theme.text }]}>آیات خوانده شده</CenteredText>
             <CenteredText style={[styles.todayValue, { color: theme.tint }]}>
-              {toArabicNumber(stats.daily.ayahsRead)}
+              {toArabicNumerals(stats.daily.ayahsRead)}
             </CenteredText>
           </View>
           <View style={[styles.todayDivider, { backgroundColor: theme.divider }]} />
           <View style={styles.todayRow}>
             <CenteredText style={[styles.todayLabel, { color: theme.text }]}>اذکار</CenteredText>
             <CenteredText style={[styles.todayValue, { color: theme.tint }]}>
-              {toArabicNumber(stats.daily.dhikrCount)}
+              {toArabicNumerals(stats.daily.dhikrCount)}
             </CenteredText>
           </View>
           <View style={[styles.todayDivider, { backgroundColor: theme.divider }]} />
           <View style={styles.todayRow}>
             <CenteredText style={[styles.todayLabel, { color: theme.text }]}>دقیقه قرآن</CenteredText>
             <CenteredText style={[styles.todayValue, { color: theme.tint }]}>
-              {toArabicNumber(stats.daily.quranMinutes)}
+              {toArabicNumerals(stats.daily.quranMinutes)}
             </CenteredText>
           </View>
         </View>
@@ -214,7 +209,7 @@ export default function MoreScreen() {
                   )}
                   {/* Date badge on left (last in RTL row so appears on left) */}
                   <View style={[styles.upcomingDate, { backgroundColor: theme.tint }]}>
-                    <CenteredText style={styles.upcomingDay}>{toArabicNumber(day.day)}</CenteredText>
+                    <CenteredText style={styles.upcomingDay}>{toArabicNumerals(day.day)}</CenteredText>
                     <CenteredText style={styles.upcomingMonth} numberOfLines={1}>
                       {HIJRI_MONTHS[day.month - 1]?.arabic ?? ''}
                     </CenteredText>
@@ -231,7 +226,7 @@ export default function MoreScreen() {
         <View style={styles.khatmInfo}>
           <CenteredText style={[styles.khatmLabel, { color: theme.textSecondary }]}>ختم قرآن</CenteredText>
           <CenteredText style={[styles.khatmValue, { color: theme.text }]}>
-            {toArabicNumber(stats.overall.khatmCount)} بار
+            {toArabicNumerals(stats.overall.khatmCount)} بار
           </CenteredText>
         </View>
         <MaterialIcons name="auto-stories" size={32} color={theme.tint} />

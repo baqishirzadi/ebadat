@@ -14,12 +14,7 @@ import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/th
 import { stripQuranicMarks } from '@/utils/quranText';
 import { Bookmark } from '@/types/quran';
 import CenteredText from '@/components/CenteredText';
-
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
+import { toArabicNumerals } from '@/utils/numbers';
 
 // Format date
 const formatDate = (timestamp: number): string => {
@@ -49,7 +44,7 @@ export default function BookmarksScreen() {
       const surah = getSurah(bookmark.surahNumber);
       Alert.alert(
         'حذف نشانه',
-        `آیا می‌خواهید نشانه سوره ${surah?.name || ''} آیه ${toArabicNumber(bookmark.ayahNumber)} را حذف کنید؟`,
+        `آیا می‌خواهید نشانه سوره ${surah?.name || ''} آیه ${toArabicNumerals(bookmark.ayahNumber)} را حذف کنید؟`,
         [
           { text: 'لغو', style: 'cancel' },
           {
@@ -88,7 +83,7 @@ export default function BookmarksScreen() {
             <View style={styles.headerRow}>
               <CenteredText style={[styles.surahName, { color: theme.text }]}>{surah.name}</CenteredText>
               <CenteredText style={[styles.ayahNumber, { color: theme.ayahNumber }]}>
-                آیه {toArabicNumber(item.ayahNumber)}
+                آیه {toArabicNumerals(item.ayahNumber)}
               </CenteredText>
             </View>
 
@@ -104,7 +99,7 @@ export default function BookmarksScreen() {
                 {formatDate(item.timestamp)}
               </CenteredText>
               <CenteredText style={[styles.pageText, { color: theme.textSecondary }]}>
-                صفحه {toArabicNumber(item.page)}
+                صفحه {toArabicNumerals(item.page)}
               </CenteredText>
             </View>
           </View>
@@ -137,7 +132,7 @@ export default function BookmarksScreen() {
         <CenteredText style={styles.headerTitle}>نشانه‌ها</CenteredText>
         <CenteredText style={styles.headerSubtitle}>
           {bookmarks.length > 0
-            ? `${toArabicNumber(bookmarks.length)} نشانه ذخیره شده`
+            ? `${toArabicNumerals(bookmarks.length)} نشانه ذخیره شده`
             : 'هیچ نشانه‌ای ذخیره نشده'}
         </CenteredText>
       </LinearGradient>

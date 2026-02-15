@@ -16,6 +16,7 @@ import {
   AFGHAN_CITIES,
 } from '@/utils/prayerTimes';
 import { Coordinates, CalculationMethod, PrayerTimes as AdhanPrayerTimes, Madhab } from 'adhan';
+import { toArabicNumeralsString } from './numbers';
 
 export interface PrayerTimesDisplay {
   fajr: string;
@@ -126,19 +127,14 @@ function format12HourInTimeZone(date: Date, timeZone?: string): string {
   }
 }
 
-function toArabicNumerals(str: string): string {
-  const arabicNumerals = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-  return str.replace(/[0-9]/g, (d) => arabicNumerals[parseInt(d, 10)]);
-}
-
 function toDisplay(times: PrayerTimes, date: Date, timeZone?: string): PrayerTimesDisplay {
   return {
-    fajr: toArabicNumerals(format12HourInTimeZone(times.fajr, timeZone)),
-    sunrise: toArabicNumerals(format12HourInTimeZone(times.sunrise, timeZone)),
-    dhuhr: toArabicNumerals(format12HourInTimeZone(times.dhuhr, timeZone)),
-    asr: toArabicNumerals(format12HourInTimeZone(times.asr, timeZone)),
-    maghrib: toArabicNumerals(format12HourInTimeZone(times.maghrib, timeZone)),
-    isha: toArabicNumerals(format12HourInTimeZone(times.isha, timeZone)),
+    fajr: toArabicNumeralsString(format12HourInTimeZone(times.fajr, timeZone)),
+    sunrise: toArabicNumeralsString(format12HourInTimeZone(times.sunrise, timeZone)),
+    dhuhr: toArabicNumeralsString(format12HourInTimeZone(times.dhuhr, timeZone)),
+    asr: toArabicNumeralsString(format12HourInTimeZone(times.asr, timeZone)),
+    maghrib: toArabicNumeralsString(format12HourInTimeZone(times.maghrib, timeZone)),
+    isha: toArabicNumeralsString(format12HourInTimeZone(times.isha, timeZone)),
     date: date.toLocaleDateString('fa-AF'),
   };
 }

@@ -17,12 +17,7 @@ import {
   RAMADAN_SMALL_GOALS,
   RAMADAN_SUHOOR_IFTAAR_TIPS,
 } from '@/constants/ramadanContent';
-
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
+import { toArabicNumerals } from '@/utils/numbers';
 
 // Daily Quran portions for completing in 30 days
 const DAILY_PORTIONS = [
@@ -148,7 +143,7 @@ export default function RamadanScreen() {
           <View style={[styles.progressFill, { width: `${progress}%` }]} />
         </View>
         <CenteredText style={styles.progressText}>
-          {toArabicNumber(completedDays.length)} از ۳۰ جز
+          {toArabicNumerals(completedDays.length)} از ۳۰ جز
         </CenteredText>
       </View>
 
@@ -175,7 +170,7 @@ export default function RamadanScreen() {
                   styles.dayButtonText,
                   { color: isCompleted ? theme.tint : theme.text },
                 ]}>
-                  {toArabicNumber(day)}
+                  {toArabicNumerals(day)}
                 </CenteredText>
                 {isCompleted && (
                   <MaterialIcons name="check" size={14} color={theme.tint} />
@@ -189,14 +184,14 @@ export default function RamadanScreen() {
       {/* Selected Day Content */}
       <View style={styles.section}>
         <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          روز {toArabicNumber(selectedDay)} رمضان
+          روز {toArabicNumerals(selectedDay)} رمضان
         </CenteredText>
 
         {/* Quran Portion */}
         <View style={[styles.portionCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
           <View style={styles.portionHeader}>
             <View style={[styles.juzBadge, { backgroundColor: theme.tint }]}>
-              <CenteredText style={styles.juzText}>جز {toArabicNumber(portion.juz)}</CenteredText>
+              <CenteredText style={styles.juzText}>جز {toArabicNumerals(portion.juz)}</CenteredText>
             </View>
             <Pressable
               onPress={() => toggleDay(selectedDay)}
@@ -234,7 +229,7 @@ export default function RamadanScreen() {
         {/* Daily Dua */}
         <View style={[styles.duaCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
           <CenteredText style={[styles.duaTitle, { color: theme.textSecondary }]}>
-            دعای روز {toArabicNumber(selectedDay)}
+            دعای روز {toArabicNumerals(selectedDay)}
           </CenteredText>
           <CenteredText style={[styles.duaArabic, { color: theme.arabicText }]}>
             {dua.arabic}

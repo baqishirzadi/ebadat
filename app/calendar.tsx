@@ -31,16 +31,11 @@ import {
 } from '@/utils/calendarNotifications';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import { toArabicNumerals } from '@/utils/numbers';
 
 // Theme colors for each calendar type
 const QAMARI_COLOR = '#16a34a';
 const SHAMSI_COLOR = '#D4AF37';
-
-// Arabic number conversion
-const toArabicNumber = (num: number): string => {
-  const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-  return num.toString().split('').map(d => arabicNumerals[parseInt(d)]).join('');
-};
 
 type CalendarMode = 'qamari' | 'shamsi';
 
@@ -170,8 +165,8 @@ export default function CalendarScreen() {
         </CenteredText>
         <CenteredText style={styles.todayYear}>
           {mode === 'qamari'
-            ? `${toArabicNumber(todayHijri.year)} هجری قمری`
-            : `${toArabicNumber(todayShamsi.year)} هجری شمسی`}
+            ? `${toArabicNumerals(todayHijri.year)} هجری قمری`
+            : `${toArabicNumerals(todayShamsi.year)} هجری شمسی`}
         </CenteredText>
         <CenteredText style={styles.todaySecondary}>
           {mode === 'qamari'
@@ -285,7 +280,7 @@ export default function CalendarScreen() {
                             showSpecialHighlight && !isTodayCell && { color: accentColor },
                           ]}
                         >
-                          {toArabicNumber(dayNum)}
+                          {toArabicNumerals(dayNum)}
                         </CenteredText>
                         {showSpecialHighlight && (
                           <View style={[styles.dayDot, { backgroundColor: isTodayCell ? '#fff' : accentColor }]} />
@@ -342,7 +337,7 @@ export default function CalendarScreen() {
               style={[styles.specialDayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
             >
               <View style={[styles.specialDayDate, { backgroundColor: QAMARI_COLOR }]}>
-                <CenteredText style={styles.specialDayNum}>{toArabicNumber(day.day)}</CenteredText>
+                <CenteredText style={styles.specialDayNum}>{toArabicNumerals(day.day)}</CenteredText>
               </View>
               <View style={styles.specialDayInfo}>
                 <CenteredText style={[styles.specialDayName, { color: theme.text }]}>
