@@ -11,6 +11,7 @@ import type { PashtoFontFamily } from '@/types/quran';
 
 interface Step {
   number: number;
+  takbir?: number;
   title_dari?: string;
   title_pashto?: string;
   description_dari?: string;
@@ -35,54 +36,57 @@ export function PrayerStepGuide({
 
   return (
     <View style={styles.container}>
-      {steps.map((step, index) => (
-        <View
-          key={step.number || index}
-          style={[styles.stepCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
-        >
-          {/* Step Number */}
-          <View style={[styles.stepNumber, { backgroundColor: color }]}>
-            <Text style={styles.stepNumberText}>{step.number}</Text>
-          </View>
+      {steps.map((step, index) => {
+        const stepNumber = step.number ?? step.takbir ?? index + 1;
+        return (
+          <View
+            key={stepNumber}
+            style={[styles.stepCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+          >
+            {/* Step Number */}
+            <View style={[styles.stepNumber, { backgroundColor: color }]}>
+              <Text style={styles.stepNumberText}>{stepNumber}</Text>
+            </View>
 
-          {/* Content */}
-          <View style={styles.stepContent}>
-            {/* Title */}
-            {(step.title_dari || step.dari) && (
-              <Text style={[styles.stepTitle, { color: theme.text }]}>
-                {step.title_dari || step.dari}
-              </Text>
-            )}
-            {showBothLanguages && (step.title_pashto || step.pashto) && (
-              <Text style={[styles.stepTitlePashto, { color: theme.textSecondary, fontFamily: pashtoFontFamily }]}>
-                {step.title_pashto || step.pashto}
-              </Text>
-            )}
+            {/* Content */}
+            <View style={styles.stepContent}>
+              {/* Title */}
+              {(step.title_dari || step.dari) && (
+                <Text style={[styles.stepTitle, { color: theme.text }]}>
+                  {step.title_dari || step.dari}
+                </Text>
+              )}
+              {showBothLanguages && (step.title_pashto || step.pashto) && (
+                <Text style={[styles.stepTitlePashto, { color: theme.textSecondary, fontFamily: pashtoFontFamily }]}>
+                  {step.title_pashto || step.pashto}
+                </Text>
+              )}
 
-            {/* Description */}
-            {step.description_dari && (
-              <View style={styles.descriptionBlock}>
-                <View style={[styles.langIndicator, { backgroundColor: theme.tint }]}>
-                  <Text style={styles.langIndicatorText}>دری</Text>
+              {/* Description */}
+              {step.description_dari && (
+                <View style={styles.descriptionBlock}>
+                  <View style={[styles.langIndicator, { backgroundColor: theme.tint }]}>
+                    <Text style={styles.langIndicatorText}>دری</Text>
+                  </View>
+                  <Text style={[styles.descriptionText, { color: theme.text }]}>
+                    {step.description_dari}
+                  </Text>
                 </View>
-                <Text style={[styles.descriptionText, { color: theme.text }]}>
-                  {step.description_dari}
-                </Text>
-              </View>
-            )}
-            {showBothLanguages && step.description_pashto && (
-              <View style={styles.descriptionBlock}>
-                <View style={[styles.langIndicator, { backgroundColor: '#FF7043' }]}>
-                  <Text style={styles.langIndicatorText}>پښتو</Text>
+              )}
+              {showBothLanguages && step.description_pashto && (
+                <View style={styles.descriptionBlock}>
+                  <View style={[styles.langIndicator, { backgroundColor: '#FF7043' }]}>
+                    <Text style={styles.langIndicatorText}>پښتو</Text>
+                  </View>
+                  <Text style={[styles.descriptionText, { color: theme.text, fontFamily: pashtoFontFamily, lineHeight: 42 }]}>
+                    {step.description_pashto}
+                  </Text>
                 </View>
-                <Text style={[styles.descriptionText, { color: theme.text, fontFamily: pashtoFontFamily, lineHeight: 42 }]}>
-                  {step.description_pashto}
-                </Text>
-              </View>
-            )}
+              )}
+            </View>
           </View>
-        </View>
-      ))}
+        );
+      })}
     </View>
   );
 }
