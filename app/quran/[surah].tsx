@@ -130,8 +130,7 @@ export default function QuranReaderScreen() {
             fontSize: 22,
             textAlign: 'center',
           }}
-          numberOfLines={1}
-          ellipsizeMode="tail"
+          numberOfLines={2}
         >
           {surahName}
         </Text>
@@ -140,7 +139,7 @@ export default function QuranReaderScreen() {
       headerTintColor: '#fff',
       headerTitleContainerStyle: {
         flex: 1,
-        minWidth: 120,
+        minWidth: 160,
         justifyContent: 'center',
       },
       headerLeftContainerStyle: { minWidth: 48 },

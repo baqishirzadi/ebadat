@@ -78,8 +78,7 @@ const SurahItem = React.memo(function SurahItem({
         </Text>
         <Text
           style={[styles.dariName, { color: theme.textSecondary }]}
-          numberOfLines={1}
-          ellipsizeMode="tail"
+          numberOfLines={2}
         >
           {surah.dari} ({surah.meaning})
         </Text>

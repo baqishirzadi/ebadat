@@ -131,6 +131,62 @@
           "motionPermission": "برای قطب‌نمای قبله به حسگرهای دستگاه نیاز داریم"
         }
       ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/QuranFont.ttf",
+            "./assets/fonts/ScheherazadeNew-Regular.ttf",
+            "./assets/fonts/ScheherazadeNew-Bold.ttf",
+            "./assets/fonts/Amiri-Regular.ttf",
+            "./assets/fonts/Amiri-Bold.ttf",
+            "./assets/fonts/NotoNaskhArabic-Regular.ttf",
+            "./assets/fonts/Vazirmatn-Regular.ttf",
+            "./assets/fonts/Vazirmatn-Bold.ttf",
+            "./assets/fonts/NotoNastaliqUrdu-Regular.ttf"
+          ],
+          "android": {
+            "fonts": [
+              {
+                "fontFamily": "QuranFont",
+                "fontDefinitions": [{ "path": "./assets/fonts/QuranFont.ttf", "weight": 400 }]
+              },
+              {
+                "fontFamily": "ScheherazadeNew",
+                "fontDefinitions": [{ "path": "./assets/fonts/ScheherazadeNew-Regular.ttf", "weight": 400 }]
+              },
+              {
+                "fontFamily": "ScheherazadeNew-Bold",
+                "fontDefinitions": [{ "path": "./assets/fonts/ScheherazadeNew-Bold.ttf", "weight": 700 }]
+              },
+              {
+                "fontFamily": "Amiri",
+                "fontDefinitions": [{ "path": "./assets/fonts/Amiri-Regular.ttf", "weight": 400 }]
+              },
+              {
+                "fontFamily": "Amiri-Bold",
+                "fontDefinitions": [{ "path": "./assets/fonts/Amiri-Bold.ttf", "weight": 700 }]
+              },
+              {
+                "fontFamily": "NotoNaskhArabic",
+                "fontDefinitions": [{ "path": "./assets/fonts/NotoNaskhArabic-Regular.ttf", "weight": 400 }]
+              },
+              {
+                "fontFamily": "Vazirmatn",
+                "fontDefinitions": [{ "path": "./assets/fonts/Vazirmatn-Regular.ttf", "weight": 400 }]
+              },
+              {
+                "fontFamily": "Vazirmatn-Bold",
+                "fontDefinitions": [{ "path": "./assets/fonts/Vazirmatn-Bold.ttf", "weight": 700 }]
+              },
+              {
+                "fontFamily": "NotoNastaliqUrdu",
+                "fontDefinitions": [{ "path": "./assets/fonts/NotoNastaliqUrdu-Regular.ttf", "weight": 400 }]
+              }
+            ]
+          }
+        }
+      ],
       "expo-asset"
     ],
     "experiments": {
