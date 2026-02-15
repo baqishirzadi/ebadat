@@ -142,35 +142,33 @@ function migrateVoiceValue(oldVoice: string): AdhanVoice {
  * Migrate preferences to new format
  */
 function migratePreferences(preferences: any): AdhanPreferences {
+  const migratePrayerSettings = (prayer: PrayerName): PrayerAdhanSettings => {
+    const incomingPrayer = preferences?.[prayer] || {};
+    return {
+      enabled:
+        typeof incomingPrayer.enabled === 'boolean'
+          ? incomingPrayer.enabled
+          : DEFAULT_ADHAN_PREFERENCES[prayer].enabled,
+      playSound:
+        typeof incomingPrayer.playSound === 'boolean'
+          ? incomingPrayer.playSound
+          : DEFAULT_ADHAN_PREFERENCES[prayer].playSound,
+      selectedVoice: migrateVoiceValue(
+        incomingPrayer.selectedVoice || DEFAULT_ADHAN_PREFERENCES[prayer].selectedVoice
+      ),
+    };
+  };
+
   const migrated: AdhanPreferences = {
     ...DEFAULT_ADHAN_PREFERENCES,
     ...preferences,
     globalVoice: migrateVoiceValue(preferences.globalVoice || 'barakatullah'),
+    fajr: migratePrayerSettings('fajr'),
+    dhuhr: migratePrayerSettings('dhuhr'),
+    asr: migratePrayerSettings('asr'),
+    maghrib: migratePrayerSettings('maghrib'),
+    isha: migratePrayerSettings('isha'),
   };
-
-  // Migrate each prayer's voice
-  const prayers: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-  for (const prayer of prayers) {
-    if (preferences[prayer]) {
-      migrated[prayer] = {
-        ...DEFAULT_ADHAN_PREFERENCES[prayer],
-        ...preferences[prayer],
-        selectedVoice: migrateVoiceValue(preferences[prayer].selectedVoice || 'barakatullah'),
-      };
-    }
-  }
-
-  // Enforce Fajr and Maghrib with sound; Dhuhr/Asr/Isha enabled but silent
-  migrated.fajr.enabled = true;
-  migrated.fajr.playSound = true;
-  migrated.maghrib.enabled = true;
-  migrated.maghrib.playSound = true;
-  migrated.dhuhr.enabled = true;
-  migrated.dhuhr.playSound = false;
-  migrated.asr.enabled = true;
-  migrated.asr.playSound = false;
-  migrated.isha.enabled = true;
-  migrated.isha.playSound = false;
 
   return migrated;
 }

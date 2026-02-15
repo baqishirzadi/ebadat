@@ -88,6 +88,13 @@ const STORAGE_KEYS = {
   SETTINGS: '@ebadat/prayer_settings',
 };
 
+const PRAYER_ROLLING_DAYS_ANDROID = 10;
+const PRAYER_ROLLING_DAYS_IOS = 7;
+const PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER = 5;
+const JUMMAH_WEEKS_ANDROID = 12;
+const JUMMAH_WEEKS_IOS = 12;
+const JUMMAH_WEEKS_IOS_WITH_REMINDER = 10;
+
 // Settings
 interface PrayerSettings {
   calculationMethod: keyof typeof CalculationMethods;
@@ -203,6 +210,7 @@ interface PrayerContextType {
   detectLocation: () => Promise<void>;
   scheduleNotifications: () => Promise<void>;
   scheduleAdhanNotifications: () => Promise<void>;
+  openNotificationSettings: () => Promise<void>;
 }
 
 const PrayerContext = createContext<PrayerContextType | undefined>(undefined);
@@ -334,14 +342,17 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Schedule Adhan notifications when prayer times or preferences change
+  // Schedule prayer notifications when prayer times or preferences change
   useEffect(() => {
-    if (state.prayerTimes && state.adhanPreferences.masterEnabled) {
-      scheduleAdhanNotifications().catch((error) => {
-        console.warn('Failed to schedule Adhan notifications:', error);
+    if (state.prayerTimes) {
+      Promise.all([
+        scheduleAdhanNotificationsRef.current(),
+        scheduleJummahNotificationsRef.current(),
+      ]).catch((error) => {
+        console.warn('Failed to schedule prayer/Jummah notifications:', error);
       });
     }
-  }, [state.prayerTimes, state.adhanPreferences, scheduleAdhanNotifications]);
+  }, [state.prayerTimes, state.adhanPreferences]);
 
   // Schedule calendar (Qamari) notifications when app has loaded
   useEffect(() => {
@@ -407,6 +418,17 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         name: 'مناسبت‌های قمری',
         importance: NotificationsModule.AndroidImportance.DEFAULT,
         vibrationPattern: [0, 100],
+        enableVibrate: true,
+        showBadge: true,
+      });
+
+      // Channel for weekly Jummah reminder
+      await NotificationsModule.setNotificationChannelAsync('jummah-reminder', {
+        name: 'یادآوری نماز جمعه',
+        importance: NotificationsModule.AndroidImportance.HIGH,
+        vibrationPattern: [0, 180, 120, 180],
+        lightColor: '#1a4d3e',
+        sound: undefined,
         enableVibrate: true,
         showBadge: true,
       });
@@ -524,6 +546,25 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   }, [state.location, state.settings.selectedCity]);
 
   const lastScheduleRef = useRef<{ dateKey: string; locationKey: string } | null>(null);
+  const scheduleAdhanNotificationsRef = useRef<() => Promise<void>>(async () => {});
+  const scheduleJummahNotificationsRef = useRef<() => Promise<void>>(async () => {});
+
+  const cancelScheduledNotificationsByPredicate = useCallback(
+    async (
+      NotificationsModule: typeof import('expo-notifications'),
+      shouldCancel: (notification: any, identifier: string) => boolean
+    ) => {
+      const scheduled = await NotificationsModule.getAllScheduledNotificationsAsync();
+      for (const notification of scheduled) {
+        const identifier = (notification as any)?.identifier || '';
+        if (!identifier) continue;
+        if (shouldCancel(notification, identifier)) {
+          await NotificationsModule.cancelScheduledNotificationAsync(identifier);
+        }
+      }
+    },
+    []
+  );
 
   function updateQibla() {
     const qibla = calculateQibla(state.location);
@@ -555,7 +596,10 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         midnightTimeout = setTimeout(async () => {
           refreshPrayerTimes();
           try {
-            await scheduleAdhanNotifications();
+            await Promise.all([
+              scheduleAdhanNotificationsRef.current(),
+              scheduleJummahNotificationsRef.current(),
+            ]);
           } catch (error) {
             console.warn('Failed to reschedule at midnight:', error);
           }
@@ -574,7 +618,10 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
       if (!last || last.dateKey !== currentKey || last.locationKey !== locationKey) {
         refreshPrayerTimes();
         try {
-          await scheduleAdhanNotifications();
+          await Promise.all([
+            scheduleAdhanNotificationsRef.current(),
+            scheduleJummahNotificationsRef.current(),
+          ]);
         } catch (error) {
           console.warn('Failed to reschedule on resume:', error);
         }
@@ -585,7 +632,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
       if (midnightTimeout) clearTimeout(midnightTimeout);
       subscription.remove();
     };
-  }, [getDateKey, getLocationKey, refreshPrayerTimes, scheduleAdhanNotifications]);
+  }, [getDateKey, getLocationKey, refreshPrayerTimes]);
 
   const setCity = useCallback(async (cityKey: string) => {
     const location = AFGHAN_CITIES[cityKey];
@@ -621,9 +668,12 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     // Reschedule notifications with new preferences
     if (state.prayerTimes) {
       try {
-        await scheduleAdhanNotifications();
+        await Promise.all([
+          scheduleAdhanNotificationsRef.current(),
+          scheduleJummahNotificationsRef.current(),
+        ]);
       } catch (error) {
-        console.warn('Failed to reschedule Adhan notifications:', error);
+        console.warn('Failed to reschedule prayer/Jummah notifications:', error);
       }
     }
   }, [state.adhanPreferences, state.prayerTimes]);
@@ -674,18 +724,12 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     }
     
     try {
-      const { status } = await NotificationsModule.getPermissionsAsync();
+      const permissionStatus = await NotificationsModule.getPermissionsAsync();
+      const status = permissionStatus?.status;
       if (status === 'granted') return 'granted';
       if (status === 'denied') {
-        // Check if it's blocked (can't request again)
-        // On Android, if canAskAgain is false, permission is blocked
-        try {
-          const canAskAgain = await NotificationsModule.canAskAgainAsync?.() ?? true;
-          return canAskAgain ? 'denied' : 'blocked';
-        } catch {
-          // If canAskAgainAsync is not available or fails, assume denied (not blocked)
-          return 'denied';
-        }
+        const canAskAgain = (permissionStatus as any)?.canAskAgain;
+        return canAskAgain === false ? 'blocked' : 'denied';
       }
       return 'undetermined';
     } catch (error) {
@@ -826,95 +870,26 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     }
   }, [state.settings.notificationsEnabled, state.settings.notificationMinutesBefore, state.prayerTimes]);
 
-  // Enhanced Adhan notification scheduling
+  // Enhanced Adhan notification scheduling (rolling window)
   const scheduleAdhanNotifications = useCallback(async () => {
     const NotificationsModule = await loadNotificationsIfAvailable();
     if (!NotificationsModule) {
       console.log('Skipping notification scheduling: Expo Go, web platform or Notifications unavailable');
       return;
     }
-    
-    if (!state.adhanPreferences.masterEnabled) {
-      console.log('Skipping notification scheduling: master toggle is disabled');
-      return;
-    }
+
     if (!state.prayerTimes) {
       console.log('Skipping notification scheduling: prayer times not available');
       return;
     }
 
     try {
-      console.log('Starting Adhan notification scheduling...');
-      
-      // Ensure Android channels exist before scheduling (critical for sound when app is killed)
-      if (Platform.OS === 'android') {
-        await configureAndroidNotificationChannels(NotificationsModule);
-      }
-      
-      // Check current permission status
-      const currentStatus = await checkNotificationPermission();
-      dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: currentStatus });
-      console.log('Current notification permission status:', currentStatus);
-      
-      // If blocked, show error with option to open settings
-      if (currentStatus === 'blocked') {
-        console.warn('Notification permission is blocked');
-        dispatch({ 
-          type: 'SET_ERROR', 
-          payload: 'اعلان‌ها بلاک شده‌اند. لطفاً در تنظیمات دستگاه اجازه دهید.' 
-        });
-        return;
-      }
-      
-      // Cancel only Adhan-related notifications
-      try {
-        const scheduled = await NotificationsModule.getAllScheduledNotificationsAsync();
-        for (const notification of scheduled) {
-          const identifier = (notification as any)?.identifier || '';
-          const dataType = (notification as any)?.content?.data?.type;
-          if (identifier.startsWith('adhan-') || dataType === 'adhan' || dataType === 'reminder') {
-            await NotificationsModule.cancelScheduledNotificationAsync(identifier);
-          }
-        }
-        console.log('Cleared previous Adhan notifications');
-      } catch (cancelError) {
-        console.warn('Failed to cancel Adhan notifications, using full reset:', cancelError);
-        await NotificationsModule.cancelAllScheduledNotificationsAsync();
-      }
-
-      // Request permission if not granted
-      if (currentStatus !== 'granted') {
-        const { status } = await NotificationsModule.requestPermissionsAsync();
-        console.log('Notification permission request result:', status);
-        
-        const newStatus = status === 'granted' ? 'granted' : 
-                         status === 'denied' ? 'denied' : 'undetermined';
-        dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: newStatus });
-        
-        if (status !== 'granted') {
-          console.warn('Notification permission not granted. Status:', status);
-          dispatch({ 
-            type: 'SET_ERROR', 
-            payload: 'اجازه اعلان داده نشد. لطفاً در تنظیمات دستگاه اجازه دهید.' 
-          });
-          return;
-        }
-      }
-
       const isValidDate = (date: Date): boolean => {
-        return date instanceof Date && !isNaN(date.getTime()) &&
-               date.getTime() > 0 && date.getTime() < Number.MAX_SAFE_INTEGER;
+        return date instanceof Date && !isNaN(date.getTime()) && date.getTime() > 0;
       };
 
       const areTimesOrdered = (times: PrayerTimes): boolean => {
-        const ordered = [
-          times.fajr,
-          times.sunrise,
-          times.dhuhr,
-          times.asr,
-          times.maghrib,
-          times.isha,
-        ];
+        const ordered = [times.fajr, times.sunrise, times.dhuhr, times.asr, times.maghrib, times.isha];
         if (ordered.some((t) => !isValidDate(t))) return false;
         for (let i = 1; i < ordered.length; i++) {
           if (ordered[i].getTime() <= ordered[i - 1].getTime()) return false;
@@ -922,193 +897,288 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         return true;
       };
 
-      let effectiveTimes = state.prayerTimes;
-      if (!areTimesOrdered(effectiveTimes)) {
-        if (__DEV__) {
-          console.log('Prayer times invalid or unordered. Falling back to local calculation.');
+      // Clear only Adhan-related notifications
+      await cancelScheduledNotificationsByPredicate(
+        NotificationsModule,
+        (notification, identifier) => {
+          const dataType = (notification as any)?.content?.data?.type;
+          return identifier.startsWith('adhan-') || dataType === 'adhan' || dataType === 'reminder';
         }
-        effectiveTimes = calculatePrayerTimes(
-          new Date(),
-          state.location,
-          state.settings.calculationMethod,
-          state.settings.asrMethod
-        );
+      );
+
+      if (!state.adhanPreferences.masterEnabled) {
+        lastScheduleRef.current = {
+          dateKey: getDateKey(new Date()),
+          locationKey: getLocationKey(),
+        };
+        dispatch({ type: 'SET_ERROR', payload: null });
+        console.log('Skipping notification scheduling: master toggle is disabled');
+        return;
       }
 
-      const prayers: { key: PrayerName; time: Date }[] = [
-        { key: 'fajr', time: effectiveTimes.fajr },
-        { key: 'dhuhr', time: effectiveTimes.dhuhr },
-        { key: 'asr', time: effectiveTimes.asr },
-        { key: 'maghrib', time: effectiveTimes.maghrib },
-        { key: 'isha', time: effectiveTimes.isha },
-      ];
+      if (Platform.OS === 'android') {
+        await configureAndroidNotificationChannels(NotificationsModule);
+      }
+
+      const currentStatus = await checkNotificationPermission();
+      dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: currentStatus });
+
+      if (currentStatus === 'blocked') {
+        dispatch({
+          type: 'SET_ERROR',
+          payload: 'اعلان‌ها بلاک شده‌اند. لطفاً در تنظیمات دستگاه اجازه دهید.',
+        });
+        return;
+      }
+
+      if (currentStatus !== 'granted') {
+        const { status } = await NotificationsModule.requestPermissionsAsync();
+        const newStatus =
+          status === 'granted' ? 'granted' : status === 'denied' ? 'denied' : 'undetermined';
+        dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: newStatus });
+        if (status !== 'granted') {
+          dispatch({
+            type: 'SET_ERROR',
+            payload: 'اجازه اعلان داده نشد. لطفاً در تنظیمات دستگاه اجازه دهید.',
+          });
+          return;
+        }
+      }
 
       const now = new Date();
+      const cityKey = toCityKey(state.settings.selectedCity);
       const { adhanPreferences } = state;
+      const rollingDays =
+        Platform.OS === 'android'
+          ? PRAYER_ROLLING_DAYS_ANDROID
+          : adhanPreferences.earlyReminder
+          ? PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER
+          : PRAYER_ROLLING_DAYS_IOS;
+
+      const prayerKeys: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+      const enabledPrayers = prayerKeys.filter((prayer) => adhanPreferences[prayer].enabled);
+
       let scheduledCount = 0;
 
-      // Helper function to safely format date for logging
-      const safeDateString = (date: Date): string => {
-        if (!isValidDate(date)) {
-          return 'Invalid Date';
-        }
+      for (let dayOffset = 0; dayOffset < rollingDays; dayOffset++) {
+        const targetDate = new Date(now);
+        targetDate.setHours(12, 0, 0, 0);
+        targetDate.setDate(now.getDate() + dayOffset);
+
+        let dayTimes: PrayerTimes;
         try {
-          return date.toISOString();
+          const result = await getPrayerTimesForDate({
+            cityKey,
+            location: state.location,
+            date: targetDate,
+          });
+          dayTimes = result.times;
         } catch {
-          return 'Date format error';
-        }
-      };
-
-      for (const prayer of prayers) {
-        const prayerSettings = adhanPreferences[prayer.key];
-        
-        // Skip if this prayer's notifications are disabled
-        if (!prayerSettings.enabled) {
-          console.log(`Skipping ${prayer.key}: notifications disabled`);
-          continue;
-        }
-        
-        // Validate prayer time is valid Date before using it
-        if (!isValidDate(prayer.time)) {
-          console.warn(`Invalid date for ${prayer.key}, skipping notification`);
-          continue;
+          dayTimes = calculatePrayerTimes(
+            targetDate,
+            state.location,
+            state.settings.calculationMethod,
+            state.settings.asrMethod
+          );
         }
 
-        // If time is already passed today, schedule for next day
-        let scheduleTime = new Date(prayer.time);
-        if (scheduleTime <= now) {
-          const tomorrow = new Date(now);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          try {
-            const cityKey = toCityKey(state.settings.selectedCity);
-            const tomorrowTimes = await getPrayerTimesForDate({
-              cityKey,
-              location: state.location,
-              date: tomorrow,
-            });
-            scheduleTime = new Date(tomorrowTimes.times[prayer.key]);
-          } catch (error) {
-            const fallbackTomorrow = calculatePrayerTimes(
-              tomorrow,
-              state.location,
-              state.settings.calculationMethod,
-              state.settings.asrMethod
-            );
-            scheduleTime = new Date(fallbackTomorrow[prayer.key]);
-          }
-        }
-        
-        // Skip only if adjusted schedule time is still in the past
-        if (scheduleTime <= now) {
-          console.log(`Skipping ${prayer.key}: schedule time is in the past (${safeDateString(scheduleTime)})`);
-          continue;
+        if (!areTimesOrdered(dayTimes)) {
+          dayTimes = calculatePrayerTimes(
+            targetDate,
+            state.location,
+            state.settings.calculationMethod,
+            state.settings.asrMethod
+          );
         }
 
-        // Validate date is in valid range (prevent invalid date errors)
-        const maxDate = new Date(now.getFullYear() + 1, 11, 31); // Max 1 year ahead
-        if (scheduleTime > maxDate) {
-          console.log(`Skipping ${prayer.key}: Date out of valid range (${safeDateString(scheduleTime)})`);
-          continue;
-        }
+        for (const prayerKey of enabledPrayers) {
+          const prayerSettings = adhanPreferences[prayerKey];
+          const scheduleTime = new Date(dayTimes[prayerKey]);
+          if (!isValidDate(scheduleTime) || scheduleTime <= now) continue;
 
-        // Get notification content
-        const content = getNotificationContent(prayer.key, prayerSettings.playSound);
-        
-        // Use prayerSettings.playSound (not hardcoded to fajr only)
-        const playSound = prayerSettings.playSound;
-        // Channel: adhan-fajr for Fajr, adhan-regular for all other prayers with sound
-        const channelId = playSound && prayer.key === 'fajr' ? 'adhan-fajr'
-          : playSound ? 'adhan-regular'
-          : 'prayer-silent';
+          const content = getNotificationContent(prayerKey, prayerSettings.playSound);
+          const playSound = prayerSettings.playSound;
+          const channelId =
+            playSound && prayerKey === 'fajr'
+              ? 'adhan-fajr'
+              : playSound
+              ? 'adhan-regular'
+              : 'prayer-silent';
+          const notificationSound: string | boolean | undefined =
+            playSound && prayerKey === 'fajr'
+              ? 'fajr_adhan'
+              : playSound
+              ? 'barakatullah_salim'
+              : false;
+          const dayKey = getDateKey(scheduleTime);
+          const adhanId = `adhan-${prayerKey}-${dayKey}`;
 
-        // Sound: Fajr → fajr_adhan, others with sound → barakatullah_salim
-        // Use filename without extension (Android res/raw resource naming)
-        let notificationSound: string | boolean | undefined = false;
-        if (playSound && prayer.key === 'fajr') {
-          notificationSound = 'fajr_adhan';
-        } else if (playSound) {
-          notificationSound = 'barakatullah_salim';
-        }
-
-        // Schedule main notification at prayer time
-        // Set sound in notification so it plays even if app is killed
-        // playAdhan() will also be called when notification is received/tapped for better experience
-        const adhanId = `adhan-${prayer.key}`;
-        await NotificationsModule.scheduleNotificationAsync({
-          identifier: adhanId,
-          content: {
-            title: content.title,
-            body: content.body,
-            sound: notificationSound, // Sound file name or false for silent
-            ...(Platform.OS === 'android' && playSound && { vibrate: [] }),
-            data: {
-              prayer: prayer.key,
-              type: 'adhan',
-              playSound, // From prayerSettings
-              voice: prayerSettings.selectedVoice,
+          await NotificationsModule.scheduleNotificationAsync({
+            identifier: adhanId,
+            content: {
+              title: content.title,
+              body: content.body,
+              sound: notificationSound,
+              ...(Platform.OS === 'android' && playSound && { vibrate: [] }),
+              data: {
+                prayer: prayerKey,
+                type: 'adhan',
+                playSound,
+                voice: prayerSettings.selectedVoice,
+                dayKey,
+              },
+              ...(Platform.OS === 'android' && { channelId }),
+              ...(Platform.OS === 'android' && playSound
+                ? { priority: NotificationsModule.AndroidNotificationPriority.HIGH }
+                : {}),
             },
-            ...(Platform.OS === 'android' && { channelId }),
-            ...(Platform.OS === 'android' && playSound
-              ? { priority: NotificationsModule.AndroidNotificationPriority.HIGH }
-              : {}),
-          },
-          trigger: {
-            type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
-            date: scheduleTime,
-          },
-        });
-        
-        scheduledCount++;
-        if (__DEV__) {
-          console.log(`Scheduled ${prayer.key} notification for ${safeDateString(scheduleTime)} (sound: ${notificationSound})`);
-        }
+            trigger: {
+              type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
+              date: scheduleTime,
+            },
+          });
+          scheduledCount++;
 
-        // Schedule early reminder if enabled
-        if (adhanPreferences.earlyReminder && adhanPreferences.earlyReminderMinutes > 0) {
-          const reminderTime = new Date(scheduleTime.getTime() - adhanPreferences.earlyReminderMinutes * 60 * 1000);
-          
-          // Validate reminder date is valid and in valid range
-          const maxDate = new Date(now.getFullYear() + 1, 11, 31); // Max 1 year ahead
-          if (isValidDate(reminderTime) && reminderTime > now && reminderTime <= maxDate) {
-            const reminderContent = getEarlyReminderContent(prayer.key, adhanPreferences.earlyReminderMinutes);
-            
-            const reminderId = `adhan-${prayer.key}-reminder`;
-            await NotificationsModule.scheduleNotificationAsync({
-              identifier: reminderId,
-              content: {
-                title: reminderContent.title,
-                body: reminderContent.body,
-                sound: false, // Early reminders are always silent
-                data: {
-                  prayer: prayer.key,
-                  type: 'reminder',
+          if (adhanPreferences.earlyReminder && adhanPreferences.earlyReminderMinutes > 0) {
+            const reminderTime = new Date(
+              scheduleTime.getTime() - adhanPreferences.earlyReminderMinutes * 60 * 1000
+            );
+            if (reminderTime > now && isValidDate(reminderTime)) {
+              const reminderContent = getEarlyReminderContent(
+                prayerKey,
+                adhanPreferences.earlyReminderMinutes
+              );
+              const reminderId = `adhan-${prayerKey}-${dayKey}-reminder`;
+              await NotificationsModule.scheduleNotificationAsync({
+                identifier: reminderId,
+                content: {
+                  title: reminderContent.title,
+                  body: reminderContent.body,
+                  sound: false,
+                  data: {
+                    prayer: prayerKey,
+                    type: 'reminder',
+                    dayKey,
+                  },
+                  ...(Platform.OS === 'android' && { channelId: 'prayer-reminder' }),
                 },
-                ...(Platform.OS === 'android' && { channelId: 'prayer-reminder' }),
-              },
-              trigger: {
-                type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
-                date: reminderTime,
-              },
-            });
-            
-            console.log(`Scheduled early reminder for ${prayer.key} at ${reminderTime.toISOString()}`);
+                trigger: {
+                  type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
+                  date: reminderTime,
+                },
+              });
+              scheduledCount++;
+            }
           }
         }
       }
-      
+
       if (__DEV__) {
-        console.log(`✅ Adhan notifications scheduled successfully. Total: ${scheduledCount} notifications`);
+        console.log(`✅ Adhan notifications scheduled successfully. Total: ${scheduledCount}`);
       }
       lastScheduleRef.current = {
         dateKey: getDateKey(new Date()),
         locationKey: getLocationKey(),
       };
-      dispatch({ type: 'SET_ERROR', payload: null }); // Clear any previous errors
+      dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
       console.error('❌ Adhan notification scheduling error:', error);
-      dispatch({ type: 'SET_ERROR', payload: `خطا در زمان‌بندی اعلان‌ها: ${error instanceof Error ? error.message : 'خطای ناشناخته'}` });
+      dispatch({
+        type: 'SET_ERROR',
+        payload: `خطا در زمان‌بندی اعلان‌ها: ${
+          error instanceof Error ? error.message : 'خطای ناشناخته'
+        }`,
+      });
     }
-  }, [checkNotificationPermission, state.adhanPreferences, state.prayerTimes, state.location, state.settings, getDateKey, getLocationKey]);
+  }, [
+    cancelScheduledNotificationsByPredicate,
+    checkNotificationPermission,
+    getDateKey,
+    getLocationKey,
+    state,
+  ]);
+
+  const scheduleJummahNotifications = useCallback(async () => {
+    const NotificationsModule = await loadNotificationsIfAvailable();
+    if (!NotificationsModule) return;
+
+    try {
+      await cancelScheduledNotificationsByPredicate(
+        NotificationsModule,
+        (notification, identifier) => {
+          const dataType = (notification as any)?.content?.data?.type;
+          return identifier.startsWith('jummah-friday-') || dataType === 'jummah';
+        }
+      );
+
+      if (!state.adhanPreferences.masterEnabled) return;
+
+      if (Platform.OS === 'android') {
+        await configureAndroidNotificationChannels(NotificationsModule);
+      }
+
+      const currentStatus = await checkNotificationPermission();
+      dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: currentStatus });
+      if (currentStatus === 'blocked') return;
+
+      if (currentStatus !== 'granted') {
+        const { status } = await NotificationsModule.requestPermissionsAsync();
+        const newStatus =
+          status === 'granted' ? 'granted' : status === 'denied' ? 'denied' : 'undetermined';
+        dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: newStatus });
+        if (status !== 'granted') return;
+      }
+
+      const now = new Date();
+      const weeksToSchedule =
+        Platform.OS === 'android'
+          ? JUMMAH_WEEKS_ANDROID
+          : state.adhanPreferences.earlyReminder
+          ? JUMMAH_WEEKS_IOS_WITH_REMINDER
+          : JUMMAH_WEEKS_IOS;
+      const firstFriday = new Date(now);
+      const daysUntilFriday = (5 - firstFriday.getDay() + 7) % 7;
+      firstFriday.setDate(firstFriday.getDate() + daysUntilFriday);
+      firstFriday.setHours(13, 0, 0, 0);
+      if (firstFriday <= now) {
+        firstFriday.setDate(firstFriday.getDate() + 7);
+      }
+
+      for (let i = 0; i < weeksToSchedule; i++) {
+        const triggerDate = new Date(firstFriday);
+        triggerDate.setDate(firstFriday.getDate() + i * 7);
+        const dayKey = getDateKey(triggerDate);
+        await NotificationsModule.scheduleNotificationAsync({
+          identifier: `jummah-friday-${dayKey}`,
+          content: {
+            title: 'نماز جمعه',
+            body: 'وقت نماز جمعه است',
+            sound: true,
+            data: {
+              type: 'jummah',
+              dayKey,
+            },
+            ...(Platform.OS === 'android' && { channelId: 'jummah-reminder' }),
+          },
+          trigger: {
+            type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
+            date: triggerDate,
+          },
+        });
+      }
+    } catch (error) {
+      console.warn('Failed to schedule Jummah notifications:', error);
+    }
+  }, [
+    cancelScheduledNotificationsByPredicate,
+    checkNotificationPermission,
+    getDateKey,
+    state.adhanPreferences.earlyReminder,
+    state.adhanPreferences.masterEnabled,
+  ]);
+
+  scheduleAdhanNotificationsRef.current = scheduleAdhanNotifications;
+  scheduleJummahNotificationsRef.current = scheduleJummahNotifications;
 
   const openNotificationSettings = useCallback(async () => {
     const NotificationsModule = await loadNotificationsIfAvailable();
@@ -1123,7 +1193,12 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
       } else {
         // Try to open notification settings directly (Android 13+)
         try {
-          await NotificationsModule.openSettingsAsync?.();
+          const maybeOpenSettings = (NotificationsModule as any).openSettingsAsync;
+          if (typeof maybeOpenSettings === 'function') {
+            await maybeOpenSettings();
+          } else {
+            await Linking.openSettings();
+          }
         } catch {
           // Fallback to general settings
           await Linking.openSettings();
