@@ -13,7 +13,7 @@ const REQUIRED_SNIPPETS = [
   },
   {
     authorId: 'shah_foulad_kabuli',
-    phrases: ['هر کو می‌جوید رهِ وصلِ دوست', 'نسیمِ رحمت وزانَد بر دل'],
+    phrases: ['زیارت به‌مثابه مدرسه اخلاق', 'مشهور محلي وینا'],
   },
   {
     authorId: 'khwaja_baqi_billah',
@@ -37,7 +37,15 @@ const REQUIRED_SNIPPETS = [
   },
   {
     authorId: 'khwaja_abdullah_ansari',
-    phrases: ['دلِ پراکندهٔ ما را به یاد خود جمع کن', 'توبهٔ ما را صادق گردان'],
+    phrases: ['الهی از پیش خطر و از پس راهم نیست', 'الهی اگر خامم پخته‌ام کن و اگر پخته‌ام سوخته‌ام کن'],
+  },
+  {
+    authorId: 'abdulrahman_jami',
+    phrases: ['ذکر گنج است و گنج پنهان به', 'سر مقصود را مراقبه کن'],
+  },
+  {
+    authorId: 'mawlana_jalaluddin_balkhi',
+    phrases: ['ای قوم به حج رفته کجایید کجایید', 'تدبیر کند بنده و تقدیر نداند'],
   },
   {
     authorId: 'abu_saeed_abolkhair',

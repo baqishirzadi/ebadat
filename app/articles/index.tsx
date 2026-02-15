@@ -64,7 +64,7 @@ const PINNED_SCHOLARS: Scholar[] = [
   },
   {
     id: 'pinned_abdulrahman_jami',
-    fullName: 'عبدالرحمن جامی (رح)',
+    fullName: 'مولانا عبدالرحمن جامی (رح)',
     email: 'abdulrahman.jami@local',
     bio: 'صاحب نفحات الانس و از چهره‌های اثرگذار عرفان خراسان',
     verified: true,
