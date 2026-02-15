@@ -54,31 +54,15 @@ const SurahItem = React.memo(function SurahItem({
         <MaterialIcons name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'} size={24} color={theme.icon} />
       </View>
 
-      {/* Meta - right of center */}
-      <View style={[styles.metaContainer, { flexShrink: 0 }]}>
-        <View style={styles.metaRow}>
-          <MaterialIcons
-            name={surah.revelationType === 'مکی' ? 'brightness-5' : 'brightness-2'}
-            size={12}
-            color={theme.textSecondary}
-          />
-          <Text style={[styles.metaText, { color: theme.textSecondary }]}>
-            {surah.revelationType}
-          </Text>
-        </View>
-        <Text style={[styles.ayahCount, { color: theme.textSecondary }]}>
-          {toArabicNumerals(surah.ayahCount)} آیات
-        </Text>
-      </View>
-
       {/* Surah name - center (flex: 1, text centered) */}
       <View style={styles.infoContainer}>
-        <Text style={[styles.arabicName, { color: theme.text }]}>
+        <Text style={[styles.arabicName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
           سوره {surah.arabic}
         </Text>
         <Text
           style={[styles.dariName, { color: theme.textSecondary }]}
           numberOfLines={2}
+          ellipsizeMode="tail"
         >
           {surah.dari} ({surah.meaning})
         </Text>
@@ -95,6 +79,23 @@ const SurahItem = React.memo(function SurahItem({
         <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
         <View style={[styles.cornerDeco, styles.cornerBottomLeft, { borderColor: theme.surahHeader }]} />
         <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
+      </View>
+
+      {/* Meta - far left (مکی/مدنی + آیات) */}
+      <View style={[styles.metaContainer, { flexShrink: 0 }]}>
+        <View style={styles.metaRow}>
+          <MaterialIcons
+            name={surah.revelationType === 'مکی' ? 'brightness-5' : 'brightness-2'}
+            size={12}
+            color={theme.textSecondary}
+          />
+          <Text style={[styles.metaText, { color: theme.textSecondary }]}>
+            {surah.revelationType}
+          </Text>
+        </View>
+        <Text style={[styles.ayahCount, { color: theme.textSecondary }]}>
+          {toArabicNumerals(surah.ayahCount)} آیات
+        </Text>
       </View>
 
       {/* Continue Reading Badge - absolute */}
@@ -360,8 +361,9 @@ const styles = StyleSheet.create({
   surahItem: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
-    minHeight: ITEM_HEIGHT,
-    padding: Spacing.lg,
+    height: ITEM_HEIGHT,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     gap: Spacing.md,
@@ -480,9 +482,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   metaContainer: {
-    alignItems: 'flex-start', // Left-aligned (metadata is now on left side)
+    alignItems: 'flex-start', // Far left in RTL
     justifyContent: 'center',
-    minWidth: 80,
+    minWidth: 70,
   },
   metaRow: {
     flexDirection: 'row-reverse',

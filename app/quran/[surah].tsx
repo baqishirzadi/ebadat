@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useCallback, useEffect, useLayoutEffect } from 'react';
-import { View, StyleSheet, StatusBar, BackHandler, Platform, ToastAndroid, Text, Pressable } from 'react-native';
+import { View, StyleSheet, StatusBar, BackHandler, Platform, ToastAndroid, Pressable } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -122,20 +122,14 @@ export default function QuranReaderScreen() {
       : `سوره ${toArabicNumerals(surahNumber)}`;
 
     navigation.setOptions({
-      headerTitle: () => (
-        <Text
-          style={{
-            color: '#fff',
-            fontFamily: 'ScheherazadeNew',
-            fontSize: 22,
-            textAlign: 'center',
-          }}
-          numberOfLines={2}
-        >
-          {surahName}
-        </Text>
-      ),
-      headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
+      headerTitle: surahName,
+      headerTitleStyle: {
+        fontFamily: 'ScheherazadeNew',
+        fontSize: 22,
+        color: '#fff',
+        fontWeight: '400',
+      },
+      headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
       headerTintColor: '#fff',
       headerTitleContainerStyle: {
         flex: 1,

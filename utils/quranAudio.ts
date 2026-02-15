@@ -105,7 +105,7 @@ export class QuranAudioManager {
         this.currentReciter = savedReciter;
       }
     } catch (error) {
-      console.log('Audio manager init error:', error);
+      if (__DEV__) console.log('Audio manager init error:', error);
     }
   }
 
@@ -143,7 +143,7 @@ export class QuranAudioManager {
         return localPath;
       }
     } catch (error) {
-      console.log('Download error:', error);
+      if (__DEV__) console.log('Download error:', error);
     }
     return null;
   }
@@ -229,7 +229,7 @@ export class QuranAudioManager {
         // Preload next ayah in background
         this.preloadAyah(surah, ayah);
       } catch (error) {
-        console.log('Play preloaded error:', error);
+        if (__DEV__) console.log('Play preloaded error:', error);
         this.sound = null;
         await this.playAyah(surah, ayah);
       }
@@ -266,7 +266,7 @@ export class QuranAudioManager {
       // Preload next ayah for gapless transition
       this.preloadAyah(surah, ayah);
     } catch (error) {
-      console.log('Play error:', error);
+      if (__DEV__) console.log('Play error:', error);
       this.onStatusUpdate?.({
         isPlaying: false,
         isLoading: false,

@@ -86,6 +86,7 @@ export function getSupabaseConfigStatus(): {
  * Log Supabase configuration status (for debugging)
  */
 export function logSupabaseConfigStatus(): void {
+  if (!__DEV__) return;
   const status = getSupabaseConfigStatus();
   if (status.configured) {
     console.log('[Supabase] ✅ Configuration is complete');

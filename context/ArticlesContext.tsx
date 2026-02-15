@@ -120,7 +120,7 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_LOADING', payload: true });
       
       // Check Supabase configuration (only when remote is enabled)
-      if (articleService.isArticlesRemoteEnabled()) {
+      if (__DEV__ && articleService.isArticlesRemoteEnabled()) {
         logSupabaseConfigStatus();
       }
       
@@ -136,7 +136,7 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
       const cachedArticles = await articleStorage.getCachedArticles();
       const cachedScholars = await articleStorage.getCachedScholars();
       
-      console.log(`[Articles] Loaded ${cachedArticles.length} cached articles, ${cachedScholars.length} cached scholars`);
+      if (__DEV__) console.log(`[Articles] Loaded ${cachedArticles.length} cached articles, ${cachedScholars.length} cached scholars`);
       
       dispatch({ type: 'SET_ARTICLES', payload: cachedArticles });
       dispatch({ type: 'SET_SCHOLARS', payload: cachedScholars });
@@ -145,14 +145,14 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
       const netInfo = await NetInfo.fetch();
       if (articleService.isArticlesRemoteEnabled()) {
         if (netInfo.isConnected) {
-          console.log('[Articles] Online - syncing articles...');
+          if (__DEV__) console.log('[Articles] Online - syncing articles...');
           await syncArticles();
         } else {
-          console.log('[Articles] Offline - using cached articles only');
+          if (__DEV__) console.log('[Articles] Offline - using cached articles only');
           dispatch({ type: 'SET_OFFLINE', payload: true });
         }
       } else {
-        console.log('[Articles] Remote disabled - using local/cached articles only');
+        if (__DEV__) console.log('[Articles] Remote disabled - using local/cached articles only');
         dispatch({ type: 'SET_OFFLINE', payload: false });
       }
     } catch (error) {

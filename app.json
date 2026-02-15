@@ -49,7 +49,7 @@
     },
     "android": {
       "package": "com.afghandev.namaz",
-      "versionCode": 1,
+      "versionCode": 3,
       "adaptiveIcon": {
         "backgroundColor": "#1a4d3e",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -82,12 +82,13 @@
     },
     "plugins": [
       "expo-localization",
+      "./plugins/withForceRTL",
       "expo-router",
       [
         "expo-build-properties",
         {
           "android": {
-            "usesCleartextTraffic": true
+            "usesCleartextTraffic": false
           }
         }
       ],

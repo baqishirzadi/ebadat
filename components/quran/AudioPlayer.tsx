@@ -176,7 +176,7 @@ export function AudioPlayer({
 
   // Cycle repeat mode
   const handleRepeatCycle = useCallback(() => {
-    const modes: Array<'none' | 'ayah' | 'surah'> = ['none', 'ayah', 'surah'];
+    const modes: ('none' | 'ayah' | 'surah')[] = ['none', 'ayah', 'surah'];
     const currentIndex = modes.indexOf(repeatMode);
     const nextIndex = (currentIndex + 1) % modes.length;
     setRepeatMode(modes[nextIndex]);

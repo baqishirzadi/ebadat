@@ -80,11 +80,11 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   
   const opacity = useSharedValue(1); // Start visible so no blank screen when native splash hides (EAS/physical devices)
   const frameScale = useSharedValue(0.9);
-  const appNameOpacity = useSharedValue(0);
+  const appNameOpacity = useSharedValue(1);
   const appNameScale = useSharedValue(0.95);
-  const arabicOpacity = useSharedValue(0);
-  const translationOpacity = useSharedValue(0);
-  const creditOpacity = useSharedValue(0);
+  const arabicOpacity = useSharedValue(1);
+  const translationOpacity = useSharedValue(1);
+  const creditOpacity = useSharedValue(1);
   const glowOpacity = useSharedValue(0);
 
   useEffect(() => {

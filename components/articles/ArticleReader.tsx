@@ -98,7 +98,7 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
   };
 
   // Extract all h2 headings and p paragraphs with their positions
-  const items: Array<{ type: 'h2' | 'p'; content: string; position: number }> = [];
+  const items: { type: 'h2' | 'p'; content: string; position: number }[] = [];
   
   // Find all h2 headings
   const h2Regex = /<h2>(.*?)<\/h2>/gi;
