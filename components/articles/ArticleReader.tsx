@@ -135,7 +135,11 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       elements.push(
         <View key={key++} style={styles.headingContainer}>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
-          <Text style={[styles.heading, { color: categoryColor }]}>
+          <Text
+            style={[styles.heading, { color: categoryColor }]}
+            numberOfLines={2}
+            ellipsizeMode="tail"
+          >
             {item.content}
           </Text>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
@@ -519,7 +523,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingTop: Spacing.lg,
     paddingBottom: Spacing.xl,
-    alignItems: 'center',
+    alignItems: 'stretch',
   },
   contentCorner: {
     position: 'absolute',
@@ -564,7 +568,7 @@ const styles = StyleSheet.create({
   },
   contentInner: {
     width: '100%',
-    alignItems: 'center',
+    alignItems: 'stretch',
   },
   paragraph: {
     marginBottom: Spacing.md,
@@ -573,18 +577,19 @@ const styles = StyleSheet.create({
   },
   paragraphText: {
     fontSize: 19,
-    lineHeight: 38,
+    lineHeight: 35,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
+    textAlign: 'right',
     marginBottom: Spacing.xs,
     letterSpacing: 0.3,
     writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   poetryLineText: {
     fontSize: 19,
-    lineHeight: 34,
+    lineHeight: 33,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
+    textAlign: 'right',
     marginBottom: Spacing.xs,
     letterSpacing: 0.25,
     writingDirection: 'rtl',
@@ -592,64 +597,73 @@ const styles = StyleSheet.create({
   },
   poetryMeaningText: {
     fontSize: 17,
-    lineHeight: 32,
+    lineHeight: 31,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
+    textAlign: 'right',
     letterSpacing: 0.2,
     writingDirection: 'rtl',
     includeFontPadding: false,
   },
   numberedListText: {
     fontSize: 18,
-    lineHeight: 30,
+    lineHeight: 31,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
+    textAlign: 'right',
     marginBottom: 6,
     letterSpacing: 0.2,
     writingDirection: 'rtl',
     includeFontPadding: false,
+    paddingRight: Spacing.xs,
   },
   bodyText: {
     fontSize: 19,
-    lineHeight: 38,
+    lineHeight: 35,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
+    textAlign: 'right',
     letterSpacing: 0.3,
     writingDirection: 'rtl',
+    width: '100%',
+    includeFontPadding: false,
   },
   headingContainer: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
     marginVertical: Spacing.md,
-    marginHorizontal: Spacing.lg,
+    marginHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
   },
   headingLine: {
-    flex: 1,
-    height: 3,
+    width: 28,
+    height: 2,
     borderRadius: 2,
-    opacity: 0.4,
+    opacity: 0.6,
+    flexShrink: 0,
   },
   heading: {
-    fontSize: 26,
+    flex: 1,
+    fontSize: 22,
     fontWeight: '700',
     fontFamily: 'Vazirmatn',
     marginHorizontal: Spacing.md,
-    textAlign: 'center',
-    letterSpacing: 0.5,
+    textAlign: 'right',
+    lineHeight: 34,
+    letterSpacing: 0.25,
     writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   strongText: {
     fontWeight: '700',
     fontSize: 19,
     letterSpacing: 0.3,
     writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   emText: {
     fontStyle: 'italic',
     fontSize: 19,
     letterSpacing: 0.3,
     writingDirection: 'rtl',
+    includeFontPadding: false,
   },
   authorSection: {
     margin: Spacing.lg,
