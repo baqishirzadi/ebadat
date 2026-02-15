@@ -41,7 +41,7 @@ const REQUIRED_SNIPPETS = [
   },
   {
     authorId: 'abdulrahman_jami',
-    phrases: ['ذکر گنج است و گنج پنهان به', 'سر مقصود را مراقبه کن'],
+    phrases: ['ذکر گنج است و گنج پنهان به', 'سر مقصود را مراقبه کن', 'باش در هر نفس ز اهل شعور'],
   },
   {
     authorId: 'mawlana_jalaluddin_balkhi',
