@@ -380,6 +380,30 @@ export default function AdhanSettingsScreen() {
           </View>
         )}
 
+        {/* Exact Alarm Settings - Android: ensure adhan fires on time when app is in background */}
+        {Platform.OS === 'android' && adhanPreferences.masterEnabled && (
+          <View style={[styles.exactAlarmCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <View style={styles.exactAlarmContent}>
+              <MaterialIcons name="schedule" size={24} color="#D4AF37" />
+              <View style={styles.exactAlarmText}>
+                <Text style={[styles.exactAlarmLabel, { color: theme.text }]}>
+                  تنظیمات دقیق اذان
+                </Text>
+                <Text style={[styles.exactAlarmDesc, { color: theme.textSecondary }]}>
+                  برای اذان به موقع، لطفاً دسترسی «ساعت و یادآوری» را در تنظیمات فعال کنید
+                </Text>
+              </View>
+            </View>
+            <Pressable
+              onPress={openNotificationSettings}
+              style={[styles.exactAlarmButton, { backgroundColor: '#1a4d3e' }]}
+            >
+              <MaterialIcons name="settings" size={20} color="#fff" />
+              <Text style={styles.exactAlarmButtonText}>باز کردن تنظیمات</Text>
+            </Pressable>
+          </View>
+        )}
+
         {/* Early Reminder */}
         {adhanPreferences.masterEnabled && (
           <View style={[styles.earlyReminder, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -627,6 +651,46 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     color: '#fff',
     fontFamily: 'Vazirmatn',
+  },
+  exactAlarmCard: {
+    margin: Spacing.md,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+  },
+  exactAlarmContent: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.md,
+    marginBottom: Spacing.sm,
+  },
+  exactAlarmText: {
+    flex: 1,
+  },
+  exactAlarmLabel: {
+    fontSize: Typography.ui.body,
+    fontWeight: '600',
+    fontFamily: 'Vazirmatn',
+  },
+  exactAlarmDesc: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+    marginTop: 4,
+    lineHeight: 20,
+  },
+  exactAlarmButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+  },
+  exactAlarmButtonText: {
+    fontSize: Typography.ui.body,
+    color: '#fff',
+    fontFamily: 'Vazirmatn',
+    fontWeight: '600',
   },
   earlyReminder: {
     flexDirection: 'row',

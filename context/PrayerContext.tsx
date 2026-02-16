@@ -86,6 +86,7 @@ async function loadNotificationsIfAvailable(): Promise<typeof import('expo-notif
 const STORAGE_KEYS = {
   LOCATION: '@ebadat/location',
   SETTINGS: '@ebadat/prayer_settings',
+  EXACT_ALARM_PROMPT_SHOWN: '@ebadat/exact_alarm_prompt_shown',
 };
 
 const PRAYER_ROLLING_DAYS_ANDROID = 10;
@@ -664,6 +665,32 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     const newPreferences = { ...state.adhanPreferences, ...preferences };
     dispatch({ type: 'SET_ADHAN_PREFERENCES', payload: newPreferences });
     await saveAdhanPreferences(newPreferences);
+
+    // One-time prompt when enabling adhan with sound for Fajr or Maghrib (Android)
+    if (Platform.OS === 'android') {
+      const newFajr = { ...state.adhanPreferences.fajr, ...(preferences.fajr || {}) };
+      const newMaghrib = { ...state.adhanPreferences.maghrib, ...(preferences.maghrib || {}) };
+      const fajrSoundJustEnabled = !state.adhanPreferences.fajr.playSound && newFajr.playSound;
+      const maghribSoundJustEnabled = !state.adhanPreferences.maghrib.playSound && newMaghrib.playSound;
+      if (fajrSoundJustEnabled || maghribSoundJustEnabled) {
+        try {
+          const alreadyShown = await AsyncStorage.getItem(STORAGE_KEYS.EXACT_ALARM_PROMPT_SHOWN);
+          if (!alreadyShown) {
+            await AsyncStorage.setItem(STORAGE_KEYS.EXACT_ALARM_PROMPT_SHOWN, '1');
+            Alert.alert(
+              'اذان به موقع',
+              'برای اذان به موقع، لطفاً در تنظیمات برنامه دسترسی «ساعت و یادآوری» را فعال کنید.',
+              [
+                { text: 'بعداً' },
+                { text: 'تنظیمات', onPress: () => Linking.openSettings() },
+              ]
+            );
+          }
+        } catch {
+          // Ignore storage errors
+        }
+      }
+    }
     
     // Reschedule notifications with new preferences
     if (state.prayerTimes) {
