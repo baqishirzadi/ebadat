@@ -123,6 +123,7 @@ export default function QuranReaderScreen() {
 
     navigation.setOptions({
       headerTitle: surahName,
+      headerTitleAlign: 'center',
       headerTitleStyle: {
         fontFamily: 'ScheherazadeNew',
         fontSize: 22,
