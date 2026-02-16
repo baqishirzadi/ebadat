@@ -10,6 +10,8 @@
     "start:tunnel-clear": "expo start --tunnel --clear",
     "clear-cache": "bash scripts/clear-all-caches.sh",
     "force-rebuild": "bash scripts/force-rebuild.sh",
+    "build:quran-timestamps": "node scripts/build-quran-timestamp-index.js",
+    "validate:quran-timestamps": "node scripts/validate-quran-timestamps.js",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "build:apk": "cd android && ./gradlew assembleRelease",

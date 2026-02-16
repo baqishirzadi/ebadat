@@ -53,7 +53,7 @@ export function AudioPlayer({
   onAyahComplete,
   onClose,
 }: AudioPlayerProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
   const { stop: stopNaat } = useNaat();
   const audioManagerRef = useRef<QuranAudioManager | null>(null);
   
@@ -97,6 +97,12 @@ export function AudioPlayer({
     manager.setOnStatusUpdate(setAudioStatus);
     setCurrentReciter(manager.getReciter());
   }, []);
+
+  useEffect(() => {
+    audioManagerRef.current?.setPlaybackContext({
+      autoPlayAudio: state.preferences.autoPlayAudio,
+    });
+  }, [state.preferences.autoPlayAudio]);
 
   // Set ayah complete callback (runs when callback or repeatMode changes)
   useEffect(() => {
