@@ -1,0 +1,169 @@
+# دعای خیر و مشورت شرعی - راهنمای کامل
+
+## ✅ پیاده‌سازی کامل
+
+این قابلیت به صورت کامل و آماده تولید پیاده‌سازی شده است.
+
+## 📁 ساختار فایل‌ها
+
+### Backend/Service Layer
+- `utils/supabase.ts` - تنظیمات Supabase
+- `utils/duaService.ts` - API calls به Supabase PostgreSQL
+- `utils/duaStorage.ts` - ذخیره‌سازی محلی (AsyncStorage)
+- `utils/duaSync.ts` - مدیریت همگام‌سازی آفلاین
+- `utils/duaNotifications.ts` - مدیریت اعلان‌ها
+- `types/dua.ts` - TypeScript interfaces
+
+### UI Components
+- `components/dua/FeatureTile.tsx` - تایل صفحه اصلی
+- `components/dua/StatusBadge.tsx` - نشان وضعیت
+- `components/dua/RequestCard.tsx` - کارت درخواست
+- `components/dua/CategorySelector.tsx` - انتخاب دسته‌بندی
+
+### Screens
+- `app/dua-request/index.tsx` - لیست درخواست‌های کاربر
+- `app/dua-request/new.tsx` - فرم درخواست جدید
+- `app/dua-request/[id].tsx` - جزئیات درخواست و پاسخ
+- `app/admin/login.tsx` - ورود مدیر
+- `app/admin/dashboard.tsx` - داشبورد مدیر
+- `app/admin/request/[id].tsx` - پاسخ به درخواست
+
+### Context
+- `context/DuaContext.tsx` - مدیریت state سراسری
+
+### Supabase Edge Functions
+- `supabase/functions/` - Edge Functions برای اعلان‌ها (اختیاری)
+
+## 🚀 مراحل راه‌اندازی
+
+### 1. تنظیم Supabase
+
+مراحل کامل در فایل `SUPABASE_SETUP.md` آمده است:
+
+1. ایجاد پروژه Supabase
+2. اجرای Database Migration
+3. تنظیم Row Level Security (RLS) Policies
+4. دریافت Supabase Config
+5. ایجاد حساب Admin
+
+### 2. تنظیم Environment Variables
+
+در فایل `.env` اضافه کنید:
+
+```env
+EXPO_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+این مقادیر را از Supabase Dashboard > Project Settings > API دریافت کنید.
+
+### 3. Deploy Edge Functions (اختیاری)
+
+برای اعلان‌های push، می‌توانید Supabase Edge Functions را deploy کنید:
+
+```bash
+supabase functions deploy send-notification
+```
+
+یا از Expo Push Notification API استفاده کنید.
+
+## 📱 استفاده
+
+### برای کاربران:
+
+1. **ارسال درخواست**:
+   - از صفحه اصلی، روی "دعای خیر و مشورت شرعی" کلیک کنید
+   - یا از منوی "بیشتر" وارد شوید
+   - "درخواست جدید" را بزنید
+   - دسته‌بندی را انتخاب کنید
+   - متن درخواست را بنویسید
+   - (اختیاری) "ارسال ناشناس" را فعال کنید
+   - "ارسال درخواست" را بزنید
+
+2. **مشاهده درخواست‌ها**:
+   - لیست تمام درخواست‌های شما نمایش داده می‌شود
+   - وضعیت هر درخواست (در انتظار / پاسخ داده شده) نمایش داده می‌شود
+   - روی هر درخواست کلیک کنید تا جزئیات و پاسخ را ببینید
+
+3. **دریافت اعلان**:
+   - وقتی پاسخ آماده شد، اعلان دریافت می‌کنید
+   - روی اعلان کلیک کنید تا مستقیماً به پاسخ بروید
+
+### برای مدیران:
+
+1. **ورود**:
+   - به `/admin/login` بروید (از طریق URL یا لینک مخفی)
+   - ایمیل و رمز عبور admin را وارد کنید
+
+2. **مشاهده درخواست‌ها**:
+   - در داشبورد، تمام درخواست‌ها را می‌بینید
+   - می‌توانید بر اساس وضعیت فیلتر کنید
+   - می‌توانید جستجو کنید
+
+3. **پاسخ دادن**:
+   - روی درخواست کلیک کنید
+   - متن پاسخ را بنویسید
+   - "ثبت پاسخ" را بزنید
+   - اعلان به صورت خودکار به کاربر ارسال می‌شود
+
+## 🔒 امنیت
+
+- درخواست‌ها فقط برای کاربر و مدیر قابل مشاهده هستند
+- هیچ درخواستی به صورت عمومی نمایش داده نمی‌شود
+- Admin authentication با Supabase Auth
+- Rate limiting (حداکثر 3 درخواست در روز)
+
+## 📴 آفلاین
+
+- درخواست‌ها در حالت آفلاین ذخیره می‌شوند
+- هنگام اتصال به اینترنت، به صورت خودکار ارسال می‌شوند
+- پاسخ‌ها در حافظه محلی cache می‌شوند
+- می‌توانید پاسخ‌ها را بدون اینترنت مشاهده کنید
+
+## 🔔 اعلان‌ها
+
+- اعلان‌ها از طریق Expo Notifications ارسال می‌شوند
+- برای production، Supabase Edge Functions یا Expo Push API اعلان را ارسال می‌کند
+- کاربر می‌تواند اعلان‌ها را در تنظیمات غیرفعال کند
+
+## 🎨 طراحی
+
+- طراحی اسلامی با رنگ سبز (#1a4d3e)
+- المان‌های طلایی (#D4AF37)
+- RTL کامل برای فارسی/پشتو
+- Tone احترام‌آمیز و رسمی
+
+## 📝 متن رسمی
+
+**عنوان**: دعای خیر و مشورت شرعی
+
+**توضیحات**:
+این بخش جهت دریافت دعای خیر، راهنمایی شرعی و نصیحت دینی ایجاد شده است.
+درخواست‌ها مستقیماً توسط سیدعبدالباقی شیرزادی بررسی می‌گردد و در موارد خاص،
+با مشورت علما و سیدان اهل علم پاسخ داده می‌شود.
+
+## ✅ چک‌لیست Production
+
+- [x] UI کامل و آماده
+- [x] Backend service layer
+- [x] Offline storage
+- [x] Sync manager
+- [x] Notification system
+- [x] Admin interface
+- [x] Security rules (RLS Policies در SUPABASE_SETUP.md)
+- [x] Error handling
+- [x] TypeScript types
+- [ ] Supabase project setup (نیاز به تنظیم دستی)
+- [ ] Edge Functions deploy (اختیاری)
+- [ ] Admin accounts creation (نیاز به تنظیم دستی)
+
+## 🐛 Debugging
+
+برای debug:
+- Console logs در تمام مراحل اضافه شده
+- Error handling کامل
+- Fallback به cache در صورت خطا
+
+## 📞 پشتیبانی
+
+برای سوالات یا مشکلات، لاگ‌های console را بررسی کنید.

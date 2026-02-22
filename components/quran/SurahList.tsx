@@ -1,0 +1,597 @@
+/**
+ * SurahList Component
+ * Displays the list of all 114 surahs with search functionality
+ * All text in Dari/Arabic - No English
+ */
+
+import { BorderRadius, Spacing, Typography, NAAT_GRADIENT } from '@/constants/theme';
+import { useApp, useReadingPosition } from '@/context/AppContext';
+import { JUZ_RANGES } from '@/data/juzRanges';
+import { SURAH_NAMES, SurahNameData, toArabicNumerals } from '@/data/surahNames';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View, I18nManager } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SearchButton } from './SearchButton';
+import { JuzList } from './JuzList';
+
+const ITEM_HEIGHT = 96;
+const SEPARATOR_HEIGHT = Spacing.md;
+const TOTAL_ROW_HEIGHT = ITEM_HEIGHT + SEPARATOR_HEIGHT;
+
+interface SurahItemProps {
+  surah: SurahNameData;
+  isLastRead?: boolean;
+  onPress: () => void;
+}
+
+const SurahItem = React.memo(function SurahItem({
+  surah,
+  isLastRead,
+  onPress,
+}: SurahItemProps) {
+  const { theme } = useApp();
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.surahItem,
+        {
+          backgroundColor: theme.card,
+          borderColor: isLastRead ? theme.playing : theme.cardBorder,
+        },
+        pressed && {
+          ...styles.surahItemPressed,
+          backgroundColor: theme.card, // Keep background visible when pressed
+        },
+      ]}
+    >
+      {/* Chevron - right */}
+      <View style={{ flexShrink: 0 }}>
+        <MaterialIcons name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'} size={24} color={theme.icon} />
+      </View>
+
+      {/* Surah name - center (flex: 1, text centered) */}
+      <View style={styles.infoContainer}>
+        <Text style={[styles.arabicName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
+          سوره {surah.arabic}
+        </Text>
+        <Text
+          style={[styles.dariName, { color: theme.textSecondary }]}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {surah.dari} ({surah.meaning})
+        </Text>
+      </View>
+
+      {/* Number badge - left */}
+      <View style={[styles.islamicBadgeContainer, { flexShrink: 0 }]}>
+        <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
+        <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
+          <Text style={styles.numberText}>{toArabicNumerals(surah.number)}</Text>
+        </View>
+        <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerBottomLeft, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
+      </View>
+
+      {/* Meta - far left (مکی/مدنی + آیات) */}
+      <View style={[styles.metaContainer, { flexShrink: 0 }]}>
+        <View style={styles.metaRow}>
+          <MaterialIcons
+            name={surah.revelationType === 'مکی' ? 'brightness-5' : 'brightness-2'}
+            size={12}
+            color={theme.textSecondary}
+          />
+          <Text style={[styles.metaText, { color: theme.textSecondary }]}>
+            {surah.revelationType}
+          </Text>
+        </View>
+        <Text style={[styles.ayahCount, { color: theme.textSecondary }]}>
+          {toArabicNumerals(surah.ayahCount)} آیات
+        </Text>
+      </View>
+
+      {/* Continue Reading Badge - absolute */}
+      {isLastRead && (
+        <View style={[styles.continueReading, { backgroundColor: theme.playing }]}>
+          <MaterialIcons name="play-arrow" size={14} color="#fff" />
+        </View>
+      )}
+    </Pressable>
+  );
+});
+
+export function SurahList() {
+  const { theme, themeMode } = useApp();
+  const { position } = useReadingPosition();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const [browseMode, setBrowseMode] = useState<'surah' | 'juz'>('surah');
+  const [searchQuery, setSearchQuery] = useState('');
+  // Header is now part of the list (no absolute overlay)
+
+  // Filter surahs based on search
+  const filteredSurahs = useMemo(() => {
+    if (!searchQuery.trim()) return SURAH_NAMES;
+    
+    const query = searchQuery.trim();
+    return SURAH_NAMES.filter(
+      (surah) =>
+        surah.arabic.includes(query) ||
+        surah.dari.includes(query) ||
+        surah.meaning.includes(query) ||
+        surah.number.toString() === query ||
+        toArabicNumerals(surah.number).includes(query)
+    );
+  }, [searchQuery]);
+
+  const surahByNumber = useMemo(() => {
+    return new Map(SURAH_NAMES.map((surah) => [surah.number, surah]));
+  }, []);
+
+  const filteredJuzs = useMemo(() => {
+    if (!searchQuery.trim()) return JUZ_RANGES;
+
+    const query = searchQuery.trim();
+    return JUZ_RANGES.filter((juz) => {
+      const startSurah = surahByNumber.get(juz.startSurah);
+      const endSurah = surahByNumber.get(juz.endSurah);
+
+      return (
+        juz.juzNumber.toString() === query ||
+        toArabicNumerals(juz.juzNumber).includes(query) ||
+        startSurah?.arabic.includes(query) ||
+        startSurah?.dari.includes(query) ||
+        endSurah?.arabic.includes(query) ||
+        endSurah?.dari.includes(query)
+      );
+    });
+  }, [searchQuery, surahByNumber]);
+
+  const handleSurahPress = useCallback((surahNumber: number) => {
+    router.push(`/quran/${surahNumber}`);
+  }, [router]);
+
+  const handleJuzPress = useCallback((juzNumber: number) => {
+    router.push(`/quran/juz/${juzNumber}`);
+  }, [router]);
+
+  const handleContinueReading = useCallback(() => {
+    router.push(`/quran/${position.surahNumber}?ayah=${position.ayahNumber}`);
+  }, [router, position]);
+
+  const handleBrowseModeChange = useCallback((mode: 'surah' | 'juz') => {
+    setBrowseMode(mode);
+    setSearchQuery('');
+  }, []);
+
+  const renderSurah = useCallback(
+    ({ item }: { item: SurahNameData }) => (
+      <SurahItem
+        surah={item}
+        isLastRead={item.number === position.surahNumber}
+        onPress={() => handleSurahPress(item.number)}
+      />
+    ),
+    [position.surahNumber, handleSurahPress]
+  );
+
+  const headerPaddingTop = insets.top;
+
+  const headerContent = (
+    <LinearGradient
+      colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
+      style={styles.headerWrapper}
+    >
+      <View style={[styles.header, { paddingTop: headerPaddingTop }]}>
+        <Text style={styles.headerTitle}>القرآن الکریم</Text>
+        <Text style={styles.headerSubtitle}>
+          {toArabicNumerals(114)} سوره • {toArabicNumerals(6236)} آیات
+        </Text>
+      </View>
+
+      {position.surahNumber > 0 && (
+        <Pressable
+          onPress={handleContinueReading}
+          style={({ pressed }) => [
+            styles.continueCard,
+            { backgroundColor: theme.card, borderColor: theme.playing },
+            pressed && styles.continueCardPressed,
+          ]}
+        >
+          <View style={styles.continueContent}>
+            <MaterialIcons name="bookmark" size={24} color={theme.playing} />
+            <View style={styles.continueInfo}>
+              <Text style={[styles.continueTitle, { color: theme.text }]}>
+                ادامه تلاوت
+              </Text>
+              <Text style={[styles.continueDetails, { color: theme.textSecondary }]}>
+                سوره {toArabicNumerals(position.surahNumber)} • آیه {toArabicNumerals(position.ayahNumber)}
+              </Text>
+            </View>
+          </View>
+          <MaterialIcons name="play-circle-filled" size={40} color={theme.playing} />
+        </Pressable>
+      )}
+
+      <View style={[styles.modeToggle, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <Pressable
+          onPress={() => handleBrowseModeChange('surah')}
+          style={[
+            styles.modeButton,
+            { backgroundColor: browseMode === 'surah' ? theme.tint : 'transparent' },
+          ]}
+        >
+          <Text style={[styles.modeButtonText, { color: browseMode === 'surah' ? '#fff' : theme.textSecondary }]}>
+            سوره
+          </Text>
+        </Pressable>
+        <Pressable
+          onPress={() => handleBrowseModeChange('juz')}
+          style={[
+            styles.modeButton,
+            { backgroundColor: browseMode === 'juz' ? theme.tint : 'transparent' },
+          ]}
+        >
+          <Text style={[styles.modeButtonText, { color: browseMode === 'juz' ? '#fff' : theme.textSecondary }]}>
+            جزء
+          </Text>
+        </Pressable>
+      </View>
+
+      <View style={[styles.searchContainer, { backgroundColor: theme.backgroundSecondary }]}>
+        <MaterialIcons name="search" size={20} color={theme.icon} />
+        <TextInput
+          style={[styles.searchInput, { color: theme.text }]}
+          placeholder={browseMode === 'juz' ? 'جستجوی جزء...' : 'جستجوی سوره...'}
+          placeholderTextColor={theme.textSecondary}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          textAlign="center"
+        />
+        {searchQuery.length > 0 && (
+          <Pressable onPress={() => setSearchQuery('')}>
+            <MaterialIcons name="close" size={20} color={theme.icon} />
+          </Pressable>
+        )}
+      </View>
+    </LinearGradient>
+  );
+
+  return (
+    <View style={[styles.container, { backgroundColor: (NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light)[0] }]}>
+      <StatusBar style="light" backgroundColor={(NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light)[0]} />
+      {browseMode === 'surah' ? (
+        <Animated.FlatList
+          data={filteredSurahs}
+          keyExtractor={(item) => `surah-${item.number}`}
+          renderItem={renderSurah}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={headerContent}
+          contentContainerStyle={styles.listContent}
+          style={[styles.list, { backgroundColor: theme.background }]}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          scrollEventThrottle={16}
+          removeClippedSubviews={false}
+          initialNumToRender={15}
+          maxToRenderPerBatch={10}
+          windowSize={10}
+          getItemLayout={(_, index) =>
+            index < 0
+              ? { index: 0, length: 0, offset: 0 }
+              : {
+                  length: TOTAL_ROW_HEIGHT,
+                  offset: TOTAL_ROW_HEIGHT * index,
+                  index,
+                }
+          }
+          updateCellsBatchingPeriod={50}
+          maintainVisibleContentPosition={null}
+          contentInsetAdjustmentBehavior="never"
+        />
+      ) : (
+        <Animated.ScrollView
+          style={[styles.list, { backgroundColor: theme.background }]}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior="never"
+        >
+          {headerContent}
+          <View style={styles.juzListWrapper}>
+            <JuzList
+              juzItems={filteredJuzs}
+              currentPosition={position}
+              onPressJuz={(juz) => handleJuzPress(juz.juzNumber)}
+            />
+          </View>
+        </Animated.ScrollView>
+      )}
+
+      {/* Search FAB */}
+      <SearchButton />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerWrapper: {
+    marginHorizontal: -Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.lg,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    overflow: 'hidden',
+  },
+  header: {
+    paddingTop: 60,
+    paddingBottom: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 36,
+    fontWeight: '700',
+    color: '#fff',
+    fontFamily: 'QuranFont',
+    writingDirection: 'rtl',
+  },
+  headerSubtitle: {
+    fontSize: Typography.ui.body,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: Spacing.xs,
+    fontFamily: 'Vazirmatn',
+  },
+  continueCard: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.md,
+    marginBottom: Spacing.md,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 2,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  continueCardPressed: {
+    opacity: 0.9,
+  },
+  continueContent: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  continueInfo: {
+    alignItems: 'center',
+  },
+  continueTitle: {
+    fontSize: Typography.ui.subtitle,
+    fontWeight: '600',
+    fontFamily: 'Vazirmatn',
+},
+  continueDetails: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+},
+  searchContainer: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    gap: Spacing.sm,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: Typography.ui.body,
+    paddingVertical: Spacing.xs,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+  },
+  modeToggle: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+    padding: 4,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    gap: 4,
+  },
+  modeButton: {
+    flex: 1,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modeButtonText: {
+    fontSize: Typography.ui.subtitle,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '600',
+  },
+  list: {
+    flex: 1,
+  },
+  listContent: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: 0,
+    paddingBottom: Spacing.xxl,
+  },
+  separator: {
+    height: Spacing.md,
+  },
+  juzListWrapper: {
+    paddingHorizontal: Spacing.md,
+  },
+  surahItem: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    height: ITEM_HEIGHT,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    gap: Spacing.md,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    overflow: 'hidden',
+  },
+  surahItemPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+  islamicBadgeContainer: {
+    width: 48,
+    height: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  decorativeRing: {
+    position: 'absolute',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 2,
+    borderStyle: 'solid',
+  },
+  decorativeRingMiddle: {
+    position: 'absolute',
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1.5,
+    borderStyle: 'solid',
+  },
+  numberContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    zIndex: 1,
+  },
+  cornerDeco: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderWidth: 1.5,
+    borderStyle: 'solid',
+  },
+  cornerTopLeft: {
+    top: 0,
+    left: 0,
+    borderTopWidth: 1.5,
+    borderLeftWidth: 1.5,
+    borderRightWidth: 0,
+    borderBottomWidth: 0,
+    borderTopLeftRadius: 4,
+  },
+  cornerTopRight: {
+    top: 0,
+    right: 0,
+    borderTopWidth: 1.5,
+    borderRightWidth: 1.5,
+    borderLeftWidth: 0,
+    borderBottomWidth: 0,
+    borderTopRightRadius: 4,
+  },
+  cornerBottomLeft: {
+    bottom: 0,
+    left: 0,
+    borderBottomWidth: 1.5,
+    borderLeftWidth: 1.5,
+    borderTopWidth: 0,
+    borderRightWidth: 0,
+    borderBottomLeftRadius: 4,
+  },
+  cornerBottomRight: {
+    bottom: 0,
+    right: 0,
+    borderBottomWidth: 1.5,
+    borderRightWidth: 1.5,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderBottomRightRadius: 4,
+  },
+  numberText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  infoContainer: {
+    flex: 1,
+    alignItems: 'center', // Center-aligned for surah names
+    justifyContent: 'center',
+  },
+  arabicName: {
+    fontSize: Typography.ui.title,
+    fontWeight: '600',
+    fontFamily: 'QuranFont',
+    textAlign: 'center', // Center-aligned text
+    width: '100%',
+  },
+  dariName: {
+    fontSize: Typography.ui.caption,
+    marginTop: 2,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center', // Center-aligned text
+    width: '100%',
+  },
+  metaContainer: {
+    alignItems: 'flex-start', // Far left in RTL
+    justifyContent: 'center',
+    minWidth: 70,
+  },
+  metaRow: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: 4,
+  },
+  metaText: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+  },
+  ayahCount: {
+    fontSize: Typography.ui.caption,
+    marginTop: 2,
+    fontFamily: 'Vazirmatn',
+  },
+  continueReading: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});

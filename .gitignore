@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Expo / Metro outputs
+.expo/
+.expo-shared/
+dist/
+web-build/
+.metro-health-check*
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Signing / keys / provisioning
+*.jks
+*.keystore
+*-release.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# OS/editor noise
+.DS_Store
+.idea/
+.cursor/
+.vscode/*
+
+# Native build outputs (keep native source tracked)
+android/.gradle/
+android/build/
+android/app/build/
+ios/build/
+
+# Logs / temp
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+
+# TypeScript cache
+*.tsbuildinfo

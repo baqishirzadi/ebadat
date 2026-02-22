@@ -1,0 +1,90 @@
+{
+  "number": 94,
+  "name": "الشرح",
+  "name_dari": "شرح",
+  "meaning_dari": "گشادن سینه",
+  "revelationType": "مکی",
+  "numberOfAyahs": 8,
+  "ayahs": [
+    {
+      "number": 1,
+      "text": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ",
+      "page": 596,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "آیا سینه‌ات را برایت نکشادیم؟",
+      "translation_pashto": "94-1 ایا مونږ تا لره ستا سینه نه ده فراخه كړې"
+    },
+    {
+      "number": 2,
+      "text": "وَوَضَعْنَا عَنكَ وِزْرَكَ",
+      "page": 596,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "و بار سنگین را از تو برنداشتیم؟",
+      "translation_pashto": "94-2 او له تا نه مو ستا دروند بار كوز كړى"
+    },
+    {
+      "number": 3,
+      "text": "ٱلَّذِىٓ أَنقَضَ ظَهْرَكَ",
+      "page": 596,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "همان باری که پشت تو را سنگین کرده بود.",
+      "translation_pashto": "94-3 هغه (بار) چې ستا شا يې كږه (او) درنه كړې وه"
+    },
+    {
+      "number": 4,
+      "text": "وَرَفَعْنَا لَكَ ذِكْرَكَ",
+      "page": 596,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "و آوازه‌ات را برایت بلند گردانیدیم.",
+      "translation_pashto": "94-4 او تا لپاره مو ستا ذكر اوچت كړ"
+    },
+    {
+      "number": 5,
+      "text": "فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا",
+      "page": 596,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "پس یقیناً با هر سختی آسانی است.",
+      "translation_pashto": "94-5 نو بېشكه له سختۍ سره اساني شته"
+    },
+    {
+      "number": 6,
+      "text": "إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا",
+      "page": 596,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "یقیناً با (همان) سختی آسانی (دیگر) است.",
+      "translation_pashto": "94-6 بېشكه له سختۍ سره اساني شته"
+    },
+    {
+      "number": 7,
+      "text": "فَإِذَا فَرَغْتَ فَٱنصَبْ",
+      "page": 596,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "پس هرگاه فارغ شدی (از دعوت و تبلیغ)، پس بکوش (برای عبادت پروردگارت).",
+      "translation_pashto": "94-7 نو كله چې ته فارغ شې، نو (په عبادت كې،) ځان ستړى كوه"
+    },
+    {
+      "number": 8,
+      "text": "وَإِلَىٰ رَبِّكَ فَٱرْغَب",
+      "page": 596,
+      "juz": 30,
+      "hizb": 60,
+      "sajda": false,
+      "translation_dari": "و (با رغبت و اشتیاق) به‌سوی پروردگارت روی آور.",
+      "translation_pashto": "94-8 او خاص خپل رب ته رغبت (او زاري) كوه"
+    }
+  ]
+}
