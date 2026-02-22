@@ -6,12 +6,13 @@ import { getJuzRange } from '@/data/juzRanges';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import { useQuranData } from '@/hooks/useQuranData';
 import { Ayah, TranslationLanguage } from '@/types/quran';
-import { audioManager } from '@/utils/quranAudio';
+import { audioManager, getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
   FlatList,
+  Alert,
   Pressable,
   StatusBar,
   StyleSheet,
@@ -308,7 +309,11 @@ export default function JuzReaderScreen() {
 
       setIsPlaying(true);
       setShowAudioPlayer(true);
-      void audioManager.playAyah(item.surahNumber, item.ayah.number, item.surahAyahCount, true);
+      void audioManager
+        .playAyah(item.surahNumber, item.ayah.number, item.surahAyahCount, true)
+        .catch((error) => {
+          Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+        });
     },
     [currentlyPlaying]
   );
@@ -330,7 +335,11 @@ export default function JuzReaderScreen() {
     if (!totalAyahs) return;
 
     setIsPlaying(true);
-    void audioManager.playAyah(currentlyPlaying.surah, currentlyPlaying.ayah, totalAyahs, true);
+    void audioManager
+      .playAyah(currentlyPlaying.surah, currentlyPlaying.ayah, totalAyahs, true)
+      .catch((error) => {
+        Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+      });
   }, [currentlyPlaying, surahAyahCountBySurah]);
 
   const handlePause = useCallback(() => {

@@ -18,6 +18,7 @@ import {
   verifyDownloads,
 } from '@/utils/naatStorage';
 import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
+import fallbackNaatsData from '@/data/naats.fallback.json';
 
 type PlayerState = {
   current: Naat | null;
@@ -29,6 +30,8 @@ type PlayerState = {
 type NaatContextValue = {
   naats: Naat[];
   loading: boolean;
+  syncError: string | null;
+  syncSource: 'supabase' | 'cache' | 'fallback';
   player: PlayerState;
   refresh: () => Promise<void>;
   createItem: (draft: NaatDraft) => Promise<void>;
@@ -54,6 +57,10 @@ export function useNaat() {
 
 let playerSetup = false;
 const TRACK_POLL_INTERVAL_MS = 250;
+const SUPABASE_FETCH_TIMEOUT_MS = 8000;
+
+type StoredCatalog = Awaited<ReturnType<typeof loadCatalog>>;
+const FALLBACK_NAATS = fallbackNaatsData as StoredCatalog;
 
 function normalizeAudioUrl(url: string): string {
   const trimmed = url.trim();
@@ -77,6 +84,8 @@ function getTrackId(track: unknown): string | null {
 export function NaatProvider({ children }: { children: React.ReactNode }) {
   const [naats, setNaats] = useState<Naat[]>([]);
   const [loading, setLoading] = useState(true);
+  const [syncError, setSyncError] = useState<string | null>(null);
+  const [syncSource, setSyncSource] = useState<'supabase' | 'cache' | 'fallback'>('cache');
   const [playerReady, setPlayerReady] = useState(false);
   const [player, setPlayer] = useState<PlayerState>({
     current: null,
@@ -93,33 +102,83 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
 
   const refresh = useCallback(async () => {
     setLoading(true);
-    await ensureNaatDirectory();
-    await verifyDownloads();
+    setSyncError(null);
 
-    const cachedCatalog = await loadCatalog();
-    const localMeta = await loadLocalMeta();
-    let catalog = cachedCatalog;
+    try {
+      await ensureNaatDirectory();
+      await verifyDownloads();
 
-    if (isSupabaseConfigured()) {
-      try {
-        const supabase = getSupabaseClient();
-        const { data, error } = await supabase
-          .from('naats')
-          .select('*')
-          .order('created_at', { ascending: false });
+      const [cachedCatalog, localMeta] = await Promise.all([
+        loadCatalog(),
+        loadLocalMeta(),
+      ]);
 
-        if (!error && data) {
-          catalog = data as Naat[];
-          await saveCatalog(catalog);
-        }
-      } catch {
-        // keep cached catalog
+      if (cachedCatalog.length > 0) {
+        setNaats(mergeCatalogWithLocal(cachedCatalog, localMeta));
+        setSyncSource('cache');
       }
-    }
 
-    const merged = mergeCatalogWithLocal(catalog, localMeta);
-    setNaats(merged);
-    setLoading(false);
+      let catalog: StoredCatalog = cachedCatalog;
+      let source: 'supabase' | 'cache' | 'fallback' = cachedCatalog.length > 0 ? 'cache' : 'fallback';
+      let errorMessage: string | null = null;
+
+      if (isSupabaseConfigured()) {
+        try {
+          const supabase = getSupabaseClient();
+          const fetchPromise = supabase
+            .from('naats')
+            .select('*')
+            .order('created_at', { ascending: false });
+          const timeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(
+              () => reject(new Error(`supabase-timeout-${SUPABASE_FETCH_TIMEOUT_MS}`)),
+              SUPABASE_FETCH_TIMEOUT_MS
+            );
+          });
+
+          const { data, error } = (await Promise.race([
+            fetchPromise,
+            timeoutPromise,
+          ])) as { data: Naat[] | null; error: { message?: string } | null };
+
+          if (error) {
+            throw new Error(error.message || 'supabase-fetch-failed');
+          }
+          if (!data || data.length === 0) {
+            throw new Error('supabase-empty-catalog');
+          }
+
+          catalog = data as StoredCatalog;
+          source = 'supabase';
+          await saveCatalog(catalog);
+        } catch (remoteError) {
+          const reason =
+            remoteError instanceof Error ? remoteError.message : 'remote-unknown-error';
+          errorMessage = `همگام‌سازی نعت انجام نشد (${reason}).`;
+        }
+      } else {
+        errorMessage = 'اتصال آنلاین نعت تنظیم نشده است.';
+      }
+
+      if (source !== 'supabase') {
+        if (cachedCatalog.length > 0) {
+          catalog = cachedCatalog;
+          source = 'cache';
+        } else {
+          catalog = FALLBACK_NAATS;
+          source = 'fallback';
+          if (!errorMessage) {
+            errorMessage = 'در حال نمایش فهرست داخلی نعت‌ها (بدون همگام‌سازی آنلاین).';
+          }
+        }
+      }
+
+      setNaats(mergeCatalogWithLocal(catalog, localMeta));
+      setSyncSource(source);
+      setSyncError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -621,6 +680,8 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<NaatContextValue>(() => ({
     naats,
     loading,
+    syncError,
+    syncSource,
     player,
     refresh,
     createItem,
@@ -632,7 +693,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     stop,
     seek,
     download,
-  }), [naats, loading, player, refresh, createItem, updateItem, removeItem, play, pause, resume, stop, seek, download]);
+  }), [naats, loading, syncError, syncSource, player, refresh, createItem, updateItem, removeItem, play, pause, resume, stop, seek, download]);
 
   return <NaatContext.Provider value={value}>{children}</NaatContext.Provider>;
 }

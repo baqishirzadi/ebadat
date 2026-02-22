@@ -55,6 +55,9 @@ export interface PrayerAdhanSettings {
 
 // Complete Adhan preferences
 export interface AdhanPreferences {
+  // Preferences schema version for migration control
+  schemaVersion: number;
+
   // Master toggle
   masterEnabled: boolean;
   
@@ -75,6 +78,7 @@ export interface AdhanPreferences {
 
 // Default settings - Fajr and Maghrib with sound, Dhuhr/Asr/Isha silent
 export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
+  schemaVersion: 2,
   masterEnabled: true,
   
   // Fajr: Full Adhan with sound
@@ -87,12 +91,12 @@ export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
   // Dhuhr, Asr, Isha: Silent reminders only
   dhuhr: {
     enabled: true,
-    playSound: false,
+    playSound: true,
     selectedVoice: 'barakatullah',
   },
   asr: {
     enabled: true,
-    playSound: false,
+    playSound: true,
     selectedVoice: 'barakatullah',
   },
   
@@ -105,7 +109,7 @@ export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
   
   isha: {
     enabled: true,
-    playSound: false,
+    playSound: true,
     selectedVoice: 'barakatullah',
   },
   
@@ -127,6 +131,10 @@ function migrateVoiceValue(oldVoice: string): AdhanVoice {
  * Migrate preferences to new format
  */
 function migratePreferences(preferences: any): AdhanPreferences {
+  const incomingSchemaVersion =
+    typeof preferences?.schemaVersion === 'number' ? preferences.schemaVersion : 0;
+  const shouldApplySoundDefaults = incomingSchemaVersion < DEFAULT_ADHAN_PREFERENCES.schemaVersion;
+
   const migratePrayerSettings = (prayer: PrayerName): PrayerAdhanSettings => {
     const incomingPrayer = preferences?.[prayer] || {};
     return {
@@ -135,7 +143,9 @@ function migratePreferences(preferences: any): AdhanPreferences {
           ? incomingPrayer.enabled
           : DEFAULT_ADHAN_PREFERENCES[prayer].enabled,
       playSound:
-        typeof incomingPrayer.playSound === 'boolean'
+        shouldApplySoundDefaults
+          ? DEFAULT_ADHAN_PREFERENCES[prayer].playSound
+          : typeof incomingPrayer.playSound === 'boolean'
           ? incomingPrayer.playSound
           : DEFAULT_ADHAN_PREFERENCES[prayer].playSound,
       selectedVoice: migrateVoiceValue(
@@ -147,6 +157,7 @@ function migratePreferences(preferences: any): AdhanPreferences {
   const migrated: AdhanPreferences = {
     ...DEFAULT_ADHAN_PREFERENCES,
     ...preferences,
+    schemaVersion: DEFAULT_ADHAN_PREFERENCES.schemaVersion,
     globalVoice: migrateVoiceValue(preferences.globalVoice || 'barakatullah'),
     fajr: migratePrayerSettings('fajr'),
     dhuhr: migratePrayerSettings('dhuhr'),
@@ -191,7 +202,7 @@ export async function saveAdhanPreferences(preferences: AdhanPreferences): Promi
 
 /**
  * Get the best available Adhan voice
- * Priority: Barakatullah > Sheikh Ali Ahmed Mulla
+ * Single-voice production policy
  */
 export function getBestAvailableVoice(): AdhanVoice {
   if (ADHAN_VOICES.barakatullah.available) return 'barakatullah';

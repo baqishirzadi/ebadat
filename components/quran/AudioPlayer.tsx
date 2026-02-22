@@ -6,11 +6,11 @@
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import audioManager, { ReciterKey, RECITERS } from '@/utils/quranAudio';
+import audioManager, { ReciterKey, RECITERS, getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { toArabicNumerals } from '@/utils/numbers';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Modal, Pressable, StyleSheet, View } from 'react-native';
+import { Alert, Modal, Pressable, StyleSheet, View } from 'react-native';
 
 interface AudioPlayerProps {
   surahNumber: number;
@@ -50,9 +50,13 @@ export function AudioPlayer({
       setShowReciterModal(false);
       if (reciter === currentReciter) return;
 
-      await audioManager.setReciter(reciter);
-      setCurrentReciter(reciter);
-      await audioManager.playAyah(surahNumber, ayahNumber, totalAyahs, isPlaying);
+      try {
+        await audioManager.setReciter(reciter);
+        setCurrentReciter(reciter);
+        await audioManager.playAyah(surahNumber, ayahNumber, totalAyahs, isPlaying);
+      } catch (error) {
+        Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+      }
     },
     [currentReciter, isPlaying, surahNumber, ayahNumber, totalAyahs]
   );

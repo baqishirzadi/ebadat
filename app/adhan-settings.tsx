@@ -34,7 +34,7 @@ const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 export default function AdhanSettingsScreen() {
   const { theme } = useApp();
-  const { state, updateAdhanPreferences, openNotificationSettings } = usePrayer();
+  const { state, updateAdhanPreferences, openNotificationSettings, scheduleAdhanSystemTest } = usePrayer();
   
   const [isTestingVoice, setIsTestingVoice] = useState<AdhanVoice | null>(null);
   const [expandedPrayer, setExpandedPrayer] = useState<PrayerName | null>(null);
@@ -66,6 +66,15 @@ export default function AdhanSettingsScreen() {
   const handleEarlyReminderToggle = useCallback(async (value: boolean) => {
     await updateAdhanPreferences({ earlyReminder: value });
   }, [updateAdhanPreferences]);
+
+  const handleSystemAdhanTest = useCallback(async () => {
+    const ok = await scheduleAdhanSystemTest();
+    if (ok) {
+      Alert.alert('تست برنامه‌ریزی شد', 'تا ۲۵ ثانیه دیگر اعلان تست اذان ارسال می‌شود.');
+      return;
+    }
+    Alert.alert('خطا', 'فعلاً امکان زمان‌بندی تست سیستمی اذان وجود ندارد.');
+  }, [scheduleAdhanSystemTest]);
 
   // Test Adhan voice
   const handleTestVoice = useCallback(async (voice: AdhanVoice, prayer?: PrayerName) => {
@@ -292,6 +301,13 @@ export default function AdhanSettingsScreen() {
             >
               <MaterialIcons name="settings" size={20} color="#fff" />
               <Text style={styles.exactAlarmButtonText}>باز کردن تنظیمات</Text>
+            </Pressable>
+            <Pressable
+              onPress={handleSystemAdhanTest}
+              style={[styles.exactAlarmButton, { backgroundColor: '#0b6e4f' }]}
+            >
+              <MaterialIcons name="notifications-active" size={20} color="#fff" />
+              <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
             </Pressable>
           </View>
         )}

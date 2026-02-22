@@ -20,6 +20,7 @@ import { toArabicNumerals } from '@/utils/numbers';
 interface MushafViewProps {
   surahNumber: number;
   initialAyah?: number;
+  jumpMode?: 'default' | 'exact';
   onAyahChange?: (surah: number, ayah: number) => void;
   onPlayAyah?: (surah: number, ayah: number) => void;
   currentlyPlaying?: { surah: number; ayah: number } | null;
@@ -49,6 +50,7 @@ function stripBismillah(text: string, surahNumber: number, ayahNumber: number): 
 export function MushafView({
   surahNumber,
   initialAyah = 1,
+  jumpMode = 'default',
   onAyahChange,
   onPlayAyah,
   currentlyPlaying,
@@ -60,11 +62,15 @@ export function MushafView({
   const flatListRef = useRef<FlatList>(null);
   const viewableAyahNumbersRef = useRef<Set<number>>(new Set());
   const scrollRetryTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const pendingScrollAyahRef = useRef<number | null>(null);
+  const pendingScrollRetryCountRef = useRef(0);
+  const activeScrollRequestIdRef = useRef(0);
 
   const [surah, setSurah] = useState<Surah | undefined>();
   const [isLoading, setIsLoading] = useState(true);
 
   const { viewMode, quranFont, arabicFontSize } = state.preferences;
+  const effectiveViewMode: 'scroll' | 'mushaf' = jumpMode === 'exact' ? 'scroll' : viewMode;
   const fontFamily = getQuranFontFamily(quranFont);
 
   const mushafPages = useMemo(() => {
@@ -105,14 +111,14 @@ export function MushafView({
 
   const getScrollIndexForAyah = useCallback((ayahNumber: number): number | null => {
     if (!surah) return null;
-    if (viewMode === 'scroll') {
+    if (effectiveViewMode === 'scroll') {
       return Math.max(0, Math.min(ayahNumber - 1, surah.ayahs.length - 1));
     }
     const pageIndex = mushafPages.findIndex((page) =>
       page.ayahs.some((ayah) => ayah.number === ayahNumber)
     );
     return pageIndex >= 0 ? pageIndex : null;
-  }, [surah, viewMode, mushafPages]);
+  }, [surah, effectiveViewMode, mushafPages]);
 
   const scrollToAyahIndex = useCallback((ayahNumber: number, animated: boolean): boolean => {
     const targetIndex = getScrollIndexForAyah(ayahNumber);
@@ -122,33 +128,39 @@ export function MushafView({
       flatListRef.current.scrollToIndex({
         index: targetIndex,
         animated,
-        ...(viewMode === 'scroll' ? { viewPosition: 0 } : {}),
+        ...(effectiveViewMode === 'scroll' ? { viewPosition: 0 } : {}),
       });
       return true;
     } catch {
       return false;
     }
-  }, [getScrollIndexForAyah, viewMode]);
+  }, [getScrollIndexForAyah, effectiveViewMode]);
 
   const scheduleDeterministicScroll = useCallback((ayahNumber: number, firstAnimated = true) => {
     clearScrollRetryTimers();
-    const retryDelays = [0, 120, 280];
+    pendingScrollAyahRef.current = ayahNumber;
+    pendingScrollRetryCountRef.current = 0;
+    const requestId = ++activeScrollRequestIdRef.current;
 
-    retryDelays.forEach((delay, index) => {
+    scrollToAyahIndex(ayahNumber, firstAnimated);
+
+    [120, 280].forEach((delay) => {
       const timer = setTimeout(() => {
-        scrollToAyahIndex(ayahNumber, index === 0 ? firstAnimated : true);
+        if (activeScrollRequestIdRef.current !== requestId) return;
+        if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(ayahNumber)) return;
+        scrollToAyahIndex(ayahNumber, true);
       }, delay);
       scrollRetryTimersRef.current.push(timer);
     });
-  }, [clearScrollRetryTimers, scrollToAyahIndex]);
+  }, [clearScrollRetryTimers, scrollToAyahIndex, effectiveViewMode]);
 
   // Deterministic initial scroll for deep-link ayah (supports both scroll and mushaf modes)
   useEffect(() => {
     if (!surah) return;
     const clampedTarget = Math.min(Math.max(initialAyah, 1), surah.ayahs.length);
-    if (viewMode === 'scroll' && clampedTarget <= 1) return;
+    if (effectiveViewMode === 'scroll' && clampedTarget <= 1) return;
     scheduleDeterministicScroll(clampedTarget);
-  }, [initialAyah, surahNumber, surah, viewMode, scheduleDeterministicScroll]);
+  }, [initialAyah, surahNumber, surah, effectiveViewMode, scheduleDeterministicScroll]);
 
   // Auto-scroll to currently playing ayah - only when ayah is not already in view (reduces jump)
   useEffect(() => {
@@ -160,12 +172,12 @@ export function MushafView({
       flatListRef.current
     ) {
       const targetAyah = currentlyPlaying.ayah;
-      if (viewMode === 'scroll' && viewableAyahNumbersRef.current.has(targetAyah)) {
+      if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(targetAyah)) {
         return;
       }
       scheduleDeterministicScroll(targetAyah);
     }
-  }, [surah, currentlyPlaying, surahNumber, viewMode, scheduleDeterministicScroll]);
+  }, [surah, currentlyPlaying, surahNumber, effectiveViewMode, scheduleDeterministicScroll]);
 
   // Handle viewable items change for tracking reading position and smart scroll
   const handleViewableItemsChanged = useCallback(
@@ -203,34 +215,29 @@ export function MushafView({
   const handleScrollToIndexFailed = useCallback(
     (info: { index: number; highestMeasuredFrameIndex: number; averageItemLength: number }) => {
       if (!flatListRef.current) return;
+      const targetAyah = pendingScrollAyahRef.current;
+      if (!targetAyah) return;
+      if (pendingScrollRetryCountRef.current >= 2) return;
+      pendingScrollRetryCountRef.current += 1;
 
       const averageLength =
         Number.isFinite(info.averageItemLength) && info.averageItemLength > 0
           ? info.averageItemLength
           : 120;
+      const targetIndex = getScrollIndexForAyah(targetAyah) ?? info.index;
 
       flatListRef.current.scrollToOffset({
-        offset: Math.max(0, averageLength * info.index),
+        offset: Math.max(0, averageLength * targetIndex),
         animated: false,
       });
 
-      const retryDelays = [120, 280];
-      retryDelays.forEach((delay, retryIndex) => {
-        const timer = setTimeout(() => {
-          try {
-            flatListRef.current?.scrollToIndex({
-              index: info.index,
-              animated: retryIndex === 0,
-              ...(viewMode === 'scroll' ? { viewPosition: 0 } : {}),
-            });
-          } catch {
-            // no-op
-          }
-        }, delay);
-        scrollRetryTimersRef.current.push(timer);
-      });
+      const delay = pendingScrollRetryCountRef.current === 1 ? 120 : 280;
+      const timer = setTimeout(() => {
+        scrollToAyahIndex(targetAyah, true);
+      }, delay);
+      scrollRetryTimersRef.current.push(timer);
     },
-    [viewMode]
+    [getScrollIndexForAyah, scrollToAyahIndex]
   );
 
   const handlePlayAyah = useCallback(
@@ -358,7 +365,7 @@ export function MushafView({
   }
 
   // Scroll mode (default)
-  if (viewMode === 'scroll') {
+  if (effectiveViewMode === 'scroll') {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <FlatList

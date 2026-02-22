@@ -25,6 +25,17 @@ export function getAyahUrl(surah: number, ayah: number, reciter: ReciterKey = 'g
   return `${RECITERS[reciter].baseUrl}/${s}${a}.mp3`;
 }
 
+export function getQuranPlaybackErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  if (message.startsWith('offline_cache_miss')) {
+    return 'این آیه هنوز ذخیره نشده است. برای بار اول اینترنت را وصل کنید.';
+  }
+  if (message.startsWith('cache_write_failed')) {
+    return 'ذخیره فایل صوتی انجام نشد. لطفاً دوباره تلاش کنید.';
+  }
+  return 'پخش آیه ممکن نیست. لطفاً دوباره تلاش کنید.';
+}
+
 const MIN_VALID_CACHE_FILE_BYTES = 1024;
 const MAX_SYNC_CACHE_ATTEMPTS = 3;
 const MAX_BACKGROUND_CACHE_ATTEMPTS = 2;
@@ -314,9 +325,7 @@ class QuranAudioManager {
     if (!isOnline) {
       throw new Error(`offline_cache_miss reciter=${reciter} surah=${surah} ayah=${ayah}`);
     }
-
-    // Fallback: stream directly if download fails
-    return { uri: getAyahUrl(surah, ayah, reciter), usedStreamingFallback: true };
+    throw new Error(`cache_write_failed reciter=${reciter} surah=${surah} ayah=${ayah}`);
   }
 
   async playAyah(
@@ -398,14 +407,18 @@ class QuranAudioManager {
 
       this.prefetchNextAyahInBackground(surah, ayah, totalAyahsInSurah, this.currentReciter);
     } catch (e) {
-      const message = e instanceof Error ? e.message : String(e);
+      const resolvedError = e instanceof Error ? e : new Error(String(e));
+      const message = resolvedError.message;
       if (message.startsWith('offline_cache_miss')) {
         console.error(`[QuranCache] offline_cache_miss ${message}`);
+      } else if (message.startsWith('cache_write_failed')) {
+        console.error(`[QuranCache] cache_write_failed ${message}`);
       } else {
-        console.error('playAyah error:', e);
+        console.error('playAyah error:', resolvedError);
       }
       this.isPlaying = false;
       this.onPlaybackEndCb?.();
+      throw resolvedError;
     }
   }
 
@@ -424,7 +437,11 @@ class QuranAudioManager {
     }
     // 300ms gap prevents first-letter repeat bug and jamming
     await new Promise((r) => setTimeout(r, 300));
-    await this.playAyah(this.currentSurah, next, this.totalAyahs, true, false);
+    try {
+      await this.playAyah(this.currentSurah, next, this.totalAyahs, true, false);
+    } catch {
+      // Error already logged and playback-end callback has been invoked inside playAyah.
+    }
   }
 
   private async _loadWithRetry(url: string, retries = 3): Promise<{ sound: Audio.Sound }> {

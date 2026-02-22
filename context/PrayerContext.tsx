@@ -96,8 +96,8 @@ const PRAYER_ROLLING_DAYS_IOS = 7;
 const PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER = 5;
 const ADHAN_SOUND_FILENAME = 'barakatullah_salim_18sec.mp3';
 const CHANNEL_IDS = {
-  ADHAN_FAJR: 'adhan-fajr-v4',
-  ADHAN_REGULAR: 'adhan-regular-v4',
+  ADHAN_FAJR: 'adhan-fajr-v5',
+  ADHAN_REGULAR: 'adhan-regular-v5',
   PRAYER_SILENT: 'prayer-silent',
   PRAYER_REMINDER: 'prayer-reminder',
   CALENDAR_QAMARI: 'calendar-qamari',
@@ -219,6 +219,7 @@ interface PrayerContextType {
   detectLocation: () => Promise<void>;
   scheduleNotifications: () => Promise<void>;
   scheduleAdhanNotifications: () => Promise<void>;
+  scheduleAdhanSystemTest: () => Promise<boolean>;
   openNotificationSettings: () => Promise<void>;
 }
 
@@ -374,12 +375,49 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     }
   }, [state.isLoading]);
 
-  async function configureAndroidNotificationChannels(NotificationsModule: typeof import('expo-notifications')) {
+async function configureAndroidNotificationChannels(NotificationsModule: typeof import('expo-notifications')) {
     if (Platform.OS !== 'android') return;
 
     try {
+      const deleteChannel = (NotificationsModule as unknown as {
+        deleteNotificationChannelAsync?: (channelId: string) => Promise<void>;
+      }).deleteNotificationChannelAsync;
+
+      const getChannel = (NotificationsModule as unknown as {
+        getNotificationChannelAsync?: (channelId: string) => Promise<{ sound?: string | null } | null>;
+      }).getNotificationChannelAsync;
+
+      const normalizeSound = (value?: string | null): string => {
+        return (value || '')
+          .toLowerCase()
+          .trim()
+          .replace(/\.mp3$/, '');
+      };
+
+      const ensureAudibleChannel = async (
+        channelId: string,
+        config: Parameters<typeof NotificationsModule.setNotificationChannelAsync>[1],
+      ) => {
+        if (typeof getChannel === 'function') {
+          try {
+            const existing = await getChannel(channelId);
+            if (
+              existing &&
+              normalizeSound(existing.sound) !== normalizeSound(ADHAN_SOUND_FILENAME) &&
+              typeof deleteChannel === 'function'
+            ) {
+              await deleteChannel(channelId);
+            }
+          } catch {
+            // Continue and recreate channel below.
+          }
+        }
+
+        await NotificationsModule.setNotificationChannelAsync(channelId, config);
+      };
+
       // Channel for Fajr Adhan (custom sound)
-      await NotificationsModule.setNotificationChannelAsync(CHANNEL_IDS.ADHAN_FAJR, {
+      await ensureAudibleChannel(CHANNEL_IDS.ADHAN_FAJR, {
         name: 'اذان صبح',
         importance: NotificationsModule.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
@@ -390,7 +428,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
       });
 
       // Channel for other Adhans (custom sound)
-      await NotificationsModule.setNotificationChannelAsync(CHANNEL_IDS.ADHAN_REGULAR, {
+      await ensureAudibleChannel(CHANNEL_IDS.ADHAN_REGULAR, {
         name: 'اذان (سایر نمازها)',
         importance: NotificationsModule.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
@@ -442,9 +480,6 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         showBadge: true,
       });
 
-      const deleteChannel = (NotificationsModule as unknown as {
-        deleteNotificationChannelAsync?: (channelId: string) => Promise<void>;
-      }).deleteNotificationChannelAsync;
       if (typeof deleteChannel === 'function') {
         await Promise.allSettled([
           deleteChannel('adhan-fajr'),
@@ -453,6 +488,8 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
           deleteChannel('adhan-regular-v2'),
           deleteChannel('adhan-fajr-v3'),
           deleteChannel('adhan-regular-v3'),
+          deleteChannel('adhan-fajr-v4'),
+          deleteChannel('adhan-regular-v4'),
         ]);
       }
     } catch (error) {
@@ -1311,6 +1348,54 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const scheduleAdhanSystemTest = useCallback(async (): Promise<boolean> => {
+    const NotificationsModule = await loadNotificationsIfAvailable();
+    if (!NotificationsModule) {
+      return false;
+    }
+
+    try {
+      if (Platform.OS === 'android') {
+        await configureAndroidNotificationChannels(NotificationsModule);
+      }
+
+      const permissionStatus = await checkNotificationPermission();
+      if (permissionStatus !== 'granted') {
+        const { status } = await NotificationsModule.requestPermissionsAsync();
+        if (status !== 'granted') {
+          return false;
+        }
+      }
+
+      await NotificationsModule.scheduleNotificationAsync({
+        identifier: `adhan-system-test-${Date.now()}`,
+        content: {
+          title: 'تست اذان',
+          body: 'اگر این اعلان با صدا رسید، تنظیمات سیستم درست است.',
+          sound: ADHAN_SOUND_FILENAME,
+          data: {
+            type: 'adhan_test',
+            playSound: true,
+            voice: 'barakatullah',
+          },
+          ...(Platform.OS === 'android' && { channelId: CHANNEL_IDS.ADHAN_REGULAR }),
+          ...(Platform.OS === 'android'
+            ? { priority: NotificationsModule.AndroidNotificationPriority.HIGH, vibrate: [] }
+            : {}),
+        },
+        trigger: {
+          type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
+          date: new Date(Date.now() + 25 * 1000),
+        },
+      });
+
+      return true;
+    } catch (error) {
+      console.error('Failed to schedule system adhan test:', error);
+      return false;
+    }
+  }, [checkNotificationPermission]);
+
   return (
     <PrayerContext.Provider
       value={{
@@ -1324,6 +1409,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         detectLocation,
         scheduleNotifications,
         scheduleAdhanNotifications,
+        scheduleAdhanSystemTest,
         openNotificationSettings,
       }}
     >

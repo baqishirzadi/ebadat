@@ -40,7 +40,7 @@ export default function NaatScreen() {
   const headerGradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { naats, loading, player, play, pause, resume, download, seek } = useNaat();
+  const { naats, loading, syncError, player, play, pause, resume, download, seek, refresh } = useNaat();
   const [query, setQuery] = useState('');
   const [selectedReciter, setSelectedReciter] = useState('همه');
   const [showNaatAdminPinModal, setShowNaatAdminPinModal] = useState(false);
@@ -120,6 +120,25 @@ export default function NaatScreen() {
               </LinearGradient>
 
               <View style={styles.headerSection}>
+                {syncError && (
+                  <View style={[styles.syncBanner, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+                    <View style={styles.syncBannerTextWrap}>
+                      <MaterialIcons name="sync-problem" size={18} color="#D4AF37" />
+                      <Text style={[styles.syncBannerText, { color: theme.textSecondary }]} numberOfLines={2}>
+                        {syncError}
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => {
+                        refresh().catch(() => {});
+                      }}
+                      style={[styles.syncBannerButton, { backgroundColor: theme.tint }]}
+                    >
+                      <Text style={styles.syncBannerButtonText}>تلاش دوباره</Text>
+                    </Pressable>
+                  </View>
+                )}
+
                 <View style={[styles.searchBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
                   <MaterialIcons name="search" size={20} color={theme.textSecondary} />
                   <TextInput
@@ -322,6 +341,35 @@ const styles = StyleSheet.create({
   headerSection: {
     paddingHorizontal: Spacing.lg,
     paddingTop: Spacing.lg,
+  },
+  syncBanner: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.sm,
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  syncBannerTextWrap: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  syncBannerText: {
+    flex: 1,
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    textAlign: 'right',
+  },
+  syncBannerButton: {
+    alignSelf: 'flex-start',
+    borderRadius: BorderRadius.sm,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 6,
+  },
+  syncBannerButtonText: {
+    color: '#fff',
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
   },
   searchBox: {
     flexDirection: 'row-reverse',

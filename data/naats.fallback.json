@@ -1,0 +1,79 @@
+[
+  {
+    "id": "d0412295-2b11-4b26-92bc-f5fab55e73dd",
+    "title_fa": "به امید آمده ام خانه خرابم نکنی\nهمه کرده اند جوابم تو جوابم نکنی",
+    "title_ps": "په هیله راغلی یم، کور دې رانه مه ورانوه\nټولو ځواب راکړی دی، ته مې بې ځوابه مه پرېږده",
+    "reciter_name": "سهیل هروی",
+    "description": null,
+    "audio_url": "https://igsmyoghkkyetsyqbqlm.supabase.co/storage/v1/object/public/Naat/WhatsApp%20Image%202026-02-19%20at%2017.18.16.mp3",
+    "duration_seconds": null,
+    "file_size_mb": null,
+    "created_at": "2026-02-19T14:59:02.55926+00:00"
+  },
+  {
+    "id": "34bbb8c3-e93b-48d9-9e75-06181a5e853c",
+    "title_fa": "له سردرو د قرطبې مسلمه | ها پرونی زرين دوران دې څه شو",
+    "title_ps": "ای مسلمانِ دره‌ها و کوهساران قرطبه!\nآن دوران طلایی دیروزت چه شد؟",
+    "reciter_name": "احرار نیازی",
+    "description": null,
+    "audio_url": "https://igsmyoghkkyetsyqbqlm.supabase.co/storage/v1/object/public/Naat/Ahrar%20Niazi%20Naat.MP3",
+    "duration_seconds": null,
+    "file_size_mb": null,
+    "created_at": "2026-02-19T12:55:07.25429+00:00"
+  },
+  {
+    "id": "6f994cd3-6cbc-4f3f-8ab2-c00e47809c6b",
+    "title_fa": "شاه مدینه سردار عالم و دیگر نعت ها",
+    "title_ps": "له شاهِ مدینه تر نورو نعتونو – بشپړ مجلس",
+    "reciter_name": "صوفی نصیر احمد گازرگاه",
+    "description": null,
+    "audio_url": "https://igsmyoghkkyetsyqbqlm.supabase.co/storage/v1/object/public/Naat/Shah%20Madina%20Sufi%20Nasir.mp3",
+    "duration_seconds": null,
+    "file_size_mb": null,
+    "created_at": "2026-02-15T09:53:09.478174+00:00"
+  },
+  {
+    "id": "2fca8d65-66ad-46fa-aba5-b64bfca4e1e6",
+    "title_fa": "غلطیده در خاک و خون شهیدان",
+    "title_ps": "غلطېدلی د شهیدانو په خاورو او وینو کې",
+    "reciter_name": "الشیخ احمد العجمي",
+    "description": null,
+    "audio_url": "https://igsmyoghkkyetsyqbqlm.supabase.co/storage/v1/object/public/Naat/ghaltida.mp3",
+    "duration_seconds": null,
+    "file_size_mb": null,
+    "created_at": "2026-02-12T06:56:33.138706+00:00"
+  },
+  {
+    "id": "f19214d4-362b-4f5f-9e39-217e80feb65a",
+    "title_fa": "آنرا که منم چاره بی چاره نخواهد شد",
+    "title_ps": "څوک چې زه یې پالنه کوم، هغه به هېڅکله بې‌چاره نه شي",
+    "reciter_name": "صوفی نصیر احمد گازرگاه",
+    "description": null,
+    "audio_url": "https://igsmyoghkkyetsyqbqlm.supabase.co/storage/v1/object/public/Naat/Sufi%20nasir%20ahmad.mp3",
+    "duration_seconds": null,
+    "file_size_mb": null,
+    "created_at": "2026-02-11T09:34:03.988579+00:00"
+  },
+  {
+    "id": "c6c35060-df69-4cda-bc23-7ff7394acd6d",
+    "title_fa": "سنگ تراش",
+    "title_ps": "ډبره تراش",
+    "reciter_name": "میرفخرالدین آغا",
+    "description": null,
+    "audio_url": "https://igsmyoghkkyetsyqbqlm.supabase.co/storage/v1/object/public/Naat/Mir%20Fakhruddin%20Aqa%20Sang%20Tarash.mp3",
+    "duration_seconds": null,
+    "file_size_mb": null,
+    "created_at": "2026-02-11T08:52:34.578475+00:00"
+  },
+  {
+    "id": "7c5f0ac6-ae64-4ca9-a858-044244f4d6bd",
+    "title_fa": "ما مریدان او باشیم بشنو ای مرد نجیب",
+    "title_ps": "ما مریدان او باشیم بشنو ای مرد نجیب",
+    "reciter_name": "امیرمحمد کابلی",
+    "description": null,
+    "audio_url": "https://igsmyoghkkyetsyqbqlm.supabase.co/storage/v1/object/public/Naat/Amir%20Muhammad%20Kabuli.mp3",
+    "duration_seconds": null,
+    "file_size_mb": null,
+    "created_at": "2026-02-11T05:05:07.154183+00:00"
+  }
+]

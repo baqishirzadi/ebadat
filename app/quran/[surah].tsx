@@ -5,21 +5,22 @@
  */
 
 import React, { useState, useCallback, useEffect, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar, BackHandler, Platform, ToastAndroid, Pressable } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, BackHandler, Platform, ToastAndroid, Pressable, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
 import { MushafView, AudioPlayer } from '@/components/quran';
-import audioManager from '@/utils/quranAudio';
+import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { Spacing } from '@/constants/theme';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
 
 export default function QuranReaderScreen() {
-  const { surah: surahParam, ayah: ayahParam } = useLocalSearchParams<{
+  const { surah: surahParam, ayah: ayahParam, jump: jumpParam } = useLocalSearchParams<{
     surah: string | string[];
     ayah?: string | string[];
+    jump?: string | string[];
   }>();
   const router = useRouter();
   const navigation = useNavigation();
@@ -28,6 +29,7 @@ export default function QuranReaderScreen() {
 
   const normalizedSurahParam = Array.isArray(surahParam) ? surahParam[0] : surahParam;
   const normalizedAyahParam = Array.isArray(ayahParam) ? ayahParam[0] : ayahParam;
+  const normalizedJumpParam = Array.isArray(jumpParam) ? jumpParam[0] : jumpParam;
 
   const parsedSurahNumber = Number.parseInt(normalizedSurahParam ?? '', 10);
   const surahNumber = Number.isFinite(parsedSurahNumber) && parsedSurahNumber > 0
@@ -38,6 +40,7 @@ export default function QuranReaderScreen() {
   const initialAyah = Number.isFinite(parsedAyahNumber) && parsedAyahNumber > 0
     ? parsedAyahNumber
     : 1;
+  const jumpMode: 'default' | 'exact' = normalizedJumpParam === 'exact' ? 'exact' : 'default';
   const surah = getSurah(surahNumber);
   const surahNameData = getSurahName(surahNumber);
 
@@ -134,7 +137,11 @@ export default function QuranReaderScreen() {
     setShowAudioPlayer(true);
     setIsPlaying(true);
     setScrollTargetAyah(ayahNum);
-    void audioManager.playAyah(surahNum, ayahNum, surah.ayahs.length, true);
+    void audioManager
+      .playAyah(surahNum, ayahNum, surah.ayahs.length, true)
+      .catch((error) => {
+        Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+      });
   }, [surah, currentlyPlaying]);
 
   const handlePlayContinuous = useCallback(() => {
@@ -143,7 +150,11 @@ export default function QuranReaderScreen() {
     const currentAyah = currentlyPlaying?.ayah ?? initialAyah;
     setIsPlaying(true);
     setScrollTargetAyah(currentAyah);
-    void audioManager.playAyah(surahNumber, currentAyah, surah.ayahs.length, true);
+    void audioManager
+      .playAyah(surahNumber, currentAyah, surah.ayahs.length, true)
+      .catch((error) => {
+        Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+      });
   }, [surah, currentlyPlaying?.ayah, initialAyah, surahNumber]);
 
   const handlePause = useCallback(() => {
@@ -269,6 +280,7 @@ export default function QuranReaderScreen() {
       <MushafView
         surahNumber={surahNumber}
         initialAyah={scrollTargetAyah}
+        jumpMode={jumpMode}
         onPlayAyah={handlePlayAyah}
         currentlyPlaying={currentlyPlaying}
       />

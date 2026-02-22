@@ -26,8 +26,17 @@ export default function SearchScreen() {
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState<SearchResult[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchWorkerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestSearchRequestIdRef = useRef(0);
 
   const runSearch = useCallback((text: string) => {
+    const requestId = ++latestSearchRequestIdRef.current;
+
+    if (searchWorkerRef.current) {
+      clearTimeout(searchWorkerRef.current);
+      searchWorkerRef.current = null;
+    }
+
     if (!text.trim() || text.length < 2) {
       setResults([]);
       setIsSearching(false);
@@ -35,13 +44,20 @@ export default function SearchScreen() {
     }
 
     setIsSearching(true);
-    const searchResults =
-      searchMode === 'arabic'
-        ? searchArabic(text, 100)
-        : searchTranslation(text, 'both', 100);
+    searchWorkerRef.current = setTimeout(() => {
+      const searchResults =
+        searchMode === 'arabic'
+          ? searchArabic(text, 100)
+          : searchTranslation(text, 'both', 100);
 
-    setResults(searchResults);
-    setIsSearching(false);
+      if (requestId !== latestSearchRequestIdRef.current) {
+        return;
+      }
+
+      setResults(searchResults);
+      setIsSearching(false);
+      searchWorkerRef.current = null;
+    }, 0);
   }, [searchMode, searchArabic, searchTranslation]);
 
   // Perform search with debounce
@@ -63,6 +79,9 @@ export default function SearchScreen() {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
       }
+      if (searchWorkerRef.current) {
+        clearTimeout(searchWorkerRef.current);
+      }
     };
   }, [query, runSearch]);
 
@@ -75,7 +94,7 @@ export default function SearchScreen() {
   // Navigate to result
   const handleResultPress = useCallback(
     (result: SearchResult) => {
-      router.push(`/quran/${result.surahNumber}?ayah=${result.ayahNumber}`);
+      router.push(`/quran/${result.surahNumber}?ayah=${result.ayahNumber}&jump=exact&from=search`);
     },
     [router]
   );
