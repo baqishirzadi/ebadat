@@ -96,8 +96,8 @@ const PRAYER_ROLLING_DAYS_IOS = 7;
 const PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER = 5;
 const ADHAN_SOUND_FILENAME = 'barakatullah_salim_18sec.mp3';
 const CHANNEL_IDS = {
-  ADHAN_FAJR: 'adhan-fajr-v5',
-  ADHAN_REGULAR: 'adhan-regular-v5',
+  ADHAN_FAJR: 'adhan-fajr-v6',
+  ADHAN_REGULAR: 'adhan-regular-v6',
   PRAYER_SILENT: 'prayer-silent',
   PRAYER_REMINDER: 'prayer-reminder',
   CALENDAR_QAMARI: 'calendar-qamari',
@@ -444,7 +444,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         importance: NotificationsModule.AndroidImportance.DEFAULT,
         vibrationPattern: [0, 100],
         lightColor: '#1a4d3e',
-        sound: undefined, // No sound
+        sound: null,
         enableVibrate: true,
         showBadge: true,
       });
@@ -455,7 +455,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         importance: NotificationsModule.AndroidImportance.LOW,
         vibrationPattern: [0, 50],
         lightColor: '#D4AF37',
-        sound: undefined,
+        sound: null,
         enableVibrate: true,
         showBadge: false,
       });
@@ -475,7 +475,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         importance: NotificationsModule.AndroidImportance.HIGH,
         vibrationPattern: [0, 180, 120, 180],
         lightColor: '#1a4d3e',
-        sound: undefined,
+        sound: null,
         enableVibrate: true,
         showBadge: true,
       });
@@ -490,6 +490,8 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           deleteChannel('adhan-regular-v3'),
           deleteChannel('adhan-fajr-v4'),
           deleteChannel('adhan-regular-v4'),
+          deleteChannel('adhan-fajr-v5'),
+          deleteChannel('adhan-regular-v5'),
         ]);
       }
     } catch (error) {

@@ -94,7 +94,16 @@ export default function SearchScreen() {
   // Navigate to result
   const handleResultPress = useCallback(
     (result: SearchResult) => {
-      router.push(`/quran/${result.surahNumber}?ayah=${result.ayahNumber}&jump=exact&from=search`);
+      router.push({
+        pathname: '/quran/[surah]',
+        params: {
+          surah: String(result.surahNumber),
+          ayah: String(result.ayahNumber),
+          jump: 'exact',
+          jumpToken: String(Date.now()),
+          from: 'search',
+        },
+      });
     },
     [router]
   );

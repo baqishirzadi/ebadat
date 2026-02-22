@@ -1,6 +1,6 @@
 import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Network from 'expo-network';
 import TrackPlayer, { State as TrackPlayerState } from 'react-native-track-player';
 
@@ -20,13 +20,30 @@ export const RECITERS = {
 };
 
 export function getAyahUrl(surah: number, ayah: number, reciter: ReciterKey = 'ghamidi'): string {
+  return getAyahUrlCandidates(surah, ayah, reciter)[0];
+}
+
+function getAyahUrlCandidates(
+  surah: number,
+  ayah: number,
+  reciter: ReciterKey = 'ghamidi'
+): string[] {
   const s = String(surah).padStart(3, '0');
   const a = String(ayah).padStart(3, '0');
-  return `${RECITERS[reciter].baseUrl}/${s}${a}.mp3`;
+  const primaryBaseUrl = RECITERS[reciter].baseUrl;
+  const fallbackBaseUrl = primaryBaseUrl.replace('https://everyayah.com/', 'https://www.everyayah.com/');
+
+  return [primaryBaseUrl, fallbackBaseUrl].map((baseUrl) => `${baseUrl}/${s}${a}.mp3`);
 }
 
 export function getQuranPlaybackErrorMessage(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error);
+  if (message.startsWith('cache_dir_unavailable')) {
+    return 'فضای ذخیره‌سازی برای قرآن در دسترس نیست. لطفاً برنامه را دوباره باز کنید.';
+  }
+  if (message.startsWith('dns_failure')) {
+    return 'اتصال به سرور تلاوت برقرار نشد. لطفاً اینترنت را بررسی کنید.';
+  }
   if (message.startsWith('offline_cache_miss')) {
     return 'این آیه هنوز ذخیره نشده است. برای بار اول اینترنت را وصل کنید.';
   }
@@ -42,7 +59,7 @@ const MAX_BACKGROUND_CACHE_ATTEMPTS = 2;
 const CACHE_RETRY_BASE_DELAY_MS = 350;
 
 function getDocumentDirectory(): string | null {
-  const documentDirectory = (FileSystem as any).documentDirectory as string | null | undefined;
+  const documentDirectory = FileSystem.documentDirectory as string | null | undefined;
   return typeof documentDirectory === 'string' ? documentDirectory : null;
 }
 
@@ -59,7 +76,9 @@ function getAyahCachePath(surah: number, ayah: number, reciter: ReciterKey): str
 // Creates cache directory if it does not exist
 async function ensureCacheDir(reciter: ReciterKey): Promise<void> {
   const documentDirectory = getDocumentDirectory();
-  if (!documentDirectory) return;
+  if (!documentDirectory) {
+    throw new Error('cache_dir_unavailable');
+  }
 
   const dir = `${documentDirectory}quran_audio/${reciter}/`;
   const info = await FileSystem.getInfoAsync(dir);
@@ -175,43 +194,69 @@ class QuranAudioManager {
     }
   }
 
-  private async downloadAyahToCache(surah: number, ayah: number, reciter: ReciterKey): Promise<boolean> {
+  private isDnsFailureError(error: unknown): boolean {
+    const message = error instanceof Error ? error.message : String(error);
+    return /UnknownHost|ENOTFOUND|getaddrinfo/i.test(message);
+  }
+
+  private async downloadAyahToCache(
+    surah: number,
+    ayah: number,
+    reciter: ReciterKey
+  ): Promise<{ ok: boolean; reason?: 'cache_dir_unavailable' | 'dns_failure' | 'cache_write_failed' }> {
     const cachePath = getAyahCachePath(surah, ayah, reciter);
-    if (!cachePath) return false;
+    if (!cachePath) return { ok: false, reason: 'cache_dir_unavailable' };
 
     const tempPath = `${cachePath}.tmp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const url = getAyahUrl(surah, ayah, reciter);
+    const urls = getAyahUrlCandidates(surah, ayah, reciter);
+    let sawDnsFailure = false;
 
     try {
       await ensureCacheDir(reciter);
       await this.removeFileIfExists(tempPath);
 
-      const result = await FileSystem.downloadAsync(url, tempPath);
-      if (result.status !== 200) {
-        await this.removeFileIfExists(tempPath);
-        return false;
+      for (const url of urls) {
+        try {
+          const result = await FileSystem.downloadAsync(url, tempPath);
+          if (result.status !== 200) {
+            await this.removeFileIfExists(tempPath);
+            continue;
+          }
+
+          const tempInfo = await FileSystem.getInfoAsync(tempPath);
+          if (!this.isValidCachedAudioFile(tempInfo)) {
+            await this.removeFileIfExists(tempPath);
+            continue;
+          }
+
+          await this.removeFileIfExists(cachePath);
+          await FileSystem.moveAsync({ from: tempPath, to: cachePath });
+
+          const finalInfo = await FileSystem.getInfoAsync(cachePath);
+          if (!this.isValidCachedAudioFile(finalInfo)) {
+            await this.removeFileIfExists(cachePath);
+            continue;
+          }
+
+          return { ok: true };
+        } catch (error) {
+          if (this.isDnsFailureError(error)) {
+            sawDnsFailure = true;
+          }
+          await this.removeFileIfExists(tempPath);
+        }
       }
-
-      const tempInfo = await FileSystem.getInfoAsync(tempPath);
-      if (!this.isValidCachedAudioFile(tempInfo)) {
-        await this.removeFileIfExists(tempPath);
-        return false;
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith('cache_dir_unavailable')) {
+        return { ok: false, reason: 'cache_dir_unavailable' };
       }
-
-      await this.removeFileIfExists(cachePath);
-      await FileSystem.moveAsync({ from: tempPath, to: cachePath });
-
-      const finalInfo = await FileSystem.getInfoAsync(cachePath);
-      if (!this.isValidCachedAudioFile(finalInfo)) {
-        await this.removeFileIfExists(cachePath);
-        return false;
-      }
-
-      return true;
-    } catch {
       await this.removeFileIfExists(tempPath);
-      return false;
+      if (this.isDnsFailureError(error)) {
+        sawDnsFailure = true;
+      }
     }
+
+    return { ok: false, reason: sawDnsFailure ? 'dns_failure' : 'cache_write_failed' };
   }
 
   private async downloadAyahToCacheWithRetries(
@@ -219,15 +264,20 @@ class QuranAudioManager {
     ayah: number,
     reciter: ReciterKey,
     attempts: number
-  ): Promise<boolean> {
+  ): Promise<{ ok: boolean; reason?: 'cache_dir_unavailable' | 'dns_failure' | 'cache_write_failed' }> {
+    let sawDnsFailure = false;
     for (let attempt = 1; attempt <= attempts; attempt++) {
-      const ok = await this.downloadAyahToCache(surah, ayah, reciter);
-      if (ok) return true;
+      const result = await this.downloadAyahToCache(surah, ayah, reciter);
+      if (result.ok) return result;
+      if (result.reason === 'cache_dir_unavailable') return result;
+      if (result.reason === 'dns_failure') {
+        sawDnsFailure = true;
+      }
       if (attempt < attempts) {
         await this.wait(CACHE_RETRY_BASE_DELAY_MS * attempt);
       }
     }
-    return false;
+    return { ok: false, reason: sawDnsFailure ? 'dns_failure' : 'cache_write_failed' };
   }
 
   private async ensureCachedInBackground(surah: number, ayah: number, reciter: ReciterKey): Promise<void> {
@@ -239,13 +289,13 @@ class QuranAudioManager {
       const cached = await this.isAyahCached(surah, ayah, reciter);
       if (cached) return;
 
-      const ok = await this.downloadAyahToCacheWithRetries(
+      const result = await this.downloadAyahToCacheWithRetries(
         surah,
         ayah,
         reciter,
         MAX_BACKGROUND_CACHE_ATTEMPTS
       );
-      this.logCacheOutcome(ok ? 'cache_retry_ok' : 'cache_retry_failed', surah, ayah, reciter);
+      this.logCacheOutcome(result.ok ? 'cache_retry_ok' : 'cache_retry_failed', surah, ayah, reciter);
     } finally {
       this.backgroundCacheInFlight.delete(cacheKey);
     }
@@ -290,7 +340,7 @@ class QuranAudioManager {
   ): Promise<CacheResolution> {
     const cachePath = getAyahCachePath(surah, ayah, reciter);
     if (!cachePath) {
-      return { uri: getAyahUrl(surah, ayah, reciter), usedStreamingFallback: true };
+      throw new Error(`cache_dir_unavailable reciter=${reciter} surah=${surah} ayah=${ayah}`);
     }
 
     try {
@@ -309,21 +359,29 @@ class QuranAudioManager {
       // Cache check failed - fall through to download
     }
 
-    const wroteToCache = await this.downloadAyahToCacheWithRetries(
+    const downloadResult = await this.downloadAyahToCacheWithRetries(
       surah,
       ayah,
       reciter,
       MAX_SYNC_CACHE_ATTEMPTS
     );
-    if (wroteToCache) {
+    if (downloadResult.ok) {
       this.logCacheOutcome('cache_write_ok', surah, ayah, reciter);
       return { uri: cachePath, usedStreamingFallback: false };
     }
     this.logCacheOutcome('cache_write_failed', surah, ayah, reciter);
 
+    if (downloadResult.reason === 'cache_dir_unavailable') {
+      throw new Error(`cache_dir_unavailable reciter=${reciter} surah=${surah} ayah=${ayah}`);
+    }
+
     const isOnline = await this.isNetworkAvailable();
     if (!isOnline) {
       throw new Error(`offline_cache_miss reciter=${reciter} surah=${surah} ayah=${ayah}`);
+    }
+
+    if (downloadResult.reason === 'dns_failure') {
+      throw new Error(`dns_failure reciter=${reciter} surah=${surah} ayah=${ayah}`);
     }
     throw new Error(`cache_write_failed reciter=${reciter} surah=${surah} ayah=${ayah}`);
   }
@@ -411,6 +469,10 @@ class QuranAudioManager {
       const message = resolvedError.message;
       if (message.startsWith('offline_cache_miss')) {
         console.error(`[QuranCache] offline_cache_miss ${message}`);
+      } else if (message.startsWith('cache_dir_unavailable')) {
+        console.error(`[QuranCache] cache_dir_unavailable ${message}`);
+      } else if (message.startsWith('dns_failure')) {
+        console.error(`[QuranCache] dns_failure ${message}`);
       } else if (message.startsWith('cache_write_failed')) {
         console.error(`[QuranCache] cache_write_failed ${message}`);
       } else {

@@ -21,11 +21,16 @@ interface MushafViewProps {
   surahNumber: number;
   initialAyah?: number;
   jumpMode?: 'default' | 'exact';
+  jumpToken?: string;
   onAyahChange?: (surah: number, ayah: number) => void;
   onPlayAyah?: (surah: number, ayah: number) => void;
   currentlyPlaying?: { surah: number; ayah: number } | null;
   onPageChange?: (page: number) => void;
 }
+
+const MAX_SCROLL_RETRY_ATTEMPTS = 6;
+const SCROLL_RETRY_DELAYS_MS = [120, 160, 200, 240, 280, 320];
+const SCROLL_PROGRESSIVE_MEASURE_STEPS = [0, 40, 120, 240, 360, 480];
 
 // Regex pattern to match Bismillah structure: بِسْمِ followed by 3 word groups (الله, الرحمن, الرحيم)
 // Pattern matches: بِسْمِ + [word1] + [word2] + [word3] + space, then captures the actual ayah content
@@ -51,6 +56,7 @@ export function MushafView({
   surahNumber,
   initialAyah = 1,
   jumpMode = 'default',
+  jumpToken,
   onAyahChange,
   onPlayAyah,
   currentlyPlaying,
@@ -103,11 +109,18 @@ export function MushafView({
     scrollRetryTimersRef.current = [];
   }, []);
 
+  const resetPendingScrollState = useCallback(() => {
+    clearScrollRetryTimers();
+    pendingScrollAyahRef.current = null;
+    pendingScrollRetryCountRef.current = 0;
+  }, [clearScrollRetryTimers]);
+
   useEffect(() => {
     return () => {
-      clearScrollRetryTimers();
+      activeScrollRequestIdRef.current += 1;
+      resetPendingScrollState();
     };
-  }, [clearScrollRetryTimers]);
+  }, [resetPendingScrollState]);
 
   const getScrollIndexForAyah = useCallback((ayahNumber: number): number | null => {
     if (!surah) return null;
@@ -137,9 +150,8 @@ export function MushafView({
   }, [getScrollIndexForAyah, effectiveViewMode]);
 
   const scheduleDeterministicScroll = useCallback((ayahNumber: number, firstAnimated = true) => {
-    clearScrollRetryTimers();
+    resetPendingScrollState();
     pendingScrollAyahRef.current = ayahNumber;
-    pendingScrollRetryCountRef.current = 0;
     const requestId = ++activeScrollRequestIdRef.current;
 
     scrollToAyahIndex(ayahNumber, firstAnimated);
@@ -147,12 +159,20 @@ export function MushafView({
     [120, 280].forEach((delay) => {
       const timer = setTimeout(() => {
         if (activeScrollRequestIdRef.current !== requestId) return;
+        if (pendingScrollAyahRef.current !== ayahNumber) return;
         if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(ayahNumber)) return;
+        if (pendingScrollRetryCountRef.current >= MAX_SCROLL_RETRY_ATTEMPTS) return;
+        pendingScrollRetryCountRef.current += 1;
         scrollToAyahIndex(ayahNumber, true);
       }, delay);
       scrollRetryTimersRef.current.push(timer);
     });
-  }, [clearScrollRetryTimers, scrollToAyahIndex, effectiveViewMode]);
+  }, [resetPendingScrollState, scrollToAyahIndex, effectiveViewMode]);
+
+  useEffect(() => {
+    activeScrollRequestIdRef.current += 1;
+    resetPendingScrollState();
+  }, [surahNumber, jumpToken, resetPendingScrollState]);
 
   // Deterministic initial scroll for deep-link ayah (supports both scroll and mushaf modes)
   useEffect(() => {
@@ -160,7 +180,7 @@ export function MushafView({
     const clampedTarget = Math.min(Math.max(initialAyah, 1), surah.ayahs.length);
     if (effectiveViewMode === 'scroll' && clampedTarget <= 1) return;
     scheduleDeterministicScroll(clampedTarget);
-  }, [initialAyah, surahNumber, surah, effectiveViewMode, scheduleDeterministicScroll]);
+  }, [initialAyah, jumpToken, surahNumber, surah, effectiveViewMode, scheduleDeterministicScroll]);
 
   // Auto-scroll to currently playing ayah - only when ayah is not already in view (reduces jump)
   useEffect(() => {
@@ -188,6 +208,14 @@ export function MushafView({
       }
       viewableAyahNumbersRef.current = visible;
 
+      if (
+        effectiveViewMode === 'scroll' &&
+        pendingScrollAyahRef.current &&
+        visible.has(pendingScrollAyahRef.current)
+      ) {
+        resetPendingScrollState();
+      }
+
       if (viewableItems.length > 0) {
         const firstVisible = viewableItems[0].item;
         const page = getPage(surahNumber, firstVisible.number);
@@ -204,7 +232,7 @@ export function MushafView({
         onAyahChange?.(surahNumber, firstVisible.number);
       }
     },
-    [surahNumber, updatePosition, onAyahChange, onPageChange, getPage]
+    [surahNumber, updatePosition, onAyahChange, onPageChange, getPage, effectiveViewMode, resetPendingScrollState]
   );
 
   const viewabilityConfig = useRef({
@@ -217,27 +245,39 @@ export function MushafView({
       if (!flatListRef.current) return;
       const targetAyah = pendingScrollAyahRef.current;
       if (!targetAyah) return;
-      if (pendingScrollRetryCountRef.current >= 2) return;
-      pendingScrollRetryCountRef.current += 1;
+      if (pendingScrollRetryCountRef.current >= MAX_SCROLL_RETRY_ATTEMPTS) return;
 
-      const averageLength =
-        Number.isFinite(info.averageItemLength) && info.averageItemLength > 0
-          ? info.averageItemLength
-          : 120;
+      const requestId = activeScrollRequestIdRef.current;
       const targetIndex = getScrollIndexForAyah(targetAyah) ?? info.index;
+      const stepIndex = Math.min(
+        pendingScrollRetryCountRef.current,
+        SCROLL_PROGRESSIVE_MEASURE_STEPS.length - 1
+      );
+      const step = SCROLL_PROGRESSIVE_MEASURE_STEPS[stepIndex];
+      const measuredIndex = Math.max(0, info.highestMeasuredFrameIndex);
+      const intermediateIndex = Math.min(targetIndex, measuredIndex + step);
 
-      flatListRef.current.scrollToOffset({
-        offset: Math.max(0, averageLength * targetIndex),
+      clearScrollRetryTimers();
+      pendingScrollRetryCountRef.current += 1;
+      const delay = SCROLL_RETRY_DELAYS_MS[Math.min(
+        pendingScrollRetryCountRef.current - 1,
+        SCROLL_RETRY_DELAYS_MS.length - 1
+      )];
+
+      flatListRef.current.scrollToIndex({
+        index: intermediateIndex,
         animated: false,
       });
 
-      const delay = pendingScrollRetryCountRef.current === 1 ? 120 : 280;
       const timer = setTimeout(() => {
+        if (activeScrollRequestIdRef.current !== requestId) return;
+        if (pendingScrollAyahRef.current !== targetAyah) return;
+        if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(targetAyah)) return;
         scrollToAyahIndex(targetAyah, true);
       }, delay);
       scrollRetryTimersRef.current.push(timer);
     },
-    [getScrollIndexForAyah, scrollToAyahIndex]
+    [clearScrollRetryTimers, effectiveViewMode, getScrollIndexForAyah, scrollToAyahIndex]
   );
 
   const handlePlayAyah = useCallback(

@@ -17,10 +17,11 @@ import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
 
 export default function QuranReaderScreen() {
-  const { surah: surahParam, ayah: ayahParam, jump: jumpParam } = useLocalSearchParams<{
+  const { surah: surahParam, ayah: ayahParam, jump: jumpParam, jumpToken: jumpTokenParam } = useLocalSearchParams<{
     surah: string | string[];
     ayah?: string | string[];
     jump?: string | string[];
+    jumpToken?: string | string[];
   }>();
   const router = useRouter();
   const navigation = useNavigation();
@@ -30,6 +31,7 @@ export default function QuranReaderScreen() {
   const normalizedSurahParam = Array.isArray(surahParam) ? surahParam[0] : surahParam;
   const normalizedAyahParam = Array.isArray(ayahParam) ? ayahParam[0] : ayahParam;
   const normalizedJumpParam = Array.isArray(jumpParam) ? jumpParam[0] : jumpParam;
+  const normalizedJumpToken = Array.isArray(jumpTokenParam) ? jumpTokenParam[0] : jumpTokenParam;
 
   const parsedSurahNumber = Number.parseInt(normalizedSurahParam ?? '', 10);
   const surahNumber = Number.isFinite(parsedSurahNumber) && parsedSurahNumber > 0
@@ -281,6 +283,7 @@ export default function QuranReaderScreen() {
         surahNumber={surahNumber}
         initialAyah={scrollTargetAyah}
         jumpMode={jumpMode}
+        jumpToken={normalizedJumpToken}
         onPlayAyah={handlePlayAyah}
         currentlyPlaying={currentlyPlaying}
       />

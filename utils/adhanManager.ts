@@ -76,9 +76,9 @@ export interface AdhanPreferences {
   globalVoice: AdhanVoice;
 }
 
-// Default settings - Fajr and Maghrib with sound, Dhuhr/Asr/Isha silent
+// Default settings - all five prayers audible by default
 export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
-  schemaVersion: 2,
+  schemaVersion: 3,
   masterEnabled: true,
   
   // Fajr: Full Adhan with sound
@@ -88,7 +88,7 @@ export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
     selectedVoice: 'barakatullah',
   },
   
-  // Dhuhr, Asr, Isha: Silent reminders only
+  // Dhuhr, Asr, Isha: Adhan with sound (default)
   dhuhr: {
     enabled: true,
     playSound: true,
