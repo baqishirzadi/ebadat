@@ -26,7 +26,7 @@ export const ADHAN_VOICES: Record<AdhanVoice, {
     nameDari: 'برکت‌الله سلیم (رح)',
     namePashto: 'برکت‌الله سلیم (رح)',
     description: 'مؤذن افغان - صدای آرام و سنتی',
-    filename: 'barakatullah_salim.mp3',
+    filename: 'barakatullah_salim_18sec.mp3',
     available: true,
   },
   sheikh_ali_ahmed_mulla: {
@@ -34,7 +34,7 @@ export const ADHAN_VOICES: Record<AdhanVoice, {
     nameDari: 'شیخ علی احمد ملا',
     namePashto: 'شیخ علی احمد ملا',
     description: 'مؤذن با صدای زیبا',
-    filename: 'fajr_adhan.mp3', // Note: This file contains Sheikh Ali Ahmed Mulla's Adhan
+    filename: 'barakatullah_salim_18sec.mp3',
     available: true,
   },
 };
