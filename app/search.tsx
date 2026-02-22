@@ -94,13 +94,14 @@ export default function SearchScreen() {
   // Navigate to result
   const handleResultPress = useCallback(
     (result: SearchResult) => {
+      const jumpToken = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
       router.push({
         pathname: '/quran/[surah]',
         params: {
           surah: String(result.surahNumber),
           ayah: String(result.ayahNumber),
           jump: 'exact',
-          jumpToken: String(Date.now()),
+          jumpToken,
           from: 'search',
         },
       });
