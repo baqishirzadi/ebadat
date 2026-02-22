@@ -1,6 +1,7 @@
 import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
+import * as Network from 'expo-network';
 import TrackPlayer, { State as TrackPlayerState } from 'react-native-track-player';
 
 export type ReciterKey = 'ghamidi' | 'muaiqly';
@@ -150,6 +151,19 @@ class QuranAudioManager {
     await new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  private async isNetworkAvailable(): Promise<boolean> {
+    try {
+      const state = await Network.getNetworkStateAsync();
+      if (typeof state.isInternetReachable === 'boolean') {
+        return state.isInternetReachable;
+      }
+      return Boolean(state.isConnected);
+    } catch {
+      // If network status cannot be resolved, keep playback path permissive.
+      return true;
+    }
+  }
+
   private async downloadAyahToCache(surah: number, ayah: number, reciter: ReciterKey): Promise<boolean> {
     const cachePath = getAyahCachePath(surah, ayah, reciter);
     if (!cachePath) return false;
@@ -226,6 +240,18 @@ class QuranAudioManager {
     }
   }
 
+  private prefetchNextAyahInBackground(
+    surah: number,
+    ayah: number,
+    totalAyahsInSurah: number,
+    reciter: ReciterKey
+  ): void {
+    if (!this.isContinuous) return;
+    const nextAyah = ayah + 1;
+    if (nextAyah > totalAyahsInSurah) return;
+    void this.ensureCachedInBackground(surah, nextAyah, reciter);
+  }
+
   private async stopCompetingNaatPlayback(): Promise<void> {
     try {
       const playbackState = await TrackPlayer.getPlaybackState();
@@ -257,12 +283,13 @@ class QuranAudioManager {
     }
 
     try {
-      const info = await FileSystem.getInfoAsync(cachePath);
-      if (this.isValidCachedAudioFile(info)) {
+      const cached = await this.isAyahCached(surah, ayah, reciter);
+      if (cached) {
         this.logCacheOutcome('cache_hit', surah, ayah, reciter);
         return { uri: cachePath, usedStreamingFallback: false };
       }
 
+      const info = await FileSystem.getInfoAsync(cachePath);
       // Corrupt or partial cache should not be reused
       if (info.exists) {
         await this.removeFileIfExists(cachePath);
@@ -282,6 +309,11 @@ class QuranAudioManager {
       return { uri: cachePath, usedStreamingFallback: false };
     }
     this.logCacheOutcome('cache_write_failed', surah, ayah, reciter);
+
+    const isOnline = await this.isNetworkAvailable();
+    if (!isOnline) {
+      throw new Error(`offline_cache_miss reciter=${reciter} surah=${surah} ayah=${ayah}`);
+    }
 
     // Fallback: stream directly if download fails
     return { uri: getAyahUrl(surah, ayah, reciter), usedStreamingFallback: true };
@@ -363,9 +395,17 @@ class QuranAudioManager {
       if (audioSource.usedStreamingFallback) {
         void this.ensureCachedInBackground(surah, ayah, this.currentReciter);
       }
+
+      this.prefetchNextAyahInBackground(surah, ayah, totalAyahsInSurah, this.currentReciter);
     } catch (e) {
-      console.error('playAyah error:', e);
+      const message = e instanceof Error ? e.message : String(e);
+      if (message.startsWith('offline_cache_miss')) {
+        console.error(`[QuranCache] offline_cache_miss ${message}`);
+      } else {
+        console.error('playAyah error:', e);
+      }
       this.isPlaying = false;
+      this.onPlaybackEndCb?.();
     }
   }
 

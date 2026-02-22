@@ -18,16 +18,26 @@ import AppCenteredText from '@/components/CenteredText';
 
 export default function QuranReaderScreen() {
   const { surah: surahParam, ayah: ayahParam } = useLocalSearchParams<{
-    surah: string;
-    ayah?: string;
+    surah: string | string[];
+    ayah?: string | string[];
   }>();
   const router = useRouter();
   const navigation = useNavigation();
   const { theme, state } = useApp();
   const { getSurah } = useQuranData();
 
-  const surahNumber = parseInt(surahParam, 10) || 1;
-  const initialAyah = ayahParam ? parseInt(ayahParam, 10) : 1;
+  const normalizedSurahParam = Array.isArray(surahParam) ? surahParam[0] : surahParam;
+  const normalizedAyahParam = Array.isArray(ayahParam) ? ayahParam[0] : ayahParam;
+
+  const parsedSurahNumber = Number.parseInt(normalizedSurahParam ?? '', 10);
+  const surahNumber = Number.isFinite(parsedSurahNumber) && parsedSurahNumber > 0
+    ? parsedSurahNumber
+    : 1;
+
+  const parsedAyahNumber = Number.parseInt(normalizedAyahParam ?? '', 10);
+  const initialAyah = Number.isFinite(parsedAyahNumber) && parsedAyahNumber > 0
+    ? parsedAyahNumber
+    : 1;
   const surah = getSurah(surahNumber);
   const surahNameData = getSurahName(surahNumber);
 
@@ -53,8 +63,13 @@ export default function QuranReaderScreen() {
   }, [shouldGoBack, router]);
 
   useEffect(() => {
-    setScrollTargetAyah(initialAyah);
-  }, [surahNumber, initialAyah]);
+    if (!surah) {
+      setScrollTargetAyah(initialAyah);
+      return;
+    }
+    const clampedAyah = Math.min(Math.max(initialAyah, 1), surah.ayahs.length);
+    setScrollTargetAyah(clampedAyah);
+  }, [surahNumber, initialAyah, surah]);
 
   useEffect(() => {
     audioManager.setOnAyahChange((s, a) => {

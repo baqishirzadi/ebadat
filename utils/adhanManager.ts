@@ -9,8 +9,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Storage key
 export const ADHAN_STORAGE_KEY = '@ebadat/adhan_settings';
 
-// Adhan voice options
-export type AdhanVoice = 'barakatullah' | 'sheikh_ali_ahmed_mulla';
+// Adhan voice options (single-voice production policy)
+export type AdhanVoice = 'barakatullah';
 
 // Voice metadata
 export const ADHAN_VOICES: Record<AdhanVoice, {
@@ -26,14 +26,6 @@ export const ADHAN_VOICES: Record<AdhanVoice, {
     nameDari: 'برکت‌الله سلیم (رح)',
     namePashto: 'برکت‌الله سلیم (رح)',
     description: 'مؤذن افغان - صدای آرام و سنتی',
-    filename: 'barakatullah_salim_18sec.mp3',
-    available: true,
-  },
-  sheikh_ali_ahmed_mulla: {
-    id: 'sheikh_ali_ahmed_mulla',
-    nameDari: 'شیخ علی احمد ملا',
-    namePashto: 'شیخ علی احمد ملا',
-    description: 'مؤذن با صدای زیبا',
     filename: 'barakatullah_salim_18sec.mp3',
     available: true,
   },
@@ -89,7 +81,7 @@ export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
   fajr: {
     enabled: true,
     playSound: true,
-    selectedVoice: 'sheikh_ali_ahmed_mulla',
+    selectedVoice: 'barakatullah',
   },
   
   // Dhuhr, Asr, Isha: Silent reminders only
@@ -126,15 +118,8 @@ export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
  * Migrate old voice values to new ones
  */
 function migrateVoiceValue(oldVoice: string): AdhanVoice {
-  // Map old voice values to new ones
-  if (oldVoice === 'tarek' || oldVoice === 'default') {
-    return 'barakatullah'; // Default to barakatullah for old voices
-  }
-  // If it's already a valid new voice, return it
-  if (oldVoice === 'barakatullah' || oldVoice === 'sheikh_ali_ahmed_mulla') {
-    return oldVoice as AdhanVoice;
-  }
-  // Fallback
+  // Map all legacy/unknown values to the only supported voice
+  if (oldVoice === 'barakatullah') return 'barakatullah';
   return 'barakatullah';
 }
 
@@ -210,7 +195,6 @@ export async function saveAdhanPreferences(preferences: AdhanPreferences): Promi
  */
 export function getBestAvailableVoice(): AdhanVoice {
   if (ADHAN_VOICES.barakatullah.available) return 'barakatullah';
-  if (ADHAN_VOICES.sheikh_ali_ahmed_mulla.available) return 'sheikh_ali_ahmed_mulla';
   return 'barakatullah'; // Fallback to barakatullah
 }
 

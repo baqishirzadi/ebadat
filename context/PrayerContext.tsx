@@ -96,8 +96,8 @@ const PRAYER_ROLLING_DAYS_IOS = 7;
 const PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER = 5;
 const ADHAN_SOUND_FILENAME = 'barakatullah_salim_18sec.mp3';
 const CHANNEL_IDS = {
-  ADHAN_FAJR: 'adhan-fajr-v3',
-  ADHAN_REGULAR: 'adhan-regular-v3',
+  ADHAN_FAJR: 'adhan-fajr-v4',
+  ADHAN_REGULAR: 'adhan-regular-v4',
   PRAYER_SILENT: 'prayer-silent',
   PRAYER_REMINDER: 'prayer-reminder',
   CALENDAR_QAMARI: 'calendar-qamari',
@@ -451,6 +451,8 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
           deleteChannel('adhan-regular'),
           deleteChannel('adhan-fajr-v2'),
           deleteChannel('adhan-regular-v2'),
+          deleteChannel('adhan-fajr-v3'),
+          deleteChannel('adhan-regular-v3'),
         ]);
       }
     } catch (error) {

@@ -17,16 +17,15 @@ import {
   Platform,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import { usePrayer } from '@/context/PrayerContext';
 import {
   AdhanVoice,
   ADHAN_VOICES,
   PrayerName,
   PRAYER_NAMES,
-  PrayerAdhanSettings,
 } from '@/utils/adhanManager';
-import { testAdhanVoice, isAdhanPlaying, stopAdhan } from '@/utils/adhanAudio';
+import { testAdhanVoice, stopAdhan } from '@/utils/adhanAudio';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 
@@ -36,12 +35,9 @@ const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 export default function AdhanSettingsScreen() {
   const { theme } = useApp();
   const { state, updateAdhanPreferences, openNotificationSettings } = usePrayer();
-  const router = useRouter();
   
   const [isTestingVoice, setIsTestingVoice] = useState<AdhanVoice | null>(null);
   const [expandedPrayer, setExpandedPrayer] = useState<PrayerName | null>(null);
-  const [showVoiceSelector, setShowVoiceSelector] = useState(false);
-  const [selectingVoiceFor, setSelectingVoiceFor] = useState<PrayerName | 'global' | null>(null);
 
   const { adhanPreferences } = state;
 
@@ -66,27 +62,6 @@ export default function AdhanSettingsScreen() {
     });
   }, [adhanPreferences, updateAdhanPreferences]);
 
-  // Change voice for a prayer
-  const handleVoiceChange = useCallback(async (prayer: PrayerName | 'global', voice: AdhanVoice) => {
-    if (prayer === 'global') {
-      // Update all prayers to use this voice
-      const updates: Partial<typeof adhanPreferences> = {
-        globalVoice: voice,
-      };
-      for (const p of PRAYER_ORDER) {
-        updates[p] = { ...adhanPreferences[p], selectedVoice: voice };
-      }
-      await updateAdhanPreferences(updates);
-    } else {
-      const currentSettings = adhanPreferences[prayer];
-      await updateAdhanPreferences({
-        [prayer]: { ...currentSettings, selectedVoice: voice },
-      });
-    }
-    setShowVoiceSelector(false);
-    setSelectingVoiceFor(null);
-  }, [adhanPreferences, updateAdhanPreferences]);
-
   // Toggle early reminder
   const handleEarlyReminderToggle = useCallback(async (value: boolean) => {
     await updateAdhanPreferences({ earlyReminder: value });
@@ -103,7 +78,7 @@ export default function AdhanSettingsScreen() {
     setIsTestingVoice(voice);
     try {
       await testAdhanVoice(voice, prayer, 10000);
-    } catch (error) {
+    } catch {
       Alert.alert('خطا', 'امکان پخش صدا وجود ندارد');
     } finally {
       setIsTestingVoice(null);
@@ -189,13 +164,7 @@ export default function AdhanSettingsScreen() {
 
             {/* Voice Selection (only if sound enabled) */}
             {settings.enabled && settings.playSound && (
-              <Pressable
-                onPress={() => {
-                  setSelectingVoiceFor(prayer);
-                  setShowVoiceSelector(true);
-                }}
-                style={[styles.voiceSelector, { backgroundColor: theme.backgroundSecondary }]}
-              >
+              <View style={[styles.voiceSelector, { backgroundColor: theme.backgroundSecondary }]}>
                 <View style={styles.voiceSelectorContent}>
                   <MaterialIcons name="record-voice-over" size={20} color={theme.tint} />
                   <View style={styles.voiceSelectorText}>
@@ -207,8 +176,7 @@ export default function AdhanSettingsScreen() {
                     </Text>
                   </View>
                 </View>
-                <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
-              </Pressable>
+              </View>
             )}
 
             {/* Test Button */}
@@ -235,75 +203,6 @@ export default function AdhanSettingsScreen() {
             )}
           </View>
         )}
-      </View>
-    );
-  };
-
-  // Render voice selector modal
-  const renderVoiceSelector = () => {
-    if (!showVoiceSelector || !selectingVoiceFor) return null;
-
-    const currentVoice = selectingVoiceFor === 'global'
-      ? adhanPreferences.globalVoice
-      : adhanPreferences[selectingVoiceFor].selectedVoice;
-
-    return (
-      <View style={styles.modalOverlay}>
-        <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
-          <View style={styles.modalHeader}>
-            <Text style={[styles.modalTitle, { color: theme.text }]}>
-              انتخاب مؤذن
-            </Text>
-            <Pressable onPress={() => setShowVoiceSelector(false)}>
-              <MaterialIcons name="close" size={24} color={theme.icon} />
-            </Pressable>
-          </View>
-
-          {Object.values(ADHAN_VOICES).map((voice) => (
-            <Pressable
-              key={voice.id}
-              onPress={() => handleVoiceChange(selectingVoiceFor, voice.id)}
-              style={[
-                styles.voiceOption,
-                { borderBottomColor: theme.divider },
-                currentVoice === voice.id && { backgroundColor: theme.backgroundSecondary },
-              ]}
-            >
-              <View style={styles.voiceOptionInfo}>
-                <Text style={[styles.voiceOptionName, { color: theme.text }]}>
-                  {voice.nameDari}
-                </Text>
-                <Text style={[styles.voiceOptionDesc, { color: theme.textSecondary }]}>
-                  {voice.description}
-                </Text>
-              </View>
-              
-              <View style={styles.voiceOptionActions}>
-                {/* Test button */}
-                <Pressable
-                  onPress={() => handleTestVoice(voice.id, selectingVoiceFor !== 'global' ? selectingVoiceFor : undefined)}
-                  style={styles.voiceTestBtn}
-                >
-                  {isTestingVoice === voice.id ? (
-                    <ActivityIndicator size="small" color="#D4AF37" />
-                  ) : (
-                    <MaterialIcons name="play-circle" size={28} color="#D4AF37" />
-                  )}
-                </Pressable>
-                
-                {/* Selected indicator */}
-                {currentVoice === voice.id && (
-                  <MaterialIcons name="check-circle" size={24} color="#1a4d3e" />
-                )}
-              </View>
-            </Pressable>
-          ))}
-
-          {/* Note about availability */}
-          <Text style={[styles.voiceNote, { color: theme.textSecondary }]}>
-            توجه: برخی صداها ممکن است هنوز در دسترس نباشند
-          </Text>
-        </View>
       </View>
     );
   };
@@ -348,13 +247,7 @@ export default function AdhanSettingsScreen() {
 
         {/* Global Voice Selector */}
         {adhanPreferences.masterEnabled && (
-          <Pressable
-            onPress={() => {
-              setSelectingVoiceFor('global');
-              setShowVoiceSelector(true);
-            }}
-            style={[styles.globalVoice, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
-          >
+          <View style={[styles.globalVoice, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <View style={styles.globalVoiceContent}>
               <MaterialIcons name="record-voice-over" size={24} color="#D4AF37" />
               <View style={styles.globalVoiceText}>
@@ -366,8 +259,7 @@ export default function AdhanSettingsScreen() {
                 </Text>
               </View>
             </View>
-            <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
-          </Pressable>
+          </View>
         )}
 
         {/* Prayer Cards */}
@@ -472,8 +364,6 @@ export default function AdhanSettingsScreen() {
         <View style={styles.bottomPadding} />
       </ScrollView>
 
-      {/* Voice Selector Modal */}
-      {renderVoiceSelector()}
     </>
   );
 }

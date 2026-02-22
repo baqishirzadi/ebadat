@@ -3,7 +3,7 @@
  * Supports both Mushaf page view and Ayah scroll view modes
  */
 
-import React, { useRef, useCallback, useEffect, useState } from 'react';
+import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp, useReadingPosition } from '@/context/AppContext';
@@ -59,12 +59,29 @@ export function MushafView({
   const { getSurah, getTranslation, getPage } = useQuranData();
   const flatListRef = useRef<FlatList>(null);
   const viewableAyahNumbersRef = useRef<Set<number>>(new Set());
+  const scrollRetryTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const [surah, setSurah] = useState<Surah | undefined>();
   const [isLoading, setIsLoading] = useState(true);
 
   const { viewMode, quranFont, arabicFontSize } = state.preferences;
   const fontFamily = getQuranFontFamily(quranFont);
+
+  const mushafPages = useMemo(() => {
+    if (!surah) return [] as { page: number; ayahs: Ayah[] }[];
+
+    const pageGroups: Map<number, Ayah[]> = new Map();
+    surah.ayahs.forEach((ayah) => {
+      const ayahs = pageGroups.get(ayah.page) || [];
+      ayahs.push(ayah);
+      pageGroups.set(ayah.page, ayahs);
+    });
+
+    return Array.from(pageGroups.entries()).map(([page, ayahs]) => ({
+      page,
+      ayahs,
+    }));
+  }, [surah]);
 
   // Load surah data
   useEffect(() => {
@@ -75,19 +92,63 @@ export function MushafView({
     setIsLoading(false);
   }, [surahNumber, getSurah]);
 
-  // Scroll to initial ayah
+  const clearScrollRetryTimers = useCallback(() => {
+    scrollRetryTimersRef.current.forEach((timer) => clearTimeout(timer));
+    scrollRetryTimersRef.current = [];
+  }, []);
+
   useEffect(() => {
-    if (surah && initialAyah > 1 && flatListRef.current) {
-      const index = initialAyah - 1;
-      setTimeout(() => {
-        flatListRef.current?.scrollToIndex({
-          index,
-          animated: true,
-          viewPosition: 0, // Top of ayah at top - Quran text (Arabic) has priority over translation
-        });
-      }, 300);
+    return () => {
+      clearScrollRetryTimers();
+    };
+  }, [clearScrollRetryTimers]);
+
+  const getScrollIndexForAyah = useCallback((ayahNumber: number): number | null => {
+    if (!surah) return null;
+    if (viewMode === 'scroll') {
+      return Math.max(0, Math.min(ayahNumber - 1, surah.ayahs.length - 1));
     }
-  }, [surah, initialAyah]);
+    const pageIndex = mushafPages.findIndex((page) =>
+      page.ayahs.some((ayah) => ayah.number === ayahNumber)
+    );
+    return pageIndex >= 0 ? pageIndex : null;
+  }, [surah, viewMode, mushafPages]);
+
+  const scrollToAyahIndex = useCallback((ayahNumber: number, animated: boolean): boolean => {
+    const targetIndex = getScrollIndexForAyah(ayahNumber);
+    if (targetIndex === null || !flatListRef.current) return false;
+
+    try {
+      flatListRef.current.scrollToIndex({
+        index: targetIndex,
+        animated,
+        ...(viewMode === 'scroll' ? { viewPosition: 0 } : {}),
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  }, [getScrollIndexForAyah, viewMode]);
+
+  const scheduleDeterministicScroll = useCallback((ayahNumber: number, firstAnimated = true) => {
+    clearScrollRetryTimers();
+    const retryDelays = [0, 120, 280];
+
+    retryDelays.forEach((delay, index) => {
+      const timer = setTimeout(() => {
+        scrollToAyahIndex(ayahNumber, index === 0 ? firstAnimated : true);
+      }, delay);
+      scrollRetryTimersRef.current.push(timer);
+    });
+  }, [clearScrollRetryTimers, scrollToAyahIndex]);
+
+  // Deterministic initial scroll for deep-link ayah (supports both scroll and mushaf modes)
+  useEffect(() => {
+    if (!surah) return;
+    const clampedTarget = Math.min(Math.max(initialAyah, 1), surah.ayahs.length);
+    if (viewMode === 'scroll' && clampedTarget <= 1) return;
+    scheduleDeterministicScroll(clampedTarget);
+  }, [initialAyah, surahNumber, surah, viewMode, scheduleDeterministicScroll]);
 
   // Auto-scroll to currently playing ayah - only when ayah is not already in view (reduces jump)
   useEffect(() => {
@@ -99,23 +160,12 @@ export function MushafView({
       flatListRef.current
     ) {
       const targetAyah = currentlyPlaying.ayah;
-      if (viewableAyahNumbersRef.current.has(targetAyah)) {
+      if (viewMode === 'scroll' && viewableAyahNumbersRef.current.has(targetAyah)) {
         return;
       }
-      const index = targetAyah - 1;
-      setTimeout(() => {
-        try {
-          flatListRef.current?.scrollToIndex({
-            index,
-            animated: true,
-            viewPosition: 0, // Top of ayah at top - Arabic text fully visible first, translation below
-          });
-        } catch (error) {
-          console.warn('Failed to scroll to index, using fallback:', error);
-        }
-      }, 100);
+      scheduleDeterministicScroll(targetAyah);
     }
-  }, [surah, currentlyPlaying, surahNumber]);
+  }, [surah, currentlyPlaying, surahNumber, viewMode, scheduleDeterministicScroll]);
 
   // Handle viewable items change for tracking reading position and smart scroll
   const handleViewableItemsChanged = useCallback(
@@ -149,6 +199,39 @@ export function MushafView({
     itemVisiblePercentThreshold: 50,
     minimumViewTime: 500,
   });
+
+  const handleScrollToIndexFailed = useCallback(
+    (info: { index: number; highestMeasuredFrameIndex: number; averageItemLength: number }) => {
+      if (!flatListRef.current) return;
+
+      const averageLength =
+        Number.isFinite(info.averageItemLength) && info.averageItemLength > 0
+          ? info.averageItemLength
+          : 120;
+
+      flatListRef.current.scrollToOffset({
+        offset: Math.max(0, averageLength * info.index),
+        animated: false,
+      });
+
+      const retryDelays = [120, 280];
+      retryDelays.forEach((delay, retryIndex) => {
+        const timer = setTimeout(() => {
+          try {
+            flatListRef.current?.scrollToIndex({
+              index: info.index,
+              animated: retryIndex === 0,
+              ...(viewMode === 'scroll' ? { viewPosition: 0 } : {}),
+            });
+          } catch {
+            // no-op
+          }
+        }, delay);
+        scrollRetryTimersRef.current.push(timer);
+      });
+    },
+    [viewMode]
+  );
 
   const handlePlayAyah = useCallback(
     (ayahNumber: number) => {
@@ -198,23 +281,10 @@ export function MushafView({
   const renderMushafPage = useCallback(() => {
     if (!surah) return null;
 
-    // Group ayahs by page
-    const pageGroups: Map<number, Ayah[]> = new Map();
-    surah.ayahs.forEach((ayah) => {
-      const ayahs = pageGroups.get(ayah.page) || [];
-      ayahs.push(ayah);
-      pageGroups.set(ayah.page, ayahs);
-    });
-
-    const pages = Array.from(pageGroups.entries()).map(([page, ayahs]) => ({
-      page,
-      ayahs,
-    }));
-
     return (
       <FlatList
         ref={flatListRef}
-        data={pages}
+        data={mushafPages}
         keyExtractor={(item) => `page-${item.page}`}
         horizontal
         pagingEnabled
@@ -266,7 +336,7 @@ export function MushafView({
         )}
       />
     );
-  }, [surah, surahNumber, theme, fontFamily, arabicFontSize, quranFont, currentlyPlaying, handlePlayAyah]);
+  }, [surah, mushafPages, surahNumber, theme, fontFamily, arabicFontSize, quranFont, currentlyPlaying, handlePlayAyah]);
 
   if (isLoading) {
     return (
@@ -305,15 +375,7 @@ export function MushafView({
           maxToRenderPerBatch={5}
           windowSize={5}
           removeClippedSubviews={true}
-          onScrollToIndexFailed={(info) => {
-            setTimeout(() => {
-              flatListRef.current?.scrollToIndex({
-                index: info.index,
-                animated: true,
-                viewPosition: 0,
-              });
-            }, 100);
-          }}
+          onScrollToIndexFailed={handleScrollToIndexFailed}
         />
       </View>
     );

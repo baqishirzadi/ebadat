@@ -222,7 +222,13 @@ export default function NamazScreen() {
               pressed && styles.buttonPressed,
             ]}
           >
-            <CenteredText style={styles.changeCityText}>تغییر شهر</CenteredText>
+            <CenteredText
+              style={styles.changeCityText}
+              numberOfLines={1}
+              ellipsizeMode="clip"
+            >
+              تغییر شهر
+            </CenteredText>
           </Pressable>
         </View>
 
@@ -492,12 +498,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.md,
+    minWidth: 100,
+    flexShrink: 0,
   },
   changeCityText: {
     color: '#fff',
     fontSize: Typography.ui.caption,
     fontWeight: '600',
     fontFamily: 'Vazirmatn',
+    lineHeight: 20,
+    textAlign: 'center',
+    includeFontPadding: false,
   },
   quickCitiesHeader: {
     flexDirection: 'row',
