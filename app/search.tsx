@@ -27,7 +27,9 @@ export default function SearchScreen() {
   const [results, setResults] = useState<SearchResult[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const searchWorkerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navigationGuardTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestSearchRequestIdRef = useRef(0);
+  const isNavigatingRef = useRef(false);
 
   const runSearch = useCallback((text: string) => {
     const requestId = ++latestSearchRequestIdRef.current;
@@ -94,6 +96,19 @@ export default function SearchScreen() {
   // Navigate to result
   const handleResultPress = useCallback(
     (result: SearchResult) => {
+      if (isNavigatingRef.current) {
+        return;
+      }
+
+      isNavigatingRef.current = true;
+      if (navigationGuardTimerRef.current) {
+        clearTimeout(navigationGuardTimerRef.current);
+      }
+      navigationGuardTimerRef.current = setTimeout(() => {
+        isNavigatingRef.current = false;
+        navigationGuardTimerRef.current = null;
+      }, 600);
+
       const jumpToken = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
       router.push({
         pathname: '/quran/[surah]',
@@ -108,6 +123,14 @@ export default function SearchScreen() {
     },
     [router]
   );
+
+  useEffect(() => {
+    return () => {
+      if (navigationGuardTimerRef.current) {
+        clearTimeout(navigationGuardTimerRef.current);
+      }
+    };
+  }, []);
 
   // Render search result
   const renderResult = useCallback(

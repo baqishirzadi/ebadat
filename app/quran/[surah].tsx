@@ -280,6 +280,7 @@ export default function QuranReaderScreen() {
       />
 
       <MushafView
+        key={`mushaf-${surahNumber}-${normalizedJumpToken ?? 'default'}`}
         surahNumber={surahNumber}
         initialAyah={scrollTargetAyah}
         jumpMode={jumpMode}

@@ -4,7 +4,7 @@
  */
 
 import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator, ViewToken } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp, useReadingPosition } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
@@ -32,16 +32,10 @@ const MAX_SCROLL_RETRY_ATTEMPTS = 6;
 const SCROLL_RETRY_DELAYS_MS = [80, 160, 260, 360, 520, 700];
 const SCROLL_PROGRESSIVE_MEASURE_STEPS = [0, 40, 120, 240, 360, 480];
 const JUMP_VISIBLE_STABLE_TICKS = 2;
-const DEFAULT_LIST_RENDER_CONFIG = {
-  initialNumToRender: 8,
-  maxToRenderPerBatch: 5,
-  windowSize: 5,
-  removeClippedSubviews: true,
-} as const;
-const EXACT_JUMP_RENDER_CONFIG = {
-  initialNumToRender: 36,
-  maxToRenderPerBatch: 18,
-  windowSize: 25,
+const STABLE_LIST_RENDER_CONFIG = {
+  initialNumToRender: 12,
+  maxToRenderPerBatch: 8,
+  windowSize: 9,
   removeClippedSubviews: false,
 } as const;
 
@@ -80,7 +74,7 @@ export function MushafView({
   const { getSurah, getTranslation, getPage } = useQuranData();
   const flatListRef = useRef<FlatList>(null);
   const viewableAyahNumbersRef = useRef<Set<number>>(new Set());
-  const retryTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingTargetAyahRef = useRef<number | null>(null);
   const retryAttemptRef = useRef(0);
   const activeJumpSessionIdRef = useRef(0);
@@ -90,7 +84,6 @@ export function MushafView({
 
   const [surah, setSurah] = useState<Surah | undefined>();
   const [isLoading, setIsLoading] = useState(true);
-  const [isExactJumpBoostActive, setIsExactJumpBoostActive] = useState(false);
   const [jumpFailureAyah, setJumpFailureAyah] = useState<number | null>(null);
 
   const { viewMode, quranFont, arabicFontSize } = state.preferences;
@@ -132,8 +125,10 @@ export function MushafView({
   }, []);
 
   const clearScrollRetryTimers = useCallback(() => {
-    retryTimersRef.current.forEach((timer) => clearTimeout(timer));
-    retryTimersRef.current = [];
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current);
+      retryTimerRef.current = null;
+    }
   }, []);
 
   const resetJumpSessionState = useCallback((keepFailureState = false) => {
@@ -152,7 +147,6 @@ export function MushafView({
     return () => {
       activeJumpSessionIdRef.current += 1;
       resetJumpSessionState();
-      setIsExactJumpBoostActive(false);
     };
   }, [resetJumpSessionState]);
 
@@ -190,9 +184,6 @@ export function MushafView({
       attempt: retryAttemptRef.current,
       exactSession: isExactJumpSessionRef.current,
     });
-    if (isExactJumpSessionRef.current) {
-      setIsExactJumpBoostActive(false);
-    }
     resetJumpSessionState();
   }, [jumpToken, logJumpDev, resetJumpSessionState]);
 
@@ -200,7 +191,6 @@ export function MushafView({
     logJumpDev('failed', { ayahNumber, reason, attempt: retryAttemptRef.current, token: jumpToken });
     if (isExactJumpSessionRef.current) {
       setJumpFailureAyah(ayahNumber);
-      setIsExactJumpBoostActive(false);
     }
     resetJumpSessionState(true);
   }, [jumpToken, logJumpDev, resetJumpSessionState]);
@@ -213,17 +203,21 @@ export function MushafView({
     targetVisibleStableCountRef.current = 0;
     const sessionId = ++activeJumpSessionIdRef.current;
 
-    scrollToAyahIndex(ayahNumber, firstAnimated);
+    const runBasicAttempt = (attempt: number) => {
+      if (activeJumpSessionIdRef.current !== sessionId) return;
+      if (pendingTargetAyahRef.current !== ayahNumber) return;
+      if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(ayahNumber)) return;
 
-    [120, 280].forEach((delay) => {
-      const timer = setTimeout(() => {
-        if (activeJumpSessionIdRef.current !== sessionId) return;
-        if (pendingTargetAyahRef.current !== ayahNumber) return;
-        if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(ayahNumber)) return;
-        scrollToAyahIndex(ayahNumber, true);
+      scrollToAyahIndex(ayahNumber, attempt === 0 ? firstAnimated : true);
+      if (attempt >= 2) return;
+
+      const delay = attempt === 0 ? 120 : 160;
+      retryTimerRef.current = setTimeout(() => {
+        runBasicAttempt(attempt + 1);
       }, delay);
-      retryTimersRef.current.push(timer);
-    });
+    };
+
+    runBasicAttempt(0);
   }, [clearScrollRetryTimers, effectiveViewMode, scrollToAyahIndex]);
 
   const scheduleExactJumpRetry = useCallback(
@@ -246,43 +240,53 @@ export function MushafView({
         if (viewableAyahNumbersRef.current.has(ayahNumber)) return;
 
         retryAttemptRef.current += 1;
+        const attempt = retryAttemptRef.current;
 
-        const targetIndex = getScrollIndexForAyah(ayahNumber) ?? 0;
-        const stepIndex = Math.min(retryAttemptRef.current - 1, SCROLL_PROGRESSIVE_MEASURE_STEPS.length - 1);
-        const measuredIndex = Math.max(0, highestMeasuredFrameIndexRef.current);
-        const intermediateIndex = Math.min(targetIndex, measuredIndex + SCROLL_PROGRESSIVE_MEASURE_STEPS[stepIndex]);
-
-        if (intermediateIndex > 0 && intermediateIndex < targetIndex) {
-          try {
-            flatListRef.current?.scrollToIndex({ index: intermediateIndex, animated: false });
-          } catch {
-            // continue with target jump below
-          }
+        const targetIndex = getScrollIndexForAyah(ayahNumber);
+        if (targetIndex === null) {
+          markJumpFailed(ayahNumber, 'target_missing');
+          return;
         }
 
-        const jumped = scrollToAyahIndex(ayahNumber, false);
+        const stepIndex = Math.min(attempt - 1, SCROLL_PROGRESSIVE_MEASURE_STEPS.length - 1);
+        const measuredIndex = Math.max(0, highestMeasuredFrameIndexRef.current);
+        const progressiveIndex = Math.min(targetIndex, measuredIndex + SCROLL_PROGRESSIVE_MEASURE_STEPS[stepIndex]);
+        const indexToScroll = attempt <= 2
+          ? targetIndex
+          : (progressiveIndex > measuredIndex && progressiveIndex < targetIndex ? progressiveIndex : targetIndex);
+
+        try {
+          flatListRef.current?.scrollToIndex({
+            index: indexToScroll,
+            animated: false,
+            ...(effectiveViewMode === 'scroll' ? { viewPosition: 0 } : {}),
+          });
+        } catch {
+          // onScrollToIndexFailed will continue retry flow
+        }
         logJumpDev('retry', {
           token: jumpToken,
           ayahNumber,
-          attempt: retryAttemptRef.current,
+          attempt,
           measuredIndex,
-          intermediateIndex,
-          jumped,
+          indexToScroll,
+          targetIndex,
         });
 
-        scheduleExactJumpRetry(sessionId, ayahNumber);
+        if (!viewableAyahNumbersRef.current.has(ayahNumber)) {
+          scheduleExactJumpRetry(sessionId, ayahNumber);
+        }
       }, delay);
 
-      retryTimersRef.current.push(timer);
+      retryTimerRef.current = timer;
     },
-    [clearScrollRetryTimers, getScrollIndexForAyah, jumpToken, logJumpDev, markJumpFailed, scrollToAyahIndex]
+    [clearScrollRetryTimers, effectiveViewMode, getScrollIndexForAyah, jumpToken, logJumpDev, markJumpFailed]
   );
 
   const startExactJumpSession = useCallback((ayahNumber: number) => {
     const sessionId = ++activeJumpSessionIdRef.current;
     resetJumpSessionState();
     isExactJumpSessionRef.current = true;
-    setIsExactJumpBoostActive(true);
     pendingTargetAyahRef.current = ayahNumber;
     targetVisibleStableCountRef.current = 0;
 
@@ -312,7 +316,6 @@ export function MushafView({
     }
 
     resetJumpSessionState();
-    setIsExactJumpBoostActive(false);
     if (effectiveViewMode === 'scroll' && clampedTarget <= 1) return;
     scheduleBasicScroll(clampedTarget, true);
   }, [
@@ -346,10 +349,13 @@ export function MushafView({
 
   // Handle viewable items change for tracking reading position and smart scroll
   const handleViewableItemsChanged = useCallback(
-    ({ viewableItems }: { viewableItems: { item: Ayah }[] }) => {
+    ({ viewableItems }: { viewableItems: (ViewToken & { item?: Ayah })[] }) => {
       const visible = new Set<number>();
-      for (const { item } of viewableItems) {
-        visible.add(item.number);
+      for (const token of viewableItems) {
+        const ayahNumber = token.item?.number;
+        if (typeof ayahNumber === 'number' && Number.isFinite(ayahNumber) && ayahNumber > 0) {
+          visible.add(ayahNumber);
+        }
       }
       viewableAyahNumbersRef.current = visible;
 
@@ -358,12 +364,12 @@ export function MushafView({
         pendingTargetAyahRef.current
       ) {
         const targetAyah = pendingTargetAyahRef.current;
+        const currentSessionId = activeJumpSessionIdRef.current;
         if (visible.has(targetAyah)) {
           targetVisibleStableCountRef.current += 1;
           if (targetVisibleStableCountRef.current >= JUMP_VISIBLE_STABLE_TICKS) {
             completeJumpSession(targetAyah);
           } else if (isExactJumpSessionRef.current) {
-            const currentSessionId = activeJumpSessionIdRef.current;
             clearScrollRetryTimers();
             const stabilityTimer = setTimeout(() => {
               if (activeJumpSessionIdRef.current !== currentSessionId) return;
@@ -378,15 +384,19 @@ export function MushafView({
                 completeJumpSession(targetAyah);
               }
             }, 120);
-            retryTimersRef.current.push(stabilityTimer);
+            retryTimerRef.current = stabilityTimer;
           }
         } else {
           targetVisibleStableCountRef.current = 0;
         }
       }
 
-      if (viewableItems.length > 0) {
-        const firstVisible = viewableItems[0].item;
+      const firstVisible = viewableItems.find((token) => {
+        const ayahNumber = token.item?.number;
+        return typeof ayahNumber === 'number' && Number.isFinite(ayahNumber) && ayahNumber > 0;
+      })?.item;
+
+      if (firstVisible) {
         const page = getPage(surahNumber, firstVisible.number);
 
         updatePosition({
@@ -430,28 +440,26 @@ export function MushafView({
       );
 
       const targetIndex = getScrollIndexForAyah(targetAyah) ?? info.index;
-      const measuredIndex = Math.max(0, highestMeasuredFrameIndexRef.current);
-      const stepIndex = Math.min(retryAttemptRef.current, SCROLL_PROGRESSIVE_MEASURE_STEPS.length - 1);
-      const intermediateIndex = Math.min(targetIndex, measuredIndex + SCROLL_PROGRESSIVE_MEASURE_STEPS[stepIndex]);
-
       clearScrollRetryTimers();
-
-      flatListRef.current.scrollToIndex({
-        index: intermediateIndex,
-        animated: false,
-      });
 
       if (!isExactJumpSessionRef.current) {
         const timer = setTimeout(() => {
           scrollToAyahIndex(targetAyah, true);
         }, 120);
-        retryTimersRef.current.push(timer);
+        retryTimerRef.current = timer;
         return;
       }
 
+      logJumpDev('scroll_to_index_failed', {
+        token: jumpToken,
+        targetAyah,
+        targetIndex,
+        infoIndex: info.index,
+        highestMeasuredFrameIndex: info.highestMeasuredFrameIndex,
+      });
       scheduleExactJumpRetry(activeJumpSessionIdRef.current, targetAyah);
     },
-    [clearScrollRetryTimers, getScrollIndexForAyah, scheduleExactJumpRetry, scrollToAyahIndex]
+    [clearScrollRetryTimers, getScrollIndexForAyah, jumpToken, logJumpDev, scheduleExactJumpRetry, scrollToAyahIndex]
   );
 
   const handlePlayAyah = useCallback(
@@ -580,10 +588,6 @@ export function MushafView({
 
   // Scroll mode (default)
   if (effectiveViewMode === 'scroll') {
-    const listRenderConfig = isExactJumpBoostActive
-      ? EXACT_JUMP_RENDER_CONFIG
-      : DEFAULT_LIST_RENDER_CONFIG;
-
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         {jumpFailureAyah !== null && (
@@ -613,10 +617,10 @@ export function MushafView({
           viewabilityConfig={viewabilityConfig.current}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
-          initialNumToRender={listRenderConfig.initialNumToRender}
-          maxToRenderPerBatch={listRenderConfig.maxToRenderPerBatch}
-          windowSize={listRenderConfig.windowSize}
-          removeClippedSubviews={listRenderConfig.removeClippedSubviews}
+          initialNumToRender={STABLE_LIST_RENDER_CONFIG.initialNumToRender}
+          maxToRenderPerBatch={STABLE_LIST_RENDER_CONFIG.maxToRenderPerBatch}
+          windowSize={STABLE_LIST_RENDER_CONFIG.windowSize}
+          removeClippedSubviews={STABLE_LIST_RENDER_CONFIG.removeClippedSubviews}
           onScrollToIndexFailed={handleScrollToIndexFailed}
         />
       </View>
