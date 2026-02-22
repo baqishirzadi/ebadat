@@ -4,20 +4,56 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Network from 'expo-network';
 import TrackPlayer, { State as TrackPlayerState } from 'react-native-track-player';
 
-export type ReciterKey = 'ghamidi' | 'muaiqly';
+export type ReciterKey =
+  | 'ghamidi'
+  | 'muaiqly'
+  | 'minshawy_mujawwad'
+  | 'minshawy_murattal'
+  | 'abdul_basit';
 
-export const RECITERS = {
+type ReciterInfo = {
+  key: ReciterKey;
+  name: string;
+  baseUrl: string;
+  quality: string;
+};
+
+export const RECITERS: Record<ReciterKey, ReciterInfo> = {
   ghamidi: {
-    key: 'ghamidi' as ReciterKey,
-    name: 'سعد الغامدی',
+    key: 'ghamidi',
+    name: 'قاری سعد الغامدی',
     baseUrl: 'https://everyayah.com/data/Ghamadi_40kbps',
+    quality: '40 kbps',
   },
   muaiqly: {
-    key: 'muaiqly' as ReciterKey,
-    name: 'ماهر المعیقلی',
+    key: 'muaiqly',
+    name: 'قاری ماهر المعیقلی',
     baseUrl: 'https://everyayah.com/data/Maher_AlMuaiqly_64kbps',
+    quality: '64 kbps',
+  },
+  minshawy_mujawwad: {
+    key: 'minshawy_mujawwad',
+    name: 'قاری منشاوی (تجوید)',
+    baseUrl: 'https://everyayah.com/data/Minshawy_Mujawwad_192kbps',
+    quality: '192 kbps',
+  },
+  minshawy_murattal: {
+    key: 'minshawy_murattal',
+    name: 'قاری منشاوی (مرتل)',
+    baseUrl: 'https://everyayah.com/data/Minshawy_Murattal_128kbps',
+    quality: '128 kbps',
+  },
+  abdul_basit: {
+    key: 'abdul_basit',
+    name: 'قاری عبدالباسط (تجوید)',
+    baseUrl: 'https://everyayah.com/data/Abdul_Basit_Mujawwad_128kbps',
+    quality: '128 kbps',
   },
 };
+
+function isReciterKey(value: string): value is ReciterKey {
+  return value in RECITERS;
+}
 
 export function getAyahUrl(surah: number, ayah: number, reciter: ReciterKey = 'ghamidi'): string {
   return getAyahUrlCandidates(surah, ayah, reciter)[0];
@@ -117,7 +153,7 @@ class QuranAudioManager {
         shouldDuckAndroid: true,
       });
       const saved = await AsyncStorage.getItem(RECITER_KEY);
-      if (saved === 'ghamidi' || saved === 'muaiqly') {
+      if (saved && isReciterKey(saved)) {
         this.currentReciter = saved;
       }
     } catch (e) {

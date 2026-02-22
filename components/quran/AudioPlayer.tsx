@@ -91,9 +91,12 @@ export function AudioPlayer({
             style={[styles.reciterButton, { backgroundColor: theme.backgroundSecondary }]}
           >
             <MaterialIcons name="person" size={16} color={theme.tint} />
-            <CenteredText style={[styles.reciterName, { color: theme.text }]}>
-              {RECITERS[currentReciter].name}
-            </CenteredText>
+            <View style={styles.reciterTextWrap}>
+              <CenteredText style={[styles.reciterName, { color: theme.text }]}>
+                {RECITERS[currentReciter].name}
+              </CenteredText>
+              <CenteredText style={styles.reciterHint}>برای تغییر قاری، اینجا را کلیک کنید</CenteredText>
+            </View>
             <MaterialIcons name="arrow-drop-down" size={18} color={theme.icon} />
           </Pressable>
 
@@ -194,10 +197,21 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
     gap: 4,
   },
+  reciterTextWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   reciterName: {
     fontSize: 12,
     fontFamily: 'Vazirmatn',
     fontWeight: '600',
+  },
+  reciterHint: {
+    fontSize: 11,
+    color: '#888',
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    marginTop: 2,
   },
   ayahInfo: {
     fontSize: Typography.ui.body,
