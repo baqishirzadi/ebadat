@@ -30,7 +30,6 @@ interface MushafViewProps {
 
 const MAX_SCROLL_RETRY_ATTEMPTS = 6;
 const SCROLL_RETRY_DELAYS_MS = [80, 160, 260, 360, 520, 700];
-const SCROLL_PROGRESSIVE_MEASURE_STEPS = [0, 40, 120, 240, 360, 480];
 const JUMP_VISIBLE_STABLE_TICKS = 2;
 const STABLE_LIST_RENDER_CONFIG = {
   initialNumToRender: 12,
@@ -248,31 +247,24 @@ export function MushafView({
           return;
         }
 
-        const stepIndex = Math.min(attempt - 1, SCROLL_PROGRESSIVE_MEASURE_STEPS.length - 1);
-        const measuredIndex = Math.max(0, highestMeasuredFrameIndexRef.current);
-        const progressiveIndex = Math.min(targetIndex, measuredIndex + SCROLL_PROGRESSIVE_MEASURE_STEPS[stepIndex]);
-        const indexToScroll = attempt <= 2
-          ? targetIndex
-          : (progressiveIndex > measuredIndex && progressiveIndex < targetIndex ? progressiveIndex : targetIndex);
+        logJumpDev('retry', {
+          token: jumpToken,
+          target: ayahNumber,
+          attempt,
+          firstVisible: undefined,
+          highestMeasured: highestMeasuredFrameIndexRef.current,
+        });
 
         try {
           flatListRef.current?.scrollToIndex({
-            index: indexToScroll,
+            index: targetIndex,
             animated: false,
             ...(effectiveViewMode === 'scroll' ? { viewPosition: 0 } : {}),
           });
         } catch {
-          // onScrollToIndexFailed will continue retry flow
+          scheduleExactJumpRetry(sessionId, ayahNumber);
+          return;
         }
-        logJumpDev('retry', {
-          token: jumpToken,
-          ayahNumber,
-          attempt,
-          measuredIndex,
-          indexToScroll,
-          targetIndex,
-        });
-
         if (!viewableAyahNumbersRef.current.has(ayahNumber)) {
           scheduleExactJumpRetry(sessionId, ayahNumber);
         }
@@ -359,42 +351,75 @@ export function MushafView({
       }
       viewableAyahNumbersRef.current = visible;
 
+      const firstVisible = viewableItems.find((token) => {
+        const ayahNumber = token.item?.number;
+        return typeof ayahNumber === 'number' && Number.isFinite(ayahNumber) && ayahNumber > 0;
+      })?.item;
+
       if (
         effectiveViewMode === 'scroll' &&
         pendingTargetAyahRef.current
       ) {
         const targetAyah = pendingTargetAyahRef.current;
         const currentSessionId = activeJumpSessionIdRef.current;
-        if (visible.has(targetAyah)) {
-          targetVisibleStableCountRef.current += 1;
-          if (targetVisibleStableCountRef.current >= JUMP_VISIBLE_STABLE_TICKS) {
-            completeJumpSession(targetAyah);
-          } else if (isExactJumpSessionRef.current) {
-            clearScrollRetryTimers();
-            const stabilityTimer = setTimeout(() => {
-              if (activeJumpSessionIdRef.current !== currentSessionId) return;
-              if (pendingTargetAyahRef.current !== targetAyah) return;
-              if (!viewableAyahNumbersRef.current.has(targetAyah)) {
-                targetVisibleStableCountRef.current = 0;
-                scheduleExactJumpRetry(currentSessionId, targetAyah);
-                return;
-              }
-              targetVisibleStableCountRef.current += 1;
-              if (targetVisibleStableCountRef.current >= JUMP_VISIBLE_STABLE_TICKS) {
-                completeJumpSession(targetAyah);
-              }
-            }, 120);
-            retryTimerRef.current = stabilityTimer;
+        const isExactJump = isExactJumpSessionRef.current;
+        const firstVisibleAyah = firstVisible?.number;
+
+        if (__DEV__ && isExactJump) {
+          logJumpDev('attempt', {
+            token: jumpToken,
+            target: targetAyah,
+            attempt: retryAttemptRef.current,
+            firstVisible: firstVisibleAyah,
+            highestMeasured: highestMeasuredFrameIndexRef.current,
+          });
+        }
+
+        if (isExactJump) {
+          if (firstVisibleAyah === targetAyah) {
+            targetVisibleStableCountRef.current += 1;
+            if (targetVisibleStableCountRef.current >= JUMP_VISIBLE_STABLE_TICKS) {
+              scrollToAyahIndex(targetAyah, false);
+              completeJumpSession(targetAyah);
+            } else {
+              clearScrollRetryTimers();
+              const stabilityTimer = setTimeout(() => {
+                if (activeJumpSessionIdRef.current !== currentSessionId) return;
+                if (pendingTargetAyahRef.current !== targetAyah) return;
+                scrollToAyahIndex(targetAyah, false);
+              }, 120);
+              retryTimerRef.current = stabilityTimer;
+            }
+          } else {
+            targetVisibleStableCountRef.current = 0;
           }
         } else {
-          targetVisibleStableCountRef.current = 0;
+          if (visible.has(targetAyah)) {
+            targetVisibleStableCountRef.current += 1;
+            if (targetVisibleStableCountRef.current >= JUMP_VISIBLE_STABLE_TICKS) {
+              completeJumpSession(targetAyah);
+            } else {
+              clearScrollRetryTimers();
+              const stabilityTimer = setTimeout(() => {
+                if (activeJumpSessionIdRef.current !== currentSessionId) return;
+                if (pendingTargetAyahRef.current !== targetAyah) return;
+                if (!viewableAyahNumbersRef.current.has(targetAyah)) {
+                  targetVisibleStableCountRef.current = 0;
+                  scheduleExactJumpRetry(currentSessionId, targetAyah);
+                  return;
+                }
+                targetVisibleStableCountRef.current += 1;
+                if (targetVisibleStableCountRef.current >= JUMP_VISIBLE_STABLE_TICKS) {
+                  completeJumpSession(targetAyah);
+                }
+              }, 120);
+              retryTimerRef.current = stabilityTimer;
+            }
+          } else {
+            targetVisibleStableCountRef.current = 0;
+          }
         }
       }
-
-      const firstVisible = viewableItems.find((token) => {
-        const ayahNumber = token.item?.number;
-        return typeof ayahNumber === 'number' && Number.isFinite(ayahNumber) && ayahNumber > 0;
-      })?.item;
 
       if (firstVisible) {
         const page = getPage(surahNumber, firstVisible.number);
@@ -416,9 +441,12 @@ export function MushafView({
       completeJumpSession,
       effectiveViewMode,
       getPage,
+      jumpToken,
+      logJumpDev,
       onAyahChange,
       onPageChange,
       scheduleExactJumpRetry,
+      scrollToAyahIndex,
       surahNumber,
       updatePosition,
     ]
@@ -434,10 +462,11 @@ export function MushafView({
       if (!flatListRef.current) return;
       const targetAyah = pendingTargetAyahRef.current;
       if (!targetAyah) return;
-      highestMeasuredFrameIndexRef.current = Math.max(
+      const highest = Math.max(
         highestMeasuredFrameIndexRef.current,
         info.highestMeasuredFrameIndex
       );
+      highestMeasuredFrameIndexRef.current = highest;
 
       const targetIndex = getScrollIndexForAyah(targetAyah) ?? info.index;
       clearScrollRetryTimers();
@@ -457,6 +486,14 @@ export function MushafView({
         infoIndex: info.index,
         highestMeasuredFrameIndex: info.highestMeasuredFrameIndex,
       });
+      try {
+        flatListRef.current.scrollToIndex({
+          index: highest,
+          animated: false,
+        });
+      } catch {
+        // ignore
+      }
       scheduleExactJumpRetry(activeJumpSessionIdRef.current, targetAyah);
     },
     [clearScrollRetryTimers, getScrollIndexForAyah, jumpToken, logJumpDev, scheduleExactJumpRetry, scrollToAyahIndex]

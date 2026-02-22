@@ -280,6 +280,33 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     setupNotifications();
   }, []);
 
+  // One-time migration on app open: cancel prayer-related notifications, recreate channels, reschedule (Android)
+  useEffect(() => {
+    if (Platform.OS !== 'android' || adhanChannelMigrationDoneRef.current || !state.prayerTimes) return;
+    adhanChannelMigrationDoneRef.current = true;
+    const run = async () => {
+      const NotificationsModule = await loadNotificationsIfAvailable();
+      if (!NotificationsModule) return;
+      await cancelScheduledNotificationsByPredicate(
+        NotificationsModule,
+        (notification, identifier) => {
+          const dataType = (notification as any)?.content?.data?.type;
+          return (
+            identifier.startsWith('adhan-') ||
+            dataType === 'adhan' ||
+            dataType === 'reminder' ||
+            identifier.startsWith('jummah-') ||
+            dataType === 'jummah'
+          );
+        }
+      );
+      await configureAndroidNotificationChannels(NotificationsModule);
+      await scheduleAdhanNotificationsRef.current();
+      await scheduleJummahNotificationsRef.current();
+    };
+    run().catch((e) => console.warn('Adhan channel migration failed:', e));
+  }, [state.prayerTimes]);
+
   // Listen for notification received events (foreground) and play Adhan audio
   useEffect(() => {
     let subscription: any = null;
@@ -708,6 +735,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   const lastScheduleRef = useRef<{ dateKey: string; locationKey: string } | null>(null);
   const scheduleAdhanNotificationsRef = useRef<() => Promise<void>>(async () => { });
   const scheduleJummahNotificationsRef = useRef<() => Promise<void>>(async () => { });
+  const adhanChannelMigrationDoneRef = useRef(false);
 
   const cancelScheduledNotificationsByPredicate = useCallback(
     async (
@@ -1043,10 +1071,12 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
               title: 'وقت نماز',
               body: `${minutesBefore} دقیقه تا ${prayer.name}`,
               sound: true,
+              ...(Platform.OS === 'android' && { channelId: CHANNEL_IDS.PRAYER_REMINDER }),
             },
             trigger: {
               type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
               date: notificationTime,
+              ...(Platform.OS === 'android' && { channelId: CHANNEL_IDS.PRAYER_REMINDER }),
             },
           });
         }
@@ -1205,7 +1235,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
 
           if (__DEV__) {
             console.log(
-              `[AdhanSchedule] id=${adhanId} prayer=${prayerKey} channelId=${channelId} playSound=${playSound}`
+              `[AdhanSchedule] identifier=${adhanId} prayer=${prayerKey} channelId=${channelId} playSound=${playSound} sound=${String(notificationSound)}`
             );
           }
 
@@ -1232,6 +1262,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
             trigger: {
               type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
               date: scheduleTime,
+              ...(Platform.OS === 'android' && { channelId }),
             },
           });
           scheduledCount++;
@@ -1266,6 +1297,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
                 trigger: {
                   type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
                   date: reminderTime,
+                  ...(Platform.OS === 'android' && { channelId: CHANNEL_IDS.PRAYER_REMINDER }),
                 },
               });
               scheduledCount++;
@@ -1395,6 +1427,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         trigger: {
           type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
           date: new Date(Date.now() + 25 * 1000),
+          ...(Platform.OS === 'android' && { channelId: CHANNEL_IDS.ADHAN_REGULAR }),
         },
       });
 
