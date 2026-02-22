@@ -43,3 +43,4 @@ yarn-error.*
 
 # TypeScript cache
 *.tsbuildinfo
+android/gradle.properties
