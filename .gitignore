@@ -33,6 +33,7 @@ web-build/
 android/.gradle/
 android/build/
 android/app/build/
+android/keystore.properties
 ios/build/
 
 # Logs / temp
@@ -43,4 +44,3 @@ yarn-error.*
 
 # TypeScript cache
 *.tsbuildinfo
-android/gradle.properties

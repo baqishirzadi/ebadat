@@ -7,7 +7,7 @@
 import { Audio, AVPlaybackStatus } from 'expo-av';
 import { AdhanVoice, PrayerName } from './adhanManager';
 
-const UNIFIED_ADHAN_FILE = require('../assets/sounds/barakatullah_salim_18sec.mp3');
+const UNIFIED_ADHAN_FILE = require('../assets/audio/adhan/barakatullah_salim_18sec.mp3');
 
 // Singleton audio manager instance
 let adhanSound: Audio.Sound | null = null;
@@ -150,7 +150,7 @@ export function getAdhanAudioPath(voice: AdhanVoice): string | null {
   if (!voice) {
     return null;
   }
-  return './assets/sounds/barakatullah_salim_18sec.mp3';
+  return './assets/audio/adhan/barakatullah_salim_18sec.mp3';
 }
 
 /**

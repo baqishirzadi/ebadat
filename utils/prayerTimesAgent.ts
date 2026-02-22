@@ -15,7 +15,7 @@ import {
   PrayerTimes,
   AFGHAN_CITIES,
 } from '@/utils/prayerTimes';
-import { Coordinates, CalculationMethod, PrayerTimes as AdhanPrayerTimes, Madhab } from 'adhan';
+import { Coordinates, CalculationMethod, PrayerTimes as AdhanPrayerTimes, Madhab, SunnahTimes } from 'adhan';
 import { toArabicNumeralsString } from './numbers';
 
 export interface PrayerTimesDisplay {
@@ -322,6 +322,7 @@ function calculateWithAdhan(location: LocationType, date: Date): PrayerTimes {
   const params = CalculationMethod.Karachi();
   params.madhab = Madhab.Hanafi;
   const prayerTimes = new AdhanPrayerTimes(coordinates, date, params);
+  const sunnahTimes = new SunnahTimes(prayerTimes);
   return {
     fajr: prayerTimes.fajr,
     sunrise: prayerTimes.sunrise,
@@ -329,8 +330,8 @@ function calculateWithAdhan(location: LocationType, date: Date): PrayerTimes {
     asr: prayerTimes.asr,
     maghrib: prayerTimes.maghrib,
     isha: prayerTimes.isha,
-    midnight: prayerTimes.middleOfTheNight,
-    qiyam: prayerTimes.lastThirdOfTheNight,
+    midnight: sunnahTimes.middleOfTheNight,
+    qiyam: sunnahTimes.lastThirdOfTheNight,
   };
 }
 

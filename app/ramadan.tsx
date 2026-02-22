@@ -131,7 +131,7 @@ export default function RamadanScreen() {
       <Stack.Screen
         options={{
           title: 'برنامه رمضان',
-          headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
+          headerStyle: { backgroundColor: theme.surahHeader },
           headerTintColor: '#fff',
         }}
       />

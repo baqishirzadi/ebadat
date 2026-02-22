@@ -118,7 +118,7 @@ export default function CalendarScreen() {
       <Stack.Screen
         options={{
           title: 'تقویم اسلامی',
-          headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28, overflow: 'hidden' },
+          headerStyle: { backgroundColor: theme.surahHeader },
           headerTintColor: '#fff',
         }}
       />

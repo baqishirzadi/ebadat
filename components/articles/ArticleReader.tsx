@@ -17,7 +17,9 @@ interface ArticleReaderProps {
 }
 
 // Category-specific color schemes
-const CATEGORY_COLORS: Record<string, { primary: string; secondary: string; accent: string; gradient: string[] }> = {
+type GradientColors = readonly [string, string, ...string[]];
+
+const CATEGORY_COLORS: Record<string, { primary: string; secondary: string; accent: string; gradient: GradientColors }> = {
   iman: {
     primary: '#1B5E20', // Deep green
     secondary: '#2E7D32',

@@ -237,7 +237,7 @@ export function getImportantCities(categoryId?: string): Array<{ key: string; ci
         if (city.isImportant) {
           results.push({
             key: `${categoryId}_${cityKey}`,
-            city: { ...city, category: categoryId, key: `${categoryId}_${cityKey}` },
+            city: { ...city, category: categoryId },
           });
         }
       });
@@ -249,7 +249,7 @@ export function getImportantCities(categoryId?: string): Array<{ key: string; ci
         if (city.isImportant) {
           results.push({
             key: `${catId}_${cityKey}`,
-            city: { ...city, category: catId, key: `${catId}_${cityKey}` },
+            city: { ...city, category: catId },
           });
         }
       });

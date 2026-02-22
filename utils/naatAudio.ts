@@ -1,4 +1,4 @@
-import { Audio } from 'expo-av';
+import { Audio, InterruptionModeAndroid, InterruptionModeIOS } from 'expo-av';
 
 let configured = false;
 
@@ -8,8 +8,8 @@ export async function configureNaatAudioMode(): Promise<void> {
     staysActiveInBackground: true,
     playsInSilentModeIOS: true,
     shouldDuckAndroid: true,
-    interruptionModeIOS: Audio.InterruptionModeIOS.DoNotMix,
-    interruptionModeAndroid: Audio.InterruptionModeAndroid.DoNotMix,
+    interruptionModeIOS: InterruptionModeIOS.DoNotMix,
+    interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
     playThroughEarpieceAndroid: false,
   });
   configured = true;

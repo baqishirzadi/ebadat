@@ -438,7 +438,9 @@ export default function ArticlesFeed() {
       {isShowingScholarFallback && selectedCategory && (
         <View style={[styles.scholarFallbackBanner, { backgroundColor: `${theme.tint}18`, borderColor: theme.tint }]}>
           <CenteredText style={[styles.scholarFallbackText, { color: theme.text }]}>
-            این عالم در {ARTICLE_CATEGORIES[selectedCategory].nameDari} مقاله‌ای ندارد؛ مقالات او در سایر دسته‌ها:
+            این عالم در {selectedCategory in ARTICLE_CATEGORIES
+              ? ARTICLE_CATEGORIES[selectedCategory as keyof typeof ARTICLE_CATEGORIES].nameDari
+              : 'این دسته'} مقاله‌ای ندارد؛ مقالات او در سایر دسته‌ها:
           </CenteredText>
         </View>
       )}

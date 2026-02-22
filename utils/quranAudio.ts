@@ -25,6 +25,9 @@ export function getAyahUrl(surah: number, ayah: number, reciter: ReciterKey = 'g
 }
 
 const MIN_VALID_CACHE_FILE_BYTES = 1024;
+const MAX_SYNC_CACHE_ATTEMPTS = 3;
+const MAX_BACKGROUND_CACHE_ATTEMPTS = 2;
+const CACHE_RETRY_BASE_DELAY_MS = 350;
 
 function getDocumentDirectory(): string | null {
   const documentDirectory = (FileSystem as any).documentDirectory as string | null | undefined;
@@ -135,12 +138,16 @@ class QuranAudioManager {
   }
 
   private logCacheOutcome(
-    status: 'cache_hit' | 'cache_write_ok' | 'cache_write_failed',
+    status: 'cache_hit' | 'cache_write_ok' | 'cache_write_failed' | 'cache_retry_ok' | 'cache_retry_failed',
     surah: number,
     ayah: number,
     reciter: ReciterKey
   ): void {
     console.log(`[QuranCache] ${status} reciter=${reciter} surah=${surah} ayah=${ayah}`);
+  }
+
+  private async wait(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private async downloadAyahToCache(surah: number, ayah: number, reciter: ReciterKey): Promise<boolean> {
@@ -182,6 +189,22 @@ class QuranAudioManager {
     }
   }
 
+  private async downloadAyahToCacheWithRetries(
+    surah: number,
+    ayah: number,
+    reciter: ReciterKey,
+    attempts: number
+  ): Promise<boolean> {
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      const ok = await this.downloadAyahToCache(surah, ayah, reciter);
+      if (ok) return true;
+      if (attempt < attempts) {
+        await this.wait(CACHE_RETRY_BASE_DELAY_MS * attempt);
+      }
+    }
+    return false;
+  }
+
   private async ensureCachedInBackground(surah: number, ayah: number, reciter: ReciterKey): Promise<void> {
     const cacheKey = this.getCacheKey(surah, ayah, reciter);
     if (this.backgroundCacheInFlight.has(cacheKey)) return;
@@ -191,8 +214,13 @@ class QuranAudioManager {
       const cached = await this.isAyahCached(surah, ayah, reciter);
       if (cached) return;
 
-      const ok = await this.downloadAyahToCache(surah, ayah, reciter);
-      this.logCacheOutcome(ok ? 'cache_write_ok' : 'cache_write_failed', surah, ayah, reciter);
+      const ok = await this.downloadAyahToCacheWithRetries(
+        surah,
+        ayah,
+        reciter,
+        MAX_BACKGROUND_CACHE_ATTEMPTS
+      );
+      this.logCacheOutcome(ok ? 'cache_retry_ok' : 'cache_retry_failed', surah, ayah, reciter);
     } finally {
       this.backgroundCacheInFlight.delete(cacheKey);
     }
@@ -243,7 +271,12 @@ class QuranAudioManager {
       // Cache check failed - fall through to download
     }
 
-    const wroteToCache = await this.downloadAyahToCache(surah, ayah, reciter);
+    const wroteToCache = await this.downloadAyahToCacheWithRetries(
+      surah,
+      ayah,
+      reciter,
+      MAX_SYNC_CACHE_ATTEMPTS
+    );
     if (wroteToCache) {
       this.logCacheOutcome('cache_write_ok', surah, ayah, reciter);
       return { uri: cachePath, usedStreamingFallback: false };

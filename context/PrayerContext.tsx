@@ -96,8 +96,8 @@ const PRAYER_ROLLING_DAYS_IOS = 7;
 const PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER = 5;
 const ADHAN_SOUND_FILENAME = 'barakatullah_salim_18sec.mp3';
 const CHANNEL_IDS = {
-  ADHAN_FAJR: 'adhan-fajr-v2',
-  ADHAN_REGULAR: 'adhan-regular-v2',
+  ADHAN_FAJR: 'adhan-fajr-v3',
+  ADHAN_REGULAR: 'adhan-regular-v3',
   PRAYER_SILENT: 'prayer-silent',
   PRAYER_REMINDER: 'prayer-reminder',
   CALENDAR_QAMARI: 'calendar-qamari',
@@ -446,7 +446,12 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         deleteNotificationChannelAsync?: (channelId: string) => Promise<void>;
       }).deleteNotificationChannelAsync;
       if (typeof deleteChannel === 'function') {
-        await Promise.allSettled([deleteChannel('adhan-fajr'), deleteChannel('adhan-regular')]);
+        await Promise.allSettled([
+          deleteChannel('adhan-fajr'),
+          deleteChannel('adhan-regular'),
+          deleteChannel('adhan-fajr-v2'),
+          deleteChannel('adhan-regular-v2'),
+        ]);
       }
     } catch (error) {
       console.error('Failed to configure notification channels:', error);
@@ -1149,6 +1154,12 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
           const adhanId = isFridayJummah
             ? `adhan-jummah-${dayKey}`
             : `adhan-${prayerKey}-${dayKey}`;
+
+          if (__DEV__) {
+            console.log(
+              `[AdhanSchedule] id=${adhanId} prayer=${prayerKey} channelId=${channelId} playSound=${playSound}`
+            );
+          }
 
           await NotificationsModule.scheduleNotificationAsync({
             identifier: adhanId,

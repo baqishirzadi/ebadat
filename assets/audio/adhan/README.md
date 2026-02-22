@@ -4,11 +4,11 @@ This project now uses a single bundled adhan sound for audible prayer notificati
 
 ## Active File
 
-- `assets/sounds/barakatullah_salim_18sec.mp3`
+- `assets/audio/adhan/barakatullah_salim_18sec.mp3`
 
 ## Runtime Behavior
 
-- Android notification channel: `adhan-channel`
+- Android notification channels: `adhan-fajr-v3`, `adhan-regular-v3`
 - Sound file: `barakatullah_salim_18sec.mp3`
 - Audible by default for: Fajr and Maghrib
 - Silent reminders remain unchanged for Dhuhr/Asr/Isha unless user settings change.
@@ -24,7 +24,7 @@ This project now uses a single bundled adhan sound for audible prayer notificati
       [
         "expo-notifications",
         {
-          "sounds": ["./assets/sounds/barakatullah_salim_18sec.mp3"]
+          "sounds": ["./assets/audio/adhan/barakatullah_salim_18sec.mp3"]
         }
       ]
     ]
@@ -34,6 +34,6 @@ This project now uses a single bundled adhan sound for audible prayer notificati
 
 ## Compliance Gate
 
-Before store release, license proof for `assets/sounds/barakatullah_salim_18sec.mp3` must be documented in:
+Before store release, license proof for `assets/audio/adhan/barakatullah_salim_18sec.mp3` must be documented in:
 
 - `/Users/ahmad/Desktop/EbadatApp/docs/adhan-audio-license-audit.md`

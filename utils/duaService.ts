@@ -11,7 +11,7 @@ import * as duaStorage from './duaStorage';
 /**
  * Check if online and Supabase is configured
  */
-const extra = (Constants.expoConfig?.extra || Constants.manifest?.extra || {}) as {
+const extra = (Constants.expoConfig?.extra || (Constants as any).manifest?.extra || {}) as {
   supabaseUrl?: string;
   duaClientUrl?: string;
 };
@@ -122,6 +122,7 @@ export async function submitRequest(request: Omit<DuaRequest, 'id' | 'createdAt'
     const userId = await duaStorage.getOrCreateUserId();
     const requestData: DuaRequest = {
       ...request,
+      id: `temp_${Date.now()}`,
       userId,
       status: 'pending',
       createdAt: new Date(),

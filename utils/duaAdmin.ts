@@ -6,7 +6,7 @@
 import { DuaRequest } from '@/types/dua';
 import Constants from 'expo-constants';
 
-const extra = (Constants.expoConfig?.extra || Constants.manifest?.extra || {}) as {
+const extra = (Constants.expoConfig?.extra || (Constants as any).manifest?.extra || {}) as {
   supabaseUrl?: string;
   duaAdminUrl?: string;
 };

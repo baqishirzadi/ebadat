@@ -8,7 +8,7 @@ import Constants from 'expo-constants';
 
 // Supabase configuration
 // For production, these must be set via environment variables (EXPO_PUBLIC_*)
-const extra = (Constants.expoConfig?.extra || Constants.manifest?.extra || {}) as {
+const extra = (Constants.expoConfig?.extra || (Constants as any).manifest?.extra || {}) as {
   supabaseUrl?: string;
   supabaseAnonKey?: string;
 };

@@ -2,7 +2,54 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+import java.io.FileInputStream
+import java.util.Properties
+
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+def releaseSigningPropsFile = rootProject.file("keystore.properties")
+def releaseSigningProps = new Properties()
+
+if (releaseSigningPropsFile.exists()) {
+    releaseSigningProps.load(new FileInputStream(releaseSigningPropsFile))
+}
+
+def resolveSigningValue = { String key ->
+    def propValue = releaseSigningProps.getProperty(key)
+    if (propValue != null && propValue.toString().trim()) {
+        return propValue.toString().trim()
+    }
+
+    def gradleValue = project.findProperty(key)
+    if (gradleValue != null && gradleValue.toString().trim()) {
+        return gradleValue.toString().trim()
+    }
+
+    def envValue = System.getenv(key)
+    return envValue != null && envValue.toString().trim() ? envValue.toString().trim() : null
+}
+
+def releaseStoreFile = resolveSigningValue('EBADAT_RELEASE_STORE_FILE')
+def releaseStorePassword = resolveSigningValue('EBADAT_RELEASE_STORE_PASSWORD')
+def releaseKeyAlias = resolveSigningValue('EBADAT_RELEASE_KEY_ALIAS')
+def releaseKeyPassword = resolveSigningValue('EBADAT_RELEASE_KEY_PASSWORD')
+def releaseSigningConfigured = [releaseStoreFile, releaseStorePassword, releaseKeyAlias, releaseKeyPassword].every { it != null }
+def resolveStoreFile = { String pathValue ->
+    if (!pathValue) {
+        return null
+    }
+    def candidate = new File(pathValue)
+    return candidate.isAbsolute() ? candidate : rootProject.file(pathValue)
+}
+def isReleaseBuildRequested = gradle.startParameter.taskNames.any { taskName ->
+    def normalizedTask = taskName.toLowerCase()
+    normalizedTask.contains('release') || normalizedTask.contains('bundle')
+}
+
+if (isReleaseBuildRequested && !releaseSigningConfigured) {
+    throw new GradleException(
+        "Missing release signing config. Set EBADAT_RELEASE_* in android/keystore.properties (preferred) or environment variables."
+    )
+}
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -105,11 +152,11 @@ android {
             keyPassword 'android'
         }
         release {
-            if (project.hasProperty('EBADAT_RELEASE_STORE_FILE')) {
-                storeFile file(EBADAT_RELEASE_STORE_FILE)
-                storePassword EBADAT_RELEASE_STORE_PASSWORD
-                keyAlias EBADAT_RELEASE_KEY_ALIAS
-                keyPassword EBADAT_RELEASE_KEY_PASSWORD
+            if (releaseSigningConfigured) {
+                storeFile resolveStoreFile(releaseStoreFile)
+                storePassword releaseStorePassword
+                keyAlias releaseKeyAlias
+                keyPassword releaseKeyPassword
             }
         }
     }
@@ -118,8 +165,7 @@ android {
             signingConfig signingConfigs.debug
         }
         release {
-            // Use production keystore for release builds
-            signingConfig signingConfigs.release.storeFile ? signingConfigs.release : signingConfigs.debug
+            signingConfig signingConfigs.release
             def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
             shrinkResources enableShrinkResources.toBoolean()
             minifyEnabled enableMinifyInReleaseBuilds
@@ -163,6 +209,7 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+    def isHermesEnabled = (findProperty('hermesEnabled') ?: "true").toBoolean();
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
@@ -181,7 +228,7 @@ dependencies {
         }
     }
 
-    if (hermesEnabled.toBoolean()) {
+    if (isHermesEnabled) {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
