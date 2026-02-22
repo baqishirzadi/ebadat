@@ -78,7 +78,7 @@ export interface AdhanPreferences {
 
 // Default settings - all five prayers audible by default
 export const DEFAULT_ADHAN_PREFERENCES: AdhanPreferences = {
-  schemaVersion: 3,
+  schemaVersion: 4,
   masterEnabled: true,
   
   // Fajr: Full Adhan with sound

@@ -54,14 +54,6 @@ export default function AdhanSettingsScreen() {
     });
   }, [adhanPreferences, updateAdhanPreferences]);
 
-  // Toggle prayer sound
-  const handlePrayerSoundToggle = useCallback(async (prayer: PrayerName, value: boolean) => {
-    const currentSettings = adhanPreferences[prayer];
-    await updateAdhanPreferences({
-      [prayer]: { ...currentSettings, playSound: value },
-    });
-  }, [adhanPreferences, updateAdhanPreferences]);
-
   // Toggle early reminder
   const handleEarlyReminderToggle = useCallback(async (value: boolean) => {
     await updateAdhanPreferences({ earlyReminder: value });
@@ -99,7 +91,6 @@ export default function AdhanSettingsScreen() {
     const prayerInfo = PRAYER_NAMES[prayer];
     const settings = adhanPreferences[prayer];
     const isExpanded = expandedPrayer === prayer;
-    const isFajr = prayer === 'fajr';
     
     return (
       <View key={prayer} style={[styles.prayerCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -120,9 +111,9 @@ export default function AdhanSettingsScreen() {
           <View style={styles.prayerStatus}>
             {settings.enabled && (
               <MaterialIcons
-                name={settings.playSound ? 'volume-up' : 'notifications'}
+                name="volume-up"
                 size={20}
-                color={settings.playSound ? '#D4AF37' : theme.icon}
+                color="#D4AF37"
               />
             )}
             <MaterialIcons
@@ -149,30 +140,8 @@ export default function AdhanSettingsScreen() {
               />
             </View>
 
-            {/* Play Sound (only if notification enabled) */}
+            {/* Voice Selection */}
             {settings.enabled && (
-              <View style={styles.settingRow}>
-                <View style={styles.settingLabelContainer}>
-                  <Text style={[styles.settingLabel, { color: theme.text }]}>
-                    پخش اذان
-                  </Text>
-                  {isFajr && (
-                    <Text style={[styles.settingHint, { color: '#D4AF37' }]}>
-                      (پیشنهاد برای صبح)
-                    </Text>
-                  )}
-                </View>
-                <Switch
-                  value={settings.playSound}
-                  onValueChange={(v) => handlePrayerSoundToggle(prayer, v)}
-                  trackColor={{ false: theme.divider, true: '#1a4d3e' }}
-                  thumbColor={settings.playSound ? '#D4AF37' : '#f4f3f4'}
-                />
-              </View>
-            )}
-
-            {/* Voice Selection (only if sound enabled) */}
-            {settings.enabled && settings.playSound && (
               <View style={[styles.voiceSelector, { backgroundColor: theme.backgroundSecondary }]}>
                 <View style={styles.voiceSelectorContent}>
                   <MaterialIcons name="record-voice-over" size={20} color={theme.tint} />
@@ -189,7 +158,7 @@ export default function AdhanSettingsScreen() {
             )}
 
             {/* Test Button */}
-            {settings.enabled && settings.playSound && (
+            {settings.enabled && (
               <Pressable
                 onPress={() => handleTestVoice(settings.selectedVoice, prayer)}
                 style={[
@@ -362,8 +331,7 @@ export default function AdhanSettingsScreen() {
         <View style={[styles.infoNote, { backgroundColor: theme.backgroundSecondary }]}>
           <MaterialIcons name="info" size={20} color="#D4AF37" />
           <Text style={[styles.infoNoteText, { color: theme.textSecondary }]}>
-            یادآوری نماز صبح به طور پیش‌فرض با صدای اذان فعال است.
-            برای سایر نمازها می‌توانید صدا را فعال کنید.
+            برای نمازهای فعال، اعلان وقت نماز همیشه با صدای مؤذن پخش می‌شود.
           </Text>
         </View>
 
@@ -507,17 +475,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: Spacing.sm,
   },
-  settingLabelContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
   settingLabel: {
     fontSize: Typography.ui.body,
-    fontFamily: 'Vazirmatn',
-  },
-  settingHint: {
-    fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
   },
   voiceSelector: {

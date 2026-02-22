@@ -96,12 +96,12 @@ const PRAYER_ROLLING_DAYS_IOS = 7;
 const PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER = 5;
 const ADHAN_SOUND_FILENAME = 'barakatullah_salim_18sec.mp3';
 const CHANNEL_IDS = {
-  ADHAN_FAJR: 'adhan-fajr-v6',
-  ADHAN_REGULAR: 'adhan-regular-v6',
-  PRAYER_SILENT: 'prayer-silent',
-  PRAYER_REMINDER: 'prayer-reminder',
+  ADHAN_FAJR: 'adhan-fajr-v7',
+  ADHAN_REGULAR: 'adhan-regular-v7',
+  PRAYER_SILENT: 'prayer-silent-v2',
+  PRAYER_REMINDER: 'prayer-reminder-v2',
   CALENDAR_QAMARI: 'calendar-qamari',
-  JUMMAH_REMINDER: 'jummah-reminder',
+  JUMMAH_REMINDER: 'jummah-reminder-v2',
 } as const;
 
 // Settings
@@ -394,19 +394,20 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           .replace(/\.mp3$/, '');
       };
 
-      const ensureAudibleChannel = async (
+      const ensureChannel = async (
         channelId: string,
         config: Parameters<typeof NotificationsModule.setNotificationChannelAsync>[1],
+        expectedSound: string | null,
       ) => {
         if (typeof getChannel === 'function') {
           try {
             const existing = await getChannel(channelId);
-            if (
-              existing &&
-              normalizeSound(existing.sound) !== normalizeSound(ADHAN_SOUND_FILENAME) &&
-              typeof deleteChannel === 'function'
-            ) {
-              await deleteChannel(channelId);
+            if (existing && typeof deleteChannel === 'function') {
+              const existingSound = normalizeSound(existing.sound);
+              const expectedNormalized = normalizeSound(expectedSound);
+              if (existingSound !== expectedNormalized) {
+                await deleteChannel(channelId);
+              }
             }
           } catch {
             // Continue and recreate channel below.
@@ -417,7 +418,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       };
 
       // Channel for Fajr Adhan (custom sound)
-      await ensureAudibleChannel(CHANNEL_IDS.ADHAN_FAJR, {
+      await ensureChannel(CHANNEL_IDS.ADHAN_FAJR, {
         name: 'اذان صبح',
         importance: NotificationsModule.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
@@ -425,10 +426,10 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         sound: ADHAN_SOUND_FILENAME,
         enableVibrate: true,
         showBadge: true,
-      });
+      }, ADHAN_SOUND_FILENAME);
 
       // Channel for other Adhans (custom sound)
-      await ensureAudibleChannel(CHANNEL_IDS.ADHAN_REGULAR, {
+      await ensureChannel(CHANNEL_IDS.ADHAN_REGULAR, {
         name: 'اذان (سایر نمازها)',
         importance: NotificationsModule.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
@@ -436,10 +437,10 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         sound: ADHAN_SOUND_FILENAME,
         enableVibrate: true,
         showBadge: true,
-      });
+      }, ADHAN_SOUND_FILENAME);
 
       // Channel for silent prayer notifications
-      await NotificationsModule.setNotificationChannelAsync(CHANNEL_IDS.PRAYER_SILENT, {
+      await ensureChannel(CHANNEL_IDS.PRAYER_SILENT, {
         name: 'یادآوری نماز (بی‌صدا)',
         importance: NotificationsModule.AndroidImportance.DEFAULT,
         vibrationPattern: [0, 100],
@@ -447,10 +448,10 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         sound: null,
         enableVibrate: true,
         showBadge: true,
-      });
+      }, null);
 
       // Channel for early reminders
-      await NotificationsModule.setNotificationChannelAsync(CHANNEL_IDS.PRAYER_REMINDER, {
+      await ensureChannel(CHANNEL_IDS.PRAYER_REMINDER, {
         name: 'یادآوری قبل از نماز',
         importance: NotificationsModule.AndroidImportance.LOW,
         vibrationPattern: [0, 50],
@@ -458,19 +459,19 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         sound: null,
         enableVibrate: true,
         showBadge: false,
-      });
+      }, null);
 
       // Channel for calendar (Qamari) event notifications
-      await NotificationsModule.setNotificationChannelAsync(CHANNEL_IDS.CALENDAR_QAMARI, {
+      await ensureChannel(CHANNEL_IDS.CALENDAR_QAMARI, {
         name: 'مناسبت‌های قمری',
         importance: NotificationsModule.AndroidImportance.DEFAULT,
         vibrationPattern: [0, 100],
         enableVibrate: true,
         showBadge: true,
-      });
+      }, null);
 
       // Channel for weekly Jummah reminder
-      await NotificationsModule.setNotificationChannelAsync(CHANNEL_IDS.JUMMAH_REMINDER, {
+      await ensureChannel(CHANNEL_IDS.JUMMAH_REMINDER, {
         name: 'یادآوری نماز جمعه',
         importance: NotificationsModule.AndroidImportance.HIGH,
         vibrationPattern: [0, 180, 120, 180],
@@ -478,12 +479,14 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         sound: null,
         enableVibrate: true,
         showBadge: true,
-      });
+      }, null);
 
       if (typeof deleteChannel === 'function') {
         await Promise.allSettled([
           deleteChannel('adhan-fajr'),
           deleteChannel('adhan-regular'),
+          deleteChannel('adhan-fajr-v1'),
+          deleteChannel('adhan-regular-v1'),
           deleteChannel('adhan-fajr-v2'),
           deleteChannel('adhan-regular-v2'),
           deleteChannel('adhan-fajr-v3'),
@@ -492,6 +495,14 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           deleteChannel('adhan-regular-v4'),
           deleteChannel('adhan-fajr-v5'),
           deleteChannel('adhan-regular-v5'),
+          deleteChannel('adhan-fajr-v6'),
+          deleteChannel('adhan-regular-v6'),
+          deleteChannel('prayer-silent'),
+          deleteChannel('prayer-silent-v1'),
+          deleteChannel('prayer-reminder'),
+          deleteChannel('prayer-reminder-v1'),
+          deleteChannel('jummah-reminder'),
+          deleteChannel('jummah-reminder-v1'),
         ]);
       }
     } catch (error) {
@@ -1183,14 +1194,10 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
 
           const content = isFridayJummah
             ? { title: 'نماز جمعه', body: 'وقت نماز جمعه است', sound: true }
-            : getNotificationContent(prayerKey, prayerSettings.playSound);
-          const playSound = isFridayJummah ? true : prayerSettings.playSound;
-          const channelId = playSound
-            ? (prayerKey === 'fajr' ? CHANNEL_IDS.ADHAN_FAJR : CHANNEL_IDS.ADHAN_REGULAR)
-            : CHANNEL_IDS.PRAYER_SILENT;
-          const notificationSound: string | boolean | undefined = playSound
-            ? ADHAN_SOUND_FILENAME
-            : false;
+            : getNotificationContent(prayerKey, true);
+          const playSound = true;
+          const channelId = prayerKey === 'fajr' ? CHANNEL_IDS.ADHAN_FAJR : CHANNEL_IDS.ADHAN_REGULAR;
+          const notificationSound: string | boolean | undefined = ADHAN_SOUND_FILENAME;
           const dayKey = getDateKey(scheduleTime);
           const adhanId = isFridayJummah
             ? `adhan-jummah-${dayKey}`
@@ -1208,7 +1215,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
               title: content.title,
               body: content.body,
               sound: notificationSound,
-              ...(Platform.OS === 'android' && playSound && { vibrate: [] }),
+              ...(Platform.OS === 'android' && { vibrate: [] }),
               data: {
                 prayer: prayerKey,
                 type: 'adhan',
