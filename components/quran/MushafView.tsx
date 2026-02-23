@@ -194,30 +194,39 @@ export function MushafView({
     resetJumpSessionState(true);
   }, [jumpToken, logJumpDev, resetJumpSessionState]);
 
-  const scheduleBasicScroll = useCallback((ayahNumber: number, firstAnimated = true) => {
-    clearScrollRetryTimers();
-    isExactJumpSessionRef.current = false;
-    pendingTargetAyahRef.current = ayahNumber;
-    retryAttemptRef.current = 0;
-    targetVisibleStableCountRef.current = 0;
-    const sessionId = ++activeJumpSessionIdRef.current;
+  const scheduleBasicScroll = useCallback(
+    (ayahNumber: number, firstAnimated = true, forceScrollToTop = false) => {
+      clearScrollRetryTimers();
+      isExactJumpSessionRef.current = false;
+      pendingTargetAyahRef.current = ayahNumber;
+      retryAttemptRef.current = 0;
+      targetVisibleStableCountRef.current = 0;
+      const sessionId = ++activeJumpSessionIdRef.current;
 
-    const runBasicAttempt = (attempt: number) => {
-      if (activeJumpSessionIdRef.current !== sessionId) return;
-      if (pendingTargetAyahRef.current !== ayahNumber) return;
-      if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(ayahNumber)) return;
+      const runBasicAttempt = (attempt: number) => {
+        if (activeJumpSessionIdRef.current !== sessionId) return;
+        if (pendingTargetAyahRef.current !== ayahNumber) return;
+        if (
+          !forceScrollToTop &&
+          effectiveViewMode === 'scroll' &&
+          viewableAyahNumbersRef.current.has(ayahNumber)
+        ) {
+          return;
+        }
 
-      scrollToAyahIndex(ayahNumber, attempt === 0 ? firstAnimated : true);
-      if (attempt >= 2) return;
+        scrollToAyahIndex(ayahNumber, attempt === 0 ? firstAnimated : true);
+        if (attempt >= 2) return;
 
-      const delay = attempt === 0 ? 120 : 160;
-      retryTimerRef.current = setTimeout(() => {
-        runBasicAttempt(attempt + 1);
-      }, delay);
-    };
+        const delay = attempt === 0 ? 120 : 160;
+        retryTimerRef.current = setTimeout(() => {
+          runBasicAttempt(attempt + 1);
+        }, delay);
+      };
 
-    runBasicAttempt(0);
-  }, [clearScrollRetryTimers, effectiveViewMode, scrollToAyahIndex]);
+      runBasicAttempt(0);
+    },
+    [clearScrollRetryTimers, effectiveViewMode, scrollToAyahIndex]
+  );
 
   const scheduleExactJumpRetry = useCallback(
     (sessionId: number, ayahNumber: number) => {
@@ -322,7 +331,7 @@ export function MushafView({
     startExactJumpSession,
   ]);
 
-  // Auto-scroll to currently playing ayah - only when ayah is not already in view (reduces jump)
+  // Auto-scroll to currently playing ayah so it stays at the top of the screen (one after another)
   useEffect(() => {
     if (
       surah &&
@@ -332,12 +341,9 @@ export function MushafView({
       flatListRef.current
     ) {
       const targetAyah = currentlyPlaying.ayah;
-      if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(targetAyah)) {
-        return;
-      }
-      scheduleBasicScroll(targetAyah);
+      scheduleBasicScroll(targetAyah, true, true);
     }
-  }, [surah, currentlyPlaying, surahNumber, effectiveViewMode, scheduleBasicScroll]);
+  }, [surah, currentlyPlaying, surahNumber, scheduleBasicScroll]);
 
   // Handle viewable items change for tracking reading position and smart scroll
   const handleViewableItemsChanged = useCallback(
