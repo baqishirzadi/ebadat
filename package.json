@@ -23,6 +23,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "verify:quran-text": "node scripts/verify-quran-text-integrity.js",
     "postinstall": "patch-package"
   },
   "dependencies": {

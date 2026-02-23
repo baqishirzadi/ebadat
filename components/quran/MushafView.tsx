@@ -11,7 +11,6 @@ import { useQuranData } from '@/hooks/useQuranData';
 import { AyahRow } from './AyahRow';
 import { SurahHeader } from './SurahHeader';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { getQuranFontFamily } from '@/hooks/useFonts';
 import { Surah, Ayah } from '@/types/quran';
 import { stripQuranicMarks } from '@/utils/quranText';
 import CenteredText from '@/components/CenteredText';
@@ -95,9 +94,8 @@ export function MushafView({
   const [isLoading, setIsLoading] = useState(true);
   const [jumpFailureAyah, setJumpFailureAyah] = useState<number | null>(null);
 
-  const { viewMode, quranFont, arabicFontSize } = state.preferences;
+  const { viewMode, arabicFontSize } = state.preferences;
   const effectiveViewMode: 'scroll' | 'mushaf' = jumpMode === 'exact' ? 'scroll' : viewMode;
-  const fontFamily = getQuranFontFamily(quranFont);
 
   const mushafPages = useMemo(() => {
     if (!surah) return [] as { page: number; ayahs: Ayah[] }[];
@@ -775,16 +773,19 @@ export function MushafView({
                   ]}
                 >
                   <CenteredText
+                    allowFontScaling={false}
+                    textBreakStrategy="simple"
+                    lineBreakStrategyIOS="none"
                     style={[
                       styles.mushafAyahText,
                       {
-                        fontFamily,
+                        fontFamily: 'ScheherazadeNew',
                         color: theme.arabicText,
                         fontSize: Typography.arabic[arabicFontSize],
                       },
                     ]}
                   >
-                    {stripBismillah(stripQuranicMarks(ayah.text, quranFont), surahNumber, ayah.number)}
+                    {stripBismillah(stripQuranicMarks(ayah.text), surahNumber, ayah.number)}
                     <CenteredText style={[styles.ayahEndMark, { color: theme.ayahNumber }]}>
                       {' '}﴿{toArabicNumerals(ayah.number)}﴾{' '}
                     </CenteredText>
@@ -796,7 +797,7 @@ export function MushafView({
         )}
       />
     );
-  }, [surah, mushafPages, surahNumber, theme, fontFamily, arabicFontSize, quranFont, currentlyPlaying, handlePlayAyah]);
+  }, [surah, mushafPages, surahNumber, theme, arabicFontSize, currentlyPlaying, handlePlayAyah]);
 
   if (isLoading) {
     return (
@@ -948,8 +949,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', // CENTERED
     lineHeight: 62, // Reduced from 75 - balanced spacing, prevents text cut-off
     writingDirection: 'rtl',
-    letterSpacing: 1, // Spacing for diacritics not to overlap
-    includeFontPadding: false, // Android: prevent extra padding
+    letterSpacing: 0,
     paddingBottom: 5, // Prevents text cut-off at bottom
   },
   ayahEndMark: {

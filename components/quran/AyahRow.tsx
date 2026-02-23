@@ -13,7 +13,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp, useBookmarks } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
+import { getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
 import { stripQuranicMarks } from '@/utils/quranText';
 import CenteredText from '@/components/CenteredText';
@@ -64,8 +64,7 @@ export const AyahRow = memo(function AyahRow({
   const { theme, state } = useApp();
   const { isBookmarked, addBookmark, removeBookmark, getBookmark } = useBookmarks();
   
-  const { quranFont, dariFont, pashtoFont, arabicFontSize, translationFontSize, showTranslation } = state.preferences;
-  const quranFontFamily = getQuranFontFamily(quranFont);
+  const { dariFont, pashtoFont, arabicFontSize, translationFontSize, showTranslation } = state.preferences;
   const dariFontFamily = getDariFontFamily(dariFont);
   const pashtoFontFamily = getPashtoFontFamily(pashtoFont);
   const bookmarked = isBookmarked(surahNumber, ayah.number);
@@ -132,16 +131,19 @@ export const AyahRow = memo(function AyahRow({
       {/* Arabic Text - CENTERED (Bismillah stripped from ayah 1 since it's in header) */}
       <View style={styles.arabicContainer}>
         <CenteredText
+          allowFontScaling={false}
+          textBreakStrategy="simple"
+          lineBreakStrategyIOS="none"
           style={[
             styles.arabicText,
             {
-              fontFamily: quranFontFamily,
+              fontFamily: 'ScheherazadeNew',
               color: theme.arabicText,
               fontSize: Typography.arabic[arabicFontSize],
             },
           ]}
         >
-          {stripBismillah(stripQuranicMarks(ayah.text, quranFont), surahNumber, ayah.number)}
+          {stripBismillah(stripQuranicMarks(ayah.text), surahNumber, ayah.number)}
         </CenteredText>
       </View>
 
@@ -236,8 +238,7 @@ const styles = StyleSheet.create({
     textAlign: 'center', // CENTERED for better display
     lineHeight: 68, // Reduced from 85 - balanced spacing, prevents text cut-off
     writingDirection: 'rtl',
-    letterSpacing: 1, // Spacing for diacritics not to overlap
-    includeFontPadding: false, // Android: prevent extra padding
+    letterSpacing: 0,
     paddingBottom: 6, // Prevents text cut-off at bottom
   },
   translationsWrapper: {
