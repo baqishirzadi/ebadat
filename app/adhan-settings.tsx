@@ -34,12 +34,25 @@ const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 export default function AdhanSettingsScreen() {
   const { theme } = useApp();
-  const { state, updateAdhanPreferences, openNotificationSettings, scheduleAdhanSystemTest } = usePrayer();
+  const {
+    state,
+    updateAdhanPreferences,
+    openNotificationSettings,
+    scheduleAdhanSystemTest,
+    requestPrayerSchedule,
+  } = usePrayer();
   
   const [isTestingVoice, setIsTestingVoice] = useState<AdhanVoice | null>(null);
   const [expandedPrayer, setExpandedPrayer] = useState<PrayerName | null>(null);
 
   const { adhanPreferences } = state;
+  const exactAlarmStatusLabel = state.exactAlarmStatus === 'granted'
+    ? 'فعال'
+    : state.exactAlarmStatus === 'missing'
+      ? 'غیرفعال'
+      : state.exactAlarmStatus === 'unknown'
+        ? 'نامشخص'
+        : 'نیاز نیست';
 
   // Toggle master notifications
   const handleMasterToggle = useCallback(async (value: boolean) => {
@@ -67,6 +80,10 @@ export default function AdhanSettingsScreen() {
     }
     Alert.alert('خطا', 'فعلاً امکان زمان‌بندی تست سیستمی اذان وجود ندارد.');
   }, [scheduleAdhanSystemTest]);
+
+  const handleScheduleAudit = useCallback(async () => {
+    await requestPrayerSchedule('manual-audit');
+  }, [requestPrayerSchedule]);
 
   // Test Adhan voice
   const handleTestVoice = useCallback(async (voice: AdhanVoice, prayer?: PrayerName) => {
@@ -277,6 +294,84 @@ export default function AdhanSettingsScreen() {
             >
               <MaterialIcons name="notifications-active" size={20} color="#fff" />
               <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
+            </Pressable>
+          </View>
+        )}
+
+        {/* Scheduling Audit */}
+        {adhanPreferences.masterEnabled && (
+          <View style={[styles.auditCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <View style={styles.auditHeader}>
+              <MaterialIcons name="fact-check" size={22} color="#D4AF37" />
+              <Text style={[styles.auditTitle, { color: theme.text }]}>وضعیت زمان‌بندی اعلان‌ها</Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>آلارم دقیق:</Text>
+              <Text
+                style={[
+                  styles.auditValue,
+                  { color: state.exactAlarmStatus === 'missing' ? '#d32f2f' : theme.text },
+                ]}
+              >
+                {exactAlarmStatusLabel}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>انتظار / زمان‌بندی (همه):</Text>
+              <Text style={[styles.auditValue, { color: theme.text }]}>
+                {state.scheduleAudit ? `${state.scheduleAudit.expectedCount} / ${state.scheduleAudit.scheduledCount}` : '---'}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>انتظار / زمان‌بندی (اذان):</Text>
+              <Text style={[styles.auditValue, { color: theme.text }]}>
+                {state.scheduleAudit ? `${state.scheduleAudit.expectedAdhanCount} / ${state.scheduleAudit.scheduledAdhanCount}` : '---'}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>تکراری:</Text>
+              <Text style={[styles.auditValue, { color: theme.text }]}>
+                {state.scheduleAudit ? String(state.scheduleAudit.duplicateCount) : '---'}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>بیشترین Drift:</Text>
+              <Text style={[styles.auditValue, { color: theme.text }]}>
+                {state.scheduleAudit ? `${state.scheduleAudit.maxDriftSeconds} ثانیه` : '---'}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>تاخیر آخرین اذان:</Text>
+              <Text style={[styles.auditValue, { color: theme.text }]}>
+                {state.lastAdhanDelaySeconds !== null ? `${state.lastAdhanDelaySeconds} ثانیه` : '---'}
+              </Text>
+            </View>
+
+            <Pressable
+              onPress={handleScheduleAudit}
+              disabled={state.isScheduling}
+              style={[
+                styles.auditButton,
+                { backgroundColor: state.isScheduling ? '#8ca69b' : '#1a4d3e' },
+              ]}
+            >
+              {state.isScheduling ? (
+                <>
+                  <ActivityIndicator size="small" color="#fff" />
+                  <Text style={styles.auditButtonText}>در حال بازبینی...</Text>
+                </>
+              ) : (
+                <>
+                  <MaterialIcons name="refresh" size={20} color="#fff" />
+                  <Text style={styles.auditButtonText}>بازبینی مجدد</Text>
+                </>
+              )}
             </Pressable>
           </View>
         )}
@@ -554,6 +649,54 @@ const styles = StyleSheet.create({
   exactAlarmButtonText: {
     fontSize: Typography.ui.body,
     color: '#fff',
+    fontFamily: 'Vazirmatn',
+    fontWeight: '600',
+  },
+  auditCard: {
+    marginHorizontal: Spacing.md,
+    marginBottom: Spacing.md,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    gap: Spacing.xs,
+  },
+  auditHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.xs,
+  },
+  auditTitle: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '700',
+  },
+  auditRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  auditLabel: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+  },
+  auditValue: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '600',
+  },
+  auditButton: {
+    marginTop: Spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+  },
+  auditButtonText: {
+    color: '#fff',
+    fontSize: Typography.ui.body,
     fontFamily: 'Vazirmatn',
     fontWeight: '600',
   },

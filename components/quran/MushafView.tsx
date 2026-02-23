@@ -31,6 +31,9 @@ interface MushafViewProps {
 const MAX_SCROLL_RETRY_ATTEMPTS = 6;
 const SCROLL_RETRY_DELAYS_MS = [80, 160, 260, 360, 520, 700];
 const JUMP_VISIBLE_STABLE_TICKS = 2;
+const FOLLOW_MAX_ATTEMPTS = 5;
+const FOLLOW_RETRY_DELAYS_MS = [80, 160, 260, 420, 620];
+const FOLLOW_VISIBLE_STABLE_TICKS = 2;
 const STABLE_LIST_RENDER_CONFIG = {
   initialNumToRender: 12,
   maxToRenderPerBatch: 8,
@@ -80,6 +83,13 @@ export function MushafView({
   const targetVisibleStableCountRef = useRef(0);
   const highestMeasuredFrameIndexRef = useRef(0);
   const isExactJumpSessionRef = useRef(false);
+  const activeFollowSessionIdRef = useRef(0);
+  const followTargetAyahRef = useRef<number | null>(null);
+  const followRetryAttemptRef = useRef(0);
+  const followTopStableTicksRef = useRef(0);
+  const followHighestMeasuredFrameIndexRef = useRef(0);
+  const followRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastFollowAyahRef = useRef<number | null>(null);
 
   const [surah, setSurah] = useState<Surah | undefined>();
   const [isLoading, setIsLoading] = useState(true);
@@ -130,6 +140,13 @@ export function MushafView({
     }
   }, []);
 
+  const clearFollowRetryTimer = useCallback(() => {
+    if (followRetryTimerRef.current) {
+      clearTimeout(followRetryTimerRef.current);
+      followRetryTimerRef.current = null;
+    }
+  }, []);
+
   const resetJumpSessionState = useCallback((keepFailureState = false) => {
     clearScrollRetryTimers();
     pendingTargetAyahRef.current = null;
@@ -142,12 +159,22 @@ export function MushafView({
     }
   }, [clearScrollRetryTimers]);
 
+  const resetFollowSessionState = useCallback(() => {
+    clearFollowRetryTimer();
+    followTargetAyahRef.current = null;
+    followRetryAttemptRef.current = 0;
+    followTopStableTicksRef.current = 0;
+    followHighestMeasuredFrameIndexRef.current = 0;
+  }, [clearFollowRetryTimer]);
+
   useEffect(() => {
     return () => {
       activeJumpSessionIdRef.current += 1;
+      activeFollowSessionIdRef.current += 1;
       resetJumpSessionState();
+      resetFollowSessionState();
     };
-  }, [resetJumpSessionState]);
+  }, [resetFollowSessionState, resetJumpSessionState]);
 
   const getScrollIndexForAyah = useCallback((ayahNumber: number): number | null => {
     if (!surah) return null;
@@ -193,6 +220,83 @@ export function MushafView({
     }
     resetJumpSessionState(true);
   }, [jumpToken, logJumpDev, resetJumpSessionState]);
+
+  const completeFollowSession = useCallback((ayahNumber: number) => {
+    logJumpDev('follow_success', {
+      token: jumpToken,
+      target: ayahNumber,
+      attempt: followRetryAttemptRef.current,
+    });
+    resetFollowSessionState();
+  }, [jumpToken, logJumpDev, resetFollowSessionState]);
+
+  const markFollowFailed = useCallback((ayahNumber: number, reason: string) => {
+    logJumpDev('follow_failed', {
+      token: jumpToken,
+      target: ayahNumber,
+      reason,
+      attempt: followRetryAttemptRef.current,
+      highestMeasured: followHighestMeasuredFrameIndexRef.current,
+    });
+    resetFollowSessionState();
+  }, [jumpToken, logJumpDev, resetFollowSessionState]);
+
+  const scheduleFollowRetry = useCallback(
+    (sessionId: number, ayahNumber: number, overrideDelayMs?: number) => {
+      if (activeFollowSessionIdRef.current !== sessionId) return;
+      if (followTargetAyahRef.current !== ayahNumber) return;
+      if (followRetryAttemptRef.current >= FOLLOW_MAX_ATTEMPTS) {
+        markFollowFailed(ayahNumber, 'max_attempts');
+        return;
+      }
+
+      clearFollowRetryTimer();
+      const delay =
+        overrideDelayMs ??
+        FOLLOW_RETRY_DELAYS_MS[
+          Math.min(followRetryAttemptRef.current, FOLLOW_RETRY_DELAYS_MS.length - 1)
+        ];
+
+      followRetryTimerRef.current = setTimeout(() => {
+        if (activeFollowSessionIdRef.current !== sessionId) return;
+        if (followTargetAyahRef.current !== ayahNumber) return;
+
+        followRetryAttemptRef.current += 1;
+        const attempt = followRetryAttemptRef.current;
+
+        logJumpDev('follow_retry', {
+          token: jumpToken,
+          target: ayahNumber,
+          attempt,
+          highestMeasured: followHighestMeasuredFrameIndexRef.current,
+        });
+
+        scrollToAyahIndex(ayahNumber, false);
+        scheduleFollowRetry(sessionId, ayahNumber);
+      }, delay);
+    },
+    [clearFollowRetryTimer, jumpToken, logJumpDev, markFollowFailed, scrollToAyahIndex]
+  );
+
+  const startAutoFollowSession = useCallback(
+    (ayahNumber: number) => {
+      const sessionId = ++activeFollowSessionIdRef.current;
+      resetFollowSessionState();
+      followTargetAyahRef.current = ayahNumber;
+      lastFollowAyahRef.current = ayahNumber;
+      followTopStableTicksRef.current = 0;
+
+      logJumpDev('follow_start', {
+        token: jumpToken,
+        target: ayahNumber,
+        sessionId,
+      });
+
+      scrollToAyahIndex(ayahNumber, false);
+      scheduleFollowRetry(sessionId, ayahNumber);
+    },
+    [jumpToken, logJumpDev, resetFollowSessionState, scheduleFollowRetry, scrollToAyahIndex]
+  );
 
   const scheduleBasicScroll = useCallback(
     (ayahNumber: number, firstAnimated = true, forceScrollToTop = false) => {
@@ -331,19 +435,41 @@ export function MushafView({
     startExactJumpSession,
   ]);
 
+  useEffect(() => {
+    activeFollowSessionIdRef.current += 1;
+    lastFollowAyahRef.current = null;
+    resetFollowSessionState();
+  }, [surahNumber, resetFollowSessionState]);
+
   // Auto-scroll to currently playing ayah so it stays at the top of the screen (one after another)
   useEffect(() => {
     if (
-      surah &&
-      currentlyPlaying &&
-      currentlyPlaying.surah === surahNumber &&
-      currentlyPlaying.ayah &&
-      flatListRef.current
+      !surah ||
+      !currentlyPlaying ||
+      currentlyPlaying.surah !== surahNumber ||
+      !currentlyPlaying.ayah ||
+      effectiveViewMode !== 'scroll'
     ) {
-      const targetAyah = currentlyPlaying.ayah;
-      scheduleBasicScroll(targetAyah, true, true);
+      activeFollowSessionIdRef.current += 1;
+      lastFollowAyahRef.current = null;
+      resetFollowSessionState();
+      return;
     }
-  }, [surah, currentlyPlaying, surahNumber, scheduleBasicScroll]);
+
+    const targetAyah = currentlyPlaying.ayah;
+    if (lastFollowAyahRef.current === targetAyah) {
+      return;
+    }
+
+    startAutoFollowSession(targetAyah);
+  }, [
+    surah,
+    currentlyPlaying,
+    surahNumber,
+    effectiveViewMode,
+    resetFollowSessionState,
+    startAutoFollowSession,
+  ]);
 
   // Handle viewable items change for tracking reading position and smart scroll
   const handleViewableItemsChanged = useCallback(
@@ -361,6 +487,28 @@ export function MushafView({
         const ayahNumber = token.item?.number;
         return typeof ayahNumber === 'number' && Number.isFinite(ayahNumber) && ayahNumber > 0;
       })?.item;
+      const firstVisibleAyah = firstVisible?.number;
+
+      if (effectiveViewMode === 'scroll' && followTargetAyahRef.current) {
+        const targetAyah = followTargetAyahRef.current;
+        const followSessionId = activeFollowSessionIdRef.current;
+
+        if (firstVisibleAyah === targetAyah) {
+          followTopStableTicksRef.current += 1;
+          if (followTopStableTicksRef.current >= FOLLOW_VISIBLE_STABLE_TICKS) {
+            completeFollowSession(targetAyah);
+          } else {
+            clearFollowRetryTimer();
+            followRetryTimerRef.current = setTimeout(() => {
+              if (activeFollowSessionIdRef.current !== followSessionId) return;
+              if (followTargetAyahRef.current !== targetAyah) return;
+              scrollToAyahIndex(targetAyah, false);
+            }, 120);
+          }
+        } else {
+          followTopStableTicksRef.current = 0;
+        }
+      }
 
       if (
         effectiveViewMode === 'scroll' &&
@@ -369,7 +517,6 @@ export function MushafView({
         const targetAyah = pendingTargetAyahRef.current;
         const currentSessionId = activeJumpSessionIdRef.current;
         const isExactJump = isExactJumpSessionRef.current;
-        const firstVisibleAyah = firstVisible?.number;
 
         if (__DEV__ && isExactJump) {
           logJumpDev('attempt', {
@@ -443,7 +590,9 @@ export function MushafView({
       }
     },
     [
+      clearFollowRetryTimer,
       clearScrollRetryTimers,
+      completeFollowSession,
       completeJumpSession,
       effectiveViewMode,
       getPage,
@@ -466,6 +615,36 @@ export function MushafView({
   const handleScrollToIndexFailed = useCallback(
     (info: { index: number; highestMeasuredFrameIndex: number; averageItemLength: number }) => {
       if (!flatListRef.current) return;
+      const followTargetAyah = followTargetAyahRef.current;
+      if (followTargetAyah && effectiveViewMode === 'scroll') {
+        const followSessionId = activeFollowSessionIdRef.current;
+        const highest = Math.max(
+          followHighestMeasuredFrameIndexRef.current,
+          info.highestMeasuredFrameIndex
+        );
+        followHighestMeasuredFrameIndexRef.current = highest;
+
+        logJumpDev('follow_scroll_to_index_failed', {
+          token: jumpToken,
+          targetAyah: followTargetAyah,
+          infoIndex: info.index,
+          highestMeasuredFrameIndex: info.highestMeasuredFrameIndex,
+          attempt: followRetryAttemptRef.current,
+        });
+
+        try {
+          flatListRef.current.scrollToIndex({
+            index: highest,
+            animated: false,
+          });
+        } catch {
+          // ignore
+        }
+
+        scheduleFollowRetry(followSessionId, followTargetAyah, 70);
+        return;
+      }
+
       const targetAyah = pendingTargetAyahRef.current;
       if (!targetAyah) return;
       const highest = Math.max(
@@ -502,7 +681,16 @@ export function MushafView({
       }
       scheduleExactJumpRetry(activeJumpSessionIdRef.current, targetAyah);
     },
-    [clearScrollRetryTimers, getScrollIndexForAyah, jumpToken, logJumpDev, scheduleExactJumpRetry, scrollToAyahIndex]
+    [
+      clearScrollRetryTimers,
+      effectiveViewMode,
+      getScrollIndexForAyah,
+      jumpToken,
+      logJumpDev,
+      scheduleExactJumpRetry,
+      scheduleFollowRetry,
+      scrollToAyahIndex,
+    ]
   );
 
   const handlePlayAyah = useCallback(
