@@ -166,8 +166,21 @@ export function SurahList() {
   }, [router]);
 
   const handleContinueReading = useCallback(() => {
-    router.push(`/quran/${position.surahNumber}?ayah=${position.ayahNumber}`);
-  }, [router, position]);
+    if (position.surahNumber <= 0 || position.ayahNumber <= 0) {
+      return;
+    }
+
+    const jumpToken = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    router.push({
+      pathname: '/quran/[surah]',
+      params: {
+        surah: String(position.surahNumber),
+        ayah: String(position.ayahNumber),
+        jump: 'exact',
+        jumpToken,
+      },
+    });
+  }, [router, position.ayahNumber, position.surahNumber]);
 
   const handleBrowseModeChange = useCallback((mode: 'surah' | 'juz') => {
     setBrowseMode(mode);
