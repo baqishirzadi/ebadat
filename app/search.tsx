@@ -13,6 +13,7 @@ import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { SearchResult } from '@/types/quran';
 import CenteredText from '@/components/CenteredText';
 import { toArabicNumerals } from '@/utils/numbers';
+import { stripQuranicMarks } from '@/utils/quranText';
 
 type SearchMode = 'arabic' | 'translation';
 
@@ -158,7 +159,7 @@ export default function SearchScreen() {
           style={[styles.arabicText, { color: theme.arabicText }]}
           numberOfLines={2}
         >
-          {item.text}
+          {stripQuranicMarks(item.text)}
         </CenteredText>
 
         {item.translation && (

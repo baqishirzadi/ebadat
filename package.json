@@ -24,6 +24,7 @@
     "lint": "expo lint",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "verify:quran-text": "node scripts/verify-quran-text-integrity.js",
+    "verify:quran-render-clean": "node scripts/verify-quran-display-normalization.js",
     "postinstall": "patch-package"
   },
   "dependencies": {
