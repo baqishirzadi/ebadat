@@ -135,27 +135,17 @@
         "expo-font",
         {
           "fonts": [
-            "./assets/fonts/QuranFont.ttf",
             "./assets/fonts/ScheherazadeNew-Regular.ttf",
             "./assets/fonts/ScheherazadeNew-Bold.ttf",
+            "./assets/fonts/QPCHafs18.ttf",
             "./assets/fonts/Amiri-Regular.ttf",
             "./assets/fonts/Amiri-Bold.ttf",
-            "./assets/fonts/NotoNaskhArabic-Regular.ttf",
             "./assets/fonts/Vazirmatn-Regular.ttf",
             "./assets/fonts/Vazirmatn-Bold.ttf",
             "./assets/fonts/NotoNastaliqUrdu-Regular.ttf"
           ],
           "android": {
             "fonts": [
-              {
-                "fontFamily": "QuranFont",
-                "fontDefinitions": [
-                  {
-                    "path": "./assets/fonts/QuranFont.ttf",
-                    "weight": 400
-                  }
-                ]
-              },
               {
                 "fontFamily": "ScheherazadeNew",
                 "fontDefinitions": [
@@ -175,6 +165,15 @@
                 ]
               },
               {
+                "fontFamily": "QPCHafs",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/QPCHafs18.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
                 "fontFamily": "Amiri",
                 "fontDefinitions": [
                   {
@@ -189,15 +188,6 @@
                   {
                     "path": "./assets/fonts/Amiri-Bold.ttf",
                     "weight": 700
-                  }
-                ]
-              },
-              {
-                "fontFamily": "NotoNaskhArabic",
-                "fontDefinitions": [
-                  {
-                    "path": "./assets/fonts/NotoNaskhArabic-Regular.ttf",
-                    "weight": 400
                   }
                 ]
               },

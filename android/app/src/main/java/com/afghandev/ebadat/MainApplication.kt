@@ -46,12 +46,11 @@ class MainApplication : Application(), ReactApplication {
     sharedI18nUtilInstance.allowRTL(this, true)
     sharedI18nUtilInstance.forceRTL(this, true)
     // @generated begin xml-fonts-init - expo prebuild (DO NOT MODIFY) sync-d1f94ccd9842f98ac34cfe7bdfd65093cbd57923
-    ReactFontManager.getInstance().addCustomFont(this, "QuranFont", R.font.xml_quran_font)
     ReactFontManager.getInstance().addCustomFont(this, "ScheherazadeNew", R.font.xml_scheherazade_new)
     ReactFontManager.getInstance().addCustomFont(this, "ScheherazadeNew-Bold", R.font.xml_scheherazade_new_bold)
+    ReactFontManager.getInstance().addCustomFont(this, "QPCHafs", R.font.xml_qpc_hafs)
     ReactFontManager.getInstance().addCustomFont(this, "Amiri", R.font.xml_amiri)
     ReactFontManager.getInstance().addCustomFont(this, "Amiri-Bold", R.font.xml_amiri_bold)
-    ReactFontManager.getInstance().addCustomFont(this, "NotoNaskhArabic", R.font.xml_noto_naskh_arabic)
     ReactFontManager.getInstance().addCustomFont(this, "Vazirmatn", R.font.xml_vazirmatn)
     ReactFontManager.getInstance().addCustomFont(this, "Vazirmatn-Bold", R.font.xml_vazirmatn_bold)
     ReactFontManager.getInstance().addCustomFont(this, "NotoNastaliqUrdu", R.font.xml_noto_nastaliq_urdu)

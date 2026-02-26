@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp, useBookmarks } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
 import { stripQuranicMarks } from '@/utils/quranText';
 import { Bookmark } from '@/types/quran';
@@ -30,6 +31,7 @@ export default function BookmarksScreen() {
   const { theme, themeMode, state } = useApp();
   const { bookmarks, removeBookmark } = useBookmarks();
   const { getSurah, getAyah } = useQuranData();
+  const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
   const router = useRouter();
 
   const handleBookmarkPress = useCallback(
@@ -101,7 +103,7 @@ export default function BookmarksScreen() {
             </View>
 
             <CenteredText
-              style={[styles.ayahPreview, { color: theme.arabicText }]}
+              style={[styles.ayahPreview, { color: theme.arabicText, fontFamily: quranFontFamily }]}
               numberOfLines={2}
             >
               {stripQuranicMarks(ayah.text, state.preferences.quranFont)}
@@ -129,7 +131,7 @@ export default function BookmarksScreen() {
         </Pressable>
       );
     },
-    [theme, state.preferences.quranFont, getSurah, getAyah, handleBookmarkPress, handleDeleteBookmark]
+    [theme, state.preferences.quranFont, quranFontFamily, getSurah, getAyah, handleBookmarkPress, handleDeleteBookmark]
   );
 
   const sortedBookmarks = [...bookmarks].sort((a, b) => b.timestamp - a.timestamp);

@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Typography.ui.title,
     fontWeight: '600',
-    fontFamily: 'QuranFont',
+    fontFamily: 'ScheherazadeNew',
     textAlign: 'center',
     width: '100%',
   },

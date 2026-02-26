@@ -13,7 +13,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp, useBookmarks } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
+import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
 import { stripQuranicMarks } from '@/utils/quranText';
 import CenteredText from '@/components/CenteredText';
@@ -67,6 +67,7 @@ export const AyahRow = memo(function AyahRow({
   const { dariFont, pashtoFont, arabicFontSize, translationFontSize, showTranslation } = state.preferences;
   const dariFontFamily = getDariFontFamily(dariFont);
   const pashtoFontFamily = getPashtoFontFamily(pashtoFont);
+  const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
   const bookmarked = isBookmarked(surahNumber, ayah.number);
 
   const handleBookmarkPress = () => {
@@ -137,13 +138,13 @@ export const AyahRow = memo(function AyahRow({
           style={[
             styles.arabicText,
             {
-              fontFamily: 'ScheherazadeNew',
+              fontFamily: quranFontFamily,
               color: theme.arabicText,
               fontSize: Typography.arabic[arabicFontSize],
             },
           ]}
         >
-          {stripBismillah(stripQuranicMarks(ayah.text), surahNumber, ayah.number)}
+          {stripBismillah(stripQuranicMarks(ayah.text, state.preferences.quranFont), surahNumber, ayah.number)}
         </CenteredText>
       </View>
 

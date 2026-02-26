@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors } from '@/constants/theme';
+import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts } from '@/constants/theme';
 import {
   Bookmark,
   ReadingPosition,
@@ -178,6 +178,10 @@ const initialState: AppState = {
   isInitialized: false,
 };
 
+function isValidQuranFontFamily(value: unknown): value is QuranFontFamily {
+  return typeof value === 'string' && value in QuranFonts;
+}
+
 // Context type
 interface AppContextType {
   state: AppState;
@@ -253,9 +257,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
         AsyncStorage.getItem(STORAGE_KEYS.LAST_POSITION),
       ]);
 
-      const preferences = prefsJson ? { ...DEFAULT_PREFERENCES, ...JSON.parse(prefsJson) } : DEFAULT_PREFERENCES;
+      const rawPreferences = prefsJson ? { ...DEFAULT_PREFERENCES, ...JSON.parse(prefsJson) } : DEFAULT_PREFERENCES;
+      let preferences = rawPreferences;
+      let preferencesNormalized = false;
+
+      if (!isValidQuranFontFamily(rawPreferences.quranFont)) {
+        preferences = {
+          ...rawPreferences,
+          quranFont: 'scheherazade',
+        };
+        preferencesNormalized = true;
+      }
+
       const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
       const lastPosition = positionJson ? JSON.parse(positionJson) : DEFAULT_POSITION;
+
+      if (preferencesNormalized) {
+        await AsyncStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(preferences));
+      }
 
       dispatch({
         type: 'INITIALIZE',

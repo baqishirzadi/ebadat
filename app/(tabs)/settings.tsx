@@ -11,6 +11,8 @@ import {
   NAAT_GRADIENT,
   PashtoFontFamily,
   PashtoFonts,
+  QuranFontFamily,
+  QuranFonts,
   Spacing,
   ThemeMode,
   Typography,
@@ -36,6 +38,7 @@ export default function SettingsScreen() {
     theme,
     state,
     setTheme,
+    setQuranFont,
     setDariFont,
     setPashtoFont,
     setTranslationLanguage,
@@ -54,6 +57,11 @@ export default function SettingsScreen() {
   const dariFonts: { id: DariFontFamily; name: string; sample: string }[] = [
     { id: 'vazirmatn', name: DariFonts.vazirmatn.displayNameDari, sample: 'به نام خداوند' },
     { id: 'amiri', name: DariFonts.amiri.displayNameDari, sample: 'به نام خداوند' },
+  ];
+
+  const quranFonts: { id: QuranFontFamily; name: string; sample: string }[] = [
+    { id: 'scheherazade', name: QuranFonts.scheherazade.displayNameDari, sample: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' },
+    { id: 'qpcHafs', name: QuranFonts.qpcHafs.displayNameDari, sample: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ' },
   ];
 
   const pashtoFonts: { id: PashtoFontFamily; name: string; sample: string }[] = [
@@ -136,20 +144,48 @@ export default function SettingsScreen() {
       )}
 
       {/* Quran Font Settings */}
-      <View style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+      <Pressable
+        onPress={() => toggleSection('quranFont')}
+        style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+      >
         <MaterialIcons name="font-download" size={24} color={theme.tint} />
         <View style={styles.sectionInfo}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>خط قرآن</Text>
-          <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>پیش‌فرض (عثمان طه)</Text>
+          <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+            {QuranFonts[state.preferences.quranFont]?.displayNameDari ?? 'عثمان طه'}
+          </Text>
         </View>
-        <MaterialIcons name="lock" size={22} color={theme.icon} />
-      </View>
-      <View style={[styles.quranFontLockedNote, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-        <MaterialIcons name="info" size={18} color={theme.tint} />
-        <Text style={[styles.quranFontLockedText, { color: theme.textSecondary }]}>
-          برای صحت کامل نمایش آیات، خط قرآن فعلاً روی فونت پیش‌فرض قفل است.
-        </Text>
-      </View>
+        <MaterialIcons
+          name={expandedSection === 'quranFont' ? 'expand-less' : 'expand-more'}
+          size={24}
+          color={theme.icon}
+        />
+      </Pressable>
+      {expandedSection === 'quranFont' && (
+        <View style={[styles.optionsList, { backgroundColor: theme.card }]}>
+          {quranFonts.map((f) => (
+            <Pressable
+              key={f.id}
+              onPress={() => setQuranFont(f.id)}
+              style={[
+                styles.optionItem,
+                { borderBottomColor: theme.divider },
+                state.preferences.quranFont === f.id && { backgroundColor: theme.backgroundSecondary },
+              ]}
+            >
+              <View style={styles.fontPreview}>
+                <Text style={[styles.fontSample, { color: theme.text, fontFamily: QuranFonts[f.id].name }]}>
+                  {f.sample}
+                </Text>
+                <Text style={[styles.optionText, { color: theme.text }]}>{f.name}</Text>
+              </View>
+              {state.preferences.quranFont === f.id && (
+                <MaterialIcons name="check" size={20} color={theme.tint} />
+              )}
+            </Pressable>
+          ))}
+        </View>
+      )}
 
       {/* Dari Font Settings */}
       <Pressable
@@ -432,23 +468,6 @@ const styles = StyleSheet.create({
   sectionValue: {
     fontSize: Typography.ui.body,
     marginTop: 2,
-    textAlign: 'center',
-    fontFamily: 'Vazirmatn',
-  },
-  quranFontLockedNote: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: Spacing.xs,
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.xs,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-  },
-  quranFontLockedText: {
-    flex: 1,
-    fontSize: Typography.ui.caption,
     textAlign: 'center',
     fontFamily: 'Vazirmatn',
   },

@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
   arabicName: {
     fontSize: Typography.ui.display,
     fontWeight: '700',
-    fontFamily: 'QuranFont',
+    fontFamily: 'ScheherazadeNew',
     textAlign: 'center',
   },
   metaContainer: {

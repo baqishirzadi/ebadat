@@ -8,6 +8,7 @@ import { View, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator, V
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp, useReadingPosition } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 import { AyahRow } from './AyahRow';
 import { SurahHeader } from './SurahHeader';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
@@ -103,6 +104,7 @@ export function MushafView({
   const [isSearchJumping, setIsSearchJumping] = useState(false);
 
   const { viewMode, arabicFontSize } = state.preferences;
+  const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
   const effectiveViewMode: 'scroll' | 'mushaf' =
     jumpMode === 'exact' || jumpMode === 'continue' || jumpMode === 'search_exact'
       ? 'scroll'
@@ -892,13 +894,13 @@ export function MushafView({
                     style={[
                       styles.mushafAyahText,
                       {
-                        fontFamily: 'ScheherazadeNew',
+                        fontFamily: quranFontFamily,
                         color: theme.arabicText,
                         fontSize: Typography.arabic[arabicFontSize],
                       },
                     ]}
                   >
-                    {stripBismillah(stripQuranicMarks(ayah.text), surahNumber, ayah.number)}
+                    {stripBismillah(stripQuranicMarks(ayah.text, state.preferences.quranFont), surahNumber, ayah.number)}
                     <CenteredText style={[styles.ayahEndMark, { color: theme.ayahNumber }]}>
                       {' '}﴿{toArabicNumerals(ayah.number)}﴾{' '}
                     </CenteredText>
@@ -910,7 +912,7 @@ export function MushafView({
         )}
       />
     );
-  }, [surah, mushafPages, surahNumber, theme, arabicFontSize, currentlyPlaying, handlePlayAyah]);
+  }, [surah, mushafPages, surahNumber, theme, arabicFontSize, currentlyPlaying, handlePlayAyah, quranFontFamily, state.preferences.quranFont]);
 
   if (isLoading) {
     return (

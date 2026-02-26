@@ -9,7 +9,7 @@ import { QuranFonts, DariFonts, PashtoFonts, QuranFontFamily, DariFontFamily, Pa
  * Get the actual font family name for Quran text
  */
 export function getQuranFontFamily(fontKey: QuranFontFamily): string {
-  return QuranFonts[fontKey]?.name || 'QuranFont';
+  return QuranFonts[fontKey]?.name || 'ScheherazadeNew';
 }
 
 /**

@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: '700',
     color: '#fff',
-    fontFamily: 'QuranFont',
+    fontFamily: 'ScheherazadeNew',
     writingDirection: 'rtl',
   },
   headerSubtitle: {
@@ -567,7 +567,7 @@ const styles = StyleSheet.create({
   arabicName: {
     fontSize: Typography.ui.title,
     fontWeight: '600',
-    fontFamily: 'QuranFont',
+    fontFamily: 'ScheherazadeNew',
     textAlign: 'center', // Center-aligned text
     width: '100%',
   },

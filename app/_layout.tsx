@@ -57,12 +57,11 @@ SplashScreen.preventAutoHideAsync();
 // Font assets - All fonts needed for Arabic, Dari, and Pashto
 const fontAssets = {
   // Arabic Quran Fonts
-  'QuranFont': require('@/assets/fonts/QuranFont.ttf'),
   'ScheherazadeNew': require('@/assets/fonts/ScheherazadeNew-Regular.ttf'),
   'ScheherazadeNew-Bold': require('@/assets/fonts/ScheherazadeNew-Bold.ttf'),
+  'QPCHafs': require('@/assets/fonts/QPCHafs18.ttf'),
   'Amiri': require('@/assets/fonts/Amiri-Regular.ttf'),
   'Amiri-Bold': require('@/assets/fonts/Amiri-Bold.ttf'),
-  'NotoNaskhArabic': require('@/assets/fonts/NotoNaskhArabic-Regular.ttf'), // Google's Noto Naskh - excellent diacritics
   
   // Dari/Farsi Font (Modern & Beautiful)
   'Vazirmatn': require('@/assets/fonts/Vazirmatn-Regular.ttf'),

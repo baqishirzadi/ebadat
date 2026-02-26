@@ -410,7 +410,7 @@ const styles = StyleSheet.create({
   arabicText: {
     fontSize: 28,
     color: '#fff',
-    fontFamily: 'QuranFont',
+    fontFamily: 'ScheherazadeNew',
     textAlign: 'center',
     lineHeight: 58,
     writingDirection: 'rtl',

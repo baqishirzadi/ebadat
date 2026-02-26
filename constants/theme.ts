@@ -196,7 +196,7 @@ export const Colors = {
 // ═══════════════════════════════════════════════════
 
 // Arabic Quran Font Type
-export type QuranFontFamily = 'notoNaskh' | 'amiriQuran' | 'scheherazade';
+export type QuranFontFamily = 'qpcHafs' | 'scheherazade';
 
 // Dari/Farsi Font Type
 export type DariFontFamily = 'vazirmatn' | 'amiri';
@@ -210,15 +210,10 @@ export const QuranFonts: Record<QuranFontFamily, {
   displayName: string; 
   displayNameDari: string;
 }> = {
-  notoNaskh: {
-    name: 'NotoNaskhArabic',
-    displayName: 'Noto Naskh',
-    displayNameDari: 'نوتو نسخ (پیشنهادی)',
-  },
-  amiriQuran: {
-    name: 'QuranFont',
-    displayName: 'نسخ کلاسیک',
-    displayNameDari: 'نسخ کلاسیک',
+  qpcHafs: {
+    name: 'QPCHafs',
+    displayName: 'QPC Hafs v2.2',
+    displayNameDari: 'مصحف حفص',
   },
   scheherazade: {
     name: 'ScheherazadeNew',
