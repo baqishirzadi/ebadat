@@ -11,6 +11,7 @@ import { toArabicNumerals } from '@/utils/numbers';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface AudioPlayerProps {
   surahNumber: number;
@@ -38,6 +39,7 @@ export function AudioPlayer({
   onClose,
 }: AudioPlayerProps) {
   const { theme } = useApp();
+  const insets = useSafeAreaInsets();
   const [currentReciter, setCurrentReciter] = useState<ReciterKey>('ghamidi');
   const [showReciterModal, setShowReciterModal] = useState(false);
 
@@ -83,13 +85,22 @@ export function AudioPlayer({
   if (!isVisible) return null;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.card, borderTopColor: theme.divider }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.card,
+          borderTopColor: theme.divider,
+          paddingBottom: Math.max(insets.bottom, 8),
+        },
+      ]}
+    >
       <View style={styles.content}>
         <Pressable
           onPress={() => setShowReciterModal(true)}
           style={[styles.reciterButton, { backgroundColor: theme.backgroundSecondary }]}
         >
-          <MaterialIcons name="person" size={16} color={theme.tint} />
+          <MaterialIcons name="person" size={15} color={theme.tint} />
           <View style={styles.reciterTextWrap}>
             <CenteredText
               style={[styles.reciterName, { color: theme.text }]}
@@ -98,11 +109,8 @@ export function AudioPlayer({
             >
               {RECITERS[currentReciter].name}
             </CenteredText>
-            <CenteredText style={styles.reciterHint} numberOfLines={1} ellipsizeMode="tail">
-              برای تغییر قاری، اینجا را کلیک کنید
-            </CenteredText>
           </View>
-          <MaterialIcons name="arrow-drop-down" size={18} color={theme.icon} />
+          <MaterialIcons name="arrow-drop-down" size={16} color={theme.icon} />
         </Pressable>
 
         <View style={styles.bottomRow}>
@@ -123,7 +131,7 @@ export function AudioPlayer({
                 pressed && styles.playButtonPressed,
               ]}
             >
-              <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={30} color="#fff" />
+              <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={26} color="#fff" />
             </Pressable>
 
             <Pressable
@@ -152,6 +160,9 @@ export function AudioPlayer({
         <Pressable style={styles.modalOverlay} onPress={() => setShowReciterModal(false)}>
           <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
             <CenteredText style={[styles.modalTitle, { color: theme.text }]}>انتخاب قاری</CenteredText>
+            <CenteredText style={[styles.modalSubtitle, { color: theme.textSecondary }]}>
+              برای تغییر قاری، یکی از گزینه‌ها را انتخاب کنید
+            </CenteredText>
 
             {Object.values(RECITERS).map((reciter) => (
               <Pressable
@@ -185,21 +196,21 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     borderTopWidth: 1,
-    paddingBottom: 34,
   },
   content: {
     flexDirection: 'column',
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.sm,
+    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.xs,
+    gap: 6,
   },
   reciterButton: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    minHeight: 46,
+    minHeight: 36,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: 2,
     borderRadius: BorderRadius.sm,
     gap: Spacing.xs,
   },
@@ -214,35 +225,28 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontWeight: '600',
   },
-  reciterHint: {
-    fontSize: 11,
-    color: '#888',
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    marginTop: 2,
-  },
   ayahInfo: {
     flex: 1,
     minWidth: 0,
-    fontSize: Typography.ui.body,
+    fontSize: Typography.ui.caption,
     fontWeight: '600',
     fontFamily: 'Vazirmatn',
   },
   bottomRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: 8,
   },
   controlsSection: {
     flexDirection: 'row',
     alignItems: 'center',
     flexShrink: 0,
-    gap: Spacing.sm,
+    gap: 6,
   },
   playButton: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 46,
+    height: 46,
+    borderRadius: 23,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -250,7 +254,7 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   controlButton: {
-    padding: Spacing.sm,
+    padding: 8,
     borderRadius: BorderRadius.full,
   },
   controlButtonPressed: {
@@ -272,7 +276,16 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.subtitle,
     fontWeight: '700',
     textAlign: 'center',
-    padding: Spacing.md,
+    paddingTop: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.xs,
+    fontFamily: 'Vazirmatn',
+  },
+  modalSubtitle: {
+    textAlign: 'center',
+    fontSize: Typography.ui.caption,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.sm,
     fontFamily: 'Vazirmatn',
   },
   modalOption: {
