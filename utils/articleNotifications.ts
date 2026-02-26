@@ -5,6 +5,7 @@
 
 import { Platform } from 'react-native';
 import { getSupabaseClient, isSupabaseConfigured } from './supabase';
+import { isAdminSessionActive, publishArticleByAdmin } from './articleAdminService';
 
 // Conditional import - only load on native platforms, not in Expo Go
 let Notifications: typeof import('expo-notifications') | null = null;
@@ -17,6 +18,22 @@ export async function notifyArticlePublished(
   scholarName: string,
   articleTitle: string
 ): Promise<{ success: boolean; sentCount: number; error?: string }> {
+  if (isAdminSessionActive()) {
+    try {
+      const result = await publishArticleByAdmin(articleId);
+      return {
+        success: result.published,
+        sentCount: result.sent,
+        error: result.failed > 0 ? `${result.failed} push notifications failed` : undefined,
+      };
+    } catch (error) {
+      if (__DEV__) {
+        console.warn('[ArticleNotifications] Admin publish fallback failed:', error);
+      }
+      // Continue to legacy local fallback below.
+    }
+  }
+
   if (Platform.OS === 'web') {
     return { success: false, sentCount: 0, error: 'Notifications not supported on web' };
   }

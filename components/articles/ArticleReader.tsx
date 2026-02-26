@@ -72,7 +72,7 @@ const CATEGORY_COLORS: Record<string, { primary: string; secondary: string; acce
 
 /**
  * Parse HTML and convert to React Native components
- * Simple and robust parser for h2, p, strong, em tags
+ * Simple and robust parser for h2, p, strong, em, mark tags
  * Fixed to prevent paragraph duplication
  */
 function parseHTML(html: string, categoryColor: string, themeText: string): React.ReactNode[] {
@@ -150,17 +150,18 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       if (normalized.length >= 40 && seenParagraphs.has(normalized)) return; // Skip duplicates
       seenParagraphs.add(normalized);
       
-      // Parse inline formatting (strong, em)
+      // Parse inline formatting (strong, em, mark)
       const paraElements: React.ReactNode[] = [];
       let paraKey = 0;
       const textParts: React.ReactNode[] = [];
       let inStrong = false;
       let inEm = false;
+      let inMark = false;
 
       // Simple state machine for parsing inline tags
-      const cleanedParaHtml = item.content.replace(/<(?!\/?(strong|em)\b)[^>]+>/gi, '');
+      const cleanedParaHtml = item.content.replace(/<(?!\/?(strong|em|mark)\b)[^>]+>/gi, '');
       const rawParagraphText = cleanedParaHtml
-        .replace(/<\/?(strong|em)>/gi, '')
+        .replace(/<\/?(strong|em|mark)>/gi, '')
         .replace(/\s+/g, ' ')
         .trim();
       const isPoetryParagraph = /«[^»]+»/.test(rawParagraphText);
@@ -169,7 +170,7 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
         /(?:د بیت معنی|د شعر معنی|د نقل قول معنی|معنی په پښتو|د مانا|په پښتو)/.test(rawParagraphText) ||
         /\((?:پشتو|پښتو)\s*:/.test(rawParagraphText) ||
         /(?:نقل‌قول|نقل قول|بیت|قول)\s*:/.test(rawParagraphText);
-      const tagRegex = /<\/?(strong|em)>/gi;
+      const tagRegex = /<\/?(strong|em|mark)>/gi;
       let lastPos = 0;
       let tagMatch;
       
@@ -182,6 +183,12 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
             if (inStrong) {
               textParts.push(
                 <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
+                  {normalizedText}
+                </Text>
+              );
+            } else if (inMark) {
+              textParts.push(
+                <Text key={paraKey++} style={styles.markText}>
                   {normalizedText}
                 </Text>
               );
@@ -205,6 +212,8 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
           inStrong = !isClosing;
         } else if (tagName === 'em') {
           inEm = !isClosing;
+        } else if (tagName === 'mark') {
+          inMark = !isClosing;
         }
         
         lastPos = tagMatch.index + tagMatch[0].length;
@@ -218,6 +227,12 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
           if (inStrong) {
             textParts.push(
               <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
+                {normalizedText}
+              </Text>
+            );
+          } else if (inMark) {
+            textParts.push(
+              <Text key={paraKey++} style={styles.markText}>
                 {normalizedText}
               </Text>
             );
@@ -659,6 +674,17 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     fontSize: 19,
     letterSpacing: 0.3,
+    writingDirection: 'rtl',
+    includeFontPadding: false,
+  },
+  markText: {
+    backgroundColor: '#F3E2A0',
+    color: '#3D2E00',
+    borderRadius: 4,
+    paddingHorizontal: 2,
+    paddingVertical: 1,
+    fontSize: 19,
+    letterSpacing: 0.2,
     writingDirection: 'rtl',
     includeFontPadding: false,
   },

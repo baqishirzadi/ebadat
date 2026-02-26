@@ -13,6 +13,8 @@ import {
   Animated,
   useWindowDimensions,
   Pressable,
+  Modal,
+  TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -24,6 +26,7 @@ import { ArticleCard } from '@/components/articles/ArticleCard';
 import { CategoryFilter } from '@/components/articles/CategoryFilter';
 import CenteredText from '@/components/CenteredText';
 import { isArticlesRemoteEnabled } from '@/utils/articleService';
+import { verifyPin } from '@/utils/articleAdminService';
 
 const PINNED_SCHOLARS: Scholar[] = [
   {
@@ -248,6 +251,10 @@ export default function ArticlesFeed() {
   const [selectedLanguage, setSelectedLanguage] = useState<'dari' | 'pashto'>('dari');
   const [selectedScholar, setSelectedScholar] = useState<ScholarFilter | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showAdminPinModal, setShowAdminPinModal] = useState(false);
+  const [adminPin, setAdminPin] = useState('');
+  const [submittingAdminPin, setSubmittingAdminPin] = useState(false);
+  const [adminPinError, setAdminPinError] = useState<string | null>(null);
   const scrollY = useRef(new Animated.Value(0)).current;
   const { width } = useWindowDimensions();
 
@@ -337,6 +344,46 @@ export default function ArticlesFeed() {
     });
   }, []);
 
+  const openAdminPinModal = useCallback(() => {
+    setAdminPin('');
+    setAdminPinError(null);
+    setShowAdminPinModal(true);
+  }, []);
+
+  const closeAdminPinModal = useCallback(() => {
+    setShowAdminPinModal(false);
+    setAdminPin('');
+    setAdminPinError(null);
+  }, []);
+
+  const handleAdminPinSubmit = useCallback(async () => {
+    const normalizedPin = adminPin.trim();
+    if (!normalizedPin) {
+      setAdminPinError('PIN را وارد کنید.');
+      return;
+    }
+
+    try {
+      setSubmittingAdminPin(true);
+      setAdminPinError(null);
+      const valid = await verifyPin(normalizedPin);
+      if (!valid) {
+        setAdminPinError('PIN اشتباه است.');
+        return;
+      }
+
+      closeAdminPinModal();
+      router.push('/articles/admin');
+    } catch (error) {
+      setAdminPinError('تأیید PIN ممکن نشد. دوباره تلاش کنید.');
+      if (__DEV__) {
+        console.warn('[ArticlesAdmin] verifyPin failed', error);
+      }
+    } finally {
+      setSubmittingAdminPin(false);
+    }
+  }, [adminPin, closeAdminPinModal, router]);
+
   const renderArticle = useCallback(
     ({ item }: { item: Article }) => (
       <ArticleCard
@@ -396,23 +443,25 @@ export default function ArticlesFeed() {
         },
       ]}
     >
-      <LinearGradient
-        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
-        style={styles.header}
-      >
-        <View style={styles.headerPattern} pointerEvents="none">
-          <View style={[styles.patternLine, styles.patternLine1]} />
-          <View style={[styles.patternLine, styles.patternLine2]} />
-          <View style={[styles.patternLine, styles.patternLine3]} />
-          <View style={[styles.patternLine, styles.patternLine4]} />
-          <View style={[styles.patternCorner, styles.patternTopLeft]} />
-          <View style={[styles.patternCorner, styles.patternTopRight]} />
-          <View style={[styles.patternCorner, styles.patternBottomLeft]} />
-          <View style={[styles.patternCorner, styles.patternBottomRight]} />
-        </View>
-        <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
-        <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
-      </LinearGradient>
+      <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
+        <LinearGradient
+          colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
+          style={styles.header}
+        >
+          <View style={styles.headerPattern} pointerEvents="none">
+            <View style={[styles.patternLine, styles.patternLine1]} />
+            <View style={[styles.patternLine, styles.patternLine2]} />
+            <View style={[styles.patternLine, styles.patternLine3]} />
+            <View style={[styles.patternLine, styles.patternLine4]} />
+            <View style={[styles.patternCorner, styles.patternTopLeft]} />
+            <View style={[styles.patternCorner, styles.patternTopRight]} />
+            <View style={[styles.patternCorner, styles.patternBottomLeft]} />
+            <View style={[styles.patternCorner, styles.patternBottomRight]} />
+          </View>
+          <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
+          <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
+        </LinearGradient>
+      </Pressable>
 
       <CategoryFilter
         selectedCategory={selectedCategory}
@@ -449,23 +498,25 @@ export default function ArticlesFeed() {
 
   const renderStaticHeader = () => (
     <View style={styles.headerWrapper}>
-      <LinearGradient
-        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
-        style={styles.header}
-      >
-        <View style={styles.headerPattern} pointerEvents="none">
-          <View style={[styles.patternLine, styles.patternLine1]} />
-          <View style={[styles.patternLine, styles.patternLine2]} />
-          <View style={[styles.patternLine, styles.patternLine3]} />
-          <View style={[styles.patternLine, styles.patternLine4]} />
-          <View style={[styles.patternCorner, styles.patternTopLeft]} />
-          <View style={[styles.patternCorner, styles.patternTopRight]} />
-          <View style={[styles.patternCorner, styles.patternBottomLeft]} />
-          <View style={[styles.patternCorner, styles.patternBottomRight]} />
-        </View>
-        <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
-        <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
-      </LinearGradient>
+      <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
+        <LinearGradient
+          colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
+          style={styles.header}
+        >
+          <View style={styles.headerPattern} pointerEvents="none">
+            <View style={[styles.patternLine, styles.patternLine1]} />
+            <View style={[styles.patternLine, styles.patternLine2]} />
+            <View style={[styles.patternLine, styles.patternLine3]} />
+            <View style={[styles.patternLine, styles.patternLine4]} />
+            <View style={[styles.patternCorner, styles.patternTopLeft]} />
+            <View style={[styles.patternCorner, styles.patternTopRight]} />
+            <View style={[styles.patternCorner, styles.patternBottomLeft]} />
+            <View style={[styles.patternCorner, styles.patternBottomRight]} />
+          </View>
+          <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
+          <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
+        </LinearGradient>
+      </Pressable>
 
       <CategoryFilter
         selectedCategory={selectedCategory}
@@ -609,6 +660,76 @@ export default function ArticlesFeed() {
           </CenteredText>
         </View>
       )}
+
+      <Modal
+        visible={showAdminPinModal}
+        transparent
+        animationType="fade"
+        onRequestClose={closeAdminPinModal}
+      >
+        <View style={styles.pinModalOverlay}>
+          <View
+            style={[
+              styles.pinModalContent,
+              { backgroundColor: theme.card, borderColor: theme.cardBorder },
+            ]}
+          >
+            <CenteredText style={[styles.pinModalTitle, { color: theme.text }]}>
+              ورود به مدیریت مقالات
+            </CenteredText>
+
+            <TextInput
+              value={adminPin}
+              onChangeText={(value) => {
+                setAdminPin(value);
+                if (adminPinError) {
+                  setAdminPinError(null);
+                }
+              }}
+              placeholder="PIN"
+              placeholderTextColor={theme.textSecondary}
+              secureTextEntry
+              keyboardType="number-pad"
+              maxLength={8}
+              style={[
+                styles.pinInput,
+                { borderColor: theme.cardBorder, color: theme.text, backgroundColor: theme.backgroundSecondary },
+              ]}
+              textAlign="center"
+            />
+
+            {adminPinError && (
+              <CenteredText style={styles.pinErrorText}>{adminPinError}</CenteredText>
+            )}
+
+            <View style={styles.pinActions}>
+              <Pressable
+                onPress={handleAdminPinSubmit}
+                disabled={submittingAdminPin}
+                style={[styles.pinConfirmButton, { backgroundColor: theme.tint }]}
+              >
+                {submittingAdminPin ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <CenteredText style={styles.pinConfirmText}>تأیید</CenteredText>
+                )}
+              </Pressable>
+              <Pressable
+                onPress={closeAdminPinModal}
+                disabled={submittingAdminPin}
+                style={[
+                  styles.pinCancelButton,
+                  { borderColor: theme.cardBorder, backgroundColor: theme.backgroundSecondary },
+                ]}
+              >
+                <CenteredText style={[styles.pinCancelText, { color: theme.text }]}>
+                  انصراف
+                </CenteredText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -854,5 +975,70 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'right',
     writingDirection: 'rtl',
+  },
+  pinModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.lg,
+  },
+  pinModalContent: {
+    width: '100%',
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    padding: Spacing.md,
+    gap: Spacing.sm,
+  },
+  pinModalTitle: {
+    fontFamily: 'Vazirmatn',
+    fontSize: 16,
+    fontWeight: '700',
+    textAlign: 'center',
+  },
+  pinInput: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.md,
+    minHeight: 44,
+    paddingHorizontal: Spacing.md,
+    fontFamily: 'Vazirmatn',
+    fontSize: 16,
+  },
+  pinErrorText: {
+    color: '#F44336',
+    fontFamily: 'Vazirmatn',
+    fontSize: 12,
+    textAlign: 'center',
+  },
+  pinActions: {
+    flexDirection: 'row-reverse',
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
+  },
+  pinConfirmButton: {
+    flex: 1,
+    minHeight: 40,
+    borderRadius: BorderRadius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pinConfirmText: {
+    color: '#fff',
+    fontFamily: 'Vazirmatn',
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  pinCancelButton: {
+    flex: 1,
+    minHeight: 40,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  pinCancelText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: 13,
+    fontWeight: '600',
   },
 });

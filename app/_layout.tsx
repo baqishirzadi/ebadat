@@ -5,10 +5,10 @@
  */
 
 import * as Font from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
+import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, I18nManager, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, I18nManager, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -79,10 +79,45 @@ export const RTL_TEXT_STYLE = {
 
 function RootLayoutNav() {
   const { theme, state } = useApp();
+  const router = useRouter();
   const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
 
   // Determine status bar style based on theme
   const statusBarStyle = state.preferences.theme === 'night' ? 'light' : 'dark';
+
+  useEffect(() => {
+    if (Platform.OS === 'web') return;
+
+    let subscription: { remove: () => void } | null = null;
+
+    const setupNotificationRouting = async () => {
+      try {
+        const Notifications = await import('expo-notifications');
+        subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+          const data = response.notification.request.content.data || {};
+          const type = String((data as Record<string, unknown>).type || '');
+          const articleId = (data as Record<string, unknown>).articleId;
+
+          if (type === 'article_published' && articleId) {
+            router.push({
+              pathname: '/articles/[id]',
+              params: { id: String(articleId) },
+            });
+          }
+        });
+      } catch (error) {
+        if (__DEV__) {
+          console.warn('[Notifications] Failed to setup article routing', error);
+        }
+      }
+    };
+
+    void setupNotificationRouting();
+
+    return () => {
+      subscription?.remove();
+    };
+  }, [router]);
 
   if (showSpiritualSplash) {
     return (
