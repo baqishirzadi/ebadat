@@ -19,7 +19,7 @@ import { toArabicNumerals } from '@/utils/numbers';
 interface MushafViewProps {
   surahNumber: number;
   initialAyah?: number;
-  jumpMode?: 'default' | 'exact';
+  jumpMode?: 'default' | 'exact' | 'continue' | 'search_exact';
   jumpToken?: string;
   onAyahChange?: (surah: number, ayah: number) => void;
   onPlayAyah?: (surah: number, ayah: number) => void;
@@ -29,6 +29,10 @@ interface MushafViewProps {
 
 const MAX_SCROLL_RETRY_ATTEMPTS = 6;
 const SCROLL_RETRY_DELAYS_MS = [80, 160, 260, 360, 520, 700];
+const SEARCH_MAX_SCROLL_RETRY_ATTEMPTS = 8;
+const SEARCH_SCROLL_RETRY_DELAYS_MS = [60, 100, 140, 200, 280, 380, 520, 700];
+const SEARCH_PRELOAD_WINDOW = 10;
+const SEARCH_VISIBLE_STABLE_TICKS = 1;
 const JUMP_VISIBLE_STABLE_TICKS = 2;
 const FOLLOW_MAX_ATTEMPTS = 5;
 const FOLLOW_RETRY_DELAYS_MS = [80, 160, 260, 420, 620];
@@ -82,6 +86,9 @@ export function MushafView({
   const targetVisibleStableCountRef = useRef(0);
   const highestMeasuredFrameIndexRef = useRef(0);
   const isExactJumpSessionRef = useRef(false);
+  const isContinueJumpSessionRef = useRef(false);
+  const isSearchExactJumpSessionRef = useRef(false);
+  const lastAverageItemLengthRef = useRef<number>(0);
   const activeFollowSessionIdRef = useRef(0);
   const followTargetAyahRef = useRef<number | null>(null);
   const followRetryAttemptRef = useRef(0);
@@ -93,9 +100,13 @@ export function MushafView({
   const [surah, setSurah] = useState<Surah | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [jumpFailureAyah, setJumpFailureAyah] = useState<number | null>(null);
+  const [isSearchJumping, setIsSearchJumping] = useState(false);
 
   const { viewMode, arabicFontSize } = state.preferences;
-  const effectiveViewMode: 'scroll' | 'mushaf' = jumpMode === 'exact' ? 'scroll' : viewMode;
+  const effectiveViewMode: 'scroll' | 'mushaf' =
+    jumpMode === 'exact' || jumpMode === 'continue' || jumpMode === 'search_exact'
+      ? 'scroll'
+      : viewMode;
 
   const mushafPages = useMemo(() => {
     if (!surah) return [] as { page: number; ayahs: Ayah[] }[];
@@ -151,7 +162,11 @@ export function MushafView({
     retryAttemptRef.current = 0;
     targetVisibleStableCountRef.current = 0;
     highestMeasuredFrameIndexRef.current = 0;
+    lastAverageItemLengthRef.current = 0;
     isExactJumpSessionRef.current = false;
+    isContinueJumpSessionRef.current = false;
+    isSearchExactJumpSessionRef.current = false;
+    setIsSearchJumping(false);
     if (!keepFailureState) {
       setJumpFailureAyah(null);
     }
@@ -207,6 +222,7 @@ export function MushafView({
       ayahNumber,
       attempt: retryAttemptRef.current,
       exactSession: isExactJumpSessionRef.current,
+      searchSession: isSearchExactJumpSessionRef.current,
     });
     resetJumpSessionState();
   }, [jumpToken, logJumpDev, resetJumpSessionState]);
@@ -336,12 +352,17 @@ export function MushafView({
       if (pendingTargetAyahRef.current !== ayahNumber) return;
       if (viewableAyahNumbersRef.current.has(ayahNumber)) return;
 
-      if (retryAttemptRef.current >= MAX_SCROLL_RETRY_ATTEMPTS) {
+      const isSearchSession = isSearchExactJumpSessionRef.current;
+      const maxAttempts = isSearchSession
+        ? SEARCH_MAX_SCROLL_RETRY_ATTEMPTS
+        : MAX_SCROLL_RETRY_ATTEMPTS;
+      if (retryAttemptRef.current >= maxAttempts) {
         markJumpFailed(ayahNumber, 'max_attempts');
         return;
       }
 
-      const delay = SCROLL_RETRY_DELAYS_MS[retryAttemptRef.current];
+      const retryDelays = isSearchSession ? SEARCH_SCROLL_RETRY_DELAYS_MS : SCROLL_RETRY_DELAYS_MS;
+      const delay = retryDelays[Math.min(retryAttemptRef.current, retryDelays.length - 1)];
       clearScrollRetryTimers();
 
       const timer = setTimeout(() => {
@@ -365,6 +386,30 @@ export function MushafView({
           firstVisible: undefined,
           highestMeasured: highestMeasuredFrameIndexRef.current,
         });
+
+        if (isSearchSession) {
+          const measuredIndex = Math.max(0, highestMeasuredFrameIndexRef.current);
+          const preloadIndex = Math.max(0, targetIndex - SEARCH_PRELOAD_WINDOW);
+          const coarseIndex = Math.min(targetIndex, Math.max(preloadIndex, measuredIndex));
+          const averageItemLength = lastAverageItemLengthRef.current;
+
+          if (averageItemLength > 0) {
+            flatListRef.current?.scrollToOffset({
+              offset: coarseIndex * averageItemLength,
+              animated: false,
+            });
+          } else {
+            try {
+              flatListRef.current?.scrollToIndex({
+                index: Math.min(targetIndex, coarseIndex),
+                animated: false,
+                ...(effectiveViewMode === 'scroll' ? { viewPosition: 0 } : {}),
+              });
+            } catch {
+              // ignore and continue to direct target retry
+            }
+          }
+        }
 
         try {
           flatListRef.current?.scrollToIndex({
@@ -390,6 +435,8 @@ export function MushafView({
     const sessionId = ++activeJumpSessionIdRef.current;
     resetJumpSessionState();
     isExactJumpSessionRef.current = true;
+    isContinueJumpSessionRef.current = false;
+    isSearchExactJumpSessionRef.current = false;
     pendingTargetAyahRef.current = ayahNumber;
     targetVisibleStableCountRef.current = 0;
 
@@ -398,6 +445,43 @@ export function MushafView({
     const jumped = scrollToAyahIndex(ayahNumber, false);
     if (!jumped) {
       logJumpDev('initial_scroll_failed', { token: jumpToken, ayahNumber, sessionId });
+    }
+    scheduleExactJumpRetry(sessionId, ayahNumber);
+  }, [jumpToken, logJumpDev, resetJumpSessionState, scheduleExactJumpRetry, scrollToAyahIndex]);
+
+  const startSearchExactJumpSession = useCallback((ayahNumber: number) => {
+    const sessionId = ++activeJumpSessionIdRef.current;
+    resetJumpSessionState();
+    isExactJumpSessionRef.current = false;
+    isContinueJumpSessionRef.current = false;
+    isSearchExactJumpSessionRef.current = true;
+    pendingTargetAyahRef.current = ayahNumber;
+    targetVisibleStableCountRef.current = 0;
+    setIsSearchJumping(true);
+
+    logJumpDev('search_start', { token: jumpToken, ayahNumber, sessionId });
+
+    const jumped = scrollToAyahIndex(ayahNumber, false);
+    if (!jumped) {
+      logJumpDev('search_initial_scroll_failed', { token: jumpToken, ayahNumber, sessionId });
+    }
+    scheduleExactJumpRetry(sessionId, ayahNumber);
+  }, [jumpToken, logJumpDev, resetJumpSessionState, scheduleExactJumpRetry, scrollToAyahIndex]);
+
+  const startContinueJumpSession = useCallback((ayahNumber: number) => {
+    const sessionId = ++activeJumpSessionIdRef.current;
+    resetJumpSessionState();
+    isExactJumpSessionRef.current = false;
+    isContinueJumpSessionRef.current = true;
+    isSearchExactJumpSessionRef.current = false;
+    pendingTargetAyahRef.current = ayahNumber;
+    targetVisibleStableCountRef.current = 0;
+
+    logJumpDev('continue_start', { token: jumpToken, ayahNumber, sessionId });
+
+    const jumped = scrollToAyahIndex(ayahNumber, false);
+    if (!jumped) {
+      logJumpDev('continue_initial_scroll_failed', { token: jumpToken, ayahNumber, sessionId });
     }
     scheduleExactJumpRetry(sessionId, ayahNumber);
   }, [jumpToken, logJumpDev, resetJumpSessionState, scheduleExactJumpRetry, scrollToAyahIndex]);
@@ -417,6 +501,14 @@ export function MushafView({
       startExactJumpSession(clampedTarget);
       return;
     }
+    if (jumpMode === 'search_exact') {
+      startSearchExactJumpSession(clampedTarget);
+      return;
+    }
+    if (jumpMode === 'continue') {
+      startContinueJumpSession(clampedTarget);
+      return;
+    }
 
     resetJumpSessionState();
     if (effectiveViewMode === 'scroll' && clampedTarget <= 1) return;
@@ -430,7 +522,9 @@ export function MushafView({
     effectiveViewMode,
     resetJumpSessionState,
     scheduleBasicScroll,
+    startContinueJumpSession,
     startExactJumpSession,
+    startSearchExactJumpSession,
   ]);
 
   useEffect(() => {
@@ -515,14 +609,16 @@ export function MushafView({
         const targetAyah = pendingTargetAyahRef.current;
         const currentSessionId = activeJumpSessionIdRef.current;
         const isExactJump = isExactJumpSessionRef.current;
+        const isSearchExactJump = isSearchExactJumpSessionRef.current;
 
-        if (__DEV__ && isExactJump) {
+        if (__DEV__ && (isExactJump || isSearchExactJump)) {
           logJumpDev('attempt', {
             token: jumpToken,
             target: targetAyah,
             attempt: retryAttemptRef.current,
             firstVisible: firstVisibleAyah,
             highestMeasured: highestMeasuredFrameIndexRef.current,
+            searchMode: isSearchExactJump,
           });
         }
 
@@ -540,6 +636,16 @@ export function MushafView({
                 scrollToAyahIndex(targetAyah, false);
               }, 120);
               retryTimerRef.current = stabilityTimer;
+            }
+          } else {
+            targetVisibleStableCountRef.current = 0;
+          }
+        } else if (isSearchExactJump) {
+          if (visible.has(targetAyah)) {
+            targetVisibleStableCountRef.current += 1;
+            if (targetVisibleStableCountRef.current >= SEARCH_VISIBLE_STABLE_TICKS) {
+              scrollToAyahIndex(targetAyah, false);
+              completeJumpSession(targetAyah);
             }
           } else {
             targetVisibleStableCountRef.current = 0;
@@ -650,11 +756,16 @@ export function MushafView({
         info.highestMeasuredFrameIndex
       );
       highestMeasuredFrameIndexRef.current = highest;
+      if (Number.isFinite(info.averageItemLength) && info.averageItemLength > 0) {
+        lastAverageItemLengthRef.current = info.averageItemLength;
+      }
 
       const targetIndex = getScrollIndexForAyah(targetAyah) ?? info.index;
       clearScrollRetryTimers();
 
-      if (!isExactJumpSessionRef.current) {
+      const isContinueJump = isContinueJumpSessionRef.current;
+      const isSearchJump = isSearchExactJumpSessionRef.current;
+      if (!isExactJumpSessionRef.current && !isContinueJump && !isSearchJump) {
         const timer = setTimeout(() => {
           scrollToAyahIndex(targetAyah, true);
         }, 120);
@@ -668,6 +779,8 @@ export function MushafView({
         targetIndex,
         infoIndex: info.index,
         highestMeasuredFrameIndex: info.highestMeasuredFrameIndex,
+        averageItemLength: info.averageItemLength,
+        searchMode: isSearchJump,
       });
       try {
         flatListRef.current.scrollToIndex({
@@ -822,7 +935,7 @@ export function MushafView({
   if (effectiveViewMode === 'scroll') {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        {jumpFailureAyah !== null && (
+        {jumpMode === 'exact' && jumpFailureAyah !== null && (
           <View style={[styles.jumpFailureBanner, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <CenteredText style={[styles.jumpFailureText, { color: theme.text }]}>
               رفتن دقیق به آیه انجام نشد.
@@ -855,6 +968,11 @@ export function MushafView({
           removeClippedSubviews={STABLE_LIST_RENDER_CONFIG.removeClippedSubviews}
           onScrollToIndexFailed={handleScrollToIndexFailed}
         />
+        {jumpMode === 'search_exact' && isSearchJumping && (
+          <View style={[styles.searchJumpOverlay, { backgroundColor: theme.background }]}>
+            <ActivityIndicator size="small" color={theme.tint} />
+          </View>
+        )}
       </View>
     );
   }
@@ -916,6 +1034,12 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: Typography.ui.caption,
     fontWeight: '600',
+  },
+  searchJumpOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 5,
   },
   // Mushaf page styles
   mushafPage: {

@@ -85,51 +85,61 @@ export function AudioPlayer({
   return (
     <View style={[styles.container, { backgroundColor: theme.card, borderTopColor: theme.divider }]}>
       <View style={styles.content}>
-        <View style={styles.leftSection}>
-          <Pressable
-            onPress={() => setShowReciterModal(true)}
-            style={[styles.reciterButton, { backgroundColor: theme.backgroundSecondary }]}
-          >
-            <MaterialIcons name="person" size={16} color={theme.tint} />
-            <View style={styles.reciterTextWrap}>
-              <CenteredText style={[styles.reciterName, { color: theme.text }]}>
-                {RECITERS[currentReciter].name}
-              </CenteredText>
-              <CenteredText style={styles.reciterHint}>برای تغییر قاری، اینجا را کلیک کنید</CenteredText>
-            </View>
-            <MaterialIcons name="arrow-drop-down" size={18} color={theme.icon} />
-          </Pressable>
+        <Pressable
+          onPress={() => setShowReciterModal(true)}
+          style={[styles.reciterButton, { backgroundColor: theme.backgroundSecondary }]}
+        >
+          <MaterialIcons name="person" size={16} color={theme.tint} />
+          <View style={styles.reciterTextWrap}>
+            <CenteredText
+              style={[styles.reciterName, { color: theme.text }]}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+            >
+              {RECITERS[currentReciter].name}
+            </CenteredText>
+            <CenteredText style={styles.reciterHint} numberOfLines={1} ellipsizeMode="tail">
+              برای تغییر قاری، اینجا را کلیک کنید
+            </CenteredText>
+          </View>
+          <MaterialIcons name="arrow-drop-down" size={18} color={theme.icon} />
+        </Pressable>
 
-          <CenteredText style={[styles.ayahInfo, { color: theme.textSecondary }]}>
+        <View style={styles.bottomRow}>
+          <CenteredText
+            style={[styles.ayahInfo, { color: theme.textSecondary }]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             سوره {toArabicNumerals(surahNumber)} · آیه {toArabicNumerals(ayahNumber)}
           </CenteredText>
-        </View>
 
-        <View style={styles.controlsSection}>
-          <Pressable
-            onPress={handlePlayPause}
-            style={({ pressed }) => [
-              styles.playButton,
-              { backgroundColor: theme.playing },
-              pressed && styles.playButtonPressed,
-            ]}
-          >
-            <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={30} color="#fff" />
-          </Pressable>
+          <View style={styles.controlsSection}>
+            <Pressable
+              onPress={handlePlayPause}
+              style={({ pressed }) => [
+                styles.playButton,
+                { backgroundColor: theme.playing },
+                pressed && styles.playButtonPressed,
+              ]}
+            >
+              <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={30} color="#fff" />
+            </Pressable>
 
-          <Pressable
-            onPress={onStop}
-            style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
-          >
-            <MaterialIcons name="stop" size={24} color={theme.icon} />
-          </Pressable>
+            <Pressable
+              onPress={onStop}
+              style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
+            >
+              <MaterialIcons name="stop" size={24} color={theme.icon} />
+            </Pressable>
 
-          <Pressable
-            onPress={handleClose}
-            style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
-          >
-            <MaterialIcons name="close" size={24} color={theme.icon} />
-          </Pressable>
+            <Pressable
+              onPress={handleClose}
+              style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
+            >
+              <MaterialIcons name="close" size={24} color={theme.icon} />
+            </Pressable>
+          </View>
         </View>
       </View>
 
@@ -178,26 +188,24 @@ const styles = StyleSheet.create({
     paddingBottom: 34,
   },
   content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-  },
-  leftSection: {
-    flex: 1,
-    alignItems: 'flex-start',
-    gap: 6,
+    gap: Spacing.sm,
   },
   reciterButton: {
     flexDirection: 'row',
     alignItems: 'center',
+    width: '100%',
+    minHeight: 46,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
     borderRadius: BorderRadius.sm,
-    gap: 4,
+    gap: Spacing.xs,
   },
   reciterTextWrap: {
+    flex: 1,
+    minWidth: 0,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -214,13 +222,21 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   ayahInfo: {
+    flex: 1,
+    minWidth: 0,
     fontSize: Typography.ui.body,
     fontWeight: '600',
     fontFamily: 'Vazirmatn',
   },
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
   controlsSection: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexShrink: 0,
     gap: Spacing.sm,
   },
   playButton: {

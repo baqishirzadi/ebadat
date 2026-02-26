@@ -42,7 +42,14 @@ export default function QuranReaderScreen() {
   const initialAyah = Number.isFinite(parsedAyahNumber) && parsedAyahNumber > 0
     ? parsedAyahNumber
     : 1;
-  const jumpMode: 'default' | 'exact' = normalizedJumpParam === 'exact' ? 'exact' : 'default';
+  const jumpMode: 'default' | 'exact' | 'continue' | 'search_exact' =
+    normalizedJumpParam === 'exact'
+      ? 'exact'
+      : normalizedJumpParam === 'continue'
+        ? 'continue'
+        : normalizedJumpParam === 'search_exact'
+          ? 'search_exact'
+          : 'default';
   const surah = getSurah(surahNumber);
   const surahNameData = getSurahName(surahNumber);
 

@@ -176,7 +176,7 @@ export function SurahList() {
       params: {
         surah: String(position.surahNumber),
         ayah: String(position.ayahNumber),
-        jump: 'exact',
+        jump: 'continue',
         jumpToken,
       },
     });

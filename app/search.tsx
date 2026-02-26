@@ -115,7 +115,7 @@ export default function SearchScreen() {
         params: {
           surah: String(result.surahNumber),
           ayah: String(result.ayahNumber),
-          jump: 'exact',
+          jump: 'search_exact',
           jumpToken,
           from: 'search',
         },

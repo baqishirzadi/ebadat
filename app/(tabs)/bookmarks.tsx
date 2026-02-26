@@ -34,7 +34,20 @@ export default function BookmarksScreen() {
 
   const handleBookmarkPress = useCallback(
     (bookmark: Bookmark) => {
-      router.push(`/quran/${bookmark.surahNumber}?ayah=${bookmark.ayahNumber}`);
+      if (bookmark.surahNumber <= 0 || bookmark.ayahNumber <= 0) {
+        return;
+      }
+
+      const jumpToken = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+      router.push({
+        pathname: '/quran/[surah]',
+        params: {
+          surah: String(bookmark.surahNumber),
+          ayah: String(bookmark.ayahNumber),
+          jump: 'continue',
+          jumpToken,
+        },
+      });
     },
     [router]
   );
