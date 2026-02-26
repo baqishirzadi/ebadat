@@ -13,52 +13,11 @@ import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 
 const SELECTED_CITY_KEY = 'selected_city';
 const AUTO_LOCATION_BOOTSTRAP_KEY = '@ebadat/auto_location_bootstrap_v1';
-const TIMEZONE_PREFERRED_CITY: Record<string, CityKey> = {
-  'Asia/Kabul': 'afghanistan_kabul',
-  'Asia/Tehran': 'iran_tehran',
-  'Europe/Istanbul': 'turkey_istanbul',
-  'Europe/London': 'europe_london',
-  'Europe/Berlin': 'europe_berlin',
-  'America/New_York': 'usa_newyork',
-  'America/Los_Angeles': 'usa_losangeles',
-  'America/Chicago': 'usa_chicago',
-  'America/Toronto': 'canada_toronto',
-  'America/Vancouver': 'canada_vancouver',
-  'Australia/Sydney': 'australia_sydney',
-  'Australia/Melbourne': 'australia_melbourne',
-  'Australia/Perth': 'australia_perth',
-};
 
 export { CityKey } from '@/utils/prayerTimesManager';
 
-function pickCityByTimezone(timezone?: string): CityKey | null {
-  if (!timezone) return null;
-
-  const preferredCity = TIMEZONE_PREFERRED_CITY[timezone];
-  if (preferredCity && preferredCity in ALL_CITIES) {
-    return preferredCity;
-  }
-
-  const matches = Object.entries(ALL_CITIES).filter(([, city]) => city.timezone === timezone);
-  if (matches.length === 0) return null;
-
-  const timezoneToken = timezone.split('/')[1]?.toLowerCase() ?? '';
-  matches.sort((a, b) => {
-    const exactTokenDiff =
-      Number(b[0].toLowerCase().endsWith(`_${timezoneToken}`)) -
-      Number(a[0].toLowerCase().endsWith(`_${timezoneToken}`));
-    if (exactTokenDiff !== 0) return exactTokenDiff;
-
-    const importanceDiff = Number(Boolean(b[1].isImportant)) - Number(Boolean(a[1].isImportant));
-    if (importanceDiff !== 0) return importanceDiff;
-    return a[0].localeCompare(b[0]);
-  });
-
-  return matches[0][0] as CityKey;
-}
-
 export function usePrayerTimes() {
-  const [selectedCity, setSelectedCity] = useState<CityKey>('afghanistan_kabul');
+  const [selectedCity, setSelectedCity] = useState<CityKey | null>(null);
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesDisplay | null>(null);
   const [loading, setLoading] = useState(true);
   const [gpsLoading, setGpsLoading] = useState(false);
@@ -72,7 +31,13 @@ export function usePrayerTimes() {
   useEffect(() => {
     let cancelled = false;
     const loadTimes = async () => {
-      if (!selectedCity) return;
+      if (!selectedCity) {
+        if (!cancelled) {
+          setPrayerTimes(null);
+          setLoading(false);
+        }
+        return;
+      }
       setLoading(true);
       try {
         const result = await getPrayerTimesForDate({ cityKey: selectedCity, date: new Date() });
@@ -107,37 +72,40 @@ export function usePrayerTimes() {
         }
       }
 
-      let resolvedCity: CityKey | null = null;
       const bootstrapDone = await AsyncStorage.getItem(AUTO_LOCATION_BOOTSTRAP_KEY);
       if (!bootstrapDone) {
         await AsyncStorage.setItem(AUTO_LOCATION_BOOTSTRAP_KEY, '1');
         const gpsResult = await detectLocationAndFindCity();
         if (gpsResult.success && gpsResult.cityKey && gpsResult.cityKey in ALL_CITIES) {
-          resolvedCity = gpsResult.cityKey as CityKey;
+          const resolvedCity = gpsResult.cityKey as CityKey;
+          await AsyncStorage.setItem(SELECTED_CITY_KEY, resolvedCity);
+          setSelectedCity(resolvedCity);
+          return;
         } else {
-          console.log('Auto GPS city detection failed, using timezone fallback');
+          console.log('Auto GPS city detection failed, waiting for manual city selection');
         }
       }
 
-      if (!resolvedCity) {
-        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const timezoneCity = pickCityByTimezone(timezone);
-        if (timezoneCity) {
-          resolvedCity = timezoneCity;
-        }
-      }
-
-      const finalCity = resolvedCity || 'afghanistan_kabul';
-      await AsyncStorage.setItem(SELECTED_CITY_KEY, finalCity);
-      setSelectedCity(finalCity);
+      setSelectedCity(null);
+      setPrayerTimes(null);
+      setLoading(false);
     } catch (err) {
       console.error('Error loading city:', err);
-      setSelectedCity('afghanistan_kabul');
+      setSelectedCity(null);
+      setPrayerTimes(null);
+      setLoading(false);
     }
   };
 
-  const changeCity = async (cityKey: CityKey) => {
+  const changeCity = async (cityKey: CityKey | null) => {
     try {
+      if (!cityKey) {
+        await AsyncStorage.removeItem(SELECTED_CITY_KEY);
+        setSelectedCity(null);
+        setPrayerTimes(null);
+        setLoading(false);
+        return;
+      }
       await AsyncStorage.setItem(SELECTED_CITY_KEY, cityKey);
       setSelectedCity(cityKey);
     } catch (err) {

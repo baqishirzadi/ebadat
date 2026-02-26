@@ -119,7 +119,7 @@ export default function NamazScreen() {
   const [showCityModal, setShowCityModal] = useState(false);
   const [showQuickCities, setShowQuickCities] = useState(false);
 
-  const selectedCityData = getCity(selectedCity);
+  const selectedCityData = selectedCity ? getCity(selectedCity) : undefined;
   const importantCities = getImportantCities();
 
   // Sync city to PrayerContext so adhan notifications use the same location
@@ -135,7 +135,8 @@ export default function NamazScreen() {
     if (city) {
       await setCustomLocation(
         { latitude: city.lat, longitude: city.lon, altitude: city.altitude || 0, timezone: city.timezone },
-        city.name
+        city.name,
+        cityKey
       );
     }
   }, [setCity, setCustomLocation]);
@@ -158,7 +159,63 @@ export default function NamazScreen() {
   // eslint-disable-next-line react-hooks/exhaustive-deps -- syncCityToPrayerContext omitted to prevent infinite loop
   }, [loading, selectedCity]);
 
-  if (loading || !prayerTimes) {
+  if (loading) {
+    return (
+      <View style={[styles.loading, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={theme.tint} />
+        <CenteredText style={{ color: theme.text }}>در حال محاسبه اوقات نماز...</CenteredText>
+      </View>
+    );
+  }
+
+  if (!selectedCity) {
+    return (
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <LinearGradient
+          colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
+          style={styles.header}
+        >
+          <MaterialIcons name="schedule" size={40} color="#fff" />
+          <CenteredText style={styles.headerTitle}>اوقات نماز</CenteredText>
+          <CenteredText style={styles.headerSubtitle}>شهر انتخاب نشده</CenteredText>
+        </LinearGradient>
+
+        <View style={styles.contentWrapper}>
+          <View style={[styles.unresolvedCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <MaterialIcons name="location-city" size={28} color={theme.tint} />
+            <CenteredText style={[styles.unresolvedTitle, { color: theme.text }]}>
+              ابتدا شهر خود را انتخاب کنید
+            </CenteredText>
+            <CenteredText style={[styles.unresolvedText, { color: theme.textSecondary }]}>
+              تا قبل از انتخاب شهر (یا تشخیص موفق موقعیت)، اذان زمان‌بندی نمی‌شود.
+            </CenteredText>
+            <Pressable
+              onPress={() => setShowCityModal(true)}
+              style={({ pressed }) => [
+                styles.unresolvedButton,
+                { backgroundColor: theme.tint },
+                pressed && styles.buttonPressed,
+              ]}
+            >
+              <CenteredText style={styles.unresolvedButtonText}>انتخاب شهر</CenteredText>
+            </Pressable>
+          </View>
+        </View>
+
+        <CitySelectorModal
+          visible={showCityModal}
+          selectedCity={selectedCity}
+          onSelectCity={(cityKey) => {
+            handleCityChange(cityKey);
+            setShowCityModal(false);
+          }}
+          onClose={() => setShowCityModal(false)}
+        />
+      </View>
+    );
+  }
+
+  if (!prayerTimes) {
     return (
       <View style={[styles.loading, { backgroundColor: theme.background }]}>
         <ActivityIndicator size="large" color={theme.tint} />
@@ -201,7 +258,7 @@ export default function NamazScreen() {
           <MaterialIcons name="schedule" size={40} color="#fff" />
           <CenteredText style={styles.headerTitle}>اوقات نماز</CenteredText>
           <CenteredText style={styles.headerSubtitle}>
-            {selectedCityData?.name || 'کابل'}
+            {selectedCityData?.name || 'شهر نامشخص'}
           </CenteredText>
         </LinearGradient>
 
@@ -211,7 +268,7 @@ export default function NamazScreen() {
           <View style={styles.cityInfo}>
             <MaterialIcons name="location-on" size={20} color={theme.tint} />
             <CenteredText style={[styles.selectedCityName, { color: theme.text }]}>
-              {selectedCityData?.name || 'کابل'}
+              {selectedCityData?.name || 'شهر نامشخص'}
             </CenteredText>
           </View>
           <Pressable
@@ -473,6 +530,38 @@ const styles = StyleSheet.create({
   contentWrapper: {
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.sm,
+  },
+  unresolvedCard: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
+  },
+  unresolvedTitle: {
+    fontSize: Typography.ui.subtitle,
+    fontWeight: '700',
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+  },
+  unresolvedText: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  unresolvedButton: {
+    marginTop: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.md,
+  },
+  unresolvedButtonText: {
+    color: '#fff',
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '700',
   },
   cityHeader: {
     flexDirection: 'row',

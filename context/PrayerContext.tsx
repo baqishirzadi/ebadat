@@ -261,7 +261,7 @@ interface PrayerContextType {
   state: PrayerState;
   refreshPrayerTimes: () => void;
   setCity: (cityKey: string) => void;
-  setCustomLocation: (location: LocationType, name: string) => void;
+  setCustomLocation: (location: LocationType, name: string, cityKey?: string) => void;
   updateSettings: (settings: Partial<PrayerSettings>) => void;
   updateAdhanPreferences: (preferences: Partial<AdhanPreferences>) => Promise<void>;
   requestLocationPermission: () => Promise<boolean>;
@@ -695,28 +695,12 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       let location = DEFAULT_LOCATION;
       let name = 'کابل';
 
-      if (locationJson) {
-        const saved = JSON.parse(locationJson);
-        location = saved.location;
-        name = saved.name;
-      } else if (settings.selectedCity) {
-        if (AFGHAN_CITIES[settings.selectedCity]) {
-          location = AFGHAN_CITIES[settings.selectedCity];
-          name = getCityName(settings.selectedCity);
-        } else {
-          const selected = getCity(settings.selectedCity);
-          if (selected) {
-            location = {
-              latitude: selected.lat,
-              longitude: selected.lon,
-              altitude: selected.altitude || 0,
-              timezone: selected.timezone,
-            };
-            name = selected.name;
-          }
-        }
-      } else if (globallySelectedCity) {
-        const selected = getCity(globallySelectedCity);
+      const normalizedSettingsCityKey = toCityKey(settings.selectedCity);
+      const normalizedGlobalCityKey = toCityKey(globallySelectedCity);
+      const resolvedCityKey = normalizedSettingsCityKey || normalizedGlobalCityKey;
+
+      if (resolvedCityKey) {
+        const selected = getCity(resolvedCityKey);
         if (selected) {
           location = {
             latitude: selected.lat,
@@ -725,9 +709,16 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
             timezone: selected.timezone,
           };
           name = selected.name;
-          effectiveSettings = { ...settings, selectedCity: globallySelectedCity };
-          shouldPersistSettings = true;
+
+          if (settings.selectedCity !== resolvedCityKey) {
+            effectiveSettings = { ...settings, selectedCity: resolvedCityKey };
+            shouldPersistSettings = true;
+          }
         }
+      } else if (locationJson) {
+        const saved = JSON.parse(locationJson);
+        location = saved.location;
+        name = saved.name;
       }
 
       dispatch({ type: 'INITIALIZE', payload: { location, settings: effectiveSettings, adhanPreferences: adhanPrefs, name } });
@@ -935,12 +926,17 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     }
   }, [state.settings]);
 
-  const setCustomLocation = useCallback(async (location: LocationType, name: string) => {
+  const setCustomLocation = useCallback(async (location: LocationType, name: string, cityKey?: string) => {
+    const resolvedCityKey = toCityKey(cityKey || null) || null;
     dispatch({ type: 'SET_LOCATION', payload: { location, name } });
-    dispatch({ type: 'SET_SETTINGS', payload: { selectedCity: null } });
+    dispatch({ type: 'SET_SETTINGS', payload: { selectedCity: resolvedCityKey } });
 
     await AsyncStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify({ location, name }));
-  }, []);
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.SETTINGS,
+      JSON.stringify({ ...state.settings, selectedCity: resolvedCityKey })
+    );
+  }, [state.settings]);
 
   const updateSettings = useCallback(async (settings: Partial<PrayerSettings>) => {
     dispatch({ type: 'SET_SETTINGS', payload: settings });
@@ -1212,13 +1208,22 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   const isPrayerRelatedNotification = useCallback((notification: any): boolean => {
     const identifier = String(notification?.identifier || '');
     const type = (notification?.content?.data?.type as string | undefined) || '';
-    return identifier.startsWith('adhan-') || type === 'adhan' || type === 'reminder';
+    return (
+      identifier.startsWith('adhan-') ||
+      identifier.startsWith('jummah-') ||
+      type === 'adhan' ||
+      type === 'reminder' ||
+      type === 'jummah'
+    );
   }, []);
 
   const buildExpectedPrayerNotifications = useCallback(async (now: Date): Promise<ExpectedPrayerNotification[]> => {
     if (!state.prayerTimes || !state.adhanPreferences.masterEnabled) return [];
 
     const cityKey = toCityKey(state.settings.selectedCity);
+    if (!cityKey) {
+      return [];
+    }
     const { adhanPreferences } = state;
     const fallbackTimeZone =
       state.location.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -1362,6 +1367,40 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
 
     if (!state.prayerTimes) {
       console.log('Skipping notification scheduling: prayer times not available');
+      return;
+    }
+
+    const resolvedCityKey = toCityKey(state.settings.selectedCity);
+    if (!resolvedCityKey) {
+      const scheduledAll = await NotificationsModule.getAllScheduledNotificationsAsync();
+      const prayerScheduled = scheduledAll.filter(isPrayerRelatedNotification);
+      await Promise.allSettled(
+        prayerScheduled
+          .map((notification) => String((notification as any)?.identifier || ''))
+          .filter((id) => id.length > 0)
+          .map((id) => NotificationsModule.cancelScheduledNotificationAsync(id))
+      );
+      dispatch({
+        type: 'SET_SCHEDULE_AUDIT',
+        payload: {
+          generatedAt: Date.now(),
+          reason,
+          expectedCount: 0,
+          expectedAdhanCount: 0,
+          scheduledCount: 0,
+          scheduledAdhanCount: 0,
+          duplicateCount: 0,
+          maxDriftSeconds: 0,
+        },
+      });
+      dispatch({
+        type: 'SET_ERROR',
+        payload: 'برای فعال شدن اذان، اول شهر را انتخاب یا موقعیت را فعال کنید.',
+      });
+      lastScheduleRef.current = {
+        dateKey: getDateKey(new Date()),
+        locationKey: getLocationKey(),
+      };
       return;
     }
 
@@ -1564,6 +1603,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     isPrayerRelatedNotification,
     state.adhanPreferences.masterEnabled,
     state.prayerTimes,
+    state.settings.selectedCity,
   ]);
 
   const requestPrayerSchedule = useCallback(async (reason = 'manual') => {

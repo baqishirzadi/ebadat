@@ -43,10 +43,42 @@ const CACHE_DAYS = 30;
 const ALADHAN_BASE = 'https://api.aladhan.com/v1';
 const ALADHAN_METHOD = 1; // Karachi
 const ALADHAN_SCHOOL = 1; // Hanafi
+const AFGHAN_MAGHRIB_OFFSET_MINUTES = 4;
 
 const FALLBACK_TZ_OFFSETS: Record<string, number> = {
   'Asia/Kabul': 270,
 };
+
+function isAfghanistanCityKey(cityKey?: string): boolean {
+  return Boolean(cityKey && cityKey.startsWith('afghanistan_'));
+}
+
+function applyAfghanMaghribOffset(times: PrayerTimes, cityKey?: string): PrayerTimes {
+  if (!isAfghanistanCityKey(cityKey)) {
+    return times;
+  }
+
+  const maghrib = new Date(times.maghrib.getTime() + AFGHAN_MAGHRIB_OFFSET_MINUTES * 60 * 1000);
+  const nextDayFajr = new Date(times.fajr.getTime() + 24 * 60 * 60 * 1000);
+  const nightDurationMs = nextDayFajr.getTime() - maghrib.getTime();
+
+  if (nightDurationMs <= 0) {
+    return {
+      ...times,
+      maghrib,
+    };
+  }
+
+  const midnight = new Date(maghrib.getTime() + nightDurationMs / 2);
+  const qiyam = new Date(nextDayFajr.getTime() - nightDurationMs / 3);
+
+  return {
+    ...times,
+    maghrib,
+    midnight,
+    qiyam,
+  };
+}
 
 type CachedDay = {
   date: string;
@@ -477,14 +509,15 @@ export async function getPrayerTimesForDate(params: {
       midnight: midnightDate,
       qiyam: qiyamDate,
     };
+    const normalizedTimes = applyAfghanMaghribOffset(times, cityKey);
     return {
       dateKey,
       cityKey,
       timezone,
       source,
       validated,
-      times,
-      display: toDisplay(times, date, timezone),
+      times: normalizedTimes,
+      display: toDisplay(normalizedTimes, date, timezone),
     };
   }
 
@@ -522,13 +555,14 @@ export async function getPrayerTimesForDate(params: {
     }
   }
 
+  const normalizedTimes = applyAfghanMaghribOffset(times, cityKey);
   return {
     dateKey,
     cityKey,
     timezone,
     source: 'fallback',
     validated: false,
-    times,
-    display: toDisplay(times, date, timezone),
+    times: normalizedTimes,
+    display: toDisplay(normalizedTimes, date, timezone),
   };
 }

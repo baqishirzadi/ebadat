@@ -27,7 +27,7 @@ import CenteredText from '@/components/CenteredText';
 
 interface CitySelectorModalProps {
   visible: boolean;
-  selectedCity: CityKey;
+  selectedCity: CityKey | null;
   onSelectCity: (cityKey: CityKey) => void;
   onClose: () => void;
 }
