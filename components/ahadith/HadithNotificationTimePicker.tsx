@@ -140,27 +140,6 @@ export function HadithNotificationTimePicker({
       <View style={styles.timeControlRow}>
         <View style={styles.column}>
           <Pressable
-            onPress={() => changeMinute(5)}
-            style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
-          >
-            <CenteredText style={[styles.stepText, { color: theme.primary }]}>+</CenteredText>
-          </Pressable>
-          <CenteredText style={[styles.timeValue, { color: theme.textPrimary }]}>
-            {toArabicNumeralsString(pad(minute))}
-          </CenteredText>
-          <Pressable
-            onPress={() => changeMinute(-5)}
-            style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
-          >
-            <CenteredText style={[styles.stepText, { color: theme.primary }]}>-</CenteredText>
-          </Pressable>
-          <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>دقیقه</CenteredText>
-        </View>
-
-        <CenteredText style={[styles.separator, { color: theme.textSecondary }]}>:</CenteredText>
-
-        <View style={styles.column}>
-          <Pressable
             onPress={() => changeHour(1)}
             style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
           >
@@ -176,6 +155,27 @@ export function HadithNotificationTimePicker({
             <CenteredText style={[styles.stepText, { color: theme.primary }]}>-</CenteredText>
           </Pressable>
           <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>ساعت</CenteredText>
+        </View>
+
+        <CenteredText style={[styles.separator, { color: theme.textSecondary }]}>:</CenteredText>
+
+        <View style={styles.column}>
+          <Pressable
+            onPress={() => changeMinute(5)}
+            style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
+          >
+            <CenteredText style={[styles.stepText, { color: theme.primary }]}>+</CenteredText>
+          </Pressable>
+          <CenteredText style={[styles.timeValue, { color: theme.textPrimary }]}>
+            {toArabicNumeralsString(pad(minute))}
+          </CenteredText>
+          <Pressable
+            onPress={() => changeMinute(-5)}
+            style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
+          >
+            <CenteredText style={[styles.stepText, { color: theme.primary }]}>-</CenteredText>
+          </Pressable>
+          <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>دقیقه</CenteredText>
         </View>
       </View>
 

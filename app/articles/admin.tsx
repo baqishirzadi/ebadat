@@ -553,16 +553,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     fontWeight: '700',
-    textAlign: 'right',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   itemMeta: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   itemActions: {
     flexDirection: 'row-reverse',
     flexWrap: 'wrap',
+    justifyContent: 'center',
     gap: Spacing.xs,
   },
   itemActionButton: {
@@ -579,5 +582,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: 11,
     fontWeight: '600',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
 });
