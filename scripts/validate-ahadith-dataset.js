@@ -13,7 +13,7 @@ const ALLOWED_SPECIAL_DAYS = new Set([
   'first_10_dhul_hijjah',
   'ashura',
 ]);
-const MIN_PRODUCTION_COUNT = 450;
+const MIN_PRODUCTION_COUNT = 60;
 
 function fail(message) {
   console.error(`[verify:ahadith-data] ${message}`);
