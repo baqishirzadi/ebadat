@@ -13,6 +13,7 @@ const ALLOWED_SPECIAL_DAYS = new Set([
   'first_10_dhul_hijjah',
   'ashura',
 ]);
+const MIN_PRODUCTION_COUNT = 450;
 
 function fail(message) {
   console.error(`[verify:ahadith-data] ${message}`);
@@ -36,6 +37,10 @@ try {
 
 assert(Array.isArray(hadiths), 'Dataset root must be an array');
 assert(hadiths.length > 0, 'Dataset must not be empty');
+assert(
+  hadiths.length >= MIN_PRODUCTION_COUNT,
+  `Dataset must contain at least ${MIN_PRODUCTION_COUNT} hadith entries for production`
+);
 
 const ids = new Set();
 const dailyIndexes = new Set();
@@ -88,6 +93,10 @@ for (const item of hadiths) {
   assert(Number.isInteger(item.daily_index) && item.daily_index > 0, `Hadith ${item.id}: daily_index must be positive integer`);
   assert(!dailyIndexes.has(item.daily_index), `Duplicate daily_index: ${item.daily_index}`);
   dailyIndexes.add(item.daily_index);
+}
+
+for (let i = 1; i <= hadiths.length; i += 1) {
+  assert(dailyIndexes.has(i), `Missing daily_index: ${i}`);
 }
 
 console.log('[verify:ahadith-data] OK');

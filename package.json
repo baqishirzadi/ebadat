@@ -25,8 +25,9 @@
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "verify:quran-text": "node scripts/verify-quran-text-integrity.js",
     "verify:quran-render-clean": "node scripts/verify-quran-display-normalization.js",
+    "import:ahadith-data": "node scripts/import-ahadith-dataset.js",
     "verify:ahadith-data": "node scripts/validate-ahadith-dataset.js",
-    "postinstall": "patch-package"
+    "verify:patches": "node scripts/verify-patches-clean.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -81,7 +82,6 @@
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "get-mp3-duration": "^1.0.0",
-    "patch-package": "^8.0.1",
     "typescript": "~5.9.2"
   },
   "private": true

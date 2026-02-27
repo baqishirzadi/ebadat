@@ -42,5 +42,9 @@ yarn-debug.*
 yarn-error.*
 *.log
 
+# Supabase local temp metadata
+supabase/.temp/*
+!supabase/.temp/.gitkeep
+
 # TypeScript cache
 *.tsbuildinfo
