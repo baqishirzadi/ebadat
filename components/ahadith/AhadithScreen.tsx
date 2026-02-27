@@ -1,15 +1,19 @@
 import React, { useMemo, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Modal,
   Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
+  TextInput,
   View,
 } from 'react-native';
-import { Stack, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
 import { useAhadith } from '@/context/AhadithContext';
 import { useApp } from '@/context/AppContext';
 import { DailyHadithSelection, Hadith } from '@/types/hadith';
@@ -24,6 +28,8 @@ import { shareHadithCard } from '@/utils/ahadith/shareCard';
 import { alphaColor } from '@/utils/ahadith/theme';
 import { formatSourceLabel } from '@/utils/ahadith/labels';
 import CenteredText from '@/components/CenteredText';
+import { verifyHadithAdminPin } from '@/utils/hadithAdminService';
+import { NAAT_GRADIENT } from '@/constants/theme';
 
 function buildFocusedSelection(hadith: Hadith): DailyHadithSelection {
   return {
@@ -42,7 +48,8 @@ function buildFocusedSelection(hadith: Hadith): DailyHadithSelection {
 
 export function AhadithScreen() {
   const params = useLocalSearchParams<{ section?: string }>();
-  const { theme } = useApp();
+  const router = useRouter();
+  const { theme, themeMode } = useApp();
   const insets = useSafeAreaInsets();
   const {
     hadiths,
@@ -67,6 +74,7 @@ export function AhadithScreen() {
     notificationPrefs,
     setNotificationTime,
     setNotificationsEnabled,
+    syncRemoteHadiths,
   } = useAhadith();
 
   React.useEffect(() => {
@@ -76,7 +84,18 @@ export function AhadithScreen() {
   }, [params.section, setSection]);
 
   const [focusedHadith, setFocusedHadith] = useState<Hadith | null>(null);
+  const [showAdminPinModal, setShowAdminPinModal] = useState(false);
+  const [adminPin, setAdminPin] = useState('');
+  const [adminPinError, setAdminPinError] = useState<string | null>(null);
+  const [submittingAdminPin, setSubmittingAdminPin] = useState(false);
   const shareCanvasRef = useRef<View | null>(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      void syncRemoteHadiths(false);
+      return undefined;
+    }, [syncRemoteHadiths])
+  );
 
   const activeSelection = useMemo(
     () => (focusedHadith ? buildFocusedSelection(focusedHadith) : dailySelection),
@@ -96,6 +115,46 @@ export function AhadithScreen() {
     setFocusedHadith(hadith);
   };
 
+  const openAdminPinModal = () => {
+    setAdminPin('');
+    setAdminPinError(null);
+    setShowAdminPinModal(true);
+  };
+
+  const closeAdminPinModal = () => {
+    setShowAdminPinModal(false);
+    setAdminPin('');
+    setAdminPinError(null);
+  };
+
+  const handleAdminPinSubmit = async () => {
+    const normalizedPin = adminPin.trim();
+    if (!normalizedPin) {
+      setAdminPinError('رمز را وارد کنید.');
+      return;
+    }
+
+    try {
+      setSubmittingAdminPin(true);
+      setAdminPinError(null);
+      const valid = await verifyHadithAdminPin(normalizedPin);
+      if (!valid) {
+        setAdminPinError('رمز نادرست است.');
+        return;
+      }
+
+      closeAdminPinModal();
+      router.push('/ahadith/admin' as any);
+    } catch (error) {
+      setAdminPinError('بررسی رمز ممکن نشد. دوباره تلاش کنید.');
+      if (__DEV__) {
+        console.warn('[AhadithAdmin] verify pin failed', error);
+      }
+    } finally {
+      setSubmittingAdminPin(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <View style={[styles.center, { backgroundColor: theme.background }]}> 
@@ -105,19 +164,18 @@ export function AhadithScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}> 
-      <Stack.Screen
-        options={{
-          title: 'احادیث',
-          headerStyle: { backgroundColor: theme.primary },
-          headerTintColor: theme.surface,
-          headerTitleStyle: {
-            fontFamily: 'Vazirmatn-Bold',
-          },
-        }}
-      />
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
+        <LinearGradient
+          colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
+          style={[styles.topHeader, { paddingTop: insets.top + 12 }]}
+        >
+          <CenteredText style={styles.topHeaderTitle}>احادیث</CenteredText>
+          <CenteredText style={styles.topHeaderSubtitle}>حدیث روز، متفق‌علیه، موضوعات و جستجو</CenteredText>
+        </LinearGradient>
+      </Pressable>
 
-      <View style={[styles.headerWrap, { paddingTop: Math.max(insets.top + 8, 16) }]}>
+      <View style={styles.headerWrap}>
         <HadithSectionTabs activeSection={section} onChange={setSection} />
       </View>
 
@@ -208,6 +266,83 @@ export function AhadithScreen() {
           </View>
         </View>
       </Modal>
+
+      <Modal
+        visible={showAdminPinModal}
+        transparent
+        animationType="fade"
+        onRequestClose={closeAdminPinModal}
+      >
+        <View style={styles.pinModalOverlay}>
+          <View
+            style={[
+              styles.pinModalContent,
+              { backgroundColor: theme.surface, borderColor: alphaColor(theme.primary, 0.26) },
+            ]}
+          >
+            <CenteredText style={[styles.pinModalTitle, { color: theme.textPrimary }]}>
+              ورود به مدیریت احادیث
+            </CenteredText>
+
+            <TextInput
+              value={adminPin}
+              onChangeText={(value) => {
+                setAdminPin(value);
+                if (adminPinError) setAdminPinError(null);
+              }}
+              placeholder="رمز"
+              placeholderTextColor={theme.textSecondary}
+              secureTextEntry
+              keyboardType="number-pad"
+              maxLength={8}
+              style={[
+                styles.pinInput,
+                {
+                  borderColor: alphaColor(theme.primary, 0.24),
+                  color: theme.textPrimary,
+                  backgroundColor: alphaColor(theme.primary, 0.06),
+                },
+              ]}
+              textAlign="center"
+            />
+
+            {adminPinError ? (
+              <CenteredText style={styles.pinErrorText}>{adminPinError}</CenteredText>
+            ) : null}
+
+            <View style={styles.pinActions}>
+              <Pressable
+                onPress={handleAdminPinSubmit}
+                disabled={submittingAdminPin}
+                style={[styles.pinConfirmButton, { backgroundColor: theme.primary }]}
+              >
+                {submittingAdminPin ? (
+                  <ActivityIndicator size="small" color={theme.surface} />
+                ) : (
+                  <CenteredText style={[styles.pinConfirmText, { color: theme.surface }]}>
+                    تأیید
+                  </CenteredText>
+                )}
+              </Pressable>
+              <Pressable
+                onPress={closeAdminPinModal}
+                disabled={submittingAdminPin}
+                style={[
+                  styles.pinCancelButton,
+                  {
+                    borderColor: alphaColor(theme.primary, 0.24),
+                    backgroundColor: theme.surface,
+                  },
+                ]}
+              >
+                <CenteredText style={[styles.pinCancelText, { color: theme.textPrimary }]}>
+                  انصراف
+                </CenteredText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -225,8 +360,30 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: 14,
   },
+  topHeader: {
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    paddingHorizontal: 16,
+    paddingBottom: 14,
+    alignItems: 'center',
+    gap: 4,
+  },
+  topHeaderTitle: {
+    color: '#ffffff',
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 24,
+    textAlign: 'center',
+  },
+  topHeaderSubtitle: {
+    color: 'rgba(255,255,255,0.92)',
+    fontFamily: 'Vazirmatn',
+    fontSize: 12,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
   headerWrap: {
     paddingHorizontal: 12,
+    paddingTop: 10,
     paddingBottom: 8,
   },
   content: {
@@ -307,5 +464,66 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 13,
     fontFamily: 'Vazirmatn-Bold',
+  },
+  pinModalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+  },
+  pinModalContent: {
+    borderRadius: 18,
+    borderWidth: 1,
+    padding: 16,
+    gap: 12,
+  },
+  pinModalTitle: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 16,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  pinInput: {
+    borderWidth: 1,
+    borderRadius: 12,
+    minHeight: 44,
+    fontFamily: 'Vazirmatn',
+    fontSize: 16,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  pinErrorText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: 12,
+    color: '#D32F2F',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  pinActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  pinConfirmButton: {
+    flex: 1,
+    minHeight: 42,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pinConfirmText: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 14,
+  },
+  pinCancelButton: {
+    flex: 1,
+    minHeight: 42,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pinCancelText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: 14,
   },
 });

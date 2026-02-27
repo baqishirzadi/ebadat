@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
 import { AhadithNotificationPreferences } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
@@ -97,6 +97,48 @@ export function HadithNotificationTimePicker({
     }
   };
 
+  const hourColumn = (
+    <View style={styles.column}>
+      <Pressable
+        onPress={() => changeHour(1)}
+        style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
+      >
+        <CenteredText style={[styles.stepText, { color: theme.primary }]}>+</CenteredText>
+      </Pressable>
+      <CenteredText style={[styles.timeValue, { color: theme.textPrimary }]}>
+        {toArabicNumeralsString(pad(hour12))}
+      </CenteredText>
+      <Pressable
+        onPress={() => changeHour(-1)}
+        style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
+      >
+        <CenteredText style={[styles.stepText, { color: theme.primary }]}>-</CenteredText>
+      </Pressable>
+      <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>ساعت</CenteredText>
+    </View>
+  );
+
+  const minuteColumn = (
+    <View style={styles.column}>
+      <Pressable
+        onPress={() => changeMinute(5)}
+        style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
+      >
+        <CenteredText style={[styles.stepText, { color: theme.primary }]}>+</CenteredText>
+      </Pressable>
+      <CenteredText style={[styles.timeValue, { color: theme.textPrimary }]}>
+        {toArabicNumeralsString(pad(minute))}
+      </CenteredText>
+      <Pressable
+        onPress={() => changeMinute(-5)}
+        style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
+      >
+        <CenteredText style={[styles.stepText, { color: theme.primary }]}>-</CenteredText>
+      </Pressable>
+      <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>دقیقه</CenteredText>
+    </View>
+  );
+
   return (
     <View
       style={[
@@ -138,45 +180,10 @@ export function HadithNotificationTimePicker({
       </CenteredText>
 
       <View style={styles.timeControlRow}>
-        <View style={styles.column}>
-          <Pressable
-            onPress={() => changeHour(1)}
-            style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
-          >
-            <CenteredText style={[styles.stepText, { color: theme.primary }]}>+</CenteredText>
-          </Pressable>
-          <CenteredText style={[styles.timeValue, { color: theme.textPrimary }]}>
-            {toArabicNumeralsString(pad(hour12))}
-          </CenteredText>
-          <Pressable
-            onPress={() => changeHour(-1)}
-            style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
-          >
-            <CenteredText style={[styles.stepText, { color: theme.primary }]}>-</CenteredText>
-          </Pressable>
-          <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>ساعت</CenteredText>
-        </View>
-
+        {/* Keep physical order stable: in RTL we invert JSX so hour stays on left and minute on right. */}
+        {I18nManager.isRTL ? minuteColumn : hourColumn}
         <CenteredText style={[styles.separator, { color: theme.textSecondary }]}>:</CenteredText>
-
-        <View style={styles.column}>
-          <Pressable
-            onPress={() => changeMinute(5)}
-            style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
-          >
-            <CenteredText style={[styles.stepText, { color: theme.primary }]}>+</CenteredText>
-          </Pressable>
-          <CenteredText style={[styles.timeValue, { color: theme.textPrimary }]}>
-            {toArabicNumeralsString(pad(minute))}
-          </CenteredText>
-          <Pressable
-            onPress={() => changeMinute(-5)}
-            style={[styles.stepButton, { borderColor: alphaColor(theme.primary, 0.26) }]}
-          >
-            <CenteredText style={[styles.stepText, { color: theme.primary }]}>-</CenteredText>
-          </Pressable>
-          <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>دقیقه</CenteredText>
-        </View>
+        {I18nManager.isRTL ? hourColumn : minuteColumn}
       </View>
 
       <View style={styles.meridiemRow}>
@@ -268,7 +275,6 @@ const styles = StyleSheet.create({
   },
   timeControlRow: {
     flexDirection: 'row',
-    direction: 'ltr',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 16,

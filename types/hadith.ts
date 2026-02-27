@@ -57,3 +57,26 @@ export interface AhadithNotificationPreferences {
   hour: number;
   minute: number;
 }
+
+export interface HadithEntryDTO extends Hadith {
+  published?: boolean;
+  published_at?: string | null;
+  notification_sent?: boolean;
+  notification_sent_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface HadithAdminPayload {
+  arabic_text: string;
+  dari_translation: string;
+  pashto_translation: string;
+  source_book: HadithSourceBook;
+  source_number: string;
+  is_muttafaq: boolean;
+  topics: string[];
+  special_days?: HadithSpecialDay[];
+  hijri_range?: HadithHijriRange;
+  weekday_only?: 'friday';
+  daily_index?: number;
+}

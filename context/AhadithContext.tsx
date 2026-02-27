@@ -1,11 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { AppState } from 'react-native';
 import { AhadithNotificationPreferences, AhadithSection, DailyHadithSelection, Hadith } from '@/types/hadith';
 import {
   getAllHadiths,
   getHadithTopics,
   getHadithsByTopic,
   getMuttafaqHadiths,
+  setRemoteHadiths,
 } from '@/utils/ahadith/repository';
 import { searchHadiths } from '@/utils/ahadith/search';
 import { selectDailyHadith } from '@/utils/ahadith/selector';
@@ -13,11 +15,13 @@ import {
   requestAhadithNotificationPermission,
   scheduleAhadithNotifications,
 } from '@/utils/ahadith/notifications';
+import { getCachedRemoteHadiths, syncPublishedHadiths } from '@/utils/ahadithRemoteService';
 
 const STORAGE_KEYS = {
   bookmarks: '@ebadat/ahadith_bookmarks',
   notifications: '@ebadat/ahadith_notification_prefs',
 };
+const REMOTE_SYNC_COOLDOWN_MS = 2 * 60 * 1000;
 
 const DEFAULT_NOTIFICATION_PREFS: AhadithNotificationPreferences = {
   enabled: true,
@@ -50,6 +54,7 @@ interface AhadithContextValue {
   isBookmarked: (hadithId: number) => boolean;
   setNotificationTime: (hour: number, minute: number) => Promise<boolean>;
   setNotificationsEnabled: (enabled: boolean) => Promise<boolean>;
+  syncRemoteHadiths: (force?: boolean) => Promise<void>;
 }
 
 const AhadithContext = createContext<AhadithContextValue | undefined>(undefined);
@@ -62,9 +67,9 @@ function getDateByOffset(offset: number): Date {
 }
 
 export function AhadithProvider({ children }: { children: React.ReactNode }) {
-  const hadiths = useMemo(() => getAllHadiths(), []);
-  const topics = useMemo(() => getHadithTopics(), []);
-  const muttafaqHadiths = useMemo(() => getMuttafaqHadiths(), []);
+  const [hadiths, setHadiths] = useState<Hadith[]>(() => getAllHadiths());
+  const topics = useMemo(() => getHadithTopics(), [hadiths]);
+  const muttafaqHadiths = useMemo(() => getMuttafaqHadiths(), [hadiths]);
 
   const [section, setSection] = useState<AhadithSection>('daily');
   const [dayOffset, setDayOffset] = useState(0);
@@ -76,18 +81,58 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationPrefs, setNotificationPrefsState] =
     useState<AhadithNotificationPreferences>(DEFAULT_NOTIFICATION_PREFS);
+  const syncInFlightRef = React.useRef<Promise<void> | null>(null);
+  const lastSyncAtRef = React.useRef(0);
+
+  const applyRemoteHadiths = useCallback((remoteHadiths: Hadith[]) => {
+    setRemoteHadiths(remoteHadiths);
+    setHadiths(getAllHadiths());
+  }, []);
+
+  const syncRemoteHadiths = useCallback(
+    async (force = false): Promise<void> => {
+      if (syncInFlightRef.current) {
+        await syncInFlightRef.current;
+        return;
+      }
+
+      if (!force && Date.now() - lastSyncAtRef.current < REMOTE_SYNC_COOLDOWN_MS) {
+        return;
+      }
+
+      const job = (async () => {
+        const remoteItems = await syncPublishedHadiths();
+        applyRemoteHadiths(remoteItems);
+        lastSyncAtRef.current = Date.now();
+      })().catch((error) => {
+        if (__DEV__) {
+          console.warn('[Ahadith] Remote sync failed', error);
+        }
+      });
+
+      syncInFlightRef.current = job;
+      try {
+        await job;
+      } finally {
+        syncInFlightRef.current = null;
+      }
+    },
+    [applyRemoteHadiths]
+  );
 
   useEffect(() => {
     let cancelled = false;
 
     const loadPersisted = async () => {
       try {
-        const [bookmarksRaw, notificationsRaw] = await Promise.all([
+        const [bookmarksRaw, notificationsRaw, remoteCached] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.bookmarks),
           AsyncStorage.getItem(STORAGE_KEYS.notifications),
+          getCachedRemoteHadiths(),
         ]);
 
         if (cancelled) return;
+        applyRemoteHadiths(remoteCached);
 
         if (bookmarksRaw) {
           const parsed = JSON.parse(bookmarksRaw);
@@ -121,6 +166,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
       } finally {
         if (!cancelled) {
           setIsLoading(false);
+          void syncRemoteHadiths(true);
         }
       }
     };
@@ -130,7 +176,19 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [applyRemoteHadiths, syncRemoteHadiths]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'active' && !isLoading) {
+        void syncRemoteHadiths(false);
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isLoading, syncRemoteHadiths]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -174,12 +232,13 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
   const refreshDaily = useCallback(async () => {
     setIsRefreshing(true);
     try {
+      await syncRemoteHadiths(true);
       const date = getDateByOffset(dayOffset);
       setDailySelection(selectDailyHadith(hadiths, date));
     } finally {
       setIsRefreshing(false);
     }
-  }, [dayOffset, hadiths]);
+  }, [dayOffset, hadiths, syncRemoteHadiths]);
 
   const toggleBookmark = useCallback(async (hadithId: number) => {
     setBookmarks((prev) =>
@@ -250,6 +309,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
       isBookmarked,
       setNotificationTime,
       setNotificationsEnabled,
+      syncRemoteHadiths,
     }),
     [
       hadiths,
@@ -273,6 +333,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
       isBookmarked,
       setNotificationTime,
       setNotificationsEnabled,
+      syncRemoteHadiths,
     ]
   );
 

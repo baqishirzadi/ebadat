@@ -22,6 +22,7 @@ import { NaatProvider } from '@/context/NaatContext';
 import { PrayerProvider } from '@/context/PrayerContext';
 import { ScholarProvider } from '@/context/ScholarContext';
 import { StatsProvider } from '@/context/StatsContext';
+import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 
 // ───────────────────────────────────────────────────
 // Global safety for unhandled promise rejections
@@ -94,10 +95,13 @@ function RootLayoutNav() {
     const setupNotificationRouting = async () => {
       try {
         const Notifications = await import('expo-notifications');
-        subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+        const handleNotificationResponse = (
+          response: import('expo-notifications').NotificationResponse
+        ) => {
           const data = response.notification.request.content.data || {};
           const type = String((data as Record<string, unknown>).type || '');
           const articleId = (data as Record<string, unknown>).articleId;
+          const hadithId = (data as Record<string, unknown>).hadithId;
 
           if (type === 'article_published' && articleId) {
             router.push({
@@ -107,13 +111,30 @@ function RootLayoutNav() {
             return;
           }
 
+          if (type === 'hadith_published' && hadithId) {
+            router.push(
+              {
+                pathname: '/ahadith/[id]',
+                params: { id: String(hadithId) },
+              } as any
+            );
+            return;
+          }
+
           if (type === 'ahadith_daily') {
             router.push({
               pathname: '/ahadith',
               params: { section: 'daily' },
             } as any);
           }
-        });
+        };
+
+        subscription = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
+
+        const initialResponse = await Notifications.getLastNotificationResponseAsync();
+        if (initialResponse) {
+          handleNotificationResponse(initialResponse);
+        }
       } catch (error) {
         if (__DEV__) {
           console.warn('[Notifications] Failed to setup article routing', error);
@@ -127,6 +148,10 @@ function RootLayoutNav() {
       subscription?.remove();
     };
   }, [router]);
+
+  useEffect(() => {
+    void ensurePushRegistrationOnFirstOpen();
+  }, []);
 
   if (showSpiritualSplash) {
     return (
