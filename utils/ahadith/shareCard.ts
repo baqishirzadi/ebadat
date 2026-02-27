@@ -7,7 +7,7 @@ interface ShareHadithCardParams {
 }
 
 async function shareTextFallback(message: string): Promise<void> {
-  await Share.share({ message, title: 'Daily Hadith' });
+  await Share.share({ message, title: 'حدیث روز' });
 }
 
 export async function shareHadithCard({ captureRef, fallbackMessage }: ShareHadithCardParams): Promise<void> {
@@ -44,7 +44,7 @@ export async function shareHadithCard({ captureRef, fallbackMessage }: ShareHadi
     await sharingModule.shareAsync(uri, {
       mimeType: 'image/png',
       UTI: 'public.png',
-      dialogTitle: 'Share Hadith',
+      dialogTitle: 'اشتراک‌گذاری حدیث',
     });
   } catch (error) {
     if (__DEV__) {

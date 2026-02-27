@@ -20,7 +20,7 @@ const STORAGE_KEYS = {
 };
 
 const DEFAULT_NOTIFICATION_PREFS: AhadithNotificationPreferences = {
-  enabled: false,
+  enabled: true,
   hour: 8,
   minute: 0,
 };
@@ -99,7 +99,10 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
         if (notificationsRaw) {
           const parsed = JSON.parse(notificationsRaw);
           const normalized: AhadithNotificationPreferences = {
-            enabled: typeof parsed?.enabled === 'boolean' ? parsed.enabled : false,
+            enabled:
+              typeof parsed?.enabled === 'boolean'
+                ? parsed.enabled
+                : DEFAULT_NOTIFICATION_PREFS.enabled,
             hour:
               Number.isInteger(parsed?.hour) && parsed.hour >= 0 && parsed.hour <= 23
                 ? parsed.hour

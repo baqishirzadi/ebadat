@@ -3,6 +3,7 @@ import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
+import { getTopicLabelFa } from '@/utils/ahadith/labels';
 import CenteredText from '@/components/CenteredText';
 import { getDariFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 
@@ -14,36 +15,6 @@ interface TopicBrowserProps {
   onOpenHadith: (hadith: Hadith) => void;
 }
 
-const TOPIC_LABELS: Record<string, string> = {
-  intention: 'نیت',
-  sincerity: 'اخلاص',
-  advice: 'نصیحت',
-  faith: 'ایمان',
-  ramadan: 'رمضان',
-  fasting: 'روزه',
-  prayer: 'نماز',
-  worship: 'عبادت',
-  manners: 'آداب',
-  speech: 'گفتار',
-  quran: 'قرآن',
-  knowledge: 'علم',
-  community: 'جامعه',
-  ihsan: 'احسان',
-  ethics: 'اخلاق',
-  hajj: 'حج',
-  purification: 'پاکی',
-  dhul_hijjah: 'ذوالحجه',
-  ashura: 'عاشورا',
-  jumuah: 'جمعه',
-  charity: 'صدقه',
-  generosity: 'سخاوت',
-  family: 'خانواده',
-};
-
-function topicLabel(topic: string): string {
-  return TOPIC_LABELS[topic] ?? topic;
-}
-
 export function TopicBrowser({
   topics,
   selectedTopic,
@@ -53,7 +24,10 @@ export function TopicBrowser({
 }: TopicBrowserProps) {
   const { theme, state } = useApp();
 
-  const title = useMemo(() => (selectedTopic ? `موضوع: ${topicLabel(selectedTopic)}` : 'موضوعی انتخاب نشده'), [selectedTopic]);
+  const title = useMemo(
+    () => (selectedTopic ? `موضوع: ${getTopicLabelFa(selectedTopic)}` : 'یک موضوع انتخاب کنید'),
+    [selectedTopic]
+  );
 
   return (
     <View style={styles.container}>
@@ -69,7 +43,7 @@ export function TopicBrowser({
             pressed && { opacity: 0.85 },
           ]}
         >
-          <CenteredText style={[styles.topicChipText, { color: selectedTopic === null ? theme.primary : theme.textSecondary }]}>همه</CenteredText>
+          <CenteredText numberOfLines={1} style={[styles.topicChipText, { color: selectedTopic === null ? theme.primary : theme.textSecondary }]}>همه</CenteredText>
         </Pressable>
 
         {topics.map((topic) => {
@@ -87,8 +61,8 @@ export function TopicBrowser({
                 pressed && { opacity: 0.85 },
               ]}
             >
-              <CenteredText style={[styles.topicChipText, { color: selected ? theme.primary : theme.textSecondary }]}>
-                {topicLabel(topic)}
+              <CenteredText numberOfLines={1} style={[styles.topicChipText, { color: selected ? theme.primary : theme.textSecondary }]}>
+                {getTopicLabelFa(topic)}
               </CenteredText>
             </Pressable>
           );
@@ -155,25 +129,32 @@ const styles = StyleSheet.create({
   topicsRow: {
     gap: 8,
     paddingBottom: 8,
+    paddingTop: 2,
+    alignItems: 'center',
   },
   topicChip: {
     borderWidth: 1,
-    borderRadius: 999,
-    minHeight: 34,
-    paddingHorizontal: 12,
+    borderRadius: 22,
+    height: 42,
+    minHeight: 42,
+    paddingHorizontal: 16,
+    maxWidth: 140,
     alignItems: 'center',
     justifyContent: 'center',
+    alignSelf: 'center',
   },
   topicChipText: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: 12,
+    fontSize: 13,
+    textAlign: 'center',
   },
   sectionTitle: {
     marginTop: 10,
     marginBottom: 10,
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 14,
-    textAlign: 'right',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   listContent: {
     paddingBottom: 24,
@@ -187,13 +168,13 @@ const styles = StyleSheet.create({
   arabic: {
     fontSize: 22,
     lineHeight: 42,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   translation: {
     fontSize: 14,
     lineHeight: 24,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   empty: {

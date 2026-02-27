@@ -2,6 +2,7 @@ import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { AhadithNotificationPreferences, Hadith } from '@/types/hadith';
 import { selectDailyHadith } from '@/utils/ahadith/selector';
+import { getContextTitleFa } from '@/utils/ahadith/labels';
 
 const CHANNEL_ID = 'ahadith-daily-v1';
 const IDENTIFIER_PREFIX = 'ahadith-daily-';
@@ -45,20 +46,11 @@ function truncatePreview(text: string, maxLength = 84): string {
   return `${normalized.slice(0, maxLength - 1)}…`;
 }
 
-function getContextualTitle(selection: ReturnType<typeof selectDailyHadith>): string {
-  if (selection.context.specialDayKeys.includes('laylat_al_qadr')) return "Laylat al-Qadr Hadith";
-  if (selection.context.specialDayKeys.includes('eid_al_fitr')) return "Eid al-Fitr Hadith";
-  if (selection.context.specialDayKeys.includes('eid_al_adha')) return "Eid al-Adha Hadith";
-  if (selection.context.specialDayKeys.includes('ramadan')) return 'Ramadan Hadith';
-  if (selection.context.isFriday) return "Jumu'ah Hadith";
-  return 'Daily Hadith';
-}
-
 async function ensureChannel(NotificationsModule: typeof import('expo-notifications')): Promise<void> {
   if (Platform.OS !== 'android') return;
 
   await NotificationsModule.setNotificationChannelAsync(CHANNEL_ID, {
-    name: 'Ahadith Daily',
+    name: 'احادیث روزانه',
     importance: NotificationsModule.AndroidImportance.DEFAULT,
     vibrationPattern: [0, 180, 120, 180],
     showBadge: true,
@@ -109,7 +101,7 @@ export async function scheduleAhadithNotifications(
     }
 
     const identifier = `${IDENTIFIER_PREFIX}${dateKey(date)}`;
-    const title = getContextualTitle(selection);
+    const title = getContextTitleFa(selection.context);
     const body = truncatePreview(selection.hadith.dari_translation);
 
     await NotificationsModule.scheduleNotificationAsync({

@@ -2,6 +2,7 @@ import React from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
+import { formatSourceLabel } from '@/utils/ahadith/labels';
 import CenteredText from '@/components/CenteredText';
 import { alphaColor } from '@/utils/ahadith/theme';
 import { getQuranFontFamily, getDariFontFamily } from '@/hooks/useFonts';
@@ -59,7 +60,7 @@ export function MuttafaqList({ items, onOpen }: MuttafaqListProps) {
           </CenteredText>
 
           <CenteredText style={[styles.source, { color: theme.primary }]}>
-            {`Sahih ${item.source_book} ${item.source_number}`}
+            {formatSourceLabel(item.source_book, item.source_number)}
           </CenteredText>
         </Pressable>
       )}
@@ -83,19 +84,20 @@ const styles = StyleSheet.create({
   arabic: {
     fontSize: 24,
     lineHeight: 46,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   translation: {
     fontSize: 15,
     lineHeight: 26,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   source: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 12,
-    textAlign: 'left',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   empty: {
     fontFamily: 'Vazirmatn',

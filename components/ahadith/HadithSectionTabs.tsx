@@ -23,7 +23,16 @@ export function HadithSectionTabs({ activeSection, onChange }: HadithSectionTabs
   const { theme } = useApp();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.surface }]}> 
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.surface,
+          borderColor: alphaColor(theme.primary, 0.16),
+          shadowColor: theme.textPrimary,
+        },
+      ]}
+    >
       {SECTIONS.map((section) => {
         const selected = section === activeSection;
         return (
@@ -61,9 +70,14 @@ export function HadithSectionTabs({ activeSection, onChange }: HadithSectionTabs
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    borderRadius: 16,
+    borderRadius: 18,
+    borderWidth: 1,
     padding: 6,
     gap: 6,
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    elevation: 2,
   },
   tab: {
     flex: 1,

@@ -11,6 +11,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { DailyHadithSelection } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor, deriveDailyCardGradient } from '@/utils/ahadith/theme';
+import {
+  formatSourceLabel,
+  getMuttafaqBadgeLabel,
+  getReasonLabelFa,
+} from '@/utils/ahadith/labels';
 import CenteredText from '@/components/CenteredText';
 import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 
@@ -21,13 +26,6 @@ interface DailyHadithCardProps {
   onShare: () => void;
   onSwipeNext: () => void;
   onSwipePrevious: () => void;
-}
-
-function getReasonLabel(reason: DailyHadithSelection['reason']): string {
-  if (reason === 'special_days') return 'مناسبتی';
-  if (reason === 'hijri_range') return 'تقویم هجری';
-  if (reason === 'weekday_only') return 'مخصوص جمعه';
-  return 'روزانه';
 }
 
 export function DailyHadithCard({
@@ -78,93 +76,105 @@ export function DailyHadithCard({
         onLongPress={() => onToggleBookmark(hadith.id)}
         delayLongPress={280}
         accessibilityRole="button"
-        accessibilityHint="Long press to bookmark this hadith"
+        accessibilityHint="برای نشانه‌گذاری حدیث، نگه دارید"
       >
-        <LinearGradient
-          colors={gradient}
+        <View
           style={[
             styles.card,
             {
               borderColor: alphaColor(theme.primary, 0.24),
               shadowColor: theme.textPrimary,
+              backgroundColor: theme.surface,
             },
           ]}
         >
-          <View style={styles.topBar}>
-            <View style={[styles.reasonChip, { backgroundColor: alphaColor(theme.primary, 0.16), borderColor: alphaColor(theme.primary, 0.35) }]}> 
-              <CenteredText style={[styles.reasonText, { color: theme.primary }]}>{getReasonLabel(selection.reason)}</CenteredText>
-            </View>
-
-            <View style={styles.actions}>
-              {hadith.is_muttafaq ? (
-                <View style={[styles.badge, { backgroundColor: alphaColor(theme.accent, 0.24), borderColor: alphaColor(theme.accent, 0.42) }]}> 
-                  <CenteredText style={[styles.badgeText, { color: theme.accent }]}>Muttafaq Alayh</CenteredText>
-                </View>
-              ) : null}
-
-              <Pressable onPress={onShare} style={styles.iconButton} accessibilityLabel="Share hadith">
-                <MaterialIcons name="share" size={20} color={theme.primary} />
+          <LinearGradient
+            colors={gradient}
+            style={[
+              styles.topPanel,
+              {
+                borderColor: alphaColor(theme.primary, 0.28),
+              },
+            ]}
+          >
+            <View style={styles.actionsRow}>
+              <Pressable onPress={onShare} style={[styles.iconButton, { backgroundColor: alphaColor(theme.surface, 0.18) }]} accessibilityLabel="اشتراک‌گذاری حدیث">
+                <MaterialIcons name="share" size={20} color={theme.surface} />
               </Pressable>
 
               <Pressable
                 onPress={() => onToggleBookmark(hadith.id)}
-                style={styles.iconButton}
-                accessibilityLabel={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
+                style={[styles.iconButton, { backgroundColor: alphaColor(theme.surface, 0.18) }]}
+                accessibilityLabel={isBookmarked ? 'حذف نشانه' : 'افزودن نشانه'}
               >
                 <MaterialIcons
                   name={isBookmarked ? 'bookmark' : 'bookmark-border'}
                   size={22}
-                  color={isBookmarked ? theme.accent : theme.primary}
+                  color={isBookmarked ? theme.accent : theme.surface}
                 />
               </Pressable>
             </View>
-          </View>
 
-          <CenteredText
-            style={[
-              styles.arabic,
-              {
-                color: theme.textPrimary,
-                fontFamily: getQuranFontFamily(state.preferences.quranFont),
-              },
-            ]}
-          >
-            {hadith.arabic_text}
-          </CenteredText>
+            <View style={styles.tagRow}>
+              <View style={[styles.reasonChip, { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) }]}> 
+                <CenteredText style={[styles.reasonText, { color: theme.surface }]}>{getReasonLabelFa(selection.reason)}</CenteredText>
+              </View>
 
-          <View style={[styles.divider, { backgroundColor: alphaColor(theme.textSecondary, 0.25) }]} />
+              {hadith.is_muttafaq ? (
+                <View style={[styles.badge, { backgroundColor: alphaColor(theme.accent, 0.24), borderColor: alphaColor(theme.accent, 0.45) }]}> 
+                  <CenteredText style={[styles.badgeText, { color: theme.accent }]}>{getMuttafaqBadgeLabel()}</CenteredText>
+                </View>
+              ) : null}
+            </View>
 
-          <CenteredText
-            style={[
-              styles.dari,
-              {
-                color: theme.textPrimary,
-                fontFamily: getDariFontFamily(state.preferences.dariFont),
-              },
-            ]}
-          >
-            {hadith.dari_translation}
-          </CenteredText>
-
-          <CenteredText
-            style={[
-              styles.pashto,
-              {
-                color: theme.textSecondary,
-                fontFamily: getPashtoFontFamily(state.preferences.pashtoFont),
-              },
-            ]}
-          >
-            {hadith.pashto_translation}
-          </CenteredText>
-
-          <View style={[styles.footer, { borderTopColor: alphaColor(theme.textSecondary, 0.2) }]}> 
-            <CenteredText style={[styles.source, { color: theme.textSecondary }]}>
-              {`Sahih ${hadith.source_book} ${hadith.source_number}`}
+            <CenteredText
+              style={[
+                styles.arabic,
+                {
+                  color: theme.surface,
+                  fontFamily: getQuranFontFamily(state.preferences.quranFont),
+                },
+              ]}
+            >
+              {hadith.arabic_text}
             </CenteredText>
-            <CenteredText style={[styles.hint, { color: theme.textSecondary }]}>برای نشانه‌گذاری، نگه‌دارید</CenteredText>
+          </LinearGradient>
+
+          <View style={styles.bottomPanel}>
+            <CenteredText
+              style={[
+                styles.dari,
+                {
+                  color: theme.textPrimary,
+                  fontFamily: getDariFontFamily(state.preferences.dariFont),
+                },
+              ]}
+            >
+              {hadith.dari_translation}
+            </CenteredText>
+
+            <CenteredText
+              style={[
+                styles.pashto,
+                {
+                  color: theme.textSecondary,
+                  fontFamily: getPashtoFontFamily(state.preferences.pashtoFont),
+                },
+              ]}
+            >
+              {hadith.pashto_translation}
+            </CenteredText>
+
+            <View style={[styles.divider, { backgroundColor: alphaColor(theme.textSecondary, 0.22) }]} />
+
+            <View style={[styles.footer, { borderTopColor: alphaColor(theme.textSecondary, 0.2) }]}> 
+              <CenteredText style={[styles.source, { color: theme.textSecondary }]}>
+                {formatSourceLabel(hadith.source_book, hadith.source_number)}
+              </CenteredText>
+              <CenteredText style={[styles.hint, { color: theme.textSecondary }]}>برای نشانه‌گذاری، نگه‌دارید</CenteredText>
+            </View>
           </View>
-        </LinearGradient>
+        </View>
       </Pressable>
     </Animated.View>
   );
@@ -174,36 +184,39 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 22,
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 16,
     shadowOpacity: 0.12,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 5 },
     elevation: 4,
+    overflow: 'hidden',
+  },
+  topPanel: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    gap: 10,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 12,
   },
-  topBar: {
+  tagRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 10,
+    gap: 6,
+    flexWrap: 'wrap',
   },
   reasonChip: {
     borderWidth: 1,
     borderRadius: 999,
-    paddingHorizontal: 10,
-    minHeight: 28,
+    paddingHorizontal: 12,
+    minHeight: 30,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  reasonText: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: 11,
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
   },
   iconButton: {
     width: 34,
@@ -212,11 +225,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  reasonText: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 11,
+  },
   badge: {
     borderWidth: 1,
     borderRadius: 999,
-    paddingHorizontal: 10,
-    minHeight: 28,
+    paddingHorizontal: 12,
+    minHeight: 30,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -227,8 +244,14 @@ const styles = StyleSheet.create({
   arabic: {
     textAlign: 'center',
     writingDirection: 'rtl',
-    fontSize: 38,
-    lineHeight: 74,
+    fontSize: 40,
+    lineHeight: 76,
+  },
+  bottomPanel: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 14,
+    gap: 10,
   },
   divider: {
     height: 1,
@@ -236,13 +259,13 @@ const styles = StyleSheet.create({
   dari: {
     fontSize: 22,
     lineHeight: 36,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   pashto: {
     fontSize: 19,
     lineHeight: 31,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   footer: {

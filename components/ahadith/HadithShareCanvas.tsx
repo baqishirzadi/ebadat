@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { deriveDailyCardGradient, alphaColor } from '@/utils/ahadith/theme';
+import { formatSourceLabel } from '@/utils/ahadith/labels';
 import CenteredText from '@/components/CenteredText';
 import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 
@@ -22,7 +23,7 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
           style={[
             styles.arabic,
             {
-              color: theme.textPrimary,
+              color: theme.surface,
               fontFamily: getQuranFontFamily(state.preferences.quranFont),
             },
           ]}
@@ -53,7 +54,7 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
             },
           ]}
         >
-          {`Sahih ${hadith.source_book} ${hadith.source_number}`}
+          {formatSourceLabel(hadith.source_book, hadith.source_number)}
         </CenteredText>
       </LinearGradient>
     </View>
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
   translation: {
     fontSize: 34,
     lineHeight: 56,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   footer: {

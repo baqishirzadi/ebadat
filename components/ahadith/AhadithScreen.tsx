@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAhadith } from '@/context/AhadithContext';
 import { useApp } from '@/context/AppContext';
 import { DailyHadithSelection, Hadith } from '@/types/hadith';
@@ -21,6 +22,7 @@ import { HadithShareCanvas } from '@/components/ahadith/HadithShareCanvas';
 import { HadithNotificationTimePicker } from '@/components/ahadith/HadithNotificationTimePicker';
 import { shareHadithCard } from '@/utils/ahadith/shareCard';
 import { alphaColor } from '@/utils/ahadith/theme';
+import { formatSourceLabel } from '@/utils/ahadith/labels';
 import CenteredText from '@/components/CenteredText';
 
 function buildFocusedSelection(hadith: Hadith): DailyHadithSelection {
@@ -41,6 +43,7 @@ function buildFocusedSelection(hadith: Hadith): DailyHadithSelection {
 export function AhadithScreen() {
   const params = useLocalSearchParams<{ section?: string }>();
   const { theme } = useApp();
+  const insets = useSafeAreaInsets();
   const {
     dailySelection,
     section,
@@ -84,7 +87,7 @@ export function AhadithScreen() {
 
     await shareHadithCard({
       captureRef: shareCanvasRef,
-      fallbackMessage: `${activeSelection.hadith.arabic_text}\n\n${activeSelection.hadith.dari_translation}\n\nSahih ${activeSelection.hadith.source_book} ${activeSelection.hadith.source_number}`,
+      fallbackMessage: `${activeSelection.hadith.arabic_text}\n\n${activeSelection.hadith.dari_translation}\n\n${formatSourceLabel(activeSelection.hadith.source_book, activeSelection.hadith.source_number)}`,
     });
   };
 
@@ -113,7 +116,7 @@ export function AhadithScreen() {
         }}
       />
 
-      <View style={styles.headerWrap}>
+      <View style={[styles.headerWrap, { paddingTop: Math.max(insets.top + 8, 16) }]}>
         <HadithSectionTabs activeSection={section} onChange={setSection} />
       </View>
 
@@ -196,7 +199,7 @@ export function AhadithScreen() {
                 <CenteredText style={[styles.modalDari, { color: theme.textPrimary }]}>{focusedHadith.dari_translation}</CenteredText>
                 <CenteredText style={[styles.modalPashto, { color: theme.textSecondary }]}>{focusedHadith.pashto_translation}</CenteredText>
                 <CenteredText style={[styles.modalSource, { color: theme.primary }]}>
-                  {`Sahih ${focusedHadith.source_book} ${focusedHadith.source_number}`}
+                  {formatSourceLabel(focusedHadith.source_book, focusedHadith.source_number)}
                 </CenteredText>
               </ScrollView>
             ) : null}
@@ -222,7 +225,6 @@ const styles = StyleSheet.create({
   },
   headerWrap: {
     paddingHorizontal: 12,
-    paddingTop: 12,
     paddingBottom: 8,
   },
   content: {
@@ -278,7 +280,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontSize: 30,
     lineHeight: 58,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
     fontFamily: 'ScheherazadeNew',
   },
@@ -286,7 +288,7 @@ const styles = StyleSheet.create({
     marginTop: 14,
     fontSize: 18,
     lineHeight: 30,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
     fontFamily: 'Vazirmatn',
   },
@@ -294,7 +296,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 16,
     lineHeight: 28,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
     fontFamily: 'Amiri',
   },

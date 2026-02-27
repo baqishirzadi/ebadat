@@ -4,6 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
+import { formatSourceLabel } from '@/utils/ahadith/labels';
 import { getDariFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 import CenteredText from '@/components/CenteredText';
 
@@ -27,11 +28,11 @@ export function HadithSearch({ query, results, onChangeQuery, onOpenHadith }: Ha
           placeholder="جستجو در عربی، دری و پشتو"
           placeholderTextColor={theme.textSecondary}
           style={[styles.input, { color: theme.textPrimary, fontFamily: getDariFontFamily(state.preferences.dariFont) }]}
-          textAlign="right"
-          accessibilityLabel="Search hadith"
+          textAlign="center"
+          accessibilityLabel="جستجوی حدیث"
         />
         {query.length > 0 ? (
-          <Pressable onPress={() => onChangeQuery('')} accessibilityLabel="Clear search">
+          <Pressable onPress={() => onChangeQuery('')} accessibilityLabel="پاک‌کردن جستجو">
             <MaterialIcons name="close" size={20} color={theme.textSecondary} />
           </Pressable>
         ) : null}
@@ -79,7 +80,7 @@ export function HadithSearch({ query, results, onChangeQuery, onOpenHadith }: Ha
               {item.dari_translation}
             </CenteredText>
             <CenteredText style={[styles.meta, { color: theme.primary }]}>
-              {`Sahih ${item.source_book} ${item.source_number}`}
+              {formatSourceLabel(item.source_book, item.source_number)}
             </CenteredText>
           </Pressable>
         )}
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 14,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   listContent: {
@@ -127,19 +128,20 @@ const styles = StyleSheet.create({
   arabic: {
     fontSize: 22,
     lineHeight: 42,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   translation: {
     fontSize: 14,
     lineHeight: 24,
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
   },
   meta: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 12,
-    textAlign: 'left',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   empty: {
     fontFamily: 'Vazirmatn',
