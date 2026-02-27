@@ -1271,19 +1271,22 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         );
       }
 
-      const fridayAnchor = isValidDate(dayTimes.dhuhr) ? dayTimes.dhuhr : targetDate;
-      const isFriday = isFridayInTimezone(fridayAnchor, dayTimeZone);
+      const weekdayAnchor = buildDateFromLocalTimeInTimezone(targetDate, '12:00', dayTimeZone);
+      const isFriday = isFridayInTimezone(weekdayAnchor, dayTimeZone);
 
       for (const prayerKey of enabledPrayers) {
         const prayerSettings = adhanPreferences[prayerKey];
         const isFridayJummah = prayerKey === 'dhuhr' && isFriday;
         const scheduleTime = isFridayJummah
-          ? buildDateFromLocalTimeInTimezone(fridayAnchor, '13:00', dayTimeZone)
+          ? buildDateFromLocalTimeInTimezone(targetDate, '13:00', dayTimeZone)
           : new Date(dayTimes[prayerKey]);
         if (!isValidDate(scheduleTime) || scheduleTime <= now) continue;
 
         const content = isFridayJummah
-          ? { title: 'نماز جمعه', body: 'وقت نماز جمعه است' }
+          ? {
+            title: 'نماز جمعه',
+            body: 'وقت نماز جمعه است. به سوی ذکر و عبادت خدا بشتابید و داد و ستد را رها سازید',
+          }
           : getNotificationContent(prayerKey, true);
         const channelId = prayerKey === 'fajr' ? CHANNEL_IDS.ADHAN_FAJR : CHANNEL_IDS.ADHAN_REGULAR;
         const dayKey = getDateKey(scheduleTime);
