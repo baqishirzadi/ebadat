@@ -143,6 +143,7 @@ export default function TabLayout() {
       />
       
       {/* Hidden routes - accessible via navigation but not in tab bar */}
+      <Tabs.Screen name="ahadith" options={{ href: null }} />
       <Tabs.Screen name="prayer-learning" options={{ href: null }} />
       <Tabs.Screen name="bookmarks" options={{ href: null }} />
       <Tabs.Screen name="explore" options={{ href: null }} />

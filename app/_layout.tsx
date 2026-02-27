@@ -14,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { SpiritualSplash } from '@/components/SpiritualSplash';
+import { AhadithProvider } from '@/context/AhadithContext';
 import { AppProvider, useApp } from '@/context/AppContext';
 import { ArticlesProvider } from '@/context/ArticlesContext';
 import { DuaProvider } from '@/context/DuaContext';
@@ -103,6 +104,14 @@ function RootLayoutNav() {
               pathname: '/articles/[id]',
               params: { id: String(articleId) },
             });
+            return;
+          }
+
+          if (type === 'ahadith_daily') {
+            router.push({
+              pathname: '/ahadith',
+              params: { section: 'daily' },
+            } as any);
           }
         });
       } catch (error) {
@@ -204,11 +213,13 @@ export default function RootLayout() {
             <StatsProvider>
               <DuaProvider>
                 <NaatProvider>
-                  <ArticlesProvider>
-                    <ScholarProvider>
-                      <RootLayoutNav />
-                    </ScholarProvider>
-                  </ArticlesProvider>
+                  <AhadithProvider>
+                    <ArticlesProvider>
+                      <ScholarProvider>
+                        <RootLayoutNav />
+                      </ScholarProvider>
+                    </ArticlesProvider>
+                  </AhadithProvider>
                 </NaatProvider>
               </DuaProvider>
             </StatsProvider>

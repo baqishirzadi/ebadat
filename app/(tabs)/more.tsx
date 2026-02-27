@@ -65,6 +65,7 @@ export default function MoreScreen() {
     { icon: 'bookmark', label: 'نشانه‌های من', route: '/(tabs)/bookmarks', color: '#10B981' },
     { icon: 'school', label: 'آموزش نماز', route: '/(tabs)/prayer-learning', color: '#9C27B0' },
     { icon: 'favorite', label: 'دعای خیر و مشورت شرعی', route: '/dua-request', color: '#D4AF37' },
+    { icon: 'menu-book', label: 'احادیث', route: '/ahadith', color: '#14B8A6' },
     { icon: 'article', label: 'مقالات', route: '/(tabs)/articles', color: '#2196F3' },
     { icon: 'calendar-today', label: 'تقویم اسلامی', route: '/calendar', color: '#6366F1' },
     { icon: 'nights-stay', label: 'برنامه رمضان', route: '/ramadan', color: '#8B5CF6' },

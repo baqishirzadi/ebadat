@@ -10,6 +10,10 @@ export type ThemeMode = 'light' | 'night' | 'turquoise' | 'olive';
 
 export interface ThemeColors {
   // Core colors
+  primary: string;
+  surface: string;
+  textPrimary: string;
+  accent: string;
   text: string;
   textSecondary: string;
   background: string;
@@ -46,6 +50,10 @@ const NAAT_GREEN_LIGHT = '#1f6b57';
 
 // Light theme - Naat green as primary
 const lightTheme: ThemeColors = {
+  primary: NAAT_GREEN,
+  surface: '#ffffff',
+  textPrimary: '#1a1a1a',
+  accent: '#d4af37',
   text: '#1a1a1a',
   textSecondary: '#666666',
   background: '#fefefe',
@@ -74,6 +82,10 @@ const lightTheme: ThemeColors = {
 
 // Night mode - Naat green accent on dark (AMOLED friendly)
 const nightTheme: ThemeColors = {
+  primary: NAAT_GREEN_LIGHT,
+  surface: '#0d0d0d',
+  textPrimary: '#c9c9c9',
+  accent: '#d4af37',
   text: '#c9c9c9',
   textSecondary: '#888888',
   background: '#000000',
@@ -102,6 +114,10 @@ const nightTheme: ThemeColors = {
 
 // Turquoise - Naat green primary (unified with Naat header)
 const turquoiseTheme: ThemeColors = {
+  primary: '#008b8b',
+  surface: '#f0fafa',
+  textPrimary: '#1a3a3a',
+  accent: '#d4af37',
   text: '#1a3a3a',
   textSecondary: '#4a6a6a',
   background: '#e8f5f5',
@@ -130,6 +146,10 @@ const turquoiseTheme: ThemeColors = {
 
 // Olive - Naat green primary (unified with Naat header)
 const oliveTheme: ThemeColors = {
+  primary: '#6b8e23',
+  surface: '#fafcf5',
+  textPrimary: '#2a3a2a',
+  accent: '#d4af37',
   text: '#2a3a2a',
   textSecondary: '#5a6a5a',
   background: '#f5f8f0',
