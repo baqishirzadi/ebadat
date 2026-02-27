@@ -9,8 +9,6 @@ import NetInfo from '@react-native-community/netinfo';
 import { getCity, City } from '@/utils/cities';
 import {
   calculatePrayerTimes,
-  CalculationMethods,
-  AsrMethod,
   Location as LocationType,
   PrayerTimes,
   AFGHAN_CITIES,
@@ -38,7 +36,8 @@ export interface PrayerTimesBundle {
   display: PrayerTimesDisplay;
 }
 
-const CACHE_KEY = '@ebadat/prayer_times_cache_v1';
+const CACHE_KEY = '@ebadat/prayer_times_cache_v2';
+const LEGACY_CACHE_KEY = '@ebadat/prayer_times_cache_v1';
 const CACHE_DAYS = 30;
 const ALADHAN_BASE = 'https://api.aladhan.com/v1';
 const ALADHAN_METHOD = 1; // Karachi
@@ -97,7 +96,7 @@ type CachedDay = {
 };
 
 type CachePayload = {
-  version: 1;
+  version: 2;
   cities: Record<
     string,
     {
@@ -232,20 +231,25 @@ async function loadCache(): Promise<CachePayload> {
   try {
     const raw = await AsyncStorage.getItem(CACHE_KEY);
     if (!raw) {
-      return { version: 1, cities: {} };
+      return { version: 2, cities: {} };
     }
     const parsed = JSON.parse(raw) as CachePayload;
-    if (!parsed || parsed.version !== 1) {
-      return { version: 1, cities: {} };
+    if (!parsed || parsed.version !== 2) {
+      return { version: 2, cities: {} };
     }
     return parsed;
   } catch {
-    return { version: 1, cities: {} };
+    return { version: 2, cities: {} };
   }
 }
 
 async function saveCache(cache: CachePayload): Promise<void> {
   await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+  try {
+    await AsyncStorage.removeItem(LEGACY_CACHE_KEY);
+  } catch {
+    // Best-effort cleanup only.
+  }
 }
 
 function pruneCache(cache: CachePayload): CachePayload {
@@ -432,7 +436,8 @@ async function ensureCache(cityKey: string, city: City, date: Date): Promise<Cac
   const neededMonths = new Set<string>();
   for (let d = new Date(date); d <= end; d.setDate(d.getDate() + 1)) {
     const key = getDateKey(d);
-    if (!cityCache.days[key]) {
+    const existingDay = cityCache.days[key];
+    if (!existingDay || existingDay.source !== 'aladhan') {
       neededMonths.add(`${d.getFullYear()}-${d.getMonth() + 1}`);
     }
   }
@@ -483,7 +488,8 @@ export async function getPrayerTimesForDate(params: {
 
   if (city && cityKey) {
     const cache = await ensureCache(cityKey, city, date);
-    cachedDay = cache.cities[cityKey]?.days[dateKey];
+    const cachedCandidate = cache.cities[cityKey]?.days[dateKey];
+    cachedDay = cachedCandidate?.source === 'aladhan' ? cachedCandidate : undefined;
     if (cachedDay) {
       timezone = cachedDay.timezone || timezone;
       validated = validateTimes(cachedDay, location, date);
@@ -522,38 +528,7 @@ export async function getPrayerTimesForDate(params: {
   }
 
   // Fallback calculations (local)
-  const times = calculatePrayerTimes(
-    date,
-    location,
-    'Karachi' as keyof typeof CalculationMethods,
-    'Hanafi' as AsrMethod
-  );
-
-  if (city && cityKey) {
-    const cache = pruneCache(await loadCache());
-    const fallbackDay: CachedDay = {
-      date: dateKey,
-      timings: {
-        fajr: `${String(times.fajr.getHours()).padStart(2, '0')}:${String(times.fajr.getMinutes()).padStart(2, '0')}`,
-        sunrise: `${String(times.sunrise.getHours()).padStart(2, '0')}:${String(times.sunrise.getMinutes()).padStart(2, '0')}`,
-        dhuhr: `${String(times.dhuhr.getHours()).padStart(2, '0')}:${String(times.dhuhr.getMinutes()).padStart(2, '0')}`,
-        asr: `${String(times.asr.getHours()).padStart(2, '0')}:${String(times.asr.getMinutes()).padStart(2, '0')}`,
-        maghrib: `${String(times.maghrib.getHours()).padStart(2, '0')}:${String(times.maghrib.getMinutes()).padStart(2, '0')}`,
-        isha: `${String(times.isha.getHours()).padStart(2, '0')}:${String(times.isha.getMinutes()).padStart(2, '0')}`,
-      },
-      timezone,
-      fetchedAt: Date.now(),
-      source: 'fallback',
-      validated: false,
-    };
-    const cityCache = cache.cities[cityKey] || { updatedAt: 0, days: {} };
-    if (!cityCache.days[dateKey]) {
-      cityCache.days[dateKey] = fallbackDay;
-      cityCache.updatedAt = Date.now();
-      cache.cities[cityKey] = cityCache;
-      await saveCache(cache);
-    }
-  }
+  const times = calculateWithAdhan(location, date);
 
   const normalizedTimes = applyAfghanMaghribOffset(times, cityKey);
   return {
