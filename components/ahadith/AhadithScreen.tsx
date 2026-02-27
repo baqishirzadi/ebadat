@@ -45,6 +45,7 @@ export function AhadithScreen() {
   const { theme } = useApp();
   const insets = useSafeAreaInsets();
   const {
+    hadiths,
     dailySelection,
     section,
     setSection,
@@ -160,6 +161,7 @@ export function AhadithScreen() {
       {section === 'topics' ? (
         <View style={styles.sectionContent}>
           <TopicBrowser
+            allHadiths={hadiths}
             topics={topics}
             selectedTopic={selectedTopic}
             topicHadiths={topicHadiths}

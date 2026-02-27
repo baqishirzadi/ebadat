@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import {
   Animated,
+  Easing,
   PanResponder,
   Pressable,
   StyleSheet,
@@ -38,17 +39,35 @@ export function DailyHadithCard({
 }: DailyHadithCardProps) {
   const { theme, themeMode, state } = useApp();
   const opacity = useRef(new Animated.Value(1)).current;
+  const translateX = useRef(new Animated.Value(0)).current;
+  const swipeDirectionRef = useRef<0 | 1 | -1>(0);
 
   const gradient = useMemo(() => deriveDailyCardGradient(theme, themeMode), [theme, themeMode]);
 
   useEffect(() => {
-    opacity.setValue(0.1);
-    Animated.timing(opacity, {
-      toValue: 1,
-      duration: 260,
-      useNativeDriver: true,
-    }).start();
-  }, [selection.hadith.id, opacity]);
+    const direction = swipeDirectionRef.current;
+    const offset = direction === 0 ? 0 : direction * 24;
+
+    opacity.setValue(direction === 0 ? 1 : 0.88);
+    translateX.setValue(offset);
+
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: direction === 0 ? 140 : 240,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateX, {
+        toValue: 0,
+        duration: direction === 0 ? 140 : 240,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      swipeDirectionRef.current = 0;
+    });
+  }, [selection.hadith.id, opacity, translateX]);
 
   const panResponder = useMemo(
     () =>
@@ -57,10 +76,12 @@ export function DailyHadithCard({
           Math.abs(gestureState.dx) > 18 && Math.abs(gestureState.dy) < 16,
         onPanResponderRelease: (_, gestureState) => {
           if (gestureState.dx < -44) {
+            swipeDirectionRef.current = 1;
             onSwipeNext();
             return;
           }
           if (gestureState.dx > 44) {
+            swipeDirectionRef.current = -1;
             onSwipePrevious();
           }
         },
@@ -71,7 +92,7 @@ export function DailyHadithCard({
   const hadith = selection.hadith;
 
   return (
-    <Animated.View style={{ opacity }} {...panResponder.panHandlers}>
+    <Animated.View style={{ opacity, transform: [{ translateX }] }} {...panResponder.panHandlers}>
       <Pressable
         onLongPress={() => onToggleBookmark(hadith.id)}
         delayLongPress={280}
@@ -90,6 +111,7 @@ export function DailyHadithCard({
         >
           <LinearGradient
             colors={gradient}
+            locations={[0, 0.58, 1]}
             style={[
               styles.topPanel,
               {

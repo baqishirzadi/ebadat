@@ -36,9 +36,9 @@ function tone(hex: string, amount: number): string {
 
 export function deriveDailyCardGradient(theme: ThemeColors, themeMode: ThemeMode): [string, string, string] {
   const isDark = themeMode === 'night';
-  const start = isDark ? tone(theme.primary, -26) : tone(theme.primary, -12);
-  const middle = theme.primary;
-  const end = isDark ? tone(theme.surface, -10) : tone(theme.surface, 8);
+  const start = isDark ? tone(theme.primary, -24) : tone(theme.primary, -16);
+  const middle = isDark ? tone(theme.primary, -10) : tone(theme.primary, -4);
+  const end = isDark ? tone(theme.primary, 4) : tone(theme.primary, 14);
   return [start, middle, end];
 }
 

@@ -268,6 +268,7 @@ const styles = StyleSheet.create({
   },
   timeControlRow: {
     flexDirection: 'row',
+    direction: 'ltr',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 16,

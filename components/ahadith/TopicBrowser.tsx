@@ -8,6 +8,7 @@ import CenteredText from '@/components/CenteredText';
 import { getDariFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 
 interface TopicBrowserProps {
+  allHadiths: Hadith[];
   topics: string[];
   selectedTopic: string | null;
   topicHadiths: Hadith[];
@@ -16,6 +17,7 @@ interface TopicBrowserProps {
 }
 
 export function TopicBrowser({
+  allHadiths,
   topics,
   selectedTopic,
   topicHadiths,
@@ -25,9 +27,16 @@ export function TopicBrowser({
   const { theme, state } = useApp();
 
   const title = useMemo(
-    () => (selectedTopic ? `موضوع: ${getTopicLabelFa(selectedTopic)}` : 'یک موضوع انتخاب کنید'),
+    () => (selectedTopic ? `موضوع: ${getTopicLabelFa(selectedTopic)}` : 'موضوع: همه'),
     [selectedTopic]
   );
+
+  const allHadithsNewestFirst = useMemo(
+    () => [...allHadiths].sort((a, b) => b.id - a.id),
+    [allHadiths]
+  );
+
+  const visibleHadiths = selectedTopic ? topicHadiths : allHadithsNewestFirst;
 
   return (
     <View style={styles.container}>
@@ -72,7 +81,7 @@ export function TopicBrowser({
       <CenteredText style={[styles.sectionTitle, { color: theme.textPrimary }]}>{title}</CenteredText>
 
       <FlatList
-        data={selectedTopic ? topicHadiths : []}
+        data={visibleHadiths}
         keyExtractor={(item) => String(item.id)}
         ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
         renderItem={({ item }) => (
@@ -114,7 +123,9 @@ export function TopicBrowser({
           </Pressable>
         )}
         ListEmptyComponent={
-          <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>برای دیدن احادیث، یک موضوع انتخاب کنید</CenteredText>
+          <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>
+            {selectedTopic ? 'در این موضوع حدیثی یافت نشد' : 'حدیثی برای نمایش موجود نیست'}
+          </CenteredText>
         }
         contentContainerStyle={styles.listContent}
       />

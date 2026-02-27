@@ -51,6 +51,8 @@ export function HadithSectionTabs({ activeSection, onChange }: HadithSectionTabs
             accessibilityLabel={SECTION_LABELS[section]}
           >
             <CenteredText
+              numberOfLines={1}
+              ellipsizeMode="clip"
               style={[
                 styles.tabText,
                 {
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     borderWidth: 1,
     padding: 6,
-    gap: 6,
+    gap: 5,
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
@@ -86,11 +88,11 @@ const styles = StyleSheet.create({
     minHeight: 40,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 8,
+    paddingHorizontal: 6,
   },
   tabText: {
     fontFamily: 'Vazirmatn',
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
   },
 });
