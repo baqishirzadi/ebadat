@@ -141,6 +141,7 @@ interface PrayerScheduleAudit {
   scheduledAdhanCount: number;
   duplicateCount: number;
   maxDriftSeconds: number;
+  nextTriggerByPrayer: Partial<Record<PrayerName, number>>;
 }
 
 const DEFAULT_SETTINGS: PrayerSettings = {
@@ -668,12 +669,13 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
       console.error('Failed to load prayer times (agent):', error);
-      const fallback = calculatePrayerTimes(
+      const fallbackBase = calculatePrayerTimes(
         new Date(),
         location,
         settings.calculationMethod,
         settings.asrMethod
       );
+      const fallback = applyAfghanMaghribOffset(fallbackBase, toCityKey(selectedCity));
       dispatch({ type: 'SET_PRAYER_TIMES', payload: fallback });
     }
   }
@@ -834,6 +836,37 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     const { latitude, longitude } = state.location;
     return `gps:${latitude.toFixed(3)},${longitude.toFixed(3)}`;
   }, [state.location, state.settings.selectedCity]);
+
+  const isAfghanistanCityKey = useCallback((cityKey?: string | null) => {
+    return Boolean(cityKey && cityKey.startsWith('afghanistan_'));
+  }, []);
+
+  const applyAfghanMaghribOffset = useCallback(
+    (times: PrayerTimes, cityKey?: string | null): PrayerTimes => {
+      if (!isAfghanistanCityKey(cityKey)) {
+        return times;
+      }
+
+      const maghrib = new Date(times.maghrib.getTime() + 4 * 60 * 1000);
+      const nextDayFajr = new Date(times.fajr.getTime() + 24 * 60 * 60 * 1000);
+      const nightDurationMs = nextDayFajr.getTime() - maghrib.getTime();
+
+      if (nightDurationMs <= 0) {
+        return {
+          ...times,
+          maghrib,
+        };
+      }
+
+      return {
+        ...times,
+        maghrib,
+        midnight: new Date(maghrib.getTime() + nightDurationMs / 2),
+        qiyam: new Date(nextDayFajr.getTime() - nightDurationMs / 3),
+      };
+    },
+    [isAfghanistanCityKey]
+  );
 
   const cancelScheduledNotificationsByPredicate = useCallback(
     async (
@@ -1254,21 +1287,23 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         dayTimes = result.times;
         dayTimeZone = result.timezone || dayTimeZone;
       } catch {
-        dayTimes = calculatePrayerTimes(
+        const fallbackTimes = calculatePrayerTimes(
           targetDate,
           state.location,
           state.settings.calculationMethod,
           state.settings.asrMethod
         );
+        dayTimes = applyAfghanMaghribOffset(fallbackTimes, cityKey);
       }
 
       if (!areTimesOrdered(dayTimes)) {
-        dayTimes = calculatePrayerTimes(
+        const fallbackTimes = calculatePrayerTimes(
           targetDate,
           state.location,
           state.settings.calculationMethod,
           state.settings.asrMethod
         );
+        dayTimes = applyAfghanMaghribOffset(fallbackTimes, cityKey);
       }
 
       const weekdayAnchor = buildDateFromLocalTimeInTimezone(targetDate, '12:00', dayTimeZone);
@@ -1354,12 +1389,29 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     return expected;
   }, [
     areTimesOrdered,
+    applyAfghanMaghribOffset,
     buildDateFromLocalTimeInTimezone,
     getDateKey,
     isFridayInTimezone,
     isValidDate,
     state,
   ]);
+
+  const buildNextTriggerByPrayer = useCallback(
+    (items: ExpectedPrayerNotification[]): Partial<Record<PrayerName, number>> => {
+      const nextTriggerByPrayer: Partial<Record<PrayerName, number>> = {};
+      for (const item of items) {
+        if (item.type !== 'adhan') continue;
+        const triggerMs = item.triggerDate.getTime();
+        const existing = nextTriggerByPrayer[item.prayerKey];
+        if (!existing || triggerMs < existing) {
+          nextTriggerByPrayer[item.prayerKey] = triggerMs;
+        }
+      }
+      return nextTriggerByPrayer;
+    },
+    []
+  );
 
   const runPrayerScheduleNow = useCallback(async (reason: string, runId: number) => {
     const NotificationsModule = await loadNotificationsIfAvailable();
@@ -1394,6 +1446,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           scheduledAdhanCount: 0,
           duplicateCount: 0,
           maxDriftSeconds: 0,
+          nextTriggerByPrayer: {},
         },
       });
       dispatch({
@@ -1414,10 +1467,37 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     const exactStatus = await checkExactAlarmCapability();
     dispatch({ type: 'SET_EXACT_ALARM_STATUS', payload: exactStatus });
     if (Platform.OS === 'android' && exactStatus === 'missing') {
+      const scheduledAll = await NotificationsModule.getAllScheduledNotificationsAsync();
+      const prayerScheduled = scheduledAll.filter(isPrayerRelatedNotification);
+      await Promise.allSettled(
+        prayerScheduled
+          .map((notification) => String((notification as any)?.identifier || ''))
+          .filter((id) => id.length > 0)
+          .map((id) => NotificationsModule.cancelScheduledNotificationAsync(id))
+      );
+      dispatch({
+        type: 'SET_SCHEDULE_AUDIT',
+        payload: {
+          generatedAt: Date.now(),
+          reason,
+          expectedCount: 0,
+          expectedAdhanCount: 0,
+          scheduledCount: 0,
+          scheduledAdhanCount: 0,
+          duplicateCount: 0,
+          maxDriftSeconds: 0,
+          nextTriggerByPrayer: {},
+        },
+      });
       dispatch({
         type: 'SET_ERROR',
-        payload: 'دسترسی «آلارم دقیق» غیرفعال است؛ ممکن است اعلان‌ها با تاخیر برسند.',
+        payload: 'برای اذان دقیق، دسترسی «آلارم دقیق» را فعال کنید. تا زمان فعال‌سازی، اعلان اذان زمان‌بندی نمی‌شود.',
       });
+      lastScheduleRef.current = {
+        dateKey: getDateKey(new Date()),
+        locationKey: getLocationKey(),
+      };
+      return;
     }
 
     const currentStatus = await checkNotificationPermission();
@@ -1469,6 +1549,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           scheduledAdhanCount: 0,
           duplicateCount: 0,
           maxDriftSeconds: 0,
+          nextTriggerByPrayer: {},
         },
       });
       lastScheduleRef.current = {
@@ -1586,6 +1667,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         scheduledAdhanCount,
         duplicateCount,
         maxDriftSeconds,
+        nextTriggerByPrayer: buildNextTriggerByPrayer(expected),
       },
     });
 
@@ -1597,6 +1679,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       dispatch({ type: 'SET_ERROR', payload: null });
     }
   }, [
+    buildNextTriggerByPrayer,
     buildExpectedPrayerNotifications,
     checkExactAlarmCapability,
     checkNotificationPermission,
