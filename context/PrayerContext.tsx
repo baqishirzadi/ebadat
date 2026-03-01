@@ -135,6 +135,7 @@ type ExactAlarmStatus = 'granted' | 'missing' | 'unknown' | 'not_applicable';
 interface PrayerScheduleAudit {
   generatedAt: number;
   reason: string;
+  scheduleMode: 'exact' | 'fallback';
   expectedCount: number;
   expectedAdhanCount: number;
   scheduledCount: number;
@@ -1440,6 +1441,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         payload: {
           generatedAt: Date.now(),
           reason,
+          scheduleMode: 'exact',
           expectedCount: 0,
           expectedAdhanCount: 0,
           scheduledCount: 0,
@@ -1466,39 +1468,8 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
 
     const exactStatus = await checkExactAlarmCapability();
     dispatch({ type: 'SET_EXACT_ALARM_STATUS', payload: exactStatus });
-    if (Platform.OS === 'android' && exactStatus === 'missing') {
-      const scheduledAll = await NotificationsModule.getAllScheduledNotificationsAsync();
-      const prayerScheduled = scheduledAll.filter(isPrayerRelatedNotification);
-      await Promise.allSettled(
-        prayerScheduled
-          .map((notification) => String((notification as any)?.identifier || ''))
-          .filter((id) => id.length > 0)
-          .map((id) => NotificationsModule.cancelScheduledNotificationAsync(id))
-      );
-      dispatch({
-        type: 'SET_SCHEDULE_AUDIT',
-        payload: {
-          generatedAt: Date.now(),
-          reason,
-          expectedCount: 0,
-          expectedAdhanCount: 0,
-          scheduledCount: 0,
-          scheduledAdhanCount: 0,
-          duplicateCount: 0,
-          maxDriftSeconds: 0,
-          nextTriggerByPrayer: {},
-        },
-      });
-      dispatch({
-        type: 'SET_ERROR',
-        payload: 'برای اذان دقیق، دسترسی «آلارم دقیق» را فعال کنید. تا زمان فعال‌سازی، اعلان اذان زمان‌بندی نمی‌شود.',
-      });
-      lastScheduleRef.current = {
-        dateKey: getDateKey(new Date()),
-        locationKey: getLocationKey(),
-      };
-      return;
-    }
+    const isFallbackScheduleMode = Platform.OS === 'android' && exactStatus === 'missing';
+    const scheduleMode: PrayerScheduleAudit['scheduleMode'] = isFallbackScheduleMode ? 'fallback' : 'exact';
 
     const currentStatus = await checkNotificationPermission();
     dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: currentStatus });
@@ -1543,6 +1514,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         payload: {
           generatedAt: Date.now(),
           reason,
+          scheduleMode,
           expectedCount: 0,
           expectedAdhanCount: 0,
           scheduledCount: 0,
@@ -1661,6 +1633,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       payload: {
         generatedAt: Date.now(),
         reason,
+        scheduleMode,
         expectedCount: expected.length,
         expectedAdhanCount: expected.filter((item) => item.type === 'adhan').length,
         scheduledCount: afterPrayer.length,
@@ -1675,9 +1648,12 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       dateKey: getDateKey(new Date()),
       locationKey: getLocationKey(),
     };
-    if (!(Platform.OS === 'android' && exactStatus === 'missing')) {
-      dispatch({ type: 'SET_ERROR', payload: null });
-    }
+    dispatch({
+      type: 'SET_ERROR',
+      payload: isFallbackScheduleMode
+        ? 'آلارم دقیق غیرفعال است؛ اعلان‌های اذان فعال‌اند اما ممکن است کمی تأخیر داشته باشند.'
+        : null,
+    });
   }, [
     buildNextTriggerByPrayer,
     buildExpectedPrayerNotifications,

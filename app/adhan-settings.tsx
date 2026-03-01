@@ -53,6 +53,7 @@ export default function AdhanSettingsScreen() {
       : state.exactAlarmStatus === 'unknown'
         ? 'نامشخص'
         : 'نیاز نیست';
+  const scheduleModeLabel = state.scheduleAudit?.scheduleMode === 'fallback' ? 'غیردقیق (جایگزین)' : 'دقیق';
 
   // Toggle master notifications
   const handleMasterToggle = useCallback(async (value: boolean) => {
@@ -295,6 +296,9 @@ export default function AdhanSettingsScreen() {
               <MaterialIcons name="notifications-active" size={20} color="#fff" />
               <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
             </Pressable>
+            <Text style={[styles.exactAlarmHint, { color: theme.textSecondary }]}>
+              این تست فقط رسیدن اعلان و صدا را می‌سنجد؛ دقت زمانی روزانه را تضمین نمی‌کند.
+            </Text>
           </View>
         )}
 
@@ -315,6 +319,13 @@ export default function AdhanSettingsScreen() {
                 ]}
               >
                 {exactAlarmStatusLabel}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>حالت زمان‌بندی:</Text>
+              <Text style={[styles.auditValue, { color: theme.text }]}>
+                {state.scheduleAudit ? scheduleModeLabel : '---'}
               </Text>
             </View>
 
@@ -651,6 +662,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'Vazirmatn',
     fontWeight: '600',
+  },
+  exactAlarmHint: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    lineHeight: 20,
+    marginTop: Spacing.sm,
   },
   auditCard: {
     marginHorizontal: Spacing.md,
