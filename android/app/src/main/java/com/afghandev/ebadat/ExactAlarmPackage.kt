@@ -7,7 +7,10 @@ import com.facebook.react.uimanager.ViewManager
 
 class ExactAlarmPackage : ReactPackage {
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(ExactAlarmModule(reactContext))
+    return listOf(
+      ExactAlarmModule(reactContext),
+      AdhanAlarmSchedulerModule(reactContext),
+    )
   }
 
   override fun createViewManagers(

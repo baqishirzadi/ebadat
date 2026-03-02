@@ -54,6 +54,9 @@ export default function AdhanSettingsScreen() {
         ? 'نامشخص'
         : 'نیاز نیست';
   const scheduleModeLabel = state.scheduleAudit?.scheduleMode === 'fallback' ? 'غیردقیق (جایگزین)' : 'دقیق';
+  const schedulerBackendLabel = state.scheduleAudit?.schedulerBackend === 'native_exact_android'
+    ? 'هسته بومی دقیق (اندروید)'
+    : 'هسته اکسپو';
 
   // Toggle master notifications
   const handleMasterToggle = useCallback(async (value: boolean) => {
@@ -330,6 +333,13 @@ export default function AdhanSettingsScreen() {
             </View>
 
             <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>هسته زمان‌بندی:</Text>
+              <Text style={[styles.auditValue, { color: theme.text }]}>
+                {state.scheduleAudit ? schedulerBackendLabel : '---'}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
               <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>انتظار / زمان‌بندی (همه):</Text>
               <Text style={[styles.auditValue, { color: theme.text }]}>
                 {state.scheduleAudit ? `${state.scheduleAudit.expectedCount} / ${state.scheduleAudit.scheduledCount}` : '---'}
@@ -347,6 +357,15 @@ export default function AdhanSettingsScreen() {
               <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>تکراری:</Text>
               <Text style={[styles.auditValue, { color: theme.text }]}>
                 {state.scheduleAudit ? String(state.scheduleAudit.duplicateCount) : '---'}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>بومی دقیق (اذان):</Text>
+              <Text style={[styles.auditValue, { color: theme.text }]}>
+                {state.scheduleAudit
+                  ? `${state.scheduleAudit.nativeExactScheduledCount} (اختلاف: ${state.scheduleAudit.nativeExactMismatchCount})`
+                  : '---'}
               </Text>
             </View>
 
