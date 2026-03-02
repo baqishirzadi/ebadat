@@ -139,20 +139,57 @@ interface PrayerSettings {
 
 type ExactAlarmStatus = 'granted' | 'missing' | 'unknown' | 'not_applicable';
 
+type PrayerScheduleBlocker =
+  | 'notifications_module_unavailable'
+  | 'prayer_times_unavailable'
+  | 'city_unresolved'
+  | 'notification_blocked'
+  | 'notification_denied'
+  | 'master_disabled'
+  | 'native_module_unavailable'
+  | 'exact_alarm_missing'
+  | 'exact_alarm_unknown';
+
+interface ExactAlarmDebugState {
+  sdkInt: number;
+  canScheduleExactAlarms: boolean;
+  notificationsEnabled: boolean;
+  nativeModuleAvailable: boolean;
+  exactAlarmStatus: ExactAlarmStatus;
+}
+
+const PRAYER_BLOCKER_MESSAGES: Record<PrayerScheduleBlocker, string> = {
+  notifications_module_unavailable: 'هسته اعلان در دسترس نیست. لطفاً اپ را دوباره نصب کنید.',
+  prayer_times_unavailable: 'اوقات شرعی هنوز آماده نیست؛ لطفاً چند لحظه بعد دوباره بازبینی کنید.',
+  city_unresolved: 'برای فعال شدن اذان، اول شهر را انتخاب یا موقعیت را فعال کنید.',
+  notification_blocked: 'اعلان‌ها بلاک شده‌اند. لطفاً در تنظیمات دستگاه اجازه دهید.',
+  notification_denied: 'اجازه اعلان داده نشد. لطفاً در تنظیمات دستگاه اجازه دهید.',
+  master_disabled: 'یادآوری اذان غیرفعال است.',
+  native_module_unavailable: 'هسته زمان‌بندی دقیق اذان در دسترس نیست. لطفاً اپ را دوباره نصب کنید.',
+  exact_alarm_missing:
+    'آلارم دقیق غیرفعال است؛ برای اذان دقیق، لطفاً دسترسی «ساعت و یادآوری» را فعال کنید.',
+  exact_alarm_unknown:
+    'وضعیت آلارم دقیق نامشخص است. لطفاً یک‌بار تنظیمات را باز کرده و دوباره زمان‌بندی کنید.',
+};
+
 interface PrayerScheduleAudit {
   generatedAt: number;
   reason: string;
   scheduleMode: 'exact' | 'fallback';
   schedulerBackend: 'native_exact_android' | 'expo';
+  blockers: PrayerScheduleBlocker[];
   expectedCount: number;
   expectedAdhanCount: number;
   scheduledCount: number;
   scheduledAdhanCount: number;
+  scheduledAdhanNativeCount: number;
+  scheduledReminderExpoCount: number;
   nativeExactScheduledCount: number;
   nativeExactMismatchCount: number;
   duplicateCount: number;
   maxDriftSeconds: number;
   nextTriggerByPrayer: Partial<Record<PrayerName, number>>;
+  exactDebugState?: ExactAlarmDebugState | null;
 }
 
 const DEFAULT_SETTINGS: PrayerSettings = {
@@ -299,12 +336,20 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   const scheduleJummahNotificationsRef = useRef<() => Promise<void>>(async () => { });
   const adhanChannelMigrationDoneRef = useRef(false);
   const lastScheduleRef = useRef<{ dateKey: string; locationKey: string } | null>(null);
+  const lastKnownExactStatusRef = useRef<ExactAlarmStatus>(
+    Platform.OS === 'android' ? 'unknown' : 'not_applicable'
+  );
 
   const getExactAlarmModule = useCallback(() => {
     const module = (NativeModules as {
       ExactAlarmModule?: {
         canScheduleExactAlarms?: () => Promise<boolean>;
         openExactAlarmSettings?: () => Promise<boolean>;
+        getExactAlarmDebugState?: () => Promise<{
+          sdkInt?: number;
+          canScheduleExactAlarms?: boolean;
+          notificationsEnabled?: boolean;
+        }>;
       };
     }).ExactAlarmModule;
     return module || null;
@@ -333,11 +378,13 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     const run = async () => {
       const status = await checkExactAlarmCapability();
       if (isMounted) {
+        lastKnownExactStatusRef.current = status;
         dispatch({ type: 'SET_EXACT_ALARM_STATUS', payload: status });
       }
     };
     run().catch(() => {
       if (isMounted) {
+        lastKnownExactStatusRef.current = Platform.OS === 'android' ? 'unknown' : 'not_applicable';
         dispatch({ type: 'SET_EXACT_ALARM_STATUS', payload: Platform.OS === 'android' ? 'unknown' : 'not_applicable' });
       }
     });
@@ -345,6 +392,52 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
       isMounted = false;
     };
   }, [checkExactAlarmCapability]);
+
+  const getExactAlarmDebugState = useCallback(
+    async (
+      exactStatus: ExactAlarmStatus,
+      notificationStatus: PrayerState['notificationPermission'],
+      nativeModuleAvailable: boolean
+    ): Promise<ExactAlarmDebugState | null> => {
+      if (Platform.OS !== 'android') return null;
+      const fallback: ExactAlarmDebugState = {
+        sdkInt: typeof Platform.Version === 'number' ? Platform.Version : 0,
+        canScheduleExactAlarms:
+          exactStatus === 'granted' ||
+          (typeof Platform.Version === 'number' && Platform.Version < 31),
+        notificationsEnabled: notificationStatus === 'granted',
+        nativeModuleAvailable,
+        exactAlarmStatus: exactStatus,
+      };
+
+      try {
+        const module = getExactAlarmModule();
+        if (!module?.getExactAlarmDebugState) {
+          return fallback;
+        }
+        const nativeState = await module.getExactAlarmDebugState();
+        return {
+          sdkInt:
+            typeof nativeState?.sdkInt === 'number'
+              ? nativeState.sdkInt
+              : fallback.sdkInt,
+          canScheduleExactAlarms:
+            typeof nativeState?.canScheduleExactAlarms === 'boolean'
+              ? nativeState.canScheduleExactAlarms
+              : fallback.canScheduleExactAlarms,
+          notificationsEnabled:
+            typeof nativeState?.notificationsEnabled === 'boolean'
+              ? nativeState.notificationsEnabled
+              : fallback.notificationsEnabled,
+          nativeModuleAvailable,
+          exactAlarmStatus: exactStatus,
+        };
+      } catch {
+        return fallback;
+      }
+    },
+    [getExactAlarmModule]
+  );
 
   // Update prayer times when location or settings change
   useEffect(() => {
@@ -939,6 +1032,21 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
 
     const subscription = AppState.addEventListener('change', async (stateStatus) => {
       if (stateStatus !== 'active') return;
+      const previousExact = lastKnownExactStatusRef.current;
+      const latestExact = await checkExactAlarmCapability();
+      lastKnownExactStatusRef.current = latestExact;
+      dispatch({ type: 'SET_EXACT_ALARM_STATUS', payload: latestExact });
+      const exactRecovered =
+        (previousExact === 'missing' || previousExact === 'unknown') &&
+        latestExact === 'granted';
+      if (exactRecovered) {
+        try {
+          await requestPrayerScheduleRef.current('exact-granted');
+        } catch (error) {
+          console.warn('Failed to reschedule after exact-alarm grant:', error);
+        }
+        return;
+      }
       const currentKey = getDateKey(new Date());
       const locationKey = getLocationKey();
       const last = lastScheduleRef.current;
@@ -956,7 +1064,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       if (midnightTimeout) clearTimeout(midnightTimeout);
       subscription.remove();
     };
-  }, [getDateKey, getLocationKey, refreshPrayerTimes]);
+  }, [checkExactAlarmCapability, getDateKey, getLocationKey, refreshPrayerTimes]);
 
   const setCity = useCallback(async (cityKey: string) => {
     const location = AFGHAN_CITIES[cityKey];
@@ -1436,37 +1544,87 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   );
 
   const runPrayerScheduleNow = useCallback(async (reason: string, runId: number) => {
-    const NotificationsModule = await loadNotificationsIfAvailable();
-    if (!NotificationsModule) {
-      console.log('Skipping notification scheduling: Expo Go, web platform or Notifications unavailable');
-      return;
-    }
-
-    if (!state.prayerTimes) {
-      console.log('Skipping notification scheduling: prayer times not available');
-      return;
-    }
-
     const useNativeExactAdhan = Platform.OS === 'android' && canUseNativeAdhanScheduler();
     const schedulerBackend: PrayerScheduleAudit['schedulerBackend'] = useNativeExactAdhan
       ? 'native_exact_android'
       : 'expo';
 
-    const buildZeroAudit = (errorMode: PrayerScheduleAudit['scheduleMode']): PrayerScheduleAudit => ({
+    const buildZeroAudit = (
+      errorMode: PrayerScheduleAudit['scheduleMode'],
+      blockers: PrayerScheduleBlocker[],
+      exactDebugState: ExactAlarmDebugState | null = null
+    ): PrayerScheduleAudit => ({
       generatedAt: Date.now(),
       reason,
       scheduleMode: errorMode,
       schedulerBackend,
+      blockers,
       expectedCount: 0,
       expectedAdhanCount: 0,
       scheduledCount: 0,
       scheduledAdhanCount: 0,
+      scheduledAdhanNativeCount: 0,
+      scheduledReminderExpoCount: 0,
       nativeExactScheduledCount: 0,
       nativeExactMismatchCount: 0,
       duplicateCount: 0,
       maxDriftSeconds: 0,
       nextTriggerByPrayer: {},
+      exactDebugState,
     });
+
+    const applyBlockingResult = async (
+      blockers: PrayerScheduleBlocker[],
+      messageOverride?: string | null,
+      options?: {
+        cancelExpoIds?: string[];
+        cancelNative?: boolean;
+        exactDebugState?: ExactAlarmDebugState | null;
+      }
+    ) => {
+      const NotificationsModule = await loadNotificationsIfAvailable();
+      if (options?.cancelExpoIds?.length && NotificationsModule) {
+        await Promise.allSettled(
+          options.cancelExpoIds.map((id) => NotificationsModule.cancelScheduledNotificationAsync(id))
+        );
+      }
+      if (options?.cancelNative && useNativeExactAdhan) {
+        const currentNative = await getNativeExactAdhanAlarms();
+        if (currentNative.length > 0) {
+          await cancelNativeExactAdhanAlarms(currentNative.map((alarm) => alarm.id));
+        }
+      }
+      dispatch({
+        type: 'SET_SCHEDULE_AUDIT',
+        payload: buildZeroAudit('exact', blockers, options?.exactDebugState ?? null),
+      });
+      dispatch({
+        type: 'SET_ERROR',
+        payload:
+          messageOverride === undefined
+            ? blockers.length > 0
+              ? PRAYER_BLOCKER_MESSAGES[blockers[0]]
+              : null
+            : messageOverride,
+      });
+      lastScheduleRef.current = {
+        dateKey: getDateKey(new Date()),
+        locationKey: getLocationKey(),
+      };
+    };
+
+    const NotificationsModule = await loadNotificationsIfAvailable();
+    if (!NotificationsModule) {
+      console.log('Skipping notification scheduling: Expo Go, web platform or Notifications unavailable');
+      await applyBlockingResult(['notifications_module_unavailable']);
+      return;
+    }
+
+    if (!state.prayerTimes) {
+      console.log('Skipping notification scheduling: prayer times not available');
+      await applyBlockingResult(['prayer_times_unavailable'], null);
+      return;
+    }
 
     const cancelAllPrayerFromExpo = async (notifications: any[]) => {
       await Promise.allSettled(
@@ -1490,18 +1648,10 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       const prayerScheduled = scheduledAll.filter(isPrayerRelatedNotification);
       await cancelAllPrayerFromExpo(prayerScheduled);
       await cancelAllAdhanFromNative();
-      dispatch({
-        type: 'SET_SCHEDULE_AUDIT',
-        payload: buildZeroAudit('exact'),
-      });
-      dispatch({
-        type: 'SET_ERROR',
-        payload: 'برای فعال شدن اذان، اول شهر را انتخاب یا موقعیت را فعال کنید.',
-      });
-      lastScheduleRef.current = {
-        dateKey: getDateKey(new Date()),
-        locationKey: getLocationKey(),
-      };
+      await applyBlockingResult(
+        ['city_unresolved'],
+        PRAYER_BLOCKER_MESSAGES.city_unresolved
+      );
       return;
     }
 
@@ -1510,6 +1660,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     }
 
     const exactStatus = await checkExactAlarmCapability();
+    lastKnownExactStatusRef.current = exactStatus;
     dispatch({ type: 'SET_EXACT_ALARM_STATUS', payload: exactStatus });
     const scheduleMode: PrayerScheduleAudit['scheduleMode'] = 'exact';
 
@@ -1517,10 +1668,12 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: currentStatus });
 
     if (currentStatus === 'blocked') {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: 'اعلان‌ها بلاک شده‌اند. لطفاً در تنظیمات دستگاه اجازه دهید.',
-      });
+      const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
+      await applyBlockingResult(
+        ['notification_blocked'],
+        PRAYER_BLOCKER_MESSAGES.notification_blocked,
+        { exactDebugState }
+      );
       return;
     }
 
@@ -1530,10 +1683,12 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         status === 'granted' ? 'granted' : status === 'denied' ? 'denied' : 'undetermined';
       dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: newStatus });
       if (status !== 'granted') {
-        dispatch({
-          type: 'SET_ERROR',
-          payload: 'اجازه اعلان داده نشد. لطفاً در تنظیمات دستگاه اجازه دهید.',
-        });
+        const exactDebugState = await getExactAlarmDebugState(exactStatus, newStatus, useNativeExactAdhan);
+        await applyBlockingResult(
+          ['notification_denied'],
+          PRAYER_BLOCKER_MESSAGES.notification_denied,
+          { exactDebugState }
+        );
         return;
       }
     }
@@ -1544,52 +1699,33 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     if (!state.adhanPreferences.masterEnabled) {
       await cancelAllPrayerFromExpo(prayerScheduled);
       await cancelAllAdhanFromNative();
-      dispatch({
-        type: 'SET_SCHEDULE_AUDIT',
-        payload: buildZeroAudit(scheduleMode),
-      });
-      lastScheduleRef.current = {
-        dateKey: getDateKey(new Date()),
-        locationKey: getLocationKey(),
-      };
-      dispatch({ type: 'SET_ERROR', payload: null });
+      const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
+      await applyBlockingResult(['master_disabled'], null, { exactDebugState });
       return;
     }
 
     if (Platform.OS === 'android' && !useNativeExactAdhan) {
       await cancelAllPrayerFromExpo(prayerScheduled);
-      dispatch({
-        type: 'SET_SCHEDULE_AUDIT',
-        payload: buildZeroAudit(scheduleMode),
-      });
-      dispatch({
-        type: 'SET_ERROR',
-        payload: 'هسته زمان‌بندی دقیق اذان در دسترس نیست. لطفاً اپ را دوباره نصب کنید.',
-      });
-      lastScheduleRef.current = {
-        dateKey: getDateKey(new Date()),
-        locationKey: getLocationKey(),
-      };
+      const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
+      await applyBlockingResult(
+        ['native_module_unavailable'],
+        PRAYER_BLOCKER_MESSAGES.native_module_unavailable,
+        { exactDebugState }
+      );
       return;
     }
 
-    if (Platform.OS === 'android' && exactStatus === 'missing') {
+    if (Platform.OS === 'android' && (exactStatus === 'missing' || exactStatus === 'unknown')) {
       await cancelAllPrayerFromExpo(prayerScheduled);
       await cancelAllAdhanFromNative();
-      dispatch({
-        type: 'SET_SCHEDULE_AUDIT',
-        payload: buildZeroAudit(scheduleMode),
-      });
-      dispatch({
-        type: 'SET_ERROR',
-        payload: 'آلارم دقیق غیرفعال است؛ برای اذان دقیق، لطفاً دسترسی «ساعت و یادآوری» را فعال کنید.',
-      });
-      lastScheduleRef.current = {
-        dateKey: getDateKey(new Date()),
-        locationKey: getLocationKey(),
-      };
+      const blocker: PrayerScheduleBlocker =
+        exactStatus === 'missing' ? 'exact_alarm_missing' : 'exact_alarm_unknown';
+      const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
+      await applyBlockingResult([blocker], PRAYER_BLOCKER_MESSAGES[blocker], { exactDebugState });
       return;
     }
+
+    const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
 
     const now = new Date();
     const expected = await buildExpectedPrayerNotifications(now);
@@ -1759,9 +1895,12 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     const scheduledAdhanCount = useNativeExactAdhan
       ? nativeExactScheduledCount
       : afterPrayerExpo.filter((notification) => isAdhanScheduledNotification(notification)).length;
+    const scheduledReminderExpoCount = afterPrayerExpo.filter(
+      (notification) => !isAdhanScheduledNotification(notification)
+    ).length;
+    const scheduledAdhanNativeCount = useNativeExactAdhan ? nativeExactScheduledCount : 0;
     const scheduledCount = useNativeExactAdhan
-      ? afterPrayerExpo.filter((notification) => !isAdhanScheduledNotification(notification)).length +
-      scheduledAdhanCount
+      ? scheduledReminderExpoCount + scheduledAdhanCount
       : afterPrayerExpo.length;
 
     dispatch({
@@ -1771,15 +1910,19 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         reason,
         scheduleMode,
         schedulerBackend,
+        blockers: [],
         expectedCount: expected.length,
         expectedAdhanCount: expectedAdhan.length,
         scheduledCount,
         scheduledAdhanCount,
+        scheduledAdhanNativeCount,
+        scheduledReminderExpoCount,
         nativeExactScheduledCount,
         nativeExactMismatchCount,
         duplicateCount,
         maxDriftSeconds,
         nextTriggerByPrayer: buildNextTriggerByPrayer(expected),
+        exactDebugState,
       },
     });
 
@@ -1794,6 +1937,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     checkExactAlarmCapability,
     checkNotificationPermission,
     extractTriggerMs,
+    getExactAlarmDebugState,
     getDateKey,
     getLocationKey,
     isAdhanScheduledNotification,

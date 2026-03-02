@@ -17,7 +17,7 @@ import {
   Platform,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { Stack, useFocusEffect } from 'expo-router';
 import { usePrayer } from '@/context/PrayerContext';
 import {
   AdhanVoice,
@@ -31,6 +31,17 @@ import { useApp } from '@/context/AppContext';
 
 // Prayer order for display
 const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+const BLOCKER_LABELS: Record<string, string> = {
+  notifications_module_unavailable: 'هسته اعلان در دسترس نیست',
+  prayer_times_unavailable: 'اوقات شرعی آماده نیست',
+  city_unresolved: 'شهر انتخاب نشده',
+  notification_blocked: 'اعلان‌های دستگاه بلاک است',
+  notification_denied: 'اجازه اعلان داده نشده',
+  master_disabled: 'یادآوری اذان غیرفعال است',
+  native_module_unavailable: 'هسته بومی اذان در دسترس نیست',
+  exact_alarm_missing: 'آلارم دقیق غیرفعال است',
+  exact_alarm_unknown: 'وضعیت آلارم دقیق نامشخص است',
+};
 
 export default function AdhanSettingsScreen() {
   const { theme } = useApp();
@@ -57,6 +68,20 @@ export default function AdhanSettingsScreen() {
   const schedulerBackendLabel = state.scheduleAudit?.schedulerBackend === 'native_exact_android'
     ? 'هسته بومی دقیق (اندروید)'
     : 'هسته اکسپو';
+  const blockerCodes = state.scheduleAudit?.blockers || [];
+  const blockerLabel =
+    blockerCodes.length > 0
+      ? blockerCodes.map((code) => BLOCKER_LABELS[code] || code).join('، ')
+      : 'ندارد';
+  const exactDebugState = state.scheduleAudit?.exactDebugState;
+
+  useFocusEffect(
+    useCallback(() => {
+      requestPrayerSchedule('adhan-settings-focus').catch((error) => {
+        console.warn('Failed to refresh schedule on settings focus:', error);
+      });
+    }, [requestPrayerSchedule])
+  );
 
   // Toggle master notifications
   const handleMasterToggle = useCallback(async (value: boolean) => {
@@ -87,6 +112,10 @@ export default function AdhanSettingsScreen() {
 
   const handleScheduleAudit = useCallback(async () => {
     await requestPrayerSchedule('manual-audit');
+  }, [requestPrayerSchedule]);
+
+  const handleRecheckAndSchedule = useCallback(async () => {
+    await requestPrayerSchedule('exact-recheck');
   }, [requestPrayerSchedule]);
 
   // Test Adhan voice
@@ -302,6 +331,21 @@ export default function AdhanSettingsScreen() {
             <Text style={[styles.exactAlarmHint, { color: theme.textSecondary }]}>
               این تست فقط رسیدن اعلان و صدا را می‌سنجد؛ دقت زمانی روزانه را تضمین نمی‌کند.
             </Text>
+            {state.exactAlarmStatus === 'missing' && (
+              <View style={[styles.exactAlarmWarning, { backgroundColor: '#fff8e1', borderColor: '#f5c16c' }]}>
+                <MaterialIcons name="warning-amber" size={18} color="#b26a00" />
+                <Text style={[styles.exactAlarmWarningText, { color: '#8d4f00' }]}>
+                  تا وقتی آلارم دقیق را فعال نکنید، اذان‌های روزانه زمان‌بندی نمی‌شود.
+                </Text>
+                <Pressable
+                  onPress={handleRecheckAndSchedule}
+                  style={[styles.exactAlarmRetryButton, { backgroundColor: '#1a4d3e' }]}
+                >
+                  <MaterialIcons name="refresh" size={18} color="#fff" />
+                  <Text style={styles.exactAlarmRetryButtonText}>بررسی دوباره و زمان‌بندی</Text>
+                </Pressable>
+              </View>
+            )}
           </View>
         )}
 
@@ -368,6 +412,39 @@ export default function AdhanSettingsScreen() {
                   : '---'}
               </Text>
             </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>اذان بومی / یادآوری اکسپو:</Text>
+              <Text style={[styles.auditValue, { color: theme.text }]}>
+                {state.scheduleAudit
+                  ? `${state.scheduleAudit.scheduledAdhanNativeCount} / ${state.scheduleAudit.scheduledReminderExpoCount}`
+                  : '---'}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>مانع زمان‌بندی:</Text>
+              <Text style={[styles.auditValue, { color: blockerCodes.length ? '#d32f2f' : theme.text }]}>
+                {state.scheduleAudit ? blockerLabel : '---'}
+              </Text>
+            </View>
+
+            {exactDebugState && (
+              <>
+                <View style={styles.auditRow}>
+                  <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>هسته بومی اذان:</Text>
+                  <Text style={[styles.auditValue, { color: exactDebugState.nativeModuleAvailable ? theme.text : '#d32f2f' }]}>
+                    {exactDebugState.nativeModuleAvailable ? 'فعال' : 'غیرفعال'}
+                  </Text>
+                </View>
+                <View style={styles.auditRow}>
+                  <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>اعلان دستگاه:</Text>
+                  <Text style={[styles.auditValue, { color: exactDebugState.notificationsEnabled ? theme.text : '#d32f2f' }]}>
+                    {exactDebugState.notificationsEnabled ? 'فعال' : 'غیرفعال'}
+                  </Text>
+                </View>
+              </>
+            )}
 
             <View style={styles.auditRow}>
               <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>بیشترین Drift:</Text>
@@ -688,6 +765,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 20,
     marginTop: Spacing.sm,
+  },
+  exactAlarmWarning: {
+    marginTop: Spacing.sm,
+    borderWidth: 1,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.sm,
+    gap: Spacing.xs,
+  },
+  exactAlarmWarningText: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+    lineHeight: 20,
+  },
+  exactAlarmRetryButton: {
+    marginTop: Spacing.xs,
+    alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 6,
+    borderRadius: BorderRadius.md,
+  },
+  exactAlarmRetryButtonText: {
+    color: '#fff',
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    fontWeight: '600',
   },
   auditCard: {
     marginHorizontal: Spacing.md,

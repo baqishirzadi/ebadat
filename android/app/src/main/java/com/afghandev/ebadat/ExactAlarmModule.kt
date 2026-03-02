@@ -5,6 +5,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.core.app.NotificationManagerCompat
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -54,6 +56,29 @@ class ExactAlarmModule(private val reactContext: ReactApplicationContext) :
       } catch (error: Exception) {
         promise.reject("exact_alarm_settings_open_failed", error)
       }
+    }
+  }
+
+  @ReactMethod
+  fun getExactAlarmDebugState(promise: Promise) {
+    try {
+      val sdkInt = Build.VERSION.SDK_INT
+      val canScheduleExactAlarms = if (sdkInt < Build.VERSION_CODES.S) {
+        true
+      } else {
+        val alarmManager = reactContext.getSystemService(AlarmManager::class.java)
+        alarmManager?.canScheduleExactAlarms() == true
+      }
+      val notificationsEnabled = NotificationManagerCompat.from(reactContext).areNotificationsEnabled()
+
+      val result = Arguments.createMap().apply {
+        putInt("sdkInt", sdkInt)
+        putBoolean("canScheduleExactAlarms", canScheduleExactAlarms)
+        putBoolean("notificationsEnabled", notificationsEnabled)
+      }
+      promise.resolve(result)
+    } catch (error: Exception) {
+      promise.reject("exact_alarm_debug_state_failed", error)
     }
   }
 }
