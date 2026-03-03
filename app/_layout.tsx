@@ -7,8 +7,8 @@
 import * as Font from 'expo-font';
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect, useState } from 'react';
-import { ActivityIndicator, I18nManager, Platform, StyleSheet, Text, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, AppState, I18nManager, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -84,57 +84,97 @@ function RootLayoutNav() {
   const { theme, state } = useApp();
   const router = useRouter();
   const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
+  const lastHandledNotificationKeyRef = useRef<string>('');
+  const pendingNotificationResponseRef = useRef<import('expo-notifications').NotificationResponse | null>(null);
+  const appStateRef = useRef(AppState.currentState);
 
   // Determine status bar style based on theme
   const statusBarStyle = state.preferences.theme === 'night' ? 'light' : 'dark';
+
+  const waitForAppActive = useCallback(async () => {
+    if (appStateRef.current === 'active') return;
+
+    await new Promise<void>((resolve) => {
+      const timeout = setTimeout(() => {
+        sub.remove();
+        resolve();
+      }, 1800);
+
+      const sub = AppState.addEventListener('change', (nextState) => {
+        appStateRef.current = nextState;
+        if (nextState === 'active') {
+          clearTimeout(timeout);
+          sub.remove();
+          resolve();
+        }
+      });
+    });
+  }, []);
+
+  const handleNotificationResponse = useCallback(async (response: import('expo-notifications').NotificationResponse) => {
+    const data = response.notification.request.content.data || {};
+    const type = String((data as Record<string, unknown>).type || '');
+    const articleId = (data as Record<string, unknown>).articleId;
+    const hadithId = (data as Record<string, unknown>).hadithId;
+    const requestId = response.notification.request.identifier || '';
+    const routeKey = `${requestId}|${type}|${String(articleId || '')}|${String(hadithId || '')}`;
+
+    if (routeKey && routeKey === lastHandledNotificationKeyRef.current) {
+      return;
+    }
+
+    if (showSpiritualSplash) {
+      pendingNotificationResponseRef.current = response;
+      return;
+    }
+
+    lastHandledNotificationKeyRef.current = routeKey;
+    await waitForAppActive();
+
+    if (type === 'article_published' && articleId) {
+      router.push({
+        pathname: '/articles/[id]',
+        params: { id: String(articleId) },
+      });
+      return;
+    }
+
+    if (type === 'hadith_published' && hadithId) {
+      router.push(
+        {
+          pathname: '/ahadith/[id]',
+          params: { id: String(hadithId) },
+        } as any
+      );
+      return;
+    }
+
+    if (type === 'ahadith_daily') {
+      router.push({
+        pathname: '/(tabs)/ahadith',
+        params: { section: 'daily' },
+      } as any);
+    }
+  }, [router, showSpiritualSplash, waitForAppActive]);
 
   useEffect(() => {
     if (Platform.OS === 'web') return;
 
     let subscription: { remove: () => void } | null = null;
+    const appStateSubscription = AppState.addEventListener('change', (nextState) => {
+      appStateRef.current = nextState;
+    });
 
     const setupNotificationRouting = async () => {
       try {
         const Notifications = await import('expo-notifications');
-        const handleNotificationResponse = (
-          response: import('expo-notifications').NotificationResponse
-        ) => {
-          const data = response.notification.request.content.data || {};
-          const type = String((data as Record<string, unknown>).type || '');
-          const articleId = (data as Record<string, unknown>).articleId;
-          const hadithId = (data as Record<string, unknown>).hadithId;
-
-          if (type === 'article_published' && articleId) {
-            router.push({
-              pathname: '/articles/[id]',
-              params: { id: String(articleId) },
-            });
-            return;
-          }
-
-          if (type === 'hadith_published' && hadithId) {
-            router.push(
-              {
-                pathname: '/ahadith/[id]',
-                params: { id: String(hadithId) },
-              } as any
-            );
-            return;
-          }
-
-          if (type === 'ahadith_daily') {
-            router.push({
-              pathname: '/ahadith',
-              params: { section: 'daily' },
-            } as any);
-          }
-        };
-
-        subscription = Notifications.addNotificationResponseReceivedListener(handleNotificationResponse);
+        subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+          void handleNotificationResponse(response);
+        });
 
         const initialResponse = await Notifications.getLastNotificationResponseAsync();
         if (initialResponse) {
-          handleNotificationResponse(initialResponse);
+          void handleNotificationResponse(initialResponse);
         }
       } catch (error) {
         if (__DEV__) {
@@ -147,8 +187,17 @@ function RootLayoutNav() {
 
     return () => {
       subscription?.remove();
+      appStateSubscription.remove();
     };
-  }, [router]);
+  }, [handleNotificationResponse]);
+
+  useEffect(() => {
+    if (showSpiritualSplash) return;
+    const queued = pendingNotificationResponseRef.current;
+    if (!queued) return;
+    pendingNotificationResponseRef.current = null;
+    void handleNotificationResponse(queued);
+  }, [handleNotificationResponse, showSpiritualSplash]);
 
   useEffect(() => {
     void ensurePushRegistrationOnFirstOpen();

@@ -8,7 +8,7 @@ import TrackPlayer from 'react-native-track-player';
 export default function NotificationClickRoute() {
   const router = useRouter();
   const { theme } = useApp();
-  const { player } = useNaat();
+  const { player, ensurePlayerReady } = useNaat();
   const hasCurrentTrack = !!player.current;
 
   useEffect(() => {
@@ -29,6 +29,7 @@ export default function NotificationClickRoute() {
 
     const redirectToNaat = async () => {
       let hasActiveTrack = false;
+      await ensurePlayerReady('notification-click').catch(() => {});
 
       for (let attempt = 0; attempt < 3; attempt += 1) {
         hasActiveTrack = (await hasNativeActiveTrack()) || hasCurrentTrack;
@@ -52,7 +53,7 @@ export default function NotificationClickRoute() {
     return () => {
       isMounted = false;
     };
-  }, [hasCurrentTrack, router]);
+  }, [ensurePlayerReady, hasCurrentTrack, router]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
