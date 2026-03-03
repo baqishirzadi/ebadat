@@ -22,3 +22,15 @@ enabled = true
 verify_jwt = false
 import_map = "./functions/dua-admin/deno.json"
 entrypoint = "./functions/dua-admin/index.ts"
+
+[functions.hadith-admin]
+enabled = true
+verify_jwt = false
+import_map = "./functions/hadith-admin/deno.json"
+entrypoint = "./functions/hadith-admin/index.ts"
+
+[functions.hadith-client]
+enabled = true
+verify_jwt = false
+import_map = "./functions/hadith-client/deno.json"
+entrypoint = "./functions/hadith-client/index.ts"
