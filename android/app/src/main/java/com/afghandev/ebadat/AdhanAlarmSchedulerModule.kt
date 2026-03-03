@@ -13,26 +13,13 @@ class AdhanAlarmSchedulerModule(private val reactContext: ReactApplicationContex
   override fun getName(): String = "AdhanAlarmSchedulerModule"
 
   @ReactMethod
+  fun scheduleAdhanAlarms(alarms: ReadableArray, mode: String?, promise: Promise) {
+    scheduleAdhanAlarmsInternal(alarms, mode, promise)
+  }
+
+  @ReactMethod
   fun scheduleExactAdhanAlarms(alarms: ReadableArray, promise: Promise) {
-    try {
-      if (!AdhanAlarmScheduler.canScheduleExactAlarms(reactContext)) {
-        promise.reject("exact_alarm_missing", "Exact alarm permission is missing")
-        return
-      }
-
-      val scheduledIds = Arguments.createArray()
-      for (index in 0 until alarms.size()) {
-        val map = alarms.getMap(index)
-          ?: throw IllegalArgumentException("Alarm payload at index=$index is not an object")
-        val payload = AdhanAlarmPayload.fromReadableMap(map)
-        AdhanAlarmScheduler.scheduleExact(reactContext, payload)
-        scheduledIds.pushString(payload.id)
-      }
-
-      promise.resolve(scheduledIds)
-    } catch (error: Exception) {
-      promise.reject("native_adhan_schedule_failed", error)
-    }
+    scheduleAdhanAlarmsInternal(alarms, "exact", promise)
   }
 
   @ReactMethod
@@ -62,5 +49,32 @@ class AdhanAlarmSchedulerModule(private val reactContext: ReactApplicationContex
     } catch (error: Exception) {
       promise.reject("native_adhan_get_failed", error)
     }
+  }
+
+  private fun scheduleAdhanAlarmsInternal(alarms: ReadableArray, mode: String?, promise: Promise) {
+    try {
+      val resolvedMode = normalizeMode(mode)
+      if (resolvedMode == "exact" && !AdhanAlarmScheduler.canScheduleExactAlarms(reactContext)) {
+        promise.reject("exact_alarm_missing", "Exact alarm permission is missing")
+        return
+      }
+
+      val scheduledIds = Arguments.createArray()
+      for (index in 0 until alarms.size()) {
+        val map = alarms.getMap(index)
+          ?: throw IllegalArgumentException("Alarm payload at index=$index is not an object")
+        val payload = AdhanAlarmPayload.fromReadableMap(map).copy(scheduleMode = resolvedMode)
+        AdhanAlarmScheduler.schedule(reactContext, payload)
+        scheduledIds.pushString(payload.id)
+      }
+
+      promise.resolve(scheduledIds)
+    } catch (error: Exception) {
+      promise.reject("native_adhan_schedule_failed", error)
+    }
+  }
+
+  private fun normalizeMode(mode: String?): String {
+    return if (mode == "fallback_inexact") "fallback_inexact" else "exact"
   }
 }

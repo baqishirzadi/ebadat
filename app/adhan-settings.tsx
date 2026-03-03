@@ -39,8 +39,10 @@ const BLOCKER_LABELS: Record<string, string> = {
   notification_denied: 'اجازه اعلان داده نشده',
   master_disabled: 'یادآوری اذان غیرفعال است',
   native_module_unavailable: 'هسته بومی اذان در دسترس نیست',
-  exact_alarm_missing: 'آلارم دقیق غیرفعال است',
-  exact_alarm_unknown: 'وضعیت آلارم دقیق نامشخص است',
+};
+const WARNING_LABELS: Record<string, string> = {
+  exact_alarm_missing: 'آلارم دقیق غیرفعال است (حالت عادی)',
+  exact_alarm_unknown: 'وضعیت آلارم دقیق نامشخص است (حالت عادی)',
 };
 
 export default function AdhanSettingsScreen() {
@@ -64,14 +66,22 @@ export default function AdhanSettingsScreen() {
       : state.exactAlarmStatus === 'unknown'
         ? 'نامشخص'
         : 'نیاز نیست';
-  const scheduleModeLabel = state.scheduleAudit?.scheduleMode === 'fallback' ? 'غیردقیق (جایگزین)' : 'دقیق';
+  const scheduleModeLabel =
+    state.scheduleAudit?.scheduleMode === 'fallback'
+      ? 'عادی (ممکن است کمی تأخیر داشته باشد)'
+      : 'دقیق';
   const schedulerBackendLabel = state.scheduleAudit?.schedulerBackend === 'native_exact_android'
     ? 'هسته بومی دقیق (اندروید)'
     : 'هسته اکسپو';
   const blockerCodes = state.scheduleAudit?.blockers || [];
+  const warningCodes = state.scheduleAudit?.warnings || [];
   const blockerLabel =
     blockerCodes.length > 0
       ? blockerCodes.map((code) => BLOCKER_LABELS[code] || code).join('، ')
+      : 'ندارد';
+  const warningLabel =
+    warningCodes.length > 0
+      ? warningCodes.map((code) => WARNING_LABELS[code] || code).join('، ')
       : 'ندارد';
   const exactDebugState = state.scheduleAudit?.exactDebugState;
 
@@ -331,11 +341,11 @@ export default function AdhanSettingsScreen() {
             <Text style={[styles.exactAlarmHint, { color: theme.textSecondary }]}>
               این تست فقط رسیدن اعلان و صدا را می‌سنجد؛ دقت زمانی روزانه را تضمین نمی‌کند.
             </Text>
-            {state.exactAlarmStatus === 'missing' && (
+            {state.scheduleAudit?.scheduleMode === 'fallback' && (
               <View style={[styles.exactAlarmWarning, { backgroundColor: '#fff8e1', borderColor: '#f5c16c' }]}>
                 <MaterialIcons name="warning-amber" size={18} color="#b26a00" />
                 <Text style={[styles.exactAlarmWarningText, { color: '#8d4f00' }]}>
-                  تا وقتی آلارم دقیق را فعال نکنید، اذان‌های روزانه زمان‌بندی نمی‌شود.
+                  حالت عادی فعال است؛ اذان‌ها پخش می‌شود اما ممکن است کمی تأخیر داشته باشد.
                 </Text>
                 <Pressable
                   onPress={handleRecheckAndSchedule}
@@ -426,6 +436,13 @@ export default function AdhanSettingsScreen() {
               <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>مانع زمان‌بندی:</Text>
               <Text style={[styles.auditValue, { color: blockerCodes.length ? '#d32f2f' : theme.text }]}>
                 {state.scheduleAudit ? blockerLabel : '---'}
+              </Text>
+            </View>
+
+            <View style={styles.auditRow}>
+              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>هشدار زمان‌بندی:</Text>
+              <Text style={[styles.auditValue, { color: warningCodes.length ? '#8d4f00' : theme.text }]}>
+                {state.scheduleAudit ? warningLabel : '---'}
               </Text>
             </View>
 

@@ -23,6 +23,7 @@ import { PrayerProvider } from '@/context/PrayerContext';
 import { ScholarProvider } from '@/context/ScholarContext';
 import { StatsProvider } from '@/context/StatsContext';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
+import { runFirstOpenPrayerOnboarding } from '@/utils/prayerOnboarding';
 
 // ───────────────────────────────────────────────────
 // Global safety for unhandled promise rejections
@@ -151,6 +152,10 @@ function RootLayoutNav() {
 
   useEffect(() => {
     void ensurePushRegistrationOnFirstOpen();
+  }, []);
+
+  useEffect(() => {
+    void runFirstOpenPrayerOnboarding();
   }, []);
 
   if (showSpiritualSplash) {

@@ -31,11 +31,12 @@ import {
 } from '@/utils/prayerTimes';
 import { getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
 import {
+  AdhanScheduleMode,
   canUseNativeAdhanScheduler,
   cancelNativeExactAdhanAlarms,
   getNativeExactAdhanAlarms,
   NativeAdhanAlarmInput,
-  scheduleNativeExactAdhanAlarms,
+  scheduleNativeAdhanAlarms,
 } from '@/utils/nativeAdhanScheduler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
@@ -99,7 +100,7 @@ const STORAGE_KEYS = {
   LAST_ADHAN_DELAY_SECONDS: '@ebadat/last_adhan_delay_seconds',
 };
 
-const PRAYER_ROLLING_DAYS_ANDROID = 10;
+const PRAYER_ROLLING_DAYS_ANDROID = 21;
 const PRAYER_ROLLING_DAYS_IOS = 7;
 const PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER = 5;
 const ADHAN_SOUND_FILENAME = 'barakatullah_salim_18sec.mp3';
@@ -146,7 +147,9 @@ type PrayerScheduleBlocker =
   | 'notification_blocked'
   | 'notification_denied'
   | 'master_disabled'
-  | 'native_module_unavailable'
+  | 'native_module_unavailable';
+
+type PrayerScheduleWarning =
   | 'exact_alarm_missing'
   | 'exact_alarm_unknown';
 
@@ -166,10 +169,6 @@ const PRAYER_BLOCKER_MESSAGES: Record<PrayerScheduleBlocker, string> = {
   notification_denied: 'اجازه اعلان داده نشد. لطفاً در تنظیمات دستگاه اجازه دهید.',
   master_disabled: 'یادآوری اذان غیرفعال است.',
   native_module_unavailable: 'هسته زمان‌بندی دقیق اذان در دسترس نیست. لطفاً اپ را دوباره نصب کنید.',
-  exact_alarm_missing:
-    'آلارم دقیق غیرفعال است؛ برای اذان دقیق، لطفاً دسترسی «ساعت و یادآوری» را فعال کنید.',
-  exact_alarm_unknown:
-    'وضعیت آلارم دقیق نامشخص است. لطفاً یک‌بار تنظیمات را باز کرده و دوباره زمان‌بندی کنید.',
 };
 
 interface PrayerScheduleAudit {
@@ -178,6 +177,7 @@ interface PrayerScheduleAudit {
   scheduleMode: 'exact' | 'fallback';
   schedulerBackend: 'native_exact_android' | 'expo';
   blockers: PrayerScheduleBlocker[];
+  warnings: PrayerScheduleWarning[];
   expectedCount: number;
   expectedAdhanCount: number;
   scheduledCount: number;
@@ -1552,6 +1552,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     const buildZeroAudit = (
       errorMode: PrayerScheduleAudit['scheduleMode'],
       blockers: PrayerScheduleBlocker[],
+      warnings: PrayerScheduleWarning[] = [],
       exactDebugState: ExactAlarmDebugState | null = null
     ): PrayerScheduleAudit => ({
       generatedAt: Date.now(),
@@ -1559,6 +1560,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       scheduleMode: errorMode,
       schedulerBackend,
       blockers,
+      warnings,
       expectedCount: 0,
       expectedAdhanCount: 0,
       scheduledCount: 0,
@@ -1580,6 +1582,8 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         cancelExpoIds?: string[];
         cancelNative?: boolean;
         exactDebugState?: ExactAlarmDebugState | null;
+        scheduleMode?: PrayerScheduleAudit['scheduleMode'];
+        warnings?: PrayerScheduleWarning[];
       }
     ) => {
       const NotificationsModule = await loadNotificationsIfAvailable();
@@ -1596,7 +1600,12 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       }
       dispatch({
         type: 'SET_SCHEDULE_AUDIT',
-        payload: buildZeroAudit('exact', blockers, options?.exactDebugState ?? null),
+        payload: buildZeroAudit(
+          options?.scheduleMode || 'exact',
+          blockers,
+          options?.warnings || [],
+          options?.exactDebugState ?? null
+        ),
       });
       dispatch({
         type: 'SET_ERROR',
@@ -1662,32 +1671,50 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     const exactStatus = await checkExactAlarmCapability();
     lastKnownExactStatusRef.current = exactStatus;
     dispatch({ type: 'SET_EXACT_ALARM_STATUS', payload: exactStatus });
-    const scheduleMode: PrayerScheduleAudit['scheduleMode'] = 'exact';
+    const scheduleMode: PrayerScheduleAudit['scheduleMode'] =
+      Platform.OS === 'android' && exactStatus !== 'granted' ? 'fallback' : 'exact';
+    const scheduleWarnings: PrayerScheduleWarning[] =
+      Platform.OS === 'android'
+        ? exactStatus === 'missing'
+          ? ['exact_alarm_missing']
+          : exactStatus === 'unknown'
+            ? ['exact_alarm_unknown']
+            : []
+        : [];
 
-    const currentStatus = await checkNotificationPermission();
-    dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: currentStatus });
+    let effectiveNotificationStatus = await checkNotificationPermission();
+    dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: effectiveNotificationStatus });
 
-    if (currentStatus === 'blocked') {
-      const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
+    if (effectiveNotificationStatus === 'blocked') {
+      const exactDebugState = await getExactAlarmDebugState(
+        exactStatus,
+        effectiveNotificationStatus,
+        useNativeExactAdhan
+      );
       await applyBlockingResult(
         ['notification_blocked'],
         PRAYER_BLOCKER_MESSAGES.notification_blocked,
-        { exactDebugState }
+        { exactDebugState, scheduleMode, warnings: scheduleWarnings }
       );
       return;
     }
 
-    if (currentStatus !== 'granted') {
+    if (effectiveNotificationStatus !== 'granted') {
       const { status } = await NotificationsModule.requestPermissionsAsync();
       const newStatus =
         status === 'granted' ? 'granted' : status === 'denied' ? 'denied' : 'undetermined';
+      effectiveNotificationStatus = newStatus;
       dispatch({ type: 'SET_NOTIFICATION_PERMISSION', payload: newStatus });
       if (status !== 'granted') {
-        const exactDebugState = await getExactAlarmDebugState(exactStatus, newStatus, useNativeExactAdhan);
+        const exactDebugState = await getExactAlarmDebugState(
+          exactStatus,
+          effectiveNotificationStatus,
+          useNativeExactAdhan
+        );
         await applyBlockingResult(
           ['notification_denied'],
           PRAYER_BLOCKER_MESSAGES.notification_denied,
-          { exactDebugState }
+          { exactDebugState, scheduleMode, warnings: scheduleWarnings }
         );
         return;
       }
@@ -1699,33 +1726,39 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     if (!state.adhanPreferences.masterEnabled) {
       await cancelAllPrayerFromExpo(prayerScheduled);
       await cancelAllAdhanFromNative();
-      const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
-      await applyBlockingResult(['master_disabled'], null, { exactDebugState });
+      const exactDebugState = await getExactAlarmDebugState(
+        exactStatus,
+        effectiveNotificationStatus,
+        useNativeExactAdhan
+      );
+      await applyBlockingResult(['master_disabled'], null, {
+        exactDebugState,
+        scheduleMode,
+        warnings: scheduleWarnings,
+      });
       return;
     }
 
     if (Platform.OS === 'android' && !useNativeExactAdhan) {
       await cancelAllPrayerFromExpo(prayerScheduled);
-      const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
+      const exactDebugState = await getExactAlarmDebugState(
+        exactStatus,
+        effectiveNotificationStatus,
+        useNativeExactAdhan
+      );
       await applyBlockingResult(
         ['native_module_unavailable'],
         PRAYER_BLOCKER_MESSAGES.native_module_unavailable,
-        { exactDebugState }
+        { exactDebugState, scheduleMode, warnings: scheduleWarnings }
       );
       return;
     }
 
-    if (Platform.OS === 'android' && (exactStatus === 'missing' || exactStatus === 'unknown')) {
-      await cancelAllPrayerFromExpo(prayerScheduled);
-      await cancelAllAdhanFromNative();
-      const blocker: PrayerScheduleBlocker =
-        exactStatus === 'missing' ? 'exact_alarm_missing' : 'exact_alarm_unknown';
-      const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
-      await applyBlockingResult([blocker], PRAYER_BLOCKER_MESSAGES[blocker], { exactDebugState });
-      return;
-    }
-
-    const exactDebugState = await getExactAlarmDebugState(exactStatus, currentStatus, useNativeExactAdhan);
+    const exactDebugState = await getExactAlarmDebugState(
+      exactStatus,
+      effectiveNotificationStatus,
+      useNativeExactAdhan
+    );
 
     const now = new Date();
     const expected = await buildExpectedPrayerNotifications(now);
@@ -1838,6 +1871,8 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     let nativeExactMismatchCount = 0;
     let nativeExactScheduledCount = 0;
     if (useNativeExactAdhan) {
+      const nativeScheduleMode: AdhanScheduleMode =
+        scheduleMode === 'exact' ? 'exact' : 'fallback_inexact';
       const existingNative = await getNativeExactAdhanAlarms();
       const expectedNativeById = new Map(expectedAdhan.map((item) => [item.id, item]));
       const existingNativeIds = new Set(existingNative.map((item) => item.id));
@@ -1872,6 +1907,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         title: item.title,
         body: item.body,
         channelId: item.channelId,
+        scheduleMode: nativeScheduleMode,
         type: 'adhan',
         prayer: item.prayerKey,
         expectedFireAtMs:
@@ -1883,7 +1919,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         voice: typeof item.data.voice === 'string' ? item.data.voice : undefined,
       }));
       if (nativePayloads.length > 0) {
-        await scheduleNativeExactAdhanAlarms(nativePayloads);
+        await scheduleNativeAdhanAlarms(nativePayloads, nativeScheduleMode);
       }
 
       const afterNative = await getNativeExactAdhanAlarms();
@@ -1911,6 +1947,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         scheduleMode,
         schedulerBackend,
         blockers: [],
+        warnings: scheduleWarnings,
         expectedCount: expected.length,
         expectedAdhanCount: expectedAdhan.length,
         scheduledCount,
@@ -2017,7 +2054,10 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         await Linking.openSettings();
       } else {
         const exactModule = getExactAlarmModule();
-        if (state.exactAlarmStatus === 'missing' && exactModule?.openExactAlarmSettings) {
+        if (
+          (state.exactAlarmStatus === 'missing' || state.exactAlarmStatus === 'unknown') &&
+          exactModule?.openExactAlarmSettings
+        ) {
           const opened = await exactModule.openExactAlarmSettings();
           if (opened) {
             return;

@@ -12,6 +12,7 @@ data class AdhanAlarmPayload(
   val title: String,
   val body: String,
   val channelId: String,
+  val scheduleMode: String = "exact",
   val type: String = "adhan",
   val prayer: String? = null,
   val expectedFireAtMs: Long,
@@ -26,6 +27,7 @@ data class AdhanAlarmPayload(
     json.put("title", title)
     json.put("body", body)
     json.put("channelId", channelId)
+    json.put("scheduleMode", scheduleMode)
     json.put("type", type)
     json.put("expectedFireAtMs", expectedFireAtMs)
     json.put("isJummah", isJummah)
@@ -42,6 +44,7 @@ data class AdhanAlarmPayload(
     map.putString("title", title)
     map.putString("body", body)
     map.putString("channelId", channelId)
+    map.putString("scheduleMode", scheduleMode)
     map.putString("type", type)
     map.putDouble("expectedFireAtMs", expectedFireAtMs.toDouble())
     map.putBoolean("isJummah", isJummah)
@@ -73,6 +76,10 @@ data class AdhanAlarmPayload(
         throw IllegalArgumentException("title, body and channelId are required")
       }
 
+      val scheduleMode = map.getString("scheduleMode")?.trim().orEmpty().ifEmpty { "exact" }
+      if (scheduleMode != "exact" && scheduleMode != "fallback_inexact") {
+        throw IllegalArgumentException("scheduleMode must be exact or fallback_inexact")
+      }
       val type = map.getString("type")?.trim().orEmpty().ifEmpty { "adhan" }
       val prayer = if (map.hasKey("prayer") && !map.isNull("prayer")) map.getString("prayer") else null
       val dayKey = if (map.hasKey("dayKey") && !map.isNull("dayKey")) map.getString("dayKey") else null
@@ -91,6 +98,7 @@ data class AdhanAlarmPayload(
         title = title,
         body = body,
         channelId = channelId,
+        scheduleMode = scheduleMode,
         type = type,
         prayer = prayer,
         expectedFireAtMs = expectedFireAtMs,
@@ -111,12 +119,17 @@ data class AdhanAlarmPayload(
         return null
       }
 
+      val scheduleMode = json.optString("scheduleMode", "exact")
+        .takeIf { it == "exact" || it == "fallback_inexact" }
+        ?: "exact"
+
       return AdhanAlarmPayload(
         id = id,
         triggerAtMs = triggerAtMs,
         title = title,
         body = body,
         channelId = channelId,
+        scheduleMode = scheduleMode,
         type = json.optString("type", "adhan"),
         prayer = optionalString(json, "prayer"),
         expectedFireAtMs = json.optLong("expectedFireAtMs", triggerAtMs),

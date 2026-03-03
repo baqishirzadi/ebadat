@@ -20,13 +20,9 @@ object AdhanAlarmScheduler {
     return alarmManager.canScheduleExactAlarms()
   }
 
-  fun scheduleExact(context: Context, payload: AdhanAlarmPayload) {
+  fun schedule(context: Context, payload: AdhanAlarmPayload) {
     val alarmManager = context.getSystemService(AlarmManager::class.java)
       ?: throw IllegalStateException("AlarmManager unavailable")
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
-      throw SecurityException("SCHEDULE_EXACT_ALARM permission is required")
-    }
 
     if (payload.triggerAtMs <= System.currentTimeMillis()) {
       cancel(context, payload.id)
@@ -34,15 +30,39 @@ object AdhanAlarmScheduler {
     }
 
     val pendingIntent = buildPendingIntent(context, payload.id, payload)
+    val scheduleMode = payload.scheduleMode
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
+    if (scheduleMode == "exact") {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+        throw SecurityException("SCHEDULE_EXACT_ALARM permission is required")
+      }
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
+      } else {
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
+      }
     } else {
-      alarmManager.setExact(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
+      } else {
+        alarmManager.set(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
+      }
     }
 
     store(context).upsert(payload)
-    Log.i(TAG, "Scheduled exact adhan id=${payload.id} triggerAtMs=${payload.triggerAtMs}")
+    Log.i(
+      TAG,
+      "Scheduled adhan id=${payload.id} mode=${payload.scheduleMode} triggerAtMs=${payload.triggerAtMs}"
+    )
+  }
+
+  fun scheduleExact(context: Context, payload: AdhanAlarmPayload) {
+    schedule(context, payload.copy(scheduleMode = "exact"))
+  }
+
+  fun scheduleFallback(context: Context, payload: AdhanAlarmPayload) {
+    schedule(context, payload.copy(scheduleMode = "fallback_inexact"))
   }
 
   fun cancel(context: Context, id: String) {
@@ -74,7 +94,7 @@ object AdhanAlarmScheduler {
       }
 
       try {
-        scheduleExact(context, payload)
+        schedule(context, payload)
         rescheduled += 1
       } catch (error: Exception) {
         Log.e(TAG, "Failed to reschedule alarm id=${payload.id}", error)
