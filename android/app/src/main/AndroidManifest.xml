@@ -48,5 +48,7 @@
         <action android:name="android.intent.action.TIMEZONE_CHANGED"/>
       </intent-filter>
     </receiver>
+    <service android:name="expo.modules.audio.service.AudioRecordingService" tools:node="remove"/>
+    <service android:name="expo.modules.audio.service.AudioControlsService" tools:node="remove"/>
   </application>
 </manifest>
