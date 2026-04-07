@@ -3,7 +3,7 @@
  * Dashboard-first hub for secondary features and personal progress
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -92,19 +92,42 @@ export default function MoreScreen() {
     { icon: 'settings', label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/(tabs)/settings' },
   ];
 
-  const summaryCards = [
+  const summaryCards = useMemo(() => [
     { icon: 'menu-book', label: 'آیات خوانده‌شده', value: stats.overall.totalAyahsRead },
-    { icon: 'auto-awesome', label: 'اذکار ثبت‌شده', value: stats.overall.totalDhikrCount },
-    { icon: 'local-fire-department', label: 'روزهای متوالی', value: stats.overall.currentStreak },
+    { icon: 'hearing', label: 'آیات شنیده‌شده', value: stats.overall.totalAyahsListened },
+    { icon: 'bolt', label: 'بهترین پیوستگی', value: stats.overall.longestStreak },
     { icon: 'auto-stories', label: 'ختم قرآن', value: stats.overall.khatmCount },
-  ];
+  ], [
+    stats.overall.khatmCount,
+    stats.overall.longestStreak,
+    stats.overall.totalAyahsListened,
+    stats.overall.totalAyahsRead,
+  ]);
 
-  const todayRows = [
-    { label: 'نمازهای امروز', value: `${toArabicNumerals(stats.daily.prayersCompleted.length)} از ${toArabicNumerals(5)}` },
-    { label: 'آیات امروز', value: toArabicNumerals(stats.daily.ayahsRead) },
+  const todayRows = useMemo(() => [
+    { label: 'آیات خوانده‌شده امروز', value: toArabicNumerals(stats.daily.ayahsRead) },
+    { label: 'آیات شنیده‌شده امروز', value: toArabicNumerals(stats.daily.ayahsListened) },
+    { label: 'صفحه‌های امروز', value: toArabicNumerals(stats.daily.pagesRead) },
     { label: 'اذکار امروز', value: toArabicNumerals(stats.daily.dhikrCount) },
-    { label: 'دقیقه قرآن', value: toArabicNumerals(stats.daily.quranMinutes) },
-  ];
+  ], [
+    stats.daily.ayahsListened,
+    stats.daily.ayahsRead,
+    stats.daily.dhikrCount,
+    stats.daily.pagesRead,
+  ]);
+
+  const heroMetrics = useMemo(() => ([
+    { value: toArabicNumerals(stats.overall.currentStreak), label: 'روز متوالی', color: theme.surahHeader },
+    { value: toArabicNumerals(stats.overall.totalQuranMinutes), label: 'دقیقه قرآن', color: theme.bookmark },
+    { value: toArabicNumerals(stats.overall.totalDhikrCount), label: 'ذکر ثبت‌شده', color: theme.tint },
+  ]), [
+    stats.overall.currentStreak,
+    stats.overall.totalDhikrCount,
+    stats.overall.totalQuranMinutes,
+    theme.bookmark,
+    theme.surahHeader,
+    theme.tint,
+  ]);
 
   return (
     <ScrollView
@@ -118,7 +141,7 @@ export default function MoreScreen() {
           <CenteredText style={styles.headerBadgeText}>مرکز امکانات</CenteredText>
         </View>
         <CenteredText style={styles.headerTitle}>بیشتر</CenteredText>
-        <CenteredText style={styles.headerSubtitle}>میان‌بُرهای مهم، آمار روزانه و همراه همیشگی عبادت</CenteredText>
+        <CenteredText style={styles.headerSubtitle}>میان‌بُرهای مهم، پیگیری پیشرفت و همراه همیشگی عبادت</CenteredText>
       </LinearGradient>
 
       <View style={[styles.heroCard, { backgroundColor: theme.card, borderColor: theme.cardBorder, shadowColor: theme.tint }]}> 
@@ -147,24 +170,17 @@ export default function MoreScreen() {
         </CenteredText>
 
         <View style={styles.heroMetricsRow}>
-          <View style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-            <CenteredText style={[styles.heroMetricValue, { color: theme.tint }]}>
-              {toArabicNumerals(stats.daily.prayersCompleted.length)}
-            </CenteredText>
-            <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>نماز امروز</CenteredText>
-          </View>
-          <View style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-            <CenteredText style={[styles.heroMetricValue, { color: theme.bookmark }]}>
-              {toArabicNumerals(stats.daily.quranMinutes)}
-            </CenteredText>
-            <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>دقیقه قرآن</CenteredText>
-          </View>
-          <View style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-            <CenteredText style={[styles.heroMetricValue, { color: theme.surahHeader }]}>
-              {toArabicNumerals(stats.overall.currentStreak)}
-            </CenteredText>
-            <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>روز متوالی</CenteredText>
-          </View>
+          {heroMetrics.map((metric) => (
+            <View
+              key={metric.label}
+              style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
+            >
+              <CenteredText style={[styles.heroMetricValue, { color: metric.color }]}>
+                {metric.value}
+              </CenteredText>
+              <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>{metric.label}</CenteredText>
+            </View>
+          ))}
         </View>
       </View>
 
@@ -210,7 +226,7 @@ export default function MoreScreen() {
       </View>
 
       <View style={styles.section}>
-        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>کارهای امروز</CenteredText>
+        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>مرور امروز</CenteredText>
         <View style={[styles.todayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}> 
           {todayRows.map((row, index) => (
             <View key={row.label}>

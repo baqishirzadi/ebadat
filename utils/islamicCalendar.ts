@@ -1,6 +1,7 @@
 import {
   KABUL_TIME_ZONE,
   addDaysToKabulDate,
+  getKabulEpochDay,
   getKabulNoon,
   getKabulWeekdayIndex,
   getKabulDateKey,
@@ -440,13 +441,77 @@ export function formatHijriDate(hijri: HijriDate, language: 'arabic' | 'dari' | 
   return `${hijri.day} ${monthName} ${hijri.year}`;
 }
 
+function getPreviousHijriExpectation(hijriYear: number, hijriMonth: number, hijriDay: number) {
+  if (hijriDay > 1) {
+    return { year: hijriYear, month: hijriMonth, day: hijriDay - 1 };
+  }
+
+  if (hijriMonth > 1) {
+    return { year: hijriYear, month: hijriMonth - 1, day: 29 };
+  }
+
+  return { year: hijriYear - 1, month: 12, day: 29 };
+}
+
+function getNextHijriExpectation(hijriYear: number, hijriMonth: number, hijriDay: number) {
+  if (hijriDay < 29) {
+    return { year: hijriYear, month: hijriMonth, day: hijriDay + 1 };
+  }
+
+  if (hijriMonth < 12) {
+    return { year: hijriYear, month: hijriMonth + 1, day: 1 };
+  }
+
+  return { year: hijriYear + 1, month: 1, day: 1 };
+}
+
+function matchesHijriExpectation(
+  candidate: HijriDate,
+  expected: { year: number; month: number; day: number },
+): boolean {
+  if (candidate.year !== expected.year || candidate.month !== expected.month) {
+    return false;
+  }
+
+  if (candidate.day === expected.day) {
+    return true;
+  }
+
+  // Month boundaries can legitimately land on 29 or 30 depending on moon sighting.
+  if (expected.day === 29 && candidate.day === 30) {
+    return true;
+  }
+
+  return false;
+}
+
+function scoreHijriCandidate(candidate: Date, hijriYear: number, hijriMonth: number, hijriDay: number): number {
+  let score = 0;
+  const previousExpected = getPreviousHijriExpectation(hijriYear, hijriMonth, hijriDay);
+  const nextExpected = getNextHijriExpectation(hijriYear, hijriMonth, hijriDay);
+  const previousActual = gregorianToHijri(addDaysToKabulDate(candidate, -1));
+  const nextActual = gregorianToHijri(addDaysToKabulDate(candidate, 1));
+
+  if (matchesHijriExpectation(previousActual, previousExpected)) {
+    score += 2;
+  }
+
+  if (matchesHijriExpectation(nextActual, nextExpected)) {
+    score += 3;
+  }
+
+  return score;
+}
+
 /**
  * Convert Hijri date to Gregorian date.
  * Uses linear search: iterates through Gregorian dates and matches via gregorianToHijri.
- * Search range: -90 to +420 days from today (covers previous, current, and next Hijri year).
+ * When Afghanistan-local corrections create duplicate matches, prefer the candidate whose
+ * adjacent days continue the local Hijri sequence correctly.
  */
 export function hijriToGregorian(hijriYear: number, hijriMonth: number, hijriDay: number): Date | null {
   const base = getKabulNoon(new Date());
+  const matches: Date[] = [];
 
   for (let offset = -90; offset <= 420; offset++) {
     const d = new Date(base);
@@ -454,9 +519,44 @@ export function hijriToGregorian(hijriYear: number, hijriMonth: number, hijriDay
 
     const h = gregorianToHijri(d);
     if (h.year === hijriYear && h.month === hijriMonth && h.day === hijriDay) {
-      return d;
+      matches.push(d);
     }
   }
 
-  return null;
+  if (matches.length === 0) {
+    return null;
+  }
+
+  matches.sort((left, right) => {
+    const scoreDifference = scoreHijriCandidate(right, hijriYear, hijriMonth, hijriDay)
+      - scoreHijriCandidate(left, hijriYear, hijriMonth, hijriDay);
+
+    if (scoreDifference !== 0) {
+      return scoreDifference;
+    }
+
+    // If two candidates still look identical, prefer the later Kabul date so local correction
+    // windows do not pin the month grid to the previous day.
+    return getKabulEpochDay(right) - getKabulEpochDay(left);
+  });
+
+  return matches[0];
+}
+
+export function getHijriMonthLength(hijriYear: number, hijriMonth: number): number {
+  const start = hijriToGregorian(hijriYear, hijriMonth, 1);
+  if (!start) {
+    return 30;
+  }
+
+  const nextMonth = hijriMonth === 12
+    ? { year: hijriYear + 1, month: 1 }
+    : { year: hijriYear, month: hijriMonth + 1 };
+  const nextStart = hijriToGregorian(nextMonth.year, nextMonth.month, 1);
+  if (!nextStart) {
+    return 30;
+  }
+
+  const diff = getKabulEpochDay(nextStart) - getKabulEpochDay(start);
+  return diff >= 29 && diff <= 30 ? diff : 30;
 }
