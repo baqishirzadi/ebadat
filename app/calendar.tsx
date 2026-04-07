@@ -11,7 +11,6 @@ import {
   AFGHAN_SOLAR_MONTHS,
   formatAfghanSolarHijriDate,
   getShamsiMonthLength,
-  gregorianToAfghanSolarHijri,
   shamsiToGregorian,
 } from '@/utils/afghanSolarHijri';
 import {
@@ -22,11 +21,12 @@ import {
 import {
   formatHijriDate,
   getNextSpecialDay,
-  gregorianToHijri,
   HIJRI_MONTHS,
   hijriToGregorian,
   SPECIAL_DAYS,
 } from '@/utils/islamicCalendar';
+import { getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
+import { getCalendarTruth } from '@/utils/calendarTruth';
 import { toArabicNumerals } from '@/utils/numbers';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
@@ -42,9 +42,9 @@ type CalendarMode = 'qamari' | 'shamsi';
 export default function CalendarScreen() {
   const { theme } = useApp();
   const { state } = usePrayer();
-  const today = new Date();
-  const todayHijri = state.hijriDate || gregorianToHijri(today);
-  const todayShamsi = gregorianToAfghanSolarHijri(today);
+  const todayTruth = getCalendarTruth();
+  const todayHijri = state.hijriDate || todayTruth.hijri;
+  const todayShamsi = todayTruth.shamsi;
 
   const [mode, setMode] = useState<CalendarMode>('qamari');
   const [selectedMonth, setSelectedMonth] = useState(todayHijri.month - 1);
@@ -96,10 +96,10 @@ export default function CalendarScreen() {
   const firstDayOffset = (() => {
     if (mode === 'qamari') {
       const d = hijriToGregorian(displayYearHijri, selectedMonth + 1, 1);
-      return d ? (d.getDay() + 1) % 7 : 0;
+      return d ? (getKabulWeekdayIndex(d) + 1) % 7 : 0;
     }
     const d = shamsiToGregorian(displayYearShamsi, selectedMonth + 1, 1);
-    return d ? (d.getDay() + 1) % 7 : 0;
+    return d ? (getKabulWeekdayIndex(d) + 1) % 7 : 0;
   })();
 
   // Special days to show: future/today in month, or next upcoming if all past

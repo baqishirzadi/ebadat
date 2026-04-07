@@ -1,3 +1,5 @@
+import { KABUL_TIME_ZONE, getKabulNoon } from '@/utils/afghanistanCalendar';
+
 /**
  * Afghan Solar Hijri (Shamsi) Calendar Utilities
  * Afghan calendar uses traditional month names (حمل، ثور، جوزا...)
@@ -32,7 +34,7 @@ export const AFGHAN_SOLAR_MONTHS = [
  * Convert Gregorian date to Afghan Solar Hijri (Shamsi)
  * Uses the standard Solar Hijri (Persian calendar) conversion algorithm
  */
-export function gregorianToAfghanSolarHijri(date: Date): AfghanSolarHijriDate {
+function gregorianToAfghanSolarHijriFallback(date: Date): AfghanSolarHijriDate {
   const gregorianYear = date.getFullYear();
   const gregorianMonth = date.getMonth() + 1; // 1-12
   const gregorianDay = date.getDate();
@@ -106,6 +108,44 @@ export function gregorianToAfghanSolarHijri(date: Date): AfghanSolarHijriDate {
   };
 }
 
+export function gregorianToAfghanSolarHijri(date: Date): AfghanSolarHijriDate {
+  const kabulDate = getKabulNoon(date);
+
+  try {
+    const parts = new Intl.DateTimeFormat('en-u-ca-persian', {
+      timeZone: KABUL_TIME_ZONE,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    }).formatToParts(kabulDate);
+    const lookup = (type: string) => parts.find((part) => part.type === type)?.value;
+    const year = Number.parseInt(lookup('year') || '', 10);
+    const month = Number.parseInt(lookup('month') || '', 10);
+    const day = Number.parseInt(lookup('day') || '', 10);
+
+    if (
+      Number.isFinite(year) &&
+      Number.isFinite(month) &&
+      Number.isFinite(day) &&
+      month >= 1 &&
+      month <= 12
+    ) {
+      const monthInfo = AFGHAN_SOLAR_MONTHS[month - 1];
+      return {
+        year,
+        month,
+        day,
+        monthNameDari: monthInfo.dari,
+        monthNamePashto: monthInfo.pashto,
+      };
+    }
+  } catch {
+    // Fall through to the bundled arithmetic fallback for older Intl runtimes.
+  }
+
+  return gregorianToAfghanSolarHijriFallback(kabulDate);
+}
+
 /**
  * Get number of days in a Solar Hijri month (1-12)
  */
@@ -140,12 +180,11 @@ function toPersianNumerals(num: number): string {
  * Uses linear search similar to hijriToGregorian.
  */
 export function shamsiToGregorian(shamsiYear: number, shamsiMonth: number, shamsiDay: number): Date | null {
-  const base = new Date();
-  base.setHours(0, 0, 0, 0);
+  const base = getKabulNoon(new Date());
 
   for (let offset = -400; offset <= 400; offset++) {
     const d = new Date(base);
-    d.setDate(d.getDate() + offset);
+    d.setUTCDate(d.getUTCDate() + offset);
 
     const s = gregorianToAfghanSolarHijri(d);
     if (s.year === shamsiYear && s.month === shamsiMonth && s.day === shamsiDay) {

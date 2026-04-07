@@ -17,9 +17,10 @@ import { useApp } from '@/context/AppContext';
 import { NAAT_GRADIENT , Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
-import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
+import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
+import { getKabulDateParts } from '@/utils/afghanistanCalendar';
+import { getCalendarTruth } from '@/utils/calendarTruth';
 import { getCity, getImportantCities } from '@/utils/cities';
-import { gregorianToHijri } from '@/utils/islamicCalendar';
 import { RamadanFeatureTile } from '@/components/ramadan/RamadanFeatureTile';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -63,24 +64,20 @@ function toPersianNumerals(num: number): string {
 
 // Format Gregorian date with Dari month name (e.g. ۱۲ فبروری ۲۰۲۶)
 function formatGregorianWithDariMonth(date: Date): string {
-  const day = date.getDate();
-  const month = date.getMonth();
-  const year = date.getFullYear();
-  return `${toPersianNumerals(day)} ${GREGORIAN_MONTHS_DARI[month]} ${toPersianNumerals(year)}`;
+  const { day, month, year } = getKabulDateParts(date);
+  return `${toPersianNumerals(day)} ${GREGORIAN_MONTHS_DARI[month - 1]} ${toPersianNumerals(year)}`;
 }
 
 // Format triple date: Hijri Qamari → Hijri Shamsi → Miladi
 function formatTripleDate(date: Date): string {
-  // Hijri Qamari (Islamic lunar calendar)
-  const hijriQamari = gregorianToHijri(date);
+  const truth = getCalendarTruth(date);
+  const hijriQamari = truth.hijri;
   const hijriQamariFormatted = `${toPersianNumerals(hijriQamari.day)} ${hijriQamari.monthNameDari} ${toPersianNumerals(hijriQamari.year)}`;
   
-  // Hijri Shamsi (Afghan Solar Hijri)
-  const hijriShamsi = gregorianToAfghanSolarHijri(date);
+  const hijriShamsi = truth.shamsi;
   const hijriShamsiFormatted = formatAfghanSolarHijriDateWithPersianNumerals(hijriShamsi, 'dari');
   
-  // Miladi (Gregorian) - با نام ماه به دری
-  const miladiFormatted = formatGregorianWithDariMonth(date);
+  const miladiFormatted = formatGregorianWithDariMonth(truth.gregorianDate);
   
   return `${hijriQamariFormatted} → ${hijriShamsiFormatted} → ${miladiFormatted}`;
 }

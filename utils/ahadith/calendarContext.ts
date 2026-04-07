@@ -1,16 +1,11 @@
 import { AhadithCalendarContext, HadithSpecialDay } from '@/types/hadith';
-import { gregorianToHijri } from '@/utils/islamicCalendar';
-
-function getEpochDay(date: Date): number {
-  const utcYear = date.getUTCFullYear();
-  const utcMonth = date.getUTCMonth();
-  const utcDay = date.getUTCDate();
-  return Math.floor(Date.UTC(utcYear, utcMonth, utcDay) / 86400000);
-}
+import { getKabulEpochDay } from '@/utils/afghanistanCalendar';
+import { getCalendarTruth } from '@/utils/calendarTruth';
 
 export function getAhadithCalendarContext(date: Date = new Date()): AhadithCalendarContext {
   const normalizedDate = new Date(date);
-  const hijri = gregorianToHijri(normalizedDate);
+  const truth = getCalendarTruth(normalizedDate);
+  const hijri = truth.hijri;
   const specialDayKeys: HadithSpecialDay[] = [];
 
   if (hijri.month === 9) {
@@ -37,11 +32,11 @@ export function getAhadithCalendarContext(date: Date = new Date()): AhadithCalen
     specialDayKeys.push('ashura');
   }
 
-  const weekday = normalizedDate.getDay();
+  const weekday = truth.weekday;
 
   return {
     gregorianDate: normalizedDate,
-    epochDay: getEpochDay(normalizedDate),
+    epochDay: getKabulEpochDay(normalizedDate),
     weekday,
     hijri: {
       year: hijri.year,

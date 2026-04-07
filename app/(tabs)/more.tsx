@@ -9,6 +9,7 @@ import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
+import { getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
 import { useApp } from '@/context/AppContext';
 import { useStats } from '@/context/StatsContext';
 import { usePrayer } from '@/context/PrayerContext';
@@ -40,7 +41,7 @@ function getShamsiAndWeekday(
   const greg = hijriToGregorian(hijriYear, hijriMonth, hijriDay);
   if (!greg) return null;
   const shamsi = gregorianToAfghanSolarHijri(greg);
-  const weekday = WEEKDAY_DARI[greg.getDay()];
+  const weekday = WEEKDAY_DARI[getKabulWeekdayIndex(greg)];
   return `${formatAfghanSolarHijriDateWithPersianNumerals(shamsi, 'dari')} • ${weekday}`;
 }
 

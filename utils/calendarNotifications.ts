@@ -5,7 +5,8 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
-import { gregorianToHijri, hijriToGregorian } from './islamicCalendar';
+import { getCalendarTruth } from './calendarTruth';
+import { hijriToGregorian } from './islamicCalendar';
 import { SPECIAL_DAYS } from './islamicCalendar';
 
 export const CALENDAR_QAMARI_STORAGE_KEY = '@ebadat/calendar_qamari_notifications';
@@ -94,7 +95,7 @@ export async function scheduleCalendarNotifications(
   }
 
   const now = new Date();
-  const todayH = gregorianToHijri(now);
+  const todayH = getCalendarTruth(now).hijri;
   const years = [todayH.year, todayH.year + 1];
 
   let scheduledCount = 0;

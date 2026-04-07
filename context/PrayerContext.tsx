@@ -17,8 +17,9 @@ import {
   loadCalendarNotificationPreferences,
   scheduleCalendarNotifications,
 } from '@/utils/calendarNotifications';
+import { getCalendarTruth } from '@/utils/calendarTruth';
 import { getCity } from '@/utils/cities';
-import { gregorianToHijri, HijriDate } from '@/utils/islamicCalendar';
+import { HijriDate } from '@/utils/islamicCalendar';
 import {
   AFGHAN_CITIES,
   AsrMethod,
@@ -840,7 +841,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       const qibla = calculateQibla(location);
       dispatch({ type: 'SET_QIBLA', payload: qibla });
 
-      const hijri = gregorianToHijri(new Date());
+      const hijri = getCalendarTruth().hijri;
       dispatch({ type: 'SET_HIJRI_DATE', payload: hijri });
     } catch (error) {
       console.error('Failed to load prayer data:', error);
@@ -850,7 +851,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       const qibla = calculateQibla(DEFAULT_LOCATION);
       dispatch({ type: 'SET_QIBLA', payload: qibla });
 
-      const hijri = gregorianToHijri(new Date());
+      const hijri = getCalendarTruth().hijri;
       dispatch({ type: 'SET_HIJRI_DATE', payload: hijri });
     }
   }
@@ -995,7 +996,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   }
 
   function updateHijriDate() {
-    const hijri = gregorianToHijri(new Date());
+    const hijri = getCalendarTruth().hijri;
     dispatch({ type: 'SET_HIJRI_DATE', payload: hijri });
   }
 

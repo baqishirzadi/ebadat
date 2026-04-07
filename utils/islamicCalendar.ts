@@ -1,3 +1,11 @@
+import {
+  KABUL_TIME_ZONE,
+  addDaysToKabulDate,
+  getKabulNoon,
+  getKabulWeekdayIndex,
+  getKabulDateKey,
+} from '@/utils/afghanistanCalendar';
+
 /**
  * Islamic (Hijri) Calendar Utilities
  * With Afghan context and special days
@@ -232,8 +240,49 @@ export const SPECIAL_DAYS: SpecialDay[] = [
   },
 ];
 
-// Convert Gregorian to Hijri (Umm al-Qura algorithm approximation)
-export function gregorianToHijri(date: Date): HijriDate {
+interface HijriCorrectionRange {
+  startGregorian: string;
+  endGregorian?: string;
+  shiftDays: number;
+}
+
+const AFGHAN_HIJRI_CORRECTIONS: HijriCorrectionRange[] = [
+  {
+    startGregorian: '2026-03-21',
+    shiftDays: -1,
+  },
+];
+
+function compareDateKeys(a: string, b: string): number {
+  if (a === b) return 0;
+  return a < b ? -1 : 1;
+}
+
+function getHijriCorrectionShift(date: Date): number {
+  const dateKey = getKabulDateKey(date);
+  const range = AFGHAN_HIJRI_CORRECTIONS.find((entry) => {
+    if (compareDateKeys(dateKey, entry.startGregorian) < 0) return false;
+    if (!entry.endGregorian) return true;
+    return compareDateKeys(dateKey, entry.endGregorian) <= 0;
+  });
+  return range?.shiftDays ?? 0;
+}
+
+function buildHijriDate(hijriYear: number, hijriMonth: number, hijriDay: number): HijriDate {
+  const monthInfo = HIJRI_MONTHS[hijriMonth - 1];
+
+  return {
+    year: hijriYear,
+    month: hijriMonth,
+    day: hijriDay,
+    monthName: monthInfo.english,
+    monthNameArabic: monthInfo.arabic,
+    monthNameDari: monthInfo.dari,
+    monthNamePashto: monthInfo.pashto,
+  };
+}
+
+function gregorianToHijriFallback(date: Date): HijriDate {
   const gregorianDate = new Date(date);
   const gregorianYear = gregorianDate.getFullYear();
   const gregorianMonth = gregorianDate.getMonth();
@@ -260,17 +309,44 @@ export function gregorianToHijri(date: Date): HijriDate {
   const hijriDay = lDoublePrime - Math.floor((709 * hijriMonth) / 24);
   const hijriYear = 30 * n + j - 30;
 
-  const monthInfo = HIJRI_MONTHS[hijriMonth - 1];
+  return buildHijriDate(hijriYear, hijriMonth, hijriDay);
+}
 
-  return {
-    year: hijriYear,
-    month: hijriMonth,
-    day: hijriDay,
-    monthName: monthInfo.english,
-    monthNameArabic: monthInfo.arabic,
-    monthNameDari: monthInfo.dari,
-    monthNamePashto: monthInfo.pashto,
-  };
+function gregorianToBaseHijri(date: Date): HijriDate {
+  try {
+    const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+      timeZone: KABUL_TIME_ZONE,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    }).formatToParts(date);
+    const lookup = (type: string) => parts.find((part) => part.type === type)?.value;
+    const year = Number.parseInt(lookup('year') || '', 10);
+    const month = Number.parseInt(lookup('month') || '', 10);
+    const day = Number.parseInt(lookup('day') || '', 10);
+
+    if (
+      Number.isFinite(year) &&
+      Number.isFinite(month) &&
+      Number.isFinite(day) &&
+      month >= 1 &&
+      month <= 12
+    ) {
+      return buildHijriDate(year, month, day);
+    }
+  } catch {
+    // Fall through to arithmetic fallback below.
+  }
+
+  return gregorianToHijriFallback(date);
+}
+
+// Convert Gregorian to Hijri with Afghanistan-local correction policy.
+export function gregorianToHijri(date: Date): HijriDate {
+  const kabulDate = getKabulNoon(date);
+  const shiftDays = getHijriCorrectionShift(kabulDate);
+  const sourceDate = shiftDays === 0 ? kabulDate : addDaysToKabulDate(kabulDate, shiftDays);
+  return gregorianToBaseHijri(sourceDate);
 }
 
 // Check if today is a special day
@@ -319,7 +395,7 @@ export function getNextSpecialDay(hijriDate: HijriDate): SpecialDay | null {
 // Check if today is a recommended fasting day
 export function isFastingDay(date: Date): { isFasting: boolean; reason?: string; reasonDari?: string; reasonPashto?: string } {
   const hijri = gregorianToHijri(date);
-  const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, 4 = Thursday
+  const dayOfWeek = getKabulWeekdayIndex(date); // 0 = Sunday, 1 = Monday, 4 = Thursday
 
   // Check special days
   const specialDay = getSpecialDayInfo(hijri);
@@ -370,12 +446,11 @@ export function formatHijriDate(hijri: HijriDate, language: 'arabic' | 'dari' | 
  * Search range: -90 to +420 days from today (covers previous, current, and next Hijri year).
  */
 export function hijriToGregorian(hijriYear: number, hijriMonth: number, hijriDay: number): Date | null {
-  const base = new Date();
-  base.setHours(0, 0, 0, 0);
+  const base = getKabulNoon(new Date());
 
   for (let offset = -90; offset <= 420; offset++) {
     const d = new Date(base);
-    d.setDate(d.getDate() + offset);
+    d.setUTCDate(d.getUTCDate() + offset);
 
     const h = gregorianToHijri(d);
     if (h.year === hijriYear && h.month === hijriMonth && h.day === hijriDay) {
