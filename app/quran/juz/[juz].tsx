@@ -62,13 +62,35 @@ const AYAH_FOLLOW_EXTRA_TOP_OFFSET = 8;
 const FOLLOW_HARD_SNAP_DELAY = 120;
 
 export default function JuzReaderScreen() {
-  const { juz: juzParam } = useLocalSearchParams<{ juz: string }>();
+  const {
+    juz: juzParam,
+    surah: resumeSurahParam,
+    ayah: resumeAyahParam,
+    jump: jumpParam,
+    jumpToken: jumpTokenParam,
+  } = useLocalSearchParams<{
+    juz: string;
+    surah?: string | string[];
+    ayah?: string | string[];
+    jump?: string | string[];
+    jumpToken?: string | string[];
+  }>();
   const navigation = useNavigation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { theme, state, setTranslationLanguage } = useApp();
   const { updatePosition } = useReadingPosition();
   const { getAyahsByJuz, getTranslation } = useQuranData();
+
+  const normalizedResumeSurah = Array.isArray(resumeSurahParam) ? resumeSurahParam[0] : resumeSurahParam;
+  const normalizedResumeAyah = Array.isArray(resumeAyahParam) ? resumeAyahParam[0] : resumeAyahParam;
+  const normalizedJumpParam = Array.isArray(jumpParam) ? jumpParam[0] : jumpParam;
+  const normalizedJumpToken = Array.isArray(jumpTokenParam) ? jumpTokenParam[0] : jumpTokenParam;
+
+  const parsedResumeSurah = Number.parseInt(normalizedResumeSurah ?? '', 10);
+  const parsedResumeAyah = Number.parseInt(normalizedResumeAyah ?? '', 10);
+  const resumeSurahNumber = Number.isFinite(parsedResumeSurah) && parsedResumeSurah > 0 ? parsedResumeSurah : null;
+  const resumeAyahNumber = Number.isFinite(parsedResumeAyah) && parsedResumeAyah > 0 ? parsedResumeAyah : null;
 
   const juzNumber = Math.min(30, Math.max(1, parseInt(juzParam || '1', 10) || 1));
   const [juzRange, setJuzRange] = useState(() => getJuzRange(juzNumber));
@@ -84,6 +106,7 @@ export default function JuzReaderScreen() {
   const activeFollowRequestIdRef = useRef(0);
   const followRetryTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const lastFirstVisibleAyahRef = useRef<string | null>(null);
+  const handledResumeTokenRef = useRef<string>('');
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50, minimumViewTime: 500 });
   const ayahFollowViewOffset = insets.top + JUZ_TOP_BAR_HEIGHT + AYAH_FOLLOW_EXTRA_TOP_OFFSET;
   const currentTranslation = state.preferences.showTranslation;
@@ -335,6 +358,30 @@ export default function JuzReaderScreen() {
     }
     return map;
   }, [sections]);
+
+  useEffect(() => {
+    if (!normalizedJumpToken || handledResumeTokenRef.current === normalizedJumpToken) return;
+    if (normalizedJumpParam !== 'continue' && normalizedJumpParam !== 'exact') return;
+    if (!resumeSurahNumber || !resumeAyahNumber) return;
+
+    const bounds = juzBoundsBySurah.get(resumeSurahNumber);
+    if (!bounds) return;
+    if (resumeAyahNumber < bounds.startAyah || resumeAyahNumber > bounds.endAyah) return;
+
+    handledResumeTokenRef.current = normalizedJumpToken;
+    setCurrentVisibleSurahNumber((prev) => (prev === resumeSurahNumber ? prev : resumeSurahNumber));
+
+    requestAnimationFrame(() => {
+      followAyahToTop(resumeSurahNumber, resumeAyahNumber, false);
+    });
+  }, [
+    followAyahToTop,
+    juzBoundsBySurah,
+    normalizedJumpParam,
+    normalizedJumpToken,
+    resumeAyahNumber,
+    resumeSurahNumber,
+  ]);
 
   const handlePlayAyah = useCallback(
     (item: JuzAyahItem) => {

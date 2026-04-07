@@ -35,6 +35,15 @@ export type QuranPlaybackSnapshot = {
   juzNumber: number | null;
 };
 
+export type PersistedQuranResumeContext = {
+  mediaType: 'quran';
+  surah: number;
+  ayah: number;
+  scopeType: QuranPlaybackScopeType;
+  juzNumber: number | null;
+  updatedAt: number;
+};
+
 type ReciterInfo = {
   key: ReciterKey;
   name: string;
@@ -153,6 +162,44 @@ const MAX_BACKGROUND_CACHE_ATTEMPTS = 2;
 const CACHE_RETRY_BASE_DELAY_MS = 350;
 const RECITER_KEY = 'quran_selected_reciter';
 const LAST_POSITION_KEY = 'quran_last_position';
+const RESUME_CONTEXT_KEY = 'quran_resume_context_v1';
+
+async function persistQuranResumeContext(context: PersistedQuranResumeContext): Promise<void> {
+  try {
+    await AsyncStorage.setItem(RESUME_CONTEXT_KEY, JSON.stringify(context));
+  } catch {
+    // ignore persistence failures for routing hints
+  }
+}
+
+export async function getPersistedQuranResumeContext(): Promise<PersistedQuranResumeContext | null> {
+  try {
+    const raw = await AsyncStorage.getItem(RESUME_CONTEXT_KEY);
+    if (!raw) return null;
+
+    const parsed = JSON.parse(raw) as Partial<PersistedQuranResumeContext> | null;
+    if (!parsed || parsed.mediaType !== 'quran') return null;
+    if (!Number.isFinite(parsed.surah) || !Number.isFinite(parsed.ayah)) return null;
+    if (parsed.scopeType !== 'surah' && parsed.scopeType !== 'juz') return null;
+
+    const updatedAt = Number(parsed.updatedAt);
+    if (!Number.isFinite(updatedAt)) return null;
+    if (Date.now() - updatedAt > 12 * 60 * 60 * 1000) return null;
+
+    return {
+      mediaType: 'quran',
+      surah: Number(parsed.surah),
+      ayah: Number(parsed.ayah),
+      scopeType: parsed.scopeType,
+      juzNumber: parsed.scopeType === 'juz' && Number.isFinite(parsed.juzNumber)
+        ? Number(parsed.juzNumber)
+        : null,
+      updatedAt,
+    };
+  } catch {
+    return null;
+  }
+}
 
 function getDocumentDirectory(): string | null {
   const documentDirectory = FileSystem.documentDirectory as string | null | undefined;
@@ -354,6 +401,14 @@ class QuranAudioManager {
           LAST_POSITION_KEY,
           JSON.stringify({ surah: activeTrack.surah, ayah: activeTrack.ayah })
         );
+        await persistQuranResumeContext({
+          mediaType: 'quran',
+          surah: activeTrack.surah,
+          ayah: activeTrack.ayah,
+          scopeType: activeTrack.scopeType,
+          juzNumber: activeTrack.juzNumber ?? null,
+          updatedAt: Date.now(),
+        });
 
         if (trackChanged) {
           this.onAyahChangeCb?.(activeTrack.surah, activeTrack.ayah);
@@ -743,6 +798,14 @@ class QuranAudioManager {
       this.emitSnapshot();
       this.onAyahChangeCb?.(surah, ayah);
       await AsyncStorage.setItem(LAST_POSITION_KEY, JSON.stringify({ surah, ayah }));
+      await persistQuranResumeContext({
+        mediaType: 'quran',
+        surah,
+        ayah,
+        scopeType: resolvedScope.type,
+        juzNumber: resolvedScope.juzNumber ?? null,
+        updatedAt: Date.now(),
+      });
     } catch (e) {
       const resolvedError = e instanceof Error ? e : new Error(String(e));
       const message = resolvedError.message;

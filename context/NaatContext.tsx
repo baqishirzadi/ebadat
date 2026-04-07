@@ -312,6 +312,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         title: item.title_fa || item.title_ps || 'نعت',
         artist: item.reciter_name || undefined,
         duration: item.duration_seconds && item.duration_seconds > 0 ? item.duration_seconds : undefined,
+        mediaType: 'naat',
       });
 
       seen.add(item.id);
@@ -326,6 +327,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         duration: selectedNaat.duration_seconds && selectedNaat.duration_seconds > 0
           ? selectedNaat.duration_seconds
           : undefined,
+        mediaType: 'naat',
       });
     }
 
