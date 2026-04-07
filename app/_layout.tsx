@@ -232,7 +232,6 @@ function RootLayoutNav() {
         <Stack.Screen name="search" options={{ headerShown: true }} />
         <Stack.Screen name="counter" options={{ presentation: 'modal' }} />
         <Stack.Screen name="calendar" options={{ headerShown: true }} />
-        <Stack.Screen name="ramadan" options={{ headerShown: true }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'اطلاعات' }} />
         {/* Rely on file-based routing for the rest (dua-request, admin, articles, scholar).
             Removing explicit Stack.Screen entries prevents \"No route named ...\" warnings

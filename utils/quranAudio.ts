@@ -5,6 +5,7 @@ import * as Network from 'expo-network';
 import TrackPlayer, { State as TrackPlayerState } from 'react-native-track-player';
 
 export type ReciterKey =
+  | 'yasser_ad_dussary'
   | 'ghamidi'
   | 'muaiqly'
   | 'minshawy_mujawwad'
@@ -19,6 +20,12 @@ type ReciterInfo = {
 };
 
 export const RECITERS: Record<ReciterKey, ReciterInfo> = {
+  yasser_ad_dussary: {
+    key: 'yasser_ad_dussary',
+    name: 'قاری یاسر الدوسری',
+    baseUrl: 'https://everyayah.com/data/Yasser_Ad-Dussary_128kbps',
+    quality: '128 kbps',
+  },
   ghamidi: {
     key: 'ghamidi',
     name: 'قاری سعد الغامدی',
@@ -55,14 +62,18 @@ function isReciterKey(value: string): value is ReciterKey {
   return value in RECITERS;
 }
 
-export function getAyahUrl(surah: number, ayah: number, reciter: ReciterKey = 'ghamidi'): string {
+export function getAyahUrl(
+  surah: number,
+  ayah: number,
+  reciter: ReciterKey = 'yasser_ad_dussary'
+): string {
   return getAyahUrlCandidates(surah, ayah, reciter)[0];
 }
 
 function getAyahUrlCandidates(
   surah: number,
   ayah: number,
-  reciter: ReciterKey = 'ghamidi'
+  reciter: ReciterKey = 'yasser_ad_dussary'
 ): string[] {
   const s = String(surah).padStart(3, '0');
   const a = String(ayah).padStart(3, '0');
@@ -132,7 +143,7 @@ type CacheResolution = {
 
 class QuranAudioManager {
   private sound: Audio.Sound | null = null;
-  private currentReciter: ReciterKey = 'ghamidi';
+  private currentReciter: ReciterKey = 'yasser_ad_dussary';
   private currentSurah = 0;
   private currentAyah = 0;
   private isPlaying = false;

@@ -40,7 +40,7 @@ export function AudioPlayer({
 }: AudioPlayerProps) {
   const { theme } = useApp();
   const insets = useSafeAreaInsets();
-  const [currentReciter, setCurrentReciter] = useState<ReciterKey>('ghamidi');
+  const [currentReciter, setCurrentReciter] = useState<ReciterKey>('yasser_ad_dussary');
   const [showReciterModal, setShowReciterModal] = useState(false);
 
   useEffect(() => {

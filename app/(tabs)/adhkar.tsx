@@ -10,7 +10,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
-import { RamadanFeatureTile } from '@/components/ramadan/RamadanFeatureTile';
 import adhkarData from '@/data/adhkar.json';
 
 // Category type
@@ -150,9 +149,6 @@ export default function AdhkarScreen() {
         </View>
         <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
       </Pressable>
-
-      <RamadanFeatureTile style={styles.ramadanCard} />
-
       <View style={styles.bottomPadding} />
     </ScrollView>
   );
@@ -357,10 +353,6 @@ paddingRight: Spacing.sm,
     marginTop: 2,
     textAlign: 'center',
     fontStyle: 'italic',
-  },
-  ramadanCard: {
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.sm,
   },
   bottomPadding: {
     height: 120,

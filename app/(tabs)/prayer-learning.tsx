@@ -6,7 +6,6 @@
 import CenteredText from '@/components/CenteredText';
 import { DuaFeatureTile } from '@/components/dua/FeatureTile';
 import { PrayerStepGuide, PrayerTextBlock } from '@/components/prayer';
-import { RamadanFeatureTile } from '@/components/ramadan/RamadanFeatureTile';
 import type { PashtoFontFamily } from '@/constants/theme';
 import { BorderRadius, NAAT_GRADIENT, PashtoFonts, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
@@ -168,7 +167,6 @@ export default function PrayerLearningScreen() {
       {/* Dua Request Feature Tile */}
       <View style={styles.duaTileContainer}>
         <DuaFeatureTile />
-        <RamadanFeatureTile style={styles.ramadanTile} />
       </View>
     </ScrollView>
   );
@@ -509,9 +507,6 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
     marginTop: Spacing.md,
     marginBottom: Spacing.sm,
-  },
-  ramadanTile: {
-    marginTop: Spacing.sm,
   },
   backButton: {
     position: 'absolute',

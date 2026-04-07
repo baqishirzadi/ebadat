@@ -1,7 +1,6 @@
 /**
  * More Screen / Dashboard
- * Shows stats, Islamic calendar, Ramadan, and additional features
- * All text in Dari - No English
+ * Dashboard-first hub for secondary features and personal progress
  */
 
 import React from 'react';
@@ -9,13 +8,7 @@ import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import { getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
-import { useApp } from '@/context/AppContext';
-import { useStats } from '@/context/StatsContext';
-import { usePrayer } from '@/context/PrayerContext';
-import { formatHijriDate, getUpcomingSpecialDays, hijriToGregorian, HIJRI_MONTHS } from '@/utils/islamicCalendar';
-import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
-import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
+
 import CenteredText from '@/components/CenteredText';
 import {
   ABOUT_CREATOR_DARI_CREATOR_LABEL,
@@ -27,17 +20,38 @@ import {
   ABOUT_CREATOR_PASHTO_PARAGRAPHS,
   ABOUT_CREATOR_PASHTO_TITLE,
 } from '@/constants/aboutCreatorContent';
+import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
+import { useApp } from '@/context/AppContext';
+import { usePrayer } from '@/context/PrayerContext';
+import { useStats } from '@/context/StatsContext';
+import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
+import { getKabulDateParts, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
+import { getCalendarTruth } from '@/utils/calendarTruth';
+import { formatHijriDate, getUpcomingSpecialDays, hijriToGregorian, HIJRI_MONTHS } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
 
-// Weekday names in Dari (JS getDay: 0=Sun, 1=Mon, ..., 6=Sat)
 const WEEKDAY_DARI = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
+const GREGORIAN_MONTHS_DARI = [
+  'جنوری',
+  'فبروری',
+  'مارچ',
+  'اپریل',
+  'می',
+  'جون',
+  'جولای',
+  'اگست',
+  'سپتمبر',
+  'اکتوبر',
+  'نومبر',
+  'دسمبر',
+];
 
-/** Get Shamsi date and weekday string for a Hijri event (e.g. "۲۲ حمل ۱۴۰۴ • شنبه") */
-function getShamsiAndWeekday(
-  hijriYear: number,
-  hijriMonth: number,
-  hijriDay: number
-): string | null {
+function formatGregorianDateDari(date: Date): string {
+  const { day, month, year } = getKabulDateParts(date);
+  return `${toArabicNumerals(day)} ${GREGORIAN_MONTHS_DARI[month - 1]} ${toArabicNumerals(year)}`;
+}
+
+function getShamsiAndWeekday(hijriYear: number, hijriMonth: number, hijriDay: number): string | null {
   const greg = hijriToGregorian(hijriYear, hijriMonth, hijriDay);
   if (!greg) return null;
   const shamsi = gregorianToAfghanSolarHijri(greg);
@@ -50,171 +64,202 @@ export default function MoreScreen() {
   const { state: stats } = useStats();
   const { state: prayer } = usePrayer();
   const router = useRouter();
+  const truth = getCalendarTruth(new Date());
+  const activeHijriDate = prayer.hijriDate ?? truth.hijri;
+  const upcomingDays = getUpcomingSpecialDays(activeHijriDate, 3);
+  const weekdayLabel = WEEKDAY_DARI[truth.weekday];
+  const locationLabel = prayer.locationName?.trim() || 'کابل';
+  const scheduleModeLabel =
+    prayer.scheduleAudit?.scheduleMode === 'exact'
+      ? 'اذان دقیق'
+      : prayer.scheduleAudit?.scheduleMode === 'fallback'
+        ? 'اذان عادی'
+        : 'اذان آماده';
 
-  const upcomingDays = prayer.hijriDate ? getUpcomingSpecialDays(prayer.hijriDate, 3) : [];
-
-  // Stats cards
-  const statsCards = [
-    { icon: 'menu-book', label: 'آیات خوانده شده', value: stats.overall.totalAyahsRead, color: '#22C55E' },
-    { icon: 'headphones', label: 'آیات شنیده شده', value: stats.overall.totalAyahsListened, color: '#3B82F6' },
-    { icon: 'auto-awesome', label: 'اذکار', value: stats.overall.totalDhikrCount, color: '#F59E0B' },
-    { icon: 'local-fire-department', label: 'روزهای متوالی', value: stats.overall.currentStreak, color: '#EF4444' },
+  const quickActions = [
+    { icon: 'menu-book', label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith', accent: theme.tint },
+    { icon: 'article', label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles', accent: theme.bookmark },
+    { icon: 'calendar-today', label: 'تقویم اسلامی', subtitle: 'مناسبت‌های مهم', route: '/calendar', accent: theme.surahHeader },
+    { icon: 'explore', label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla', accent: theme.tint },
+    { icon: 'school', label: 'آموزش نماز', subtitle: 'فقه و راهنما', route: '/(tabs)/prayer-learning', accent: theme.bookmark },
+    { icon: 'bookmark', label: 'نشانه‌های من', subtitle: 'موارد ذخیره‌شده', route: '/(tabs)/bookmarks', accent: theme.surahHeader },
   ];
 
-  // Menu items
-  const menuItems = [
-    { icon: 'bookmark', label: 'نشانه‌های من', route: '/(tabs)/bookmarks', color: '#10B981' },
-    { icon: 'school', label: 'آموزش نماز', route: '/(tabs)/prayer-learning', color: '#9C27B0' },
-    { icon: 'favorite', label: 'دعای خیر و مشورت شرعی', route: '/dua-request', color: '#D4AF37' },
-    { icon: 'menu-book', label: 'احادیث', route: '/ahadith', color: '#14B8A6' },
-    { icon: 'article', label: 'مقالات', route: '/(tabs)/articles', color: '#2196F3' },
-    { icon: 'calendar-today', label: 'تقویم اسلامی', route: '/calendar', color: '#6366F1' },
-    { icon: 'nights-stay', label: 'برنامه رمضان', route: '/ramadan', color: '#8B5CF6' },
-    { icon: 'explore', label: 'قبله‌نما', route: '/qibla', color: '#F59E0B' },
-    { icon: 'admin-panel-settings', label: 'پنل مدیریت', route: '/admin/login', color: '#0EA5E9' },
-    { icon: 'settings', label: 'تنظیمات', route: '/(tabs)/settings', color: '#64748B' },
+  const secondaryActions = [
+    { icon: 'access-alarm', label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings' },
+    { icon: 'favorite', label: 'دعای خیر و مشورت شرعی', subtitle: 'ارسال درخواست دعا', route: '/dua-request' },
+    { icon: 'admin-panel-settings', label: 'پنل مدیریت', subtitle: 'بخش مدیریتی', route: '/admin/login' },
+    { icon: 'settings', label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/(tabs)/settings' },
+  ];
+
+  const summaryCards = [
+    { icon: 'menu-book', label: 'آیات خوانده‌شده', value: stats.overall.totalAyahsRead },
+    { icon: 'auto-awesome', label: 'اذکار ثبت‌شده', value: stats.overall.totalDhikrCount },
+    { icon: 'local-fire-department', label: 'روزهای متوالی', value: stats.overall.currentStreak },
+    { icon: 'auto-stories', label: 'ختم قرآن', value: stats.overall.khatmCount },
+  ];
+
+  const todayRows = [
+    { label: 'نمازهای امروز', value: `${toArabicNumerals(stats.daily.prayersCompleted.length)} از ${toArabicNumerals(5)}` },
+    { label: 'آیات امروز', value: toArabicNumerals(stats.daily.ayahsRead) },
+    { label: 'اذکار امروز', value: toArabicNumerals(stats.daily.dhikrCount) },
+    { label: 'دقیقه قرآن', value: toArabicNumerals(stats.daily.quranMinutes) },
   ];
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      <LinearGradient
-        colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
-        style={styles.header}
-      >
+    <ScrollView
+      style={[styles.container, { backgroundColor: theme.background }]}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      <LinearGradient colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light} style={styles.header}>
+        <View style={styles.headerBadge}>
+          <MaterialIcons name="dashboard" size={16} color="#fff" />
+          <CenteredText style={styles.headerBadgeText}>مرکز امکانات</CenteredText>
+        </View>
         <CenteredText style={styles.headerTitle}>بیشتر</CenteredText>
-        {prayer.hijriDate && (
-          <CenteredText style={styles.headerDate}>
-            {formatHijriDate(prayer.hijriDate, 'dari')}
-          </CenteredText>
-        )}
+        <CenteredText style={styles.headerSubtitle}>میان‌بُرهای مهم، آمار روزانه و همراه همیشگی عبادت</CenteredText>
       </LinearGradient>
 
-      {/* Menu */}
-      <View style={styles.section}>
-        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          منو
+      <View style={[styles.heroCard, { backgroundColor: theme.card, borderColor: theme.cardBorder, shadowColor: theme.tint }]}> 
+        <View style={styles.heroChipRow}>
+          <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <MaterialIcons name="today" size={16} color={theme.tint} />
+            <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{weekdayLabel}</CenteredText>
+          </View>
+          <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <MaterialIcons name="place" size={16} color={theme.tint} />
+            <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{locationLabel}</CenteredText>
+          </View>
+          <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <MaterialIcons name="notifications-active" size={16} color={theme.bookmark} />
+            <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{scheduleModeLabel}</CenteredText>
+          </View>
+        </View>
+
+        <CenteredText style={[styles.heroLead, { color: theme.textSecondary }]}>امروز در یک نگاه</CenteredText>
+        <CenteredText style={[styles.heroHijri, { color: theme.text }]}>{formatHijriDate(truth.hijri, 'dari')}</CenteredText>
+        <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
+          {formatAfghanSolarHijriDateWithPersianNumerals(truth.shamsi, 'dari')}
         </CenteredText>
-        <View style={styles.menuList}>
-          {menuItems.map((item, index) => (
+        <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
+          {formatGregorianDateDari(truth.gregorianDate)}
+        </CenteredText>
+
+        <View style={styles.heroMetricsRow}>
+          <View style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <CenteredText style={[styles.heroMetricValue, { color: theme.tint }]}>
+              {toArabicNumerals(stats.daily.prayersCompleted.length)}
+            </CenteredText>
+            <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>نماز امروز</CenteredText>
+          </View>
+          <View style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <CenteredText style={[styles.heroMetricValue, { color: theme.bookmark }]}>
+              {toArabicNumerals(stats.daily.quranMinutes)}
+            </CenteredText>
+            <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>دقیقه قرآن</CenteredText>
+          </View>
+          <View style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <CenteredText style={[styles.heroMetricValue, { color: theme.surahHeader }]}>
+              {toArabicNumerals(stats.overall.currentStreak)}
+            </CenteredText>
+            <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>روز متوالی</CenteredText>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>میان‌بُرهای اصلی</CenteredText>
+        <View style={styles.quickGrid}>
+          {quickActions.map((item) => (
             <Pressable
-              key={index}
+              key={item.label}
               onPress={() => router.push(item.route as any)}
               style={({ pressed }) => [
-                styles.menuItem,
+                styles.quickCard,
                 { backgroundColor: theme.card, borderColor: theme.cardBorder },
-                pressed && styles.menuItemPressed,
+                pressed && styles.pressedCard,
               ]}
             >
-              <View style={[styles.menuIcon, { backgroundColor: `${item.color}20` }]}>
-                <MaterialIcons name={item.icon as any} size={24} color={item.color} />
+              <View style={[styles.quickIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+                <MaterialIcons name={item.icon as any} size={24} color={item.accent} />
               </View>
-              <CenteredText style={[styles.menuLabel, { color: theme.text }]}>
-                {item.label}
-              </CenteredText>
-              <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
+              <CenteredText style={[styles.quickLabel, { color: theme.text }]}>{item.label}</CenteredText>
+              <CenteredText style={[styles.quickSubtitle, { color: theme.textSecondary }]}>{item.subtitle}</CenteredText>
             </Pressable>
           ))}
         </View>
       </View>
 
-      {/* Stats Grid */}
       <View style={styles.section}>
-        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          آمار شما
-        </CenteredText>
-        <View style={styles.statsGrid}>
-          {statsCards.map((stat, index) => (
+        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>خلاصه پیشرفت</CenteredText>
+        <View style={styles.summaryGrid}>
+          {summaryCards.map((item) => (
             <View
-              key={index}
-              style={[styles.statCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+              key={item.label}
+              style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
             >
-              <View style={[styles.statIcon, { backgroundColor: `${stat.color}20` }]}>
-                <MaterialIcons name={stat.icon as any} size={24} color={stat.color} />
+              <View style={[styles.summaryIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+                <MaterialIcons name={item.icon as any} size={22} color={theme.tint} />
               </View>
-              <CenteredText style={[styles.statValue, { color: theme.text }]}>
-                {toArabicNumerals(stat.value)}
-              </CenteredText>
-              <CenteredText style={[styles.statLabel, { color: theme.textSecondary }]}>
-                {stat.label}
-              </CenteredText>
+              <CenteredText style={[styles.summaryValue, { color: theme.text }]}>{toArabicNumerals(item.value)}</CenteredText>
+              <CenteredText style={[styles.summaryLabel, { color: theme.textSecondary }]}>{item.label}</CenteredText>
             </View>
           ))}
         </View>
       </View>
 
-      {/* Today's Progress */}
       <View style={styles.section}>
-        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          امروز
-        </CenteredText>
-        <View style={[styles.todayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <View style={styles.todayRow}>
-            <CenteredText style={[styles.todayLabel, { color: theme.text }]}>آیات خوانده شده</CenteredText>
-            <CenteredText style={[styles.todayValue, { color: theme.tint }]}>
-              {toArabicNumerals(stats.daily.ayahsRead)}
-            </CenteredText>
-          </View>
-          <View style={[styles.todayDivider, { backgroundColor: theme.divider }]} />
-          <View style={styles.todayRow}>
-            <CenteredText style={[styles.todayLabel, { color: theme.text }]}>اذکار</CenteredText>
-            <CenteredText style={[styles.todayValue, { color: theme.tint }]}>
-              {toArabicNumerals(stats.daily.dhikrCount)}
-            </CenteredText>
-          </View>
-          <View style={[styles.todayDivider, { backgroundColor: theme.divider }]} />
-          <View style={styles.todayRow}>
-            <CenteredText style={[styles.todayLabel, { color: theme.text }]}>دقیقه قرآن</CenteredText>
-            <CenteredText style={[styles.todayValue, { color: theme.tint }]}>
-              {toArabicNumerals(stats.daily.quranMinutes)}
-            </CenteredText>
-          </View>
+        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>کارهای امروز</CenteredText>
+        <View style={[styles.todayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}> 
+          {todayRows.map((row, index) => (
+            <View key={row.label}>
+              {index > 0 && <View style={[styles.todayDivider, { backgroundColor: theme.divider }]} />}
+              <View style={styles.todayRow}>
+                <CenteredText style={[styles.todayValue, { color: theme.tint }]}>{row.value}</CenteredText>
+                <CenteredText style={[styles.todayLabel, { color: theme.text }]}>{row.label}</CenteredText>
+              </View>
+            </View>
+          ))}
         </View>
       </View>
 
-      {/* Upcoming Islamic Days - numbers left, texts right, with Shamsi date + weekday */}
-      {upcomingDays.length > 0 && prayer.hijriDate && (
+      {upcomingDays.length > 0 && (
         <View style={styles.section}>
-          <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-            مناسبت‌های آینده
-          </CenteredText>
+          <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>مناسبت‌های آینده</CenteredText>
           <View style={styles.upcomingList}>
             {upcomingDays.map((day, index) => {
-              const hijriYear = day.month >= prayer.hijriDate!.month
-                ? prayer.hijriDate!.year
-                : prayer.hijriDate!.year + 1;
+              const baseYear = activeHijriDate.year;
+              const hijriYear = day.month >= activeHijriDate.month ? baseYear : baseYear + 1;
               const shamsiWeekday = getShamsiAndWeekday(hijriYear, day.month, day.day);
               return (
                 <View
-                  key={index}
+                  key={`${day.month}-${day.day}-${index}`}
                   style={[styles.upcomingCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
                 >
-                  {/* Text block on right (first in RTL row so appears on right) */}
-                  <View style={styles.upcomingInfo}>
-                    <CenteredText style={[styles.upcomingName, { color: theme.text }]}>
-                      {day.nameDari}
-                    </CenteredText>
-                    <CenteredText style={[styles.upcomingDesc, { color: theme.textSecondary }]} numberOfLines={1}>
+                  <View style={styles.upcomingTextWrap}>
+                    <CenteredText style={[styles.upcomingName, { color: theme.text }]}>{day.nameDari}</CenteredText>
+                    <CenteredText style={[styles.upcomingDescription, { color: theme.textSecondary }]}>
                       {day.descriptionDari}
                     </CenteredText>
                     {shamsiWeekday && (
-                      <CenteredText style={[styles.upcomingShamsi, { color: theme.textSecondary }]}>
+                      <CenteredText style={[styles.upcomingMeta, { color: theme.textSecondary }]}>
                         {shamsiWeekday}
                       </CenteredText>
                     )}
                   </View>
-                  {day.isFasting && (
-                    <MaterialIcons name="restaurant" size={20} color={theme.bookmark} />
-                  )}
-                  {day.isEid && (
-                    <MaterialIcons name="celebration" size={20} color="#F59E0B" />
-                  )}
-                  {/* Date badge on left (last in RTL row so appears on left) */}
-                  <View style={[styles.upcomingDate, { backgroundColor: theme.tint }]}>
-                    <CenteredText style={styles.upcomingDay}>{toArabicNumerals(day.day)}</CenteredText>
-                    <CenteredText style={styles.upcomingMonth} numberOfLines={1}>
-                      {HIJRI_MONTHS[day.month - 1]?.arabic ?? ''}
-                    </CenteredText>
+                  <View style={styles.upcomingBadgeWrap}>
+                    {(day.isFasting || day.isEid) && (
+                      <MaterialIcons
+                        name={day.isEid ? 'celebration' : 'restaurant'}
+                        size={18}
+                        color={day.isEid ? theme.bookmark : theme.tint}
+                      />
+                    )}
+                    <View style={[styles.upcomingDateBadge, { backgroundColor: theme.tint }]}>
+                      <CenteredText style={styles.upcomingDay}>{toArabicNumerals(day.day)}</CenteredText>
+                      <CenteredText style={styles.upcomingMonth}>{HIJRI_MONTHS[day.month - 1]?.dari ?? ''}</CenteredText>
+                    </View>
                   </View>
                 </View>
               );
@@ -223,25 +268,47 @@ export default function MoreScreen() {
         </View>
       )}
 
-      {/* Khatm Counter - icon left, text centered */}
-      <View style={[styles.khatmCard, { backgroundColor: theme.card, borderColor: theme.tint }]}>
-        <View style={styles.khatmInfo}>
-          <CenteredText style={[styles.khatmLabel, { color: theme.textSecondary }]}>ختم قرآن</CenteredText>
-          <CenteredText style={[styles.khatmValue, { color: theme.text }]}>
-            {toArabicNumerals(stats.overall.khatmCount)} بار
-          </CenteredText>
+      <View style={styles.section}>
+        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>راهنما و پشتیبانی</CenteredText>
+        <View style={styles.secondaryList}>
+          {secondaryActions.map((item) => (
+            <Pressable
+              key={item.label}
+              onPress={() => router.push(item.route as any)}
+              style={({ pressed }) => [
+                styles.secondaryRow,
+                { backgroundColor: theme.card, borderColor: theme.cardBorder },
+                pressed && styles.pressedCard,
+              ]}
+            >
+              <MaterialIcons name="chevron-left" size={22} color={theme.icon} />
+              <View style={styles.secondaryTextWrap}>
+                <CenteredText style={[styles.secondaryLabel, { color: theme.text }]}>{item.label}</CenteredText>
+                <CenteredText style={[styles.secondarySubtitle, { color: theme.textSecondary }]}>{item.subtitle}</CenteredText>
+              </View>
+              <View style={[styles.secondaryIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+                <MaterialIcons name={item.icon as any} size={22} color={theme.tint} />
+              </View>
+            </Pressable>
+          ))}
         </View>
-        <MaterialIcons name="auto-stories" size={32} color={theme.tint} />
       </View>
 
-      {/* Creator Section */}
+      <View style={[styles.khatmCard, { backgroundColor: theme.card, borderColor: theme.bookmark }]}> 
+        <MaterialIcons name="auto-stories" size={30} color={theme.bookmark} />
+        <View style={styles.khatmTextWrap}>
+          <CenteredText style={[styles.khatmValue, { color: theme.text }]}>
+            {toArabicNumerals(stats.overall.khatmCount)} ختم کامل قرآن
+          </CenteredText>
+          <CenteredText style={[styles.khatmLabel, { color: theme.textSecondary }]}>این شمار از تمام ختم‌های ثبت‌شده در برنامه است</CenteredText>
+        </View>
+      </View>
+
       <View style={styles.section}>
-        <View style={[styles.creatorCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <View style={[styles.creatorCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}> 
           <View style={styles.creatorHeader}>
-            <MaterialIcons name="favorite" size={20} color="#D4AF37" />
-            <CenteredText style={[styles.creatorTitle, { color: '#D4AF37' }]}>
-              {ABOUT_CREATOR_DARI_TITLE}
-            </CenteredText>
+            <MaterialIcons name="favorite" size={18} color={theme.bookmark} />
+            <CenteredText style={[styles.creatorTitle, { color: theme.bookmark }]}>{ABOUT_CREATOR_DARI_TITLE}</CenteredText>
           </View>
 
           {ABOUT_CREATOR_DARI_PARAGRAPHS.map((paragraph, index) => (
@@ -250,35 +317,21 @@ export default function MoreScreen() {
             </CenteredText>
           ))}
 
-          <CenteredText style={[styles.creatorLabel, { color: theme.text }]}>
-            {ABOUT_CREATOR_DARI_CREATOR_LABEL}
-          </CenteredText>
-          <CenteredText style={[styles.creatorNameDari, { color: '#D4AF37' }]}>
-            {ABOUT_CREATOR_DARI_CREATOR_NAME}
-          </CenteredText>
+          <CenteredText style={[styles.creatorLabel, { color: theme.text }]}>{ABOUT_CREATOR_DARI_CREATOR_LABEL}</CenteredText>
+          <CenteredText style={[styles.creatorNameDari, { color: theme.bookmark }]}>{ABOUT_CREATOR_DARI_CREATOR_NAME}</CenteredText>
 
           <View style={[styles.creatorDivider, { backgroundColor: theme.divider }]} />
 
-          <CenteredText style={[styles.creatorTitle, { color: '#0F766E' }]}>
-            {ABOUT_CREATOR_PASHTO_TITLE}
-          </CenteredText>
-
+          <CenteredText style={[styles.creatorTitle, { color: theme.tint }]}>{ABOUT_CREATOR_PASHTO_TITLE}</CenteredText>
           {ABOUT_CREATOR_PASHTO_PARAGRAPHS.map((paragraph, index) => (
             <CenteredText key={`pashto-${index}`} style={[styles.creatorParagraph, { color: theme.textSecondary }]}>
               {paragraph}
             </CenteredText>
           ))}
-
-          <CenteredText style={[styles.creatorLabel, { color: theme.text }]}>
-            {ABOUT_CREATOR_PASHTO_CREATOR_LABEL}
-          </CenteredText>
-          <CenteredText style={[styles.creatorNamePashto, { color: '#0F766E' }]}>
-            {ABOUT_CREATOR_PASHTO_CREATOR_NAME}
-          </CenteredText>
+          <CenteredText style={[styles.creatorLabel, { color: theme.text }]}>{ABOUT_CREATOR_PASHTO_CREATOR_LABEL}</CenteredText>
+          <CenteredText style={[styles.creatorNamePashto, { color: theme.tint }]}>{ABOUT_CREATOR_PASHTO_CREATOR_NAME}</CenteredText>
         </View>
       </View>
-
-      <View style={styles.bottomPadding} />
     </ScrollView>
   );
 }
@@ -287,67 +340,182 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  contentContainer: {
+    paddingBottom: 120,
+  },
   header: {
     paddingTop: 60,
-    paddingBottom: Spacing.lg,
+    paddingBottom: 108,
     paddingHorizontal: Spacing.lg,
     alignItems: 'center',
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
     overflow: 'hidden',
+  },
+  headerBadge: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
+  headerBadgeText: {
+    fontSize: Typography.ui.caption,
+    color: '#fff',
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
     color: '#fff',
+    marginTop: Spacing.md,
   },
-  headerDate: {
+  headerSubtitle: {
     fontSize: Typography.ui.body,
-    color: 'rgba(255,255,255,0.8)',
+    color: 'rgba(255,255,255,0.88)',
+    marginTop: Spacing.sm,
+    lineHeight: 26,
+  },
+  heroCard: {
+    marginTop: -64,
+    marginHorizontal: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    padding: Spacing.lg,
+    elevation: 5,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.12,
+    shadowRadius: 18,
+  },
+  heroChipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+  },
+  heroChip: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 8,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  heroChipText: {
+    fontSize: Typography.ui.caption,
+    fontWeight: '600',
+  },
+  heroLead: {
+    marginTop: Spacing.lg,
+    fontSize: Typography.ui.caption,
+    fontWeight: '700',
+  },
+  heroHijri: {
     marginTop: Spacing.xs,
+    fontSize: Typography.ui.title,
+    fontWeight: '700',
+  },
+  heroDateLine: {
+    marginTop: 4,
+    fontSize: Typography.ui.body,
+    lineHeight: 25,
+  },
+  heroMetricsRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginTop: Spacing.lg,
+  },
+  heroMetric: {
+    flex: 1,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xs,
+    alignItems: 'center',
+  },
+  heroMetricValue: {
+    fontSize: Typography.ui.heading,
+    fontWeight: '700',
+  },
+  heroMetricLabel: {
+    marginTop: 4,
+    fontSize: Typography.ui.caption,
   },
   section: {
-    marginTop: Spacing.lg,
+    marginTop: Spacing.xl,
     paddingHorizontal: Spacing.md,
   },
   sectionTitle: {
     fontSize: Typography.ui.caption,
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: Spacing.md,
-paddingRight: Spacing.sm,
     textTransform: 'uppercase',
   },
-  statsGrid: {
+  quickGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
   },
-  statCard: {
+  quickCard: {
     width: '48%',
-    padding: Spacing.md,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    paddingVertical: Spacing.lg,
+    paddingHorizontal: Spacing.md,
+    alignItems: 'center',
+  },
+  quickIconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     borderWidth: 1,
     alignItems: 'center',
-  },
-  statIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
     justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: Spacing.sm,
   },
-  statValue: {
+  quickLabel: {
+    fontSize: Typography.ui.body,
+    fontWeight: '700',
+  },
+  quickSubtitle: {
+    fontSize: Typography.ui.caption,
+    marginTop: Spacing.xs,
+    lineHeight: 22,
+  },
+  summaryGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  summaryCard: {
+    width: '48%',
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    padding: Spacing.md,
+    alignItems: 'center',
+  },
+  summaryIconWrap: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.sm,
+  },
+  summaryValue: {
     fontSize: Typography.ui.heading,
     fontWeight: '700',
   },
-  statLabel: {
+  summaryLabel: {
     fontSize: Typography.ui.caption,
-    marginTop: Spacing.xs,
-    textAlign: 'center',
+    marginTop: 4,
+    lineHeight: 20,
   },
   todayCard: {
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     borderWidth: 1,
     overflow: 'hidden',
   },
@@ -355,9 +523,12 @@ paddingRight: Spacing.sm,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    gap: Spacing.md,
   },
   todayLabel: {
+    flex: 1,
     fontSize: Typography.ui.body,
   },
   todayValue: {
@@ -374,18 +545,40 @@ paddingRight: Spacing.sm,
   upcomingCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Spacing.md,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     borderWidth: 1,
+    padding: Spacing.md,
     gap: Spacing.md,
   },
-  upcomingDate: {
-    width: 56,
-    minHeight: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
+  upcomingTextWrap: {
+    flex: 1,
     alignItems: 'center',
-    paddingVertical: 4,
+  },
+  upcomingName: {
+    fontSize: Typography.ui.body,
+    fontWeight: '700',
+  },
+  upcomingDescription: {
+    fontSize: Typography.ui.caption,
+    lineHeight: 22,
+    marginTop: 4,
+  },
+  upcomingMeta: {
+    fontSize: 11,
+    marginTop: 6,
+  },
+  upcomingBadgeWrap: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  upcomingDateBadge: {
+    width: 64,
+    minHeight: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 8,
   },
   upcomingDay: {
     fontSize: Typography.ui.subtitle,
@@ -393,84 +586,62 @@ paddingRight: Spacing.sm,
     color: '#fff',
   },
   upcomingMonth: {
-    fontSize: 9,
+    fontSize: 10,
     color: 'rgba(255,255,255,0.95)',
-    marginTop: 1,
-    writingDirection: 'rtl',
-  },
-  upcomingInfo: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  upcomingName: {
-    fontSize: Typography.ui.body,
-    fontWeight: '600',
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  upcomingDesc: {
-    fontSize: Typography.ui.caption,
     marginTop: 2,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
-  upcomingShamsi: {
-    fontSize: 11,
-    marginTop: 4,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  menuList: {
+  secondaryList: {
     gap: Spacing.sm,
   },
-  menuItem: {
+  secondaryRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
+    padding: Spacing.md,
     gap: Spacing.md,
   },
-  menuItemPressed: {
-    opacity: 0.9,
-  },
-  menuIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  menuLabel: {
+  secondaryTextWrap: {
     flex: 1,
-    fontSize: Typography.ui.body,
-    fontWeight: '500',
-},
-  khatmCard: {
-    flexDirection: 'row',
     alignItems: 'center',
-    marginHorizontal: Spacing.md,
+  },
+  secondaryLabel: {
+    fontSize: Typography.ui.body,
+    fontWeight: '700',
+  },
+  secondarySubtitle: {
+    fontSize: Typography.ui.caption,
+    marginTop: 4,
+    lineHeight: 20,
+  },
+  secondaryIconWrap: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  khatmCard: {
     marginTop: Spacing.xl,
-    padding: Spacing.lg,
+    marginHorizontal: Spacing.md,
     borderRadius: BorderRadius.xl,
     borderWidth: 2,
-    gap: Spacing.md,
-  },
-  khatmInfo: {
-    flex: 1,
+    padding: Spacing.lg,
     alignItems: 'center',
+    gap: Spacing.sm,
   },
-  khatmLabel: {
-    fontSize: Typography.ui.caption,
-    textAlign: 'center',
+  khatmTextWrap: {
+    alignItems: 'center',
   },
   khatmValue: {
     fontSize: Typography.ui.title,
     fontWeight: '700',
-    textAlign: 'center',
   },
-  bottomPadding: {
-    height: 120,
+  khatmLabel: {
+    marginTop: 4,
+    fontSize: Typography.ui.caption,
+    lineHeight: 21,
   },
   creatorCard: {
     borderRadius: BorderRadius.xl,
@@ -481,7 +652,6 @@ paddingRight: Spacing.sm,
   creatorHeader: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
-    justifyContent: 'center',
     gap: Spacing.xs,
     marginBottom: Spacing.md,
   },
@@ -489,43 +659,40 @@ paddingRight: Spacing.sm,
     fontSize: Typography.ui.subtitle,
     fontWeight: '700',
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
   },
   creatorParagraph: {
     fontSize: Typography.ui.body,
     fontFamily: 'Vazirmatn',
     lineHeight: 30,
-    textAlign: 'center',
     marginBottom: Spacing.sm,
   },
   creatorLabel: {
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
     fontWeight: '700',
-    textAlign: 'center',
     marginTop: Spacing.xs,
   },
   creatorNameDari: {
     fontSize: Typography.ui.body,
     fontFamily: 'NotoNastaliqUrdu',
     lineHeight: 38,
-    textAlign: 'center',
     marginTop: Spacing.xs,
     includeFontPadding: false,
-    writingDirection: 'rtl',
   },
   creatorNamePashto: {
     fontSize: Typography.ui.body,
     fontFamily: 'NotoNastaliqUrdu',
     lineHeight: 38,
-    textAlign: 'center',
     marginTop: Spacing.xs,
     includeFontPadding: false,
-    writingDirection: 'rtl',
   },
   creatorDivider: {
     width: '70%',
     height: 1,
     marginVertical: Spacing.md,
+  },
+  pressedCard: {
+    opacity: 0.92,
+    transform: [{ scale: 0.985 }],
   },
 });

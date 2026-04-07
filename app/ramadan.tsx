@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
-import { Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useApp } from '@/context/AppContext';
@@ -88,8 +88,9 @@ const DAILY_DUAS = [
 ];
 
 const STORAGE_KEY = '@ebadat/ramadan_progress';
+const RAMADAN_SEASON_ACTIVE = false;
 
-export default function RamadanScreen() {
+function RamadanPlannerArchivedScreen() {
   const { theme } = useApp();
   const { updateRamadanDay } = useStats();
   const [completedDays, setCompletedDays] = useState<number[]>([]);
@@ -369,6 +370,14 @@ export default function RamadanScreen() {
       <View style={styles.bottomPadding} />
     </ScrollView>
   );
+}
+
+export default function RamadanScreen() {
+  if (!RAMADAN_SEASON_ACTIVE) {
+    return <Redirect href="/(tabs)/more" />;
+  }
+
+  return <RamadanPlannerArchivedScreen />;
 }
 
 const styles = StyleSheet.create({

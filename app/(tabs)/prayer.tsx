@@ -21,7 +21,6 @@ import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSol
 import { getKabulDateParts } from '@/utils/afghanistanCalendar';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import { getCity, getImportantCities } from '@/utils/cities';
-import { RamadanFeatureTile } from '@/components/ramadan/RamadanFeatureTile';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GOLD = '#D4AF37';
@@ -433,8 +432,6 @@ export default function NamazScreen() {
           </View>
           <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
         </Pressable>
-
-        <RamadanFeatureTile style={styles.ramadanCard} variant="compact" />
         </View>
       </ScrollView>
 
@@ -893,9 +890,5 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     color: 'rgba(255,255,255,0.85)',
     fontFamily: 'Vazirmatn',
-  },
-  ramadanCard: {
-    marginTop: Spacing.sm,
-    marginBottom: Spacing.sm,
   },
 });
