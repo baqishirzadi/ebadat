@@ -6,7 +6,7 @@
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import audioManager, { ReciterKey, RECITERS, getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
+import audioManager, { ReciterKey, RECITERS, QuranPlaybackScopeType, getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { toArabicNumerals } from '@/utils/numbers';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -17,6 +17,10 @@ interface AudioPlayerProps {
   surahNumber: number;
   ayahNumber: number;
   totalAyahs: number;
+  scopeType?: QuranPlaybackScopeType;
+  scopeStartAyah?: number;
+  scopeEndAyah?: number;
+  juzNumber?: number | null;
   isVisible?: boolean;
   isPlaying: boolean;
   onPlayContinuous: () => void;
@@ -31,6 +35,10 @@ export function AudioPlayer({
   ayahNumber,
   totalAyahs,
   isVisible = true,
+  scopeType = 'surah',
+  scopeStartAyah = 1,
+  scopeEndAyah,
+  juzNumber = null,
   isPlaying,
   onPlayContinuous,
   onPause,
@@ -55,12 +63,17 @@ export function AudioPlayer({
       try {
         await audioManager.setReciter(reciter);
         setCurrentReciter(reciter);
-        await audioManager.playAyah(surahNumber, ayahNumber, totalAyahs, isPlaying);
+        await audioManager.playAyah(surahNumber, ayahNumber, totalAyahs, isPlaying, true, {
+          type: scopeType,
+          startAyah: scopeStartAyah,
+          endAyah: scopeEndAyah ?? totalAyahs,
+          juzNumber,
+        });
       } catch (error) {
         Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
       }
     },
-    [currentReciter, isPlaying, surahNumber, ayahNumber, totalAyahs]
+    [currentReciter, isPlaying, surahNumber, ayahNumber, totalAyahs, scopeType, scopeStartAyah, scopeEndAyah, juzNumber]
   );
 
   const handlePlayPause = useCallback(() => {

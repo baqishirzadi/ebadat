@@ -62,6 +62,23 @@ export default function QuranReaderScreen() {
   const [scrollTargetAyah, setScrollTargetAyah] = useState(initialAyah);
   const [shouldGoBack, setShouldGoBack] = useState(false);
 
+  const syncFromAudioSnapshot = useCallback(() => {
+    const snapshot = audioManager.getPlaybackSnapshot();
+    const isMatchingSurah = snapshot.isActive && snapshot.scopeType === 'surah' && snapshot.surah === surahNumber;
+
+    if (!isMatchingSurah) {
+      setIsPlaying(false);
+      setCurrentlyPlaying(null);
+      setShowAudioPlayer(false);
+      return;
+    }
+
+    setCurrentlyPlaying({ surah: snapshot.surah, ayah: snapshot.ayah });
+    setShowAudioPlayer(true);
+    setIsPlaying(snapshot.isPlaying);
+    setScrollTargetAyah(snapshot.ayah);
+  }, [surahNumber]);
+
   useEffect(() => {
     if (!surah && !shouldGoBack) {
       setShouldGoBack(true);
@@ -85,6 +102,7 @@ export default function QuranReaderScreen() {
 
   useEffect(() => {
     audioManager.setOnAyahChange((s, a) => {
+      if (s !== surahNumber) return;
       setCurrentlyPlaying({ surah: s, ayah: a });
       setShowAudioPlayer(true);
       setIsPlaying(true);
@@ -94,14 +112,23 @@ export default function QuranReaderScreen() {
     audioManager.setOnPlaybackEnd(() => {
       setIsPlaying(false);
       setCurrentlyPlaying(null);
+      setShowAudioPlayer(false);
     });
 
-    void audioManager.initialize();
+    const unsubscribe = audioManager.subscribe(() => {
+      syncFromAudioSnapshot();
+    });
+
+    void audioManager.initialize().then(() => {
+      syncFromAudioSnapshot();
+    });
 
     return () => {
-      void audioManager.stop();
+      unsubscribe();
+      audioManager.setOnAyahChange(null);
+      audioManager.setOnPlaybackEnd(null);
     };
-  }, []);
+  }, [surahNumber, syncFromAudioSnapshot]);
 
   // Android back button handler - first press goes to list, second press exits
   useEffect(() => {
@@ -147,7 +174,11 @@ export default function QuranReaderScreen() {
     setIsPlaying(true);
     setScrollTargetAyah(ayahNum);
     void audioManager
-      .playAyah(surahNum, ayahNum, surah.ayahs.length, true)
+      .playAyah(surahNum, ayahNum, surah.ayahs.length, true, true, {
+        type: 'surah',
+        startAyah: 1,
+        endAyah: surah.ayahs.length,
+      })
       .catch((error) => {
         Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
       });
@@ -160,7 +191,11 @@ export default function QuranReaderScreen() {
     setIsPlaying(true);
     setScrollTargetAyah(currentAyah);
     void audioManager
-      .playAyah(surahNumber, currentAyah, surah.ayahs.length, true)
+      .playAyah(surahNumber, currentAyah, surah.ayahs.length, true, true, {
+        type: 'surah',
+        startAyah: 1,
+        endAyah: surah.ayahs.length,
+      })
       .catch((error) => {
         Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
       });
@@ -301,6 +336,9 @@ export default function QuranReaderScreen() {
           surahNumber={currentlyPlaying.surah}
           ayahNumber={currentlyPlaying.ayah}
           totalAyahs={surah.ayahs.length}
+          scopeType="surah"
+          scopeStartAyah={1}
+          scopeEndAyah={surah.ayahs.length}
           isVisible={showAudioPlayer}
           isPlaying={isPlaying}
           onPlayContinuous={handlePlayContinuous}

@@ -3,7 +3,7 @@ import { Alert, AppState } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Audio } from 'expo-av';
-import TrackPlayer, { AppKilledPlaybackBehavior, Capability, Event, State, type AddTrack } from 'react-native-track-player';
+import TrackPlayer, { Event, State, type AddTrack } from 'react-native-track-player';
 import { Naat, NaatDraft } from '@/types/naat';
 import {
   createDraftPayload,
@@ -19,6 +19,7 @@ import {
 } from '@/utils/naatStorage';
 import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
 import fallbackNaatsData from '@/data/naats.fallback.json';
+import { ensureSharedTrackPlayerReady } from '@/utils/sharedTrackPlayer';
 
 type PlayerState = {
   current: Naat | null;
@@ -58,7 +59,6 @@ export function useNaat() {
 
 const TRACK_POLL_INTERVAL_MS = 250;
 const SUPABASE_FETCH_TIMEOUT_MS = 8000;
-const PLAYER_SETUP_DEFER_MS = 400;
 
 type StoredCatalog = Awaited<ReturnType<typeof loadCatalog>>;
 const FALLBACK_NAATS = fallbackNaatsData as StoredCatalog;
@@ -100,9 +100,6 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const naatsRef = useRef<Naat[]>([]);
   const lastSavedPosition = useRef<number>(0);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const setupPromiseRef = useRef<Promise<void> | null>(null);
-  const pendingSetupRef = useRef(false);
-  const appStateRef = useRef(AppState.currentState);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -210,7 +207,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         setPlayer((prev) => ({
           ...prev,
           current: null,
-          isPlaying: playbackState.state === State.Playing,
+          isPlaying: false,
           positionMillis: 0,
           durationMillis: 0,
         }));
@@ -236,70 +233,17 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [findNaatByTrack]);
 
-  const ensurePlayerReady = useCallback(async (_reason: string = 'unknown') => {
-    if (playerReady) return;
-
-    if (setupPromiseRef.current) {
-      await setupPromiseRef.current;
-      return;
-    }
-
-    if (appStateRef.current !== 'active') {
-      pendingSetupRef.current = true;
-      return;
-    }
-
-    const job = (async () => {
-      // Short defer avoids foreground-service start race when app is opened from notification/deep link.
-      await new Promise((resolve) => setTimeout(resolve, PLAYER_SETUP_DEFER_MS));
-
-      if (playerReady) return;
-      if (appStateRef.current !== 'active') {
-        pendingSetupRef.current = true;
-        return;
-      }
-
-      await TrackPlayer.setupPlayer({
-        autoHandleInterruptions: true,
-        autoUpdateMetadata: true,
-      });
-
-      await TrackPlayer.updateOptions({
-        capabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.Stop,
-          Capability.SeekTo,
-          Capability.SkipToNext,
-          Capability.SkipToPrevious,
-        ],
-        compactCapabilities: [
-          Capability.Play,
-          Capability.Pause,
-          Capability.SkipToNext,
-        ],
-        progressUpdateEventInterval: 1,
-        android: {
-          appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
-        },
-      });
-
-      setPlayerReady(true);
-      pendingSetupRef.current = false;
-      await syncPlayerSnapshot();
-    })();
-
-    setupPromiseRef.current = job;
+  const ensurePlayerReady = useCallback(async (reason: string = 'unknown') => {
     try {
-      await job;
+      await ensureSharedTrackPlayerReady(reason);
+      setPlayerReady(true);
+      await syncPlayerSnapshot();
     } catch (err) {
       setPlayerReady(false);
       if (__DEV__) console.warn('TrackPlayer setup:', err);
       throw err;
-    } finally {
-      setupPromiseRef.current = null;
     }
-  }, [playerReady, syncPlayerSnapshot]);
+  }, [syncPlayerSnapshot]);
 
   const getLocalUriIfExists = useCallback(async (naat: Naat): Promise<string | null> => {
     if (!naat.localFileUri) return null;
@@ -395,12 +339,11 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (status) => {
-      appStateRef.current = status;
       if (status === 'active') {
-        if (pendingSetupRef.current && !playerReady) {
+        if (!playerReady) {
           ensurePlayerReady('app-active').catch(() => {});
+          return;
         }
-        if (!playerReady) return;
         syncPlayerSnapshot().catch(() => {});
       }
     });

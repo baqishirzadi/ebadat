@@ -173,6 +173,24 @@ export default function JuzReaderScreen() {
     followRetryTimeoutsRef.current = [];
   }, []);
 
+  const syncFromAudioSnapshot = useCallback(() => {
+    const snapshot = audioManager.getPlaybackSnapshot();
+    const isMatchingJuz =
+      snapshot.isActive && snapshot.scopeType === 'juz' && snapshot.juzNumber === juzNumber;
+
+    if (!isMatchingJuz) {
+      setIsPlaying(false);
+      setCurrentlyPlaying(null);
+      setShowAudioPlayer(false);
+      return;
+    }
+
+    setCurrentlyPlaying({ surah: snapshot.surah, ayah: snapshot.ayah });
+    setShowAudioPlayer(true);
+    setIsPlaying(snapshot.isPlaying);
+    followAyahToTopRef.current(snapshot.surah, snapshot.ayah, false);
+  }, [juzNumber]);
+
   const followAyahToTop = useCallback(
     (surah: number, ayah: number, animated = true) => {
       const ayahKey = getAyahKey(surah, ayah);
@@ -262,6 +280,10 @@ export default function JuzReaderScreen() {
 
   useEffect(() => {
     audioManager.setOnAyahChange((surah, ayah) => {
+      const snapshot = audioManager.getPlaybackSnapshot();
+      if (!(snapshot.isActive && snapshot.scopeType === 'juz' && snapshot.juzNumber === juzNumber)) {
+        return;
+      }
       setCurrentlyPlaying({ surah, ayah });
       setShowAudioPlayer(true);
       setIsPlaying(true);
@@ -274,17 +296,51 @@ export default function JuzReaderScreen() {
       setShowAudioPlayer(false);
     });
 
-    void audioManager.initialize();
+    const unsubscribe = audioManager.subscribe(() => {
+      syncFromAudioSnapshot();
+    });
+
+    void audioManager.initialize().then(() => {
+      syncFromAudioSnapshot();
+    });
 
     return () => {
+      unsubscribe();
       activeFollowRequestIdRef.current += 1;
       clearFollowRetryTimeouts();
-      void audioManager.stop();
+      audioManager.setOnAyahChange(null);
+      audioManager.setOnPlaybackEnd(null);
     };
-  }, [clearFollowRetryTimeouts]);
+  }, [clearFollowRetryTimeouts, juzNumber, syncFromAudioSnapshot]);
+
+  const surahAyahCountBySurah = useMemo(() => {
+    const map = new Map<number, number>();
+    for (const section of sections) {
+      const ayahCount = section.data[0]?.surahAyahCount;
+      if (ayahCount) {
+        map.set(section.surahNumber, ayahCount);
+      }
+    }
+    return map;
+  }, [sections]);
+
+  const juzBoundsBySurah = useMemo(() => {
+    const map = new Map<number, { startAyah: number; endAyah: number; totalAyahs: number }>();
+    for (const section of sections) {
+      map.set(section.surahNumber, {
+        startAyah: section.startAyah,
+        endAyah: section.endAyah,
+        totalAyahs: section.data[0]?.surahAyahCount ?? section.endAyah,
+      });
+    }
+    return map;
+  }, [sections]);
 
   const handlePlayAyah = useCallback(
     (item: JuzAyahItem) => {
+      const bounds = juzBoundsBySurah.get(item.surahNumber);
+      if (!bounds) return;
+
       const isSameAyah = currentlyPlaying?.surah === item.surahNumber && currentlyPlaying?.ayah === item.ayah.number;
 
       if (isSameAyah && audioManager.getIsPlaying()) {
@@ -309,38 +365,38 @@ export default function JuzReaderScreen() {
 
       setIsPlaying(true);
       setShowAudioPlayer(true);
+      setCurrentlyPlaying({ surah: item.surahNumber, ayah: item.ayah.number });
       void audioManager
-        .playAyah(item.surahNumber, item.ayah.number, item.surahAyahCount, true)
+        .playAyah(item.surahNumber, item.ayah.number, bounds.totalAyahs, true, true, {
+          type: 'juz',
+          startAyah: bounds.startAyah,
+          endAyah: bounds.endAyah,
+          juzNumber,
+        })
         .catch((error) => {
           Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
         });
     },
-    [currentlyPlaying]
+    [currentlyPlaying, juzBoundsBySurah, juzNumber]
   );
-
-  const surahAyahCountBySurah = useMemo(() => {
-    const map = new Map<number, number>();
-    for (const section of sections) {
-      const ayahCount = section.data[0]?.surahAyahCount;
-      if (ayahCount) {
-        map.set(section.surahNumber, ayahCount);
-      }
-    }
-    return map;
-  }, [sections]);
 
   const handlePlayContinuous = useCallback(() => {
     if (!currentlyPlaying) return;
-    const totalAyahs = surahAyahCountBySurah.get(currentlyPlaying.surah);
-    if (!totalAyahs) return;
+    const bounds = juzBoundsBySurah.get(currentlyPlaying.surah);
+    if (!bounds) return;
 
     setIsPlaying(true);
     void audioManager
-      .playAyah(currentlyPlaying.surah, currentlyPlaying.ayah, totalAyahs, true)
+      .playAyah(currentlyPlaying.surah, currentlyPlaying.ayah, bounds.totalAyahs, true, true, {
+        type: 'juz',
+        startAyah: bounds.startAyah,
+        endAyah: bounds.endAyah,
+        juzNumber,
+      })
       .catch((error) => {
         Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
       });
-  }, [currentlyPlaying, surahAyahCountBySurah]);
+  }, [currentlyPlaying, juzBoundsBySurah, juzNumber]);
 
   const handlePause = useCallback(() => {
     setIsPlaying(false);
@@ -552,6 +608,10 @@ export default function JuzReaderScreen() {
           surahNumber={currentlyPlaying.surah}
           ayahNumber={currentlyPlaying.ayah}
           totalAyahs={surahAyahCountBySurah.get(currentlyPlaying.surah) ?? 0}
+          scopeType="juz"
+          scopeStartAyah={juzBoundsBySurah.get(currentlyPlaying.surah)?.startAyah ?? 1}
+          scopeEndAyah={juzBoundsBySurah.get(currentlyPlaying.surah)?.endAyah}
+          juzNumber={juzNumber}
           isVisible={showAudioPlayer}
           isPlaying={isPlaying}
           onPlayContinuous={handlePlayContinuous}

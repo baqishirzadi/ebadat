@@ -1,8 +1,9 @@
-import { Audio } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Network from 'expo-network';
-import TrackPlayer, { State as TrackPlayerState } from 'react-native-track-player';
+import TrackPlayer, { Event, State as TrackPlayerState, type AddTrack } from 'react-native-track-player';
+import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
+import { ensureSharedTrackPlayerReady, isSharedTrackPlayerReady } from '@/utils/sharedTrackPlayer';
 
 export type ReciterKey =
   | 'yasser_ad_dussary'
@@ -12,11 +13,57 @@ export type ReciterKey =
   | 'minshawy_murattal'
   | 'abdul_basit';
 
+export type QuranPlaybackScopeType = 'surah' | 'juz';
+
+export type QuranPlaybackScopeOptions = {
+  type?: QuranPlaybackScopeType;
+  startAyah?: number;
+  endAyah?: number;
+  juzNumber?: number | null;
+};
+
+export type QuranPlaybackSnapshot = {
+  isActive: boolean;
+  isPlaying: boolean;
+  surah: number;
+  ayah: number;
+  reciter: ReciterKey;
+  scopeType: QuranPlaybackScopeType | null;
+  scopeStartAyah: number;
+  scopeEndAyah: number;
+  totalAyahs: number;
+  juzNumber: number | null;
+};
+
 type ReciterInfo = {
   key: ReciterKey;
   name: string;
   baseUrl: string;
   quality: string;
+};
+
+type CacheResolution = {
+  uri: string;
+  usedStreamingFallback: boolean;
+};
+
+type QueueBuildResult = {
+  tracks: AddTrack[];
+  selectedIndex: number;
+  scopeStartAyah: number;
+  scopeEndAyah: number;
+};
+
+type QuranTrack = AddTrack & {
+  mediaType: 'quran';
+  reciterKey: ReciterKey;
+  surah: number;
+  ayah: number;
+  scopeType: QuranPlaybackScopeType;
+  scopeStartAyah: number;
+  scopeEndAyah: number;
+  totalAyahs: number;
+  juzNumber?: number | null;
 };
 
 export const RECITERS: Record<ReciterKey, ReciterInfo> = {
@@ -104,13 +151,14 @@ const MIN_VALID_CACHE_FILE_BYTES = 1024;
 const MAX_SYNC_CACHE_ATTEMPTS = 3;
 const MAX_BACKGROUND_CACHE_ATTEMPTS = 2;
 const CACHE_RETRY_BASE_DELAY_MS = 350;
+const RECITER_KEY = 'quran_selected_reciter';
+const LAST_POSITION_KEY = 'quran_last_position';
 
 function getDocumentDirectory(): string | null {
   const documentDirectory = FileSystem.documentDirectory as string | null | undefined;
   return typeof documentDirectory === 'string' ? documentDirectory : null;
 }
 
-// Returns the permanent local path for a cached ayah
 function getAyahCachePath(surah: number, ayah: number, reciter: ReciterKey): string | null {
   const documentDirectory = getDocumentDirectory();
   if (!documentDirectory) return null;
@@ -120,7 +168,6 @@ function getAyahCachePath(surah: number, ayah: number, reciter: ReciterKey): str
   return `${documentDirectory}quran_audio/${reciter}/${s}${a}.mp3`;
 }
 
-// Creates cache directory if it does not exist
 async function ensureCacheDir(reciter: ReciterKey): Promise<void> {
   const documentDirectory = getDocumentDirectory();
   if (!documentDirectory) {
@@ -134,60 +181,201 @@ async function ensureCacheDir(reciter: ReciterKey): Promise<void> {
   }
 }
 
-const RECITER_KEY = 'quran_selected_reciter';
-const LAST_POSITION_KEY = 'quran_last_position';
-type CacheResolution = {
-  uri: string;
-  usedStreamingFallback: boolean;
-};
+function createDefaultSnapshot(reciter: ReciterKey): QuranPlaybackSnapshot {
+  return {
+    isActive: false,
+    isPlaying: false,
+    surah: 0,
+    ayah: 0,
+    reciter,
+    scopeType: null,
+    scopeStartAyah: 0,
+    scopeEndAyah: 0,
+    totalAyahs: 0,
+    juzNumber: null,
+  };
+}
+
+function isQuranTrack(track: unknown): track is QuranTrack {
+  return Boolean(
+    track &&
+      typeof track === 'object' &&
+      (track as { mediaType?: string }).mediaType === 'quran' &&
+      typeof (track as { surah?: unknown }).surah === 'number' &&
+      typeof (track as { ayah?: unknown }).ayah === 'number'
+  );
+}
 
 class QuranAudioManager {
-  private sound: Audio.Sound | null = null;
   private currentReciter: ReciterKey = 'yasser_ad_dussary';
-  private currentSurah = 0;
-  private currentAyah = 0;
-  private isPlaying = false;
-  private isContinuous = false;
-  private totalAyahs = 0;
-  private playbackSessionId = 0;
-  private hasHandledCompletion = false;
+  private snapshot: QuranPlaybackSnapshot = createDefaultSnapshot('yasser_ad_dussary');
+  private initialized = false;
+  private listenersRegistered = false;
   private backgroundCacheInFlight = new Set<string>();
   private onAyahChangeCb: ((surah: number, ayah: number) => void) | null = null;
   private onPlaybackEndCb: (() => void) | null = null;
+  private subscribers = new Set<(snapshot: QuranPlaybackSnapshot) => void>();
+  private lastKnownTrackId: string | null = null;
 
   async initialize(): Promise<void> {
     try {
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: true,
-        shouldDuckAndroid: true,
-      });
       const saved = await AsyncStorage.getItem(RECITER_KEY);
       if (saved && isReciterKey(saved)) {
         this.currentReciter = saved;
+        this.snapshot = { ...this.snapshot, reciter: saved };
       }
+
+      await ensureSharedTrackPlayerReady('quran-init');
+      this.registerTrackPlayerListeners();
+      this.initialized = true;
+      await this.syncFromTrackPlayer();
     } catch (e) {
       console.error('QuranAudio init error:', e);
     }
   }
 
   async setReciter(reciter: ReciterKey): Promise<void> {
-    if (this.isPlaying) await this.stop();
+    if (this.snapshot.isActive) {
+      await this.stop();
+    }
     this.currentReciter = reciter;
+    this.snapshot = { ...this.snapshot, reciter };
     await AsyncStorage.setItem(RECITER_KEY, reciter);
+    this.emitSnapshot();
   }
 
   getReciter(): ReciterKey {
     return this.currentReciter;
   }
 
-  setOnAyahChange(cb: (surah: number, ayah: number) => void): void {
+  getPlaybackSnapshot(): QuranPlaybackSnapshot {
+    return { ...this.snapshot };
+  }
+
+  subscribe(listener: (snapshot: QuranPlaybackSnapshot) => void): () => void {
+    this.subscribers.add(listener);
+    listener(this.getPlaybackSnapshot());
+    return () => {
+      this.subscribers.delete(listener);
+    };
+  }
+
+  setOnAyahChange(cb: ((surah: number, ayah: number) => void) | null): void {
     this.onAyahChangeCb = cb;
   }
 
-  setOnPlaybackEnd(cb: () => void): void {
+  setOnPlaybackEnd(cb: (() => void) | null): void {
     this.onPlaybackEndCb = cb;
+  }
+
+  private emitSnapshot(): void {
+    const snapshot = this.getPlaybackSnapshot();
+    this.subscribers.forEach((listener) => {
+      try {
+        listener(snapshot);
+      } catch {
+        // ignore subscriber failure
+      }
+    });
+  }
+
+  private getTrackId(track: unknown): string | null {
+    if (!track) return null;
+    if (typeof track === 'string' || typeof track === 'number') {
+      return String(track);
+    }
+    if (typeof track === 'object' && 'id' in track) {
+      const id = (track as { id?: string | number | null }).id;
+      if (id !== undefined && id !== null) {
+        return String(id);
+      }
+    }
+    return null;
+  }
+
+  private registerTrackPlayerListeners(): void {
+    if (this.listenersRegistered) return;
+    this.listenersRegistered = true;
+
+    TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, async (event) => {
+      await this.syncFromTrackPlayer(event.track);
+    });
+
+    TrackPlayer.addEventListener(Event.PlaybackState, async (event) => {
+      const nextIsPlaying = event.state === TrackPlayerState.Playing;
+      if (this.snapshot.isActive) {
+        if (this.snapshot.isPlaying !== nextIsPlaying) {
+          this.snapshot = { ...this.snapshot, isPlaying: nextIsPlaying };
+          this.emitSnapshot();
+        }
+      } else if (!nextIsPlaying) {
+        await this.syncFromTrackPlayer();
+      }
+    });
+
+    TrackPlayer.addEventListener(Event.PlaybackQueueEnded, async () => {
+      if (!this.snapshot.isActive) return;
+      try {
+        await TrackPlayer.reset();
+      } catch {
+        // ignore
+      }
+      this.clearQuranPlayback(true);
+    });
+  }
+
+  private async syncFromTrackPlayer(activeTrackOverride?: unknown): Promise<void> {
+    if (!isSharedTrackPlayerReady()) return;
+
+    try {
+      const activeTrack = activeTrackOverride ?? (await TrackPlayer.getActiveTrack());
+      const nextTrackId = this.getTrackId(activeTrack);
+      const playbackState = await TrackPlayer.getPlaybackState();
+      const nextIsPlaying = playbackState.state === TrackPlayerState.Playing;
+
+      if (isQuranTrack(activeTrack)) {
+        const trackChanged = nextTrackId !== this.lastKnownTrackId;
+        this.lastKnownTrackId = nextTrackId;
+        this.currentReciter = activeTrack.reciterKey;
+        this.snapshot = {
+          isActive: true,
+          isPlaying: nextIsPlaying,
+          surah: activeTrack.surah,
+          ayah: activeTrack.ayah,
+          reciter: activeTrack.reciterKey,
+          scopeType: activeTrack.scopeType,
+          scopeStartAyah: activeTrack.scopeStartAyah,
+          scopeEndAyah: activeTrack.scopeEndAyah,
+          totalAyahs: activeTrack.totalAyahs,
+          juzNumber: activeTrack.juzNumber ?? null,
+        };
+
+        await AsyncStorage.setItem(
+          LAST_POSITION_KEY,
+          JSON.stringify({ surah: activeTrack.surah, ayah: activeTrack.ayah })
+        );
+
+        if (trackChanged) {
+          this.onAyahChangeCb?.(activeTrack.surah, activeTrack.ayah);
+        }
+        this.emitSnapshot();
+        return;
+      }
+
+      this.clearQuranPlayback(this.snapshot.isActive);
+    } catch {
+      // TrackPlayer may not be ready yet.
+    }
+  }
+
+  private clearQuranPlayback(notifyEnd: boolean): void {
+    const wasActive = this.snapshot.isActive;
+    this.lastKnownTrackId = null;
+    this.snapshot = createDefaultSnapshot(this.currentReciter);
+    this.emitSnapshot();
+    if (notifyEnd && wasActive) {
+      this.onPlaybackEndCb?.();
+    }
   }
 
   private isValidCachedAudioFile(info: unknown): boolean {
@@ -236,7 +424,6 @@ class QuranAudioManager {
       }
       return Boolean(state.isConnected);
     } catch {
-      // If network status cannot be resolved, keep playback path permissive.
       return true;
     }
   }
@@ -348,38 +535,6 @@ class QuranAudioManager {
     }
   }
 
-  private prefetchNextAyahInBackground(
-    surah: number,
-    ayah: number,
-    totalAyahsInSurah: number,
-    reciter: ReciterKey
-  ): void {
-    if (!this.isContinuous) return;
-    const nextAyah = ayah + 1;
-    if (nextAyah > totalAyahsInSurah) return;
-    void this.ensureCachedInBackground(surah, nextAyah, reciter);
-  }
-
-  private async stopCompetingNaatPlayback(): Promise<void> {
-    try {
-      const playbackState = await TrackPlayer.getPlaybackState();
-      if (
-        playbackState.state === TrackPlayerState.Playing ||
-        playbackState.state === TrackPlayerState.Paused ||
-        playbackState.state === TrackPlayerState.Buffering ||
-        playbackState.state === TrackPlayerState.Loading ||
-        playbackState.state === TrackPlayerState.Ready
-      ) {
-        await TrackPlayer.reset();
-      }
-    } catch {
-      // TrackPlayer may be unavailable or not initialized; Quran playback should continue
-    }
-  }
-
-  // Cache-first URI resolver
-  // First play: downloads from everyayah.com -> saves to documentDirectory -> plays local
-  // After that: plays from local file forever (no internet needed)
   private async getAudioUri(
     surah: number,
     ayah: number,
@@ -398,12 +553,11 @@ class QuranAudioManager {
       }
 
       const info = await FileSystem.getInfoAsync(cachePath);
-      // Corrupt or partial cache should not be reused
       if (info.exists) {
         await this.removeFileIfExists(cachePath);
       }
     } catch {
-      // Cache check failed - fall through to download
+      // fall through to download
     }
 
     const downloadResult = await this.downloadAyahToCacheWithRetries(
@@ -418,10 +572,6 @@ class QuranAudioManager {
     }
     this.logCacheOutcome('cache_write_failed', surah, ayah, reciter);
 
-    if (downloadResult.reason === 'cache_dir_unavailable') {
-      throw new Error(`cache_dir_unavailable reciter=${reciter} surah=${surah} ayah=${ayah}`);
-    }
-
     const isOnline = await this.isNetworkAvailable();
     if (!isOnline) {
       throw new Error(`offline_cache_miss reciter=${reciter} surah=${surah} ayah=${ayah}`);
@@ -430,7 +580,119 @@ class QuranAudioManager {
     if (downloadResult.reason === 'dns_failure') {
       throw new Error(`dns_failure reciter=${reciter} surah=${surah} ayah=${ayah}`);
     }
-    throw new Error(`cache_write_failed reciter=${reciter} surah=${surah} ayah=${ayah}`);
+
+    return { uri: getAyahUrl(surah, ayah, reciter), usedStreamingFallback: true };
+  }
+
+  private async getQueueTrackUri(surah: number, ayah: number, reciter: ReciterKey): Promise<string | null> {
+    const cachePath = getAyahCachePath(surah, ayah, reciter);
+    if (cachePath) {
+      try {
+        const info = await FileSystem.getInfoAsync(cachePath);
+        if (this.isValidCachedAudioFile(info)) {
+          return cachePath;
+        }
+      } catch {
+        // ignore
+      }
+    }
+
+    const isOnline = await this.isNetworkAvailable();
+    if (!isOnline) {
+      return null;
+    }
+
+    void this.ensureCachedInBackground(surah, ayah, reciter);
+    return getAyahUrl(surah, ayah, reciter);
+  }
+
+  private buildTrackTitle(surah: number, ayah: number): string {
+    const surahName = getSurahName(surah)?.arabic ?? `سوره ${toArabicNumerals(surah)}`;
+    return `${surahName} • آیه ${toArabicNumerals(ayah)}`;
+  }
+
+  private buildTrackId(
+    reciter: ReciterKey,
+    surah: number,
+    ayah: number,
+    scopeType: QuranPlaybackScopeType,
+    scopeStartAyah: number,
+    scopeEndAyah: number,
+    juzNumber: number | null
+  ): string {
+    return [
+      'quran',
+      reciter,
+      scopeType,
+      String(juzNumber ?? 0),
+      String(surah),
+      String(scopeStartAyah),
+      String(scopeEndAyah),
+      String(ayah),
+    ].join(':');
+  }
+
+  private async buildQueueTracks(
+    surah: number,
+    ayah: number,
+    totalAyahsInSurah: number,
+    reciter: ReciterKey,
+    scope: Required<QuranPlaybackScopeOptions>
+  ): Promise<QueueBuildResult> {
+    const scopeStartAyah = Math.max(1, Math.min(scope.startAyah, totalAyahsInSurah));
+    const scopeEndAyah = Math.max(scopeStartAyah, Math.min(scope.endAyah, totalAyahsInSurah));
+    const selectedIndex = ayah - scopeStartAyah;
+    const selectedTrack = await this.getAudioUri(surah, ayah, reciter);
+    const tracks: AddTrack[] = [];
+
+    for (let ayahNumber = scopeStartAyah; ayahNumber <= scopeEndAyah; ayahNumber += 1) {
+      let uri: string | null;
+      if (ayahNumber === ayah) {
+        uri = selectedTrack.uri;
+      } else {
+        uri = await this.getQueueTrackUri(surah, ayahNumber, reciter);
+      }
+
+      if (!uri) continue;
+
+      tracks.push({
+        id: this.buildTrackId(reciter, surah, ayahNumber, scope.type, scopeStartAyah, scopeEndAyah, scope.juzNumber),
+        url: uri,
+        title: this.buildTrackTitle(surah, ayahNumber),
+        artist: RECITERS[reciter].name,
+        album: 'القرآن الكريم',
+        mediaType: 'quran',
+        reciterKey: reciter,
+        surah,
+        ayah: ayahNumber,
+        scopeType: scope.type,
+        scopeStartAyah,
+        scopeEndAyah,
+        totalAyahs: totalAyahsInSurah,
+        juzNumber: scope.juzNumber,
+      } as QuranTrack);
+    }
+
+    if (!tracks.length) {
+      throw new Error(`offline_cache_miss reciter=${reciter} surah=${surah} ayah=${ayah}`);
+    }
+
+    const resolvedSelectedIndex = tracks.findIndex((track) => isQuranTrack(track) && track.ayah === ayah);
+    if (resolvedSelectedIndex < 0) {
+      throw new Error(`offline_cache_miss reciter=${reciter} surah=${surah} ayah=${ayah}`);
+    }
+
+    if (selectedTrack.usedStreamingFallback) {
+      void this.ensureCachedInBackground(surah, ayah, reciter);
+    }
+    void this.ensureCachedInBackground(surah, Math.min(scopeEndAyah, ayah + 1), reciter);
+
+    return {
+      tracks,
+      selectedIndex: resolvedSelectedIndex,
+      scopeStartAyah,
+      scopeEndAyah,
+    };
   }
 
   async playAyah(
@@ -438,79 +700,49 @@ class QuranAudioManager {
     ayah: number,
     totalAyahsInSurah: number,
     continuous = false,
-    interruptCompetingAudio = true
+    _interruptCompetingAudio = true,
+    scope: QuranPlaybackScopeOptions = {}
   ): Promise<void> {
     try {
-      const sessionId = ++this.playbackSessionId;
-      this.hasHandledCompletion = false;
-      if (interruptCompetingAudio) {
-        await this.stopCompetingNaatPlayback();
-      }
-      if (sessionId !== this.playbackSessionId) return;
-      await this._unloadCurrent();
-      if (sessionId !== this.playbackSessionId) return;
+      await this.initialize();
+      await ensureSharedTrackPlayerReady('quran-play');
 
-      this.currentSurah = surah;
-      this.currentAyah = ayah;
-      this.isContinuous = continuous;
-      this.totalAyahs = totalAyahsInSurah;
-      this.isPlaying = true;
+      const resolvedScope: Required<QuranPlaybackScopeOptions> = {
+        type: scope.type ?? 'surah',
+        startAyah: scope.startAyah ?? 1,
+        endAyah: scope.endAyah ?? totalAyahsInSurah,
+        juzNumber: scope.juzNumber ?? null,
+      };
 
+      const queue = continuous
+        ? await this.buildQueueTracks(surah, ayah, totalAyahsInSurah, this.currentReciter, resolvedScope)
+        : await this.buildQueueTracks(surah, ayah, totalAyahsInSurah, this.currentReciter, {
+            ...resolvedScope,
+            startAyah: ayah,
+            endAyah: ayah,
+          });
+
+      await TrackPlayer.reset();
+      await TrackPlayer.add(queue.tracks);
+      await TrackPlayer.skip(queue.selectedIndex);
+      await TrackPlayer.play();
+
+      this.lastKnownTrackId = this.getTrackId(queue.tracks[queue.selectedIndex]);
+      this.snapshot = {
+        isActive: true,
+        isPlaying: true,
+        surah,
+        ayah,
+        reciter: this.currentReciter,
+        scopeType: resolvedScope.type,
+        scopeStartAyah: queue.scopeStartAyah,
+        scopeEndAyah: queue.scopeEndAyah,
+        totalAyahs: totalAyahsInSurah,
+        juzNumber: resolvedScope.juzNumber,
+      };
+      this.emitSnapshot();
       this.onAyahChangeCb?.(surah, ayah);
       await AsyncStorage.setItem(LAST_POSITION_KEY, JSON.stringify({ surah, ayah }));
-
-      const audioSource = await this.getAudioUri(surah, ayah, this.currentReciter);
-      if (sessionId !== this.playbackSessionId) return;
-
-      const { sound } = await this._loadWithRetry(audioSource.uri);
-      if (sessionId !== this.playbackSessionId) {
-        try {
-          await sound.unloadAsync();
-        } catch {}
-        return;
-      }
-
-      this.sound = sound;
-
-      sound.setOnPlaybackStatusUpdate((status) => {
-        if (!status.isLoaded) return;
-        if (sessionId !== this.playbackSessionId || !this.isPlaying) return;
-        if (this.hasHandledCompletion) return;
-
-        if (status.didJustFinish) {
-          this.hasHandledCompletion = true;
-          void this._handleComplete();
-          return;
-        }
-
-        if (
-          status.isPlaying &&
-          status.durationMillis &&
-          status.durationMillis > 0 &&
-          status.positionMillis
-        ) {
-          const progress = status.positionMillis / status.durationMillis;
-          if (progress >= 0.97) {
-            this.hasHandledCompletion = true;
-            void this._handleComplete();
-          }
-        }
-      });
-
-      if (sessionId !== this.playbackSessionId) {
-        try {
-          await sound.unloadAsync();
-        } catch {}
-        return;
-      }
-
-      await sound.playAsync();
-
-      if (audioSource.usedStreamingFallback) {
-        void this.ensureCachedInBackground(surah, ayah, this.currentReciter);
-      }
-
-      this.prefetchNextAyahInBackground(surah, ayah, totalAyahsInSurah, this.currentReciter);
     } catch (e) {
       const resolvedError = e instanceof Error ? e : new Error(String(e));
       const message = resolvedError.message;
@@ -525,99 +757,60 @@ class QuranAudioManager {
       } else {
         console.error('playAyah error:', resolvedError);
       }
-      this.isPlaying = false;
-      this.onPlaybackEndCb?.();
+      this.clearQuranPlayback(true);
       throw resolvedError;
-    }
-  }
-
-  private async _handleComplete(): Promise<void> {
-    if (!this.isContinuous || !this.isPlaying) {
-      this.isPlaying = false;
-      this.onPlaybackEndCb?.();
-      return;
-    }
-    const next = this.currentAyah + 1;
-    if (next > this.totalAyahs) {
-      this.isPlaying = false;
-      this.isContinuous = false;
-      this.onPlaybackEndCb?.();
-      return;
-    }
-    // 300ms gap prevents first-letter repeat bug and jamming
-    await new Promise((r) => setTimeout(r, 300));
-    try {
-      await this.playAyah(this.currentSurah, next, this.totalAyahs, true, false);
-    } catch {
-      // Error already logged and playback-end callback has been invoked inside playAyah.
-    }
-  }
-
-  private async _loadWithRetry(url: string, retries = 3): Promise<{ sound: Audio.Sound }> {
-    let lastErr: unknown;
-    for (let i = 1; i <= retries; i++) {
-      try {
-        return await Audio.Sound.createAsync(
-          { uri: url },
-          { shouldPlay: false, progressUpdateIntervalMillis: 100 }
-        );
-      } catch (e) {
-        lastErr = e;
-        if (i < retries) await new Promise((r) => setTimeout(r, 500 * i));
-      }
-    }
-    throw lastErr;
-  }
-
-  private async _unloadCurrent(): Promise<void> {
-    if (this.sound) {
-      try {
-        await this.sound.stopAsync();
-      } catch {}
-      try {
-        await this.sound.unloadAsync();
-      } catch {}
-      this.sound = null;
     }
   }
 
   async pause(): Promise<void> {
     try {
-      if (this.sound) {
-        await this.sound.pauseAsync();
-        this.isPlaying = false;
-      }
-    } catch {}
+      if (!this.snapshot.isActive) return;
+      await TrackPlayer.pause();
+      this.snapshot = { ...this.snapshot, isPlaying: false };
+      this.emitSnapshot();
+    } catch {
+      // ignore
+    }
   }
 
   async resume(): Promise<void> {
     try {
-      if (this.sound) {
-        await this.stopCompetingNaatPlayback();
-        await this.sound.playAsync();
-        this.isPlaying = true;
-      }
-    } catch {}
+      await ensureSharedTrackPlayerReady('quran-resume');
+      if (!this.snapshot.isActive) return;
+      await TrackPlayer.play();
+      this.snapshot = { ...this.snapshot, isPlaying: true };
+      this.emitSnapshot();
+    } catch {
+      // ignore
+    }
   }
 
   async stop(): Promise<void> {
-    this.playbackSessionId += 1;
-    this.isPlaying = false;
-    this.isContinuous = false;
-    await this._unloadCurrent();
-    this.onPlaybackEndCb?.();
+    try {
+      if (!isSharedTrackPlayerReady()) {
+        this.clearQuranPlayback(true);
+        return;
+      }
+      const activeTrack = await TrackPlayer.getActiveTrack();
+      if (isQuranTrack(activeTrack)) {
+        await TrackPlayer.reset();
+      }
+    } catch {
+      // ignore
+    }
+    this.clearQuranPlayback(true);
   }
 
   getIsPlaying(): boolean {
-    return this.isPlaying;
+    return this.snapshot.isActive && this.snapshot.isPlaying;
   }
 
   getCurrentSurah(): number {
-    return this.currentSurah;
+    return this.snapshot.surah;
   }
 
   getCurrentAyah(): number {
-    return this.currentAyah;
+    return this.snapshot.ayah;
   }
 
   async isAyahCached(
