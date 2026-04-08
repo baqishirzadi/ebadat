@@ -9,6 +9,8 @@ export interface CalendarMonthGridMeta {
   firstDayOffset: number;
 }
 
+const MONTH_GRID_META_CACHE = new Map<string, CalendarMonthGridMeta>();
+
 function mapWeekdayToDariGridColumn(date: Date | null): number {
   if (!date) {
     return 0;
@@ -23,15 +25,25 @@ export function getCalendarMonthGridMeta(
   displayYear: number,
   displayMonth: number,
 ): CalendarMonthGridMeta {
+  const cacheKey = `${mode}:${displayYear}:${displayMonth}`;
+  const cached = MONTH_GRID_META_CACHE.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   if (mode === 'qamari') {
-    return {
+    const resolved = {
       daysInMonth: getHijriMonthLength(displayYear, displayMonth),
       firstDayOffset: mapWeekdayToDariGridColumn(hijriToGregorian(displayYear, displayMonth, 1)),
     };
+    MONTH_GRID_META_CACHE.set(cacheKey, resolved);
+    return resolved;
   }
 
-  return {
+  const resolved = {
     daysInMonth: getShamsiMonthLength(displayYear, displayMonth),
     firstDayOffset: mapWeekdayToDariGridColumn(shamsiToGregorian(displayYear, displayMonth, 1)),
   };
+  MONTH_GRID_META_CACHE.set(cacheKey, resolved);
+  return resolved;
 }

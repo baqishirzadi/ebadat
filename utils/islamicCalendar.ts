@@ -241,6 +241,10 @@ export const SPECIAL_DAYS: SpecialDay[] = [
   },
 ];
 
+const GREGORIAN_TO_HIJRI_CACHE = new Map<string, HijriDate>();
+const HIJRI_TO_GREGORIAN_CACHE = new Map<string, number | null>();
+const HIJRI_MONTH_LENGTH_CACHE = new Map<string, number>();
+
 interface HijriCorrectionRange {
   startGregorian: string;
   endGregorian?: string;
@@ -342,12 +346,24 @@ function gregorianToBaseHijri(date: Date): HijriDate {
   return gregorianToHijriFallback(date);
 }
 
+function cloneHijriDate(hijri: HijriDate): HijriDate {
+  return { ...hijri };
+}
+
 // Convert Gregorian to Hijri with Afghanistan-local correction policy.
 export function gregorianToHijri(date: Date): HijriDate {
   const kabulDate = getKabulNoon(date);
+  const cacheKey = getKabulDateKey(kabulDate);
+  const cached = GREGORIAN_TO_HIJRI_CACHE.get(cacheKey);
+  if (cached) {
+    return cloneHijriDate(cached);
+  }
+
   const shiftDays = getHijriCorrectionShift(kabulDate);
   const sourceDate = shiftDays === 0 ? kabulDate : addDaysToKabulDate(kabulDate, shiftDays);
-  return gregorianToBaseHijri(sourceDate);
+  const resolved = gregorianToBaseHijri(sourceDate);
+  GREGORIAN_TO_HIJRI_CACHE.set(cacheKey, resolved);
+  return cloneHijriDate(resolved);
 }
 
 // Check if today is a special day
@@ -510,6 +526,17 @@ function scoreHijriCandidate(candidate: Date, hijriYear: number, hijriMonth: num
  * adjacent days continue the local Hijri sequence correctly.
  */
 export function hijriToGregorian(hijriYear: number, hijriMonth: number, hijriDay: number): Date | null {
+  const cacheKey = `${hijriYear}-${hijriMonth}-${hijriDay}`;
+  if (HIJRI_TO_GREGORIAN_CACHE.has(cacheKey)) {
+    const cached = HIJRI_TO_GREGORIAN_CACHE.get(cacheKey);
+    if (cached === null) {
+      return null;
+    }
+    if (typeof cached === 'number') {
+      return new Date(cached);
+    }
+  }
+
   const base = getKabulNoon(new Date());
   const matches: Date[] = [];
 
@@ -524,6 +551,7 @@ export function hijriToGregorian(hijriYear: number, hijriMonth: number, hijriDay
   }
 
   if (matches.length === 0) {
+    HIJRI_TO_GREGORIAN_CACHE.set(cacheKey, null);
     return null;
   }
 
@@ -540,10 +568,18 @@ export function hijriToGregorian(hijriYear: number, hijriMonth: number, hijriDay
     return getKabulEpochDay(right) - getKabulEpochDay(left);
   });
 
-  return matches[0];
+  const resolved = matches[0];
+  HIJRI_TO_GREGORIAN_CACHE.set(cacheKey, resolved.getTime());
+  return new Date(resolved);
 }
 
 export function getHijriMonthLength(hijriYear: number, hijriMonth: number): number {
+  const cacheKey = `${hijriYear}-${hijriMonth}`;
+  const cachedLength = HIJRI_MONTH_LENGTH_CACHE.get(cacheKey);
+  if (typeof cachedLength === 'number') {
+    return cachedLength;
+  }
+
   const start = hijriToGregorian(hijriYear, hijriMonth, 1);
   if (!start) {
     return 30;
@@ -558,5 +594,7 @@ export function getHijriMonthLength(hijriYear: number, hijriMonth: number): numb
   }
 
   const diff = getKabulEpochDay(nextStart) - getKabulEpochDay(start);
-  return diff >= 29 && diff <= 30 ? diff : 30;
+  const resolvedLength = diff >= 29 && diff <= 30 ? diff : 30;
+  HIJRI_MONTH_LENGTH_CACHE.set(cacheKey, resolvedLength);
+  return resolvedLength;
 }

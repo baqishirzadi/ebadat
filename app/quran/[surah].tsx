@@ -5,8 +5,8 @@
  */
 
 import React, { useState, useCallback, useEffect, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, StatusBar, BackHandler, Platform, ToastAndroid, Pressable, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
+import { View, Text, StyleSheet, StatusBar, Pressable, Alert } from 'react-native';
+import { useFocusEffect, useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
@@ -73,10 +73,14 @@ export default function QuranReaderScreen() {
       return;
     }
 
-    setCurrentlyPlaying({ surah: snapshot.surah, ayah: snapshot.ayah });
+    setCurrentlyPlaying((previous) => (
+      previous?.surah === snapshot.surah && previous.ayah === snapshot.ayah
+        ? previous
+        : { surah: snapshot.surah, ayah: snapshot.ayah }
+    ));
     setShowAudioPlayer(true);
     setIsPlaying(snapshot.isPlaying);
-    setScrollTargetAyah(snapshot.ayah);
+    setScrollTargetAyah((previous) => (previous === snapshot.ayah ? previous : snapshot.ayah));
   }, [surahNumber]);
 
   useEffect(() => {
@@ -101,47 +105,42 @@ export default function QuranReaderScreen() {
   }, [surahNumber, initialAyah, surah]);
 
   useEffect(() => {
-    audioManager.setOnAyahChange((s, a) => {
-      if (s !== surahNumber) return;
-      setCurrentlyPlaying({ surah: s, ayah: a });
-      setShowAudioPlayer(true);
-      setIsPlaying(true);
-      setScrollTargetAyah(a);
-    });
+    void audioManager.initialize();
+  }, []);
 
-    audioManager.setOnPlaybackEnd(() => {
-      setIsPlaying(false);
-      setCurrentlyPlaying(null);
-      setShowAudioPlayer(false);
-    });
+  useFocusEffect(
+    useCallback(() => {
+      audioManager.setOnAyahChange((s, a) => {
+        if (s !== surahNumber) return;
+        setCurrentlyPlaying((previous) => (
+          previous?.surah === s && previous.ayah === a
+            ? previous
+            : { surah: s, ayah: a }
+        ));
+        setShowAudioPlayer(true);
+        setIsPlaying(true);
+        setScrollTargetAyah((previous) => (previous === a ? previous : a));
+      });
 
-    const unsubscribe = audioManager.subscribe(() => {
+      audioManager.setOnPlaybackEnd(() => {
+        setIsPlaying(false);
+        setCurrentlyPlaying(null);
+        setShowAudioPlayer(false);
+      });
+
+      const unsubscribe = audioManager.subscribe(() => {
+        syncFromAudioSnapshot();
+      });
+
       syncFromAudioSnapshot();
-    });
 
-    void audioManager.initialize().then(() => {
-      syncFromAudioSnapshot();
-    });
-
-    return () => {
-      unsubscribe();
-      audioManager.setOnAyahChange(null);
-      audioManager.setOnPlaybackEnd(null);
-    };
-  }, [surahNumber, syncFromAudioSnapshot]);
-
-  // Android back button handler - first press goes to list, second press exits
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      router.back();
-      ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
-      return true;
-    });
-
-    return () => backHandler.remove();
-  }, [router]);
+      return () => {
+        unsubscribe();
+        audioManager.setOnAyahChange(null);
+        audioManager.setOnPlaybackEnd(null);
+      };
+    }, [surahNumber, syncFromAudioSnapshot])
+  );
 
   const handlePlayAyah = useCallback((surahNum: number, ayahNum: number) => {
     if (!surah) return;
@@ -221,6 +220,8 @@ export default function QuranReaderScreen() {
   const handleAudioClose = useCallback(() => {
     handleStop();
   }, [handleStop]);
+
+  const activeAyahNumber = currentlyPlaying?.surah === surahNumber ? currentlyPlaying.ayah : null;
 
   const goToNextSurah = useCallback(async () => {
     if (surahNumber < 114) {
@@ -328,7 +329,7 @@ export default function QuranReaderScreen() {
         jumpMode={jumpMode}
         jumpToken={normalizedJumpToken}
         onPlayAyah={handlePlayAyah}
-        currentlyPlaying={currentlyPlaying}
+        activePlayingAyah={activeAyahNumber}
       />
 
       {showAudioPlayer && currentlyPlaying && (

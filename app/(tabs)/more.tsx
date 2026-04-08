@@ -3,8 +3,8 @@
  * Dashboard-first hub for secondary features and personal progress
  */
 
-import React, { useMemo } from 'react';
-import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, StyleSheet, Pressable, InteractionManager, SectionList } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -46,6 +46,8 @@ const GREGORIAN_MONTHS_DARI = [
   'دسمبر',
 ];
 
+type DeferredSectionKey = 'summary' | 'today' | 'upcoming' | 'support' | 'khatm' | 'creator';
+
 function formatGregorianDateDari(date: Date): string {
   const { day, month, year } = getKabulDateParts(date);
   return `${toArabicNumerals(day)} ${GREGORIAN_MONTHS_DARI[month - 1]} ${toArabicNumerals(year)}`;
@@ -61,12 +63,12 @@ function getShamsiAndWeekday(hijriYear: number, hijriMonth: number, hijriDay: nu
 
 export default function MoreScreen() {
   const { theme, themeMode } = useApp();
-  const { state: stats } = useStats();
+  const { state: stats, dashboardSnapshot } = useStats();
   const { state: prayer } = usePrayer();
   const router = useRouter();
+  const [showDeferredSections, setShowDeferredSections] = useState(false);
   const truth = getCalendarTruth(new Date());
   const activeHijriDate = prayer.hijriDate ?? truth.hijri;
-  const upcomingDays = getUpcomingSpecialDays(activeHijriDate, 3);
   const weekdayLabel = WEEKDAY_DARI[truth.weekday];
   const locationLabel = prayer.locationName?.trim() || 'کابل';
   const scheduleModeLabel =
@@ -76,65 +78,89 @@ export default function MoreScreen() {
         ? 'اذان عادی'
         : 'اذان آماده';
 
-  const quickActions = [
+  useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => {
+      setShowDeferredSections(true);
+    });
+
+    return () => {
+      task.cancel();
+    };
+  }, []);
+
+  const quickActions = useMemo(() => [
     { icon: 'menu-book', label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith', accent: theme.tint },
     { icon: 'article', label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles', accent: theme.bookmark },
     { icon: 'calendar-today', label: 'تقویم اسلامی', subtitle: 'مناسبت‌های مهم', route: '/calendar', accent: theme.surahHeader },
     { icon: 'explore', label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla', accent: theme.tint },
     { icon: 'school', label: 'آموزش نماز', subtitle: 'فقه و راهنما', route: '/(tabs)/prayer-learning', accent: theme.bookmark },
     { icon: 'bookmark', label: 'نشانه‌های من', subtitle: 'موارد ذخیره‌شده', route: '/(tabs)/bookmarks', accent: theme.surahHeader },
-  ];
+  ], [theme.bookmark, theme.surahHeader, theme.tint]);
 
-  const secondaryActions = [
+  const secondaryActions = useMemo(() => [
     { icon: 'access-alarm', label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings' },
     { icon: 'favorite', label: 'دعای خیر و مشورت شرعی', subtitle: 'ارسال درخواست دعا', route: '/dua-request' },
     { icon: 'admin-panel-settings', label: 'پنل مدیریت', subtitle: 'بخش مدیریتی', route: '/admin/login' },
     { icon: 'settings', label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/(tabs)/settings' },
-  ];
+  ], []);
 
   const summaryCards = useMemo(() => [
-    { icon: 'menu-book', label: 'آیات خوانده‌شده', value: stats.overall.totalAyahsRead },
-    { icon: 'hearing', label: 'آیات شنیده‌شده', value: stats.overall.totalAyahsListened },
-    { icon: 'bolt', label: 'بهترین پیوستگی', value: stats.overall.longestStreak },
-    { icon: 'auto-stories', label: 'ختم قرآن', value: stats.overall.khatmCount },
+    { icon: 'menu-book', label: 'آیات خوانده‌شده', value: dashboardSnapshot.summary.totalAyahsRead },
+    { icon: 'hearing', label: 'آیات شنیده‌شده', value: dashboardSnapshot.summary.totalAyahsListened },
+    { icon: 'bolt', label: 'بهترین پیوستگی', value: dashboardSnapshot.summary.longestStreak },
+    { icon: 'auto-stories', label: 'ختم قرآن', value: dashboardSnapshot.summary.khatmCount },
   ], [
-    stats.overall.khatmCount,
-    stats.overall.longestStreak,
-    stats.overall.totalAyahsListened,
-    stats.overall.totalAyahsRead,
+    dashboardSnapshot.summary.khatmCount,
+    dashboardSnapshot.summary.longestStreak,
+    dashboardSnapshot.summary.totalAyahsListened,
+    dashboardSnapshot.summary.totalAyahsRead,
   ]);
 
   const todayRows = useMemo(() => [
-    { label: 'آیات خوانده‌شده امروز', value: toArabicNumerals(stats.daily.ayahsRead) },
-    { label: 'آیات شنیده‌شده امروز', value: toArabicNumerals(stats.daily.ayahsListened) },
-    { label: 'صفحه‌های امروز', value: toArabicNumerals(stats.daily.pagesRead) },
-    { label: 'اذکار امروز', value: toArabicNumerals(stats.daily.dhikrCount) },
+    { label: 'آیات خوانده‌شده امروز', value: toArabicNumerals(dashboardSnapshot.today.ayahsRead) },
+    { label: 'آیات شنیده‌شده امروز', value: toArabicNumerals(dashboardSnapshot.today.ayahsListened) },
+    { label: 'صفحه‌های امروز', value: toArabicNumerals(dashboardSnapshot.today.pagesRead) },
+    { label: 'اذکار امروز', value: toArabicNumerals(dashboardSnapshot.today.dhikrCount) },
   ], [
-    stats.daily.ayahsListened,
-    stats.daily.ayahsRead,
-    stats.daily.dhikrCount,
-    stats.daily.pagesRead,
+    dashboardSnapshot.today.ayahsListened,
+    dashboardSnapshot.today.ayahsRead,
+    dashboardSnapshot.today.dhikrCount,
+    dashboardSnapshot.today.pagesRead,
   ]);
 
   const heroMetrics = useMemo(() => ([
-    { value: toArabicNumerals(stats.overall.currentStreak), label: 'روز متوالی', color: theme.surahHeader },
-    { value: toArabicNumerals(stats.overall.totalQuranMinutes), label: 'دقیقه قرآن', color: theme.bookmark },
-    { value: toArabicNumerals(stats.overall.totalDhikrCount), label: 'ذکر ثبت‌شده', color: theme.tint },
+    { value: toArabicNumerals(dashboardSnapshot.heroMetrics.currentStreak), label: 'روز متوالی', color: theme.surahHeader },
+    { value: toArabicNumerals(dashboardSnapshot.heroMetrics.totalQuranMinutes), label: 'دقیقه قرآن', color: theme.bookmark },
+    { value: toArabicNumerals(dashboardSnapshot.heroMetrics.totalDhikrCount), label: 'ذکر ثبت‌شده', color: theme.tint },
   ]), [
-    stats.overall.currentStreak,
-    stats.overall.totalDhikrCount,
-    stats.overall.totalQuranMinutes,
+    dashboardSnapshot.heroMetrics.currentStreak,
+    dashboardSnapshot.heroMetrics.totalDhikrCount,
+    dashboardSnapshot.heroMetrics.totalQuranMinutes,
     theme.bookmark,
     theme.surahHeader,
     theme.tint,
   ]);
 
-  return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.background }]}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-    >
+  const upcomingDays = useMemo(() => (
+    showDeferredSections ? getUpcomingSpecialDays(activeHijriDate, 3) : []
+  ), [activeHijriDate, showDeferredSections]);
+
+  const deferredSections = useMemo(() => {
+    if (!showDeferredSections) {
+      return [] as { key: string; data: DeferredSectionKey[] }[];
+    }
+
+    const items: DeferredSectionKey[] = ['summary', 'today'];
+    if (upcomingDays.length > 0) {
+      items.push('upcoming');
+    }
+    items.push('support', 'khatm', 'creator');
+
+    return [{ key: 'dashboard', data: items }];
+  }, [showDeferredSections, upcomingDays.length]);
+
+  const listHeader = (
+    <>
       <LinearGradient colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light} style={styles.header}>
         <View style={styles.headerBadge}>
           <MaterialIcons name="dashboard" size={16} color="#fff" />
@@ -206,41 +232,53 @@ export default function MoreScreen() {
           ))}
         </View>
       </View>
+    </>
+  );
 
-      <View style={styles.section}>
-        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>خلاصه پیشرفت</CenteredText>
-        <View style={styles.summaryGrid}>
-          {summaryCards.map((item) => (
-            <View
-              key={item.label}
-              style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
-            >
-              <View style={[styles.summaryIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-                <MaterialIcons name={item.icon as any} size={22} color={theme.tint} />
+  const renderDeferredSection = ({ item }: { item: DeferredSectionKey }) => {
+    if (item === 'summary') {
+      return (
+        <View style={styles.section}>
+          <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>خلاصه پیشرفت</CenteredText>
+          <View style={styles.summaryGrid}>
+            {summaryCards.map((card) => (
+              <View
+                key={card.label}
+                style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+              >
+                <View style={[styles.summaryIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+                  <MaterialIcons name={card.icon as any} size={22} color={theme.tint} />
+                </View>
+                <CenteredText style={[styles.summaryValue, { color: theme.text }]}>{toArabicNumerals(card.value)}</CenteredText>
+                <CenteredText style={[styles.summaryLabel, { color: theme.textSecondary }]}>{card.label}</CenteredText>
               </View>
-              <CenteredText style={[styles.summaryValue, { color: theme.text }]}>{toArabicNumerals(item.value)}</CenteredText>
-              <CenteredText style={[styles.summaryLabel, { color: theme.textSecondary }]}>{item.label}</CenteredText>
-            </View>
-          ))}
+            ))}
+          </View>
         </View>
-      </View>
+      );
+    }
 
-      <View style={styles.section}>
-        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>مرور امروز</CenteredText>
-        <View style={[styles.todayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}> 
-          {todayRows.map((row, index) => (
-            <View key={row.label}>
-              {index > 0 && <View style={[styles.todayDivider, { backgroundColor: theme.divider }]} />}
-              <View style={styles.todayRow}>
-                <CenteredText style={[styles.todayValue, { color: theme.tint }]}>{row.value}</CenteredText>
-                <CenteredText style={[styles.todayLabel, { color: theme.text }]}>{row.label}</CenteredText>
+    if (item === 'today') {
+      return (
+        <View style={styles.section}>
+          <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>مرور امروز</CenteredText>
+          <View style={[styles.todayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            {todayRows.map((row, index) => (
+              <View key={row.label}>
+                {index > 0 && <View style={[styles.todayDivider, { backgroundColor: theme.divider }]} />}
+                <View style={styles.todayRow}>
+                  <CenteredText style={[styles.todayValue, { color: theme.tint }]}>{row.value}</CenteredText>
+                  <CenteredText style={[styles.todayLabel, { color: theme.text }]}>{row.label}</CenteredText>
+                </View>
               </View>
-            </View>
-          ))}
+            ))}
+          </View>
         </View>
-      </View>
+      );
+    }
 
-      {upcomingDays.length > 0 && (
+    if (item === 'upcoming') {
+      return (
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>مناسبت‌های آینده</CenteredText>
           <View style={styles.upcomingList}>
@@ -282,44 +320,56 @@ export default function MoreScreen() {
             })}
           </View>
         </View>
-      )}
+      );
+    }
 
-      <View style={styles.section}>
-        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>راهنما و پشتیبانی</CenteredText>
-        <View style={styles.secondaryList}>
-          {secondaryActions.map((item) => (
-            <Pressable
-              key={item.label}
-              onPress={() => router.push(item.route as any)}
-              style={({ pressed }) => [
-                styles.secondaryRow,
-                { backgroundColor: theme.card, borderColor: theme.cardBorder },
-                pressed && styles.pressedCard,
-              ]}
-            >
-              <MaterialIcons name="chevron-left" size={22} color={theme.icon} />
-              <View style={styles.secondaryTextWrap}>
-                <CenteredText style={[styles.secondaryLabel, { color: theme.text }]}>{item.label}</CenteredText>
-                <CenteredText style={[styles.secondarySubtitle, { color: theme.textSecondary }]}>{item.subtitle}</CenteredText>
-              </View>
-              <View style={[styles.secondaryIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-                <MaterialIcons name={item.icon as any} size={22} color={theme.tint} />
-              </View>
-            </Pressable>
-          ))}
+    if (item === 'support') {
+      return (
+        <View style={styles.section}>
+          <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>راهنما و پشتیبانی</CenteredText>
+          <View style={styles.secondaryList}>
+            {secondaryActions.map((action) => (
+              <Pressable
+                key={action.label}
+                onPress={() => router.push(action.route as any)}
+                style={({ pressed }) => [
+                  styles.secondaryRow,
+                  { backgroundColor: theme.card, borderColor: theme.cardBorder },
+                  pressed && styles.pressedCard,
+                ]}
+              >
+                <MaterialIcons name="chevron-left" size={22} color={theme.icon} />
+                <View style={styles.secondaryTextWrap}>
+                  <CenteredText style={[styles.secondaryLabel, { color: theme.text }]}>{action.label}</CenteredText>
+                  <CenteredText style={[styles.secondarySubtitle, { color: theme.textSecondary }]}>{action.subtitle}</CenteredText>
+                </View>
+                <View style={[styles.secondaryIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+                  <MaterialIcons name={action.icon as any} size={22} color={theme.tint} />
+                </View>
+              </Pressable>
+            ))}
+          </View>
         </View>
-      </View>
+      );
+    }
 
-      <View style={[styles.khatmCard, { backgroundColor: theme.card, borderColor: theme.bookmark }]}> 
-        <MaterialIcons name="auto-stories" size={30} color={theme.bookmark} />
-        <View style={styles.khatmTextWrap}>
-          <CenteredText style={[styles.khatmValue, { color: theme.text }]}>
-            {toArabicNumerals(stats.overall.khatmCount)} ختم کامل قرآن
-          </CenteredText>
-          <CenteredText style={[styles.khatmLabel, { color: theme.textSecondary }]}>این شمار از تمام ختم‌های ثبت‌شده در برنامه است</CenteredText>
+    if (item === 'khatm') {
+      return (
+        <View style={styles.section}>
+          <View style={[styles.khatmCard, { backgroundColor: theme.card, borderColor: theme.bookmark }]}>
+            <MaterialIcons name="auto-stories" size={30} color={theme.bookmark} />
+            <View style={styles.khatmTextWrap}>
+              <CenteredText style={[styles.khatmValue, { color: theme.text }]}>
+                {toArabicNumerals(stats.overall.khatmCount)} ختم کامل قرآن
+              </CenteredText>
+              <CenteredText style={[styles.khatmLabel, { color: theme.textSecondary }]}>این شمار از تمام ختم‌های ثبت‌شده در برنامه است</CenteredText>
+            </View>
+          </View>
         </View>
-      </View>
+      );
+    }
 
+    return (
       <View style={styles.section}>
         <View style={[styles.creatorCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}> 
           <View style={styles.creatorHeader}>
@@ -348,7 +398,23 @@ export default function MoreScreen() {
           <CenteredText style={[styles.creatorNamePashto, { color: theme.tint }]}>{ABOUT_CREATOR_PASHTO_CREATOR_NAME}</CenteredText>
         </View>
       </View>
-    </ScrollView>
+    );
+  };
+
+  return (
+    <SectionList
+      style={[styles.container, { backgroundColor: theme.background }]}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+      sections={deferredSections}
+      keyExtractor={(item) => item}
+      renderItem={renderDeferredSection}
+      renderSectionHeader={() => null}
+      stickySectionHeadersEnabled={false}
+      ListHeaderComponent={listHeader}
+      ListFooterComponent={<View style={styles.listFooterSpacing} />}
+    >
+    </SectionList>
   );
 }
 
@@ -358,6 +424,9 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 120,
+  },
+  listFooterSpacing: {
+    height: 48,
   },
   header: {
     paddingTop: 60,

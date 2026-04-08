@@ -3,7 +3,7 @@
  * Tracks user's Quran reading, dhikr counts, and streaks
  */
 
-import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Storage keys
@@ -44,6 +44,26 @@ interface StatsState {
   weeklyAyahs: number[];
   monthlyAyahs: number[];
   isLoading: boolean;
+}
+
+interface DashboardSnapshot {
+  heroMetrics: {
+    currentStreak: number;
+    totalQuranMinutes: number;
+    totalDhikrCount: number;
+  };
+  summary: {
+    totalAyahsRead: number;
+    totalAyahsListened: number;
+    longestStreak: number;
+    khatmCount: number;
+  };
+  today: {
+    ayahsRead: number;
+    ayahsListened: number;
+    pagesRead: number;
+    dhikrCount: number;
+  };
 }
 
 // Actions
@@ -162,6 +182,7 @@ const initialState: StatsState = {
 // Context
 interface StatsContextType {
   state: StatsState;
+  dashboardSnapshot: DashboardSnapshot;
   addAyahsRead: (count: number) => void;
   addAyahsListened: (count: number) => void;
   addDhikr: (count: number) => void;
@@ -288,10 +309,43 @@ export function StatsProvider({ children }: { children: ReactNode }) {
     return state.monthlyAyahs.reduce((sum, count) => sum + count, 0);
   }, [state.monthlyAyahs]);
 
+  const dashboardSnapshot = useMemo<DashboardSnapshot>(() => ({
+    heroMetrics: {
+      currentStreak: state.overall.currentStreak,
+      totalQuranMinutes: state.overall.totalQuranMinutes,
+      totalDhikrCount: state.overall.totalDhikrCount,
+    },
+    summary: {
+      totalAyahsRead: state.overall.totalAyahsRead,
+      totalAyahsListened: state.overall.totalAyahsListened,
+      longestStreak: state.overall.longestStreak,
+      khatmCount: state.overall.khatmCount,
+    },
+    today: {
+      ayahsRead: state.daily.ayahsRead,
+      ayahsListened: state.daily.ayahsListened,
+      pagesRead: state.daily.pagesRead,
+      dhikrCount: state.daily.dhikrCount,
+    },
+  }), [
+    state.daily.ayahsListened,
+    state.daily.ayahsRead,
+    state.daily.dhikrCount,
+    state.daily.pagesRead,
+    state.overall.currentStreak,
+    state.overall.khatmCount,
+    state.overall.longestStreak,
+    state.overall.totalAyahsListened,
+    state.overall.totalAyahsRead,
+    state.overall.totalDhikrCount,
+    state.overall.totalQuranMinutes,
+  ]);
+
   return (
     <StatsContext.Provider
       value={{
         state,
+        dashboardSnapshot,
         addAyahsRead,
         addAyahsListened,
         addDhikr,

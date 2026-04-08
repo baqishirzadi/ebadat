@@ -3,7 +3,7 @@
  * Handles: Theme, Font, Bookmarks, Reading Position, Preferences
  */
 
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts } from '@/constants/theme';
 import {
@@ -222,6 +222,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 // Provider component
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
+  const positionPersistTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load persisted state on mount
   useEffect(() => {
@@ -244,9 +245,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Persist last position whenever it changes
   useEffect(() => {
-    if (state.isInitialized) {
-      AsyncStorage.setItem(STORAGE_KEYS.LAST_POSITION, JSON.stringify(state.lastPosition));
+    if (!state.isInitialized) {
+      return;
     }
+
+    if (positionPersistTimeoutRef.current) {
+      clearTimeout(positionPersistTimeoutRef.current);
+    }
+
+    positionPersistTimeoutRef.current = setTimeout(() => {
+      AsyncStorage.setItem(STORAGE_KEYS.LAST_POSITION, JSON.stringify(state.lastPosition));
+    }, 250);
+
+    return () => {
+      if (positionPersistTimeoutRef.current) {
+        clearTimeout(positionPersistTimeoutRef.current);
+        positionPersistTimeoutRef.current = null;
+      }
+    };
   }, [state.lastPosition, state.isInitialized]);
 
   async function loadPersistedState() {
@@ -358,12 +374,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  const updatePosition = (position: Omit<ReadingPosition, 'timestamp'>) => {
+  const updatePosition = useCallback((position: Omit<ReadingPosition, 'timestamp'>) => {
+    if (
+      state.lastPosition.surahNumber === position.surahNumber &&
+      state.lastPosition.ayahNumber === position.ayahNumber &&
+      state.lastPosition.page === position.page
+    ) {
+      return;
+    }
+
     dispatch({
       type: 'UPDATE_POSITION',
       payload: { ...position, timestamp: Date.now() },
     });
-  };
+  }, [state.lastPosition.ayahNumber, state.lastPosition.page, state.lastPosition.surahNumber]);
 
   const contextValue: AppContextType = {
     state,

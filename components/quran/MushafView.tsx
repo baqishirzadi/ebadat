@@ -24,7 +24,7 @@ interface MushafViewProps {
   jumpToken?: string;
   onAyahChange?: (surah: number, ayah: number) => void;
   onPlayAyah?: (surah: number, ayah: number) => void;
-  currentlyPlaying?: { surah: number; ayah: number } | null;
+  activePlayingAyah?: number | null;
   onPageChange?: (page: number) => void;
 }
 
@@ -65,14 +65,14 @@ function stripBismillah(text: string, surahNumber: number, ayahNumber: number): 
   return text;
 }
 
-export function MushafView({
+export const MushafView = React.memo(function MushafView({
   surahNumber,
   initialAyah = 1,
   jumpMode = 'default',
   jumpToken,
   onAyahChange,
   onPlayAyah,
-  currentlyPlaying,
+  activePlayingAyah = null,
   onPageChange,
 }: MushafViewProps) {
   const { theme, state } = useApp();
@@ -97,6 +97,8 @@ export function MushafView({
   const followHighestMeasuredFrameIndexRef = useRef(0);
   const followRetryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastFollowAyahRef = useRef<number | null>(null);
+  const lastReportedAyahRef = useRef<number | null>(null);
+  const lastReportedPageRef = useRef<number | null>(null);
 
   const [surah, setSurah] = useState<Surah | undefined>();
   const [isLoading, setIsLoading] = useState(true);
@@ -532,6 +534,8 @@ export function MushafView({
   useEffect(() => {
     activeFollowSessionIdRef.current += 1;
     lastFollowAyahRef.current = null;
+    lastReportedAyahRef.current = null;
+    lastReportedPageRef.current = null;
     resetFollowSessionState();
   }, [surahNumber, resetFollowSessionState]);
 
@@ -539,9 +543,7 @@ export function MushafView({
   useEffect(() => {
     if (
       !surah ||
-      !currentlyPlaying ||
-      currentlyPlaying.surah !== surahNumber ||
-      !currentlyPlaying.ayah ||
+      !activePlayingAyah ||
       effectiveViewMode !== 'scroll'
     ) {
       activeFollowSessionIdRef.current += 1;
@@ -550,7 +552,7 @@ export function MushafView({
       return;
     }
 
-    const targetAyah = currentlyPlaying.ayah;
+    const targetAyah = activePlayingAyah;
     if (lastFollowAyahRef.current === targetAyah) {
       return;
     }
@@ -558,7 +560,7 @@ export function MushafView({
     startAutoFollowSession(targetAyah);
   }, [
     surah,
-    currentlyPlaying,
+    activePlayingAyah,
     surahNumber,
     effectiveViewMode,
     resetFollowSessionState,
@@ -683,16 +685,20 @@ export function MushafView({
       if (firstVisible) {
         const page = getPage(surahNumber, firstVisible.number);
 
-        updatePosition({
-          surahNumber,
-          ayahNumber: firstVisible.number,
-          page,
-        });
+        if (lastReportedAyahRef.current !== firstVisible.number || lastReportedPageRef.current !== page) {
+          lastReportedAyahRef.current = firstVisible.number;
+          lastReportedPageRef.current = page;
 
-        // Notify parent component about page change
-        onPageChange?.(page);
+          updatePosition({
+            surahNumber,
+            ayahNumber: firstVisible.number,
+            page,
+          });
 
-        onAyahChange?.(surahNumber, firstVisible.number);
+          // Notify parent component about page change
+          onPageChange?.(page);
+          onAyahChange?.(surahNumber, firstVisible.number);
+        }
       }
     },
     [
@@ -818,8 +824,7 @@ export function MushafView({
     ({ item }: { item: Ayah }) => {
       const dariTranslation = getTranslation(surahNumber, item.number, 'dari');
       const pashtoTranslation = getTranslation(surahNumber, item.number, 'pashto');
-      const isPlaying =
-        currentlyPlaying?.surah === surahNumber && currentlyPlaying?.ayah === item.number;
+      const isPlaying = activePlayingAyah === item.number;
 
       return (
         <AyahRow
@@ -832,7 +837,7 @@ export function MushafView({
         />
       );
     },
-    [surahNumber, getTranslation, currentlyPlaying, handlePlayAyah]
+    [surahNumber, getTranslation, activePlayingAyah, handlePlayAyah]
   );
 
   // Render header - Arabic/Dari only, NO ENGLISH
@@ -878,10 +883,9 @@ export function MushafView({
                 <Pressable
                   key={ayah.number}
                   onPress={() => handlePlayAyah(ayah.number)}
-                  style={({ pressed }) => [
-                    styles.mushafAyah,
-                    currentlyPlaying?.surah === surahNumber &&
-                    currentlyPlaying?.ayah === ayah.number && {
+                    style={({ pressed }) => [
+                      styles.mushafAyah,
+                    activePlayingAyah === ayah.number && {
                       backgroundColor: `${theme.playing}20`,
                     },
                     pressed && { opacity: 0.8 },
@@ -912,7 +916,7 @@ export function MushafView({
         )}
       />
     );
-  }, [surah, mushafPages, surahNumber, theme, arabicFontSize, currentlyPlaying, handlePlayAyah, quranFontFamily, state.preferences.quranFont]);
+  }, [surah, mushafPages, surahNumber, theme, arabicFontSize, activePlayingAyah, handlePlayAyah, quranFontFamily, state.preferences.quranFont]);
 
   if (isLoading) {
     return (
@@ -986,7 +990,7 @@ export function MushafView({
       {renderMushafPage()}
     </View>
   );
-}
+});
 
 const styles = StyleSheet.create({
   container: {
