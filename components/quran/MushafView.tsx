@@ -22,6 +22,7 @@ interface MushafViewProps {
   initialAyah?: number;
   jumpMode?: 'default' | 'exact' | 'continue' | 'search_exact';
   jumpToken?: string;
+  resumeSource?: 'notification';
   onAyahChange?: (surah: number, ayah: number) => void;
   onPlayAyah?: (surah: number, ayah: number) => void;
   activePlayingAyah?: number | null;
@@ -70,6 +71,7 @@ export const MushafView = React.memo(function MushafView({
   initialAyah = 1,
   jumpMode = 'default',
   jumpToken,
+  resumeSource,
   onAyahChange,
   onPlayAyah,
   activePlayingAyah = null,
@@ -99,6 +101,9 @@ export const MushafView = React.memo(function MushafView({
   const lastFollowAyahRef = useRef<number | null>(null);
   const lastReportedAyahRef = useRef<number | null>(null);
   const lastReportedPageRef = useRef<number | null>(null);
+  const handledNavigationJumpKeyRef = useRef<string | null>(null);
+  const notificationResumeTargetAyahRef = useRef<number | null>(null);
+  const notificationResumeSettledRef = useRef(true);
 
   const [surah, setSurah] = useState<Surah | undefined>();
   const [isLoading, setIsLoading] = useState(true);
@@ -221,6 +226,11 @@ export const MushafView = React.memo(function MushafView({
   }, [getScrollIndexForAyah, effectiveViewMode]);
 
   const completeJumpSession = useCallback((ayahNumber: number) => {
+    const shouldSettleNotificationResume =
+      resumeSource === 'notification' &&
+      isContinueJumpSessionRef.current &&
+      notificationResumeTargetAyahRef.current === ayahNumber;
+
     logJumpDev('success', {
       token: jumpToken,
       ayahNumber,
@@ -229,7 +239,13 @@ export const MushafView = React.memo(function MushafView({
       searchSession: isSearchExactJumpSessionRef.current,
     });
     resetJumpSessionState();
-  }, [jumpToken, logJumpDev, resetJumpSessionState]);
+    if (shouldSettleNotificationResume) {
+      notificationResumeSettledRef.current = true;
+      notificationResumeTargetAyahRef.current = null;
+      lastFollowAyahRef.current = ayahNumber;
+      resetFollowSessionState();
+    }
+  }, [jumpToken, logJumpDev, resetFollowSessionState, resetJumpSessionState, resumeSource]);
 
   const markJumpFailed = useCallback((ayahNumber: number, reason: string) => {
     logJumpDev('failed', { ayahNumber, reason, attempt: retryAttemptRef.current, token: jumpToken });
@@ -500,6 +516,18 @@ export const MushafView = React.memo(function MushafView({
   useEffect(() => {
     if (!surah) return;
     const clampedTarget = Math.min(Math.max(initialAyah, 1), surah.ayahs.length);
+    const navigationJumpKey =
+      jumpToken ??
+      `${surahNumber}:${jumpMode}:${effectiveViewMode}:${clampedTarget}`;
+
+    if (handledNavigationJumpKeyRef.current === navigationJumpKey) {
+      return;
+    }
+    handledNavigationJumpKeyRef.current = navigationJumpKey;
+
+    const isNotificationResume = resumeSource === 'notification' && jumpMode === 'continue';
+    notificationResumeSettledRef.current = !isNotificationResume;
+    notificationResumeTargetAyahRef.current = isNotificationResume ? clampedTarget : null;
 
     if (jumpMode === 'exact') {
       startExactJumpSession(clampedTarget);
@@ -521,6 +549,7 @@ export const MushafView = React.memo(function MushafView({
     initialAyah,
     jumpMode,
     jumpToken,
+    resumeSource,
     surahNumber,
     surah,
     effectiveViewMode,
@@ -536,6 +565,8 @@ export const MushafView = React.memo(function MushafView({
     lastFollowAyahRef.current = null;
     lastReportedAyahRef.current = null;
     lastReportedPageRef.current = null;
+    notificationResumeSettledRef.current = true;
+    notificationResumeTargetAyahRef.current = null;
     resetFollowSessionState();
   }, [surahNumber, resetFollowSessionState]);
 
@@ -553,6 +584,13 @@ export const MushafView = React.memo(function MushafView({
     }
 
     const targetAyah = activePlayingAyah;
+    if (!notificationResumeSettledRef.current) {
+      if (notificationResumeTargetAyahRef.current === targetAyah) {
+        return;
+      }
+      notificationResumeSettledRef.current = true;
+      notificationResumeTargetAyahRef.current = null;
+    }
     if (lastFollowAyahRef.current === targetAyah) {
       return;
     }
@@ -684,6 +722,15 @@ export const MushafView = React.memo(function MushafView({
 
       if (firstVisible) {
         const page = getPage(surahNumber, firstVisible.number);
+
+        if (
+          !notificationResumeSettledRef.current &&
+          notificationResumeTargetAyahRef.current === firstVisible.number
+        ) {
+          notificationResumeSettledRef.current = true;
+          notificationResumeTargetAyahRef.current = null;
+          lastFollowAyahRef.current = firstVisible.number;
+        }
 
         if (lastReportedAyahRef.current !== firstVisible.number || lastReportedPageRef.current !== page) {
           lastReportedAyahRef.current = firstVisible.number;

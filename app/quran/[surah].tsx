@@ -17,11 +17,18 @@ import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
 
 export default function QuranReaderScreen() {
-  const { surah: surahParam, ayah: ayahParam, jump: jumpParam, jumpToken: jumpTokenParam } = useLocalSearchParams<{
+  const {
+    surah: surahParam,
+    ayah: ayahParam,
+    jump: jumpParam,
+    jumpToken: jumpTokenParam,
+    resumeSource: resumeSourceParam,
+  } = useLocalSearchParams<{
     surah: string | string[];
     ayah?: string | string[];
     jump?: string | string[];
     jumpToken?: string | string[];
+    resumeSource?: string | string[];
   }>();
   const router = useRouter();
   const navigation = useNavigation();
@@ -32,6 +39,7 @@ export default function QuranReaderScreen() {
   const normalizedAyahParam = Array.isArray(ayahParam) ? ayahParam[0] : ayahParam;
   const normalizedJumpParam = Array.isArray(jumpParam) ? jumpParam[0] : jumpParam;
   const normalizedJumpToken = Array.isArray(jumpTokenParam) ? jumpTokenParam[0] : jumpTokenParam;
+  const normalizedResumeSource = Array.isArray(resumeSourceParam) ? resumeSourceParam[0] : resumeSourceParam;
 
   const parsedSurahNumber = Number.parseInt(normalizedSurahParam ?? '', 10);
   const surahNumber = Number.isFinite(parsedSurahNumber) && parsedSurahNumber > 0
@@ -59,7 +67,6 @@ export default function QuranReaderScreen() {
     surah: number;
     ayah: number;
   } | null>(null);
-  const [scrollTargetAyah, setScrollTargetAyah] = useState(initialAyah);
   const [shouldGoBack, setShouldGoBack] = useState(false);
 
   const syncFromAudioSnapshot = useCallback(() => {
@@ -80,7 +87,6 @@ export default function QuranReaderScreen() {
     ));
     setShowAudioPlayer(true);
     setIsPlaying(snapshot.isPlaying);
-    setScrollTargetAyah((previous) => (previous === snapshot.ayah ? previous : snapshot.ayah));
   }, [surahNumber]);
 
   useEffect(() => {
@@ -94,15 +100,6 @@ export default function QuranReaderScreen() {
       router.back();
     }
   }, [shouldGoBack, router]);
-
-  useEffect(() => {
-    if (!surah) {
-      setScrollTargetAyah(initialAyah);
-      return;
-    }
-    const clampedAyah = Math.min(Math.max(initialAyah, 1), surah.ayahs.length);
-    setScrollTargetAyah(clampedAyah);
-  }, [surahNumber, initialAyah, surah]);
 
   useEffect(() => {
     void audioManager.initialize();
@@ -119,7 +116,6 @@ export default function QuranReaderScreen() {
         ));
         setShowAudioPlayer(true);
         setIsPlaying(true);
-        setScrollTargetAyah((previous) => (previous === a ? previous : a));
       });
 
       audioManager.setOnPlaybackEnd(() => {
@@ -171,7 +167,6 @@ export default function QuranReaderScreen() {
     setCurrentlyPlaying({ surah: surahNum, ayah: ayahNum });
     setShowAudioPlayer(true);
     setIsPlaying(true);
-    setScrollTargetAyah(ayahNum);
     void audioManager
       .playAyah(surahNum, ayahNum, surah.ayahs.length, true, true, {
         type: 'surah',
@@ -188,7 +183,6 @@ export default function QuranReaderScreen() {
 
     const currentAyah = currentlyPlaying?.ayah ?? initialAyah;
     setIsPlaying(true);
-    setScrollTargetAyah(currentAyah);
     void audioManager
       .playAyah(surahNumber, currentAyah, surah.ayahs.length, true, true, {
         type: 'surah',
@@ -325,9 +319,10 @@ export default function QuranReaderScreen() {
       <MushafView
         key={`mushaf-${surahNumber}-${normalizedJumpToken ?? 'default'}`}
         surahNumber={surahNumber}
-        initialAyah={scrollTargetAyah}
+        initialAyah={initialAyah}
         jumpMode={jumpMode}
         jumpToken={normalizedJumpToken}
+        resumeSource={normalizedResumeSource === 'notification' ? 'notification' : undefined}
         onPlayAyah={handlePlayAyah}
         activePlayingAyah={activeAyahNumber}
       />

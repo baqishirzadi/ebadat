@@ -54,10 +54,23 @@ async function getActiveTrack(): Promise<ActiveMediaTrack | null> {
       const queue = await TrackPlayer.getQueue();
       return (queue[activeTrack] as ActiveMediaTrack | undefined) ?? null;
     }
-    return (activeTrack as ActiveMediaTrack | null) ?? null;
+  return (activeTrack as ActiveMediaTrack | null) ?? null;
   } catch {
     return null;
   }
+}
+
+function getQuranReaderSingularId(
+  _name: string,
+  params: Record<string, undefined | string | number | (string | number)[]>
+): string | undefined {
+  if (params.juz !== undefined) {
+    return 'quran-juz-reader';
+  }
+  if (params.surah !== undefined) {
+    return 'quran-surah-reader';
+  }
+  return undefined;
 }
 
 function routeToQuranReadingContext(
@@ -72,7 +85,7 @@ function routeToQuranReadingContext(
   const jumpToken = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
   if (context.scopeType === 'juz' && context.juzNumber) {
-    router.replace({
+    router.dismissTo({
       pathname: '/quran/juz/[juz]',
       params: {
         juz: String(context.juzNumber),
@@ -80,20 +93,26 @@ function routeToQuranReadingContext(
         ayah: String(context.ayah),
         jump: 'continue',
         jumpToken,
+        resumeSource: 'notification',
       },
-    } as any);
+    } as any, {
+      dangerouslySingular: getQuranReaderSingularId,
+    });
     return true;
   }
 
-  router.replace({
+  router.dismissTo({
     pathname: '/quran/[surah]',
     params: {
       surah: String(context.surah),
       ayah: String(context.ayah),
       jump: 'continue',
       jumpToken,
+      resumeSource: 'notification',
     },
-  } as any);
+  } as any, {
+    dangerouslySingular: getQuranReaderSingularId,
+  });
   return true;
 }
 
@@ -146,7 +165,7 @@ export default function NotificationClickRoute() {
       }
 
       if (isNaatTrack(activeTrack)) {
-        router.replace('/naat/now-playing');
+        router.dismissTo('/naat/now-playing');
         return;
       }
 
