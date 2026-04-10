@@ -16,6 +16,7 @@ import {
   scheduleAhadithNotifications,
 } from '@/utils/ahadith/notifications';
 import { getCachedRemoteHadiths, syncPublishedHadiths } from '@/utils/ahadithRemoteService';
+import { useStartupPhase } from '@/context/StartupPhaseContext';
 
 const STORAGE_KEYS = {
   bookmarks: '@ebadat/ahadith_bookmarks',
@@ -67,6 +68,7 @@ function getDateByOffset(offset: number): Date {
 }
 
 export function AhadithProvider({ children }: { children: React.ReactNode }) {
+  const { isInteractiveReady } = useStartupPhase();
   const [hadiths, setHadiths] = useState<Hadith[]>(() => getAllHadiths());
   const topics = useMemo(() => getHadithTopics(), [hadiths]);
   const muttafaqHadiths = useMemo(() => getMuttafaqHadiths(), [hadiths]);
@@ -166,7 +168,6 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
       } finally {
         if (!cancelled) {
           setIsLoading(false);
-          void syncRemoteHadiths(true);
         }
       }
     };
@@ -179,8 +180,14 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
   }, [applyRemoteHadiths, syncRemoteHadiths]);
 
   useEffect(() => {
+    if (!isInteractiveReady || isLoading) return;
+
+    void syncRemoteHadiths(true);
+  }, [isInteractiveReady, isLoading, syncRemoteHadiths]);
+
+  useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
-      if (nextState === 'active' && !isLoading) {
+      if (nextState === 'active' && !isLoading && isInteractiveReady) {
         void syncRemoteHadiths(false);
       }
     });
@@ -188,7 +195,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.remove();
     };
-  }, [isLoading, syncRemoteHadiths]);
+  }, [isInteractiveReady, isLoading, syncRemoteHadiths]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -202,14 +209,14 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
   }, [bookmarks, isLoading]);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || !isInteractiveReady) return;
     void AsyncStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(notificationPrefs));
     void scheduleAhadithNotifications(hadiths, notificationPrefs).catch((error) => {
       if (__DEV__) {
         console.warn('[Ahadith] Failed to schedule notifications', error);
       }
     });
-  }, [notificationPrefs, hadiths, isLoading]);
+  }, [notificationPrefs, hadiths, isInteractiveReady, isLoading]);
 
   const topicHadiths = useMemo(() => {
     if (!selectedTopic) return [];

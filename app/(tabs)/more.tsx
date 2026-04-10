@@ -48,6 +48,18 @@ const GREGORIAN_MONTHS_DARI = [
 
 type DeferredSectionKey = 'summary' | 'today' | 'upcoming' | 'support' | 'khatm' | 'creator';
 
+interface UpcomingDayCard {
+  key: string;
+  day: number;
+  month: number;
+  nameDari: string;
+  descriptionDari: string;
+  isFasting?: boolean;
+  isEid?: boolean;
+  monthLabel: string;
+  shamsiWeekday: string | null;
+}
+
 function formatGregorianDateDari(date: Date): string {
   const { day, month, year } = getKabulDateParts(date);
   return `${toArabicNumerals(day)} ${GREGORIAN_MONTHS_DARI[month - 1]} ${toArabicNumerals(year)}`;
@@ -67,6 +79,7 @@ export default function MoreScreen() {
   const { state: prayer } = usePrayer();
   const router = useRouter();
   const [showDeferredSections, setShowDeferredSections] = useState(false);
+  const [upcomingCards, setUpcomingCards] = useState<UpcomingDayCard[]>([]);
   const truth = getCalendarTruth(new Date());
   const activeHijriDate = prayer.hijriDate ?? truth.hijri;
   const weekdayLabel = WEEKDAY_DARI[truth.weekday];
@@ -87,6 +100,41 @@ export default function MoreScreen() {
       task.cancel();
     };
   }, []);
+
+  useEffect(() => {
+    if (!showDeferredSections) {
+      setUpcomingCards([]);
+      return;
+    }
+
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      const baseYear = activeHijriDate.year;
+      const cards = getUpcomingSpecialDays(activeHijriDate, 3).map((day, index) => {
+        const hijriYear = day.month >= activeHijriDate.month ? baseYear : baseYear + 1;
+        return {
+          key: `${hijriYear}-${day.month}-${day.day}-${index}`,
+          day: day.day,
+          month: day.month,
+          nameDari: day.nameDari,
+          descriptionDari: day.descriptionDari,
+          isFasting: day.isFasting,
+          isEid: day.isEid,
+          monthLabel: HIJRI_MONTHS[day.month - 1]?.dari ?? '',
+          shamsiWeekday: getShamsiAndWeekday(hijriYear, day.month, day.day),
+        };
+      });
+
+      if (!cancelled) {
+        setUpcomingCards(cards);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, [activeHijriDate, showDeferredSections]);
 
   const quickActions = useMemo(() => [
     { icon: 'menu-book', label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith', accent: theme.tint },
@@ -141,23 +189,19 @@ export default function MoreScreen() {
     theme.tint,
   ]);
 
-  const upcomingDays = useMemo(() => (
-    showDeferredSections ? getUpcomingSpecialDays(activeHijriDate, 3) : []
-  ), [activeHijriDate, showDeferredSections]);
-
   const deferredSections = useMemo(() => {
     if (!showDeferredSections) {
       return [] as { key: string; data: DeferredSectionKey[] }[];
     }
 
     const items: DeferredSectionKey[] = ['summary', 'today'];
-    if (upcomingDays.length > 0) {
+    if (upcomingCards.length > 0) {
       items.push('upcoming');
     }
     items.push('support', 'khatm', 'creator');
 
     return [{ key: 'dashboard', data: items }];
-  }, [showDeferredSections, upcomingDays.length]);
+  }, [showDeferredSections, upcomingCards.length]);
 
   const listHeader = (
     <>
@@ -282,13 +326,10 @@ export default function MoreScreen() {
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>مناسبت‌های آینده</CenteredText>
           <View style={styles.upcomingList}>
-            {upcomingDays.map((day, index) => {
-              const baseYear = activeHijriDate.year;
-              const hijriYear = day.month >= activeHijriDate.month ? baseYear : baseYear + 1;
-              const shamsiWeekday = getShamsiAndWeekday(hijriYear, day.month, day.day);
+            {upcomingCards.map((day) => {
               return (
                 <View
-                  key={`${day.month}-${day.day}-${index}`}
+                  key={day.key}
                   style={[styles.upcomingCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
                 >
                   <View style={styles.upcomingTextWrap}>
@@ -296,9 +337,9 @@ export default function MoreScreen() {
                     <CenteredText style={[styles.upcomingDescription, { color: theme.textSecondary }]}>
                       {day.descriptionDari}
                     </CenteredText>
-                    {shamsiWeekday && (
+                    {day.shamsiWeekday && (
                       <CenteredText style={[styles.upcomingMeta, { color: theme.textSecondary }]}>
-                        {shamsiWeekday}
+                        {day.shamsiWeekday}
                       </CenteredText>
                     )}
                   </View>
@@ -312,7 +353,7 @@ export default function MoreScreen() {
                     )}
                     <View style={[styles.upcomingDateBadge, { backgroundColor: theme.tint }]}>
                       <CenteredText style={styles.upcomingDay}>{toArabicNumerals(day.day)}</CenteredText>
-                      <CenteredText style={styles.upcomingMonth}>{HIJRI_MONTHS[day.month - 1]?.dari ?? ''}</CenteredText>
+                      <CenteredText style={styles.upcomingMonth}>{day.monthLabel}</CenteredText>
                     </View>
                   </View>
                 </View>
@@ -406,6 +447,9 @@ export default function MoreScreen() {
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
+      initialNumToRender={2}
+      maxToRenderPerBatch={2}
+      windowSize={4}
       sections={deferredSections}
       keyExtractor={(item) => item}
       renderItem={renderDeferredSection}

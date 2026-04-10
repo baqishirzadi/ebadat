@@ -11,6 +11,8 @@ import * as scholarService from '@/utils/scholarService';
 import * as syncService from '@/utils/syncService';
 import { logSupabaseConfigStatus } from '@/utils/supabase';
 import NetInfo from '@react-native-community/netinfo';
+import { InteractionManager } from 'react-native';
+import { useStartupPhase } from '@/context/StartupPhaseContext';
 
 interface ArticlesState {
   articles: Article[];
@@ -100,6 +102,7 @@ const ArticlesContext = createContext<ArticlesContextType | undefined>(undefined
 
 export function ArticlesProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(articlesReducer, initialState);
+  const { isInteractiveReady } = useStartupPhase();
 
   // Monitor network status
   useEffect(() => {
@@ -112,8 +115,22 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
 
   // Initialize
   useEffect(() => {
-    initialize();
-  }, []);
+    if (!isInteractiveReady) {
+      return;
+    }
+
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (!cancelled) {
+        void initialize();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, [isInteractiveReady]);
 
   async function initialize() {
     try {

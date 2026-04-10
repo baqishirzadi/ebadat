@@ -4,7 +4,9 @@
  */
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback, ReactNode } from 'react';
+import { InteractionManager } from 'react-native';
 import { Scholar } from '@/types/articles';
+import { useStartupPhase } from '@/context/StartupPhaseContext';
 import * as scholarAuth from '@/utils/scholarAuth';
 import * as scholarService from '@/utils/scholarService';
 
@@ -62,11 +64,7 @@ const ScholarContext = createContext<ScholarContextType | undefined>(undefined);
 
 export function ScholarProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(scholarReducer, initialState);
-
-  // Check authentication on mount
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  const { isInteractiveReady } = useStartupPhase();
 
   const checkAuth = useCallback(async () => {
     try {
@@ -91,6 +89,25 @@ export function ScholarProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
   }, []);
+
+  // Check authentication on mount
+  useEffect(() => {
+    if (!isInteractiveReady) {
+      return;
+    }
+
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (!cancelled) {
+        void checkAuth();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, [checkAuth, isInteractiveReady]);
 
   const login = useCallback(async (email: string, password: string) => {
     try {

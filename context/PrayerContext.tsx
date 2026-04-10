@@ -41,7 +41,8 @@ import {
 } from '@/utils/nativeAdhanScheduler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
-import { Alert, AppState, Linking, NativeModules, Platform } from 'react-native';
+import { Alert, AppState, InteractionManager, Linking, NativeModules, Platform } from 'react-native';
+import { useStartupPhase } from '@/context/StartupPhaseContext';
 
 // Conditional imports - only load on native platforms
 // Skip notifications entirely in Expo Go to avoid SDK 53 error
@@ -327,6 +328,7 @@ const PrayerContext = createContext<PrayerContextType | undefined>(undefined);
 
 // Provider
 export function PrayerProvider({ children }: { children: ReactNode }) {
+  const { isInteractiveReady } = useStartupPhase();
   const [state, dispatch] = useReducer(prayerReducer, initialState);
   const scheduleRunIdRef = useRef(0);
   const scheduleInFlightRef = useRef(false);
@@ -336,6 +338,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   const scheduleAdhanNotificationsRef = useRef<() => Promise<void>>(async () => { });
   const scheduleJummahNotificationsRef = useRef<() => Promise<void>>(async () => { });
   const adhanChannelMigrationDoneRef = useRef(false);
+  const startupScheduleBootstrappedRef = useRef(Platform.OS !== 'android');
   const lastScheduleRef = useRef<{ dateKey: string; locationKey: string } | null>(null);
   const lastKnownExactStatusRef = useRef<ExactAlarmStatus>(
     Platform.OS === 'android' ? 'unknown' : 'not_applicable'
@@ -369,12 +372,29 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     }
   }, [getExactAlarmModule]);
 
-  // Initialize
+  // Initialize prayer state after the app becomes interactive so cold-start taps
+  // are not competing with prayer-time hydration and calculation work.
   useEffect(() => {
-    loadSavedData();
-  }, []);
+    if (!isInteractiveReady) {
+      return;
+    }
+
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (!cancelled) {
+        void loadSavedData();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, [isInteractiveReady]);
 
   useEffect(() => {
+    if (!isInteractiveReady) return;
+
     let isMounted = true;
     const run = async () => {
       const status = await checkExactAlarmCapability();
@@ -392,7 +412,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     return () => {
       isMounted = false;
     };
-  }, [checkExactAlarmCapability]);
+  }, [checkExactAlarmCapability, isInteractiveReady]);
 
   const getExactAlarmDebugState = useCallback(
     async (
@@ -475,11 +495,6 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         },
       });
 
-      // Configure notification channels for Android
-      if (Platform.OS === 'android') {
-        await configureAndroidNotificationChannels(NotificationsModule);
-      }
-
       console.log('Notification handler configured');
     };
 
@@ -488,29 +503,42 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
 
   // One-time migration on app open: cancel prayer-related notifications, recreate channels, reschedule (Android)
   useEffect(() => {
-    if (Platform.OS !== 'android' || adhanChannelMigrationDoneRef.current || !state.prayerTimes) return;
+    if (!isInteractiveReady || Platform.OS !== 'android' || adhanChannelMigrationDoneRef.current || !state.prayerTimes) return;
     adhanChannelMigrationDoneRef.current = true;
     const run = async () => {
       const NotificationsModule = await loadNotificationsIfAvailable();
-      if (!NotificationsModule) return;
-      await cancelScheduledNotificationsByPredicate(
-        NotificationsModule,
-        (notification, identifier) => {
-          const dataType = (notification as any)?.content?.data?.type;
-          return (
-            identifier.startsWith('adhan-') ||
-            dataType === 'adhan' ||
-            dataType === 'reminder' ||
-            identifier.startsWith('jummah-') ||
-            dataType === 'jummah'
-          );
-        }
-      );
-      await configureAndroidNotificationChannels(NotificationsModule);
-      await requestPrayerScheduleRef.current('startup-migration');
+      if (!NotificationsModule) {
+        startupScheduleBootstrappedRef.current = true;
+        return;
+      }
+      try {
+        await cancelScheduledNotificationsByPredicate(
+          NotificationsModule,
+          (notification, identifier) => {
+            const dataType = (notification as any)?.content?.data?.type;
+            return (
+              identifier.startsWith('adhan-') ||
+              dataType === 'adhan' ||
+              dataType === 'reminder' ||
+              identifier.startsWith('jummah-') ||
+              dataType === 'jummah'
+            );
+          }
+        );
+        await configureAndroidNotificationChannels(NotificationsModule);
+        await requestPrayerScheduleRef.current('startup-migration');
+      } finally {
+        startupScheduleBootstrappedRef.current = true;
+      }
     };
-    run().catch((e) => console.warn('Adhan channel migration failed:', e));
-  }, [state.prayerTimes]);
+    const task = InteractionManager.runAfterInteractions(() => {
+      run().catch((e) => console.warn('Adhan channel migration failed:', e));
+    });
+
+    return () => {
+      task.cancel();
+    };
+  }, [isInteractiveReady, state.prayerTimes]);
 
   // Listen for notification received events (foreground) and play Adhan audio
   useEffect(() => {
@@ -597,23 +625,39 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
 
   // Schedule prayer notifications when prayer times or preferences change
   useEffect(() => {
+    if (!isInteractiveReady || !state.prayerTimes) {
+      return;
+    }
+
+    if (Platform.OS === 'android' && !startupScheduleBootstrappedRef.current) {
+      return;
+    }
+
     if (state.prayerTimes) {
       requestPrayerScheduleRef.current('state-change').catch((error) => {
         console.warn('Failed to schedule prayer/Jummah notifications:', error);
       });
     }
-  }, [state.prayerTimes, state.adhanPreferences]);
+  }, [isInteractiveReady, state.prayerTimes, state.adhanPreferences]);
 
   // Schedule calendar (Qamari) notifications when app has loaded
   useEffect(() => {
-    if (!state.isLoading) {
+    if (!isInteractiveReady || state.isLoading) {
+      return;
+    }
+
+    const task = InteractionManager.runAfterInteractions(() => {
       loadCalendarNotificationPreferences().then((prefs) => {
         scheduleCalendarNotifications(prefs.enabled).catch((err) => {
           if (__DEV__) console.warn('Calendar notification schedule:', err);
         });
       });
-    }
-  }, [state.isLoading]);
+    });
+
+    return () => {
+      task.cancel();
+    };
+  }, [isInteractiveReady, state.isLoading]);
 
 async function configureAndroidNotificationChannels(NotificationsModule: typeof import('expo-notifications')) {
     if (Platform.OS !== 'android') return;
@@ -973,22 +1017,19 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     [isAfghanistanCityKey]
   );
 
-  const cancelScheduledNotificationsByPredicate = useCallback(
-    async (
-      NotificationsModule: typeof import('expo-notifications'),
-      shouldCancel: (notification: any, identifier: string) => boolean
-    ) => {
-      const scheduled = await NotificationsModule.getAllScheduledNotificationsAsync();
-      for (const notification of scheduled) {
-        const identifier = (notification as any)?.identifier || '';
-        if (!identifier) continue;
-        if (shouldCancel(notification, identifier)) {
-          await NotificationsModule.cancelScheduledNotificationAsync(identifier);
-        }
+  async function cancelScheduledNotificationsByPredicate(
+    NotificationsModule: typeof import('expo-notifications'),
+    shouldCancel: (notification: any, identifier: string) => boolean
+  ) {
+    const scheduled = await NotificationsModule.getAllScheduledNotificationsAsync();
+    for (const notification of scheduled) {
+      const identifier = (notification as any)?.identifier || '';
+      if (!identifier) continue;
+      if (shouldCancel(notification, identifier)) {
+        await NotificationsModule.cancelScheduledNotificationAsync(identifier);
       }
-    },
-    []
-  );
+    }
+  }
 
   function updateQibla() {
     const qibla = calculateQibla(state.location);

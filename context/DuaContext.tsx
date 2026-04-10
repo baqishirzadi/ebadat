@@ -4,10 +4,12 @@
  */
 
 import { DuaCategory, DuaRequest, UserGender } from '@/types/dua';
+import { useStartupPhase } from '@/context/StartupPhaseContext';
 import * as duaService from '@/utils/duaService';
 import * as duaStorage from '@/utils/duaStorage';
 import * as duaSync from '@/utils/duaSync';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useReducer } from 'react';
+import { InteractionManager } from 'react-native';
 
 interface DuaState {
   requests: DuaRequest[];
@@ -70,11 +72,26 @@ const DuaContext = createContext<DuaContextType | undefined>(undefined);
 
 export function DuaProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(duaReducer, initialState);
+  const { isInteractiveReady } = useStartupPhase();
 
   // Initialize user ID and load requests
   useEffect(() => {
-    initialize();
-  }, []);
+    if (!isInteractiveReady) {
+      return;
+    }
+
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (!cancelled) {
+        void initialize();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, [isInteractiveReady]);
 
   const refreshRequests = useCallback(async () => {
     if (!state.userId) {
@@ -103,6 +120,10 @@ export function DuaProvider({ children }: { children: ReactNode }) {
 
   // Start auto-sync
   useEffect(() => {
+    if (!isInteractiveReady) {
+      return;
+    }
+
     const cleanup = duaSync.startAutoSync();
     const unsubscribe = duaSync.addSyncListener(() => {
       refreshRequests();
@@ -111,10 +132,14 @@ export function DuaProvider({ children }: { children: ReactNode }) {
       cleanup();
       unsubscribe();
     };
-  }, [refreshRequests]);
+  }, [isInteractiveReady, refreshRequests]);
 
   // Setup notification listener
   useEffect(() => {
+    if (!isInteractiveReady) {
+      return;
+    }
+
     let cleanup: (() => void) | undefined;
 
     const setupNotifications = async () => {
@@ -143,7 +168,7 @@ export function DuaProvider({ children }: { children: ReactNode }) {
         cleanup();
       }
     };
-  }, [refreshRequests, state.userId]);
+  }, [isInteractiveReady, refreshRequests, state.userId]);
 
   async function initialize() {
     try {

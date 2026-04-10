@@ -77,6 +77,7 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
 export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   const insets = useSafeAreaInsets();
   const [phrase] = useState(() => PHRASES[Math.floor(Math.random() * PHRASES.length)]);
+  const [isExiting, setIsExiting] = useState(false);
   
   const opacity = useSharedValue(1); // Start visible so no blank screen when native splash hides (EAS/physical devices)
   const frameScale = useSharedValue(0.9);
@@ -105,12 +106,13 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
 
     // Fade out and complete
     const timeout = setTimeout(() => {
-      opacity.value = withTiming(0, { duration: 400 }, (finished) => {
+      setIsExiting(true);
+      opacity.value = withTiming(0, { duration: 250 }, (finished) => {
         if (finished) {
           runOnJS(onComplete)();
         }
       });
-    }, 3500);
+    }, 2500);
 
     return () => clearTimeout(timeout);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -146,7 +148,14 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   }));
 
   return (
-    <Animated.View style={[styles.container, containerStyle, { paddingTop: Math.max(48, insets.top + 12), paddingBottom: Math.max(16, insets.bottom + 8) }]}>
+    <Animated.View
+      pointerEvents={isExiting ? 'none' : 'auto'}
+      style={[
+        styles.container,
+        containerStyle,
+        { paddingTop: Math.max(48, insets.top + 12), paddingBottom: Math.max(16, insets.bottom + 8) },
+      ]}
+    >
       {/* Gradient Background */}
       <LinearGradient
         colors={['#0a1f18', '#1a4d3e', '#0d2a20']}

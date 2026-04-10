@@ -28,7 +28,7 @@ import { toArabicNumerals } from '@/utils/numbers';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { InteractionManager, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
 import Animated, {
   Easing,
   runOnJS,
@@ -66,17 +66,6 @@ export default function CalendarScreen() {
   const contentOpacity = useSharedValue(1);
   const contentTranslateX = useSharedValue(0);
 
-  // Sync selected month and year when switching modes
-  useEffect(() => {
-    if (mode === 'qamari') {
-      setSelectedMonth(todayHijri.month - 1);
-      setDisplayYearHijri(todayHijri.year);
-    } else {
-      setSelectedMonth(todayShamsi.month - 1);
-      setDisplayYearShamsi(todayShamsi.year);
-    }
-  }, [mode, todayHijri.month, todayHijri.year, todayShamsi.month, todayShamsi.year]);
-
   useEffect(() => {
     loadCalendarNotificationPreferences().then((p) => setCalendarNotifEnabled(p.enabled));
   }, []);
@@ -95,6 +84,13 @@ export default function CalendarScreen() {
 
   const applyMode = useCallback((nextMode: CalendarMode, direction: number) => {
     setMode(nextMode);
+    if (nextMode === 'qamari') {
+      setSelectedMonth(todayHijri.month - 1);
+      setDisplayYearHijri(todayHijri.year);
+    } else {
+      setSelectedMonth(todayShamsi.month - 1);
+      setDisplayYearShamsi(todayShamsi.year);
+    }
     contentOpacity.value = 0.35;
     contentTranslateX.value = direction * -18;
 
@@ -106,7 +102,7 @@ export default function CalendarScreen() {
         }
       });
     });
-  }, [contentOpacity, contentTranslateX, finishModeTransition]);
+  }, [contentOpacity, contentTranslateX, finishModeTransition, todayHijri.month, todayHijri.year, todayShamsi.month, todayShamsi.year]);
 
   const handleModeChange = useCallback((nextMode: CalendarMode) => {
     if (nextMode === mode || transitionLockRef.current) {
@@ -136,6 +132,21 @@ export default function CalendarScreen() {
     mode === 'qamari' ? displayYearHijri : displayYearShamsi,
     selectedMonth + 1,
   ), [displayYearHijri, displayYearShamsi, mode, selectedMonth]);
+
+  useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => {
+      getCalendarMonthGridMeta('qamari', todayHijri.year, todayHijri.month);
+      getCalendarMonthGridMeta('shamsi', todayShamsi.year, todayShamsi.month);
+
+      const nextHijriMonth = todayHijri.month === 12 ? 1 : todayHijri.month + 1;
+      const nextHijriYear = todayHijri.month === 12 ? todayHijri.year + 1 : todayHijri.year;
+      getCalendarMonthGridMeta('qamari', nextHijriYear, nextHijriMonth);
+    });
+
+    return () => {
+      task.cancel();
+    };
+  }, [todayHijri.month, todayHijri.year, todayShamsi.month, todayShamsi.year]);
 
   const accentColor = mode === 'qamari' ? QAMARI_COLOR : SHAMSI_COLOR;
   // Persian/Afghan week order: شن (Sat), یک (Sun), دو (Mon), سه (Tue), چه (Wed), پن (Thu), جم (Fri)

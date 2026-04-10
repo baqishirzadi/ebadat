@@ -244,6 +244,8 @@ export const SPECIAL_DAYS: SpecialDay[] = [
 const GREGORIAN_TO_HIJRI_CACHE = new Map<string, HijriDate>();
 const HIJRI_TO_GREGORIAN_CACHE = new Map<string, number | null>();
 const HIJRI_MONTH_LENGTH_CACHE = new Map<string, number>();
+const HIJRI_MONTH_START_CACHE = new Map<string, number | null>();
+const AVERAGE_HIJRI_MONTH_DAYS = 29.530588;
 
 interface HijriCorrectionRange {
   startGregorian: string;
@@ -261,6 +263,26 @@ const AFGHAN_HIJRI_CORRECTIONS: HijriCorrectionRange[] = [
 function compareDateKeys(a: string, b: string): number {
   if (a === b) return 0;
   return a < b ? -1 : 1;
+}
+
+function getHijriMonthKey(hijriYear: number, hijriMonth: number): string {
+  return `${hijriYear}-${hijriMonth}`;
+}
+
+function getPreviousHijriMonth(hijriYear: number, hijriMonth: number) {
+  if (hijriMonth > 1) {
+    return { year: hijriYear, month: hijriMonth - 1 };
+  }
+
+  return { year: hijriYear - 1, month: 12 };
+}
+
+function getNextHijriMonthInfo(hijriYear: number, hijriMonth: number) {
+  if (hijriMonth < 12) {
+    return { year: hijriYear, month: hijriMonth + 1 };
+  }
+
+  return { year: hijriYear + 1, month: 1 };
 }
 
 function getHijriCorrectionShift(date: Date): number {
@@ -285,6 +307,150 @@ function buildHijriDate(hijriYear: number, hijriMonth: number, hijriDay: number)
     monthNameDari: monthInfo.dari,
     monthNamePashto: monthInfo.pashto,
   };
+}
+
+function isExactHijriMatch(
+  resolved: HijriDate,
+  hijriYear: number,
+  hijriMonth: number,
+  hijriDay: number
+): boolean {
+  return (
+    resolved.year === hijriYear &&
+    resolved.month === hijriMonth &&
+    resolved.day === hijriDay
+  );
+}
+
+function collectHijriMatches(
+  center: Date,
+  searchRadius: number,
+  hijriYear: number,
+  hijriMonth: number,
+  hijriDay: number
+): Date[] {
+  const matches: Date[] = [];
+
+  for (let offset = -searchRadius; offset <= searchRadius; offset++) {
+    const candidate = addDaysToKabulDate(center, offset);
+    const resolved = gregorianToHijri(candidate);
+    if (isExactHijriMatch(resolved, hijriYear, hijriMonth, hijriDay)) {
+      matches.push(candidate);
+    }
+  }
+
+  return matches;
+}
+
+function pickBestHijriMatch(
+  matches: Date[],
+  hijriYear: number,
+  hijriMonth: number,
+  hijriDay: number
+): Date | null {
+  if (matches.length === 0) {
+    return null;
+  }
+
+  matches.sort((left, right) => {
+    const scoreDifference =
+      scoreHijriCandidate(right, hijriYear, hijriMonth, hijriDay) -
+      scoreHijriCandidate(left, hijriYear, hijriMonth, hijriDay);
+
+    if (scoreDifference !== 0) {
+      return scoreDifference;
+    }
+
+    return getKabulEpochDay(right) - getKabulEpochDay(left);
+  });
+
+  return matches[0];
+}
+
+function estimateHijriMonthStart(hijriYear: number, hijriMonth: number): Date {
+  const today = getKabulNoon(new Date());
+  const todayHijri = gregorianToHijri(today);
+  const monthDelta =
+    (hijriYear - todayHijri.year) * 12 + (hijriMonth - todayHijri.month);
+  const dayOffsetEstimate = Math.round(monthDelta * AVERAGE_HIJRI_MONTH_DAYS) - (todayHijri.day - 1);
+  return addDaysToKabulDate(today, dayOffsetEstimate);
+}
+
+function resolveHijriMonthStart(hijriYear: number, hijriMonth: number): Date | null {
+  const cacheKey = getHijriMonthKey(hijriYear, hijriMonth);
+  if (HIJRI_MONTH_START_CACHE.has(cacheKey)) {
+    const cached = HIJRI_MONTH_START_CACHE.get(cacheKey);
+    return typeof cached === 'number' ? new Date(cached) : null;
+  }
+
+  const tryResolveAround = (center: Date, radius: number): Date | null => {
+    const match = pickBestHijriMatch(
+      collectHijriMatches(center, radius, hijriYear, hijriMonth, 1),
+      hijriYear,
+      hijriMonth,
+      1
+    );
+    return match ? getKabulNoon(match) : null;
+  };
+
+  const previousMonth = getPreviousHijriMonth(hijriYear, hijriMonth);
+  const previousCached = HIJRI_MONTH_START_CACHE.get(
+    getHijriMonthKey(previousMonth.year, previousMonth.month)
+  );
+  if (typeof previousCached === 'number') {
+    const previousStart = new Date(previousCached);
+    const from29 = tryResolveAround(addDaysToKabulDate(previousStart, 29), 2);
+    if (from29) {
+      HIJRI_MONTH_START_CACHE.set(cacheKey, from29.getTime());
+      return from29;
+    }
+
+    const from30 = tryResolveAround(addDaysToKabulDate(previousStart, 30), 2);
+    if (from30) {
+      HIJRI_MONTH_START_CACHE.set(cacheKey, from30.getTime());
+      return from30;
+    }
+  }
+
+  const nextMonth = getNextHijriMonthInfo(hijriYear, hijriMonth);
+  const nextCached = HIJRI_MONTH_START_CACHE.get(getHijriMonthKey(nextMonth.year, nextMonth.month));
+  if (typeof nextCached === 'number') {
+    const nextStart = new Date(nextCached);
+    const from29 = tryResolveAround(addDaysToKabulDate(nextStart, -29), 2);
+    if (from29) {
+      HIJRI_MONTH_START_CACHE.set(cacheKey, from29.getTime());
+      return from29;
+    }
+
+    const from30 = tryResolveAround(addDaysToKabulDate(nextStart, -30), 2);
+    if (from30) {
+      HIJRI_MONTH_START_CACHE.set(cacheKey, from30.getTime());
+      return from30;
+    }
+  }
+
+  const estimatedStart = tryResolveAround(estimateHijriMonthStart(hijriYear, hijriMonth), 8);
+  if (estimatedStart) {
+    HIJRI_MONTH_START_CACHE.set(cacheKey, estimatedStart.getTime());
+    return estimatedStart;
+  }
+
+  const fallbackCenter = getKabulNoon(new Date());
+  const fallback = pickBestHijriMatch(
+    collectHijriMatches(fallbackCenter, 420, hijriYear, hijriMonth, 1),
+    hijriYear,
+    hijriMonth,
+    1
+  );
+
+  if (!fallback) {
+    HIJRI_MONTH_START_CACHE.set(cacheKey, null);
+    return null;
+  }
+
+  const resolved = getKabulNoon(fallback);
+  HIJRI_MONTH_START_CACHE.set(cacheKey, resolved.getTime());
+  return resolved;
 }
 
 function gregorianToHijriFallback(date: Date): HijriDate {
@@ -537,40 +703,21 @@ export function hijriToGregorian(hijriYear: number, hijriMonth: number, hijriDay
     }
   }
 
-  const base = getKabulNoon(new Date());
-  const matches: Date[] = [];
-
-  for (let offset = -90; offset <= 420; offset++) {
-    const d = new Date(base);
-    d.setUTCDate(d.getUTCDate() + offset);
-
-    const h = gregorianToHijri(d);
-    if (h.year === hijriYear && h.month === hijriMonth && h.day === hijriDay) {
-      matches.push(d);
-    }
-  }
-
-  if (matches.length === 0) {
+  const monthStart = resolveHijriMonthStart(hijriYear, hijriMonth);
+  if (!monthStart || hijriDay < 1) {
     HIJRI_TO_GREGORIAN_CACHE.set(cacheKey, null);
     return null;
   }
 
-  matches.sort((left, right) => {
-    const scoreDifference = scoreHijriCandidate(right, hijriYear, hijriMonth, hijriDay)
-      - scoreHijriCandidate(left, hijriYear, hijriMonth, hijriDay);
+  const candidate = addDaysToKabulDate(monthStart, hijriDay - 1);
+  const resolvedHijri = gregorianToHijri(candidate);
+  if (!isExactHijriMatch(resolvedHijri, hijriYear, hijriMonth, hijriDay)) {
+    HIJRI_TO_GREGORIAN_CACHE.set(cacheKey, null);
+    return null;
+  }
 
-    if (scoreDifference !== 0) {
-      return scoreDifference;
-    }
-
-    // If two candidates still look identical, prefer the later Kabul date so local correction
-    // windows do not pin the month grid to the previous day.
-    return getKabulEpochDay(right) - getKabulEpochDay(left);
-  });
-
-  const resolved = matches[0];
-  HIJRI_TO_GREGORIAN_CACHE.set(cacheKey, resolved.getTime());
-  return new Date(resolved);
+  HIJRI_TO_GREGORIAN_CACHE.set(cacheKey, candidate.getTime());
+  return new Date(candidate);
 }
 
 export function getHijriMonthLength(hijriYear: number, hijriMonth: number): number {
@@ -580,15 +727,13 @@ export function getHijriMonthLength(hijriYear: number, hijriMonth: number): numb
     return cachedLength;
   }
 
-  const start = hijriToGregorian(hijriYear, hijriMonth, 1);
+  const start = resolveHijriMonthStart(hijriYear, hijriMonth);
   if (!start) {
     return 30;
   }
 
-  const nextMonth = hijriMonth === 12
-    ? { year: hijriYear + 1, month: 1 }
-    : { year: hijriYear, month: hijriMonth + 1 };
-  const nextStart = hijriToGregorian(nextMonth.year, nextMonth.month, 1);
+  const nextMonth = getNextHijriMonthInfo(hijriYear, hijriMonth);
+  const nextStart = resolveHijriMonthStart(nextMonth.year, nextMonth.month);
   if (!nextStart) {
     return 30;
   }

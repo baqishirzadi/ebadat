@@ -5,6 +5,8 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { InteractionManager } from 'react-native';
+import { useStartupPhase } from '@/context/StartupPhaseContext';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -199,11 +201,26 @@ const StatsContext = createContext<StatsContextType | undefined>(undefined);
 // Provider
 export function StatsProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(statsReducer, initialState);
+  const { isInteractiveReady } = useStartupPhase();
 
   // Load saved data
   useEffect(() => {
-    loadStats();
-  }, []);
+    if (!isInteractiveReady) {
+      return;
+    }
+
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (!cancelled) {
+        void loadStats();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, [isInteractiveReady]);
 
   // Save stats when they change
   useEffect(() => {

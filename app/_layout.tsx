@@ -8,7 +8,7 @@ import * as Font from 'expo-font';
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, I18nManager, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, I18nManager, InteractionManager, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -21,7 +21,11 @@ import { DuaProvider } from '@/context/DuaContext';
 import { NaatProvider } from '@/context/NaatContext';
 import { PrayerProvider } from '@/context/PrayerContext';
 import { ScholarProvider } from '@/context/ScholarContext';
+import { StartupPhaseProvider, useStartupPhase } from '@/context/StartupPhaseContext';
 import { StatsProvider } from '@/context/StatsContext';
+import { getKabulNoon } from '@/utils/afghanistanCalendar';
+import { getCalendarMonthGridMeta } from '@/utils/calendarMonthGrid';
+import { getCalendarTruth } from '@/utils/calendarTruth';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 import { runFirstOpenPrayerOnboarding } from '@/utils/prayerOnboarding';
 
@@ -82,6 +86,7 @@ export const RTL_TEXT_STYLE = {
 
 function RootLayoutNav() {
   const { theme, state } = useApp();
+  const { isInteractiveReady, markInteractiveReady } = useStartupPhase();
   const router = useRouter();
   const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
   const lastHandledNotificationKeyRef = useRef<string>('');
@@ -200,11 +205,64 @@ function RootLayoutNav() {
   }, [handleNotificationResponse, showSpiritualSplash]);
 
   useEffect(() => {
-    void ensurePushRegistrationOnFirstOpen();
-  }, []);
+    if (showSpiritualSplash || isInteractiveReady) return;
+
+    let cancelled = false;
+    let idleTimer: ReturnType<typeof setTimeout> | null = null;
+    const task = InteractionManager.runAfterInteractions(() => {
+      idleTimer = setTimeout(() => {
+        if (!cancelled) {
+          markInteractiveReady();
+        }
+      }, 900);
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+      if (idleTimer) {
+        clearTimeout(idleTimer);
+      }
+    };
+  }, [isInteractiveReady, markInteractiveReady, showSpiritualSplash]);
 
   useEffect(() => {
-    void runFirstOpenPrayerOnboarding();
+    if (showSpiritualSplash || !isInteractiveReady) return;
+
+    let cancelled = false;
+
+    const runDeferredStartup = async () => {
+      try {
+        await runFirstOpenPrayerOnboarding();
+        if (cancelled) return;
+        await ensurePushRegistrationOnFirstOpen();
+      } catch (error) {
+        if (__DEV__) {
+          console.warn('[Startup] Deferred first-open setup failed', error);
+        }
+      }
+    };
+
+    void runDeferredStartup();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isInteractiveReady, showSpiritualSplash]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (cancelled) return;
+      const today = getCalendarTruth(getKabulNoon(new Date()));
+      getCalendarMonthGridMeta('qamari', today.hijri.year, today.hijri.month);
+      getCalendarMonthGridMeta('shamsi', today.shamsi.year, today.shamsi.month);
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
   }, []);
 
   if (showSpiritualSplash) {
@@ -286,23 +344,25 @@ export default function RootLayout() {
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
-        <AppProvider>
-          <PrayerProvider>
-            <StatsProvider>
-              <DuaProvider>
-                <NaatProvider>
-                  <AhadithProvider>
-                    <ArticlesProvider>
-                      <ScholarProvider>
-                        <RootLayoutNav />
-                      </ScholarProvider>
-                    </ArticlesProvider>
-                  </AhadithProvider>
-                </NaatProvider>
-              </DuaProvider>
-            </StatsProvider>
-          </PrayerProvider>
-        </AppProvider>
+        <StartupPhaseProvider>
+          <AppProvider>
+            <PrayerProvider>
+              <StatsProvider>
+                <DuaProvider>
+                  <NaatProvider>
+                    <AhadithProvider>
+                      <ArticlesProvider>
+                        <ScholarProvider>
+                          <RootLayoutNav />
+                        </ScholarProvider>
+                      </ArticlesProvider>
+                    </AhadithProvider>
+                  </NaatProvider>
+                </DuaProvider>
+              </StatsProvider>
+            </PrayerProvider>
+          </AppProvider>
+        </StartupPhaseProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
   );

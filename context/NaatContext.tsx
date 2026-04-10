@@ -1,9 +1,10 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, AppState } from 'react-native';
+import { Alert, AppState, InteractionManager } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import * as FileSystem from 'expo-file-system/legacy';
 import { Audio } from 'expo-av';
 import TrackPlayer, { Event, State, type AddTrack } from 'react-native-track-player';
+import { useStartupPhase } from '@/context/StartupPhaseContext';
 import { Naat, NaatDraft } from '@/types/naat';
 import {
   createDraftPayload,
@@ -83,6 +84,7 @@ function getTrackId(track: unknown): string | null {
 }
 
 export function NaatProvider({ children }: { children: React.ReactNode }) {
+  const { isInteractiveReady } = useStartupPhase();
   const [naats, setNaats] = useState<Naat[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -183,8 +185,22 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    refresh().catch(() => setLoading(false));
-  }, [refresh]);
+    if (!isInteractiveReady) {
+      return;
+    }
+
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      if (!cancelled) {
+        refresh().catch(() => setLoading(false));
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, [isInteractiveReady, refresh]);
 
   useEffect(() => {
     naatsRef.current = naats;

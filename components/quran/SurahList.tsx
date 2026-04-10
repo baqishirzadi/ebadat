@@ -13,7 +13,7 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View, I18nManager } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View, I18nManager, Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SearchButton } from './SearchButton';
@@ -294,10 +294,10 @@ export function SurahList() {
           style={[styles.list, { backgroundColor: theme.background }]}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           scrollEventThrottle={16}
-          removeClippedSubviews={false}
-          initialNumToRender={15}
-          maxToRenderPerBatch={10}
-          windowSize={10}
+          removeClippedSubviews={Platform.OS === 'android'}
+          initialNumToRender={8}
+          maxToRenderPerBatch={6}
+          windowSize={5}
           getItemLayout={(_, index) =>
             index < 0
               ? { index: 0, length: 0, offset: 0 }
