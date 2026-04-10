@@ -3,19 +3,19 @@
  * Displays user's saved ayah bookmarks
  */
 
-import React, { useCallback } from 'react';
-import { View, StyleSheet, FlatList, Pressable, Alert } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useApp, useBookmarks } from '@/context/AppContext';
-import { useQuranData } from '@/hooks/useQuranData';
-import { getQuranFontFamily } from '@/hooks/useFonts';
-import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
-import { stripQuranicMarks } from '@/utils/quranText';
-import { Bookmark } from '@/types/quran';
 import CenteredText from '@/components/CenteredText';
+import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
+import { useApp, useBookmarks } from '@/context/AppContext';
+import { getQuranFontFamily } from '@/hooks/useFonts';
+import { useQuranData } from '@/hooks/useQuranData';
+import { Bookmark } from '@/types/quran';
 import { toArabicNumerals } from '@/utils/numbers';
+import { stripQuranicMarks } from '@/utils/quranText';
+import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import React, { useCallback } from 'react';
+import { Alert, FlatList, Pressable, StyleSheet, View } from 'react-native';
 
 // Format date
 const formatDate = (timestamp: number): string => {

@@ -3,17 +3,17 @@
  * Search Quran Arabic text and translations
  */
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { View, StyleSheet, TextInput, FlatList, Pressable, ActivityIndicator, Keyboard } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter, Stack } from 'expo-router';
+import CenteredText from '@/components/CenteredText';
+import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { SearchResult } from '@/types/quran';
-import CenteredText from '@/components/CenteredText';
 import { toArabicNumerals } from '@/utils/numbers';
 import { stripQuranicMarks } from '@/utils/quranText';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Stack, useRouter } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Keyboard, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 type SearchMode = 'arabic' | 'translation';
 
