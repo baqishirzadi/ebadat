@@ -3,19 +3,19 @@
  * Supports both Mushaf page view and Ayah scroll view modes
  */
 
-import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator, ViewToken } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import CenteredText from '@/components/CenteredText';
+import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp, useReadingPosition } from '@/context/AppContext';
-import { useQuranData } from '@/hooks/useQuranData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
+import { useQuranData } from '@/hooks/useQuranData';
+import { Ayah, Surah } from '@/types/quran';
+import { toArabicNumerals } from '@/utils/numbers';
+import { stripQuranicMarks } from '@/utils/quranText';
+import { MaterialIcons } from '@expo/vector-icons';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Dimensions, FlatList, Pressable, StyleSheet, View, ViewToken } from 'react-native';
 import { AyahRow } from './AyahRow';
 import { SurahHeader } from './SurahHeader';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { Surah, Ayah } from '@/types/quran';
-import { stripQuranicMarks } from '@/utils/quranText';
-import CenteredText from '@/components/CenteredText';
-import { toArabicNumerals } from '@/utils/numbers';
 
 interface MushafViewProps {
   surahNumber: number;
@@ -112,6 +112,7 @@ export const MushafView = React.memo(function MushafView({
 
   const { viewMode, arabicFontSize } = state.preferences;
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
+  const isQpcHafs = state.preferences.quranFont === 'qpcHafs';
   const effectiveViewMode: 'scroll' | 'mushaf' =
     jumpMode === 'exact' || jumpMode === 'continue' || jumpMode === 'search_exact'
       ? 'scroll'
@@ -940,7 +941,6 @@ export const MushafView = React.memo(function MushafView({
                 >
                   <CenteredText
                     allowFontScaling={false}
-                    textBreakStrategy="simple"
                     lineBreakStrategyIOS="none"
                     style={[
                       styles.mushafAyahText,
@@ -951,7 +951,9 @@ export const MushafView = React.memo(function MushafView({
                       },
                     ]}
                   >
-                    {stripBismillah(stripQuranicMarks(ayah.text, state.preferences.quranFont), surahNumber, ayah.number)}
+                    {(isQpcHafs
+                      ? stripQuranicMarks(stripBismillah(ayah.text, surahNumber, ayah.number))
+                      : stripBismillah(ayah.text, surahNumber, ayah.number)) + '\u00A0'}
                     <CenteredText style={[styles.ayahEndMark, { color: theme.ayahNumber }]}>
                       {' '}﴿{toArabicNumerals(ayah.number)}﴾{' '}
                     </CenteredText>
@@ -963,7 +965,7 @@ export const MushafView = React.memo(function MushafView({
         )}
       />
     );
-  }, [surah, mushafPages, surahNumber, theme, arabicFontSize, activePlayingAyah, handlePlayAyah, quranFontFamily, state.preferences.quranFont]);
+  }, [surah, mushafPages, surahNumber, theme, arabicFontSize, activePlayingAyah, handlePlayAyah, quranFontFamily, isQpcHafs]);
 
   if (isLoading) {
     return (
@@ -1123,11 +1125,12 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.sm,
   },
   mushafAyahText: {
-    textAlign: 'center', // CENTERED
-    lineHeight: 62, // Reduced from 75 - balanced spacing, prevents text cut-off
+    textAlign: 'center',
+    lineHeight: 62,
     writingDirection: 'rtl',
     letterSpacing: 0,
-    paddingBottom: 5, // Prevents text cut-off at bottom
+    paddingBottom: 62,
+    marginBottom: -57,
   },
   ayahEndMark: {
     fontSize: 16,

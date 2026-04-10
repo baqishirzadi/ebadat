@@ -3,21 +3,21 @@
  * Displays a single Quran ayah with Arabic text, translations, and controls
  */
 
-import React, { memo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import CenteredText from '@/components/CenteredText';
+import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp, useBookmarks } from '@/context/AppContext';
-import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
-import { stripQuranicMarks } from '@/utils/quranText';
-import CenteredText from '@/components/CenteredText';
 import { toArabicNumerals } from '@/utils/numbers';
+import { stripQuranicMarks } from '@/utils/quranText';
+import { MaterialIcons } from '@expo/vector-icons';
+import React, { memo } from 'react';
+import {
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
+} from 'react-native';
 
 interface AyahRowProps {
   ayah: Ayah;
@@ -68,6 +68,7 @@ export const AyahRow = memo(function AyahRow({
   const dariFontFamily = getDariFontFamily(dariFont);
   const pashtoFontFamily = getPashtoFontFamily(pashtoFont);
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
+  const isQpcHafs = state.preferences.quranFont === 'qpcHafs';
   const bookmarked = isBookmarked(surahNumber, ayah.number);
 
   const handleBookmarkPress = () => {
@@ -133,7 +134,6 @@ export const AyahRow = memo(function AyahRow({
       <View style={styles.arabicContainer}>
         <CenteredText
           allowFontScaling={false}
-          textBreakStrategy="simple"
           lineBreakStrategyIOS="none"
           style={[
             styles.arabicText,
@@ -144,7 +144,9 @@ export const AyahRow = memo(function AyahRow({
             },
           ]}
         >
-          {stripBismillah(stripQuranicMarks(ayah.text, state.preferences.quranFont), surahNumber, ayah.number)}
+          {(isQpcHafs
+            ? stripQuranicMarks(stripBismillah(ayah.text, surahNumber, ayah.number))
+            : stripBismillah(ayah.text, surahNumber, ayah.number)) + '\u00A0'}
         </CenteredText>
       </View>
 
@@ -236,11 +238,12 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.md,
   },
   arabicText: {
-    textAlign: 'center', // CENTERED for better display
-    lineHeight: 68, // Reduced from 85 - balanced spacing, prevents text cut-off
+    textAlign: 'center',
+    lineHeight: 68,
     writingDirection: 'rtl',
     letterSpacing: 0,
-    paddingBottom: 6, // Prevents text cut-off at bottom
+    paddingBottom: 68,
+    marginBottom: -62,
   },
   translationsWrapper: {
     paddingHorizontal: Spacing.lg,
