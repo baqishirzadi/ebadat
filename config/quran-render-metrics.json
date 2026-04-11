@@ -1,0 +1,53 @@
+{
+  "fonts": {
+    "scheherazade": {
+      "scroll": {
+        "fontScale": 0.93,
+        "lineHeightMultiplier": 2.28,
+        "textAlign": "center",
+        "containerPaddingHorizontal": 18,
+        "textPaddingTop": 4,
+        "textPaddingBottom": 6
+      },
+      "mushaf": {
+        "fontScale": 0.93,
+        "lineHeightMultiplier": 2.18,
+        "textAlign": "center",
+        "containerPaddingHorizontal": 0,
+        "textPaddingTop": 2,
+        "textPaddingBottom": 4
+      }
+    },
+    "qpcHafs": {
+      "scroll": {
+        "fontScale": 1,
+        "lineHeightMultiplier": 2.35,
+        "textAlign": "center",
+        "containerPaddingHorizontal": 24,
+        "textPaddingTop": 2,
+        "textPaddingBottom": 4
+      },
+      "mushaf": {
+        "fontScale": 1,
+        "lineHeightMultiplier": 2.22,
+        "textAlign": "center",
+        "containerPaddingHorizontal": 0,
+        "textPaddingTop": 2,
+        "textPaddingBottom": 4
+      }
+    }
+  },
+  "audit": {
+    "requiredSafeSettings": {
+      "allowNegativeMargins": false,
+      "allowOverflowHiddenOnArabicContainer": false
+    },
+    "longAyahChecks": [
+      { "surah": 13, "ayah": 1 },
+      { "surah": 2, "ayah": 282 },
+      { "surah": 24, "ayah": 31 },
+      { "surah": 4, "ayah": 12 },
+      { "surah": 2, "ayah": 286 }
+    ]
+  }
+}

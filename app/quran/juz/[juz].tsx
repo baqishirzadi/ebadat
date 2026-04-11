@@ -104,6 +104,7 @@ export default function JuzReaderScreen() {
   const [currentlyPlaying, setCurrentlyPlaying] = useState<{ surah: number; ayah: number } | null>(null);
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPreparing, setIsPreparing] = useState(false);
   const flatListRef = useRef<FlatList<JuzListItem>>(null);
   const pendingScrollTargetRef = useRef<{ surah: number; ayah: number } | null>(null);
   const activeFollowRequestIdRef = useRef(0);
@@ -226,6 +227,7 @@ export default function JuzReaderScreen() {
 
     if (!isMatchingJuz) {
       setIsPlaying(false);
+      setIsPreparing(false);
       setCurrentlyPlaying(null);
       setShowAudioPlayer(false);
       return;
@@ -233,7 +235,8 @@ export default function JuzReaderScreen() {
 
     setCurrentlyPlaying({ surah: snapshot.surah, ayah: snapshot.ayah });
     setShowAudioPlayer(true);
-    setIsPlaying(snapshot.isPlaying);
+    setIsPreparing(snapshot.phase === 'preparing');
+    setIsPlaying(snapshot.phase === 'playing' && snapshot.isPlaying);
     if (!shouldSuppressNotificationResumeFollow(snapshot.surah, snapshot.ayah)) {
       followAyahToTopRef.current(snapshot.surah, snapshot.ayah, false);
     }
@@ -336,6 +339,7 @@ export default function JuzReaderScreen() {
       }
       setCurrentlyPlaying({ surah, ayah });
       setShowAudioPlayer(true);
+      setIsPreparing(false);
       setIsPlaying(true);
       if (!shouldSuppressNotificationResumeFollow(surah, ayah)) {
         followAyahToTopRef.current(surah, ayah, true);
@@ -344,6 +348,7 @@ export default function JuzReaderScreen() {
 
     audioManager.setOnPlaybackEnd(() => {
       setIsPlaying(false);
+      setIsPreparing(false);
       setCurrentlyPlaying(null);
       setShowAudioPlayer(false);
     });
@@ -360,6 +365,7 @@ export default function JuzReaderScreen() {
       unsubscribe();
       activeFollowRequestIdRef.current += 1;
       clearFollowRetryTimeouts();
+      audioManager.cancelPendingStart();
       audioManager.setOnAyahChange(null);
       audioManager.setOnPlaybackEnd(null);
     };
@@ -428,6 +434,7 @@ export default function JuzReaderScreen() {
 
       if (isSameAyah && audioManager.getIsPlaying()) {
         setIsPlaying(false);
+        setIsPreparing(false);
         setCurrentlyPlaying(null);
         setShowAudioPlayer(false);
         void audioManager.stop();
@@ -440,13 +447,15 @@ export default function JuzReaderScreen() {
         audioManager.getCurrentSurah() === item.surahNumber &&
         audioManager.getCurrentAyah() === item.ayah.number
       ) {
+        setIsPreparing(false);
         setIsPlaying(true);
         setShowAudioPlayer(true);
         void audioManager.resume();
         return;
       }
 
-      setIsPlaying(true);
+      setIsPreparing(true);
+      setIsPlaying(false);
       setShowAudioPlayer(true);
       setCurrentlyPlaying({ surah: item.surahNumber, ayah: item.ayah.number });
       void audioManager
@@ -457,6 +466,7 @@ export default function JuzReaderScreen() {
           juzNumber,
         })
         .catch((error) => {
+          setIsPreparing(false);
           Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
         });
     },
@@ -468,7 +478,8 @@ export default function JuzReaderScreen() {
     const bounds = juzBoundsBySurah.get(currentlyPlaying.surah);
     if (!bounds) return;
 
-    setIsPlaying(true);
+    setIsPreparing(true);
+    setIsPlaying(false);
     void audioManager
       .playAyah(currentlyPlaying.surah, currentlyPlaying.ayah, bounds.totalAyahs, true, true, {
         type: 'juz',
@@ -477,22 +488,26 @@ export default function JuzReaderScreen() {
         juzNumber,
       })
       .catch((error) => {
+        setIsPreparing(false);
         Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
       });
   }, [currentlyPlaying, juzBoundsBySurah, juzNumber]);
 
   const handlePause = useCallback(() => {
+    setIsPreparing(false);
     setIsPlaying(false);
     void audioManager.pause();
   }, []);
 
   const handleResume = useCallback(() => {
+    setIsPreparing(false);
     setIsPlaying(true);
     void audioManager.resume();
   }, []);
 
   const handleStop = useCallback(() => {
     setIsPlaying(false);
+    setIsPreparing(false);
     setCurrentlyPlaying(null);
     setShowAudioPlayer(false);
     void audioManager.stop();
@@ -705,6 +720,7 @@ export default function JuzReaderScreen() {
           juzNumber={juzNumber}
           isVisible={showAudioPlayer}
           isPlaying={isPlaying}
+          isPreparing={isPreparing}
           onPlayContinuous={handlePlayContinuous}
           onPause={handlePause}
           onResume={handleResume}

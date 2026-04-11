@@ -10,7 +10,7 @@ import audioManager, { ReciterKey, RECITERS, QuranPlaybackScopeType, getQuranPla
 import { toArabicNumerals } from '@/utils/numbers';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface AudioPlayerProps {
@@ -23,6 +23,7 @@ interface AudioPlayerProps {
   juzNumber?: number | null;
   isVisible?: boolean;
   isPlaying: boolean;
+  isPreparing?: boolean;
   onPlayContinuous: () => void;
   onPause: () => void;
   onResume: () => void;
@@ -40,6 +41,7 @@ export function AudioPlayer({
   scopeEndAyah,
   juzNumber = null,
   isPlaying,
+  isPreparing = false,
   onPlayContinuous,
   onPause,
   onResume,
@@ -58,7 +60,7 @@ export function AudioPlayer({
   const handleReciterChange = useCallback(
     async (reciter: ReciterKey) => {
       setShowReciterModal(false);
-      if (reciter === currentReciter) return;
+      if (reciter === currentReciter || isPreparing) return;
 
       try {
         await audioManager.setReciter(reciter);
@@ -73,10 +75,13 @@ export function AudioPlayer({
         Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
       }
     },
-    [currentReciter, isPlaying, surahNumber, ayahNumber, totalAyahs, scopeType, scopeStartAyah, scopeEndAyah, juzNumber]
+    [currentReciter, isPlaying, isPreparing, surahNumber, ayahNumber, totalAyahs, scopeType, scopeStartAyah, scopeEndAyah, juzNumber]
   );
 
   const handlePlayPause = useCallback(() => {
+    if (isPreparing) {
+      return;
+    }
     if (isPlaying) {
       onPause();
       return;
@@ -88,7 +93,7 @@ export function AudioPlayer({
     } else {
       onPlayContinuous();
     }
-  }, [isPlaying, onPause, onPlayContinuous, onResume, surahNumber, ayahNumber]);
+  }, [isPreparing, isPlaying, onPause, onPlayContinuous, onResume, surahNumber, ayahNumber]);
 
   const handleClose = useCallback(() => {
     onStop();
@@ -111,9 +116,18 @@ export function AudioPlayer({
       <View style={styles.content}>
         <Pressable
           onPress={() => setShowReciterModal(true)}
-          style={[styles.reciterButton, { backgroundColor: theme.backgroundSecondary }]}
+          disabled={isPreparing}
+          style={[
+            styles.reciterButton,
+            { backgroundColor: theme.backgroundSecondary },
+            isPreparing && styles.disabledButton,
+          ]}
         >
-          <MaterialIcons name="person" size={15} color={theme.tint} />
+          {isPreparing ? (
+            <ActivityIndicator size="small" color={theme.tint} />
+          ) : (
+            <MaterialIcons name="person" size={15} color={theme.tint} />
+          )}
           <View style={styles.reciterTextWrap}>
             <CenteredText
               style={[styles.reciterName, { color: theme.text }]}
@@ -138,17 +152,24 @@ export function AudioPlayer({
           <View style={styles.controlsSection}>
             <Pressable
               onPress={handlePlayPause}
+              disabled={isPreparing}
               style={({ pressed }) => [
                 styles.playButton,
                 { backgroundColor: theme.playing },
-                pressed && styles.playButtonPressed,
+                isPreparing && styles.disabledButton,
+                pressed && !isPreparing && styles.playButtonPressed,
               ]}
             >
-              <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={26} color="#fff" />
+              {isPreparing ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={26} color="#fff" />
+              )}
             </Pressable>
 
             <Pressable
               onPress={onStop}
+              disabled={isPreparing}
               style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
             >
               <MaterialIcons name="stop" size={24} color={theme.icon} />
@@ -180,11 +201,13 @@ export function AudioPlayer({
             {Object.values(RECITERS).map((reciter) => (
               <Pressable
                 key={reciter.key}
+                disabled={isPreparing}
                 onPress={() => void handleReciterChange(reciter.key)}
                 style={[
                   styles.modalOption,
                   { borderBottomColor: theme.divider },
                   currentReciter === reciter.key && { backgroundColor: theme.backgroundSecondary },
+                  isPreparing && styles.disabledButton,
                 ]}
               >
                 <CenteredText style={[styles.reciterOptionName, { color: theme.text }]}>
@@ -272,6 +295,9 @@ const styles = StyleSheet.create({
   },
   controlButtonPressed: {
     opacity: 0.7,
+  },
+  disabledButton: {
+    opacity: 0.55,
   },
   modalOverlay: {
     flex: 1,

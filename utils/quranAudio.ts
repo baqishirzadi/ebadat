@@ -22,9 +22,12 @@ export type QuranPlaybackScopeOptions = {
   juzNumber?: number | null;
 };
 
+export type QuranPlaybackPhase = 'idle' | 'preparing' | 'playing' | 'error';
+
 export type QuranPlaybackSnapshot = {
   isActive: boolean;
   isPlaying: boolean;
+  phase: QuranPlaybackPhase;
   surah: number;
   ayah: number;
   reciter: ReciterKey;
@@ -33,6 +36,7 @@ export type QuranPlaybackSnapshot = {
   scopeEndAyah: number;
   totalAyahs: number;
   juzNumber: number | null;
+  errorMessage: string | null;
 };
 
 export type PersistedQuranResumeContext = {
@@ -54,13 +58,6 @@ type ReciterInfo = {
 type CacheResolution = {
   uri: string;
   usedStreamingFallback: boolean;
-};
-
-type QueueBuildResult = {
-  tracks: AddTrack[];
-  selectedIndex: number;
-  scopeStartAyah: number;
-  scopeEndAyah: number;
 };
 
 type QuranTrack = AddTrack & {
@@ -232,6 +229,7 @@ function createDefaultSnapshot(reciter: ReciterKey): QuranPlaybackSnapshot {
   return {
     isActive: false,
     isPlaying: false,
+    phase: 'idle',
     surah: 0,
     ayah: 0,
     reciter,
@@ -240,6 +238,30 @@ function createDefaultSnapshot(reciter: ReciterKey): QuranPlaybackSnapshot {
     scopeEndAyah: 0,
     totalAyahs: 0,
     juzNumber: null,
+    errorMessage: null,
+  };
+}
+
+function createPreparingSnapshot(
+  reciter: ReciterKey,
+  surah: number,
+  ayah: number,
+  totalAyahs: number,
+  scope: Required<QuranPlaybackScopeOptions>
+): QuranPlaybackSnapshot {
+  return {
+    isActive: true,
+    isPlaying: false,
+    phase: 'preparing',
+    surah,
+    ayah,
+    reciter,
+    scopeType: scope.type,
+    scopeStartAyah: scope.startAyah,
+    scopeEndAyah: scope.endAyah,
+    totalAyahs,
+    juzNumber: scope.juzNumber,
+    errorMessage: null,
   };
 }
 
@@ -258,6 +280,7 @@ class QuranAudioManager {
   private snapshot: QuranPlaybackSnapshot = createDefaultSnapshot('yasser_ad_dussary');
   private initialized = false;
   private listenersRegistered = false;
+  private playbackGeneration = 0;
   private backgroundCacheInFlight = new Set<string>();
   private onAyahChangeCb: ((surah: number, ayah: number) => void) | null = null;
   private onPlaybackEndCb: (() => void) | null = null;
@@ -282,11 +305,11 @@ class QuranAudioManager {
   }
 
   async setReciter(reciter: ReciterKey): Promise<void> {
-    if (this.snapshot.isActive) {
+    if (this.snapshot.isActive || this.snapshot.phase === 'preparing') {
       await this.stop();
     }
     this.currentReciter = reciter;
-    this.snapshot = { ...this.snapshot, reciter };
+    this.snapshot = { ...createDefaultSnapshot(reciter) };
     await AsyncStorage.setItem(RECITER_KEY, reciter);
     this.emitSnapshot();
   }
@@ -326,6 +349,33 @@ class QuranAudioManager {
     });
   }
 
+  private nextPlaybackGeneration(): number {
+    this.playbackGeneration += 1;
+    return this.playbackGeneration;
+  }
+
+  private isPlaybackGenerationCurrent(generation: number): boolean {
+    return generation === this.playbackGeneration;
+  }
+
+  private setErrorSnapshot(message: string): void {
+    this.lastKnownTrackId = null;
+    this.snapshot = {
+      ...createDefaultSnapshot(this.currentReciter),
+      phase: 'error',
+      errorMessage: message,
+    };
+    this.emitSnapshot();
+  }
+
+  cancelPendingStart(): void {
+    if (this.snapshot.phase !== 'preparing') {
+      return;
+    }
+    this.nextPlaybackGeneration();
+    this.clearQuranPlayback(false);
+  }
+
   private getTrackId(track: unknown): string | null {
     if (!track) return null;
     if (typeof track === 'string' || typeof track === 'number') {
@@ -351,8 +401,13 @@ class QuranAudioManager {
     TrackPlayer.addEventListener(Event.PlaybackState, async (event) => {
       const nextIsPlaying = event.state === TrackPlayerState.Playing;
       if (this.snapshot.isActive) {
-        if (this.snapshot.isPlaying !== nextIsPlaying) {
-          this.snapshot = { ...this.snapshot, isPlaying: nextIsPlaying };
+        const nextPhase = nextIsPlaying
+          ? 'playing'
+          : this.snapshot.phase === 'preparing'
+            ? 'preparing'
+            : 'idle';
+        if (this.snapshot.isPlaying !== nextIsPlaying || this.snapshot.phase !== nextPhase) {
+          this.snapshot = { ...this.snapshot, isPlaying: nextIsPlaying, phase: nextPhase };
           this.emitSnapshot();
         }
       } else if (!nextIsPlaying) {
@@ -387,6 +442,11 @@ class QuranAudioManager {
         this.snapshot = {
           isActive: true,
           isPlaying: nextIsPlaying,
+          phase: nextIsPlaying
+            ? 'playing'
+            : this.snapshot.phase === 'preparing'
+              ? 'preparing'
+              : 'idle',
           surah: activeTrack.surah,
           ayah: activeTrack.ayah,
           reciter: activeTrack.reciterKey,
@@ -395,6 +455,7 @@ class QuranAudioManager {
           scopeEndAyah: activeTrack.scopeEndAyah,
           totalAyahs: activeTrack.totalAyahs,
           juzNumber: activeTrack.juzNumber ?? null,
+          errorMessage: null,
         };
 
         await AsyncStorage.setItem(
@@ -687,67 +748,65 @@ class QuranAudioManager {
     ].join(':');
   }
 
-  private async buildQueueTracks(
+  private buildTrack(
     surah: number,
     ayah: number,
     totalAyahsInSurah: number,
     reciter: ReciterKey,
-    scope: Required<QuranPlaybackScopeOptions>
-  ): Promise<QueueBuildResult> {
-    const scopeStartAyah = Math.max(1, Math.min(scope.startAyah, totalAyahsInSurah));
-    const scopeEndAyah = Math.max(scopeStartAyah, Math.min(scope.endAyah, totalAyahsInSurah));
-    const selectedIndex = ayah - scopeStartAyah;
-    const selectedTrack = await this.getAudioUri(surah, ayah, reciter);
-    const tracks: AddTrack[] = [];
+    scope: Required<QuranPlaybackScopeOptions>,
+    uri: string
+  ): QuranTrack {
+    return {
+      id: this.buildTrackId(reciter, surah, ayah, scope.type, scope.startAyah, scope.endAyah, scope.juzNumber),
+      url: uri,
+      title: this.buildTrackTitle(surah, ayah),
+      artist: RECITERS[reciter].name,
+      album: 'القرآن الكريم',
+      mediaType: 'quran',
+      reciterKey: reciter,
+      surah,
+      ayah,
+      scopeType: scope.type,
+      scopeStartAyah: scope.startAyah,
+      scopeEndAyah: scope.endAyah,
+      totalAyahs: totalAyahsInSurah,
+      juzNumber: scope.juzNumber,
+    };
+  }
 
-    for (let ayahNumber = scopeStartAyah; ayahNumber <= scopeEndAyah; ayahNumber += 1) {
-      let uri: string | null;
-      if (ayahNumber === ayah) {
-        uri = selectedTrack.uri;
-      } else {
-        uri = await this.getQueueTrackUri(surah, ayahNumber, reciter);
+  private async appendRemainingTracks(
+    requestGeneration: number,
+    surah: number,
+    startAyah: number,
+    totalAyahsInSurah: number,
+    reciter: ReciterKey,
+    scope: Required<QuranPlaybackScopeOptions>
+  ): Promise<void> {
+    if (startAyah > scope.endAyah) return;
+
+    const pendingTracks: AddTrack[] = [];
+    for (let ayahNumber = startAyah; ayahNumber <= scope.endAyah; ayahNumber += 1) {
+      if (!this.isPlaybackGenerationCurrent(requestGeneration)) {
+        return;
       }
 
-      if (!uri) continue;
+      const uri = await this.getQueueTrackUri(surah, ayahNumber, reciter);
+      if (!this.isPlaybackGenerationCurrent(requestGeneration)) {
+        return;
+      }
+      if (!uri) {
+        continue;
+      }
 
-      tracks.push({
-        id: this.buildTrackId(reciter, surah, ayahNumber, scope.type, scopeStartAyah, scopeEndAyah, scope.juzNumber),
-        url: uri,
-        title: this.buildTrackTitle(surah, ayahNumber),
-        artist: RECITERS[reciter].name,
-        album: 'القرآن الكريم',
-        mediaType: 'quran',
-        reciterKey: reciter,
-        surah,
-        ayah: ayahNumber,
-        scopeType: scope.type,
-        scopeStartAyah,
-        scopeEndAyah,
-        totalAyahs: totalAyahsInSurah,
-        juzNumber: scope.juzNumber,
-      } as QuranTrack);
+      pendingTracks.push(this.buildTrack(surah, ayahNumber, totalAyahsInSurah, reciter, scope, uri));
+      if (pendingTracks.length >= 4 || ayahNumber === scope.endAyah) {
+        await TrackPlayer.add(pendingTracks);
+        pendingTracks.length = 0;
+        if (!this.isPlaybackGenerationCurrent(requestGeneration)) {
+          return;
+        }
+      }
     }
-
-    if (!tracks.length) {
-      throw new Error(`offline_cache_miss reciter=${reciter} surah=${surah} ayah=${ayah}`);
-    }
-
-    const resolvedSelectedIndex = tracks.findIndex((track) => isQuranTrack(track) && track.ayah === ayah);
-    if (resolvedSelectedIndex < 0) {
-      throw new Error(`offline_cache_miss reciter=${reciter} surah=${surah} ayah=${ayah}`);
-    }
-
-    if (selectedTrack.usedStreamingFallback) {
-      void this.ensureCachedInBackground(surah, ayah, reciter);
-    }
-    void this.ensureCachedInBackground(surah, Math.min(scopeEndAyah, ayah + 1), reciter);
-
-    return {
-      tracks,
-      selectedIndex: resolvedSelectedIndex,
-      scopeStartAyah,
-      scopeEndAyah,
-    };
   }
 
   async playAyah(
@@ -758,9 +817,16 @@ class QuranAudioManager {
     _interruptCompetingAudio = true,
     scope: QuranPlaybackScopeOptions = {}
   ): Promise<void> {
+    const requestGeneration = this.nextPlaybackGeneration();
     try {
       await this.initialize();
+      if (!this.isPlaybackGenerationCurrent(requestGeneration)) {
+        return;
+      }
       await ensureSharedTrackPlayerReady('quran-play');
+      if (!this.isPlaybackGenerationCurrent(requestGeneration)) {
+        return;
+      }
 
       const resolvedScope: Required<QuranPlaybackScopeOptions> = {
         type: scope.type ?? 'surah',
@@ -768,32 +834,73 @@ class QuranAudioManager {
         endAyah: scope.endAyah ?? totalAyahsInSurah,
         juzNumber: scope.juzNumber ?? null,
       };
+      const normalizedScope: Required<QuranPlaybackScopeOptions> = {
+        ...resolvedScope,
+        startAyah: Math.max(1, Math.min(resolvedScope.startAyah, totalAyahsInSurah)),
+        endAyah: Math.max(
+          Math.max(1, Math.min(resolvedScope.startAyah, totalAyahsInSurah)),
+          Math.min(resolvedScope.endAyah, totalAyahsInSurah)
+        ),
+      };
 
-      const queue = continuous
-        ? await this.buildQueueTracks(surah, ayah, totalAyahsInSurah, this.currentReciter, resolvedScope)
-        : await this.buildQueueTracks(surah, ayah, totalAyahsInSurah, this.currentReciter, {
-            ...resolvedScope,
+      this.snapshot = createPreparingSnapshot(
+        this.currentReciter,
+        surah,
+        ayah,
+        totalAyahsInSurah,
+        normalizedScope
+      );
+      this.emitSnapshot();
+
+      const initialScope: Required<QuranPlaybackScopeOptions> = continuous
+        ? normalizedScope
+        : {
+            ...normalizedScope,
             startAyah: ayah,
             endAyah: ayah,
-          });
+          };
+
+      const selectedTrack = await this.getAudioUri(surah, ayah, this.currentReciter);
+      if (!this.isPlaybackGenerationCurrent(requestGeneration)) {
+        return;
+      }
+
+      const initialTrack = this.buildTrack(
+        surah,
+        ayah,
+        totalAyahsInSurah,
+        this.currentReciter,
+        initialScope,
+        selectedTrack.uri
+      );
 
       await TrackPlayer.reset();
-      await TrackPlayer.add(queue.tracks);
-      await TrackPlayer.skip(queue.selectedIndex);
+      if (!this.isPlaybackGenerationCurrent(requestGeneration)) {
+        return;
+      }
+      await TrackPlayer.add([initialTrack]);
+      if (!this.isPlaybackGenerationCurrent(requestGeneration)) {
+        return;
+      }
       await TrackPlayer.play();
+      if (!this.isPlaybackGenerationCurrent(requestGeneration)) {
+        return;
+      }
 
-      this.lastKnownTrackId = this.getTrackId(queue.tracks[queue.selectedIndex]);
+      this.lastKnownTrackId = this.getTrackId(initialTrack);
       this.snapshot = {
         isActive: true,
         isPlaying: true,
+        phase: 'playing',
         surah,
         ayah,
         reciter: this.currentReciter,
-        scopeType: resolvedScope.type,
-        scopeStartAyah: queue.scopeStartAyah,
-        scopeEndAyah: queue.scopeEndAyah,
+        scopeType: initialScope.type,
+        scopeStartAyah: initialScope.startAyah,
+        scopeEndAyah: initialScope.endAyah,
         totalAyahs: totalAyahsInSurah,
-        juzNumber: resolvedScope.juzNumber,
+        juzNumber: initialScope.juzNumber,
+        errorMessage: null,
       };
       this.emitSnapshot();
       this.onAyahChangeCb?.(surah, ayah);
@@ -802,10 +909,24 @@ class QuranAudioManager {
         mediaType: 'quran',
         surah,
         ayah,
-        scopeType: resolvedScope.type,
-        juzNumber: resolvedScope.juzNumber ?? null,
+        scopeType: initialScope.type,
+        juzNumber: initialScope.juzNumber ?? null,
         updatedAt: Date.now(),
       });
+
+      if (selectedTrack.usedStreamingFallback) {
+        void this.ensureCachedInBackground(surah, ayah, this.currentReciter);
+      }
+      if (continuous) {
+        void this.appendRemainingTracks(
+          requestGeneration,
+          surah,
+          Math.min(initialScope.endAyah, ayah + 1),
+          totalAyahsInSurah,
+          this.currentReciter,
+          initialScope
+        );
+      }
     } catch (e) {
       const resolvedError = e instanceof Error ? e : new Error(String(e));
       const message = resolvedError.message;
@@ -820,7 +941,9 @@ class QuranAudioManager {
       } else {
         console.error('playAyah error:', resolvedError);
       }
-      this.clearQuranPlayback(true);
+      if (this.isPlaybackGenerationCurrent(requestGeneration)) {
+        this.setErrorSnapshot(message);
+      }
       throw resolvedError;
     }
   }
@@ -829,7 +952,7 @@ class QuranAudioManager {
     try {
       if (!this.snapshot.isActive) return;
       await TrackPlayer.pause();
-      this.snapshot = { ...this.snapshot, isPlaying: false };
+      this.snapshot = { ...this.snapshot, isPlaying: false, phase: 'idle' };
       this.emitSnapshot();
     } catch {
       // ignore
@@ -841,7 +964,7 @@ class QuranAudioManager {
       await ensureSharedTrackPlayerReady('quran-resume');
       if (!this.snapshot.isActive) return;
       await TrackPlayer.play();
-      this.snapshot = { ...this.snapshot, isPlaying: true };
+      this.snapshot = { ...this.snapshot, isPlaying: true, phase: 'playing', errorMessage: null };
       this.emitSnapshot();
     } catch {
       // ignore
@@ -849,6 +972,7 @@ class QuranAudioManager {
   }
 
   async stop(): Promise<void> {
+    const requestGeneration = this.nextPlaybackGeneration();
     try {
       if (!isSharedTrackPlayerReady()) {
         this.clearQuranPlayback(true);
@@ -861,7 +985,9 @@ class QuranAudioManager {
     } catch {
       // ignore
     }
-    this.clearQuranPlayback(true);
+    if (this.isPlaybackGenerationCurrent(requestGeneration)) {
+      this.clearQuranPlayback(true);
+    }
   }
 
   getIsPlaying(): boolean {

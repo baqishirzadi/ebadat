@@ -25,6 +25,7 @@
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "verify:quran-text": "node scripts/verify-quran-text-integrity.js",
     "verify:quran-render-clean": "node scripts/verify-quran-display-normalization.js",
+    "verify:quran-render-integrity": "node scripts/verify-quran-render-integrity.js",
     "import:ahadith-data": "node scripts/import-ahadith-dataset.js",
     "verify:ahadith-data": "node scripts/validate-ahadith-dataset.js",
     "verify:patches": "node scripts/verify-patches-clean.js"

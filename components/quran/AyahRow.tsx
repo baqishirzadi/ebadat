@@ -6,7 +6,7 @@
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp, useBookmarks } from '@/context/AppContext';
-import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
+import { getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
 import { toArabicNumerals } from '@/utils/numbers';
 import { stripQuranicMarks } from '@/utils/quranText';
@@ -18,6 +18,7 @@ import {
     Text,
     View,
 } from 'react-native';
+import { QuranArabicText, getQuranTextLayoutMetrics } from './QuranArabicText';
 
 interface AyahRowProps {
   ayah: Ayah;
@@ -67,9 +68,13 @@ export const AyahRow = memo(function AyahRow({
   const { dariFont, pashtoFont, arabicFontSize, translationFontSize, showTranslation } = state.preferences;
   const dariFontFamily = getDariFontFamily(dariFont);
   const pashtoFontFamily = getPashtoFontFamily(pashtoFont);
-  const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
-  const isQpcHafs = state.preferences.quranFont === 'qpcHafs';
+  const quranFont = state.preferences.quranFont;
+  const isQpcHafs = quranFont === 'qpcHafs';
   const bookmarked = isBookmarked(surahNumber, ayah.number);
+  const arabicMetrics = getQuranTextLayoutMetrics(quranFont, arabicFontSize, 'scroll');
+  const displayText = (isQpcHafs
+    ? stripQuranicMarks(stripBismillah(ayah.text, surahNumber, ayah.number))
+    : stripBismillah(ayah.text, surahNumber, ayah.number)) + '\u00A0';
 
   const handleBookmarkPress = () => {
     if (bookmarked) {
@@ -131,23 +136,19 @@ export const AyahRow = memo(function AyahRow({
       </View>
 
       {/* Arabic Text - CENTERED (Bismillah stripped from ayah 1 since it's in header) */}
-      <View style={styles.arabicContainer}>
-        <CenteredText
-          allowFontScaling={false}
-          lineBreakStrategyIOS="none"
-          style={[
-            styles.arabicText,
-            {
-              fontFamily: quranFontFamily,
-              color: theme.arabicText,
-              fontSize: Typography.arabic[arabicFontSize],
-            },
-          ]}
-        >
-          {(isQpcHafs
-            ? stripQuranicMarks(stripBismillah(ayah.text, surahNumber, ayah.number))
-            : stripBismillah(ayah.text, surahNumber, ayah.number)) + '\u00A0'}
-        </CenteredText>
+      <View
+        style={[
+          styles.arabicContainer,
+          { paddingHorizontal: arabicMetrics.containerPaddingHorizontal },
+        ]}
+      >
+        <QuranArabicText
+          text={displayText}
+          quranFont={quranFont}
+          arabicFontSize={arabicFontSize}
+          variant="scroll"
+          color={theme.arabicText}
+        />
       </View>
 
       {/* Translations */}
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.sm,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   ayahBadge: {
     position: 'absolute',
@@ -234,16 +235,8 @@ const styles = StyleSheet.create({
   },
   arabicContainer: {
     paddingTop: 50, // Extra top padding for ayah number
-    paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
-  },
-  arabicText: {
-    textAlign: 'center',
-    lineHeight: 68,
-    writingDirection: 'rtl',
-    letterSpacing: 0,
-    paddingBottom: 68,
-    marginBottom: -62,
+    overflow: 'visible',
   },
   translationsWrapper: {
     paddingHorizontal: Spacing.lg,

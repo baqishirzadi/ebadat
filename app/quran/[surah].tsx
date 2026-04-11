@@ -63,6 +63,7 @@ export default function QuranReaderScreen() {
 
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isPreparing, setIsPreparing] = useState(false);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<{
     surah: number;
     ayah: number;
@@ -75,6 +76,7 @@ export default function QuranReaderScreen() {
 
     if (!isMatchingSurah) {
       setIsPlaying(false);
+      setIsPreparing(false);
       setCurrentlyPlaying(null);
       setShowAudioPlayer(false);
       return;
@@ -86,7 +88,8 @@ export default function QuranReaderScreen() {
         : { surah: snapshot.surah, ayah: snapshot.ayah }
     ));
     setShowAudioPlayer(true);
-    setIsPlaying(snapshot.isPlaying);
+    setIsPreparing(snapshot.phase === 'preparing');
+    setIsPlaying(snapshot.phase === 'playing' && snapshot.isPlaying);
   }, [surahNumber]);
 
   useEffect(() => {
@@ -115,11 +118,13 @@ export default function QuranReaderScreen() {
             : { surah: s, ayah: a }
         ));
         setShowAudioPlayer(true);
+        setIsPreparing(false);
         setIsPlaying(true);
       });
 
       audioManager.setOnPlaybackEnd(() => {
         setIsPlaying(false);
+        setIsPreparing(false);
         setCurrentlyPlaying(null);
         setShowAudioPlayer(false);
       });
@@ -131,6 +136,7 @@ export default function QuranReaderScreen() {
       syncFromAudioSnapshot();
 
       return () => {
+        audioManager.cancelPendingStart();
         unsubscribe();
         audioManager.setOnAyahChange(null);
         audioManager.setOnPlaybackEnd(null);
@@ -146,6 +152,7 @@ export default function QuranReaderScreen() {
 
     if (isSameAyah && audioManager.getIsPlaying()) {
       setIsPlaying(false);
+      setIsPreparing(false);
       setCurrentlyPlaying(null);
       setShowAudioPlayer(false);
       void audioManager.stop();
@@ -159,6 +166,7 @@ export default function QuranReaderScreen() {
       audioManager.getCurrentAyah() === ayahNum
     ) {
       setIsPlaying(true);
+      setIsPreparing(false);
       setShowAudioPlayer(true);
       void audioManager.resume();
       return;
@@ -166,7 +174,8 @@ export default function QuranReaderScreen() {
 
     setCurrentlyPlaying({ surah: surahNum, ayah: ayahNum });
     setShowAudioPlayer(true);
-    setIsPlaying(true);
+    setIsPreparing(true);
+    setIsPlaying(false);
     void audioManager
       .playAyah(surahNum, ayahNum, surah.ayahs.length, true, true, {
         type: 'surah',
@@ -174,6 +183,7 @@ export default function QuranReaderScreen() {
         endAyah: surah.ayahs.length,
       })
       .catch((error) => {
+        setIsPreparing(false);
         Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
       });
   }, [surah, currentlyPlaying]);
@@ -182,7 +192,8 @@ export default function QuranReaderScreen() {
     if (!surah) return;
 
     const currentAyah = currentlyPlaying?.ayah ?? initialAyah;
-    setIsPlaying(true);
+    setIsPreparing(true);
+    setIsPlaying(false);
     void audioManager
       .playAyah(surahNumber, currentAyah, surah.ayahs.length, true, true, {
         type: 'surah',
@@ -190,22 +201,26 @@ export default function QuranReaderScreen() {
         endAyah: surah.ayahs.length,
       })
       .catch((error) => {
+        setIsPreparing(false);
         Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
       });
   }, [surah, currentlyPlaying?.ayah, initialAyah, surahNumber]);
 
   const handlePause = useCallback(() => {
+    setIsPreparing(false);
     setIsPlaying(false);
     void audioManager.pause();
   }, []);
 
   const handleResume = useCallback(() => {
+    setIsPreparing(false);
     setIsPlaying(true);
     void audioManager.resume();
   }, []);
 
   const handleStop = useCallback(() => {
     setIsPlaying(false);
+    setIsPreparing(false);
     setCurrentlyPlaying(null);
     setShowAudioPlayer(false);
     void audioManager.stop();
@@ -337,6 +352,7 @@ export default function QuranReaderScreen() {
           scopeEndAyah={surah.ayahs.length}
           isVisible={showAudioPlayer}
           isPlaying={isPlaying}
+          isPreparing={isPreparing}
           onPlayContinuous={handlePlayContinuous}
           onPause={handlePause}
           onResume={handleResume}
