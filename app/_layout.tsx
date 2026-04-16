@@ -13,6 +13,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FirstRunCitySetup } from '@/components/onboarding/FirstRunCitySetup';
 import { SpiritualSplash } from '@/components/SpiritualSplash';
 import { AhadithProvider } from '@/context/AhadithContext';
 import { AppProvider, useApp } from '@/context/AppContext';
@@ -27,7 +28,10 @@ import { getKabulNoon } from '@/utils/afghanistanCalendar';
 import { getCalendarMonthGridMeta } from '@/utils/calendarMonthGrid';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
-import { runFirstOpenPrayerOnboarding } from '@/utils/prayerOnboarding';
+import {
+  hasResolvedPrayerCitySelection,
+  runFirstOpenPrayerOnboarding,
+} from '@/utils/prayerOnboarding';
 
 // ───────────────────────────────────────────────────
 // Global safety for unhandled promise rejections
@@ -89,12 +93,15 @@ function RootLayoutNav() {
   const { isInteractiveReady, markInteractiveReady } = useStartupPhase();
   const router = useRouter();
   const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
+  const [cityOnboardingState, setCityOnboardingState] = useState<'checking' | 'required' | 'ready'>('checking');
   const lastHandledNotificationKeyRef = useRef<string>('');
   const pendingNotificationResponseRef = useRef<import('expo-notifications').NotificationResponse | null>(null);
   const appStateRef = useRef(AppState.currentState);
 
   // Determine status bar style based on theme
   const statusBarStyle = state.preferences.theme === 'night' ? 'light' : 'dark';
+
+  const routeGateOpen = !showSpiritualSplash && cityOnboardingState === 'ready';
 
   const waitForAppActive = useCallback(async () => {
     if (appStateRef.current === 'active') return;
@@ -128,7 +135,7 @@ function RootLayoutNav() {
       return;
     }
 
-    if (showSpiritualSplash) {
+    if (!routeGateOpen) {
       pendingNotificationResponseRef.current = response;
       return;
     }
@@ -160,7 +167,7 @@ function RootLayoutNav() {
         params: { section: 'daily' },
       } as any);
     }
-  }, [router, showSpiritualSplash, waitForAppActive]);
+  }, [routeGateOpen, router, waitForAppActive]);
 
   useEffect(() => {
     if (Platform.OS === 'web') return;
@@ -197,12 +204,31 @@ function RootLayoutNav() {
   }, [handleNotificationResponse]);
 
   useEffect(() => {
-    if (showSpiritualSplash) return;
+    if (!routeGateOpen) return;
     const queued = pendingNotificationResponseRef.current;
     if (!queued) return;
     pendingNotificationResponseRef.current = null;
     void handleNotificationResponse(queued);
-  }, [handleNotificationResponse, showSpiritualSplash]);
+  }, [handleNotificationResponse, routeGateOpen]);
+
+  useEffect(() => {
+    if (showSpiritualSplash) return;
+
+    let cancelled = false;
+
+    const resolveCityGate = async () => {
+      const hasCity = await hasResolvedPrayerCitySelection();
+      if (!cancelled) {
+        setCityOnboardingState(hasCity ? 'ready' : 'required');
+      }
+    };
+
+    void resolveCityGate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [showSpiritualSplash]);
 
   useEffect(() => {
     if (showSpiritualSplash || isInteractiveReady) return;
@@ -227,7 +253,7 @@ function RootLayoutNav() {
   }, [isInteractiveReady, markInteractiveReady, showSpiritualSplash]);
 
   useEffect(() => {
-    if (showSpiritualSplash || !isInteractiveReady) return;
+    if (showSpiritualSplash || cityOnboardingState !== 'ready' || !isInteractiveReady) return;
 
     let cancelled = false;
 
@@ -248,7 +274,7 @@ function RootLayoutNav() {
     return () => {
       cancelled = true;
     };
-  }, [isInteractiveReady, showSpiritualSplash]);
+  }, [cityOnboardingState, isInteractiveReady, showSpiritualSplash]);
 
   useEffect(() => {
     let cancelled = false;
@@ -272,6 +298,19 @@ function RootLayoutNav() {
         <StatusBar style="light" />
       </>
     );
+  }
+
+  if (cityOnboardingState === 'checking') {
+    return (
+      <View style={[styles.loadingContainer, { backgroundColor: theme.background }]}>
+        <ActivityIndicator size="large" color={theme.tint} />
+        <Text style={[styles.loadingText, { color: theme.text }]}>در حال آماده‌سازی...</Text>
+      </View>
+    );
+  }
+
+  if (cityOnboardingState === 'required') {
+    return <FirstRunCitySetup onComplete={() => setCityOnboardingState('ready')} />;
   }
 
   return (

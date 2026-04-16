@@ -311,8 +311,8 @@ const initialState: PrayerState = {
 interface PrayerContextType {
   state: PrayerState;
   refreshPrayerTimes: () => void;
-  setCity: (cityKey: string) => void;
-  setCustomLocation: (location: LocationType, name: string, cityKey?: string) => void;
+  setCity: (cityKey: string) => Promise<void>;
+  setCustomLocation: (location: LocationType, name: string, cityKey?: string) => Promise<void>;
   updateSettings: (settings: Partial<PrayerSettings>) => void;
   updateAdhanPreferences: (preferences: Partial<AdhanPreferences>) => Promise<void>;
   requestLocationPermission: () => Promise<boolean>;
@@ -1109,15 +1109,40 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   }, [checkExactAlarmCapability, getDateKey, getLocationKey, refreshPrayerTimes]);
 
   const setCity = useCallback(async (cityKey: string) => {
-    const location = AFGHAN_CITIES[cityKey];
-    if (location) {
-      const name = getCityName(cityKey);
-      dispatch({ type: 'SET_LOCATION', payload: { location, name } });
-      dispatch({ type: 'SET_SETTINGS', payload: { selectedCity: cityKey } });
-
-      await AsyncStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify({ location, name }));
-      await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({ ...state.settings, selectedCity: cityKey }));
+    const resolvedCityKey = toCityKey(cityKey || null);
+    if (!resolvedCityKey) {
+      return;
     }
+
+    const resolvedCity = getCity(resolvedCityKey);
+    const afghanKey = cityKey.startsWith('afghanistan_')
+      ? cityKey.replace('afghanistan_', '')
+      : cityKey;
+    const fallbackLocation = AFGHAN_CITIES[afghanKey];
+
+    const location = resolvedCity
+      ? {
+          latitude: resolvedCity.lat,
+          longitude: resolvedCity.lon,
+          altitude: resolvedCity.altitude || 0,
+          timezone: resolvedCity.timezone,
+        }
+      : fallbackLocation;
+    const name = resolvedCity?.name || (fallbackLocation ? getCityName(afghanKey) : null);
+
+    if (!location || !name) {
+      return;
+    }
+
+    dispatch({ type: 'SET_LOCATION', payload: { location, name } });
+    dispatch({ type: 'SET_SETTINGS', payload: { selectedCity: resolvedCityKey } });
+
+    await AsyncStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify({ location, name }));
+    await AsyncStorage.setItem(
+      STORAGE_KEYS.SETTINGS,
+      JSON.stringify({ ...state.settings, selectedCity: resolvedCityKey })
+    );
+    await AsyncStorage.setItem(STORAGE_KEYS.SELECTED_CITY, resolvedCityKey);
   }, [state.settings]);
 
   const setCustomLocation = useCallback(async (location: LocationType, name: string, cityKey?: string) => {
@@ -1130,6 +1155,11 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       STORAGE_KEYS.SETTINGS,
       JSON.stringify({ ...state.settings, selectedCity: resolvedCityKey })
     );
+    if (resolvedCityKey) {
+      await AsyncStorage.setItem(STORAGE_KEYS.SELECTED_CITY, resolvedCityKey);
+    } else {
+      await AsyncStorage.removeItem(STORAGE_KEYS.SELECTED_CITY);
+    }
   }, [state.settings]);
 
   const updateSettings = useCallback(async (settings: Partial<PrayerSettings>) => {

@@ -6,18 +6,19 @@
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { usePrayer } from '@/context/PrayerContext';
 import {
   AFGHAN_SOLAR_MONTHS,
-  formatAfghanSolarHijriDate,
 } from '@/utils/afghanSolarHijri';
+import {
+  formatCalendarTruthDisplay,
+  WEEKDAY_GRID_DARI,
+} from '@/utils/calendarPresentation';
 import {
   loadCalendarNotificationPreferences,
   saveCalendarNotificationPreferences,
   scheduleCalendarNotifications,
 } from '@/utils/calendarNotifications';
 import {
-  formatHijriDate,
   getNextSpecialDay,
   HIJRI_MONTHS,
   SPECIAL_DAYS,
@@ -28,7 +29,7 @@ import { toArabicNumerals } from '@/utils/numbers';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InteractionManager, Pressable, ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { InteractionManager, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import Animated, {
   Easing,
   runOnJS,
@@ -51,10 +52,10 @@ interface CalendarCell {
 
 export default function CalendarScreen() {
   const { theme } = useApp();
-  const { state } = usePrayer();
   const todayTruth = getCalendarTruth();
-  const todayHijri = state.hijriDate || todayTruth.hijri;
+  const todayHijri = todayTruth.hijri;
   const todayShamsi = todayTruth.shamsi;
+  const truthDisplay = formatCalendarTruthDisplay(todayTruth);
 
   const [mode, setMode] = useState<CalendarMode>('qamari');
   const [selectedMonth, setSelectedMonth] = useState(todayHijri.month - 1);
@@ -149,9 +150,6 @@ export default function CalendarScreen() {
   }, [todayHijri.month, todayHijri.year, todayShamsi.month, todayShamsi.year]);
 
   const accentColor = mode === 'qamari' ? QAMARI_COLOR : SHAMSI_COLOR;
-  // Persian/Afghan week order: شن (Sat), یک (Sun), دو (Mon), سه (Tue), چه (Wed), پن (Thu), جم (Fri)
-  // JS getDay: 0=Sun, 1=Mon, ..., 6=Sat → columns: 0=Sat, 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri
-  const weekDays = ['شن', 'یک', 'دو', 'سه', 'چه', 'پن', 'جم'];
 
   // Special days to show: future/today in month, or next upcoming if all past
   const specialDaysInMonthRaw = mode === 'qamari'
@@ -246,21 +244,28 @@ export default function CalendarScreen() {
           mode === 'qamari' ? styles.todayCardQamari : styles.todayCardShamsi,
         ]}>
           <CenteredText style={styles.todayLabel}>امروز</CenteredText>
-          <CenteredText style={styles.todayDate}>
-            {mode === 'qamari'
-              ? formatHijriDate(todayHijri, 'dari')
-              : formatAfghanSolarHijriDate(todayShamsi, 'dari')}
-          </CenteredText>
-          <CenteredText style={styles.todayYear}>
-            {mode === 'qamari'
-              ? `${toArabicNumerals(todayHijri.year)} هجری قمری`
-              : `${toArabicNumerals(todayShamsi.year)} هجری شمسی`}
-          </CenteredText>
-          <CenteredText style={styles.todaySecondary}>
-            {mode === 'qamari'
-              ? formatAfghanSolarHijriDate(todayShamsi, 'dari') + ' شمسی'
-              : formatHijriDate(todayHijri, 'dari') + ' قمری'}
-          </CenteredText>
+          <CenteredText style={styles.todayWeekday}>{truthDisplay.weekday.dari}</CenteredText>
+          <CenteredText style={styles.todayPrimaryDate}>{truthDisplay.shamsiFull}</CenteredText>
+          <CenteredText style={styles.todayPrimarySlash}>{truthDisplay.shamsiSlash}</CenteredText>
+
+          <View style={styles.todaySystemDivider} />
+
+          <View style={styles.todaySystemHeader}>
+            <Text style={styles.todaySystemEmoji}>🌙</Text>
+            <CenteredText style={styles.todaySystemLabel}>قمری</CenteredText>
+          </View>
+          <CenteredText style={styles.todayArabicWeekday}>{truthDisplay.weekday.arabic}</CenteredText>
+          <CenteredText style={styles.todayArabicDate}>{truthDisplay.hijriFullArabic}</CenteredText>
+          <CenteredText style={styles.todayArabicSlash}>{truthDisplay.hijriSlashArabic}</CenteredText>
+
+          <View style={styles.todaySystemDivider} />
+
+          <View style={styles.todaySystemHeader}>
+            <Text style={styles.todaySystemEmoji}>🗓️</Text>
+            <CenteredText style={styles.todaySystemLabel}>میلادی</CenteredText>
+          </View>
+          <CenteredText style={styles.todayGregorianWeekday}>{truthDisplay.weekday.english}</CenteredText>
+          <CenteredText style={styles.todayGregorianDate}>{truthDisplay.gregorianFullEnglish}</CenteredText>
         </View>
 
         {/* Month Selector */}
@@ -316,7 +321,7 @@ export default function CalendarScreen() {
         ]}>
           {/* Week Header - explicit LTR for correct column alignment */}
           <View style={[styles.weekHeader, styles.gridLTR]}>
-            {weekDays.map((day, index) => (
+            {WEEKDAY_GRID_DARI.map((day, index) => (
               <View key={index} style={styles.weekDay}>
                 <CenteredText style={[styles.weekDayText, { color: theme.textSecondary }]}>
                   {day}
@@ -517,25 +522,79 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-  todaySecondary: {
-    fontSize: Typography.ui.caption,
-    color: 'rgba(255,255,255,0.85)',
-    marginTop: Spacing.xs,
-  },
   todayLabel: {
     fontSize: Typography.ui.caption,
     color: 'rgba(255,255,255,0.8)',
   },
-  todayDate: {
-    fontSize: Typography.ui.heading,
+  todayWeekday: {
+    fontSize: Typography.ui.title,
     fontWeight: '700',
     color: '#fff',
     marginTop: Spacing.xs,
   },
-  todayYear: {
+  todayPrimaryDate: {
+    fontSize: Typography.ui.heading,
+    fontWeight: '700',
+    color: '#fff',
+    marginTop: Spacing.sm,
+  },
+  todayPrimarySlash: {
     fontSize: Typography.ui.body,
     color: 'rgba(255,255,255,0.9)',
     marginTop: Spacing.xs,
+  },
+  todaySystemDivider: {
+    width: '48%',
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    marginVertical: Spacing.md,
+  },
+  todaySystemHeader: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  todaySystemEmoji: {
+    fontSize: 18,
+  },
+  todaySystemLabel: {
+    fontSize: Typography.ui.caption,
+    color: 'rgba(255,255,255,0.82)',
+    fontFamily: 'Vazirmatn',
+  },
+  todayArabicWeekday: {
+    fontSize: Typography.ui.title,
+    color: '#fff',
+    fontFamily: 'ScheherazadeNew',
+    writingDirection: 'rtl',
+    marginTop: Spacing.xs,
+  },
+  todayArabicDate: {
+    fontSize: 28,
+    color: '#fff',
+    fontFamily: 'ScheherazadeNew',
+    writingDirection: 'rtl',
+    marginTop: Spacing.xs,
+  },
+  todayArabicSlash: {
+    fontSize: Typography.ui.body,
+    color: 'rgba(255,255,255,0.9)',
+    fontFamily: 'ScheherazadeNew',
+    writingDirection: 'rtl',
+    marginTop: Spacing.xs,
+  },
+  todayGregorianWeekday: {
+    fontSize: Typography.ui.title,
+    color: '#fff',
+    marginTop: Spacing.xs,
+    fontWeight: '700',
+    writingDirection: 'ltr',
+  },
+  todayGregorianDate: {
+    fontSize: Typography.ui.body,
+    color: 'rgba(255,255,255,0.9)',
+    marginTop: Spacing.xs,
+    writingDirection: 'ltr',
   },
   monthSelector: {
     flexDirection: 'row',

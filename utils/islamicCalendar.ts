@@ -255,8 +255,10 @@ interface HijriCorrectionRange {
 
 const AFGHAN_HIJRI_CORRECTIONS: HijriCorrectionRange[] = [
   {
-    startGregorian: '2026-03-21',
-    shiftDays: -1,
+    // Afghanistan-local moon-sighting snapshot: Shawwal 1447 runs one day
+    // ahead of the base Umm al-Qura conversion from March 2026 onward.
+    startGregorian: '2026-03-19',
+    shiftDays: 1,
   },
 ];
 

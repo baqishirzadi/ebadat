@@ -4,6 +4,7 @@
  */
 
 const ARABIC_NUMERALS = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+const PERSIAN_NUMERALS = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
 
 /**
  * Convert a number to Arabic-Indic numerals
@@ -17,4 +18,18 @@ export function toArabicNumerals(num: number): string {
  */
 export function toArabicNumeralsString(str: string): string {
   return str.replace(/\d/g, d => ARABIC_NUMERALS[parseInt(d, 10)]);
+}
+
+/**
+ * Convert a number to Persian/Dari numerals
+ */
+export function toPersianNumerals(value: number | string): string {
+  return String(value).replace(/\d/g, d => PERSIAN_NUMERALS[parseInt(d, 10)]);
+}
+
+/**
+ * Convert a string (e.g. "1405/01/27") to Persian/Dari numerals.
+ */
+export function toPersianNumeralsString(str: string): string {
+  return str.replace(/\d/g, d => PERSIAN_NUMERALS[parseInt(d, 10)]);
 }

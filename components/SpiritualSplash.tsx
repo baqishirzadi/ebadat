@@ -239,18 +239,18 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
       <Animated.View style={[styles.creditContainer, creditStyle]}>
         <View style={styles.creditCard}>
           <CenteredText style={styles.creditIntro}>
-            برای تسهیل عبادات مردم شریف افغانستان
+            برای تسهیل عبادات پیروان فقه حنفی در افغانستان و سراسر جهان
           </CenteredText>
           <View style={styles.creditDivider} />
-          <CenteredText style={styles.creditDeveloper}>
-            سیدعبدالباقی ابن سیدعبدالاله (عارف بالله)
+          <CenteredText style={styles.creditSupportLabel}>
+            توسعه و پشتیبانی
           </CenteredText>
-          <CenteredText style={styles.creditLineage}>
-            ابن خلیفه صاحب سیدمحمد یتیم شیرزادی (رحمه‌الله)
+          <CenteredText style={styles.creditBrand}>
+            شرکت نرم‌افزاری Afghan.Dev
           </CenteredText>
-          <CenteredText style={styles.creditDua}>
-            انشاءالله قبول درگاه حق تعالی باشد
-          </CenteredText>
+          <View style={styles.creditUrlPill}>
+            <Text style={styles.creditUrl}>www.afghan.dev</Text>
+          </View>
         </View>
       </Animated.View>
     </Animated.View>
@@ -259,7 +259,6 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
 
 const GOLD = '#D4AF37';
 const GOLD_LIGHT = '#E8D48A';
-const GOLD_DARK = '#B8960C';
 
 const styles = StyleSheet.create({
   container: {
@@ -523,22 +522,38 @@ const styles = StyleSheet.create({
     backgroundColor: `${GOLD}50`,
     marginVertical: 10,
   },
-  creditDeveloper: {
-    fontSize: 13,
-    color: GOLD_LIGHT,
-    lineHeight: 22,
-    fontFamily: 'Vazirmatn',
-    fontWeight: '600',
-    writingDirection: 'rtl',
-    textAlign: 'center',
-  },
-  creditLineage: {
+  creditSupportLabel: {
     fontSize: 11,
     color: `${GOLD}cc`,
     lineHeight: 18,
-    marginTop: 4,
     fontFamily: 'Vazirmatn',
     writingDirection: 'rtl',
+    textAlign: 'center',
+  },
+  creditBrand: {
+    fontSize: 15,
+    color: GOLD_LIGHT,
+    lineHeight: 24,
+    marginTop: 4,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '700',
+    writingDirection: 'rtl',
+    textAlign: 'center',
+  },
+  creditUrlPill: {
+    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+    borderWidth: 1,
+    borderColor: `${GOLD}35`,
+  },
+  creditUrl: {
+    fontSize: 11,
+    color: `${GOLD_LIGHT}dd`,
+    letterSpacing: 0.4,
+    fontFamily: 'Vazirmatn',
     textAlign: 'center',
   },
   creditDua: {

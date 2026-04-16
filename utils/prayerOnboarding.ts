@@ -1,10 +1,42 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getCity } from '@/utils/cities';
+import { AFGHAN_CITIES } from '@/utils/prayerTimes';
 import { Alert, Linking, NativeModules, Platform } from 'react-native';
 
 const ONBOARDING_KEY = '@ebadat/adhan_first_open_guided_setup_done_v1';
+const PRAYER_SETTINGS_KEY = '@ebadat/prayer_settings';
+const SELECTED_CITY_KEY = 'selected_city';
 
 interface FirstOpenPrayerOnboardingOptions {
   onAfterSetup?: () => Promise<void> | void;
+}
+
+function normalizeStoredCityKey(selectedCity: string | null): string | null {
+  if (!selectedCity) return null;
+  if (selectedCity.startsWith('afghanistan_')) {
+    return getCity(selectedCity) ? selectedCity : null;
+  }
+  if (AFGHAN_CITIES[selectedCity]) {
+    return `afghanistan_${selectedCity}`;
+  }
+  return getCity(selectedCity) ? selectedCity : null;
+}
+
+export async function hasResolvedPrayerCitySelection(): Promise<boolean> {
+  try {
+    const [settingsJson, globallySelectedCity] = await Promise.all([
+      AsyncStorage.getItem(PRAYER_SETTINGS_KEY),
+      AsyncStorage.getItem(SELECTED_CITY_KEY),
+    ]);
+
+    const settings = settingsJson ? JSON.parse(settingsJson) : null;
+    const fromSettings = normalizeStoredCityKey(settings?.selectedCity || null);
+    const fromGlobal = normalizeStoredCityKey(globallySelectedCity);
+
+    return Boolean(fromSettings || fromGlobal);
+  } catch {
+    return false;
+  }
 }
 
 export async function runFirstOpenPrayerOnboarding(
