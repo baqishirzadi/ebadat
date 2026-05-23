@@ -311,10 +311,7 @@ export default function QuranReaderScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar
-        barStyle={state.preferences.theme === 'night' ? 'light-content' : 'dark-content'}
-        backgroundColor={theme.background}
-      />
+      <StatusBar barStyle={state.preferences.theme === 'night' ? 'light-content' : 'dark-content'} />
 
       <MushafView
         key={`mushaf-${surahNumber}-${normalizedJumpToken ?? 'default'}`}

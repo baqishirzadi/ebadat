@@ -14,6 +14,9 @@ const ALLOWED_SPECIAL_DAYS = new Set([
   'eid_al_fitr',
   'eid_al_adha',
   'first_10_dhul_hijjah',
+  'arafah',
+  'tashreeq',
+  'hijri_new_year',
   'ashura',
 ]);
 

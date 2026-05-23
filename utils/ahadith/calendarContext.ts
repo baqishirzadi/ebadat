@@ -23,9 +23,19 @@ export function getAhadithCalendarContext(date: Date = new Date()): AhadithCalen
     if (hijri.day >= 1 && hijri.day <= 10) {
       specialDayKeys.push('first_10_dhul_hijjah');
     }
+    if (hijri.day === 9) {
+      specialDayKeys.push('arafah');
+    }
     if (hijri.day === 10) {
       specialDayKeys.push('eid_al_adha');
     }
+    if (hijri.day >= 11 && hijri.day <= 13) {
+      specialDayKeys.push('tashreeq');
+    }
+  }
+
+  if (hijri.month === 1 && hijri.day === 1) {
+    specialDayKeys.push('hijri_new_year');
   }
 
   if (hijri.month === 1 && hijri.day === 10) {

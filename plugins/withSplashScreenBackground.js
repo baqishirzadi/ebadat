@@ -1,6 +1,6 @@
 /**
  * Config plugin to ensure Android splash screen never shows white.
- * Adds windowBackground, statusBarColor, navigationBarColor to the splash theme.
+ * Adds windowBackground to the splash theme without deprecated system-bar color attrs.
  * Uses withFinalizedMod to run after styles are written.
  */
 const { withFinalizedMod } = require('expo/config-plugins');
@@ -29,8 +29,6 @@ function withSplashScreenBackground(config) {
 
       const extraItems = [
         '    <item name="android:windowBackground">@color/splashscreen_background</item>',
-        '    <item name="android:statusBarColor">@color/splashscreen_background</item>',
-        '    <item name="android:navigationBarColor">@color/splashscreen_background</item>',
       ].join('\n');
 
       contents = contents.replace(

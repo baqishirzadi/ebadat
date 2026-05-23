@@ -59,6 +59,7 @@
     "source_number": "223",
     "is_muttafaq": false,
     "topics": ["prayer", "worship"],
+    "weekday_only": "friday",
     "daily_index": 5
   },
   {
@@ -81,6 +82,7 @@
     "source_number": "5027",
     "is_muttafaq": false,
     "topics": ["quran", "knowledge"],
+    "weekday_only": "friday",
     "daily_index": 7
   },
   {
@@ -114,22 +116,28 @@
     "source_number": "1955",
     "is_muttafaq": false,
     "topics": ["ihsan", "ethics"],
+    "special_days": ["first_10_dhul_hijjah"],
+    "hijri_range": {
+      "month": 12,
+      "day_start": 1,
+      "day_end": 10
+    },
     "daily_index": 10
   },
   {
     "id": 11,
-    "arabic_text": "مَنْ حَجَّ هَذَا الْبَيْتَ فَلَمْ يَرْفُثْ وَلَمْ يَفْسُقْ رَجَعَ كَيَوْمِ وَلَدَتْهُ أُمُّهُ",
-    "dari_translation": "هرکس حج را درست انجام دهد و مرتکب گناه نشود، مانند روزی که از مادر زاده شده برمی‌گردد.",
-    "pashto_translation": "څوک چې دا بيت الله حج وکړي او ګناه و نه کړي، د مور له زېږېدو د ورځې په شان پاک راستنېږي.",
+    "arabic_text": "إِنَّ أَوَّلَ مَا نَبْدَأُ فِي يَوْمِنَا هَذَا أَنْ نُصَلِّيَ، ثُمَّ نَرْجِعَ فَنَنْحَرَ",
+    "dari_translation": "نخستین کاری که در روز عید قربان آغاز می‌کنیم نماز عید است، سپس برمی‌گردیم و قربانی می‌کنیم.",
+    "pashto_translation": "د لوی اختر په ورځ لومړی کار مو د اختر لمونځ دی، بيا راګرځو او قرباني کوو.",
     "source_book": "Bukhari",
-    "source_number": "1521",
+    "source_number": "5545",
     "is_muttafaq": true,
-    "topics": ["hajj", "purification"],
-    "special_days": ["first_10_dhul_hijjah", "eid_al_adha"],
+    "topics": ["eid_al_adha", "qurbani", "prayer"],
+    "special_days": ["eid_al_adha"],
     "hijri_range": {
       "month": 12,
-      "day_start": 1,
-      "day_end": 13
+      "day_start": 10,
+      "day_end": 10
     },
     "daily_index": 11
   },
@@ -158,12 +166,12 @@
     "source_book": "Muslim",
     "source_number": "1163",
     "is_muttafaq": false,
-    "topics": ["fasting", "muharram"],
-    "special_days": ["ashura"],
+    "topics": ["fasting", "muharram", "hijri_new_year"],
+    "special_days": ["hijri_new_year"],
     "hijri_range": {
       "month": 1,
       "day_start": 1,
-      "day_end": 10
+      "day_end": 1
     },
     "daily_index": 13
   },
@@ -181,25 +189,25 @@
   },
   {
     "id": 15,
-    "arabic_text": "مَنْ غَسَّلَ وَاغْتَسَلَ يَوْمَ الْجُمُعَةِ ... كَانَ لَهُ بِكُلِّ خُطْوَةٍ أَجْرُ سَنَةٍ",
-    "dari_translation": "هرکس در روز جمعه به آداب جمعه عمل کند، در هر گام پاداش یک سال عبادت دارد.",
-    "pashto_translation": "څوک چې د جمعې آداب ترسره کړي، په هر ګام کې د يو کال عبادت اجر لري.",
+    "arabic_text": "غُسْلُ يَوْمِ الْجُمُعَةِ وَاجِبٌ عَلَى كُلِّ مُحْتَلِمٍ",
+    "dari_translation": "غسل روز جمعه بر هر بالغ تأکید شده است.",
+    "pashto_translation": "د جمعې د ورځې غسل پر هر بالغ مسلمان ټينګار شوی دی.",
     "source_book": "Bukhari",
-    "source_number": "883",
+    "source_number": "879",
     "is_muttafaq": false,
-    "topics": ["jumuah", "prayer"],
+    "topics": ["jumuah", "purity"],
     "weekday_only": "friday",
     "daily_index": 15
   },
   {
     "id": 16,
-    "arabic_text": "مَنْ قَرَأَ سُورَةَ الْكَهْفِ يَوْمَ الْجُمُعَةِ أَضَاءَ لَهُ مِنَ النُّورِ",
-    "dari_translation": "هرکس سوره کهف را روز جمعه بخواند، نوری برای او می‌تابد.",
-    "pashto_translation": "څوک چې د جمعې په ورځ سورت کهف ولولي، د هغه لپاره رڼا کېږي.",
-    "source_book": "Muslim",
-    "source_number": "809",
+    "arabic_text": "إِذَا قُلْتَ لِصَاحِبِكَ يَوْمَ الْجُمُعَةِ أَنْصِتْ وَالإِمَامُ يَخْطُبُ فَقَدْ لَغَوْتَ",
+    "dari_translation": "اگر روز جمعه هنگام خطبه به همراهت بگویی خاموش باش، کار بیهوده کرده‌ای.",
+    "pashto_translation": "که د جمعې د خطبې پر مهال ملګري ته ووايې چوپ شه، نو بېځايه کار دې وکړ.",
+    "source_book": "Bukhari",
+    "source_number": "934",
     "is_muttafaq": false,
-    "topics": ["jumuah", "quran"],
+    "topics": ["jumuah", "manners"],
     "weekday_only": "friday",
     "daily_index": 16
   },
@@ -234,6 +242,7 @@
     "source_number": "223",
     "is_muttafaq": false,
     "topics": ["purity", "faith"],
+    "weekday_only": "friday",
     "daily_index": 19
   },
   {
@@ -278,6 +287,7 @@
     "source_number": "2699",
     "is_muttafaq": false,
     "topics": ["knowledge", "education"],
+    "weekday_only": "friday",
     "daily_index": 23
   },
   {
@@ -392,13 +402,13 @@
   },
   {
     "id": 34,
-    "arabic_text": "خَيْرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ",
-    "dari_translation": "بهترین مردم کسی است که برای مردم سودمندتر باشد.",
-    "pashto_translation": "غوره خلک هغه دي چې خلکو ته ډېر ګټور وي.",
+    "arabic_text": "لاَ تَحْقِرَنَّ مِنَ الْمَعْرُوفِ شَيْئًا وَلَوْ أَنْ تَلْقَى أَخَاكَ بِوَجْهٍ طَلْقٍ",
+    "dari_translation": "هیچ کار نیکی را کوچک مشمار؛ حتی این‌که برادرت را با چهره گشاده دیدار کنی.",
+    "pashto_translation": "هيڅ نېکي کمه مه ګڼئ؛ که څه هم خپل ورور په ورين تندي ووينئ.",
     "source_book": "Muslim",
     "source_number": "2626",
     "is_muttafaq": false,
-    "topics": ["service", "community"],
+    "topics": ["manners", "community"],
     "daily_index": 34
   },
   {
@@ -425,35 +435,35 @@
   },
   {
     "id": 37,
-    "arabic_text": "مَنْ لَا يَشْكُرِ النَّاسَ لَا يَشْكُرِ اللَّهَ",
-    "dari_translation": "کسی که از مردم تشکر نکند، از خدا نیز تشکر نکرده است.",
-    "pashto_translation": "څوک چې له خلکو مننه ونه کړي، له الله څخه مننه يې نه ده کړې.",
-    "source_book": "Muslim",
-    "source_number": "2672",
+    "arabic_text": "نِعْمَتَانِ مَغْبُونٌ فِيهِمَا كَثِيرٌ مِنَ النَّاسِ: الصِّحَّةُ وَالْفَرَاغُ",
+    "dari_translation": "دو نعمت است که بسیاری مردم در آن زیان می‌کنند: تندرستی و فراغت.",
+    "pashto_translation": "دوه نعمتونه دي چې ډېر خلک پکې تاوان کوي: روغتيا او فراغت.",
+    "source_book": "Bukhari",
+    "source_number": "6412",
     "is_muttafaq": false,
-    "topics": ["gratitude", "manners"],
+    "topics": ["gratitude", "mindset"],
     "daily_index": 37
   },
   {
     "id": 38,
-    "arabic_text": "اتَّقِ اللَّهَ حَيْثُمَا كُنْتَ",
-    "dari_translation": "هرجا که هستی از خدا پروا کن.",
-    "pashto_translation": "هر چېرته چې يې، له الله څخه وويرېږه.",
+    "arabic_text": "اتَّقُوا النَّارَ وَلَوْ بِشِقِّ تَمْرَةٍ",
+    "dari_translation": "خود را از آتش نگه دارید، اگرچه با دادن نیم خرما باشد.",
+    "pashto_translation": "ځانونه له اوره وساتئ، که څه هم د نيمې کجورې په صدقه وي.",
     "source_book": "Bukhari",
-    "source_number": "3331",
-    "is_muttafaq": false,
-    "topics": ["taqwa", "ethics"],
+    "source_number": "1417",
+    "is_muttafaq": true,
+    "topics": ["taqwa", "charity"],
     "daily_index": 38
   },
   {
     "id": 39,
-    "arabic_text": "تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ لَكَ صَدَقَةٌ",
-    "dari_translation": "لبخندت به روی برادرت برایت صدقه است.",
-    "pashto_translation": "د خپل ورور پر مخ موسکا کول تا ته صدقه ده.",
+    "arabic_text": "الْكَلِمَةُ الطَّيِّبَةُ صَدَقَةٌ",
+    "dari_translation": "سخن نیک صدقه است.",
+    "pashto_translation": "ښه خبره صدقه ده.",
     "source_book": "Muslim",
     "source_number": "1009",
-    "is_muttafaq": false,
-    "topics": ["charity", "manners"],
+    "is_muttafaq": true,
+    "topics": ["charity", "speech"],
     "daily_index": 39
   },
   {
@@ -498,6 +508,7 @@
     "source_number": "71",
     "is_muttafaq": true,
     "topics": ["knowledge", "faith"],
+    "weekday_only": "friday",
     "daily_index": 43
   },
   {
@@ -520,28 +531,29 @@
     "source_number": "450",
     "is_muttafaq": true,
     "topics": ["mosque", "charity"],
+    "weekday_only": "friday",
     "daily_index": 45
   },
   {
     "id": 46,
-    "arabic_text": "إِنَّ أَحَبَّكُمْ إِلَيَّ وَأَقْرَبَكُمْ مِنِّي مَجْلِسًا يَوْمَ الْقِيَامَةِ أَحَاسِنُكُمْ أَخْلَاقًا",
-    "dari_translation": "محبوب‌ترین شما نزد من و نزدیک‌ترین در قیامت، خوش‌اخلاق‌ترین شماست.",
-    "pashto_translation": "تر ټولو محبوب او نږدې کسان هغه دي چې اخلاق يې غوره وي.",
-    "source_book": "Muslim",
-    "source_number": "2321",
-    "is_muttafaq": false,
+    "arabic_text": "إِنَّ مِنْ خِيَارِكُمْ أَحْسَنَكُمْ أَخْلَاقًا",
+    "dari_translation": "از بهترین شما کسانی‌اند که اخلاق‌شان نیکوتر است.",
+    "pashto_translation": "ستاسو له غوره کسانو هغه دي چې اخلاق يې ډېر ښه وي.",
+    "source_book": "Bukhari",
+    "source_number": "6035",
+    "is_muttafaq": true,
     "topics": ["character", "akhlaq"],
     "daily_index": 46
   },
   {
     "id": 47,
-    "arabic_text": "إِذَا أَفْطَرَ أَحَدُكُمْ فَلْيُفْطِرْ عَلَى تَمْرٍ",
-    "dari_translation": "وقتی افطار می‌کنید، با خرما افطار کنید.",
-    "pashto_translation": "کله چې افطار کوئ، په کجورو يې وکړئ.",
+    "arabic_text": "إِذَا أَقْبَلَ اللَّيْلُ مِنْ هَا هُنَا وَأَدْبَرَ النَّهَارُ مِنْ هَا هُنَا فَقَدْ أَفْطَرَ الصَّائِمُ",
+    "dari_translation": "وقتی شب از این سو فرا رسد و روز از آن سو برود، روزه‌دار افطار کرده است.",
+    "pashto_translation": "کله چې شپه راشي او ورځ ولاړه شي، روژه دار افطار کړی دی.",
     "source_book": "Bukhari",
-    "source_number": "1957",
+    "source_number": "1954",
     "is_muttafaq": false,
-    "topics": ["ramadan", "sunnah"],
+    "topics": ["ramadan", "fasting"],
     "special_days": ["ramadan"],
     "hijri_range": {
       "month": 9,
@@ -564,43 +576,43 @@
   },
   {
     "id": 49,
-    "arabic_text": "مَنْ فَطَّرَ صَائِمًا كَانَ لَهُ مِثْلُ أَجْرِهِ",
-    "dari_translation": "هرکس روزه‌داری را افطار دهد، پاداشی مانند او خواهد داشت.",
-    "pashto_translation": "څوک چې روژه دار ته افطار ورکړي، د هغه په شان اجر لري.",
-    "source_book": "Muslim",
-    "source_number": "1151",
-    "is_muttafaq": false,
-    "topics": ["ramadan", "charity"],
+    "arabic_text": "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً",
+    "dari_translation": "سحری بخورید؛ زیرا در سحری برکت است.",
+    "pashto_translation": "پېشلمی کوئ، ځکه په پېشلمي کې برکت دی.",
+    "source_book": "Bukhari",
+    "source_number": "1923",
+    "is_muttafaq": true,
+    "topics": ["ramadan", "barakah"],
     "special_days": ["ramadan"],
     "daily_index": 49
   },
   {
     "id": 50,
-    "arabic_text": "الْحَجُّ عَرَفَةُ",
-    "dari_translation": "حج، عرفه است.",
-    "pashto_translation": "حج عرفه دی.",
+    "arabic_text": "صِيَامُ يَوْمِ عَرَفَةَ أَحْتَسِبُ عَلَى اللَّهِ أَنْ يُكَفِّرَ السَّنَةَ الَّتِي قَبْلَهُ وَالسَّنَةَ الَّتِي بَعْدَهُ",
+    "dari_translation": "امید دارم روزه روز عرفه گناهان سال گذشته و سال آینده را پاک کند.",
+    "pashto_translation": "هيله لرم چې د عرفې د ورځې روژه د تېر او راتلونکي کال ګناهونه وبښي.",
     "source_book": "Muslim",
-    "source_number": "1348",
+    "source_number": "1162",
     "is_muttafaq": false,
-    "topics": ["hajj", "arafah"],
-    "special_days": ["first_10_dhul_hijjah"],
+    "topics": ["arafah", "fasting"],
+    "special_days": ["arafah"],
     "hijri_range": {
       "month": 12,
-      "day_start": 1,
-      "day_end": 10
+      "day_start": 9,
+      "day_end": 9
     },
     "daily_index": 50
   },
   {
     "id": 51,
-    "arabic_text": "خَيْرُ الدُّعَاءِ دُعَاءُ يَوْمِ عَرَفَةَ",
-    "dari_translation": "بهترین دعا، دعای روز عرفه است.",
-    "pashto_translation": "تر ټولو غوره دعا د عرفې د ورځې دعا ده.",
+    "arabic_text": "مَا مِنْ يَوْمٍ أَكْثَرَ مِنْ أَنْ يُعْتِقَ اللَّهُ فِيهِ عَبْدًا مِنَ النَّارِ مِنْ يَوْمِ عَرَفَةَ",
+    "dari_translation": "هیچ روزی نیست که خدا در آن بیش از روز عرفه بندگان را از آتش آزاد کند.",
+    "pashto_translation": "د عرفې له ورځې زياته بله ورځ نشته چې الله پکې بندګان له اوره آزاد کړي.",
     "source_book": "Muslim",
-    "source_number": "1349",
+    "source_number": "1348",
     "is_muttafaq": false,
-    "topics": ["dua", "dhul_hijjah"],
-    "special_days": ["first_10_dhul_hijjah"],
+    "topics": ["arafah", "mercy"],
+    "special_days": ["arafah"],
     "hijri_range": {
       "month": 12,
       "day_start": 9,
@@ -610,24 +622,36 @@
   },
   {
     "id": 52,
-    "arabic_text": "إِذَا قَامَ أَحَدُكُمْ إِلَى الصَّلَاةِ فَلْيُسَوِّ صُفُوفَهُ",
-    "dari_translation": "وقتی برای نماز می‌ایستید، صفوف خود را منظم سازید.",
-    "pashto_translation": "کله چې لمانځه ته درېږئ، صفونه سم برابر کړئ.",
-    "source_book": "Bukhari",
-    "source_number": "723",
-    "is_muttafaq": true,
-    "topics": ["prayer", "jamaah"],
+    "arabic_text": "أَيَّامُ التَّشْرِيقِ أَيَّامُ أَكْلٍ وَشُرْبٍ وَذِكْرٍ لِلَّهِ",
+    "dari_translation": "ایام تشریق روزهای خوردن، نوشیدن و یاد خداست.",
+    "pashto_translation": "د تشریق ورځې د خوراک، څښاک او د الله د ذکر ورځې دي.",
+    "source_book": "Muslim",
+    "source_number": "1141",
+    "is_muttafaq": false,
+    "topics": ["tashreeq", "dhikr"],
+    "special_days": ["tashreeq"],
+    "hijri_range": {
+      "month": 12,
+      "day_start": 11,
+      "day_end": 13
+    },
     "daily_index": 52
   },
   {
     "id": 53,
-    "arabic_text": "مَنْ تَوَضَّأَ فَأَحْسَنَ الْوُضُوءَ خَرَجَتْ خَطَايَاهُ",
-    "dari_translation": "هرکس وضو را نیکو انجام دهد، خطاهایش زدوده می‌شود.",
-    "pashto_translation": "څوک چې ښه اودس وکړي، ګناهونه يې توييږي.",
+    "arabic_text": "أَحَبُّ الْكَلَامِ إِلَى اللَّهِ أَرْبَعٌ: سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ",
+    "dari_translation": "محبوب‌ترین سخن‌ها نزد خدا چهار کلمه است: سبحان‌الله، الحمدلله، لا اله الا الله و الله‌اکبر.",
+    "pashto_translation": "الله ته تر ټولو خوښې خبرې څلور دي: سبحان الله، الحمدلله، لا اله الا الله او الله اکبر.",
     "source_book": "Muslim",
-    "source_number": "244",
+    "source_number": "2137",
     "is_muttafaq": false,
-    "topics": ["wudu", "purity"],
+    "topics": ["dhikr", "worship"],
+    "special_days": ["tashreeq"],
+    "hijri_range": {
+      "month": 12,
+      "day_start": 11,
+      "day_end": 13
+    },
     "daily_index": 53
   },
   {
@@ -639,6 +663,7 @@
     "source_number": "671",
     "is_muttafaq": false,
     "topics": ["mosque", "worship"],
+    "weekday_only": "friday",
     "daily_index": 54
   },
   {
@@ -650,6 +675,12 @@
     "source_number": "1893",
     "is_muttafaq": false,
     "topics": ["guidance", "good_deeds"],
+    "special_days": ["first_10_dhul_hijjah"],
+    "hijri_range": {
+      "month": 12,
+      "day_start": 1,
+      "day_end": 10
+    },
     "daily_index": 55
   },
   {
@@ -676,35 +707,41 @@
   },
   {
     "id": 58,
-    "arabic_text": "صِلَةُ الرَّحِمِ مَحَبَّةٌ فِي الأَهْلِ، مَثْرَاةٌ فِي الْمَالِ",
-    "dari_translation": "پیوند با خویشاوندان محبت در خانواده و برکت در مال می‌آورد.",
-    "pashto_translation": "د خپلوانو پالنه په کورنۍ کې مينه او په مال کې برکت راولي.",
-    "source_book": "Muslim",
-    "source_number": "2557",
-    "is_muttafaq": false,
+    "arabic_text": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ وَيُنْسَأَ لَهُ فِي أَثَرِهِ فَلْيَصِلْ رَحِمَهُ",
+    "dari_translation": "هرکه دوست دارد روزی‌اش فراخ و عمرش بابرکت شود، پیوند خویشاوندی را نگه دارد.",
+    "pashto_translation": "څوک چې د رزق پراخي او د عمر برکت غواړي، خپلوي دې وپالي.",
+    "source_book": "Bukhari",
+    "source_number": "5986",
+    "is_muttafaq": true,
     "topics": ["family", "barakah"],
     "daily_index": 58
   },
   {
     "id": 59,
-    "arabic_text": "إِذَا سَأَلْتَ فَاسْأَلِ اللَّهَ، وَإِذَا اسْتَعَنْتَ فَاسْتَعِنْ بِاللَّهِ",
-    "dari_translation": "وقتی می‌خواهی، از خدا بخواه و وقتی کمک می‌طلبی، از خدا یاری بطلب.",
-    "pashto_translation": "کله چې غوښتنه کوې له الله وغواړه، او کله چې مرسته غواړې له الله مرسته وغواړه.",
+    "arabic_text": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
+    "dari_translation": "خداوند می‌فرماید: من نزد گمان بنده‌ام نسبت به من هستم.",
+    "pashto_translation": "الله تعالی فرمايي: زه د خپل بنده له ګمان سره سم يم.",
     "source_book": "Bukhari",
-    "source_number": "7378",
+    "source_number": "7405",
     "is_muttafaq": false,
     "topics": ["dua", "tawakkul"],
     "daily_index": 59
   },
   {
     "id": 60,
-    "arabic_text": "إِنَّمَا بُعِثْتُ لأُتَمِّمَ مَكَارِمَ الأَخْلاَقِ",
-    "dari_translation": "من برای تکمیل اخلاق نیک فرستاده شده‌ام.",
-    "pashto_translation": "زه د ښو اخلاقو د بشپړولو لپاره رالېږل شوی يم.",
-    "source_book": "Muslim",
-    "source_number": "323",
-    "is_muttafaq": false,
-    "topics": ["prophet", "akhlaq"],
+    "arabic_text": "كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ، حَبِيبَتَانِ إِلَى الرَّحْمَنِ",
+    "dari_translation": "دو کلمه بر زبان سبک، در ترازوی عمل سنگین، و نزد رحمان محبوب‌اند.",
+    "pashto_translation": "دوې کلمې پر ژبه سپکې، په ميزان کې درنې او رحمن ته محبوبې دي.",
+    "source_book": "Bukhari",
+    "source_number": "6406",
+    "is_muttafaq": true,
+    "topics": ["dhikr", "worship"],
+    "special_days": ["tashreeq"],
+    "hijri_range": {
+      "month": 12,
+      "day_start": 11,
+      "day_end": 13
+    },
     "daily_index": 60
   }
 ]

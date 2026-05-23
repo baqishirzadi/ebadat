@@ -301,7 +301,7 @@ function RootLayoutNav() {
       </Stack>
       {/* On Android, fill the area behind the status bar with the same color
           as the Quran header to avoid any white strip above the header. */}
-      <StatusBar style={statusBarStyle} backgroundColor={theme.surahHeader} />
+      <StatusBar style={statusBarStyle} />
     </>
   );
 }

@@ -15,7 +15,10 @@ const SPECIAL_DAYS: { key: HadithSpecialDay; label: string }[] = [
   { key: 'laylat_al_qadr', label: 'شب قدر (۲۷ رمضان)' },
   { key: 'eid_al_fitr', label: 'عید فطر' },
   { key: 'eid_al_adha', label: 'عید قربان' },
+  { key: 'arafah', label: 'روز عرفه' },
+  { key: 'tashreeq', label: 'ایام تشریق' },
   { key: 'first_10_dhul_hijjah', label: 'دهه اول ذوالحجه' },
+  { key: 'hijri_new_year', label: 'سال نو هجری' },
   { key: 'ashura', label: 'عاشورا' },
 ];
 

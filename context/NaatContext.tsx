@@ -29,18 +29,34 @@ type PlayerState = {
   durationMillis: number;
 };
 
+export type NaatQueueSource = 'catalog' | 'filtered' | 'downloads' | 'single';
+
+type NaatSessionState = {
+  queueIds: string[];
+  currentIndex: number;
+  source: NaatQueueSource;
+  totalCount: number;
+  canSkipNext: boolean;
+  canSkipPrevious: boolean;
+};
+
 type NaatContextValue = {
   naats: Naat[];
   loading: boolean;
   syncError: string | null;
   syncSource: 'supabase' | 'cache' | 'fallback';
   player: PlayerState;
+  session: NaatSessionState;
   ensurePlayerReady: (reason?: string) => Promise<void>;
   refresh: () => Promise<void>;
   createItem: (draft: NaatDraft) => Promise<void>;
   updateItem: (id: string, patch: Partial<Naat>) => Promise<void>;
   removeItem: (id: string) => Promise<void>;
   play: (naat: Naat) => Promise<void>;
+  playFromQueue: (items: Naat[], selectedId: string, source: NaatQueueSource) => Promise<void>;
+  togglePlayPause: () => Promise<void>;
+  skipNext: () => Promise<void>;
+  skipPrevious: () => Promise<void>;
   pause: () => Promise<void>;
   resume: () => Promise<void>;
   stop: () => Promise<void>;
@@ -60,6 +76,14 @@ export function useNaat() {
 
 const TRACK_POLL_INTERVAL_MS = 250;
 const SUPABASE_FETCH_TIMEOUT_MS = 8000;
+const EMPTY_SESSION: NaatSessionState = {
+  queueIds: [],
+  currentIndex: -1,
+  source: 'single',
+  totalCount: 0,
+  canSkipNext: false,
+  canSkipPrevious: false,
+};
 
 type StoredCatalog = Awaited<ReturnType<typeof loadCatalog>>;
 const FALLBACK_NAATS = fallbackNaatsData as StoredCatalog;
@@ -83,6 +107,30 @@ function getTrackId(track: unknown): string | null {
   return null;
 }
 
+function uniqueNaats(items: Naat[]): Naat[] {
+  const seen = new Set<string>();
+  const next: Naat[] = [];
+  for (const item of items) {
+    if (!item.id || seen.has(item.id)) continue;
+    seen.add(item.id);
+    next.push(item);
+  }
+  return next;
+}
+
+function makeSession(queueIds: string[], currentId: string | null, source: NaatQueueSource): NaatSessionState {
+  const currentIndex = currentId ? queueIds.findIndex((id) => id === currentId) : -1;
+  const totalCount = queueIds.length;
+  return {
+    queueIds,
+    currentIndex,
+    source,
+    totalCount,
+    canSkipPrevious: currentIndex > 0,
+    canSkipNext: currentIndex >= 0 && currentIndex < totalCount - 1,
+  };
+}
+
 export function NaatProvider({ children }: { children: React.ReactNode }) {
   const { isInteractiveReady } = useStartupPhase();
   const [naats, setNaats] = useState<Naat[]>([]);
@@ -96,10 +144,12 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     positionMillis: 0,
     durationMillis: 0,
   });
+  const [session, setSession] = useState<NaatSessionState>(EMPTY_SESSION);
   const activeTrackId = player.current?.id;
 
   const currentNaatRef = useRef<Naat | null>(null);
   const naatsRef = useRef<Naat[]>([]);
+  const sessionRef = useRef<NaatSessionState>(EMPTY_SESSION);
   const lastSavedPosition = useRef<number>(0);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -206,6 +256,10 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     naatsRef.current = naats;
   }, [naats]);
 
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
+
   const findNaatByTrack = useCallback((track: unknown): Naat | null => {
     const trackId = getTrackId(track);
     if (!trackId) return null;
@@ -227,11 +281,22 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           positionMillis: 0,
           durationMillis: 0,
         }));
+        setSession(EMPTY_SESSION);
         return;
       }
 
       currentNaatRef.current = activeNaat;
       const progress = await TrackPlayer.getProgress();
+      let queueIds = sessionRef.current.queueIds;
+      if (!queueIds.includes(activeNaat.id)) {
+        const queue = await TrackPlayer.getQueue();
+        queueIds = queue.map((track) => getTrackId(track)).filter((id): id is string => Boolean(id));
+      }
+      if (queueIds.length > 0) {
+        const source = sessionRef.current.queueIds.length > 0 ? sessionRef.current.source : 'catalog';
+        setSession(makeSession(queueIds, activeNaat.id, source));
+      }
+
       const positionMillis = Math.floor(progress.position * 1000);
       const durationMillis = progress.duration > 0
         ? Math.floor(progress.duration * 1000)
@@ -293,10 +358,11 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
 
   const buildQueueTracks = useCallback(async (
     selectedNaat: Naat,
+    queueItems: Naat[],
     selectedUri: string,
     isOffline: boolean,
   ): Promise<AddTrack[]> => {
-    const sourceList = naatsRef.current.length > 0 ? naatsRef.current : [selectedNaat];
+    const sourceList = uniqueNaats(queueItems.length > 0 ? queueItems : [selectedNaat]);
     const tracks: AddTrack[] = [];
     const seen = new Set<string>();
 
@@ -482,33 +548,48 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     await refresh();
   }, [refresh]);
 
-  const play = useCallback(async (naat: Naat) => {
+  const playFromQueue = useCallback(async (
+    items: Naat[],
+    selectedId: string,
+    source: NaatQueueSource,
+  ) => {
     try {
       await ensurePlayerReady('play');
 
-      const { uri, isOffline } = await resolveAudioSource(naat);
-      const queueTracks = await buildQueueTracks(naat, uri, isOffline);
-      const selectedIndex = queueTracks.findIndex((track) => String(track.id) === naat.id);
+      const queueItems = uniqueNaats(items.length > 0 ? items : naatsRef.current);
+      const selectedNaat =
+        queueItems.find((item) => item.id === selectedId) ??
+        naatsRef.current.find((item) => item.id === selectedId);
+
+      if (!selectedNaat) {
+        throw new Error('no-audio');
+      }
+
+      const { uri, isOffline } = await resolveAudioSource(selectedNaat);
+      const queueTracks = await buildQueueTracks(selectedNaat, queueItems, uri, isOffline);
+      const selectedIndex = queueTracks.findIndex((track) => String(track.id) === selectedNaat.id);
 
       if (!queueTracks.length || selectedIndex < 0) {
         throw new Error('no-audio');
       }
 
-      const initialPosition = Math.max(0, (naat.lastPositionMillis ?? 0) / 1000);
+      const initialPosition = Math.max(0, (selectedNaat.lastPositionMillis ?? 0) / 1000);
+      const queueIds = queueTracks.map((track) => String(track.id));
 
       await TrackPlayer.reset();
       await TrackPlayer.add(queueTracks);
       await TrackPlayer.skip(selectedIndex, initialPosition > 0 ? initialPosition : undefined);
       await TrackPlayer.play();
 
-      currentNaatRef.current = naat;
-      lastSavedPosition.current = naat.lastPositionMillis ?? 0;
+      currentNaatRef.current = selectedNaat;
+      lastSavedPosition.current = selectedNaat.lastPositionMillis ?? 0;
+      setSession(makeSession(queueIds, selectedNaat.id, source));
       setPlayer((prev) => ({
         ...prev,
-        current: naat,
+        current: selectedNaat,
         isPlaying: true,
-        positionMillis: naat.lastPositionMillis ?? 0,
-        durationMillis: (naat.duration_seconds ?? 0) * 1000,
+        positionMillis: selectedNaat.lastPositionMillis ?? 0,
+        durationMillis: (selectedNaat.duration_seconds ?? 0) * 1000,
       }));
     } catch (error: any) {
       if (error?.message === 'offline') {
@@ -525,6 +606,11 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       Alert.alert('خطا', 'پخش نعت ممکن نیست');
     }
   }, [ensurePlayerReady, resolveAudioSource, buildQueueTracks]);
+
+  const play = useCallback(async (naat: Naat) => {
+    const sourceList = naatsRef.current.length > 0 ? naatsRef.current : [naat];
+    await playFromQueue(sourceList, naat.id, 'catalog');
+  }, [playFromQueue]);
 
   const pause = useCallback(async () => {
     try {
@@ -552,6 +638,47 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [ensurePlayerReady]);
 
+  const togglePlayPause = useCallback(async () => {
+    if (player.isPlaying) {
+      await pause();
+      return;
+    }
+    await resume();
+  }, [pause, player.isPlaying, resume]);
+
+  const skipNext = useCallback(async () => {
+    try {
+      if (!sessionRef.current.canSkipNext) return;
+      await ensurePlayerReady('skip-next');
+      await TrackPlayer.skipToNext();
+      await TrackPlayer.play();
+      await syncPlayerSnapshot();
+    } catch (err) {
+      if (__DEV__) console.warn('TrackPlayer skip next:', err);
+    }
+  }, [ensurePlayerReady, syncPlayerSnapshot]);
+
+  const skipPrevious = useCallback(async () => {
+    try {
+      await ensurePlayerReady('skip-previous');
+      const progress = await TrackPlayer.getProgress();
+      if (progress.position > 3 || !sessionRef.current.canSkipPrevious) {
+        await TrackPlayer.seekTo(0);
+      } else {
+        await TrackPlayer.skipToPrevious();
+      }
+      await TrackPlayer.play();
+      await syncPlayerSnapshot();
+    } catch (err) {
+      try {
+        await TrackPlayer.seekTo(0);
+      } catch {
+        // ignore fallback failure
+      }
+      if (__DEV__) console.warn('TrackPlayer skip previous:', err);
+    }
+  }, [ensurePlayerReady, syncPlayerSnapshot]);
+
   const stop = useCallback(async () => {
     try {
       await ensurePlayerReady('stop');
@@ -560,6 +687,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       if (__DEV__) console.warn('TrackPlayer reset:', err);
     }
     currentNaatRef.current = null;
+    setSession(EMPTY_SESSION);
     setPlayer({ current: null, isPlaying: false, positionMillis: 0, durationMillis: 0 });
   }, [ensurePlayerReady]);
 
@@ -674,18 +802,23 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     syncError,
     syncSource,
     player,
+    session,
     ensurePlayerReady,
     refresh,
     createItem,
     updateItem,
     removeItem,
     play,
+    playFromQueue,
+    togglePlayPause,
+    skipNext,
+    skipPrevious,
     pause,
     resume,
     stop,
     seek,
     download,
-  }), [naats, loading, syncError, syncSource, player, ensurePlayerReady, refresh, createItem, updateItem, removeItem, play, pause, resume, stop, seek, download]);
+  }), [naats, loading, syncError, syncSource, player, session, ensurePlayerReady, refresh, createItem, updateItem, removeItem, play, playFromQueue, togglePlayPause, skipNext, skipPrevious, pause, resume, stop, seek, download]);
 
   return <NaatContext.Provider value={value}>{children}</NaatContext.Provider>;
 }

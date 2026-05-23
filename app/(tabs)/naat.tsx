@@ -10,9 +10,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
-import { useNaat } from '@/context/NaatContext';
+import { useNaat, type NaatQueueSource } from '@/context/NaatContext';
 import { BorderRadius, Spacing, Typography, NAAT_GRADIENT } from '@/constants/theme';
+import { Naat } from '@/types/naat';
 import { NaatCard } from '@/components/naat/NaatCard';
+import { NaatProgressBar } from '@/components/naat/NaatProgressBar';
+import { NaatQueueSheet } from '@/components/naat/NaatQueueSheet';
 
 const ADMIN_ENABLED = true;
 const NAAT_ADMIN_PIN = '0852';
@@ -34,17 +37,37 @@ function normalizeText(input: string) {
     .trim();
 }
 
+function filterQueueItems(ids: string[], naats: Naat[]) {
+  const byId = new Map(naats.map((item) => [item.id, item]));
+  return ids.map((id) => byId.get(id)).filter((item): item is Naat => Boolean(item));
+}
+
 export default function NaatScreen() {
   const { theme, state } = useApp();
   const themeMode = state.preferences.theme;
   const headerGradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { naats, loading, syncError, player, play, pause, resume, download, seek, refresh } = useNaat();
+  const {
+    naats,
+    loading,
+    syncError,
+    player,
+    session,
+    playFromQueue,
+    togglePlayPause,
+    skipNext,
+    skipPrevious,
+    download,
+    seek,
+    stop,
+    refresh,
+  } = useNaat();
   const [query, setQuery] = useState('');
   const [selectedReciter, setSelectedReciter] = useState('همه');
   const [showNaatAdminPinModal, setShowNaatAdminPinModal] = useState(false);
   const [naatAdminPin, setNaatAdminPin] = useState('');
+  const [queueVisible, setQueueVisible] = useState(false);
 
   const reciters = useMemo(() => {
     const names = Array.from(new Set(naats.map((item) => item.reciter_name).filter(Boolean)));
@@ -60,6 +83,23 @@ export default function NaatScreen() {
       return matchesReciter && hay.includes(q);
     });
   }, [naats, query, selectedReciter]);
+
+  const queueItems = useMemo(
+    () => filterQueueItems(session.queueIds, naats),
+    [naats, session.queueIds],
+  );
+
+  const queueLabel =
+    player.current && session.totalCount > 0 && session.currentIndex >= 0
+      ? `${session.currentIndex + 1} از ${session.totalCount}`
+      : 'صف پخش';
+
+  const handleQueueSelect = (id: string) => {
+    setQueueVisible(false);
+    const source: NaatQueueSource = session.source ?? 'catalog';
+    const sourceItems = queueItems.length > 0 ? queueItems : filtered;
+    playFromQueue(sourceItems, id, source).catch(() => {});
+  };
 
   const handleNaatAdminPinSubmit = () => {
     if (naatAdminPin.trim() === NAAT_ADMIN_PIN) {
@@ -89,7 +129,7 @@ export default function NaatScreen() {
           data={filtered}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContent}
+          contentContainerStyle={[styles.listContent, player.current && styles.listContentWithPlayer]}
           ListHeaderComponent={(
             <View>
               <LinearGradient
@@ -189,32 +229,18 @@ export default function NaatScreen() {
           )}
           renderItem={({ item }) => {
             const isActive = player.current?.id === item.id;
-            const durationMillis = isActive
-              ? player.durationMillis || (item.duration_seconds ? item.duration_seconds * 1000 : 0)
-              : 0;
-            const positionMillis = isActive ? player.positionMillis : 0;
-            const progress = durationMillis > 0 ? positionMillis / durationMillis : 0;
-            const canSeek = isActive && durationMillis > 0;
             return (
               <View style={styles.section}>
                 <NaatCard
                   naat={item}
                   isActive={isActive}
                   isPlaying={isActive ? player.isPlaying : false}
-                  progress={progress}
-                  positionMillis={positionMillis}
-                  durationMillis={durationMillis}
-                  onSeek={canSeek ? (millis) => seek(Math.max(0, Math.min(durationMillis, millis))) : undefined}
                   onPlay={() => {
                     if (isActive) {
-                      if (player.isPlaying) {
-                        pause();
-                      } else {
-                        resume();
-                      }
+                      togglePlayPause().catch(() => {});
                       return;
                     }
-                    play(item);
+                    playFromQueue(filtered, item.id, 'filtered').catch(() => {});
                   }}
                   onDownload={() => download(item)}
                 />
@@ -223,6 +249,92 @@ export default function NaatScreen() {
           }}
         />
       )}
+
+      {player.current && (
+        <View
+          style={[
+            styles.playerDock,
+            {
+              bottom: insets.bottom + 82,
+              backgroundColor: theme.card,
+              borderColor: theme.cardBorder,
+              shadowColor: theme.text,
+            },
+          ]}
+        >
+          <NaatProgressBar
+            positionMillis={player.positionMillis}
+            durationMillis={player.durationMillis || (player.current.duration_seconds ? player.current.duration_seconds * 1000 : 0)}
+            onSeek={(millis) => seek(millis)}
+            fillColor={theme.tint}
+            trackColor={theme.backgroundSecondary}
+            textColor={theme.textSecondary}
+          />
+
+          <View style={styles.playerMainRow}>
+            <Pressable
+              onPress={() => setQueueVisible(true)}
+              style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
+            >
+              <MaterialIcons name="queue-music" size={22} color={theme.tint} />
+            </Pressable>
+
+            <View style={styles.playerInfo}>
+              <Text style={[styles.playerTitle, { color: theme.text }]} numberOfLines={1}>
+                {player.current.title_fa}
+              </Text>
+              <Text style={[styles.playerSubtitle, { color: theme.textSecondary }]} numberOfLines={1}>
+                {player.current.reciter_name} • {queueLabel}
+              </Text>
+            </View>
+
+            <View style={styles.playerControls}>
+              <Pressable
+                onPress={() => {
+                  skipPrevious().catch(() => {});
+                }}
+                disabled={!session.canSkipPrevious}
+                style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipPrevious ? 1 : 0.42 }]}
+              >
+                <MaterialIcons name="skip-previous" size={22} color={theme.textSecondary} />
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  togglePlayPause().catch(() => {});
+                }}
+                style={[styles.playerPlayButton, { backgroundColor: theme.tint }]}
+              >
+                <MaterialIcons name={player.isPlaying ? 'pause' : 'play-arrow'} size={28} color="#fff" />
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  skipNext().catch(() => {});
+                }}
+                disabled={!session.canSkipNext}
+                style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipNext ? 1 : 0.42 }]}
+              >
+                <MaterialIcons name="skip-next" size={22} color={theme.textSecondary} />
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  stop().catch(() => {});
+                }}
+                style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
+              >
+                <MaterialIcons name="stop" size={22} color={theme.textSecondary} />
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
+
+      <NaatQueueSheet
+        visible={queueVisible}
+        items={queueItems.length > 0 ? queueItems : filtered}
+        currentId={player.current?.id}
+        onClose={() => setQueueVisible(false)}
+        onSelect={handleQueueSelect}
+      />
 
       {/* Naat Admin PIN Modal */}
       <Modal
@@ -334,6 +446,9 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: Spacing.xxl,
+  },
+  listContentWithPlayer: {
+    paddingBottom: 250,
   },
   section: {
     paddingHorizontal: Spacing.lg,
@@ -479,5 +594,61 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     fontWeight: '600',
     fontFamily: 'Vazirmatn',
+  },
+  playerDock: {
+    position: 'absolute',
+    left: Spacing.md,
+    right: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.sm,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.16,
+    shadowRadius: 18,
+    elevation: 10,
+    gap: Spacing.sm,
+  },
+  playerMainRow: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  playerInfo: {
+    flex: 1,
+    minWidth: 0,
+    alignItems: 'flex-end',
+  },
+  playerTitle: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.body,
+    fontWeight: '800',
+    textAlign: 'right',
+  },
+  playerSubtitle: {
+    marginTop: 2,
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    textAlign: 'right',
+  },
+  playerControls: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+    gap: 6,
+  },
+  playerIconButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playerPlayButton: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

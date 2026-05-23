@@ -618,10 +618,7 @@ export default function JuzReaderScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar
-        barStyle="light-content"
-        backgroundColor={theme.surahHeader}
-      />
+      <StatusBar barStyle="light-content" />
 
       <View
         style={[

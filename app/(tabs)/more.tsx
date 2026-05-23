@@ -146,11 +146,11 @@ export default function MoreScreen() {
   ], [theme.bookmark, theme.surahHeader, theme.tint]);
 
   const secondaryActions = useMemo(() => [
-    { icon: 'access-alarm', label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings' },
-    { icon: 'favorite', label: 'دعای خیر و مشورت شرعی', subtitle: 'ارسال درخواست دعا', route: '/dua-request' },
-    { icon: 'admin-panel-settings', label: 'پنل مدیریت', subtitle: 'بخش مدیریتی', route: '/admin/login' },
-    { icon: 'settings', label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/(tabs)/settings' },
-  ], []);
+    { icon: 'access-alarm', label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings', accent: theme.tint },
+    { icon: 'favorite', label: 'دعای خیر و مشورت شرعی', subtitle: 'ارسال درخواست دعا', route: '/dua-request', accent: theme.bookmark },
+    { icon: 'admin-panel-settings', label: 'پنل مدیریت', subtitle: 'بخش مدیریتی', route: '/admin/login', accent: theme.surahHeader },
+    { icon: 'settings', label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/(tabs)/settings', accent: theme.tint },
+  ], [theme.bookmark, theme.surahHeader, theme.tint]);
 
   const summaryCards = useMemo(() => [
     { icon: 'menu-book', label: 'آیات خوانده‌شده', value: dashboardSnapshot.summary.totalAyahsRead },
@@ -267,7 +267,7 @@ export default function MoreScreen() {
                 pressed && styles.pressedCard,
               ]}
             >
-              <View style={[styles.quickIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+              <View style={[styles.featureIconWrap, { backgroundColor: `${item.accent}14`, borderColor: `${item.accent}38` }]}>
                 <MaterialIcons name={item.icon as any} size={24} color={item.accent} />
               </View>
               <CenteredText style={[styles.quickLabel, { color: theme.text }]}>{item.label}</CenteredText>
@@ -384,8 +384,8 @@ export default function MoreScreen() {
                   <CenteredText style={[styles.secondaryLabel, { color: theme.text }]}>{action.label}</CenteredText>
                   <CenteredText style={[styles.secondarySubtitle, { color: theme.textSecondary }]}>{action.subtitle}</CenteredText>
                 </View>
-                <View style={[styles.secondaryIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-                  <MaterialIcons name={action.icon as any} size={22} color={theme.tint} />
+                <View style={[styles.featureIconWrapSmall, { backgroundColor: `${action.accent}14`, borderColor: `${action.accent}38` }]}>
+                  <MaterialIcons name={action.icon as any} size={22} color={action.accent} />
                 </View>
               </Pressable>
             ))}
@@ -595,7 +595,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     alignItems: 'center',
   },
-  quickIconWrap: {
+  featureIconWrap: {
     width: 52,
     height: 52,
     borderRadius: 26,
@@ -603,6 +603,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,
+  },
+  featureIconWrapSmall: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   quickLabel: {
     fontSize: Typography.ui.body,
@@ -742,14 +750,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     marginTop: 4,
     lineHeight: 20,
-  },
-  secondaryIconWrap: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   khatmCard: {
     marginTop: Spacing.xl,

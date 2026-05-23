@@ -1,7 +1,7 @@
 {
   "name": "ebadatapp",
   "main": "AppEntry.js",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "scripts": {
     "start": "expo start",
     "start:clear": "expo start --clear",
@@ -27,6 +27,9 @@
     "verify:quran-render-clean": "node scripts/verify-quran-display-normalization.js",
     "import:ahadith-data": "node scripts/import-ahadith-dataset.js",
     "verify:ahadith-data": "node scripts/validate-ahadith-dataset.js",
+    "verify:ahadith-schedule": "node scripts/verify-ahadith-schedule.js",
+    "seed:ahadith-remote": "node scripts/seed-ahadith-remote.js",
+    "verify:calendar-truth": "node scripts/verify-calendar-truth.js",
     "verify:patches": "node scripts/verify-patches-clean.js"
   },
   "dependencies": {

@@ -253,12 +253,7 @@ interface HijriCorrectionRange {
   shiftDays: number;
 }
 
-const AFGHAN_HIJRI_CORRECTIONS: HijriCorrectionRange[] = [
-  {
-    startGregorian: '2026-03-21',
-    shiftDays: -1,
-  },
-];
+const AFGHAN_HIJRI_CORRECTIONS: HijriCorrectionRange[] = [];
 
 function compareDateKeys(a: string, b: string): number {
   if (a === b) return 0;

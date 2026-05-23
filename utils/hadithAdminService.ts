@@ -72,6 +72,9 @@ function rowToHadith(row: Partial<HadithEntryDTO>): Hadith | null {
         item === 'eid_al_fitr' ||
         item === 'eid_al_adha' ||
         item === 'first_10_dhul_hijjah' ||
+        item === 'arafah' ||
+        item === 'tashreeq' ||
+        item === 'hijri_new_year' ||
         item === 'ashura'
     );
   }

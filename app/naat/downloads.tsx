@@ -10,11 +10,12 @@ import { useApp } from '@/context/AppContext';
 import { useNaat } from '@/context/NaatContext';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { NaatCard } from '@/components/naat/NaatCard';
+import { NaatMiniPlayer } from '@/components/naat/NaatMiniPlayer';
 
 export default function NaatDownloadsScreen() {
   const { theme } = useApp();
   const router = useRouter();
-  const { naats, play, download } = useNaat();
+  const { naats, player, play, playFromQueue, togglePlayPause, download, seek } = useNaat();
 
   const downloaded = useMemo(() => naats.filter((n) => n.isDownloaded), [naats]);
   const inProgress = useMemo(
@@ -35,7 +36,7 @@ export default function NaatDownloadsScreen() {
         <Text style={styles.headerTitle}>دانلودها</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView contentContainerStyle={[styles.content, player.current && styles.contentWithMiniPlayer]}>
         <View style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
           <Text style={[styles.summaryTitle, { color: theme.text }]}>حجم ذخیره‌شده</Text>
           <Text style={[styles.summaryValue, { color: theme.tint }]}>{totalSize} MB</Text>
@@ -44,9 +45,32 @@ export default function NaatDownloadsScreen() {
         {inProgress.length > 0 && (
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>در حال دانلود</Text>
-            {inProgress.map((naat) => (
-              <NaatCard key={naat.id} naat={naat} onPlay={() => play(naat)} onDownload={() => download(naat)} />
-            ))}
+            {inProgress.map((naat) => {
+              const isActive = player.current?.id === naat.id;
+              const durationMillis = isActive
+                ? player.durationMillis || (naat.duration_seconds ? naat.duration_seconds * 1000 : 0)
+                : 0;
+              return (
+                <NaatCard
+                  key={naat.id}
+                  naat={naat}
+                  isActive={isActive}
+                  isPlaying={isActive ? player.isPlaying : false}
+                  progress={isActive && durationMillis > 0 ? player.positionMillis / durationMillis : 0}
+                  positionMillis={isActive ? player.positionMillis : 0}
+                  durationMillis={durationMillis}
+                  onSeek={isActive && durationMillis > 0 ? (millis) => seek(Math.max(0, Math.min(durationMillis, millis))) : undefined}
+                  onPlay={() => {
+                    if (isActive) {
+                      togglePlayPause().catch(() => {});
+                      return;
+                    }
+                    play(naat).catch(() => {});
+                  }}
+                  onDownload={() => download(naat)}
+                />
+              );
+            })}
           </View>
         )}
 
@@ -55,12 +79,47 @@ export default function NaatDownloadsScreen() {
           {downloaded.length === 0 ? (
             <Text style={[styles.emptyText, { color: theme.textSecondary }]}>هنوز چیزی دانلود نشده است</Text>
           ) : (
-            downloaded.map((naat) => (
-              <NaatCard key={naat.id} naat={naat} onPlay={() => play(naat)} onDownload={() => download(naat)} />
-            ))
+            downloaded.map((naat) => {
+              const isActive = player.current?.id === naat.id;
+              const durationMillis = isActive
+                ? player.durationMillis || (naat.duration_seconds ? naat.duration_seconds * 1000 : 0)
+                : 0;
+              return (
+                <NaatCard
+                  key={naat.id}
+                  naat={naat}
+                  isActive={isActive}
+                  isPlaying={isActive ? player.isPlaying : false}
+                  progress={isActive && durationMillis > 0 ? player.positionMillis / durationMillis : 0}
+                  positionMillis={isActive ? player.positionMillis : 0}
+                  durationMillis={durationMillis}
+                  onSeek={isActive && durationMillis > 0 ? (millis) => seek(Math.max(0, Math.min(durationMillis, millis))) : undefined}
+                  onPlay={() => {
+                    if (isActive) {
+                      togglePlayPause().catch(() => {});
+                      return;
+                    }
+                    playFromQueue(downloaded, naat.id, 'downloads').catch(() => {});
+                  }}
+                  onDownload={() => download(naat)}
+                />
+              );
+            })
           )}
         </View>
       </ScrollView>
+
+      {player.current && (
+        <NaatMiniPlayer
+          naat={player.current}
+          isPlaying={player.isPlaying}
+          progress={player.durationMillis > 0 ? player.positionMillis / player.durationMillis : 0}
+          onPlayPause={() => {
+            togglePlayPause().catch(() => {});
+          }}
+          onOpen={() => router.push('/naat')}
+        />
+      )}
     </View>
   );
 }
@@ -93,6 +152,9 @@ const styles = StyleSheet.create({
   content: {
     padding: Spacing.lg,
     paddingBottom: Spacing.xl,
+  },
+  contentWithMiniPlayer: {
+    paddingBottom: 160,
   },
   summaryCard: {
     borderWidth: 1,

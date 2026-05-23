@@ -165,7 +165,7 @@ export default function NotificationClickRoute() {
       }
 
       if (isNaatTrack(activeTrack)) {
-        router.dismissTo('/naat/now-playing');
+        router.dismissTo('/naat');
         return;
       }
 

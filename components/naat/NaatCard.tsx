@@ -1,9 +1,10 @@
-import React, { useMemo, useRef, useState, useCallback, useEffect } from 'react';
-import { Pressable, StyleSheet, View, Text, PanResponder, I18nManager } from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, View, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Naat } from '@/types/naat';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { NaatProgressBar } from '@/components/naat/NaatProgressBar';
 
 type Props = {
   naat: Naat;
@@ -31,16 +32,6 @@ function formatSize(size?: number | string | null) {
   return `${value.toFixed(1)} مگابایت`;
 }
 
-function formatTime(millis?: number) {
-  if (!millis || millis <= 0) return '0:00';
-  const totalSeconds = Math.floor(millis / 1000);
-  const m = Math.floor(totalSeconds / 60);
-  const s = totalSeconds % 60;
-  return `${m}:${String(s).padStart(2, '0')}`;
-}
-
-const SEEK_THROTTLE_MS = 70;
-
 export function NaatCard({
   naat,
   onPlay,
@@ -58,91 +49,6 @@ export function NaatCard({
     : naat.downloadProgress !== undefined
       ? `در حال دانلود ${Math.round(naat.downloadProgress * 100)}٪`
       : 'دانلود نشده';
-  const [trackWidth, setTrackWidth] = useState(0);
-  const [seekingRatio, setSeekingRatio] = useState<number | null>(null);
-  const trackRef = useRef<View>(null);
-  const trackMetricsRef = useRef({ left: 0, width: 0 });
-  const seekRatioRef = useRef<number | null>(null);
-  const lastSeekAtRef = useRef(0);
-  useEffect(() => {
-    if (!isActive) setSeekingRatio(null);
-  }, [isActive]);
-  const displayProgress = seekingRatio !== null ? seekingRatio : Math.max(0, Math.min(progress, 1));
-  const clampedProgress = Math.max(0, Math.min(displayProgress, 1));
-  const fillWidth = trackWidth ? trackWidth * clampedProgress : 0;
-  const thumbRadius = 8;
-  const thumbOffset = Math.max(0, Math.min(Math.max(trackWidth - thumbRadius * 2, 0), fillWidth - thumbRadius));
-
-  const updateTrackMetrics = useCallback(() => {
-    trackRef.current?.measureInWindow((x, _y, width) => {
-      if (!width) return;
-      trackMetricsRef.current = { left: x, width };
-      setTrackWidth(width);
-    });
-  }, []);
-
-  const computeRatio = useCallback(
-    (pageX: number) => {
-      const { left, width } = trackMetricsRef.current;
-      const effectiveWidth = width || trackWidth;
-      if (!effectiveWidth) return 0;
-      const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
-      const rawRatio = x / effectiveWidth;
-      return I18nManager.isRTL ? 1 - rawRatio : rawRatio;
-    },
-    [trackWidth],
-  );
-
-  const commitSeek = useCallback(
-    (ratio: number, force = false) => {
-      if (!onSeek || durationMillis <= 0) return;
-      const now = Date.now();
-      if (!force && now - lastSeekAtRef.current < SEEK_THROTTLE_MS) return;
-      lastSeekAtRef.current = now;
-      onSeek(ratio * durationMillis);
-    },
-    [durationMillis, onSeek],
-  );
-
-  const panResponder = useMemo(
-    () =>
-      PanResponder.create({
-        onStartShouldSetPanResponder: () => isActive && !!onSeek,
-        onMoveShouldSetPanResponder: () => isActive && !!onSeek,
-        onStartShouldSetPanResponderCapture: () => isActive && !!onSeek,
-        onMoveShouldSetPanResponderCapture: () => isActive && !!onSeek,
-        onPanResponderGrant: (evt) => {
-          if (!trackWidth || !onSeek || durationMillis <= 0) return;
-          updateTrackMetrics();
-          const ratio = computeRatio(evt.nativeEvent.pageX);
-          seekRatioRef.current = ratio;
-          setSeekingRatio(ratio);
-          commitSeek(ratio, true);
-        },
-        onPanResponderMove: (evt) => {
-          if (!trackWidth || !onSeek || durationMillis <= 0) return;
-          const ratio = computeRatio(evt.nativeEvent.pageX);
-          seekRatioRef.current = ratio;
-          setSeekingRatio(ratio);
-          commitSeek(ratio, false);
-        },
-        onPanResponderRelease: () => {
-          if (seekRatioRef.current !== null) {
-            commitSeek(seekRatioRef.current, true);
-          }
-          seekRatioRef.current = null;
-          setSeekingRatio(null);
-        },
-        onPanResponderTerminate: () => {
-          if (seekRatioRef.current !== null) {
-            commitSeek(seekRatioRef.current, true);
-          }
-          seekRatioRef.current = null;
-          setSeekingRatio(null);
-        },
-      }),
-    [durationMillis, isActive, onSeek, trackWidth, computeRatio, updateTrackMetrics, commitSeek],
-  );
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -160,45 +66,14 @@ export function NaatCard({
 
       {isActive && durationMillis > 0 && (
         <View style={styles.seekSection}>
-          <View style={{ direction: 'ltr', width: '100%' }}>
-            <View
-              ref={trackRef}
-              style={[styles.seekTrack, { backgroundColor: theme.backgroundSecondary }]}
-            onLayout={(e) => {
-              const width = e.nativeEvent.layout.width;
-              trackMetricsRef.current.width = width;
-              setTrackWidth(width);
-              requestAnimationFrame(updateTrackMetrics);
-            }}
-            {...panResponder.panHandlers}
-          >
-            <View
-              style={[
-                styles.seekFill,
-                {
-                  width: fillWidth,
-                  backgroundColor: theme.tint,
-                  left: 0,
-                },
-              ]}
-            />
-            <View
-              style={[
-                styles.seekThumb,
-                {
-                  backgroundColor: theme.tint,
-                  left: thumbOffset,
-                },
-              ]}
-            />
-          </View>
-          </View>
-          <View style={styles.timeRow}>
-            <Text style={[styles.timeText, { color: theme.textSecondary }]}>
-              {formatTime(seekingRatio !== null ? seekingRatio * durationMillis : positionMillis)}
-            </Text>
-            <Text style={[styles.timeText, { color: theme.textSecondary }]}>{formatTime(durationMillis)}</Text>
-          </View>
+          <NaatProgressBar
+            positionMillis={positionMillis}
+            durationMillis={durationMillis}
+            onSeek={onSeek}
+            fillColor={theme.tint}
+            trackColor={theme.backgroundSecondary}
+            textColor={theme.textSecondary}
+          />
         </View>
       )}
 
@@ -292,40 +167,6 @@ const styles = StyleSheet.create({
   seekSection: {
     marginTop: Spacing.sm,
     marginBottom: Spacing.sm,
-  },
-  seekTrack: {
-    height: 6,
-    borderRadius: BorderRadius.full,
-    position: 'relative',
-    direction: 'ltr',
-  },
-  seekFill: {
-    height: '100%',
-    position: 'absolute',
-    borderRadius: BorderRadius.full,
-  },
-  seekThumb: {
-    position: 'absolute',
-    top: -6,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#fff',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 1 },
-    elevation: 3,
-  },
-  timeRow: {
-    marginTop: Spacing.xs,
-    flexDirection: 'row-reverse',
-    justifyContent: 'space-between',
-  },
-  timeText: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
   },
   footerRow: {
     marginTop: Spacing.md,

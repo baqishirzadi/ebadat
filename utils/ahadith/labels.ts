@@ -23,6 +23,7 @@ const TOPIC_LABELS_FA: Record<string, string> = {
   community: 'جامعه',
   consistency: 'پایداری',
   dawah: 'دعوت',
+  dhikr: 'ذکر',
   dhul_hijjah: 'ذوالحجه',
   dua: 'دعا',
   education: 'آموزش',
@@ -38,6 +39,7 @@ const TOPIC_LABELS_FA: Record<string, string> = {
   hajj: 'حج',
   heart: 'قلب',
   helping_others: 'کمک به دیگران',
+  hijri_new_year: 'سال نو هجری',
   honesty: 'صداقت',
   ihsan: 'احسان',
   intention: 'نیت',
@@ -58,6 +60,7 @@ const TOPIC_LABELS_FA: Record<string, string> = {
   prophet: 'پیامبر',
   purification: 'پاکی',
   purity: 'طهارت',
+  qurbani: 'قربانی',
   quran: 'قرآن',
   ramadan: 'رمضان',
   reconciliation: 'آشتی',
@@ -70,6 +73,7 @@ const TOPIC_LABELS_FA: Record<string, string> = {
   sunnah: 'سنت',
   taqwa: 'تقوا',
   tawakkul: 'توکل',
+  tashreeq: 'ایام تشریق',
   worship: 'عبادت',
   wudu: 'وضو',
 };
@@ -95,6 +99,9 @@ export function getContextTitleFa(
   if (context.specialDayKeys.includes('laylat_al_qadr')) return 'حدیث شب قدر';
   if (context.specialDayKeys.includes('eid_al_fitr')) return 'حدیث عید فطر';
   if (context.specialDayKeys.includes('eid_al_adha')) return 'حدیث عید قربان';
+  if (context.specialDayKeys.includes('arafah')) return 'حدیث عرفه';
+  if (context.specialDayKeys.includes('tashreeq')) return 'حدیث ایام تشریق';
+  if (context.specialDayKeys.includes('hijri_new_year')) return 'حدیث سال نو هجری';
   if (context.specialDayKeys.includes('ramadan')) return 'حدیث رمضان';
   if (context.isFriday) return 'حدیث جمعه';
   return 'حدیث روز';
