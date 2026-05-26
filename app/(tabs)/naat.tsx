@@ -120,12 +120,13 @@ export default function NaatScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.statusFill, { height: insets.top, backgroundColor: headerGradient[0] }]} />
       {loading ? (
-        <View style={styles.loading}>
+        <View testID="naat-loading" style={styles.loading}>
           <ActivityIndicator size="large" color={theme.tint} />
           <Text style={[styles.loadingText, { color: theme.textSecondary }]}>در حال بارگذاری...</Text>
         </View>
       ) : (
         <FlatList
+          testID="naat-screen-list"
           data={filtered}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
@@ -142,7 +143,11 @@ export default function NaatScreen() {
                   style={styles.headerContent}
                 >
                   <View style={styles.headerTopRow}>
-                    <Pressable onPress={() => router.push('/naat/downloads')} style={styles.downloadsButton}>
+                    <Pressable
+                      testID="naat-downloads-button"
+                      onPress={() => router.push('/naat/downloads')}
+                      style={styles.downloadsButton}
+                    >
                       <MaterialIcons name="library-music" size={20} color={theme.surahHeaderText} />
                       <Text style={[styles.downloadsText, { color: theme.surahHeaderText }]}>دانلودها</Text>
                     </Pressable>
@@ -182,6 +187,7 @@ export default function NaatScreen() {
                 <View style={[styles.searchBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
                   <MaterialIcons name="search" size={20} color={theme.textSecondary} />
                   <TextInput
+                    testID="naat-search-input"
                     style={[styles.searchInput, { color: theme.text }]}
                     placeholder="جستجوی نعت..."
                     placeholderTextColor={theme.textSecondary}
@@ -252,6 +258,7 @@ export default function NaatScreen() {
 
       {player.current && (
         <View
+          testID="naat-player-dock"
           style={[
             styles.playerDock,
             {
@@ -273,6 +280,8 @@ export default function NaatScreen() {
 
           <View style={styles.playerMainRow}>
             <Pressable
+              testID="naat-player-queue-button"
+              accessibilityLabel="صف پخش نعت"
               onPress={() => setQueueVisible(true)}
               style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
             >
@@ -290,6 +299,8 @@ export default function NaatScreen() {
 
             <View style={styles.playerControls}>
               <Pressable
+                testID="naat-player-previous-button"
+                accessibilityLabel="نعت قبلی"
                 onPress={() => {
                   skipPrevious().catch(() => {});
                 }}
@@ -299,6 +310,8 @@ export default function NaatScreen() {
                 <MaterialIcons name="skip-previous" size={22} color={theme.textSecondary} />
               </Pressable>
               <Pressable
+                testID="naat-player-toggle-button"
+                accessibilityLabel={player.isPlaying ? 'توقف نعت' : 'پخش نعت'}
                 onPress={() => {
                   togglePlayPause().catch(() => {});
                 }}
@@ -307,6 +320,8 @@ export default function NaatScreen() {
                 <MaterialIcons name={player.isPlaying ? 'pause' : 'play-arrow'} size={28} color="#fff" />
               </Pressable>
               <Pressable
+                testID="naat-player-next-button"
+                accessibilityLabel="نعت بعدی"
                 onPress={() => {
                   skipNext().catch(() => {});
                 }}
@@ -316,6 +331,8 @@ export default function NaatScreen() {
                 <MaterialIcons name="skip-next" size={22} color={theme.textSecondary} />
               </Pressable>
               <Pressable
+                testID="naat-player-stop-button"
+                accessibilityLabel="بستن پلیر نعت"
                 onPress={() => {
                   stop().catch(() => {});
                 }}

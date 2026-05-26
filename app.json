@@ -38,13 +38,14 @@
           "ar"
         ],
         "NSLocationWhenInUseUsageDescription": "برای محاسبه اوقات نماز و جهت قبله به موقعیت شما نیاز داریم",
+        "NSLocationAlwaysUsageDescription": "برای یادآوری نماز به موقعیت شما نیاز داریم",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "برای یادآوری نماز به موقعیت شما نیاز داریم",
         "ITSAppUsesNonExemptEncryption": false
       },
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "1"
+      "buildNumber": "11"
     },
     "android": {
       "package": "com.afghandev.ebadat",
@@ -112,8 +113,15 @@
       [
         "expo-location",
         {
+          "locationAlwaysPermission": "برای یادآوری نماز به موقعیت شما نیاز داریم",
           "locationAlwaysAndWhenInUsePermission": "برای یادآوری نماز به موقعیت شما نیاز داریم",
           "locationWhenInUsePermission": "برای محاسبه اوقات نماز و جهت قبله به موقعیت شما نیاز داریم"
+        }
+      ],
+      [
+        "expo-av",
+        {
+          "microphonePermission": false
         }
       ],
       [

@@ -39,6 +39,7 @@ export function ArticleCard({ article, isBookmarked, onPress }: ArticleCardProps
         ]}
       >
         <Pressable
+          testID="ios-article-card"
           onPress={onPress}
           style={({ pressed }) => [
             styles.card,

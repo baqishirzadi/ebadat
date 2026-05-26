@@ -8,7 +8,7 @@ import * as Font from 'expo-font';
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, I18nManager, InteractionManager, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, I18nManager, InteractionManager, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -56,6 +56,20 @@ if (!globalAny.__EBADAT_UNHANDLED_REJECTION__) {
       }
     });
   }
+}
+
+if (__DEV__) {
+  LogBox.ignoreLogs([
+    '`expo-av` has been deprecated',
+    'expo-av has been deprecated',
+    'Expo AV has been deprecated',
+    'Remote notifications are not supported in the simulator',
+    'Push notifications are not supported in the iOS Simulator',
+    'obtaining a push token may not work on iOS simulators',
+    'Legacy Architecture',
+    'The app is running using the Legacy Architecture',
+    'Sending `onAnimatedValueUpdate` with no listeners registered',
+  ]);
 }
 
 // Keep splash screen visible while loading

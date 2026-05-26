@@ -1,0 +1,96 @@
+appId: com.afghandev.ebadat
+---
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 8000
+- extendedWaitUntil:
+    visible:
+      id: "ios-home-ready"
+    timeout: 20000
+- assertNotVisible: "Console Error"
+- assertNotVisible: "Console Warning"
+- takeScreenshot: ios-home
+
+- tapOn:
+    point: "8%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 10000
+- assertNotVisible: "Console Error"
+- takeScreenshot: ios-more
+
+- tapOn:
+    point: "42%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "ios-articles-ready"
+    timeout: 10000
+- tapOn:
+    id: "ios-article-card"
+- extendedWaitUntil:
+    visible:
+      id: "ios-article-detail-ready"
+    timeout: 10000
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertNotVisible: "Console Error"
+- takeScreenshot: ios-articles
+- tapOn:
+    point: "8%,9%"
+- extendedWaitUntil:
+    visible:
+      id: "ios-articles-ready"
+    timeout: 10000
+
+- tapOn:
+    point: "25%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "naat-screen-list"
+    timeout: 15000
+- tapOn:
+    id: "naat-card-play-button"
+- extendedWaitUntil:
+    visible:
+      id: "naat-player-dock"
+    timeout: 12000
+- assertNotVisible: "Console Error"
+- takeScreenshot: ios-naat-playing
+- tapOn:
+    id: "naat-player-next-button"
+    optional: true
+- tapOn:
+    id: "naat-player-previous-button"
+    optional: true
+- tapOn:
+    id: "naat-player-toggle-button"
+- tapOn:
+    id: "naat-player-toggle-button"
+- assertNotVisible: "Console Error"
+
+- tapOn:
+    point: "8%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 10000
+- tapOn:
+    id: "ios-open-adhan-settings"
+- extendedWaitUntil:
+    visible:
+      id: "ios-adhan-settings-ready"
+    timeout: 10000
+- tapOn:
+    id: "adhan-system-test-button"
+- tapOn:
+    text: "Allow"
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertNotVisible: "Console Error"
+- takeScreenshot: ios-adhan-test

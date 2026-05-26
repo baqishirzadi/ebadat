@@ -257,7 +257,7 @@ export default function AdhanSettingsScreen() {
         }}
       />
       
-      <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
+      <ScrollView testID="ios-adhan-settings-ready" style={[styles.container, { backgroundColor: theme.background }]}>
         {/* Header */}
         <View style={[styles.header, { backgroundColor: '#0F1F14' }]}>
           <MaterialIcons name="notifications-active" size={40} color="#D4AF37" />
@@ -300,6 +300,30 @@ export default function AdhanSettingsScreen() {
           </View>
         )}
 
+        {Platform.OS !== 'android' && adhanPreferences.masterEnabled && (
+          <View style={[styles.exactAlarmCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <View style={styles.exactAlarmContent}>
+              <MaterialIcons name="notifications-active" size={24} color="#D4AF37" />
+              <View style={styles.exactAlarmText}>
+                <Text style={[styles.exactAlarmLabel, { color: theme.text }]}>
+                  تست اعلان اذان
+                </Text>
+                <Text style={[styles.exactAlarmDesc, { color: theme.textSecondary }]}>
+                  برای شبیه‌ساز iOS، اعلان محلی و پخش اذان در حالت باز بودن اپ بررسی می‌شود.
+                </Text>
+              </View>
+            </View>
+            <Pressable
+              testID="adhan-system-test-button"
+              onPress={handleSystemAdhanTest}
+              style={[styles.exactAlarmButton, { backgroundColor: '#0b6e4f' }]}
+            >
+              <MaterialIcons name="notifications-active" size={20} color="#fff" />
+              <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
+            </Pressable>
+          </View>
+        )}
+
         {/* Prayer Cards */}
         {adhanPreferences.masterEnabled && (
           <View style={styles.prayerCards}>
@@ -332,6 +356,7 @@ export default function AdhanSettingsScreen() {
               <Text style={styles.exactAlarmButtonText}>باز کردن تنظیمات</Text>
             </Pressable>
             <Pressable
+              testID="adhan-system-test-button"
               onPress={handleSystemAdhanTest}
               style={[styles.exactAlarmButton, { backgroundColor: '#0b6e4f' }]}
             >

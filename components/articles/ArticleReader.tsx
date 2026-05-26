@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Linking } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
@@ -72,210 +72,270 @@ const CATEGORY_COLORS: Record<string, { primary: string; secondary: string; acce
 
 /**
  * Parse HTML and convert to React Native components
- * Simple and robust parser for h2, p, strong, em, mark tags
- * Fixed to prevent paragraph duplication
+ * Supports the limited article HTML vocabulary used by the seeded content.
  */
 function parseHTML(html: string, categoryColor: string, themeText: string): React.ReactNode[] {
   const elements: React.ReactNode[] = [];
   let key = 0;
 
-  const normalizedHtml = html.replace(/<br\s*\/?>/gi, ' — ');
+  const normalizedHtml = html
+    .replace(/\r/g, '')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<\/(?:div|section|article)>/gi, '\n')
+    .replace(/<(?:div|section|article)\b[^>]*>/gi, '');
+
+  type BlockType = 'h2' | 'h3' | 'p' | 'blockquote' | 'ul' | 'ol';
+  type InlinePart = {
+    text: string;
+    strong?: boolean;
+    em?: boolean;
+    mark?: boolean;
+    href?: string;
+  };
+
+  const decodeHtml = (value: string): string => {
+    const entities: Record<string, string> = {
+      amp: '&',
+      apos: "'",
+      hellip: '...',
+      laquo: '«',
+      ldquo: '“',
+      lrm: '',
+      nbsp: ' ',
+      ndash: '-',
+      quot: '"',
+      raquo: '»',
+      rdquo: '”',
+      rlm: '',
+      zwj: '\u200D',
+      zwnj: '\u200C',
+    };
+
+    return value
+      .replace(/&#x([0-9a-f]+);/gi, (_match, hex: string) => {
+        const codePoint = Number.parseInt(hex, 16);
+        return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : '';
+      })
+      .replace(/&#(\d+);/g, (_match, dec: string) => {
+        const codePoint = Number.parseInt(dec, 10);
+        return Number.isFinite(codePoint) ? String.fromCodePoint(codePoint) : '';
+      })
+      .replace(/&([a-z]+);/gi, (match, entity: string) => entities[entity.toLowerCase()] ?? match);
+  };
 
   const normalizeParagraph = (text: string) =>
-    text
+    decodeHtml(text)
       .replace(/[\u064B-\u065F]/g, '') // remove Arabic diacritics
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<[^>]+>/g, ' ')
       .replace(/[^\dA-Za-z\u0600-\u06FF]+/g, ' ')
       .replace(/\s+/g, ' ')
       .trim()
       .toLowerCase();
 
-  const normalizeInlineText = (raw: string): string => {
-    const hasLeadingSpace = /^\s/.test(raw);
-    const hasTrailingSpace = /\s$/.test(raw);
-    const core = raw.replace(/\s+/g, ' ').trim();
+  const htmlToPlainText = (source: string): string =>
+    decodeHtml(
+      source
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/(?:p|h2|h3|blockquote|li)>/gi, '\n\n')
+        .replace(/<[^>]+>/g, '')
+    )
+      .replace(/[ \t\f\v]+/g, ' ')
+      .replace(/ *\n+ */g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
 
-    if (!core) return '';
+  const parseInlineParts = (source: string): InlinePart[] => {
+    const parts: InlinePart[] = [];
+    let lastPos = 0;
+    let strong = false;
+    let em = false;
+    let mark = false;
+    let href: string | undefined;
 
-    return `${hasLeadingSpace ? ' ' : ''}${core}${hasTrailingSpace ? ' ' : ''}`;
+    const pushText = (raw: string) => {
+      const text = decodeHtml(raw.replace(/<(?!br\s*\/?>)[^>]+>/gi, ''))
+        .replace(/[ \t\f\v]+/g, ' ')
+        .replace(/ *\n+ */g, '\n')
+        .replace(/\n{3,}/g, '\n\n');
+      if (!text.trim()) return;
+      parts.push({ text, strong, em, mark, href });
+    };
+
+    const tagRegex = /<br\s*\/?>|<\/?(strong|b|em|i|mark|a)\b(?:\s+[^>]*)?>/gi;
+    let tagMatch;
+
+    while ((tagMatch = tagRegex.exec(source)) !== null) {
+      if (tagMatch.index > lastPos) {
+        pushText(source.substring(lastPos, tagMatch.index));
+      }
+
+      const fullTag = tagMatch[0];
+      if (/^<br/i.test(fullTag)) {
+        pushText('\n');
+        lastPos = tagMatch.index + fullTag.length;
+        continue;
+      }
+
+      const tagName = tagMatch[1]?.toLowerCase();
+      const isClosing = fullTag.startsWith('</');
+      if (tagName === 'strong' || tagName === 'b') {
+        strong = !isClosing;
+      } else if (tagName === 'em' || tagName === 'i') {
+        em = !isClosing;
+      } else if (tagName === 'mark') {
+        mark = !isClosing;
+      } else if (tagName === 'a') {
+        if (isClosing) {
+          href = undefined;
+        } else {
+          const hrefMatch = /href=(["'])(.*?)\1/i.exec(fullTag);
+          href = hrefMatch ? decodeHtml(hrefMatch[2]) : undefined;
+        }
+      }
+
+      lastPos = tagMatch.index + fullTag.length;
+    }
+
+    if (lastPos < source.length) {
+      pushText(source.substring(lastPos));
+    }
+
+    return parts;
   };
 
-  // Extract all h2 headings and p paragraphs with their positions
-  const items: { type: 'h2' | 'p'; content: string; position: number }[] = [];
-  
-  // Find all h2 headings
-  const h2Regex = /<h2>(.*?)<\/h2>/gi;
-  let h2Match;
-  while ((h2Match = h2Regex.exec(normalizedHtml)) !== null) {
+  const renderInlineParts = (parts: InlinePart[], keyPrefix: string) =>
+    parts.map((part, index) => {
+      if (!part.strong && !part.em && !part.mark && !part.href) {
+        return part.text;
+      }
+
+      return (
+        <Text
+          key={`${keyPrefix}-${index}`}
+          onPress={part.href ? () => Linking.openURL(part.href as string).catch(() => {}) : undefined}
+          style={[
+            part.strong && [styles.strongText, { color: categoryColor }],
+            part.em && [styles.emText, { color: themeText }],
+            part.mark && styles.markText,
+            part.href && [styles.linkText, { color: categoryColor }],
+          ]}
+        >
+          {part.text}
+        </Text>
+      );
+    });
+
+  const renderParagraph = (content: string, type: 'p' | 'blockquote') => {
+    const normalized = normalizeParagraph(content);
+    if (!normalized) return;
+    if (normalized.length >= 40 && seenParagraphs.has(normalized)) return;
+    seenParagraphs.add(normalized);
+
+    const plainText = htmlToPlainText(content);
+    const isPoetryParagraph = /«[^»]+»/.test(plainText);
+    const isNumberedListParagraph = /^[0-9۰-۹]{1,2}[.)]\s*/.test(plainText);
+    const isMeaningParagraph =
+      /(?:د بیت معنی|د شعر معنی|د نقل قول معنی|معنی په پښتو|د مانا|په پښتو)/.test(plainText) ||
+      /\((?:پشتو|پښتو)\s*:/.test(plainText) ||
+      /(?:نقل‌قول|نقل قول|بیت|قول)\s*:/.test(plainText);
+    const textStyle =
+      type === 'blockquote'
+        ? styles.blockquoteText
+        : isPoetryParagraph
+          ? styles.poetryLineText
+          : isNumberedListParagraph
+            ? styles.numberedListText
+            : isMeaningParagraph
+              ? styles.poetryMeaningText
+              : styles.paragraphText;
+
+    elements.push(
+      <View
+        key={key++}
+        style={[
+          type === 'blockquote' ? styles.blockquote : styles.paragraph,
+          type === 'blockquote' && { borderRightColor: categoryColor },
+        ]}
+      >
+        <Text style={[textStyle, { color: themeText }]}>
+          {renderInlineParts(parseInlineParts(content), `inline-${key}`)}
+        </Text>
+      </View>
+    );
+  };
+
+  const renderList = (content: string, ordered: boolean) => {
+    const listItems: string[] = [];
+    const liRegex = /<li\b[^>]*>([\s\S]*?)<\/li>/gi;
+    let liMatch;
+    while ((liMatch = liRegex.exec(content)) !== null) {
+      if (normalizeParagraph(liMatch[1])) {
+        listItems.push(liMatch[1]);
+      }
+    }
+
+    if (listItems.length === 0) {
+      const fallback = htmlToPlainText(content)
+        .split(/\n+/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+      listItems.push(...fallback);
+    }
+
+    if (listItems.length === 0) return;
+
+    elements.push(
+      <View key={key++} style={styles.listBlock}>
+        {listItems.map((item, index) => (
+          <View key={`${key}-item-${index}`} style={styles.listItemRow}>
+            <Text style={[styles.listBullet, { color: categoryColor }]}>
+              {ordered ? `${index + 1}.` : '•'}
+            </Text>
+            <Text style={[styles.listItemText, { color: themeText }]}>
+              {renderInlineParts(parseInlineParts(item), `list-${key}-${index}`)}
+            </Text>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
+  const items: { type: BlockType; content: string; position: number }[] = [];
+  const blockRegex = /<(h2|h3|p|blockquote|ul|ol)\b[^>]*>([\s\S]*?)<\/\1>/gi;
+  let blockMatch;
+  while ((blockMatch = blockRegex.exec(normalizedHtml)) !== null) {
     items.push({
-      type: 'h2',
-      content: h2Match[1].replace(/<[^>]*>/g, '').trim(), // Strip inner tags
-      position: h2Match.index,
+      type: blockMatch[1].toLowerCase() as BlockType,
+      content: blockMatch[2],
+      position: blockMatch.index,
     });
   }
-  
-  // Find all p paragraphs
-  const pRegex = /<p>(.*?)<\/p>/gi;
-  let pMatch;
-      while ((pMatch = pRegex.exec(normalizedHtml)) !== null) {
-    items.push({
-      type: 'p',
-      content: pMatch[1], // Keep inner HTML and boundary spaces for formatting
-      position: pMatch.index,
-    });
-  }
-  
-  // Sort by position to maintain order
+
   items.sort((a, b) => a.position - b.position);
-  
-  // Process deduplication
+
   const seenParagraphs = new Set<string>();
-  
-  // Process items in order
+
   items.forEach((item) => {
-    if (item.type === 'h2') {
-      // Render heading
+    if (item.type === 'h2' || item.type === 'h3') {
       elements.push(
-        <View key={key++} style={styles.headingContainer}>
+        <View key={key++} style={[styles.headingContainer, item.type === 'h3' && styles.subheadingContainer]}>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
-          <Text style={[styles.heading, { color: categoryColor }]}>
-            {item.content}
+          <Text style={[item.type === 'h3' ? styles.subheading : styles.heading, { color: categoryColor }]}>
+            {htmlToPlainText(item.content)}
           </Text>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
         </View>
       );
-    } else {
-      // Process paragraph
-      const normalized = normalizeParagraph(item.content);
-      if (normalized.length < 10) return; // Skip very short paragraphs
-      if (normalized.length >= 40 && seenParagraphs.has(normalized)) return; // Skip duplicates
-      seenParagraphs.add(normalized);
-      
-      // Parse inline formatting (strong, em, mark)
-      const paraElements: React.ReactNode[] = [];
-      let paraKey = 0;
-      const textParts: React.ReactNode[] = [];
-      let inStrong = false;
-      let inEm = false;
-      let inMark = false;
-
-      // Simple state machine for parsing inline tags
-      const cleanedParaHtml = item.content.replace(/<(?!\/?(strong|em|mark)\b)[^>]+>/gi, '');
-      const rawParagraphText = cleanedParaHtml
-        .replace(/<\/?(strong|em|mark)>/gi, '')
-        .replace(/\s+/g, ' ')
-        .trim();
-      const isPoetryParagraph = /«[^»]+»/.test(rawParagraphText);
-      const isNumberedListParagraph = /^[0-9۰-۹]{1,2}[.)]\s*/.test(rawParagraphText);
-      const isMeaningParagraph =
-        /(?:د بیت معنی|د شعر معنی|د نقل قول معنی|معنی په پښتو|د مانا|په پښتو)/.test(rawParagraphText) ||
-        /\((?:پشتو|پښتو)\s*:/.test(rawParagraphText) ||
-        /(?:نقل‌قول|نقل قول|بیت|قول)\s*:/.test(rawParagraphText);
-      const tagRegex = /<\/?(strong|em|mark)>/gi;
-      let lastPos = 0;
-      let tagMatch;
-      
-      while ((tagMatch = tagRegex.exec(cleanedParaHtml)) !== null) {
-        // Text before tag
-        if (tagMatch.index > lastPos) {
-          const text = cleanedParaHtml.substring(lastPos, tagMatch.index);
-          const normalizedText = normalizeInlineText(text);
-          if (normalizedText) {
-            if (inStrong) {
-              textParts.push(
-                <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
-                  {normalizedText}
-                </Text>
-              );
-            } else if (inMark) {
-              textParts.push(
-                <Text key={paraKey++} style={styles.markText}>
-                  {normalizedText}
-                </Text>
-              );
-            } else if (inEm) {
-              textParts.push(
-                <Text key={paraKey++} style={[styles.emText, { color: themeText }]}>
-                  {normalizedText}
-                </Text>
-              );
-            } else {
-              textParts.push(normalizedText);
-            }
-          }
-        }
-        
-        // Handle tag
-        const tagName = tagMatch[1].toLowerCase();
-        const isClosing = tagMatch[0].startsWith('</');
-        
-        if (tagName === 'strong') {
-          inStrong = !isClosing;
-        } else if (tagName === 'em') {
-          inEm = !isClosing;
-        } else if (tagName === 'mark') {
-          inMark = !isClosing;
-        }
-        
-        lastPos = tagMatch.index + tagMatch[0].length;
-      }
-      
-      // Remaining text
-      if (lastPos < cleanedParaHtml.length) {
-        const text = cleanedParaHtml.substring(lastPos);
-        const normalizedText = normalizeInlineText(text);
-        if (normalizedText) {
-          if (inStrong) {
-            textParts.push(
-              <Text key={paraKey++} style={[styles.strongText, { color: categoryColor }]}>
-                {normalizedText}
-              </Text>
-            );
-          } else if (inMark) {
-            textParts.push(
-              <Text key={paraKey++} style={styles.markText}>
-                {normalizedText}
-              </Text>
-            );
-          } else if (inEm) {
-            textParts.push(
-              <Text key={paraKey++} style={[styles.emText, { color: themeText }]}>
-                {normalizedText}
-              </Text>
-            );
-          } else {
-            textParts.push(normalizedText);
-          }
-        }
-      }
-      
-      if (textParts.length > 0) {
-        paraElements.push(
-          <Text
-            key={paraKey++}
-            style={[
-              isPoetryParagraph
-                ? styles.poetryLineText
-                : isNumberedListParagraph
-                  ? styles.numberedListText
-                : isMeaningParagraph
-                  ? styles.poetryMeaningText
-                  : styles.paragraphText,
-              { color: themeText },
-            ]}
-          >
-            {textParts}
-          </Text>
-        );
-      }
-      
-      if (paraElements.length > 0) {
-        elements.push(
-          <View key={key++} style={styles.paragraph}>
-            {paraElements}
-          </View>
-        );
-      }
+      return;
     }
+
+    if (item.type === 'ul' || item.type === 'ol') {
+      renderList(item.content, item.type === 'ol');
+      return;
+    }
+
+    renderParagraph(item.content, item.type);
   });
 
   if (elements.length > 0) {
@@ -283,7 +343,7 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
   }
 
   // Fallback: render as plain text if no structured content found
-  const fallbackPlain = normalizedHtml.replace(/<[^>]*>/g, '');
+  const fallbackPlain = htmlToPlainText(normalizedHtml);
   const fallbackParagraphs = fallbackPlain
     .split(/\n\s*\n/)
     .map((p) => p.trim())
@@ -592,11 +652,11 @@ const styles = StyleSheet.create({
     fontSize: 19,
     lineHeight: 35,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
+    textAlign: 'right',
     marginBottom: Spacing.xs,
-    letterSpacing: 0.3,
+    letterSpacing: 0,
     writingDirection: 'rtl',
-    includeFontPadding: false,
+    includeFontPadding: true,
   },
   poetryLineText: {
     fontSize: 19,
@@ -604,38 +664,38 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
     marginBottom: Spacing.xs,
-    letterSpacing: 0.25,
+    letterSpacing: 0,
     writingDirection: 'rtl',
-    includeFontPadding: false,
+    includeFontPadding: true,
   },
   poetryMeaningText: {
     fontSize: 17,
     lineHeight: 31,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    letterSpacing: 0.2,
+    textAlign: 'right',
+    letterSpacing: 0,
     writingDirection: 'rtl',
-    includeFontPadding: false,
+    includeFontPadding: true,
   },
   numberedListText: {
     fontSize: 18,
     lineHeight: 31,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
+    textAlign: 'right',
     marginBottom: 6,
-    letterSpacing: 0.2,
+    letterSpacing: 0,
     writingDirection: 'rtl',
-    includeFontPadding: false,
+    includeFontPadding: true,
   },
   bodyText: {
     fontSize: 19,
     lineHeight: 35,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    letterSpacing: 0.3,
+    textAlign: 'right',
+    letterSpacing: 0,
     writingDirection: 'rtl',
     width: '100%',
-    includeFontPadding: false,
+    includeFontPadding: true,
   },
   headingContainer: {
     flexDirection: 'row-reverse',
@@ -659,23 +719,83 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
     textAlign: 'center',
     lineHeight: 34,
-    letterSpacing: 0.25,
+    letterSpacing: 0,
     writingDirection: 'rtl',
-    includeFontPadding: false,
+    includeFontPadding: true,
+  },
+  subheadingContainer: {
+    marginVertical: Spacing.sm,
+  },
+  subheading: {
+    flex: 1,
+    fontSize: 20,
+    fontWeight: '700',
+    fontFamily: 'Vazirmatn',
+    marginHorizontal: Spacing.md,
+    textAlign: 'right',
+    lineHeight: 32,
+    letterSpacing: 0,
+    writingDirection: 'rtl',
+    includeFontPadding: true,
+  },
+  blockquote: {
+    marginBottom: Spacing.md,
+    paddingVertical: Spacing.sm,
+    paddingRight: Spacing.md,
+    borderRightWidth: 3,
+    width: '100%',
+  },
+  blockquoteText: {
+    fontSize: 18,
+    lineHeight: 33,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'right',
+    letterSpacing: 0,
+    writingDirection: 'rtl',
+    includeFontPadding: true,
+  },
+  listBlock: {
+    width: '100%',
+    marginBottom: Spacing.md,
+    gap: Spacing.sm,
+  },
+  listItemRow: {
+    flexDirection: 'row-reverse',
+    alignItems: 'flex-start',
+    gap: Spacing.sm,
+  },
+  listBullet: {
+    minWidth: 28,
+    fontSize: 18,
+    lineHeight: 32,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '800',
+    textAlign: 'right',
+    writingDirection: 'rtl',
+  },
+  listItemText: {
+    flex: 1,
+    fontSize: 18,
+    lineHeight: 32,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'right',
+    letterSpacing: 0,
+    writingDirection: 'rtl',
+    includeFontPadding: true,
   },
   strongText: {
     fontWeight: '700',
     fontSize: 19,
-    letterSpacing: 0.3,
+    letterSpacing: 0,
     writingDirection: 'rtl',
-    includeFontPadding: false,
+    includeFontPadding: true,
   },
   emText: {
     fontStyle: 'italic',
     fontSize: 19,
-    letterSpacing: 0.3,
+    letterSpacing: 0,
     writingDirection: 'rtl',
-    includeFontPadding: false,
+    includeFontPadding: true,
   },
   markText: {
     backgroundColor: '#F3E2A0',
@@ -684,9 +804,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     paddingVertical: 1,
     fontSize: 19,
-    letterSpacing: 0.2,
+    letterSpacing: 0,
     writingDirection: 'rtl',
-    includeFontPadding: false,
+    includeFontPadding: true,
+  },
+  linkText: {
+    fontSize: 19,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+    letterSpacing: 0,
+    writingDirection: 'rtl',
+    includeFontPadding: true,
   },
   authorSection: {
     margin: Spacing.lg,

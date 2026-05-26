@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { updateUserMetadata } from '@/utils/duaService';
@@ -96,6 +97,12 @@ async function registerTokenIfChanged(projectId: string): Promise<void> {
 async function runPushRegistration(): Promise<void> {
   if (Platform.OS === 'web') return;
   if (isExpoGo()) return;
+  if (!Device.isDevice) {
+    if (__DEV__) {
+      console.log('[PushRegistry] Simulator detected; skipping Expo push token registration.');
+    }
+    return;
+  }
 
   const projectId = getProjectId();
   if (!projectId) {

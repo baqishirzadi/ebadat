@@ -51,7 +51,10 @@ export function NaatCard({
       : 'دانلود نشده';
 
   return (
-    <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+    <View
+      testID="naat-card"
+      style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+    >
       <View style={styles.accentRow}>
         <View style={[styles.accentLine, { backgroundColor: `${theme.bookmark}80` }]} />
         <MaterialIcons name="auto-awesome" size={16} color={theme.bookmark} />
@@ -93,6 +96,8 @@ export function NaatCard({
 
         <View style={styles.actions}>
           <Pressable
+            testID="naat-card-download-button"
+            accessibilityLabel="دانلود نعت"
             onPress={onDownload}
             style={({ pressed }) => [
               styles.iconButton,
@@ -107,6 +112,8 @@ export function NaatCard({
             />
           </Pressable>
           <Pressable
+            testID="naat-card-play-button"
+            accessibilityLabel={isActive && isPlaying ? 'توقف نعت' : 'پخش نعت'}
             onPress={onPlay}
             style={({ pressed }) => [
               styles.playButton,

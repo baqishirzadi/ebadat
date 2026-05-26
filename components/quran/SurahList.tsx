@@ -281,7 +281,10 @@ export function SurahList() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: (NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light)[0] }]}>
+    <View
+      testID="ios-home-ready"
+      style={[styles.container, { backgroundColor: (NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light)[0] }]}
+    >
       <StatusBar style="light" />
       {browseMode === 'surah' ? (
         <Animated.FlatList

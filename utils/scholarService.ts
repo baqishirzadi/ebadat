@@ -100,13 +100,17 @@ export async function getAllScholars(): Promise<Scholar[]> {
         .order('full_name', { ascending: true });
 
       if (error) {
-        console.warn('[Scholars] Supabase error, falling back to local data:', error.message);
+        if (__DEV__) {
+          console.log('[Scholars] Supabase error, falling back to local data:', error.message);
+        }
         // Fall through to local data
       } else if (data && data.length > 0) {
         return data.map(rowToScholar);
       }
     } catch (error) {
-      console.warn('[Scholars] Supabase failed, falling back to local data:', error);
+      if (__DEV__) {
+        console.log('[Scholars] Supabase failed, falling back to local data:', error);
+      }
       // Fall through to local data
     }
   }

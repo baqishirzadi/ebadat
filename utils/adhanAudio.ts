@@ -5,6 +5,8 @@
  */
 
 import { Audio, AVPlaybackStatus } from 'expo-av';
+import { Asset } from 'expo-asset';
+import * as FileSystem from 'expo-file-system/legacy';
 import { AdhanVoice, PrayerName } from './adhanManager';
 
 const UNIFIED_ADHAN_FILE = require('../assets/audio/adhan/barakatullah_salim_18sec.mp3');
@@ -12,6 +14,72 @@ const UNIFIED_ADHAN_FILE = require('../assets/audio/adhan/barakatullah_salim_18s
 // Singleton audio manager instance
 let adhanSound: Audio.Sound | null = null;
 let isPlaying = false;
+let cachedAdhanSource: { uri: string } | number | null = null;
+let adhanSourcePromise: Promise<{ uri: string } | number> | null = null;
+
+function describeError(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error ?? 'unknown-error');
+}
+
+async function fileExists(uri: string): Promise<boolean> {
+  if (!uri || !uri.startsWith('file://')) {
+    return false;
+  }
+
+  try {
+    const info = await FileSystem.getInfoAsync(uri);
+    return info.exists;
+  } catch {
+    return false;
+  }
+}
+
+async function resolveAdhanAudioSource(): Promise<{ uri: string } | number> {
+  if (cachedAdhanSource) {
+    return cachedAdhanSource;
+  }
+
+  if (adhanSourcePromise) {
+    return adhanSourcePromise;
+  }
+
+  adhanSourcePromise = (async () => {
+    const asset = Asset.fromModule(UNIFIED_ADHAN_FILE);
+
+    if (asset.localUri && (await fileExists(asset.localUri))) {
+      const source = { uri: asset.localUri };
+      cachedAdhanSource = source;
+      return source;
+    }
+
+    try {
+      await asset.downloadAsync();
+      const localUri = asset.localUri;
+      if (localUri && (await fileExists(localUri))) {
+        const source = { uri: localUri };
+        cachedAdhanSource = source;
+        return source;
+      }
+    } catch (error) {
+      if (__DEV__) {
+        console.log('[AdhanAudio] Bundled asset cache unavailable; using module source.', describeError(error));
+      }
+    }
+
+    // In a release build this module id resolves to the bundled asset. In a dev
+    // client it still depends on Metro, so callers handle failures softly.
+    const fallbackSource = UNIFIED_ADHAN_FILE as number;
+    cachedAdhanSource = fallbackSource;
+    return fallbackSource;
+  })().finally(() => {
+    adhanSourcePromise = null;
+  });
+
+  return adhanSourcePromise;
+}
 
 /**
  * Configure audio session for Adhan playback
@@ -26,10 +94,11 @@ export async function configureAdhanAudio(): Promise<void> {
       shouldDuckAndroid: true,
       playThroughEarpieceAndroid: false,
     });
-    console.log('✅ Adhan audio configured for background playback');
   } catch (error) {
-    console.error('❌ Failed to configure Adhan audio:', error);
-    throw error; // Re-throw to allow caller to handle
+    if (__DEV__) {
+      console.log('[AdhanAudio] Failed to configure audio mode:', describeError(error));
+    }
+    throw error;
   }
 }
 
@@ -45,16 +114,13 @@ export async function playAdhan(
   onComplete?: () => void
 ): Promise<void> {
   try {
-    console.log(`🎵 Starting Adhan playback: voice=${voice}, prayer=${prayer || 'none'}`);
-    
     // Stop any currently playing Adhan
     await stopAdhan();
     
     // Configure audio mode (critical for background playback)
     await configureAdhanAudio();
     
-    const audioSource = UNIFIED_ADHAN_FILE;
-    console.log(`📿 Playing unified Adhan sound for prayer: ${prayer || 'unknown'}`);
+    const audioSource = await resolveAdhanAudioSource();
     
     // Create and play sound
     const { sound } = await Audio.Sound.createAsync(
@@ -67,7 +133,9 @@ export async function playAdhan(
       (status: AVPlaybackStatus) => {
         if (!status.isLoaded) {
           if (status.error) {
-            console.error('❌ Adhan playback error:', status.error);
+            if (__DEV__) {
+              console.log('[AdhanAudio] Playback status error:', status.error);
+            }
             isPlaying = false;
             onComplete?.();
           }
@@ -75,7 +143,6 @@ export async function playAdhan(
         }
 
         if (status.didJustFinish) {
-          console.log('✅ Adhan playback completed');
           isPlaying = false;
           onComplete?.();
         }
@@ -84,13 +151,17 @@ export async function playAdhan(
     
     adhanSound = sound;
     isPlaying = true;
-    console.log('✅ Adhan playback started successfully');
     
   } catch (error) {
-    console.error('❌ Failed to play Adhan:', error);
+    if (__DEV__) {
+      console.log('[AdhanAudio] Playback unavailable:', {
+        voice,
+        prayer,
+        reason: describeError(error),
+      });
+    }
     isPlaying = false;
     onComplete?.();
-    throw error; // Re-throw to allow caller to handle
   }
 }
 
@@ -106,7 +177,9 @@ export async function stopAdhan(): Promise<void> {
     }
     isPlaying = false;
   } catch (error) {
-    console.error('Failed to stop Adhan:', error);
+    if (__DEV__) {
+      console.log('[AdhanAudio] Failed to stop playback:', describeError(error));
+    }
   }
 }
 
@@ -158,9 +231,11 @@ export function getAdhanAudioPath(voice: AdhanVoice): string | null {
  * Call this on app start
  */
 export async function preloadAdhanAudio(): Promise<void> {
-  // TODO: Implement preloading when audio files are available
-  // This helps reduce latency when Adhan needs to play
-  console.log('Adhan audio preload: Files not yet available');
+  await resolveAdhanAudioSource().catch((error) => {
+    if (__DEV__) {
+      console.log('[AdhanAudio] Preload unavailable:', describeError(error));
+    }
+  });
 }
 
 /**

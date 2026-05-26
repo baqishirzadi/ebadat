@@ -224,10 +224,19 @@ export default function MoreScreen() {
             <MaterialIcons name="place" size={16} color={theme.tint} />
             <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{locationLabel}</CenteredText>
           </View>
-          <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+          <Pressable
+            testID="ios-open-adhan-settings"
+            accessibilityRole="button"
+            onPress={() => router.push('/adhan-settings')}
+            style={({ pressed }) => [
+              styles.heroChip,
+              { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder },
+              pressed && styles.pressedChip,
+            ]}
+          >
             <MaterialIcons name="notifications-active" size={16} color={theme.bookmark} />
             <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{scheduleModeLabel}</CenteredText>
-          </View>
+          </Pressable>
         </View>
 
         <CenteredText style={[styles.heroLead, { color: theme.textSecondary }]}>امروز در یک نگاه</CenteredText>
@@ -260,6 +269,7 @@ export default function MoreScreen() {
           {quickActions.map((item) => (
             <Pressable
               key={item.label}
+              testID={item.route === '/adhan-settings' ? 'ios-open-adhan-settings' : undefined}
               onPress={() => router.push(item.route as any)}
               style={({ pressed }) => [
                 styles.quickCard,
@@ -372,6 +382,7 @@ export default function MoreScreen() {
             {secondaryActions.map((action) => (
               <Pressable
                 key={action.label}
+                testID={action.route === '/adhan-settings' ? 'ios-open-adhan-settings-secondary' : undefined}
                 onPress={() => router.push(action.route as any)}
                 style={({ pressed }) => [
                   styles.secondaryRow,
@@ -444,6 +455,7 @@ export default function MoreScreen() {
 
   return (
     <SectionList
+      testID="ios-more-ready"
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
@@ -531,6 +543,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 999,
     borderWidth: 1,
+  },
+  pressedChip: {
+    opacity: 0.82,
   },
   heroChipText: {
     fontSize: Typography.ui.caption,

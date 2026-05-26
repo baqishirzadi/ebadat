@@ -564,7 +564,7 @@ export default function ArticlesFeed() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View testID="ios-articles-ready" style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Articles List */}
       {state.isLoading && state.articles.length === 0 ? (
         <View style={styles.loadingContainer}>
@@ -628,6 +628,7 @@ export default function ArticlesFeed() {
         </View>
       ) : (
         <Animated.FlatList
+          testID="ios-articles-list"
           data={displayArticles}
           keyExtractor={(item) => item.id}
           renderItem={renderArticle}

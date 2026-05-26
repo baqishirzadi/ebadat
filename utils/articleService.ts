@@ -192,7 +192,9 @@ export async function getArticleById(articleId: string): Promise<Article | null>
         return article;
       }
     } catch (error) {
-      console.warn('Error getting article from Supabase, falling back to local/cache:', error);
+      if (__DEV__) {
+        console.log('[Articles] Supabase article lookup fallback:', error);
+      }
     }
   }
 
@@ -285,13 +287,17 @@ export async function getPublishedArticles(
       const { data, error } = await query;
 
       if (error) {
-        console.warn('[Articles] Supabase error, falling back to local data:', error.message);
+        if (__DEV__) {
+          console.log('[Articles] Supabase error, falling back to local data:', error.message);
+        }
         // Fall through to local data
       } else if (data && data.length > 0) {
         return data.map(rowToArticle);
       }
     } catch (error) {
-      console.warn('[Articles] Supabase failed, falling back to local data:', error);
+      if (__DEV__) {
+        console.log('[Articles] Supabase failed, falling back to local data:', error);
+      }
       // Fall through to local data
     }
   }

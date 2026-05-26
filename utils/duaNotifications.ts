@@ -4,6 +4,7 @@
  */
 
 import { Platform } from 'react-native';
+import * as Device from 'expo-device';
 import * as duaStorage from './duaStorage';
 import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 import { updateUserMetadata } from './duaService';
@@ -40,7 +41,7 @@ export async function sendNotificationToUser(userId: string, requestId: string):
   }
 
   if (!isSupabaseConfigured()) {
-    console.warn('Supabase not configured, skipping notification');
+    console.log('Supabase not configured, skipping notification');
     return;
   }
 
@@ -55,7 +56,7 @@ export async function sendNotificationToUser(userId: string, requestId: string):
       .single();
     
     if (userError || !userData) {
-      console.warn('User not found for notification');
+      console.log('User not found for notification');
       return;
     }
 
@@ -75,7 +76,7 @@ export async function sendNotificationToUser(userId: string, requestId: string):
       .single();
     
     if (requestError || !requestData) {
-      console.warn('Request not found');
+      console.log('Request not found');
       return;
     }
 
@@ -131,6 +132,11 @@ export async function registerDeviceToken(userId: string): Promise<void> {
     return;
   }
 
+  if (!Device.isDevice) {
+    console.log('Skipping notification registration: simulator detected (remote push requires a real device)');
+    return;
+  }
+
   // Load Notifications module if not already loaded
   if (!Notifications) {
     try {
@@ -149,7 +155,7 @@ export async function registerDeviceToken(userId: string): Promise<void> {
     // Request notification permissions
     const { status } = await Notifications.requestPermissionsAsync();
     if (status !== 'granted') {
-      console.warn('Notification permission not granted');
+      console.log('Notification permission not granted');
       return;
     }
 
@@ -170,13 +176,13 @@ export async function registerDeviceToken(userId: string): Promise<void> {
         const match = supabaseUrl.match(/https:\/\/([^.]+)\.supabase\.co/);
         if (match) {
           // Use Supabase project ref as fallback (though Expo Push needs EAS projectId)
-          console.warn('Using Supabase project ref, but Expo Push requires EAS projectId');
+          console.log('Using Supabase project ref, but Expo Push requires EAS projectId');
         }
       }
     }
 
     if (!projectId || projectId === 'your-project-id') {
-      console.warn('Skipping notification registration: Invalid or missing projectId');
+      console.log('Skipping notification registration: Invalid or missing projectId');
       return;
     }
 

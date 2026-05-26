@@ -3,7 +3,7 @@
  * Manages prayer times, location, Qibla direction, and Adhan notifications
  */
 
-import { playAdhan } from '@/utils/adhanAudio';
+import { playAdhan, preloadAdhanAudio } from '@/utils/adhanAudio';
 import {
   AdhanPreferences,
   DEFAULT_ADHAN_PREFERENCES,
@@ -540,6 +540,14 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     };
   }, [isInteractiveReady, state.prayerTimes]);
 
+  useEffect(() => {
+    if (!isInteractiveReady) {
+      return;
+    }
+
+    void preloadAdhanAudio();
+  }, [isInteractiveReady]);
+
   // Listen for notification received events (foreground) and play Adhan audio
   useEffect(() => {
     let subscription: any = null;
@@ -564,15 +572,16 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
           }
         }
 
-        // Only play Adhan audio for adhan notifications with sound enabled
-        if (type === 'adhan' && playSound && prayer) {
+        // Play Adhan audio for real prayer notifications and the foreground system test.
+        if ((type === 'adhan' || type === 'adhan_test') && playSound) {
           try {
-            const prayerName = prayer as PrayerName;
+            const prayerName = (prayer || 'fajr') as PrayerName;
             const selectedVoice = (voice as any) || 'barakatullah';
-            console.log(`Playing Adhan for ${prayerName} with voice: ${selectedVoice} (foreground)`);
             await playAdhan(selectedVoice, prayerName);
           } catch (error) {
-            console.error('Failed to play Adhan from notification (foreground):', error);
+            if (__DEV__) {
+              console.log('[PrayerNotifications] Foreground Adhan playback skipped:', error);
+            }
           }
         }
       });
@@ -601,14 +610,15 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
         console.log('Notification response received (background/killed):', { prayer, playSound, voice, type });
 
         // Play Adhan when user taps notification (even if app was killed)
-        if (type === 'adhan' && playSound && prayer) {
+        if ((type === 'adhan' || type === 'adhan_test') && playSound) {
           try {
-            const prayerName = prayer as PrayerName;
+            const prayerName = (prayer || 'fajr') as PrayerName;
             const selectedVoice = (voice as any) || 'barakatullah';
-            console.log(`Playing Adhan for ${prayerName} with voice: ${selectedVoice} (from notification tap)`);
             await playAdhan(selectedVoice, prayerName);
           } catch (error) {
-            console.error('Failed to play Adhan from notification response:', error);
+            if (__DEV__) {
+              console.log('[PrayerNotifications] Tapped Adhan playback skipped:', error);
+            }
           }
         }
       });
@@ -2156,6 +2166,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           sound: ADHAN_SOUND_FILENAME,
           data: {
             type: 'adhan_test',
+            prayer: 'fajr',
             playSound: true,
             voice: 'barakatullah',
           },
@@ -2173,7 +2184,9 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
 
       return true;
     } catch (error) {
-      console.error('Failed to schedule system adhan test:', error);
+      if (__DEV__) {
+        console.log('[PrayerNotifications] Failed to schedule system Adhan test:', error);
+      }
       return false;
     }
   }, [checkNotificationPermission]);

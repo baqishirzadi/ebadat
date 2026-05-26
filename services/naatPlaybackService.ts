@@ -10,28 +10,28 @@ export async function NaatPlaybackService() {
     try {
       await TrackPlayer.play();
     } catch (err) {
-      if (__DEV__) console.warn('RemotePlay:', err);
+      if (__DEV__) console.log('RemotePlay:', err);
     }
   });
   TrackPlayer.addEventListener(Event.RemotePause, async () => {
     try {
       await TrackPlayer.pause();
     } catch (err) {
-      if (__DEV__) console.warn('RemotePause:', err);
+      if (__DEV__) console.log('RemotePause:', err);
     }
   });
   TrackPlayer.addEventListener(Event.RemoteStop, async () => {
     try {
       await TrackPlayer.reset();
     } catch (err) {
-      if (__DEV__) console.warn('RemoteStop:', err);
+      if (__DEV__) console.log('RemoteStop:', err);
     }
   });
   TrackPlayer.addEventListener(Event.RemoteSeek, async (e) => {
     try {
       await TrackPlayer.seekTo(e.position);
     } catch (err) {
-      if (__DEV__) console.warn('RemoteSeek:', err);
+      if (__DEV__) console.log('RemoteSeek:', err);
     }
   });
   TrackPlayer.addEventListener(Event.RemoteJumpForward, async (e) => {
@@ -42,7 +42,7 @@ export async function NaatPlaybackService() {
       const nextPosition = Math.min(progress.position + interval, duration);
       await TrackPlayer.seekTo(nextPosition);
     } catch (err) {
-      if (__DEV__) console.warn('RemoteJumpForward:', err);
+      if (__DEV__) console.log('RemoteJumpForward:', err);
     }
   });
   TrackPlayer.addEventListener(Event.RemoteJumpBackward, async (e) => {
@@ -52,14 +52,14 @@ export async function NaatPlaybackService() {
       const nextPosition = Math.max(0, progress.position - interval);
       await TrackPlayer.seekTo(nextPosition);
     } catch (err) {
-      if (__DEV__) console.warn('RemoteJumpBackward:', err);
+      if (__DEV__) console.log('RemoteJumpBackward:', err);
     }
   });
   TrackPlayer.addEventListener(Event.RemoteNext, async () => {
     try {
       await TrackPlayer.skipToNext();
     } catch (err) {
-      if (__DEV__) console.warn('RemoteNext:', err);
+      if (__DEV__) console.log('RemoteNext:', err);
     }
   });
   TrackPlayer.addEventListener(Event.RemotePrevious, async () => {
@@ -76,7 +76,7 @@ export async function NaatPlaybackService() {
       } catch {
         // ignore fallback failure
       }
-      if (__DEV__) console.warn('RemotePrevious:', err);
+      if (__DEV__) console.log('RemotePrevious:', err);
     }
   });
 }

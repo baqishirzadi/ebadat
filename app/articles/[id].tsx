@@ -102,7 +102,7 @@ export default function ArticleReadingScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View testID="ios-article-detail-ready" style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen
         options={{
           headerShown: false,

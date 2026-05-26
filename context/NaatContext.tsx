@@ -2,7 +2,6 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { Alert, AppState, InteractionManager } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import * as FileSystem from 'expo-file-system/legacy';
-import { Audio } from 'expo-av';
 import TrackPlayer, { Event, State, type AddTrack } from 'react-native-track-player';
 import { useStartupPhase } from '@/context/StartupPhaseContext';
 import { Naat, NaatDraft } from '@/types/naat';
@@ -76,6 +75,8 @@ export function useNaat() {
 
 const TRACK_POLL_INTERVAL_MS = 250;
 const SUPABASE_FETCH_TIMEOUT_MS = 8000;
+const PLAYBACK_START_TIMEOUT_MS = 12000;
+const PLAYBACK_START_POLL_MS = 300;
 const EMPTY_SESSION: NaatSessionState = {
   queueIds: [],
   currentIndex: -1,
@@ -93,6 +94,85 @@ function normalizeAudioUrl(url: string): string {
   return trimmed.includes(' ') ? encodeURI(trimmed) : trimmed;
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error ?? 'unknown-error');
+}
+
+function isRemoteAudioUrl(uri: string): boolean {
+  return /^https?:\/\//i.test(uri);
+}
+
+function getAudioContentType(uri: string): string {
+  const cleanUri = uri.split('?')[0].toLowerCase();
+  if (cleanUri.endsWith('.m4a') || cleanUri.endsWith('.mp4')) {
+    return 'audio/mp4';
+  }
+  return 'audio/mpeg';
+}
+
+async function loadAndStartTrackQueue(
+  queueTracks: AddTrack[],
+  selectedIndex: number,
+  initialPosition: number,
+  selectedId: string,
+): Promise<void> {
+  await TrackPlayer.reset();
+  await TrackPlayer.add(queueTracks);
+  await TrackPlayer.skip(selectedIndex, initialPosition > 0 ? initialPosition : undefined);
+  await TrackPlayer.play();
+
+  await waitForPlaybackStart(selectedId);
+}
+
+async function waitForPlaybackStart(selectedId: string): Promise<void> {
+  const startedAt = Date.now();
+  let lastState: State | null = null;
+  let lastPosition = 0;
+
+  while (Date.now() - startedAt < PLAYBACK_START_TIMEOUT_MS) {
+    const [activeTrack, playbackState, progress] = await Promise.all([
+      TrackPlayer.getActiveTrack(),
+      TrackPlayer.getPlaybackState(),
+      TrackPlayer.getProgress(),
+    ]);
+    const activeTrackId = getTrackId(activeTrack);
+    const state = playbackState.state;
+    lastState = state;
+
+    if (activeTrackId !== selectedId) {
+      throw new Error(`naat-active-track-mismatch:${activeTrackId ?? 'none'}`);
+    }
+
+    if (state === State.Error) {
+      const reason = 'error' in playbackState ? playbackState.error?.message : 'unknown-playback-error';
+      throw new Error(`naat-playback-error:${reason || 'unknown-playback-error'}`);
+    }
+
+    if (state === State.Playing && progress.position > lastPosition + 0.15) {
+      return;
+    }
+
+    if (state === State.Playing) {
+      lastPosition = Math.max(lastPosition, progress.position);
+    }
+
+    if (state === State.Ready || state === State.Paused) {
+      await TrackPlayer.play();
+    }
+
+    await sleep(PLAYBACK_START_POLL_MS);
+  }
+
+  throw new Error(`naat-playback-timeout:${lastState ?? 'unknown'}`);
+}
+
 function getTrackId(track: unknown): string | null {
   if (!track) return null;
   if (typeof track === 'string' || typeof track === 'number') {
@@ -105,6 +185,11 @@ function getTrackId(track: unknown): string | null {
     }
   }
   return null;
+}
+
+function shouldRetryPlaybackStart(error: unknown): boolean {
+  const message = getErrorMessage(error);
+  return /not initialized|setupPlayer first|active-track-mismatch/i.test(message);
 }
 
 function uniqueNaats(items: Naat[]): Naat[] {
@@ -151,6 +236,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const naatsRef = useRef<Naat[]>([]);
   const sessionRef = useRef<NaatSessionState>(EMPTY_SESSION);
   const lastSavedPosition = useRef<number>(0);
+  const lastPlaybackErrorAt = useRef<number>(0);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const refresh = useCallback(async () => {
@@ -321,7 +407,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       await syncPlayerSnapshot();
     } catch (err) {
       setPlayerReady(false);
-      if (__DEV__) console.warn('TrackPlayer setup:', err);
+      if (__DEV__) console.log('TrackPlayer setup:', err);
       throw err;
     }
   }, [syncPlayerSnapshot]);
@@ -353,7 +439,12 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       throw new Error('no-audio');
     }
 
-    return { uri: normalizeAudioUrl(naat.audio_url), isOffline };
+    const uri = normalizeAudioUrl(naat.audio_url);
+    if (!isRemoteAudioUrl(uri)) {
+      throw new Error('no-audio');
+    }
+
+    return { uri, isOffline };
   }, [getLocalUriIfExists]);
 
   const buildQueueTracks = useCallback(async (
@@ -394,6 +485,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         title: item.title_fa || item.title_ps || 'نعت',
         artist: item.reciter_name || undefined,
         duration: item.duration_seconds && item.duration_seconds > 0 ? item.duration_seconds : undefined,
+        contentType: getAudioContentType(uri),
         mediaType: 'naat',
       });
 
@@ -409,6 +501,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         duration: selectedNaat.duration_seconds && selectedNaat.duration_seconds > 0
           ? selectedNaat.duration_seconds
           : undefined,
+        contentType: getAudioContentType(selectedUri),
         mediaType: 'naat',
       });
     }
@@ -452,9 +545,26 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       }));
     });
 
+    const playbackErrorSub = TrackPlayer.addEventListener(Event.PlaybackError, (event) => {
+      if (__DEV__) {
+        console.log('[NaatPlayer] Native playback error:', event);
+      }
+      setPlayer((prev) => ({
+        ...prev,
+        isPlaying: false,
+      }));
+
+      const now = Date.now();
+      if (now - lastPlaybackErrorAt.current > 5000) {
+        lastPlaybackErrorAt.current = now;
+        Alert.alert('خطا', 'پخش نعت قطع شد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.');
+      }
+    });
+
     return () => {
       activeTrackSub.remove();
       playbackStateSub.remove();
+      playbackErrorSub.remove();
     };
   }, [playerReady, findNaatByTrack, syncPlayerSnapshot]);
 
@@ -576,10 +686,18 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       const initialPosition = Math.max(0, (selectedNaat.lastPositionMillis ?? 0) / 1000);
       const queueIds = queueTracks.map((track) => String(track.id));
 
-      await TrackPlayer.reset();
-      await TrackPlayer.add(queueTracks);
-      await TrackPlayer.skip(selectedIndex, initialPosition > 0 ? initialPosition : undefined);
-      await TrackPlayer.play();
+      try {
+        await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
+      } catch (firstError) {
+        if (!shouldRetryPlaybackStart(firstError)) {
+          throw firstError;
+        }
+        if (__DEV__) {
+          console.log('[NaatPlayer] First playback start failed, retrying once:', getErrorMessage(firstError));
+        }
+        await ensurePlayerReady('play-retry');
+        await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
+      }
 
       currentNaatRef.current = selectedNaat;
       lastSavedPosition.current = selectedNaat.lastPositionMillis ?? 0;
@@ -601,9 +719,9 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       if (__DEV__) {
-        console.warn('TrackPlayer play error:', error);
+        console.log('[NaatPlayer] Playback unavailable:', getErrorMessage(error));
       }
-      Alert.alert('خطا', 'پخش نعت ممکن نیست');
+      Alert.alert('خطا', 'پخش نعت شروع نشد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.');
     }
   }, [ensurePlayerReady, resolveAudioSource, buildQueueTracks]);
 
@@ -618,7 +736,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       await TrackPlayer.pause();
       setPlayer((prev) => ({ ...prev, isPlaying: false }));
     } catch (err) {
-      if (__DEV__) console.warn('TrackPlayer pause:', err);
+      if (__DEV__) console.log('TrackPlayer pause:', err);
       setPlayer((prev) => ({ ...prev, isPlaying: false }));
     }
   }, [ensurePlayerReady]);
@@ -654,7 +772,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       await TrackPlayer.play();
       await syncPlayerSnapshot();
     } catch (err) {
-      if (__DEV__) console.warn('TrackPlayer skip next:', err);
+      if (__DEV__) console.log('TrackPlayer skip next:', err);
     }
   }, [ensurePlayerReady, syncPlayerSnapshot]);
 
@@ -675,7 +793,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       } catch {
         // ignore fallback failure
       }
-      if (__DEV__) console.warn('TrackPlayer skip previous:', err);
+      if (__DEV__) console.log('TrackPlayer skip previous:', err);
     }
   }, [ensurePlayerReady, syncPlayerSnapshot]);
 
@@ -684,7 +802,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       await ensurePlayerReady('stop');
       await TrackPlayer.reset();
     } catch (err) {
-      if (__DEV__) console.warn('TrackPlayer reset:', err);
+      if (__DEV__) console.log('TrackPlayer reset:', err);
     }
     currentNaatRef.current = null;
     setSession(EMPTY_SESSION);
@@ -744,25 +862,11 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       }
       const info = await FileSystem.getInfoAsync(result?.uri ?? target);
       const sizeMb = info.exists && info.size ? Number((info.size / (1024 * 1024)).toFixed(2)) : undefined;
-      let durationSeconds: number | undefined;
-      try {
-        const { sound, status } = await Audio.Sound.createAsync(
-          { uri: result?.uri ?? target },
-          { shouldPlay: false },
-        );
-        if (status.isLoaded && status.durationMillis) {
-          durationSeconds = Math.floor(status.durationMillis / 1000);
-        }
-        await sound.unloadAsync();
-      } catch {
-        // ignore duration probe failure
-      }
       await upsertLocalMeta(naat.id, {
         localFileUri: result?.uri ?? target,
         isDownloaded: true,
         downloadProgress: undefined,
         file_size_mb: sizeMb,
-        duration_seconds: durationSeconds,
       });
       setNaats((prev) =>
         prev.map((item) =>
@@ -773,7 +877,6 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
                 isDownloaded: true,
                 downloadProgress: undefined,
                 file_size_mb: sizeMb,
-                duration_seconds: durationSeconds ?? item.duration_seconds,
               }
             : item,
         ),
