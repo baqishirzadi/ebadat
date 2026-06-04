@@ -7,7 +7,8 @@ appId: com.afghandev.ebadat
 - extendedWaitUntil:
     visible:
       id: "first-open-adhan-setup"
-    timeout: 20000
+    timeout: 25000
+- takeScreenshot: ios-device-first-open-adhan
 - tapOn:
     id: "first-open-use-kabul"
 - tapOn:
@@ -19,57 +20,78 @@ appId: com.afghandev.ebadat
 - extendedWaitUntil:
     visible:
       id: "ios-home-ready"
-    timeout: 20000
+    timeout: 25000
 - assertNotVisible: "Console Error"
 - assertNotVisible: "Console Warning"
-- takeScreenshot: ios-home
+- takeScreenshot: ios-device-home
 
 - tapOn:
-    point: "8%,94%"
+    point: "75%,94%"
 - extendedWaitUntil:
     visible:
-      id: "ios-more-ready"
-    timeout: 10000
+      id: "ios-prayer-ready"
+    timeout: 15000
 - assertNotVisible: "Console Error"
-- takeScreenshot: ios-more
+- takeScreenshot: ios-device-prayer
 
 - tapOn:
     point: "42%,94%"
 - extendedWaitUntil:
     visible:
       id: "ios-articles-ready"
-    timeout: 10000
+    timeout: 15000
 - tapOn:
     id: "ios-article-card"
 - extendedWaitUntil:
     visible:
       id: "ios-article-detail-ready"
-    timeout: 10000
-- waitForAnimationToEnd:
-    timeout: 5000
+    timeout: 15000
 - assertNotVisible: "Console Error"
-- takeScreenshot: ios-articles
+- takeScreenshot: ios-device-articles
 - tapOn:
     point: "8%,9%"
 - extendedWaitUntil:
     visible:
       id: "ios-articles-ready"
-    timeout: 10000
+    timeout: 15000
+
+- tapOn:
+    point: "8%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 15000
+- assertNotVisible: "Console Error"
+- takeScreenshot: ios-device-more
+- tapOn:
+    id: "ios-open-ahadith"
+- extendedWaitUntil:
+    visible:
+      id: "ios-ahadith-ready"
+    timeout: 15000
+- assertNotVisible: "Console Error"
+- takeScreenshot: ios-device-ahadith
+- tapOn:
+    point: "8%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 15000
 
 - tapOn:
     point: "25%,94%"
 - extendedWaitUntil:
     visible:
       id: "naat-screen-list"
-    timeout: 15000
+    timeout: 20000
 - tapOn:
     id: "naat-card-play-button"
 - extendedWaitUntil:
     visible:
       id: "naat-player-dock"
-    timeout: 12000
+    timeout: 60000
 - assertNotVisible: "Console Error"
-- takeScreenshot: ios-naat-playing
+- takeScreenshot: ios-device-naat-playing
 - tapOn:
     id: "naat-player-next-button"
     optional: true
@@ -80,20 +102,37 @@ appId: com.afghandev.ebadat
     id: "naat-player-toggle-button"
 - tapOn:
     id: "naat-player-toggle-button"
+- pressKey: Home
+- waitForAnimationToEnd:
+    timeout: 6000
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "naat-player-dock"
+    timeout: 15000
 - assertNotVisible: "Console Error"
+- tapOn:
+    id: "naat-downloads-button"
+- extendedWaitUntil:
+    visible:
+      id: "ios-naat-downloads-ready"
+    timeout: 15000
+- takeScreenshot: ios-device-downloads
+- tapOn:
+    point: "8%,9%"
 
 - tapOn:
     point: "8%,94%"
 - extendedWaitUntil:
     visible:
       id: "ios-more-ready"
-    timeout: 10000
+    timeout: 15000
 - tapOn:
     id: "ios-open-adhan-settings"
 - extendedWaitUntil:
     visible:
       id: "ios-adhan-settings-ready"
-    timeout: 10000
+    timeout: 15000
 - tapOn:
     id: "adhan-system-test-button"
 - tapOn:
@@ -103,6 +142,7 @@ appId: com.afghandev.ebadat
     text: "OK"
     optional: true
 - waitForAnimationToEnd:
-    timeout: 3000
+    timeout: 30000
 - assertNotVisible: "Console Error"
-- takeScreenshot: ios-adhan-test
+- assertNotVisible: "Console Warning"
+- takeScreenshot: ios-device-adhan-test

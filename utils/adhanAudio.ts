@@ -112,7 +112,7 @@ export async function playAdhan(
   voice: AdhanVoice = 'barakatullah',
   prayer?: PrayerName,
   onComplete?: () => void
-): Promise<void> {
+): Promise<boolean> {
   try {
     // Stop any currently playing Adhan
     await stopAdhan();
@@ -151,6 +151,7 @@ export async function playAdhan(
     
     adhanSound = sound;
     isPlaying = true;
+    return true;
     
   } catch (error) {
     if (__DEV__) {
@@ -162,6 +163,7 @@ export async function playAdhan(
     }
     isPlaying = false;
     onComplete?.();
+    return false;
   }
 }
 

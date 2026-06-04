@@ -30,6 +30,9 @@ interface CitySelectorModalProps {
   selectedCity: CityKey | null;
   onSelectCity: (cityKey: CityKey) => void;
   onClose: () => void;
+  allowClose?: boolean;
+  title?: string;
+  testID?: string;
 }
 
 export function CitySelectorModal({
@@ -37,6 +40,9 @@ export function CitySelectorModal({
   selectedCity,
   onSelectCity,
   onClose,
+  allowClose = true,
+  title = 'انتخاب شهر',
+  testID,
 }: CitySelectorModalProps) {
   const { theme } = useApp();
   const [selectedCategory, setSelectedCategory] = useState<string>('afghanistan');
@@ -127,17 +133,21 @@ export function CitySelectorModal({
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
-      onRequestClose={onClose}
+      onRequestClose={allowClose ? onClose : undefined}
     >
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View testID={testID} style={[styles.container, { backgroundColor: theme.background }]}>
         <StatusBar style="light" />
         {/* Header Wrapper - Extends to top */}
         <View style={[styles.headerWrapper, { backgroundColor: theme.surahHeader }]}>
           <View style={styles.header}>
-            <Pressable onPress={onClose} style={styles.closeButton}>
-              <MaterialIcons name="close" size={24} color="#fff" />
-            </Pressable>
-            <CenteredText style={styles.headerTitle}>انتخاب شهر</CenteredText>
+            {allowClose ? (
+              <Pressable onPress={onClose} style={styles.closeButton}>
+                <MaterialIcons name="close" size={24} color="#fff" />
+              </Pressable>
+            ) : (
+              <View style={styles.closeButton} />
+            )}
+            <CenteredText style={styles.headerTitle}>{title}</CenteredText>
             <Pressable
               onPress={handleGpsPress}
               style={({ pressed }) => [
@@ -214,6 +224,7 @@ export function CitySelectorModal({
 
         {/* City List */}
         <FlatList
+          testID="city-selector-list"
           data={categoryCities}
           keyExtractor={(item) => item.key}
           renderItem={renderCity}

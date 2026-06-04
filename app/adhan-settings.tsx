@@ -84,6 +84,17 @@ export default function AdhanSettingsScreen() {
       ? warningCodes.map((code) => WARNING_LABELS[code] || code).join('، ')
       : 'ندارد';
   const exactDebugState = state.scheduleAudit?.exactDebugState;
+  const adhanTestStatusLabel = state.adhanTestStatus.error
+    ? `خطا: ${state.adhanTestStatus.error}`
+    : state.adhanTestStatus.playbackOk === true
+      ? 'اعلان دریافت شد و پخش اذان آغاز شد.'
+      : state.adhanTestStatus.playbackAttemptedAt
+        ? 'اعلان دریافت شد؛ پخش اذان بررسی شد.'
+        : state.adhanTestStatus.receivedAt
+          ? 'اعلان دریافت شد؛ در حال بررسی پخش صدا.'
+          : state.adhanTestStatus.expectedAt
+            ? 'تست زمان‌بندی شد؛ منتظر اعلان باشید.'
+            : 'هنوز تستی اجرا نشده است.';
 
   useFocusEffect(
     useCallback(() => {
@@ -321,6 +332,12 @@ export default function AdhanSettingsScreen() {
               <MaterialIcons name="notifications-active" size={20} color="#fff" />
               <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
             </Pressable>
+            <Text
+              testID="adhan-system-test-status"
+              style={[styles.exactAlarmHint, { color: theme.textSecondary }]}
+            >
+              {adhanTestStatusLabel}
+            </Text>
           </View>
         )}
 
@@ -364,7 +381,7 @@ export default function AdhanSettingsScreen() {
               <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
             </Pressable>
             <Text style={[styles.exactAlarmHint, { color: theme.textSecondary }]}>
-              این تست فقط رسیدن اعلان و صدا را می‌سنجد؛ دقت زمانی روزانه را تضمین نمی‌کند.
+              {adhanTestStatusLabel}
             </Text>
             {state.scheduleAudit?.scheduleMode === 'fallback' && (
               <View style={[styles.exactAlarmWarning, { backgroundColor: '#fff8e1', borderColor: '#f5c16c' }]}>

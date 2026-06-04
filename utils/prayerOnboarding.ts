@@ -1,10 +1,37 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert, Linking, NativeModules, Platform } from 'react-native';
 
-const ONBOARDING_KEY = '@ebadat/adhan_first_open_guided_setup_done_v1';
+export const FIRST_OPEN_ADHAN_ONBOARDING_KEY = '@ebadat/adhan_first_open_guided_setup_done_v2';
+export const SELECTED_CITY_STORAGE_KEY = 'selected_city';
+const PRAYER_SETTINGS_STORAGE_KEY = '@ebadat/prayer_settings';
 
 interface FirstOpenPrayerOnboardingOptions {
   onAfterSetup?: () => Promise<void> | void;
+}
+
+export async function isFirstOpenAdhanSetupDone(): Promise<boolean> {
+  return (await AsyncStorage.getItem(FIRST_OPEN_ADHAN_ONBOARDING_KEY)) === '1';
+}
+
+export async function markFirstOpenAdhanSetupDone(): Promise<void> {
+  await AsyncStorage.setItem(FIRST_OPEN_ADHAN_ONBOARDING_KEY, '1');
+}
+
+export async function getSavedPrayerCityKey(): Promise<string | null> {
+  const selectedCity = await AsyncStorage.getItem(SELECTED_CITY_STORAGE_KEY);
+  if (selectedCity) return selectedCity;
+
+  const settingsRaw = await AsyncStorage.getItem(PRAYER_SETTINGS_STORAGE_KEY);
+  if (!settingsRaw) return null;
+
+  try {
+    const settings = JSON.parse(settingsRaw) as { selectedCity?: unknown };
+    return typeof settings.selectedCity === 'string' && settings.selectedCity.trim()
+      ? settings.selectedCity
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function runFirstOpenPrayerOnboarding(
@@ -12,7 +39,7 @@ export async function runFirstOpenPrayerOnboarding(
 ): Promise<void> {
   if (Platform.OS === 'web') return;
 
-  const alreadyDone = await AsyncStorage.getItem(ONBOARDING_KEY);
+  const alreadyDone = await AsyncStorage.getItem(FIRST_OPEN_ADHAN_ONBOARDING_KEY);
   if (alreadyDone === '1') return;
 
   let notificationsGranted = false;
@@ -29,7 +56,7 @@ export async function runFirstOpenPrayerOnboarding(
     notificationsGranted = false;
   }
 
-  await AsyncStorage.setItem(ONBOARDING_KEY, '1');
+  await AsyncStorage.setItem(FIRST_OPEN_ADHAN_ONBOARDING_KEY, '1');
 
   if (Platform.OS === 'android') {
     const exactModule = (NativeModules as {

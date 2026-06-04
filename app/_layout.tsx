@@ -13,6 +13,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { FirstOpenAdhanSetup } from '@/components/prayer/FirstOpenAdhanSetup';
 import { SpiritualSplash } from '@/components/SpiritualSplash';
 import { AhadithProvider } from '@/context/AhadithContext';
 import { AppProvider, useApp } from '@/context/AppContext';
@@ -27,7 +28,7 @@ import { getKabulNoon } from '@/utils/afghanistanCalendar';
 import { getCalendarMonthGridMeta } from '@/utils/calendarMonthGrid';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
-import { runFirstOpenPrayerOnboarding } from '@/utils/prayerOnboarding';
+import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
 
 // ───────────────────────────────────────────────────
 // Global safety for unhandled promise rejections
@@ -247,9 +248,14 @@ function RootLayoutNav() {
 
     const runDeferredStartup = async () => {
       try {
-        await runFirstOpenPrayerOnboarding();
+        const [cityKey, setupDone] = await Promise.all([
+          getSavedPrayerCityKey(),
+          isFirstOpenAdhanSetupDone(),
+        ]);
         if (cancelled) return;
-        await ensurePushRegistrationOnFirstOpen();
+        if (cityKey || setupDone) {
+          await ensurePushRegistrationOnFirstOpen();
+        }
       } catch (error) {
         if (__DEV__) {
           console.warn('[Startup] Deferred first-open setup failed', error);
@@ -313,6 +319,7 @@ function RootLayoutNav() {
         {/* <Stack.Screen name="articles" options={{ headerShown: false }} /> */}
         {/* <Stack.Screen name="scholar" options={{ headerShown: false }} /> */}
       </Stack>
+      <FirstOpenAdhanSetup />
       {/* On Android, fill the area behind the status bar with the same color
           as the Quran header to avoid any white strip above the header. */}
       <StatusBar style={statusBarStyle} />

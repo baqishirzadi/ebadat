@@ -269,7 +269,13 @@ export default function MoreScreen() {
           {quickActions.map((item) => (
             <Pressable
               key={item.label}
-              testID={item.route === '/adhan-settings' ? 'ios-open-adhan-settings' : undefined}
+              testID={
+                item.route === '/adhan-settings'
+                  ? 'ios-open-adhan-settings'
+                  : item.route === '/(tabs)/ahadith'
+                    ? 'ios-open-ahadith'
+                    : undefined
+              }
               onPress={() => router.push(item.route as any)}
               style={({ pressed }) => [
                 styles.quickCard,

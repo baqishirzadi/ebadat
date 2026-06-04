@@ -12,7 +12,6 @@ import { CITIES, ALL_CITIES, searchCities } from '@/utils/cities';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 
 const SELECTED_CITY_KEY = 'selected_city';
-const AUTO_LOCATION_BOOTSTRAP_KEY = '@ebadat/auto_location_bootstrap_v1';
 
 export { CityKey } from '@/utils/prayerTimesManager';
 
@@ -69,20 +68,6 @@ export function usePrayerTimes() {
         if (saved && saved.startsWith('afghanistan_')) {
           setSelectedCity(saved as CityKey);
           return;
-        }
-      }
-
-      const bootstrapDone = await AsyncStorage.getItem(AUTO_LOCATION_BOOTSTRAP_KEY);
-      if (!bootstrapDone) {
-        await AsyncStorage.setItem(AUTO_LOCATION_BOOTSTRAP_KEY, '1');
-        const gpsResult = await detectLocationAndFindCity();
-        if (gpsResult.success && gpsResult.cityKey && gpsResult.cityKey in ALL_CITIES) {
-          const resolvedCity = gpsResult.cityKey as CityKey;
-          await AsyncStorage.setItem(SELECTED_CITY_KEY, resolvedCity);
-          setSelectedCity(resolvedCity);
-          return;
-        } else {
-          console.log('Auto GPS city detection failed, waiting for manual city selection');
         }
       }
 

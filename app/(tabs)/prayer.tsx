@@ -166,7 +166,7 @@ export default function NamazScreen() {
 
   if (!selectedCity) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View testID="ios-prayer-ready" style={[styles.container, { backgroundColor: theme.background }]}>
         <LinearGradient
           colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
           style={styles.header}
@@ -213,7 +213,7 @@ export default function NamazScreen() {
 
   if (!prayerTimes) {
     return (
-      <View style={[styles.loading, { backgroundColor: theme.background }]}>
+      <View testID="ios-prayer-ready" style={[styles.loading, { backgroundColor: theme.background }]}>
         <ActivityIndicator size="large" color={theme.tint} />
         <CenteredText style={{ color: theme.text }}>در حال محاسبه اوقات نماز...</CenteredText>
       </View>
@@ -221,7 +221,7 @@ export default function NamazScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View testID="ios-prayer-ready" style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Subtle background pattern */}
       <View style={styles.patternContainer}>
         {[...Array(6)].map((_, i) => (

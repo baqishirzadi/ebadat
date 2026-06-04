@@ -163,6 +163,15 @@ interface ExactAlarmDebugState {
   exactAlarmStatus: ExactAlarmStatus;
 }
 
+interface AdhanTestStatus {
+  scheduledAt: number | null;
+  expectedAt: number | null;
+  receivedAt: number | null;
+  playbackAttemptedAt: number | null;
+  playbackOk: boolean | null;
+  error: string | null;
+}
+
 const PRAYER_BLOCKER_MESSAGES: Record<PrayerScheduleBlocker, string> = {
   notifications_module_unavailable: 'هسته اعلان در دسترس نیست. لطفاً اپ را دوباره نصب کنید.',
   prayer_times_unavailable: 'اوقات شرعی هنوز آماده نیست؛ لطفاً چند لحظه بعد دوباره بازبینی کنید.',
@@ -217,6 +226,7 @@ interface PrayerState {
   notificationPermission: 'granted' | 'denied' | 'blocked' | 'undetermined';
   exactAlarmStatus: ExactAlarmStatus;
   scheduleAudit: PrayerScheduleAudit | null;
+  adhanTestStatus: AdhanTestStatus;
   lastAdhanDelaySeconds: number | null;
   isScheduling: boolean;
   error: string | null;
@@ -236,6 +246,7 @@ type PrayerAction =
   | { type: 'SET_NOTIFICATION_PERMISSION'; payload: 'granted' | 'denied' | 'blocked' | 'undetermined' }
   | { type: 'SET_EXACT_ALARM_STATUS'; payload: ExactAlarmStatus }
   | { type: 'SET_SCHEDULE_AUDIT'; payload: PrayerScheduleAudit | null }
+  | { type: 'SET_ADHAN_TEST_STATUS'; payload: Partial<AdhanTestStatus> }
   | { type: 'SET_LAST_ADHAN_DELAY_SECONDS'; payload: number | null }
   | { type: 'SET_IS_SCHEDULING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
@@ -268,6 +279,8 @@ function prayerReducer(state: PrayerState, action: PrayerAction): PrayerState {
       return { ...state, exactAlarmStatus: action.payload };
     case 'SET_SCHEDULE_AUDIT':
       return { ...state, scheduleAudit: action.payload };
+    case 'SET_ADHAN_TEST_STATUS':
+      return { ...state, adhanTestStatus: { ...state.adhanTestStatus, ...action.payload } };
     case 'SET_LAST_ADHAN_DELAY_SECONDS':
       return { ...state, lastAdhanDelaySeconds: action.payload };
     case 'SET_IS_SCHEDULING':
@@ -302,6 +315,14 @@ const initialState: PrayerState = {
   notificationPermission: 'undetermined',
   exactAlarmStatus: Platform.OS === 'android' ? 'unknown' : 'not_applicable',
   scheduleAudit: null,
+  adhanTestStatus: {
+    scheduledAt: null,
+    expectedAt: null,
+    receivedAt: null,
+    playbackAttemptedAt: null,
+    playbackOk: null,
+    error: null,
+  },
   lastAdhanDelaySeconds: null,
   isScheduling: false,
   error: null,
@@ -577,8 +598,37 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
           try {
             const prayerName = (prayer || 'fajr') as PrayerName;
             const selectedVoice = (voice as any) || 'barakatullah';
-            await playAdhan(selectedVoice, prayerName);
+            if (type === 'adhan_test') {
+              dispatch({
+                type: 'SET_ADHAN_TEST_STATUS',
+                payload: {
+                  receivedAt: Date.now(),
+                  playbackAttemptedAt: Date.now(),
+                  playbackOk: null,
+                  error: null,
+                },
+              });
+            }
+            const played = await playAdhan(selectedVoice, prayerName);
+            if (type === 'adhan_test') {
+              dispatch({
+                type: 'SET_ADHAN_TEST_STATUS',
+                payload: {
+                  playbackOk: played,
+                  error: played ? null : 'playback-unavailable',
+                },
+              });
+            }
           } catch (error) {
+            if (type === 'adhan_test') {
+              dispatch({
+                type: 'SET_ADHAN_TEST_STATUS',
+                payload: {
+                  playbackOk: false,
+                  error: error instanceof Error ? error.message : 'playback-error',
+                },
+              });
+            }
             if (__DEV__) {
               console.log('[PrayerNotifications] Foreground Adhan playback skipped:', error);
             }
@@ -1119,14 +1169,19 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   }, [checkExactAlarmCapability, getDateKey, getLocationKey, refreshPrayerTimes]);
 
   const setCity = useCallback(async (cityKey: string) => {
-    const location = AFGHAN_CITIES[cityKey];
+    const shortCityKey = cityKey.startsWith('afghanistan_')
+      ? cityKey.replace('afghanistan_', '')
+      : cityKey;
+    const resolvedCityKey = `afghanistan_${shortCityKey}`;
+    const location = AFGHAN_CITIES[shortCityKey];
     if (location) {
-      const name = getCityName(cityKey);
+      const name = getCityName(shortCityKey);
       dispatch({ type: 'SET_LOCATION', payload: { location, name } });
-      dispatch({ type: 'SET_SETTINGS', payload: { selectedCity: cityKey } });
+      dispatch({ type: 'SET_SETTINGS', payload: { selectedCity: resolvedCityKey } });
 
       await AsyncStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify({ location, name }));
-      await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({ ...state.settings, selectedCity: cityKey }));
+      await AsyncStorage.setItem(STORAGE_KEYS.SELECTED_CITY, resolvedCityKey);
+      await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({ ...state.settings, selectedCity: resolvedCityKey }));
     }
   }, [state.settings]);
 
@@ -1136,6 +1191,11 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     dispatch({ type: 'SET_SETTINGS', payload: { selectedCity: resolvedCityKey } });
 
     await AsyncStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify({ location, name }));
+    if (resolvedCityKey) {
+      await AsyncStorage.setItem(STORAGE_KEYS.SELECTED_CITY, resolvedCityKey);
+    } else {
+      await AsyncStorage.removeItem(STORAGE_KEYS.SELECTED_CITY);
+    }
     await AsyncStorage.setItem(
       STORAGE_KEYS.SETTINGS,
       JSON.stringify({ ...state.settings, selectedCity: resolvedCityKey })
@@ -2158,6 +2218,19 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         }
       }
 
+      const expectedAt = Date.now() + 25 * 1000;
+      dispatch({
+        type: 'SET_ADHAN_TEST_STATUS',
+        payload: {
+          scheduledAt: Date.now(),
+          expectedAt,
+          receivedAt: null,
+          playbackAttemptedAt: null,
+          playbackOk: null,
+          error: null,
+        },
+      });
+
       await NotificationsModule.scheduleNotificationAsync({
         identifier: `adhan-system-test-${Date.now()}`,
         content: {
@@ -2177,13 +2250,20 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         },
         trigger: {
           type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
-          date: new Date(Date.now() + 25 * 1000),
+          date: new Date(expectedAt),
           ...(Platform.OS === 'android' && { channelId: CHANNEL_IDS.ADHAN_REGULAR }),
         },
       });
 
       return true;
     } catch (error) {
+      dispatch({
+        type: 'SET_ADHAN_TEST_STATUS',
+        payload: {
+          error: error instanceof Error ? error.message : 'schedule-error',
+          playbackOk: false,
+        },
+      });
       if (__DEV__) {
         console.log('[PrayerNotifications] Failed to schedule system Adhan test:', error);
       }

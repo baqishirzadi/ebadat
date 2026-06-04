@@ -77,6 +77,7 @@ const TRACK_POLL_INTERVAL_MS = 250;
 const SUPABASE_FETCH_TIMEOUT_MS = 8000;
 const PLAYBACK_START_TIMEOUT_MS = 12000;
 const PLAYBACK_START_POLL_MS = 300;
+const REMOTE_AUDIO_PROBE_TIMEOUT_MS = 6000;
 const EMPTY_SESSION: NaatSessionState = {
   queueIds: [],
   currentIndex: -1,
@@ -87,6 +88,12 @@ const EMPTY_SESSION: NaatSessionState = {
 };
 
 type StoredCatalog = Awaited<ReturnType<typeof loadCatalog>>;
+type ResolvedAudioSource = {
+  uri: string;
+  isOffline: boolean;
+  isLocal: boolean;
+  probeOk: boolean;
+};
 const FALLBACK_NAATS = fallbackNaatsData as StoredCatalog;
 
 function normalizeAudioUrl(url: string): string {
@@ -115,6 +122,36 @@ function getAudioContentType(uri: string): string {
     return 'audio/mp4';
   }
   return 'audio/mpeg';
+}
+
+function getNaatAudioExtension(uri: string): 'm4a' | 'mp3' {
+  const cleanUri = uri.split('?')[0].toLowerCase();
+  return cleanUri.endsWith('.m4a') || cleanUri.endsWith('.mp4') ? 'm4a' : 'mp3';
+}
+
+async function probeRemoteAudio(uri: string): Promise<void> {
+  if (!isRemoteAudioUrl(uri)) return;
+
+  const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timeout = setTimeout(() => {
+    controller?.abort();
+  }, REMOTE_AUDIO_PROBE_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(uri, {
+      method: 'GET',
+      headers: {
+        Range: 'bytes=0-1023',
+      },
+      signal: controller?.signal,
+    });
+
+    if (!(response.ok || response.status === 206)) {
+      throw new Error(`probe-status-${response.status}`);
+    }
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function loadAndStartTrackQueue(
@@ -422,13 +459,69 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const resolveAudioSource = useCallback(async (naat: Naat): Promise<{ uri: string; isOffline: boolean }> => {
+  const cacheNaatForPlayback = useCallback(async (naat: Naat, sourceUri: string): Promise<string> => {
+    await ensureNaatDirectory();
+    const dir = getNaatDirectory();
+    const target = `${dir}${naat.id}.${getNaatAudioExtension(sourceUri)}`;
+
+    try {
+      const existing = await FileSystem.getInfoAsync(target);
+      if (existing.exists && existing.size && existing.size > 0) {
+        await upsertLocalMeta(naat.id, {
+          localFileUri: target,
+          isDownloaded: true,
+          file_size_mb: Number((existing.size / (1024 * 1024)).toFixed(2)),
+        });
+        return target;
+      }
+    } catch {
+      // Continue with a fresh download.
+    }
+
+    const result = await FileSystem.downloadAsync(sourceUri, target);
+    if (!result?.uri) {
+      throw new Error('cache-download-empty');
+    }
+    if (result.status && result.status >= 400) {
+      throw new Error(`cache-download-status-${result.status}`);
+    }
+
+    const info = await FileSystem.getInfoAsync(result.uri);
+    if (!info.exists || !info.size) {
+      throw new Error('cache-download-missing');
+    }
+
+    const sizeMb = Number((info.size / (1024 * 1024)).toFixed(2));
+    await upsertLocalMeta(naat.id, {
+      localFileUri: result.uri,
+      isDownloaded: true,
+      downloadProgress: undefined,
+      file_size_mb: sizeMb,
+    });
+    setNaats((prev) =>
+      prev.map((item) =>
+        item.id === naat.id
+          ? {
+              ...item,
+              localFileUri: result.uri,
+              isDownloaded: true,
+              downloadProgress: undefined,
+              file_size_mb: sizeMb,
+            }
+          : item,
+      ),
+    );
+
+    return result.uri;
+  }, []);
+
+  const resolveAudioSource = useCallback(async (naat: Naat): Promise<ResolvedAudioSource> => {
     const localUri = await getLocalUriIfExists(naat);
     const netInfo = await NetInfo.fetch();
     const isOffline = !netInfo.isConnected || netInfo.isInternetReachable === false;
 
     if (localUri) {
-      return { uri: localUri, isOffline };
+      return { uri: localUri, isOffline, isLocal: true, probeOk: true };
     }
 
     if (isOffline) {
@@ -444,7 +537,17 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       throw new Error('no-audio');
     }
 
-    return { uri, isOffline };
+    let probeOk = true;
+    try {
+      await probeRemoteAudio(uri);
+    } catch (error) {
+      probeOk = false;
+      if (__DEV__) {
+        console.log('[NaatPlayer] Remote audio probe failed:', getErrorMessage(error));
+      }
+    }
+
+    return { uri, isOffline, isLocal: false, probeOk };
   }, [getLocalUriIfExists]);
 
   const buildQueueTracks = useCallback(async (
@@ -675,9 +778,25 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         throw new Error('no-audio');
       }
 
-      const { uri, isOffline } = await resolveAudioSource(selectedNaat);
-      const queueTracks = await buildQueueTracks(selectedNaat, queueItems, uri, isOffline);
-      const selectedIndex = queueTracks.findIndex((track) => String(track.id) === selectedNaat.id);
+      let audioSource = await resolveAudioSource(selectedNaat);
+
+      if (!audioSource.isLocal && !audioSource.probeOk) {
+        const cachedUri = await cacheNaatForPlayback(selectedNaat, audioSource.uri);
+        audioSource = {
+          uri: cachedUri,
+          isOffline: audioSource.isOffline,
+          isLocal: true,
+          probeOk: true,
+        };
+      }
+
+      let queueTracks = await buildQueueTracks(
+        selectedNaat,
+        queueItems,
+        audioSource.uri,
+        audioSource.isOffline,
+      );
+      let selectedIndex = queueTracks.findIndex((track) => String(track.id) === selectedNaat.id);
 
       if (!queueTracks.length || selectedIndex < 0) {
         throw new Error('no-audio');
@@ -689,14 +808,33 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       try {
         await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
       } catch (firstError) {
-        if (!shouldRetryPlaybackStart(firstError)) {
+        if (shouldRetryPlaybackStart(firstError)) {
+          if (__DEV__) {
+            console.log('[NaatPlayer] First playback start failed, retrying once:', getErrorMessage(firstError));
+          }
+          await ensurePlayerReady('play-retry');
+          await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
+        } else if (!audioSource.isLocal) {
+          if (__DEV__) {
+            console.log('[NaatPlayer] Stream did not start, caching selected track:', getErrorMessage(firstError));
+          }
+          const cachedUri = await cacheNaatForPlayback(selectedNaat, audioSource.uri);
+          queueTracks = await buildQueueTracks(selectedNaat, queueItems, cachedUri, false);
+          selectedIndex = queueTracks.findIndex((track) => String(track.id) === selectedNaat.id);
+          if (!queueTracks.length || selectedIndex < 0) {
+            throw new Error('no-audio');
+          }
+          await ensurePlayerReady('play-cache-retry');
+          await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
+          audioSource = {
+            uri: cachedUri,
+            isOffline: false,
+            isLocal: true,
+            probeOk: true,
+          };
+        } else {
           throw firstError;
         }
-        if (__DEV__) {
-          console.log('[NaatPlayer] First playback start failed, retrying once:', getErrorMessage(firstError));
-        }
-        await ensurePlayerReady('play-retry');
-        await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
       }
 
       currentNaatRef.current = selectedNaat;
@@ -723,7 +861,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       }
       Alert.alert('خطا', 'پخش نعت شروع نشد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.');
     }
-  }, [ensurePlayerReady, resolveAudioSource, buildQueueTracks]);
+  }, [ensurePlayerReady, resolveAudioSource, cacheNaatForPlayback, buildQueueTracks]);
 
   const play = useCallback(async (naat: Naat) => {
     const sourceList = naatsRef.current.length > 0 ? naatsRef.current : [naat];
