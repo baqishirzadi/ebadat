@@ -24,7 +24,7 @@ export const TranslationBlock = memo(function TranslationBlock({
   const { translationFontSize } = state.preferences;
 
   const languageLabels = {
-    dari: { name: 'دری', flag: '🇦🇫' },
+    dari: { name: 'فارسی (دری)', flag: '🇦🇫' },
     pashto: { name: 'پښتو', flag: '🇦🇫' },
   };
 

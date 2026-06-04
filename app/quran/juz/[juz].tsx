@@ -117,7 +117,7 @@ export default function JuzReaderScreen() {
   const currentTranslation = state.preferences.showTranslation;
   const translationOptions: { key: TranslationLanguage; label: string }[] = useMemo(
     () => [
-      { key: 'dari', label: 'دری' },
+      { key: 'dari', label: 'فارسی (دری)' },
       { key: 'pashto', label: 'پښتو' },
       { key: 'both', label: 'هردو' },
       { key: 'none', label: 'بدون ترجمه' },

@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, Dimensions } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Linking, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
 import Animated, {
@@ -243,11 +243,14 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
           </CenteredText>
           <View style={styles.creditDivider} />
           <CenteredText style={styles.creditDeveloper}>
-            سیدعبدالباقی ابن سیدعبدالاله (عارف بالله)
+            سازنده: شرکت نرم‌افزار افغان دِو
           </CenteredText>
-          <CenteredText style={styles.creditLineage}>
-            ابن خلیفه صاحب سیدمحمد یتیم شیرزادی (رحمه‌الله)
-          </CenteredText>
+          <Pressable
+            onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
+            style={styles.creditLinkButton}
+          >
+            <CenteredText style={styles.creditLink}>www.afghan.dev</CenteredText>
+          </Pressable>
           <CenteredText style={styles.creditDua}>
             انشاءالله قبول درگاه حق تعالی باشد
           </CenteredText>
@@ -259,7 +262,6 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
 
 const GOLD = '#D4AF37';
 const GOLD_LIGHT = '#E8D48A';
-const GOLD_DARK = '#B8960C';
 
 const styles = StyleSheet.create({
   container: {
@@ -539,6 +541,18 @@ const styles = StyleSheet.create({
     marginTop: 4,
     fontFamily: 'Vazirmatn',
     writingDirection: 'rtl',
+    textAlign: 'center',
+  },
+  creditLinkButton: {
+    marginTop: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  creditLink: {
+    fontSize: 12,
+    color: GOLD,
+    lineHeight: 18,
+    fontFamily: 'Vazirmatn',
     textAlign: 'center',
   },
   creditDua: {

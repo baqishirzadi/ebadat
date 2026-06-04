@@ -36,7 +36,7 @@ export const SurahHeader = memo(function SurahHeader({
   
   // Translation toggle options - Dari, Pashto, Both, or Arabic only
   const translationOptions: { key: TranslationLanguage; label: string }[] = [
-    { key: 'dari', label: 'دری' },
+    { key: 'dari', label: 'فارسی (دری)' },
     { key: 'pashto', label: 'پښتو' },
     { key: 'both', label: 'هردو' },
     { key: 'none', label: 'بدون ترجمه' },

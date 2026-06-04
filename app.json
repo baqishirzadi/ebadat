@@ -2,7 +2,7 @@
   "expo": {
     "name": "عبادت",
     "slug": "NamazAfghanistan",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "icon": "./assets/images/icon.png",
     "scheme": "ebadat",
     "userInterfaceStyle": "automatic",
@@ -45,11 +45,11 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "11"
+      "buildNumber": "12"
     },
     "android": {
       "package": "com.afghandev.ebadat",
-      "versionCode": 11,
+      "versionCode": 12,
       "adaptiveIcon": {
         "backgroundColor": "#1a4d3e",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

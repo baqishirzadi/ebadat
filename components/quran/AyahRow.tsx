@@ -93,7 +93,7 @@ export const AyahRow = memo(function AyahRow({
     return (
       <View style={styles.translationContainer}>
         <CenteredText style={[styles.translationLabel, { color: theme.textSecondary, fontFamily }]}>
-          {lang === 'dari' ? 'دری' : 'پښتو'}
+          {lang === 'dari' ? 'فارسی (دری)' : 'پښتو'}
         </CenteredText>
         <CenteredText
           style={[

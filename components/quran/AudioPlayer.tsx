@@ -6,11 +6,17 @@
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import audioManager, { ReciterKey, RECITERS, QuranPlaybackScopeType, getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
+import audioManager, {
+  ReciterKey,
+  RECITERS,
+  QuranPlaybackScopeType,
+  type QuranPlaybackSnapshot,
+  getQuranPlaybackErrorMessage,
+} from '@/utils/quranAudio';
 import { toArabicNumerals } from '@/utils/numbers';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Modal, Pressable, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface AudioPlayerProps {
@@ -50,9 +56,15 @@ export function AudioPlayer({
   const insets = useSafeAreaInsets();
   const [currentReciter, setCurrentReciter] = useState<ReciterKey>('yasser_ad_dussary');
   const [showReciterModal, setShowReciterModal] = useState(false);
+  const [playback, setPlayback] = useState<QuranPlaybackSnapshot>(() => audioManager.getPlaybackSnapshot());
 
   useEffect(() => {
     setCurrentReciter(audioManager.getReciter());
+    const unsubscribe = audioManager.subscribe((snapshot) => {
+      setPlayback(snapshot);
+      setCurrentReciter(snapshot.reciter);
+    });
+    return unsubscribe;
   }, []);
 
   const handleReciterChange = useCallback(
@@ -63,17 +75,21 @@ export function AudioPlayer({
       try {
         await audioManager.setReciter(reciter);
         setCurrentReciter(reciter);
-        await audioManager.playAyah(surahNumber, ayahNumber, totalAyahs, isPlaying, true, {
-          type: scopeType,
-          startAyah: scopeStartAyah,
-          endAyah: scopeEndAyah ?? totalAyahs,
-          juzNumber,
-        });
+        void audioManager
+          .playAyah(surahNumber, ayahNumber, totalAyahs, true, true, {
+            type: scopeType,
+            startAyah: scopeStartAyah,
+            endAyah: scopeEndAyah ?? totalAyahs,
+            juzNumber,
+          })
+          .catch((error) => {
+            Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+          });
       } catch (error) {
         Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
       }
     },
-    [currentReciter, isPlaying, surahNumber, ayahNumber, totalAyahs, scopeType, scopeStartAyah, scopeEndAyah, juzNumber]
+    [currentReciter, surahNumber, ayahNumber, totalAyahs, scopeType, scopeStartAyah, scopeEndAyah, juzNumber]
   );
 
   const handlePlayPause = useCallback(() => {
@@ -96,6 +112,9 @@ export function AudioPlayer({
   }, [onStop, onClose]);
 
   if (!isVisible) return null;
+
+  const isPreparing = playback.status === 'preparing' || playback.status === 'buffering';
+  const statusText = playback.statusMessage || playback.errorMessage;
 
   return (
     <View
@@ -138,13 +157,18 @@ export function AudioPlayer({
           <View style={styles.controlsSection}>
             <Pressable
               onPress={handlePlayPause}
+              disabled={playback.status === 'preparing'}
               style={({ pressed }) => [
                 styles.playButton,
-                { backgroundColor: theme.playing },
+                { backgroundColor: theme.playing, opacity: playback.status === 'preparing' ? 0.75 : 1 },
                 pressed && styles.playButtonPressed,
               ]}
             >
-              <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={26} color="#fff" />
+              {isPreparing ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={26} color="#fff" />
+              )}
             </Pressable>
 
             <Pressable
@@ -162,6 +186,17 @@ export function AudioPlayer({
             </Pressable>
           </View>
         </View>
+        {statusText ? (
+          <CenteredText
+            style={[
+              styles.statusText,
+              { color: playback.status === 'error' ? '#DC2626' : theme.textSecondary },
+            ]}
+            numberOfLines={2}
+          >
+            {statusText}
+          </CenteredText>
+        ) : null}
       </View>
 
       <Modal
@@ -255,6 +290,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexShrink: 0,
     gap: 6,
+  },
+  statusText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: 11,
+    lineHeight: 18,
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   playButton: {
     width: 46,

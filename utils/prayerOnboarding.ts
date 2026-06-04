@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Alert, Linking, NativeModules, Platform } from 'react-native';
 
-export const FIRST_OPEN_ADHAN_ONBOARDING_KEY = '@ebadat/adhan_first_open_guided_setup_done_v2';
+export const FIRST_OPEN_ADHAN_ONBOARDING_KEY = '@ebadat/adhan_first_open_guided_setup_done_v3';
 export const SELECTED_CITY_STORAGE_KEY = 'selected_city';
 const PRAYER_SETTINGS_STORAGE_KEY = '@ebadat/prayer_settings';
 

@@ -290,7 +290,7 @@ export default function SettingsScreen() {
         <View style={styles.sectionInfo}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>ترجمه</Text>
           <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
-            {state.preferences.showTranslation === 'dari' ? 'دری (انور بدخشانی)' :
+            {state.preferences.showTranslation === 'dari' ? 'فارسی (دری) - انور بدخشانی' :
              state.preferences.showTranslation === 'pashto' ? 'پښتو' :
              state.preferences.showTranslation === 'both' ? 'هردو' : 'بدون ترجمه'}
           </Text>
@@ -304,7 +304,7 @@ export default function SettingsScreen() {
       {expandedSection === 'translation' && (
         <View style={[styles.optionsList, { backgroundColor: theme.card }]}>
           {[
-            { id: 'dari', name: 'دری (انور بدخشانی)' },
+            { id: 'dari', name: 'فارسی (دری) - انور بدخشانی' },
             { id: 'pashto', name: 'پښتو' },
             { id: 'both', name: 'هردو' },
             { id: 'none', name: 'بدون ترجمه' },
