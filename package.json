@@ -38,7 +38,8 @@
     "verify:ahadith-schedule": "node scripts/verify-ahadith-schedule.js",
     "seed:ahadith-remote": "node scripts/seed-ahadith-remote.js",
     "verify:calendar-truth": "node scripts/verify-calendar-truth.js",
-    "verify:patches": "node scripts/verify-patches-clean.js"
+    "verify:patches": "node scripts/verify-patches-clean.js",
+    "verify:qibla-math": "node scripts/verify-qibla-math.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
