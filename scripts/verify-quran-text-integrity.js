@@ -7,7 +7,7 @@ const ROOT = path.resolve(__dirname, '..');
 const SURAH_DIR = path.join(ROOT, 'data', 'surahs');
 const METADATA_PATH = path.join(ROOT, 'data', 'metadata.json');
 
-const QURANIC_MARKS_REGEX = /[\u06D6-\u06DE]/g;
+const QURANIC_MARKS_REGEX = /[\u06D6-\u06ED]/g;
 const BISMILLAH_REGEX = /^بِسْمِ(?:\s+[^\s]+){3}\s+(.+)/;
 
 function stripQuranicMarks(text) {

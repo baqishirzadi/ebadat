@@ -1,3 +1,4 @@
+import { InteractionManager } from 'react-native';
 import { SearchResult } from '@/types/quran';
 import { getSurahSync } from '@/hooks/useSurahData';
 
@@ -15,7 +16,10 @@ type IndexedAyah = {
   normalizedPashto: string;
 };
 
+const SURAH_CHUNK_SIZE = 10;
+
 let ayahIndexCache: IndexedAyah[] | null = null;
+let ayahIndexBuildPromise: Promise<IndexedAyah[]> | null = null;
 
 function normalizeArabic(text: string): string {
   if (!text) return '';
@@ -32,41 +36,72 @@ function normalizeArabic(text: string): string {
     .toLowerCase();
 }
 
-function buildAyahIndex(): IndexedAyah[] {
-  if (ayahIndexCache) {
-    return ayahIndexCache;
-  }
+function indexSurahRows(surahNumber: number): IndexedAyah[] {
+  const surah = getSurahSync(surahNumber);
+  if (!surah) return [];
 
-  const rows: IndexedAyah[] = [];
-  for (let surahNumber = 1; surahNumber <= 114; surahNumber++) {
-    const surah = getSurahSync(surahNumber);
-    if (!surah) continue;
-
-    for (const ayah of surah.ayahs) {
-      rows.push({
-        surahNumber,
-        surahName: surah.name,
-        ayahNumber: ayah.number,
-        text: ayah.text,
-        normalizedArabic: normalizeArabic(ayah.text),
-        translationDari: ayah.translation_dari,
-        translationPashto: ayah.translation_pashto,
-        normalizedDari: normalizeArabic(ayah.translation_dari || ''),
-        normalizedPashto: normalizeArabic(ayah.translation_pashto || ''),
-      });
-    }
-  }
-
-  ayahIndexCache = rows;
-  return rows;
+  return surah.ayahs.map((ayah) => ({
+    surahNumber,
+    surahName: surah.name,
+    ayahNumber: ayah.number,
+    text: ayah.text,
+    normalizedArabic: normalizeArabic(ayah.text),
+    translationDari: ayah.translation_dari,
+    translationPashto: ayah.translation_pashto,
+    normalizedDari: normalizeArabic(ayah.translation_dari || ''),
+    normalizedPashto: normalizeArabic(ayah.translation_pashto || ''),
+  }));
 }
 
-export function searchArabicIndex(query: string, limit: number = 50): SearchResult[] {
+function buildAyahIndexChunked(): Promise<IndexedAyah[]> {
+  if (ayahIndexCache) {
+    return Promise.resolve(ayahIndexCache);
+  }
+
+  if (ayahIndexBuildPromise) {
+    return ayahIndexBuildPromise;
+  }
+
+  ayahIndexBuildPromise = new Promise((resolve) => {
+    InteractionManager.runAfterInteractions(() => {
+      const rows: IndexedAyah[] = [];
+      let nextSurah = 1;
+
+      const processChunk = () => {
+        const chunkEnd = Math.min(nextSurah + SURAH_CHUNK_SIZE - 1, 114);
+
+        for (let surahNumber = nextSurah; surahNumber <= chunkEnd; surahNumber += 1) {
+          rows.push(...indexSurahRows(surahNumber));
+        }
+
+        nextSurah = chunkEnd + 1;
+
+        if (nextSurah <= 114) {
+          setImmediate(processChunk);
+          return;
+        }
+
+        ayahIndexCache = rows;
+        resolve(rows);
+      };
+
+      processChunk();
+    });
+  });
+
+  return ayahIndexBuildPromise;
+}
+
+export function ensureAyahIndexReady(): Promise<IndexedAyah[]> {
+  return buildAyahIndexChunked();
+}
+
+export async function searchArabicIndex(query: string, limit: number = 50): Promise<SearchResult[]> {
   const normalizedQuery = normalizeArabic(query);
   if (!normalizedQuery || normalizedQuery.length < 2) return [];
 
   const results: SearchResult[] = [];
-  const rows = buildAyahIndex();
+  const rows = await ensureAyahIndexReady();
 
   for (const row of rows) {
     if (!row.normalizedArabic.includes(normalizedQuery)) continue;
@@ -87,16 +122,16 @@ export function searchArabicIndex(query: string, limit: number = 50): SearchResu
   return results;
 }
 
-export function searchTranslationIndex(
+export async function searchTranslationIndex(
   query: string,
   language: TranslationLanguage = 'both',
   limit: number = 50
-): SearchResult[] {
+): Promise<SearchResult[]> {
   const normalizedQuery = normalizeArabic(query);
   if (!normalizedQuery || normalizedQuery.length < 2) return [];
 
   const results: SearchResult[] = [];
-  const rows = buildAyahIndex();
+  const rows = await ensureAyahIndexReady();
 
   for (const row of rows) {
     const matchDari = (language === 'dari' || language === 'both')
@@ -128,4 +163,5 @@ export function searchTranslationIndex(
 
 export function clearQuranSearchIndexCache(): void {
   ayahIndexCache = null;
+  ayahIndexBuildPromise = null;
 }

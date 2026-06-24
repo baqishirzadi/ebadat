@@ -27,18 +27,12 @@ export default function SearchScreen() {
   const [isSearching, setIsSearching] = useState(false);
   const [results, setResults] = useState<SearchResult[]>([]);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const searchWorkerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigationGuardTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestSearchRequestIdRef = useRef(0);
   const isNavigatingRef = useRef(false);
 
   const runSearch = useCallback((text: string) => {
     const requestId = ++latestSearchRequestIdRef.current;
-
-    if (searchWorkerRef.current) {
-      clearTimeout(searchWorkerRef.current);
-      searchWorkerRef.current = null;
-    }
 
     if (!text.trim() || text.length < 2) {
       setResults([]);
@@ -47,20 +41,24 @@ export default function SearchScreen() {
     }
 
     setIsSearching(true);
-    searchWorkerRef.current = setTimeout(() => {
-      const searchResults =
-        searchMode === 'arabic'
-          ? searchArabic(text, 100)
-          : searchTranslation(text, 'both', 100);
+    void (async () => {
+      try {
+        const searchResults =
+          searchMode === 'arabic'
+            ? await searchArabic(text, 100)
+            : await searchTranslation(text, 'both', 100);
 
-      if (requestId !== latestSearchRequestIdRef.current) {
-        return;
+        if (requestId !== latestSearchRequestIdRef.current) {
+          return;
+        }
+
+        setResults(searchResults);
+      } finally {
+        if (requestId === latestSearchRequestIdRef.current) {
+          setIsSearching(false);
+        }
       }
-
-      setResults(searchResults);
-      setIsSearching(false);
-      searchWorkerRef.current = null;
-    }, 0);
+    })();
   }, [searchMode, searchArabic, searchTranslation]);
 
   // Perform search with debounce
@@ -81,9 +79,6 @@ export default function SearchScreen() {
     return () => {
       if (debounceRef.current) {
         clearTimeout(debounceRef.current);
-      }
-      if (searchWorkerRef.current) {
-        clearTimeout(searchWorkerRef.current);
       }
     };
   }, [query, runSearch]);

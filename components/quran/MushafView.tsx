@@ -1126,7 +1126,8 @@ const styles = StyleSheet.create({
     textAlign: 'center', // CENTERED
     lineHeight: 62, // Reduced from 75 - balanced spacing, prevents text cut-off
     writingDirection: 'rtl',
-    letterSpacing: 0,
+    letterSpacing: 1, // Spacing for diacritics not to overlap
+    includeFontPadding: false, // Android: prevent extra padding
     paddingBottom: 5, // Prevents text cut-off at bottom
   },
   ayahEndMark: {

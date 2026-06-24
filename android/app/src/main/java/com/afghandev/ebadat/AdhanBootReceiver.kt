@@ -14,12 +14,17 @@ class AdhanBootReceiver : BroadcastReceiver() {
       Intent.ACTION_TIME_CHANGED,
       Intent.ACTION_TIMEZONE_CHANGED,
       -> {
-        try {
-          val rescheduled = AdhanAlarmScheduler.rescheduleStored(context.applicationContext)
-          Log.i("AdhanBootReceiver", "Rescheduled $rescheduled alarms after action=$action")
-        } catch (error: Exception) {
-          Log.e("AdhanBootReceiver", "Failed to reschedule alarms after action=$action", error)
-        }
+        val pending = goAsync()
+        Thread {
+          try {
+            val rescheduled = AdhanAlarmScheduler.rescheduleStored(context.applicationContext)
+            Log.i("AdhanBootReceiver", "Rescheduled $rescheduled alarms after action=$action")
+          } catch (error: Exception) {
+            Log.e("AdhanBootReceiver", "Failed to reschedule alarms after action=$action", error)
+          } finally {
+            pending.finish()
+          }
+        }.start()
       }
     }
   }

@@ -8,6 +8,7 @@
 import { useMemo, useCallback } from 'react';
 import { QuranData, Surah, Ayah, SearchResult } from '@/types/quran';
 import metadata from '@/data/metadata.json';
+import { getJuzRange, JUZ_RANGES } from '@/data/juzRanges';
 import { getSurahSync, SurahData, SurahMetadata } from './useSurahData';
 import { searchArabicIndex, searchTranslationIndex } from '@/utils/quranSearchEngine';
 
@@ -81,73 +82,72 @@ export function useQuranData() {
   // Get ayahs by page number
   const getAyahsByPage = useCallback((pageNumber: number): { surah: Surah; ayah: Ayah }[] => {
     const result: { surah: Surah; ayah: Ayah }[] = [];
-    
-    // Load all surahs and search for ayahs on this page
-    for (let i = 1; i <= 114; i++) {
-      const surahData = getSurahSync(i);
+    const matchingRanges = JUZ_RANGES.filter(
+      (range) => pageNumber >= range.startPage && pageNumber <= range.endPage
+    );
+
+    if (matchingRanges.length === 0) {
+      return result;
+    }
+
+    const startSurah = Math.min(...matchingRanges.map((range) => range.startSurah));
+    const endSurah = Math.max(...matchingRanges.map((range) => range.endSurah));
+
+    for (let surahNumber = startSurah; surahNumber <= endSurah; surahNumber += 1) {
+      const surahData = getSurahSync(surahNumber);
       if (!surahData) continue;
 
       for (const ayah of surahData.ayahs) {
-        if (ayah.page === pageNumber) {
-          result.push({
-            surah: convertToLegacyFormat(surahData),
-            ayah: {
-              number: ayah.number,
-              numberInQuran: ayah.number,
-              text: ayah.text,
-              page: ayah.page,
-              juz: ayah.juz,
-              hizb: ayah.hizb,
-              sajda: ayah.sajda,
-            },
-          });
-        }
+        if (ayah.page !== pageNumber) continue;
+
+        result.push({
+          surah: convertToLegacyFormat(surahData),
+          ayah: toLegacyAyah(ayah),
+        });
       }
     }
-    
+
     return result;
   }, []);
 
   // Get ayahs by juz number
   const getAyahsByJuz = useCallback((juzNumber: number): { surah: Surah; ayah: Ayah }[] => {
     const result: { surah: Surah; ayah: Ayah }[] = [];
-    
-    for (let i = 1; i <= 114; i++) {
-      const surahData = getSurahSync(i);
+    const range = getJuzRange(juzNumber);
+
+    if (!range) {
+      return result;
+    }
+
+    for (let surahNumber = range.startSurah; surahNumber <= range.endSurah; surahNumber += 1) {
+      const surahData = getSurahSync(surahNumber);
       if (!surahData) continue;
 
       for (const ayah of surahData.ayahs) {
-        if (ayah.juz === juzNumber) {
-          result.push({
-            surah: convertToLegacyFormat(surahData),
-            ayah: {
-              number: ayah.number,
-              numberInQuran: ayah.number,
-              text: ayah.text,
-              page: ayah.page,
-              juz: ayah.juz,
-              hizb: ayah.hizb,
-              sajda: ayah.sajda,
-            },
-          });
-        }
+        if (surahNumber === range.startSurah && ayah.number < range.startAyah) continue;
+        if (surahNumber === range.endSurah && ayah.number > range.endAyah) continue;
+
+        result.push({
+          surah: convertToLegacyFormat(surahData),
+          ayah: toLegacyAyah(ayah),
+        });
       }
     }
-    
+
     return result;
   }, []);
 
   // Search in Arabic text
-  const searchArabic = useCallback((query: string, limit: number = 50): SearchResult[] => {
+  const searchArabic = useCallback(async (query: string, limit: number = 50): Promise<SearchResult[]> => {
     return searchArabicIndex(query, limit);
   }, []);
 
   // Search in translations
-  const searchTranslation = useCallback((
+  const searchTranslation = useCallback(async (
     query: string,
     language: 'dari' | 'pashto' | 'both' = 'both',
     limit: number = 50
-  ): SearchResult[] => {
+  ): Promise<SearchResult[]> => {
     return searchTranslationIndex(query, language, limit);
   }, []);
 
@@ -228,6 +228,18 @@ export function useQuranData() {
 /**
  * Convert new SurahData format to legacy Surah format for backward compatibility
  */
+function toLegacyAyah(ayah: SurahData['ayahs'][number]): Ayah {
+  return {
+    number: ayah.number,
+    numberInQuran: ayah.number,
+    text: ayah.text,
+    page: ayah.page,
+    juz: ayah.juz,
+    hizb: ayah.hizb,
+    sajda: ayah.sajda,
+  };
+}
+
 function convertToLegacyFormat(surahData: SurahData): Surah {
   return {
     number: surahData.number,
@@ -239,15 +251,7 @@ function convertToLegacyFormat(surahData: SurahData): Surah {
     ayahCount: surahData.numberOfAyahs,
     revelationType: surahData.revelationType === 'مکی' ? 'Meccan' : 'Medinan',
     startPage: surahData.ayahs[0]?.page || 1,
-    ayahs: surahData.ayahs.map(a => ({
-      number: a.number,
-      numberInQuran: a.number,
-      text: a.text,
-      page: a.page,
-      juz: a.juz,
-      hizb: a.hizb,
-      sajda: a.sajda,
-    })),
+    ayahs: surahData.ayahs.map(toLegacyAyah),
     translations: {
       dari: surahData.ayahs.map(a => ({
         ayahNumber: a.number,
