@@ -20,12 +20,7 @@ class ExactAlarmModule(private val reactContext: ReactApplicationContext) :
   @ReactMethod
   fun canScheduleExactAlarms(promise: Promise) {
     try {
-      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-        promise.resolve(true)
-        return
-      }
-      val alarmManager = reactContext.getSystemService(AlarmManager::class.java)
-      promise.resolve(alarmManager?.canScheduleExactAlarms() == true)
+      promise.resolve(AdhanAlarmScheduler.canScheduleExactAlarms(reactContext))
     } catch (error: Exception) {
       promise.reject("exact_alarm_check_failed", error)
     }
@@ -60,21 +55,46 @@ class ExactAlarmModule(private val reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
+  fun isIgnoringBatteryOptimizations(promise: Promise) {
+    try {
+      promise.resolve(AdhanPowerHelper.isIgnoringBatteryOptimizations(reactContext))
+    } catch (error: Exception) {
+      promise.reject("battery_optimization_check_failed", error)
+    }
+  }
+
+  @ReactMethod
+  fun openBatteryOptimizationSettings(promise: Promise) {
+    try {
+      promise.resolve(AdhanPowerHelper.openBatteryOptimizationSettings(reactContext))
+    } catch (error: Exception) {
+      promise.reject("battery_optimization_settings_open_failed", error)
+    }
+  }
+
+  @ReactMethod
+  fun openOemAutostartSettings(promise: Promise) {
+    try {
+      promise.resolve(AdhanPowerHelper.openOemAutostartSettings(reactContext))
+    } catch (error: Exception) {
+      promise.reject("oem_autostart_settings_open_failed", error)
+    }
+  }
+
+  @ReactMethod
   fun getExactAlarmDebugState(promise: Promise) {
     try {
       val sdkInt = Build.VERSION.SDK_INT
-      val canScheduleExactAlarms = if (sdkInt < Build.VERSION_CODES.S) {
-        true
-      } else {
-        val alarmManager = reactContext.getSystemService(AlarmManager::class.java)
-        alarmManager?.canScheduleExactAlarms() == true
-      }
+      val canScheduleExactAlarms = AdhanAlarmScheduler.canScheduleExactAlarms(reactContext)
       val notificationsEnabled = NotificationManagerCompat.from(reactContext).areNotificationsEnabled()
+      val isIgnoringBatteryOptimizations = AdhanPowerHelper.isIgnoringBatteryOptimizations(reactContext)
 
       val result = Arguments.createMap().apply {
         putInt("sdkInt", sdkInt)
         putBoolean("canScheduleExactAlarms", canScheduleExactAlarms)
         putBoolean("notificationsEnabled", notificationsEnabled)
+        putBoolean("isIgnoringBatteryOptimizations", isIgnoringBatteryOptimizations)
+        putString("manufacturer", Build.MANUFACTURER)
       }
       promise.resolve(result)
     } catch (error: Exception) {

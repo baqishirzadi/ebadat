@@ -376,20 +376,6 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Notification Settings */}
-      <View style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-        <MaterialIcons name="notifications" size={24} color={theme.tint} />
-        <View style={styles.sectionInfo}>
-          <Text style={[styles.sectionTitle, { color: theme.text }]}>یادآوری نماز</Text>
-        </View>
-        <Switch
-          value={prayerState.settings.notificationsEnabled}
-          onValueChange={(value) => updateSettings({ notificationsEnabled: value })}
-          trackColor={{ false: theme.divider, true: theme.tint }}
-          thumbColor="#fff"
-        />
-      </View>
-
       {/* Adhan Settings Link */}
       <Pressable
         onPress={() => router.push('/adhan-settings')}

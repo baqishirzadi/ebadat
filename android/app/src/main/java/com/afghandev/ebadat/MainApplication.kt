@@ -62,6 +62,8 @@ class MainApplication : Application(), ReactApplication {
     }
     loadReactNative(this)
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
+    AdhanNotificationChannels.ensureCreated(this)
+    AdhanScheduleManager.enqueuePeriodicMaintenance(this)
   }
 
   override fun onConfigurationChanged(newConfig: Configuration) {

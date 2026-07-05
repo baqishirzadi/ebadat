@@ -32,12 +32,11 @@ import {
 } from '@/utils/prayerTimes';
 import { getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
 import {
-  AdhanScheduleMode,
   canUseNativeAdhanScheduler,
   cancelNativeExactAdhanAlarms,
   getNativeExactAdhanAlarms,
-  NativeAdhanAlarmInput,
-  scheduleNativeAdhanAlarms,
+  NativeAdhanConfigInput,
+  syncNativeAdhanConfig,
 } from '@/utils/nativeAdhanScheduler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useReducer, useRef } from 'react';
@@ -102,7 +101,7 @@ const STORAGE_KEYS = {
   LAST_ADHAN_DELAY_SECONDS: '@ebadat/last_adhan_delay_seconds',
 };
 
-const PRAYER_ROLLING_DAYS_ANDROID = 21;
+const PRAYER_ROLLING_DAYS_ANDROID = 3;
 const PRAYER_ROLLING_DAYS_IOS = 7;
 const PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER = 5;
 const ADHAN_SOUND_FILENAME = 'barakatullah_salim_18sec.mp3';
@@ -114,6 +113,52 @@ const CHANNEL_IDS = {
   CALENDAR_QAMARI: 'calendar-qamari',
   JUMMAH_REMINDER: 'jummah-reminder-v2',
 } as const;
+
+const JUMMAH_NOTIFICATION_COPY = {
+  title: 'نماز جمعه',
+  body: 'وقت نماز جمعه است. به سوی ذکر و عبادت خدا بشتابید و داد و ستد را رها سازید',
+} as const;
+
+function buildNativeAdhanConfig(
+  location: LocationType,
+  cityKey: string,
+  adhanPreferences: AdhanPreferences,
+): NativeAdhanConfigInput {
+  const fajrContent = getNotificationContent('fajr', true);
+  const dhuhrContent = getNotificationContent('dhuhr', true);
+  const asrContent = getNotificationContent('asr', true);
+  const maghribContent = getNotificationContent('maghrib', true);
+  const ishaContent = getNotificationContent('isha', true);
+
+  return {
+    latitude: location.latitude,
+    longitude: location.longitude,
+    timezoneId: location.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+    cityKey,
+    masterEnabled: adhanPreferences.masterEnabled,
+    fajrEnabled: adhanPreferences.fajr.enabled,
+    dhuhrEnabled: adhanPreferences.dhuhr.enabled,
+    asrEnabled: adhanPreferences.asr.enabled,
+    maghribEnabled: adhanPreferences.maghrib.enabled,
+    ishaEnabled: adhanPreferences.isha.enabled,
+    voice: adhanPreferences.globalVoice,
+    fajrTitle: fajrContent.title,
+    fajrBody: fajrContent.body,
+    dhuhrTitle: dhuhrContent.title,
+    dhuhrBody: dhuhrContent.body,
+    asrTitle: asrContent.title,
+    asrBody: asrContent.body,
+    maghribTitle: maghribContent.title,
+    maghribBody: maghribContent.body,
+    ishaTitle: ishaContent.title,
+    ishaBody: ishaContent.body,
+    jummahTitle: JUMMAH_NOTIFICATION_COPY.title,
+    jummahBody: JUMMAH_NOTIFICATION_COPY.body,
+    fajrChannelId: CHANNEL_IDS.ADHAN_FAJR,
+    regularChannelId: CHANNEL_IDS.ADHAN_REGULAR,
+    configVersion: Date.now(),
+  };
+}
 
 type ExpectedNotificationType = 'adhan' | 'reminder';
 
@@ -1214,32 +1259,6 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     dispatch({ type: 'SET_ADHAN_PREFERENCES', payload: newPreferences });
     await saveAdhanPreferences(newPreferences);
 
-    // One-time prompt when enabling adhan with sound for Fajr or Maghrib (Android)
-    if (Platform.OS === 'android') {
-      const newFajr = { ...state.adhanPreferences.fajr, ...(preferences.fajr || {}) };
-      const newMaghrib = { ...state.adhanPreferences.maghrib, ...(preferences.maghrib || {}) };
-      const fajrSoundJustEnabled = !state.adhanPreferences.fajr.playSound && newFajr.playSound;
-      const maghribSoundJustEnabled = !state.adhanPreferences.maghrib.playSound && newMaghrib.playSound;
-      if (fajrSoundJustEnabled || maghribSoundJustEnabled) {
-        try {
-          const alreadyShown = await AsyncStorage.getItem(STORAGE_KEYS.EXACT_ALARM_PROMPT_SHOWN);
-          if (!alreadyShown) {
-            await AsyncStorage.setItem(STORAGE_KEYS.EXACT_ALARM_PROMPT_SHOWN, '1');
-            Alert.alert(
-              'اذان به موقع',
-              'برای اذان به موقع، لطفاً در تنظیمات برنامه دسترسی «ساعت و یادآوری» را فعال کنید.',
-              [
-                { text: 'بعداً' },
-                { text: 'تنظیمات', onPress: () => Linking.openSettings() },
-              ]
-            );
-          }
-        } catch {
-          // Ignore storage errors
-        }
-      }
-    }
-
     // Reschedule notifications with new preferences
     if (state.prayerTimes) {
       try {
@@ -1499,6 +1518,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     if (!cityKey) {
       return [];
     }
+    const useNativeEngine = Platform.OS === 'android' && canUseNativeAdhanScheduler();
     const { adhanPreferences } = state;
     const fallbackTimeZone =
       state.location.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -1559,38 +1579,38 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           : new Date(dayTimes[prayerKey]);
         if (!isValidDate(scheduleTime) || scheduleTime <= now) continue;
 
-        const content = isFridayJummah
-          ? {
-            title: 'نماز جمعه',
-            body: 'وقت نماز جمعه است. به سوی ذکر و عبادت خدا بشتابید و داد و ستد را رها سازید',
-          }
-          : getNotificationContent(prayerKey, true);
-        const channelId = prayerKey === 'fajr' ? CHANNEL_IDS.ADHAN_FAJR : CHANNEL_IDS.ADHAN_REGULAR;
         const dayKey = getDateKey(scheduleTime);
-        const adhanId = isFridayJummah
-          ? `adhan-jummah-${dayKey}`
-          : `adhan-${prayerKey}-${dayKey}`;
 
-        expected.push({
-          id: adhanId,
-          type: 'adhan',
-          prayerKey,
-          dayKey,
-          triggerDate: scheduleTime,
-          channelId,
-          title: content.title,
-          body: content.body,
-          sound: ADHAN_SOUND_FILENAME,
-          data: {
-            prayer: prayerKey,
+        if (!useNativeEngine) {
+          const content = isFridayJummah
+            ? JUMMAH_NOTIFICATION_COPY
+            : getNotificationContent(prayerKey, true);
+          const channelId = prayerKey === 'fajr' ? CHANNEL_IDS.ADHAN_FAJR : CHANNEL_IDS.ADHAN_REGULAR;
+          const adhanId = isFridayJummah
+            ? `adhan-jummah-${dayKey}`
+            : `adhan-${prayerKey}-${dayKey}`;
+
+          expected.push({
+            id: adhanId,
             type: 'adhan',
-            playSound: true,
-            voice: prayerSettings.selectedVoice,
+            prayerKey,
             dayKey,
-            isJummah: isFridayJummah,
-            expectedFireAtMs: scheduleTime.getTime(),
-          },
-        });
+            triggerDate: scheduleTime,
+            channelId,
+            title: content.title,
+            body: content.body,
+            sound: ADHAN_SOUND_FILENAME,
+            data: {
+              prayer: prayerKey,
+              type: 'adhan',
+              playSound: true,
+              voice: prayerSettings.selectedVoice,
+              dayKey,
+              isJummah: isFridayJummah,
+              expectedFireAtMs: scheduleTime.getTime(),
+            },
+          });
+        }
 
         if (adhanPreferences.earlyReminder && adhanPreferences.earlyReminderMinutes > 0) {
           const reminderTime = new Date(
@@ -1982,60 +2002,15 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
 
     let nativeExactMismatchCount = 0;
     let nativeExactScheduledCount = 0;
+    let nativeExpectedCount = 0;
     if (useNativeExactAdhan) {
-      const nativeScheduleMode: AdhanScheduleMode =
-        scheduleMode === 'exact' ? 'exact' : 'fallback_inexact';
-      const existingNative = await getNativeExactAdhanAlarms();
-      const expectedNativeById = new Map(expectedAdhan.map((item) => [item.id, item]));
-      const existingNativeIds = new Set(existingNative.map((item) => item.id));
-
-      for (const scheduled of existingNative) {
-        const expectedItem = expectedNativeById.get(scheduled.id);
-        if (!expectedItem) {
-          nativeExactMismatchCount += 1;
-          continue;
-        }
-        const driftMs = Math.abs(scheduled.triggerAtMs - expectedItem.triggerDate.getTime());
-        if (driftMs > 5_000) {
-          nativeExactMismatchCount += 1;
-        } else {
-          maxDriftSeconds = Math.max(maxDriftSeconds, Math.round(driftMs / 1000));
-        }
+      const nativeConfig = buildNativeAdhanConfig(state.location, resolvedCityKey, state.adhanPreferences);
+      const nativeResult = await syncNativeAdhanConfig(nativeConfig);
+      nativeExactScheduledCount = nativeResult.expectedCount;
+      nativeExpectedCount = nativeResult.expectedCount;
+      if (nativeResult.scheduledCount > 0) {
+        nativeExactMismatchCount = 0;
       }
-
-      for (const expectedItem of expectedAdhan) {
-        if (!existingNativeIds.has(expectedItem.id)) {
-          nativeExactMismatchCount += 1;
-        }
-      }
-
-      if (existingNative.length > 0) {
-        await cancelNativeExactAdhanAlarms(existingNative.map((item) => item.id));
-      }
-
-      const nativePayloads: NativeAdhanAlarmInput[] = expectedAdhan.map((item) => ({
-        id: item.id,
-        triggerAtMs: item.triggerDate.getTime(),
-        title: item.title,
-        body: item.body,
-        channelId: item.channelId,
-        scheduleMode: nativeScheduleMode,
-        type: 'adhan',
-        prayer: item.prayerKey,
-        expectedFireAtMs:
-          typeof item.data.expectedFireAtMs === 'number'
-            ? item.data.expectedFireAtMs
-            : item.triggerDate.getTime(),
-        dayKey: typeof item.data.dayKey === 'string' ? item.data.dayKey : item.dayKey,
-        isJummah: Boolean(item.data.isJummah),
-        voice: typeof item.data.voice === 'string' ? item.data.voice : undefined,
-      }));
-      if (nativePayloads.length > 0) {
-        await scheduleNativeAdhanAlarms(nativePayloads, nativeScheduleMode);
-      }
-
-      const afterNative = await getNativeExactAdhanAlarms();
-      nativeExactScheduledCount = afterNative.length;
     }
 
     const afterAll = await NotificationsModule.getAllScheduledNotificationsAsync();
@@ -2050,6 +2025,22 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     const scheduledCount = useNativeExactAdhan
       ? scheduledReminderExpoCount + scheduledAdhanCount
       : afterPrayerExpo.length;
+    const expectedAdhanCount = useNativeExactAdhan ? nativeExpectedCount : expectedAdhan.length;
+
+    let nextTriggerByPrayer = buildNextTriggerByPrayer(expected);
+    if (useNativeExactAdhan) {
+      const nativeAlarms = await getNativeExactAdhanAlarms();
+      const nativeNextTrigger: Partial<Record<PrayerName, number>> = {};
+      for (const alarm of nativeAlarms) {
+        const prayerKey = alarm.prayer as PrayerName | undefined;
+        if (!prayerKey) continue;
+        const existing = nativeNextTrigger[prayerKey];
+        if (!existing || alarm.triggerAtMs < existing) {
+          nativeNextTrigger[prayerKey] = alarm.triggerAtMs;
+        }
+      }
+      nextTriggerByPrayer = nativeNextTrigger;
+    }
 
     dispatch({
       type: 'SET_SCHEDULE_AUDIT',
@@ -2060,8 +2051,8 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         schedulerBackend,
         blockers: [],
         warnings: scheduleWarnings,
-        expectedCount: expected.length,
-        expectedAdhanCount: expectedAdhan.length,
+        expectedCount: expectedAdhanCount + expectedReminder.length,
+        expectedAdhanCount,
         scheduledCount,
         scheduledAdhanCount,
         scheduledAdhanNativeCount,

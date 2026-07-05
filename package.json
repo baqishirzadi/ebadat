@@ -39,6 +39,7 @@
     "seed:ahadith-remote": "node scripts/seed-ahadith-remote.js",
     "verify:calendar-truth": "node scripts/verify-calendar-truth.js",
     "verify:patches": "node scripts/verify-patches-clean.js",
+    "verify:prayer-engine-parity": "node scripts/verify-prayer-engine-parity.js",
     "verify:qibla-math": "node scripts/verify-qibla-math.js"
   },
   "dependencies": {

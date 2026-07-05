@@ -1,5 +1,6 @@
 package com.afghandev.ebadat
 
+import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -13,14 +14,18 @@ class AdhanBootReceiver : BroadcastReceiver() {
       Intent.ACTION_MY_PACKAGE_REPLACED,
       Intent.ACTION_TIME_CHANGED,
       Intent.ACTION_TIMEZONE_CHANGED,
+      AlarmManager.ACTION_SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED,
       -> {
         val pending = goAsync()
         Thread {
           try {
-            val rescheduled = AdhanAlarmScheduler.rescheduleStored(context.applicationContext)
-            Log.i("AdhanBootReceiver", "Rescheduled $rescheduled alarms after action=$action")
+            val result = AdhanScheduleManager.ensureScheduled(context.applicationContext, "boot-$action")
+            Log.i(
+              "AdhanBootReceiver",
+              "Recomputed alarms after action=$action scheduled=${result.scheduledCount} expected=${result.expectedCount}",
+            )
           } catch (error: Exception) {
-            Log.e("AdhanBootReceiver", "Failed to reschedule alarms after action=$action", error)
+            Log.e("AdhanBootReceiver", "Failed to recompute alarms after action=$action", error)
           } finally {
             pending.finish()
           }

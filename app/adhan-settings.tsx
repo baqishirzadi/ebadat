@@ -4,7 +4,7 @@
  * Designed with mosque-style calm aesthetic
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -26,6 +26,8 @@ import {
   PRAYER_NAMES,
 } from '@/utils/adhanManager';
 import { testAdhanVoice, stopAdhan } from '@/utils/adhanAudio';
+import { AdhanHealthBanner } from '@/components/prayer/AdhanHealthBanner';
+import { fetchAdhanHealth, openBatteryOptimizationSettings, openOemAutostartSettings, snoozeBatteryNudge } from '@/utils/adhanHealth';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 
@@ -57,6 +59,14 @@ export default function AdhanSettingsScreen() {
   
   const [isTestingVoice, setIsTestingVoice] = useState<AdhanVoice | null>(null);
   const [expandedPrayer, setExpandedPrayer] = useState<PrayerName | null>(null);
+  const [showBatteryNudge, setShowBatteryNudge] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    fetchAdhanHealth()
+      .then((health) => setShowBatteryNudge(health.shouldShowBatteryNudge))
+      .catch(() => {});
+  }, []);
 
   const { adhanPreferences } = state;
   const exactAlarmStatusLabel = state.exactAlarmStatus === 'granted'
@@ -351,17 +361,18 @@ export default function AdhanSettingsScreen() {
           </View>
         )}
 
-        {/* Exact Alarm Settings - Android: ensure adhan fires on time when app is in background */}
+        {/* Native adhan health + system test */}
         {Platform.OS === 'android' && adhanPreferences.masterEnabled && (
           <View style={[styles.exactAlarmCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <AdhanHealthBanner theme={theme} />
             <View style={styles.exactAlarmContent}>
               <MaterialIcons name="schedule" size={24} color="#D4AF37" />
               <View style={styles.exactAlarmText}>
                 <Text style={[styles.exactAlarmLabel, { color: theme.text }]}>
-                  تنظیمات دقیق اذان
+                  وضعیت اذان سیستمی
                 </Text>
                 <Text style={[styles.exactAlarmDesc, { color: theme.textSecondary }]}>
-                  برای اذان به موقع، لطفاً دسترسی «ساعت و یادآوری» را در تنظیمات فعال کنید
+                  اذان به‌صورت خودکار با موتور بومی اندروید زمان‌بندی می‌شود.
                 </Text>
               </View>
             </View>
@@ -596,13 +607,33 @@ export default function AdhanSettingsScreen() {
           </Text>
         </View>
 
-        {/* Battery optimization tip for Android - critical for sound when app is closed */}
-        {Platform.OS === 'android' && (
+        {Platform.OS === 'android' && showBatteryNudge && (
           <View style={[styles.infoNote, { backgroundColor: theme.backgroundSecondary, marginTop: Spacing.sm }]}>
             <MaterialIcons name="battery-charging-full" size={20} color="#D4AF37" />
             <Text style={[styles.infoNoteText, { color: theme.textSecondary }]}>
-              اگر صدای اذان هنگام بسته بودن اپ پخش نمی‌شود، در تنظیمات دستگاه «بهینه‌سازی باتری» را برای این اپ غیرفعال کنید.
+              اگر اذان گاهی با تأخیر می‌آید، بهینه‌سازی باتری را برای عبادت غیرفعال کنید.
             </Text>
+            <Pressable
+              onPress={() => openBatteryOptimizationSettings().catch(() => {})}
+              style={[styles.openSettingsButton, { backgroundColor: '#1a4d3e', marginTop: Spacing.sm }]}
+            >
+              <Text style={styles.openSettingsButtonText}>تنظیمات باتری</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => openOemAutostartSettings().catch(() => {})}
+              style={[styles.openSettingsButton, { backgroundColor: theme.tint, marginTop: Spacing.xs }]}
+            >
+              <Text style={styles.openSettingsButtonText}>راهنمای گوشی</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                snoozeBatteryNudge().catch(() => {});
+                setShowBatteryNudge(false);
+              }}
+              style={{ marginTop: Spacing.xs, alignSelf: 'center' }}
+            >
+              <Text style={[styles.infoNoteText, { color: theme.textSecondary }]}>بعداً</Text>
+            </Pressable>
           </View>
         )}
 

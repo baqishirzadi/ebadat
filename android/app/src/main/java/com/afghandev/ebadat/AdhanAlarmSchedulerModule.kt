@@ -6,11 +6,44 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.bridge.ReadableMap
 
 class AdhanAlarmSchedulerModule(private val reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
 
   override fun getName(): String = "AdhanAlarmSchedulerModule"
+
+  @ReactMethod
+  fun setAdhanConfig(config: ReadableMap, promise: Promise) {
+    try {
+      val parsed = AdhanConfig.fromReadableMap(config)
+      AdhanConfigStore.get(reactContext).save(parsed)
+      val result = AdhanScheduleManager.ensureScheduled(reactContext.applicationContext, "config-sync")
+      promise.resolve(result.toWritableMap())
+    } catch (error: Exception) {
+      promise.reject("adhan_config_sync_failed", error)
+    }
+  }
+
+  @ReactMethod
+  fun getAdhanHealth(promise: Promise) {
+    try {
+      val health = AdhanHealthReporter.collect(reactContext.applicationContext)
+      promise.resolve(health.toWritableMap())
+    } catch (error: Exception) {
+      promise.reject("adhan_health_failed", error)
+    }
+  }
+
+  @ReactMethod
+  fun runMaintenanceNow(promise: Promise) {
+    try {
+      val result = AdhanScheduleManager.ensureScheduled(reactContext.applicationContext, "manual-maintenance")
+      promise.resolve(result.toWritableMap())
+    } catch (error: Exception) {
+      promise.reject("adhan_maintenance_failed", error)
+    }
+  }
 
   @ReactMethod
   fun scheduleAdhanAlarms(alarms: ReadableArray, mode: String?, promise: Promise) {

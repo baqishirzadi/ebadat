@@ -6,7 +6,6 @@ import {
   ActivityIndicator,
   Alert,
   Modal,
-  NativeModules,
   Platform,
   Pressable,
   ScrollView,
@@ -14,7 +13,6 @@ import {
   Text,
   View,
   InteractionManager,
-  Linking,
   useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -31,7 +29,9 @@ import {
   getSavedPrayerCityKey,
   isFirstOpenAdhanSetupDone,
   markFirstOpenAdhanSetupDone,
+  requestAdhanNotificationPermission,
   SELECTED_CITY_STORAGE_KEY,
+  shouldShowNotificationOnboardingStep,
 } from '@/utils/prayerOnboarding';
 
 const DEFAULT_CITY_KEY: CityKey = 'afghanistan_kabul';
@@ -41,6 +41,8 @@ const QUICK_CITY_KEYS: CityKey[] = [
   'afghanistan_mazar',
   'afghanistan_kandahar',
 ];
+
+type SetupStep = 'city' | 'notifications';
 
 type SetupLanguage = 'dari' | 'pashto';
 
@@ -65,6 +67,13 @@ const SETUP_COPY = {
     accuracySubtitle: 'برای پخش به‌موقع اذان وقتی برنامه بسته است، دسترسی «ساعت و یادآوری» را فعال کنید.',
     accuracyButton: 'فعال‌سازی از تنظیمات',
     footerNote: 'بعداً می‌توانید شهر و تنظیمات اعلان را از صفحه نماز تغییر دهید.',
+    notificationsStepTitle: 'فعال‌سازی اعلان‌ها',
+    notificationsStepSubtitle:
+      'برای دریافت اذان به‌موقع، اجازه اعلان را فعال کنید. این تنها مرحله ضروری پس از انتخاب شهر است.',
+    notificationsEnableButton: 'فعال‌سازی اعلان‌ها',
+    notificationsSkipButton: 'ادامه بدون اعلان',
+    notificationsDeniedTitle: 'اعلان غیرفعال ماند',
+    notificationsDeniedBody: 'می‌توانید بعداً از تنظیمات گوشی اعلان را فعال کنید.',
     cityPickerTitle: 'شهر اذان را انتخاب کنید',
     preparingStatus: 'در حال آماده‌سازی اذان...',
     detectingStatus: 'در حال تشخیص موقعیت...',
@@ -95,6 +104,13 @@ const SETUP_COPY = {
     accuracySubtitle: 'د اذان د پر وخت غږېدو لپاره، د موبایل په تنظیماتو کې «Alarms & reminders» اجازه فعاله کړئ.',
     accuracyButton: 'له تنظیماتو فعالول',
     footerNote: 'وروسته کولای شئ ښار او خبرتیاوې د لمانځه له پاڼې بدل کړئ.',
+    notificationsStepTitle: 'خبرتیاوې فعالول',
+    notificationsStepSubtitle:
+      'د اذان د پر وخت ترلاسه کولو لپاره د خبرتیاو اجازه فعاله کړئ. دا د ښار انتخاب وروسته یوازینۍ اړینه مرحله ده.',
+    notificationsEnableButton: 'خبرتیاوې فعالول',
+    notificationsSkipButton: 'پرته له خبرتیاوو دوام',
+    notificationsDeniedTitle: 'خبرتیاوې فعالې نه شوې',
+    notificationsDeniedBody: 'وروسته کولای شئ له د موبایل تنظیماتو څخه خبرتیاوې فعاله کړئ.',
     cityPickerTitle: 'د اذان ښار انتخاب کړئ',
     preparingStatus: 'اذان چمتو کېږي...',
     detectingStatus: 'موقعیت معلومېږي...',
@@ -128,6 +144,8 @@ export function FirstOpenAdhanSetup() {
     requestPrayerSchedule,
   } = usePrayer();
   const [visible, setVisible] = useState(false);
+  const [setupStep, setSetupStep] = useState<SetupStep>('city');
+  const [pendingCityKey, setPendingCityKey] = useState<CityKey | null>(null);
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [statusText, setStatusText] = useState('');
@@ -138,27 +156,6 @@ export function FirstOpenAdhanSetup() {
   const isCompactHeight = height < 740;
   const copy = SETUP_COPY[language];
 
-  const openHighAccuracySettings = useCallback(async () => {
-    if (Platform.OS !== 'android') {
-      await Linking.openSettings();
-      return;
-    }
-
-    try {
-      const exactModule = (NativeModules as {
-        ExactAlarmModule?: { openExactAlarmSettings?: () => Promise<boolean> };
-      }).ExactAlarmModule;
-
-      if (typeof exactModule?.openExactAlarmSettings === 'function') {
-        const opened = await exactModule.openExactAlarmSettings();
-        if (opened) return;
-      }
-      await Linking.openSettings();
-    } catch {
-      await Linking.openSettings();
-    }
-  }, []);
-
   const navigateToTabs = useCallback(() => {
     try {
       router.dismissAll();
@@ -167,6 +164,107 @@ export function FirstOpenAdhanSetup() {
     }
     router.replace('/(tabs)' as never);
   }, []);
+
+  const finalizeSetup = useCallback(
+    async (cityKey: CityKey) => {
+      const city = resolveCity(cityKey);
+      if (!city) {
+        Alert.alert(copy.errorTitle, copy.missingCityError);
+        return;
+      }
+
+      setIsBusy(true);
+      setStatusText(copy.preparingStatus);
+
+      try {
+        await AsyncStorage.setItem(SELECTED_CITY_STORAGE_KEY, city.key);
+        await setCustomLocation(
+          {
+            latitude: city.lat,
+            longitude: city.lon,
+            altitude: city.altitude || 0,
+            timezone: city.timezone,
+          },
+          city.name,
+          city.key,
+        );
+        await markFirstOpenAdhanSetupDone();
+
+        setVisible(false);
+        setCityPickerVisible(false);
+        setShouldRedirectHome(true);
+        setTimeout(() => {
+          navigateToTabs();
+        }, 0);
+        InteractionManager.runAfterInteractions(() => {
+          navigateToTabs();
+        });
+        refreshPrayerTimes();
+
+        setTimeout(() => {
+          requestPrayerSchedule('first-open-city-selected')
+            .then(() => ensurePushRegistrationOnFirstOpen())
+            .catch((error) => {
+              if (__DEV__) {
+                console.log('[FirstOpenAdhanSetup] Schedule after city selection failed:', error);
+              }
+            });
+        }, 1200);
+      } catch (error) {
+        if (__DEV__) {
+          console.log('[FirstOpenAdhanSetup] City setup failed:', error);
+        }
+        Alert.alert(copy.errorTitle, copy.setupFailedError);
+      } finally {
+        setIsBusy(false);
+        setStatusText('');
+        setPendingCityKey(null);
+        setSetupStep('city');
+      }
+    },
+    [copy, navigateToTabs, refreshPrayerTimes, requestPrayerSchedule, setCustomLocation],
+  );
+
+  const completeWithCity = useCallback(
+    async (cityKey: CityKey) => {
+      if (shouldShowNotificationOnboardingStep()) {
+        setPendingCityKey(cityKey);
+        setSetupStep('notifications');
+        return;
+      }
+      await finalizeSetup(cityKey);
+    },
+    [finalizeSetup],
+  );
+
+  const finalizeAfterNotifications = useCallback(async () => {
+    if (!pendingCityKey) return;
+    await finalizeSetup(pendingCityKey);
+  }, [finalizeSetup, pendingCityKey]);
+
+  const handleNotificationStep = useCallback(async () => {
+    setIsBusy(true);
+    setStatusText(copy.preparingStatus);
+    try {
+      const permission = await requestAdhanNotificationPermission();
+      if (permission === 'denied' || permission === 'blocked') {
+        Alert.alert(copy.notificationsDeniedTitle, copy.notificationsDeniedBody);
+      }
+      await finalizeAfterNotifications();
+    } finally {
+      setIsBusy(false);
+      setStatusText('');
+    }
+  }, [copy, finalizeAfterNotifications]);
+
+  const skipNotificationStep = useCallback(async () => {
+    setIsBusy(true);
+    try {
+      await finalizeAfterNotifications();
+    } finally {
+      setIsBusy(false);
+    }
+  }, [finalizeAfterNotifications]);
 
   useEffect(() => {
     if (!shouldRedirectHome) return;
@@ -221,82 +319,6 @@ export function FirstOpenAdhanSetup() {
       cancelled = true;
     };
   }, [currentSelectedCity, isInteractiveReady, requestPrayerSchedule]);
-
-  const completeWithCity = useCallback(
-    async (cityKey: CityKey) => {
-      const city = resolveCity(cityKey);
-      if (!city) {
-        Alert.alert(copy.errorTitle, copy.missingCityError);
-        return;
-      }
-
-      setIsBusy(true);
-      setStatusText(copy.preparingStatus);
-
-      try {
-        await AsyncStorage.setItem(SELECTED_CITY_STORAGE_KEY, city.key);
-        await setCustomLocation(
-          {
-            latitude: city.lat,
-            longitude: city.lon,
-            altitude: city.altitude || 0,
-            timezone: city.timezone,
-          },
-          city.name,
-          city.key,
-        );
-        await markFirstOpenAdhanSetupDone();
-
-        setVisible(false);
-        setCityPickerVisible(false);
-        setShouldRedirectHome(true);
-        setTimeout(() => {
-          navigateToTabs();
-        }, 0);
-        InteractionManager.runAfterInteractions(() => {
-          navigateToTabs();
-        });
-        refreshPrayerTimes();
-
-        setTimeout(() => {
-          requestPrayerSchedule('first-open-city-selected')
-            .then(() => ensurePushRegistrationOnFirstOpen())
-            .catch((error) => {
-              if (__DEV__) {
-                console.log('[FirstOpenAdhanSetup] Schedule after city selection failed:', error);
-              }
-            });
-        }, 1200);
-
-        if (Platform.OS === 'android') {
-          setTimeout(() => {
-            Alert.alert(
-              copy.highAccuracyTitle,
-              copy.highAccuracyBody,
-              [
-                { text: copy.laterButton },
-                {
-                  text: copy.activateAccuracyButton,
-                  onPress: () => {
-                    openHighAccuracySettings().catch(() => {});
-                  },
-                },
-              ],
-            );
-          }, 550);
-        }
-      } catch (error) {
-        if (__DEV__) {
-          console.log('[FirstOpenAdhanSetup] City setup failed:', error);
-        }
-        Alert.alert(copy.errorTitle, copy.setupFailedError);
-      } finally {
-        setIsBusy(false);
-        setStatusText('');
-      }
-    },
-    [copy, navigateToTabs, openHighAccuracySettings, refreshPrayerTimes, requestPrayerSchedule, setCustomLocation],
-  );
 
   const handleDetectLocation = useCallback(async () => {
     setIsBusy(true);
@@ -369,11 +391,17 @@ export function FirstOpenAdhanSetup() {
                 <MaterialIcons name="notifications-active" size={30} color="#D4AF37" />
               </View>
               <View style={styles.headerTextStack}>
-                <Text style={styles.kicker}>{copy.kicker}</Text>
-                <Text style={styles.title}>{copy.title}</Text>
+                <Text style={styles.kicker}>
+                  {setupStep === 'notifications' ? (language === 'dari' ? 'قدم دوم' : 'دوهم ګام') : copy.kicker}
+                </Text>
+                <Text style={styles.title}>
+                  {setupStep === 'notifications' ? copy.notificationsStepTitle : copy.title}
+                </Text>
               </View>
             </View>
-            <Text style={styles.subtitle}>{copy.subtitle}</Text>
+            <Text style={styles.subtitle}>
+              {setupStep === 'notifications' ? copy.notificationsStepSubtitle : copy.subtitle}
+            </Text>
 
             <View style={styles.languageTabs}>
               {SETUP_LANGUAGE_OPTIONS.map((option) => {
@@ -404,6 +432,48 @@ export function FirstOpenAdhanSetup() {
             contentContainerStyle={styles.content}
             showsVerticalScrollIndicator={false}
           >
+            {setupStep === 'notifications' ? (
+              <View style={styles.notificationStep}>
+                <View style={[styles.accuracyCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+                  <View style={styles.accuracyTopRow}>
+                    <View style={[styles.accuracyIcon, { backgroundColor: theme.backgroundSecondary }]}>
+                      <MaterialIcons name="notifications-active" size={24} color="#D4AF37" />
+                    </View>
+                    <View style={styles.actionText}>
+                      <Text style={[styles.actionTitle, { color: theme.text }]}>
+                        {copy.notificationsStepTitle}
+                      </Text>
+                      <Text style={[styles.actionSubtitle, { color: theme.textSecondary }]}>
+                        {copy.notificationsStepSubtitle}
+                      </Text>
+                    </View>
+                  </View>
+                  <Pressable
+                    testID="first-open-enable-notifications"
+                    disabled={isBusy}
+                    onPress={() => handleNotificationStep().catch(() => {})}
+                    style={({ pressed }) => [
+                      styles.accuracyButton,
+                      { backgroundColor: theme.tint },
+                      pressed && styles.playButtonPressed,
+                    ]}
+                  >
+                    <Text style={styles.accuracyButtonText}>{copy.notificationsEnableButton}</Text>
+                  </Pressable>
+                  <Pressable
+                    testID="first-open-skip-notifications"
+                    disabled={isBusy}
+                    onPress={() => skipNotificationStep().catch(() => {})}
+                    style={styles.dismissStepButton}
+                  >
+                    <Text style={[styles.dismissStepText, { color: theme.textSecondary }]}>
+                      {copy.notificationsSkipButton}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            ) : (
+              <>
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: theme.text }]}>
                 {copy.quickCitiesTitle}
@@ -469,37 +539,11 @@ export function FirstOpenAdhanSetup() {
               </Pressable>
             ))}
 
-            <View
-              testID="first-open-high-accuracy-card"
-              style={[styles.accuracyCard, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
-            >
-              <View style={styles.accuracyTopRow}>
-                <View style={[styles.accuracyIcon, { backgroundColor: theme.card }]}>
-                  <MaterialIcons name="alarm-on" size={24} color="#D4AF37" />
-                </View>
-                <View style={styles.actionText}>
-                  <Text style={[styles.actionTitle, { color: theme.text }]}>{copy.accuracyTitle}</Text>
-                  <Text style={[styles.actionSubtitle, { color: theme.textSecondary }]}>
-                    {copy.accuracySubtitle}
-                  </Text>
-                </View>
-              </View>
-              <Pressable
-                testID="first-open-open-high-accuracy"
-                onPress={() => openHighAccuracySettings().catch(() => {})}
-                style={({ pressed }) => [
-                  styles.accuracyButton,
-                  { backgroundColor: theme.tint },
-                  pressed && styles.playButtonPressed,
-                ]}
-              >
-                <Text style={styles.accuracyButtonText}>{copy.accuracyButton}</Text>
-              </Pressable>
-            </View>
-
             <Text style={[styles.footerNote, { color: theme.textSecondary }]}>
               {copy.footerNote}
             </Text>
+              </>
+            )}
 
             {isBusy && (
               <View testID="first-open-setup-progress" style={styles.busyRow}>
@@ -741,6 +785,19 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
     lineHeight: 20,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  notificationStep: {
+    paddingTop: Spacing.md,
+  },
+  dismissStepButton: {
+    alignSelf: 'center',
+    paddingVertical: Spacing.sm,
+  },
+  dismissStepText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
     textAlign: 'center',
     writingDirection: 'rtl',
   },

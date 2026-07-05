@@ -144,6 +144,19 @@ android {
 
         buildConfigField "String", "REACT_NATIVE_RELEASE_LEVEL", "\"${findProperty('reactNativeReleaseLevel') ?: 'stable'}\""
     }
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    testOptions {
+        unitTests.all {
+            it.jvmArgs('-XX:+EnableDynamicAgentLoading')
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -208,6 +221,10 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation("com.batoulapps.adhan:adhan2:0.0.6")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    testImplementation("junit:junit:4.13.2")
 
     def isHermesEnabled = (findProperty('hermesEnabled') ?: "true").toBoolean();
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";

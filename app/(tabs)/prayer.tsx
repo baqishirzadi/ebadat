@@ -11,7 +11,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CenteredText from '@/components/CenteredText';
-import { CitySelectorModal } from '@/components/prayer';
+import { CitySelectorModal, AdhanHealthBanner } from '@/components/prayer';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
 import { NAAT_GRADIENT , Typography, Spacing, BorderRadius } from '@/constants/theme';
@@ -177,6 +177,10 @@ export default function NamazScreen() {
         </LinearGradient>
 
         <View style={styles.contentWrapper}>
+          <AdhanHealthBanner
+            theme={theme}
+            onSelectCity={() => setShowCityModal(true)}
+          />
           <View style={[styles.unresolvedCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <MaterialIcons name="location-city" size={28} color={theme.tint} />
             <CenteredText style={[styles.unresolvedTitle, { color: theme.text }]}>
