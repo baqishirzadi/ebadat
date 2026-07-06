@@ -29,7 +29,13 @@ export async function requestAdhanNotificationPermission(): Promise<Notification
     if (current.status === 'granted') return 'granted';
     if (current.status === 'denied' && !current.canAskAgain) return 'blocked';
 
-    const requested = await Notifications.requestPermissionsAsync();
+    const requested = await Notifications.requestPermissionsAsync({
+      ios: {
+        allowAlert: true,
+        allowBadge: true,
+        allowSound: true,
+      },
+    });
     if (requested.status === 'granted') return 'granted';
     if (requested.status === 'denied' && !requested.canAskAgain) return 'blocked';
     return 'denied';
@@ -38,7 +44,20 @@ export async function requestAdhanNotificationPermission(): Promise<Notification
   }
 }
 
-export function shouldShowNotificationOnboardingStep(): boolean {
-  if (Platform.OS !== 'android') return false;
-  return Number(Platform.Version) >= 33;
+export async function shouldShowNotificationOnboardingStep(): Promise<boolean> {
+  if (Platform.OS === 'android') {
+    return Number(Platform.Version) >= 33;
+  }
+
+  if (Platform.OS === 'ios') {
+    try {
+      const Notifications = await import('expo-notifications');
+      const current = await Notifications.getPermissionsAsync();
+      return current.status === 'undetermined';
+    } catch {
+      return true;
+    }
+  }
+
+  return false;
 }

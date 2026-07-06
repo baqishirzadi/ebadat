@@ -12,6 +12,9 @@ export interface City {
   timezone: string;
   altitude?: number; // in meters
   isImportant?: boolean; // Top 4 cities per category
+  country?: string;
+  admin1?: string;
+  aliases?: string[];
 }
 
 export interface CityCategory {
@@ -93,12 +96,54 @@ export const CITIES: Record<string, CityCategory> = {
     nameEn: 'Europe',
     cities: {
       london: { lat: 51.5074, lon: -0.1278, name: 'لندن', nameEn: 'London', timezone: 'Europe/London', altitude: 35, isImportant: true },
-      hamburg: { lat: 53.5511, lon: 9.9937, name: 'هامبورگ', nameEn: 'Hamburg', timezone: 'Europe/Berlin', altitude: 6, isImportant: true },
-      berlin: { lat: 52.5200, lon: 13.4050, name: 'برلین', nameEn: 'Berlin', timezone: 'Europe/Berlin', altitude: 34, isImportant: true },
       stockholm: { lat: 59.3293, lon: 18.0686, name: 'استکهلم', nameEn: 'Stockholm', timezone: 'Europe/Stockholm', altitude: 28, isImportant: true },
       amsterdam: { lat: 52.3676, lon: 4.9041, name: 'آمستردام', nameEn: 'Amsterdam', timezone: 'Europe/Amsterdam', altitude: 2 },
       paris: { lat: 48.8566, lon: 2.3522, name: 'پاریس', nameEn: 'Paris', timezone: 'Europe/Paris', altitude: 35 },
       vienna: { lat: 48.2082, lon: 16.3738, name: 'وین', nameEn: 'Vienna', timezone: 'Europe/Vienna', altitude: 171 },
+    },
+  },
+  germany: {
+    id: 'germany',
+    name: 'آلمان',
+    nameEn: 'Germany',
+    cities: {
+      berlin: { lat: 52.5200, lon: 13.4050, name: 'برلین', nameEn: 'Berlin', timezone: 'Europe/Berlin', altitude: 34, country: 'Germany', admin1: 'Berlin', isImportant: true },
+      hamburg: { lat: 53.5511, lon: 9.9937, name: 'هامبورگ', nameEn: 'Hamburg', timezone: 'Europe/Berlin', altitude: 6, country: 'Germany', admin1: 'Hamburg', isImportant: true },
+      munich: { lat: 48.1351, lon: 11.5820, name: 'مونیخ', nameEn: 'Munich', timezone: 'Europe/Berlin', altitude: 520, country: 'Germany', admin1: 'Bavaria', aliases: ['Muenchen', 'München'], isImportant: true },
+      cologne: { lat: 50.9375, lon: 6.9603, name: 'کلن', nameEn: 'Cologne', timezone: 'Europe/Berlin', altitude: 37, country: 'Germany', admin1: 'North Rhine-Westphalia', aliases: ['Koeln', 'Köln'] },
+      frankfurt: { lat: 50.1109, lon: 8.6821, name: 'فرانکفورت', nameEn: 'Frankfurt', timezone: 'Europe/Berlin', altitude: 112, country: 'Germany', admin1: 'Hesse' },
+      stuttgart: { lat: 48.7758, lon: 9.1829, name: 'اشتوتگارت', nameEn: 'Stuttgart', timezone: 'Europe/Berlin', altitude: 245, country: 'Germany', admin1: 'Baden-Württemberg' },
+      essen: { lat: 51.4556, lon: 7.0116, name: 'اسن', nameEn: 'Essen', timezone: 'Europe/Berlin', altitude: 116, country: 'Germany', admin1: 'North Rhine-Westphalia' },
+      dortmund: { lat: 51.5136, lon: 7.4653, name: 'دورتموند', nameEn: 'Dortmund', timezone: 'Europe/Berlin', altitude: 86, country: 'Germany', admin1: 'North Rhine-Westphalia' },
+      duesseldorf: { lat: 51.2277, lon: 6.7735, name: 'دوسلدورف', nameEn: 'Düsseldorf', timezone: 'Europe/Berlin', altitude: 38, country: 'Germany', admin1: 'North Rhine-Westphalia', aliases: ['Duesseldorf', 'Dusseldorf', 'دوسلدورف'], isImportant: true },
+      duisburg: { lat: 51.4344, lon: 6.7623, name: 'دویسبورگ', nameEn: 'Duisburg', timezone: 'Europe/Berlin', altitude: 31, country: 'Germany', admin1: 'North Rhine-Westphalia' },
+      bremen: { lat: 53.0793, lon: 8.8017, name: 'برمن', nameEn: 'Bremen', timezone: 'Europe/Berlin', altitude: 12, country: 'Germany', admin1: 'Bremen' },
+      hannover: { lat: 52.3759, lon: 9.7320, name: 'هانوفر', nameEn: 'Hannover', timezone: 'Europe/Berlin', altitude: 55, country: 'Germany', admin1: 'Lower Saxony', aliases: ['Hanover'] },
+      nuremberg: { lat: 49.4521, lon: 11.0767, name: 'نورنبرگ', nameEn: 'Nuremberg', timezone: 'Europe/Berlin', altitude: 302, country: 'Germany', admin1: 'Bavaria', aliases: ['Nuernberg', 'Nürnberg'] },
+      leipzig: { lat: 51.3397, lon: 12.3731, name: 'لایپزیگ', nameEn: 'Leipzig', timezone: 'Europe/Berlin', altitude: 113, country: 'Germany', admin1: 'Saxony' },
+      dresden: { lat: 51.0504, lon: 13.7373, name: 'درسدن', nameEn: 'Dresden', timezone: 'Europe/Berlin', altitude: 113, country: 'Germany', admin1: 'Saxony' },
+      kiel: { lat: 54.3233, lon: 10.1228, name: 'کیل', nameEn: 'Kiel', timezone: 'Europe/Berlin', altitude: 5, country: 'Germany', admin1: 'Schleswig-Holstein' },
+      mainz: { lat: 50.0012, lon: 8.2763, name: 'ماینتس', nameEn: 'Mainz', timezone: 'Europe/Berlin', altitude: 85, country: 'Germany', admin1: 'Rhineland-Palatinate' },
+      saarbruecken: { lat: 49.2354, lon: 6.9969, name: 'زاربروکن', nameEn: 'Saarbrücken', timezone: 'Europe/Berlin', altitude: 230, country: 'Germany', admin1: 'Saarland', aliases: ['Saarbruecken', 'Saarbrucken'] },
+      erfurt: { lat: 50.9848, lon: 11.0299, name: 'ارفورت', nameEn: 'Erfurt', timezone: 'Europe/Berlin', altitude: 194, country: 'Germany', admin1: 'Thuringia' },
+      magdeburg: { lat: 52.1205, lon: 11.6276, name: 'ماگدبورگ', nameEn: 'Magdeburg', timezone: 'Europe/Berlin', altitude: 43, country: 'Germany', admin1: 'Saxony-Anhalt' },
+      schwerin: { lat: 53.6355, lon: 11.4012, name: 'شورین', nameEn: 'Schwerin', timezone: 'Europe/Berlin', altitude: 38, country: 'Germany', admin1: 'Mecklenburg-Vorpommern' },
+      potsdam: { lat: 52.3906, lon: 13.0645, name: 'پوتسدام', nameEn: 'Potsdam', timezone: 'Europe/Berlin', altitude: 35, country: 'Germany', admin1: 'Brandenburg' },
+      wiesbaden: { lat: 50.0782, lon: 8.2398, name: 'ویسبادن', nameEn: 'Wiesbaden', timezone: 'Europe/Berlin', altitude: 115, country: 'Germany', admin1: 'Hesse' },
+      offenbach: { lat: 50.1006, lon: 8.7761, name: 'افنباخ', nameEn: 'Offenbach', timezone: 'Europe/Berlin', altitude: 98, country: 'Germany', admin1: 'Hesse' },
+      bonn: { lat: 50.7374, lon: 7.0982, name: 'بن', nameEn: 'Bonn', timezone: 'Europe/Berlin', altitude: 60, country: 'Germany', admin1: 'North Rhine-Westphalia' },
+      bochum: { lat: 51.4818, lon: 7.2162, name: 'بوخوم', nameEn: 'Bochum', timezone: 'Europe/Berlin', altitude: 88, country: 'Germany', admin1: 'North Rhine-Westphalia' },
+      wuppertal: { lat: 51.2562, lon: 7.1508, name: 'ووپرتال', nameEn: 'Wuppertal', timezone: 'Europe/Berlin', altitude: 160, country: 'Germany', admin1: 'North Rhine-Westphalia' },
+      krefeld: { lat: 51.3388, lon: 6.5853, name: 'کرفلد', nameEn: 'Krefeld', timezone: 'Europe/Berlin', altitude: 39, country: 'Germany', admin1: 'North Rhine-Westphalia' },
+      moenchengladbach: { lat: 51.1805, lon: 6.4428, name: 'مونشن‌گلادباخ', nameEn: 'Mönchengladbach', timezone: 'Europe/Berlin', altitude: 70, country: 'Germany', admin1: 'North Rhine-Westphalia', aliases: ['Moenchengladbach', 'Monchengladbach'] },
+      augsburg: { lat: 48.3705, lon: 10.8978, name: 'آوگسبورگ', nameEn: 'Augsburg', timezone: 'Europe/Berlin', altitude: 494, country: 'Germany', admin1: 'Bavaria' },
+      karlsruhe: { lat: 49.0069, lon: 8.4037, name: 'کارلزروه', nameEn: 'Karlsruhe', timezone: 'Europe/Berlin', altitude: 115, country: 'Germany', admin1: 'Baden-Württemberg' },
+      mannheim: { lat: 49.4875, lon: 8.4660, name: 'مانهایم', nameEn: 'Mannheim', timezone: 'Europe/Berlin', altitude: 97, country: 'Germany', admin1: 'Baden-Württemberg' },
+      freiburg: { lat: 47.9990, lon: 7.8421, name: 'فریبورگ', nameEn: 'Freiburg', timezone: 'Europe/Berlin', altitude: 278, country: 'Germany', admin1: 'Baden-Württemberg', aliases: ['Freiburg im Breisgau'] },
+      rostock: { lat: 54.0924, lon: 12.0991, name: 'روستک', nameEn: 'Rostock', timezone: 'Europe/Berlin', altitude: 13, country: 'Germany', admin1: 'Mecklenburg-Vorpommern' },
+      luebeck: { lat: 53.8655, lon: 10.6866, name: 'لوبک', nameEn: 'Lübeck', timezone: 'Europe/Berlin', altitude: 3, country: 'Germany', admin1: 'Schleswig-Holstein', aliases: ['Luebeck', 'Lubeck'] },
+      muenster: { lat: 51.9607, lon: 7.6261, name: 'مونستر', nameEn: 'Münster', timezone: 'Europe/Berlin', altitude: 60, country: 'Germany', admin1: 'North Rhine-Westphalia', aliases: ['Muenster', 'Munster'] },
+      bielefeld: { lat: 52.0302, lon: 8.5325, name: 'بیلفلد', nameEn: 'Bielefeld', timezone: 'Europe/Berlin', altitude: 118, country: 'Germany', admin1: 'North Rhine-Westphalia' },
     },
   },
   usa: {
@@ -156,13 +201,27 @@ Object.entries(CITIES).forEach(([categoryId, category]) => {
   });
 });
 
-// Get city by full key
+/** Maps deprecated city keys to their current equivalents */
+export const LEGACY_CITY_KEY_ALIASES: Record<string, string> = {
+  europe_hamburg: 'germany_hamburg',
+  europe_berlin: 'germany_berlin',
+};
+
+// Get city by full key (resolves legacy aliases)
 export function getCity(fullKey: string): (City & { category: string; key: string }) | undefined {
-  return ALL_CITIES[fullKey];
+  const resolvedKey = LEGACY_CITY_KEY_ALIASES[fullKey] ?? fullKey;
+  return ALL_CITIES[resolvedKey];
 }
 
-// Find nearest city to coordinates
-export function findNearestCity(lat: number, lon: number): string | null {
+export const NEAREST_CITY_MAX_KM = 50;
+
+export interface NearestCityResult {
+  key: string | null;
+  distanceKm: number;
+}
+
+// Find nearest city to coordinates within NEAREST_CITY_MAX_KM
+export function findNearestCity(lat: number, lon: number): NearestCityResult {
   let nearestKey: string | null = null;
   let minDistance = Infinity;
 
@@ -174,11 +233,20 @@ export function findNearestCity(lat: number, lon: number): string | null {
     }
   });
 
-  return nearestKey;
+  if (nearestKey === null || minDistance > NEAREST_CITY_MAX_KM) {
+    return { key: null, distanceKm: minDistance };
+  }
+
+  return { key: nearestKey, distanceKm: minDistance };
+}
+
+/** @deprecated Use findNearestCity() which returns { key, distanceKm } */
+export function findNearestCityLegacy(lat: number, lon: number): string | null {
+  return findNearestCity(lat, lon).key;
 }
 
 // Calculate distance between two coordinates (Haversine formula)
-function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+export function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371; // Earth radius in km
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -190,29 +258,77 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
   return R * c;
 }
 
-// Search cities by name
-export function searchCities(query: string): Array<{ key: string; city: City & { category: string } }> {
-  const lowerQuery = query.toLowerCase().trim();
-  if (!lowerQuery) return [];
+function normalizeSearchText(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ü/g, 'u')
+    .replace(/ö/g, 'o')
+    .replace(/ä/g, 'a')
+    .replace(/ß/g, 'ss')
+    .replace(/ي/g, 'ی')
+    .replace(/ك/g, 'ک')
+    .trim();
+}
 
-  const results: Array<{ key: string; city: City & { category: string } }> = [];
+type SearchMatchRank = 'exact' | 'starts-with' | 'contains';
+
+function getSearchMatchRank(normalizedQuery: string, normalizedField: string): SearchMatchRank | null {
+  if (!normalizedField) return null;
+  if (normalizedField === normalizedQuery) return 'exact';
+  if (normalizedField.startsWith(normalizedQuery)) return 'starts-with';
+  if (normalizedField.includes(normalizedQuery)) return 'contains';
+  return null;
+}
+
+function getSearchScore(rank: SearchMatchRank, isImportant?: boolean): number {
+  const baseScores: Record<SearchMatchRank, number> = {
+    exact: 1000,
+    'starts-with': 100,
+    contains: 10,
+  };
+  return baseScores[rank] + (isImportant ? 50 : 0);
+}
+
+function getCitySearchFields(city: City): string[] {
+  return [city.name, city.nameEn, ...(city.aliases ?? [])];
+}
+
+function getBestCitySearchScore(normalizedQuery: string, city: City): number {
+  let bestScore = 0;
+
+  for (const field of getCitySearchFields(city)) {
+    const normalizedField = normalizeSearchText(field);
+    const rank = getSearchMatchRank(normalizedQuery, normalizedField);
+    if (rank) {
+      bestScore = Math.max(bestScore, getSearchScore(rank, city.isImportant));
+    }
+  }
+
+  return bestScore;
+}
+
+// Search cities by name with normalized matching and ranked results
+export function searchCities(query: string): Array<{ key: string; city: City & { category: string } }> {
+  const normalizedQuery = normalizeSearchText(query);
+  if (!normalizedQuery) return [];
+
+  const results: Array<{ key: string; city: City & { category: string }; score: number }> = [];
 
   Object.entries(ALL_CITIES).forEach(([key, city]) => {
-    if (
-      city.name.includes(query) ||
-      city.nameEn.toLowerCase().includes(lowerQuery) ||
-      city.name.toLowerCase().includes(lowerQuery)
-    ) {
-      results.push({ key, city });
+    const score = getBestCitySearchScore(normalizedQuery, city);
+    if (score > 0) {
+      results.push({ key, city, score });
     }
   });
 
-  return results.sort((a, b) => {
-    // Prioritize exact matches
-    if (a.city.name === query) return -1;
-    if (b.city.name === query) return 1;
-    return a.city.name.localeCompare(b.city.name);
-  });
+  return results
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.city.name.localeCompare(b.city.name);
+    })
+    .map(({ key, city }) => ({ key, city }));
 }
 
 // Export category list

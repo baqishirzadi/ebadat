@@ -4,6 +4,23 @@
  */
 
 import { playAdhan, preloadAdhanAudio } from '@/utils/adhanAudio';
+import { registerAdhanBackgroundRefresh } from '@/utils/backgroundRefresh';
+import {
+  evaluateIOSActivationReschedule,
+  getDeviceTimezoneSnapshot,
+  isIOSScheduleHealthPlatform,
+  loadIOSScheduleSyncMetadata,
+  saveIOSScheduleSyncMetadata,
+} from '@/utils/iosScheduleHealth';
+import {
+  getAdhanSoundFilename,
+  getIosAzanRollingDays,
+} from '@/utils/notificationBudget';
+import {
+  registerPrayerScheduleCallback,
+  runPendingBackgroundPrayerSchedule,
+  unregisterPrayerScheduleCallback,
+} from '@/utils/prayerScheduleCoordinator';
 import {
   AdhanPreferences,
   DEFAULT_ADHAN_PREFERENCES,
@@ -30,6 +47,7 @@ import {
   Location as LocationType,
   PrayerTimes,
 } from '@/utils/prayerTimes';
+import { clampHijriOffsetDays, setUserHijriOffsetDays } from '@/utils/hijriOffset';
 import { getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
 import {
   canUseNativeAdhanScheduler,
@@ -102,9 +120,7 @@ const STORAGE_KEYS = {
 };
 
 const PRAYER_ROLLING_DAYS_ANDROID = 3;
-const PRAYER_ROLLING_DAYS_IOS = 7;
-const PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER = 5;
-const ADHAN_SOUND_FILENAME = 'barakatullah_salim_18sec.mp3';
+const ANDROID_ADHAN_SOUND_FILENAME = getAdhanSoundFilename('android');
 const CHANNEL_IDS = {
   ADHAN_FAJR: 'adhan-fajr-v7',
   ADHAN_REGULAR: 'adhan-regular-v7',
@@ -172,6 +188,7 @@ interface ExpectedPrayerNotification {
   title: string;
   body: string;
   sound: string | boolean;
+  interruptionLevel?: 'timeSensitive';
   data: Record<string, unknown>;
 }
 
@@ -182,7 +199,8 @@ interface PrayerSettings {
   use24Hour: boolean;
   notificationsEnabled: boolean;
   notificationMinutesBefore: number;
-  selectedCity: string | null; // null means auto-detect
+  selectedCity: string | null;
+  hijriOffsetDays: number;
 }
 
 type ExactAlarmStatus = 'granted' | 'missing' | 'unknown' | 'not_applicable';
@@ -255,6 +273,7 @@ const DEFAULT_SETTINGS: PrayerSettings = {
   notificationsEnabled: true,
   notificationMinutesBefore: 15,
   selectedCity: null,
+  hijriOffsetDays: 0,
 };
 
 // State
@@ -383,7 +402,6 @@ interface PrayerContextType {
   updateAdhanPreferences: (preferences: Partial<AdhanPreferences>) => Promise<void>;
   requestLocationPermission: () => Promise<boolean>;
   detectLocation: () => Promise<void>;
-  scheduleNotifications: () => Promise<void>;
   scheduleAdhanNotifications: () => Promise<void>;
   requestPrayerSchedule: (reason?: string) => Promise<void>;
   scheduleAdhanSystemTest: () => Promise<boolean>;
@@ -548,12 +566,13 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
 
       NotificationsModule.setNotificationHandler({
         handleNotification: async (notification) => {
-          const { playSound } = notification.request.content.data || {};
+          const { playSound, type } = notification.request.content.data || {};
+          const isAdhanType = type === 'adhan' || type === 'adhan_test';
 
-          // For adhan notifications with sound, ensure audio plays
+          // Foreground adhan: expo-av plays full audio; suppress system notification sound to avoid double playback.
           return {
             shouldShowAlert: true,
-            shouldPlaySound: playSound === true,
+            shouldPlaySound: isAdhanType ? false : playSound === true,
             shouldSetBadge: false,
             shouldShowBanner: true,
             shouldShowList: true,
@@ -812,10 +831,10 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         importance: NotificationsModule.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#1a4d3e',
-        sound: ADHAN_SOUND_FILENAME,
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
         enableVibrate: true,
         showBadge: true,
-      }, ADHAN_SOUND_FILENAME);
+      }, ANDROID_ADHAN_SOUND_FILENAME);
 
       // Channel for other Adhans (custom sound)
       await ensureChannel(CHANNEL_IDS.ADHAN_REGULAR, {
@@ -823,10 +842,10 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         importance: NotificationsModule.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#1a4d3e',
-        sound: ADHAN_SOUND_FILENAME,
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
         enableVibrate: true,
         showBadge: true,
-      }, ADHAN_SOUND_FILENAME);
+      }, ANDROID_ADHAN_SOUND_FILENAME);
 
       // Channel for silent prayer notifications
       await ensureChannel(CHANNEL_IDS.PRAYER_SILENT, {
@@ -945,7 +964,9 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       ]);
 
       const settings = settingsJson ? { ...DEFAULT_SETTINGS, ...JSON.parse(settingsJson) } : DEFAULT_SETTINGS;
-      let effectiveSettings = settings;
+      const effectiveHijriOffset = clampHijriOffsetDays(settings.hijriOffsetDays ?? 0);
+      let effectiveSettings = { ...settings, hijriOffsetDays: effectiveHijriOffset };
+      setUserHijriOffsetDays(effectiveHijriOffset);
       let shouldPersistSettings = false;
 
       let location = DEFAULT_LOCATION;
@@ -1153,7 +1174,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     updateHijriDate();
   }, [updatePrayerTimes]);
 
-  // Reschedule Adhan notifications on app resume and day change
+  // Reschedule Adhan notifications on app resume, day change, and iOS health checks
   useEffect(() => {
     let midnightTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -1194,8 +1215,55 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         }
         return;
       }
+
       const currentKey = getDateKey(new Date());
       const locationKey = getLocationKey();
+
+      if (isIOSScheduleHealthPlatform()) {
+        try {
+          const NotificationsModule = await loadNotificationsIfAvailable();
+          let pendingAdhanCount = 0;
+          if (NotificationsModule) {
+            const scheduled = await NotificationsModule.getAllScheduledNotificationsAsync();
+            pendingAdhanCount = scheduled.filter((notification) => {
+              const identifier = String((notification as any)?.identifier || '');
+              const type = (notification as any)?.content?.data?.type;
+              return (
+                type === 'adhan' ||
+                (identifier.startsWith('adhan-') && !identifier.endsWith('-reminder'))
+              );
+            }).length;
+          }
+
+          const enabledPrayerCount = state.adhanPreferences.masterEnabled
+            ? (['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as PrayerName[]).filter(
+                (prayer) => state.adhanPreferences[prayer].enabled
+              ).length
+            : 0;
+
+          const { shouldReschedule, reason } = evaluateIOSActivationReschedule({
+            currentDateKey: currentKey,
+            currentLocationKey: locationKey,
+            pendingAdhanCount,
+            expectedNext24hAdhanCount: enabledPrayerCount,
+            lastSync: await loadIOSScheduleSyncMetadata(),
+            timezoneSnapshot: getDeviceTimezoneSnapshot(),
+          });
+
+          if (shouldReschedule) {
+            refreshPrayerTimes();
+            try {
+              await requestPrayerScheduleRef.current(reason);
+            } catch (error) {
+              console.warn('Failed to reschedule on iOS activation health check:', error);
+            }
+          }
+        } catch (error) {
+          console.warn('iOS activation health check failed:', error);
+        }
+        return;
+      }
+
       const last = lastScheduleRef.current;
       if (!last || last.dateKey !== currentKey || last.locationKey !== locationKey) {
         refreshPrayerTimes();
@@ -1211,7 +1279,13 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       if (midnightTimeout) clearTimeout(midnightTimeout);
       subscription.remove();
     };
-  }, [checkExactAlarmCapability, getDateKey, getLocationKey, refreshPrayerTimes]);
+  }, [
+    checkExactAlarmCapability,
+    getDateKey,
+    getLocationKey,
+    refreshPrayerTimes,
+    state.adhanPreferences,
+  ]);
 
   const setCity = useCallback(async (cityKey: string) => {
     const shortCityKey = cityKey.startsWith('afghanistan_')
@@ -1248,6 +1322,18 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   }, [state.settings]);
 
   const updateSettings = useCallback(async (settings: Partial<PrayerSettings>) => {
+    if (settings.hijriOffsetDays !== undefined) {
+      const clamped = clampHijriOffsetDays(settings.hijriOffsetDays);
+      settings = { ...settings, hijriOffsetDays: clamped };
+      setUserHijriOffsetDays(clamped);
+      try {
+        const prefs = await loadCalendarNotificationPreferences();
+        await scheduleCalendarNotifications(prefs.enabled);
+      } catch {
+        // Non-fatal
+      }
+    }
+
     dispatch({ type: 'SET_SETTINGS', payload: settings });
 
     const newSettings = { ...state.settings, ...settings };
@@ -1408,61 +1494,6 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     }
   }, [requestLocationPermission]);
 
-  // Legacy notification scheduling (kept for backward compatibility)
-  const scheduleNotifications = useCallback(async () => {
-    const NotificationsModule = await loadNotificationsIfAvailable();
-    if (!NotificationsModule) {
-      console.log('Notifications not available (Expo Go or web), skipping schedule');
-      return;
-    }
-
-    if (!state.settings.notificationsEnabled || !state.prayerTimes) return;
-
-    try {
-      // Cancel existing notifications
-      await NotificationsModule.cancelAllScheduledNotificationsAsync();
-
-      // Request permission
-      const { status } = await NotificationsModule.requestPermissionsAsync();
-      if (status !== 'granted') return;
-
-      const prayers = [
-        { key: 'fajr', name: 'نماز صبح', time: state.prayerTimes.fajr },
-        { key: 'dhuhr', name: 'نماز ظهر', time: state.prayerTimes.dhuhr },
-        { key: 'asr', name: 'نماز عصر', time: state.prayerTimes.asr },
-        { key: 'maghrib', name: 'نماز مغرب', time: state.prayerTimes.maghrib },
-        { key: 'isha', name: 'نماز عشا', time: state.prayerTimes.isha },
-      ];
-
-      const now = new Date();
-      const minutesBefore = state.settings.notificationMinutesBefore;
-
-      for (const prayer of prayers) {
-        const notificationTime = new Date(prayer.time.getTime() - minutesBefore * 60 * 1000);
-
-        // Validate date is in valid range (prevent invalid date errors)
-        const maxDate = new Date(now.getFullYear() + 1, 11, 31); // Max 1 year ahead
-        if (notificationTime > now && notificationTime <= maxDate) {
-          await NotificationsModule.scheduleNotificationAsync({
-            content: {
-              title: 'وقت نماز',
-              body: `${minutesBefore} دقیقه تا ${prayer.name}`,
-              sound: true,
-              ...(Platform.OS === 'android' && { channelId: CHANNEL_IDS.PRAYER_REMINDER }),
-            },
-            trigger: {
-              type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
-              date: notificationTime,
-              ...(Platform.OS === 'android' && { channelId: CHANNEL_IDS.PRAYER_REMINDER }),
-            },
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Notification scheduling error:', error);
-    }
-  }, [state.settings.notificationsEnabled, state.settings.notificationMinutesBefore, state.prayerTimes]);
-
   const isValidDate = useCallback((date: Date): boolean => {
     return date instanceof Date && !isNaN(date.getTime()) && date.getTime() > 0;
   }, []);
@@ -1525,9 +1556,8 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     const rollingDays =
       Platform.OS === 'android'
         ? PRAYER_ROLLING_DAYS_ANDROID
-        : adhanPreferences.earlyReminder
-          ? PRAYER_ROLLING_DAYS_IOS_WITH_REMINDER
-          : PRAYER_ROLLING_DAYS_IOS;
+        : getIosAzanRollingDays(adhanPreferences.earlyReminder);
+    const adhanSoundFilename = getAdhanSoundFilename(Platform.OS);
 
     const prayerKeys: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
     const enabledPrayers = prayerKeys.filter((prayer) => adhanPreferences[prayer].enabled);
@@ -1590,6 +1620,8 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
             ? `adhan-jummah-${dayKey}`
             : `adhan-${prayerKey}-${dayKey}`;
 
+          const shouldPlaySound = prayerSettings.playSound;
+
           expected.push({
             id: adhanId,
             type: 'adhan',
@@ -1599,11 +1631,14 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
             channelId,
             title: content.title,
             body: content.body,
-            sound: ADHAN_SOUND_FILENAME,
+            sound: shouldPlaySound ? adhanSoundFilename : false,
+            ...(Platform.OS === 'ios' && shouldPlaySound
+              ? { interruptionLevel: 'timeSensitive' as const }
+              : {}),
             data: {
               prayer: prayerKey,
               type: 'adhan',
-              playSound: true,
+              playSound: shouldPlaySound,
               voice: prayerSettings.selectedVoice,
               dayKey,
               isJummah: isFridayJummah,
@@ -1987,6 +2022,9 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           sound: item.sound,
           ...(Platform.OS === 'android' && item.type === 'adhan' ? { vibrate: [] } : {}),
           data: item.data,
+          ...(Platform.OS === 'ios' && item.interruptionLevel
+            ? { interruptionLevel: item.interruptionLevel }
+            : {}),
           ...(Platform.OS === 'android' && { channelId: item.channelId }),
           ...(Platform.OS === 'android' && item.type === 'adhan'
             ? { priority: NotificationsModule.AndroidNotificationPriority.HIGH }
@@ -2070,6 +2108,19 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       dateKey: getDateKey(new Date()),
       locationKey: getLocationKey(),
     };
+
+    if (Platform.OS === 'ios' && !useNativeExactAdhan) {
+      const timezoneSnapshot = getDeviceTimezoneSnapshot();
+      await saveIOSScheduleSyncMetadata({
+        syncedAtMs: Date.now(),
+        timezoneId: timezoneSnapshot.timezoneId,
+        timezoneOffsetMinutes: timezoneSnapshot.timezoneOffsetMinutes,
+        dateKey: getDateKey(new Date()),
+        locationKey: getLocationKey(),
+        pendingAdhanCount: scheduledAdhanCount,
+      });
+    }
+
     dispatch({ type: 'SET_ERROR', payload: null });
   }, [
     buildNextTriggerByPrayer,
@@ -2140,6 +2191,16 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   }, [
     cancelScheduledNotificationsByPredicate,
   ]);
+
+  useEffect(() => {
+    registerPrayerScheduleCallback((reason) => requestPrayerSchedule(reason));
+    void registerAdhanBackgroundRefresh();
+    void runPendingBackgroundPrayerSchedule(requestPrayerSchedule);
+
+    return () => {
+      unregisterPrayerScheduleCallback();
+    };
+  }, [requestPrayerSchedule]);
 
   requestPrayerScheduleRef.current = requestPrayerSchedule;
   scheduleAdhanNotificationsRef.current = scheduleAdhanNotifications;
@@ -2227,13 +2288,14 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         content: {
           title: 'تست اذان',
           body: 'اگر این اعلان با صدا رسید، تنظیمات سیستم درست است.',
-          sound: ADHAN_SOUND_FILENAME,
+          sound: getAdhanSoundFilename(Platform.OS),
           data: {
             type: 'adhan_test',
             prayer: 'fajr',
             playSound: true,
             voice: 'barakatullah',
           },
+          ...(Platform.OS === 'ios' ? { interruptionLevel: 'timeSensitive' as const } : {}),
           ...(Platform.OS === 'android' && { channelId: CHANNEL_IDS.ADHAN_REGULAR }),
           ...(Platform.OS === 'android'
             ? { priority: NotificationsModule.AndroidNotificationPriority.HIGH, vibrate: [] }
@@ -2273,7 +2335,6 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         updateAdhanPreferences,
         requestLocationPermission,
         detectLocation,
-        scheduleNotifications,
         scheduleAdhanNotifications,
         requestPrayerSchedule,
         scheduleAdhanSystemTest,

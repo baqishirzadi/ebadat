@@ -1,8 +1,8 @@
 import { getShamsiMonthLength, shamsiToGregorian } from '@/utils/afghanSolarHijri';
-import { getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
+import { getKabulDateParts, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
 import { getHijriMonthLength, hijriToGregorian } from '@/utils/islamicCalendar';
 
-export type CalendarGridMode = 'qamari' | 'shamsi';
+export type CalendarGridMode = 'qamari' | 'shamsi' | 'gregorian';
 
 export interface CalendarMonthGridMeta {
   daysInMonth: number;
@@ -29,6 +29,17 @@ export function getCalendarMonthGridMeta(
   const cached = MONTH_GRID_META_CACHE.get(cacheKey);
   if (cached) {
     return cached;
+  }
+
+  if (mode === 'gregorian') {
+    const firstDay = new Date(displayYear, displayMonth - 1, 1);
+    const daysInMonth = new Date(displayYear, displayMonth, 0).getDate();
+    const resolved = {
+      daysInMonth,
+      firstDayOffset: mapWeekdayToDariGridColumn(firstDay),
+    };
+    MONTH_GRID_META_CACHE.set(cacheKey, resolved);
+    return resolved;
   }
 
   if (mode === 'qamari') {

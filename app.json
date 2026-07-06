@@ -24,11 +24,17 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.afghandev.ebadat",
+      "entitlements": {
+        "com.apple.developer.usernotifications.time-sensitive": true
+      },
       "infoPlist": {
         "UIBackgroundModes": [
           "audio",
           "location",
-          "fetch"
+          "processing"
+        ],
+        "BGTaskSchedulerPermittedIdentifiers": [
+          "com.expo.modules.backgroundtask.processing"
         ],
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleDevelopmentRegion": "fa",
@@ -129,10 +135,12 @@
         "expo-notifications",
         {
           "sounds": [
-            "./assets/audio/adhan/barakatullah_salim_18sec.mp3"
+            "./assets/audio/adhan/barakatullah_salim_18sec.mp3",
+            "./assets/audio/adhan/barakatullah_salim_18sec.caf"
           ]
         }
       ],
+      "expo-background-task",
       [
         "expo-sensors",
         {
@@ -230,7 +238,8 @@
           }
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-background-task"
     ],
     "experiments": {
       "typedRoutes": true

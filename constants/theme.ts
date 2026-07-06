@@ -41,6 +41,11 @@ export interface ThemeColors {
   // Tab bar
   tabBar: string;
   tabBarBorder: string;
+
+  // Semantic
+  warning: string;
+  warningSurface: string;
+  shadow: string;
 }
 
 // Naat header green palette (primary app color)
@@ -78,6 +83,10 @@ const lightTheme: ThemeColors = {
   
   tabBar: '#ffffff',
   tabBarBorder: '#e0dcd7',
+
+  warning: '#b45309',
+  warningSurface: '#fff7ed',
+  shadow: 'rgba(26, 77, 62, 0.12)',
 };
 
 // Night mode - Naat green accent on dark (AMOLED friendly)
@@ -110,6 +119,10 @@ const nightTheme: ThemeColors = {
   
   tabBar: '#000000',
   tabBarBorder: '#1a1a1a',
+
+  warning: '#f59e0b',
+  warningSurface: '#1a1408',
+  shadow: 'rgba(0, 0, 0, 0.4)',
 };
 
 // Turquoise - Naat green primary (unified with Naat header)
@@ -142,6 +155,10 @@ const turquoiseTheme: ThemeColors = {
   
   tabBar: '#e0f0f0',
   tabBarBorder: '#b8d8d8',
+
+  warning: '#b45309',
+  warningSurface: '#fff7ed',
+  shadow: 'rgba(0, 139, 139, 0.12)',
 };
 
 // Olive - Naat green primary (unified with Naat header)
@@ -174,6 +191,10 @@ const oliveTheme: ThemeColors = {
   
   tabBar: '#f0f5e8',
   tabBarBorder: '#d0dab8',
+
+  warning: '#b45309',
+  warningSurface: '#fff7ed',
+  shadow: 'rgba(107, 142, 35, 0.12)',
 };
 
 export const Themes: Record<ThemeMode, ThemeColors> = {

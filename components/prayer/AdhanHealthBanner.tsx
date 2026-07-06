@@ -2,7 +2,10 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { useApp } from '@/context/AppContext';
 import {
   AdhanHealthState,
   fetchAdhanHealth,
@@ -15,23 +18,15 @@ import {
 } from '@/utils/adhanHealth';
 
 interface AdhanHealthBannerProps {
-  theme: {
-    card: string;
-    cardBorder: string;
-    text: string;
-    textSecondary: string;
-    tint: string;
-    backgroundSecondary: string;
-  };
   onSelectCity?: () => void;
 }
 
-export function AdhanHealthBanner({ theme, onSelectCity }: AdhanHealthBannerProps) {
+export function AdhanHealthBanner({ onSelectCity }: AdhanHealthBannerProps) {
+  const { theme } = useApp();
   const [health, setHealth] = useState<AdhanHealthState | null>(null);
   const [dismissedBattery, setDismissedBattery] = useState(false);
 
   const refresh = useCallback(async () => {
-    if (Platform.OS !== 'android') return;
     const next = await fetchAdhanHealth();
     setHealth(next);
   }, []);
@@ -40,10 +35,10 @@ export function AdhanHealthBanner({ theme, onSelectCity }: AdhanHealthBannerProp
     refresh().catch(() => {});
   }, [refresh]);
 
-  if (!health || Platform.OS !== 'android') return null;
+  if (!health) return null;
 
   const showHealth = health.shouldShowHealthBanner;
-  const showBattery = health.shouldShowBatteryNudge && !dismissedBattery;
+  const showBattery = Platform.OS === 'android' && health.shouldShowBatteryNudge && !dismissedBattery;
 
   if (!showHealth && !showBattery) return null;
 
@@ -67,28 +62,22 @@ export function AdhanHealthBanner({ theme, onSelectCity }: AdhanHealthBannerProp
   return (
     <View style={styles.stack}>
       {showHealth && healthCopy ? (
-        <View style={[styles.card, { backgroundColor: '#fff4e5', borderColor: '#f0b429' }]}>
+        <View style={[styles.card, { backgroundColor: theme.warningSurface, borderColor: theme.warning, gap: Spacing.sm }]}>
           <View style={styles.row}>
-            <MaterialIcons name="notifications-off" size={22} color="#b26a00" />
+            <MaterialIcons name="notifications-off" size={22} color={theme.warning} />
             <View style={styles.textBlock}>
               <Text style={[styles.title, { color: theme.text }]}>{healthCopy.title}</Text>
               <Text style={[styles.body, { color: theme.textSecondary }]}>{healthCopy.body}</Text>
             </View>
           </View>
-          <Pressable
-            testID="adhan-health-banner-action"
-            onPress={() => handleHealthAction().catch(() => {})}
-            style={[styles.button, { backgroundColor: theme.tint }]}
-          >
-            <Text style={styles.buttonText}>رفع مشکل</Text>
-          </Pressable>
+          <Button label="رفع مشکل" onPress={() => handleHealthAction().catch(() => {})} />
         </View>
       ) : null}
 
       {showBattery ? (
-        <View style={[styles.card, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+        <Card style={styles.card}>
           <View style={styles.row}>
-            <MaterialIcons name="battery-alert" size={22} color="#D4AF37" />
+            <MaterialIcons name="battery-alert" size={22} color={theme.accent} />
             <View style={styles.textBlock}>
               <Text style={[styles.title, { color: theme.text }]}>بهینه‌سازی باتری</Text>
               <Text style={[styles.body, { color: theme.textSecondary }]}>
@@ -97,13 +86,7 @@ export function AdhanHealthBanner({ theme, onSelectCity }: AdhanHealthBannerProp
             </View>
           </View>
           <View style={styles.actions}>
-            <Pressable
-              testID="adhan-battery-nudge-open"
-              onPress={() => openBatteryOptimizationSettings().catch(() => {})}
-              style={[styles.button, { backgroundColor: theme.tint }]}
-            >
-              <Text style={styles.buttonText}>تنظیمات باتری</Text>
-            </Pressable>
+            <Button label="تنظیمات باتری" onPress={() => openBatteryOptimizationSettings().catch(() => {})} />
             <Pressable
               testID="adhan-battery-nudge-oem"
               onPress={() => openOemAutostartSettings().catch(() => Linking.openSettings())}
@@ -122,7 +105,7 @@ export function AdhanHealthBanner({ theme, onSelectCity }: AdhanHealthBannerProp
               <Text style={[styles.dismissText, { color: theme.textSecondary }]}>بعداً</Text>
             </Pressable>
           </View>
-        </View>
+        </Card>
       ) : null}
     </View>
   );
@@ -131,12 +114,10 @@ export function AdhanHealthBanner({ theme, onSelectCity }: AdhanHealthBannerProp
 const styles = StyleSheet.create({
   stack: {
     gap: Spacing.sm,
+    marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
   },
   card: {
-    borderWidth: 1,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
     gap: Spacing.sm,
   },
   row: {
@@ -164,19 +145,6 @@ const styles = StyleSheet.create({
   actions: {
     gap: Spacing.xs,
     alignItems: 'stretch',
-  },
-  button: {
-    borderRadius: BorderRadius.full,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   secondaryButton: {
     borderWidth: 1,

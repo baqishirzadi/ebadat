@@ -8,6 +8,7 @@ import { Platform } from 'react-native';
 import { getCalendarTruth } from './calendarTruth';
 import { hijriToGregorian } from './islamicCalendar';
 import { SPECIAL_DAYS } from './islamicCalendar';
+import { IOS_CALENDAR_MAX_EVENTS } from './notificationBudget';
 
 export const CALENDAR_QAMARI_STORAGE_KEY = '@ebadat/calendar_qamari_notifications';
 
@@ -100,6 +101,7 @@ export async function scheduleCalendarNotifications(
 
   let scheduledCount = 0;
   const HOURS_BEFORE = 12;
+  const maxEvents = Platform.OS === 'ios' ? IOS_CALENDAR_MAX_EVENTS : Number.MAX_SAFE_INTEGER;
 
   try {
     if (Platform.OS === 'android') {
@@ -125,6 +127,12 @@ export async function scheduleCalendarNotifications(
       }
     }
 
+    const upcomingOccasions: Array<{
+      specialDay: (typeof SPECIAL_DAYS)[number];
+      hijriYear: number;
+      triggerDate: Date;
+    }> = [];
+
     for (const hijriYear of years) {
       for (const specialDay of SPECIAL_DAYS) {
         const gregDate = hijriToGregorian(hijriYear, specialDay.month, specialDay.day);
@@ -135,24 +143,35 @@ export async function scheduleCalendarNotifications(
 
         if (triggerDate.getTime() <= now.getTime()) continue;
 
-        const identifier = `calendar-qamari-${specialDay.month}-${specialDay.day}-${hijriYear}`;
-
-        await NotificationsModule.scheduleNotificationAsync({
-          identifier,
-          content: {
-            title: 'مناسبت قمری',
-            body: `فردا: ${specialDay.nameDari}\n${specialDay.descriptionDari}`,
-            data: { type: 'calendar_qamari', month: specialDay.month, day: specialDay.day },
-            sound: true,
-            ...(Platform.OS === 'android' && { channelId: 'calendar-qamari' }),
-          },
-          trigger: {
-            type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
-            date: triggerDate,
-          },
-        });
-        scheduledCount++;
+        upcomingOccasions.push({ specialDay, hijriYear, triggerDate });
       }
+    }
+
+    upcomingOccasions.sort((a, b) => a.triggerDate.getTime() - b.triggerDate.getTime());
+    const occasionsToSchedule =
+      maxEvents === Number.MAX_SAFE_INTEGER
+        ? upcomingOccasions
+        : upcomingOccasions.slice(0, maxEvents);
+
+    for (const occasion of occasionsToSchedule) {
+      const { specialDay, hijriYear, triggerDate } = occasion;
+      const identifier = `calendar-qamari-${specialDay.month}-${specialDay.day}-${hijriYear}`;
+
+      await NotificationsModule.scheduleNotificationAsync({
+        identifier,
+        content: {
+          title: 'مناسبت قمری',
+          body: `فردا: ${specialDay.nameDari}\n${specialDay.descriptionDari}`,
+          data: { type: 'calendar_qamari', month: specialDay.month, day: specialDay.day },
+          sound: true,
+          ...(Platform.OS === 'android' && { channelId: 'calendar-qamari' }),
+        },
+        trigger: {
+          type: NotificationsModule.SchedulableTriggerInputTypes.DATE,
+          date: triggerDate,
+        },
+      });
+      scheduledCount++;
     }
 
     if (__DEV__ && scheduledCount > 0) {

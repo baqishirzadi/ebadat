@@ -4,7 +4,7 @@
  */
 
 import * as Location from 'expo-location';
-import { findNearestCity, getCity, CityKey } from './cities';
+import { findNearestCity, getCity, CityKey, NEAREST_CITY_MAX_KM } from './cities';
 import { Platform } from 'react-native';
 
 export interface LocationResult {
@@ -55,14 +55,16 @@ export async function detectLocationAndFindCity(): Promise<LocationResult> {
     const lat = location.coords.latitude;
     const lon = location.coords.longitude;
 
-    // Find nearest city
-    const nearestCityKey = findNearestCity(lat, lon);
+    // Find nearest city within supported radius
+    const { key: nearestCityKey, distanceKm } = findNearestCity(lat, lon);
     
     if (!nearestCityKey) {
       return {
         success: false,
         cityKey: null,
-        error: 'شهری یافت نشد',
+        error: distanceKm > NEAREST_CITY_MAX_KM
+          ? `هیچ شهری در شعاع ${NEAREST_CITY_MAX_KM} کیلومتری یافت نشد`
+          : 'شهری یافت نشد',
       };
     }
 

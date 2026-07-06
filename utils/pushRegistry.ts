@@ -112,20 +112,7 @@ async function runPushRegistration(): Promise<void> {
     return;
   }
 
-  const promptShown = await readPromptShown();
-  let permission = await Notifications.getPermissionsAsync();
-
-  if (permission.status !== 'granted') {
-    if (!promptShown) {
-      permission = await Notifications.requestPermissionsAsync();
-      await writePromptShown();
-    } else {
-      return;
-    }
-  } else if (!promptShown) {
-    await writePromptShown();
-  }
-
+  const permission = await Notifications.getPermissionsAsync();
   if (permission.status !== 'granted') {
     return;
   }

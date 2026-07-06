@@ -40,7 +40,8 @@
     "verify:calendar-truth": "node scripts/verify-calendar-truth.js",
     "verify:patches": "node scripts/verify-patches-clean.js",
     "verify:prayer-engine-parity": "node scripts/verify-prayer-engine-parity.js",
-    "verify:qibla-math": "node scripts/verify-qibla-math.js"
+    "verify:qibla-math": "node scripts/verify-qibla-math.js",
+    "verify:ios-adhan": "cat docs/ios-adhan-verification.md"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -55,6 +56,7 @@
     "expo": "~54.0.32",
     "expo-asset": "~12.0.12",
     "expo-av": "^16.0.8",
+    "expo-background-task": "~1.0.10",
     "expo-build-properties": "^1.0.10",
     "expo-constants": "~18.0.13",
     "expo-device": "^8.0.10",
@@ -75,6 +77,7 @@
     "expo-status-bar": "~3.0.9",
     "expo-symbols": "~1.0.8",
     "expo-system-ui": "~6.0.9",
+    "expo-task-manager": "~14.0.9",
     "expo-web-browser": "~15.0.10",
     "react": "19.1.0",
     "react-dom": "19.1.0",

@@ -6,6 +6,7 @@ import {
   getKabulWeekdayIndex,
   getKabulDateKey,
 } from '@/utils/afghanistanCalendar';
+import { getUserHijriOffsetDays } from '@/utils/hijriOffset';
 
 /**
  * Islamic (Hijri) Calendar Utilities
@@ -287,7 +288,14 @@ function getHijriCorrectionShift(date: Date): number {
     if (!entry.endGregorian) return true;
     return compareDateKeys(dateKey, entry.endGregorian) <= 0;
   });
-  return range?.shiftDays ?? 0;
+  return (range?.shiftDays ?? 0) + getUserHijriOffsetDays();
+}
+
+export function invalidateIslamicCalendarCaches(): void {
+  GREGORIAN_TO_HIJRI_CACHE.clear();
+  HIJRI_TO_GREGORIAN_CACHE.clear();
+  HIJRI_MONTH_LENGTH_CACHE.clear();
+  HIJRI_MONTH_START_CACHE.clear();
 }
 
 function buildHijriDate(hijriYear: number, hijriMonth: number, hijriDay: number): HijriDate {

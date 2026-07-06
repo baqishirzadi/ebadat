@@ -6,6 +6,7 @@ import {
   NativeAdhanHealth,
   runNativeAdhanMaintenance,
 } from '@/utils/nativeAdhanScheduler';
+import { triggerPrayerScheduleFromBackground } from '@/utils/prayerScheduleCoordinator';
 
 const BATTERY_NUDGE_SNOOZE_KEY = '@ebadat/battery_nudge_snooze_until';
 const BATTERY_NUDGE_SNOOZE_DAYS = 7;
@@ -45,7 +46,62 @@ export function isAggressiveOem(manufacturer: string): boolean {
   return AGGRESSIVE_OEMS.some((oem) => normalized.includes(oem));
 }
 
+function isAdhanPendingNotification(notification: unknown): boolean {
+  const identifier = String((notification as any)?.identifier || '');
+  const type = (notification as any)?.content?.data?.type;
+  return (
+    type === 'adhan' ||
+    (identifier.startsWith('adhan-') && !identifier.endsWith('-reminder'))
+  );
+}
+
+async function fetchIOSAdhanHealth(): Promise<AdhanHealthState> {
+  const issues: AdhanHealthIssue[] = [];
+  let notificationsEnabled = false;
+  let scheduledAlarmCount = 0;
+
+  try {
+    const Notifications = await import('expo-notifications');
+    const permission = await Notifications.getPermissionsAsync();
+    notificationsEnabled = permission.status === 'granted';
+
+    if (!notificationsEnabled) {
+      issues.push('notification_denied');
+    } else {
+      const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+      scheduledAlarmCount = scheduled.filter(isAdhanPendingNotification).length;
+      if (scheduledAlarmCount === 0) {
+        issues.push('no_alarms_scheduled');
+      }
+    }
+  } catch {
+    issues.push('no_alarms_scheduled');
+  }
+
+  const shouldShowHealthBanner = issues.some((issue) =>
+    ['notification_denied', 'no_alarms_scheduled'].includes(issue),
+  );
+
+  return {
+    notificationsEnabled,
+    canScheduleExactAlarms: true,
+    scheduledAlarmCount,
+    nextAlarmAtMs: null,
+    configPresent: true,
+    masterEnabled: true,
+    isIgnoringBatteryOptimizations: true,
+    manufacturer: 'apple',
+    issues,
+    shouldShowBatteryNudge: false,
+    shouldShowHealthBanner,
+  };
+}
+
 export async function fetchAdhanHealth(): Promise<AdhanHealthState> {
+  if (Platform.OS === 'ios') {
+    return fetchIOSAdhanHealth();
+  }
+
   if (Platform.OS !== 'android') {
     return {
       notificationsEnabled: true,
@@ -129,8 +185,14 @@ export async function openOemAutostartSettings(): Promise<boolean> {
 }
 
 export async function triggerAdhanMaintenance(): Promise<void> {
-  if (Platform.OS !== 'android') return;
-  await runNativeAdhanMaintenance();
+  if (Platform.OS === 'android') {
+    await runNativeAdhanMaintenance();
+    return;
+  }
+
+  if (Platform.OS === 'ios') {
+    await triggerPrayerScheduleFromBackground('ios-health-maintenance');
+  }
 }
 
 export function getHealthBannerMessage(issues: string[]): { title: string; body: string } {

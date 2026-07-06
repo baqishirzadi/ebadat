@@ -86,6 +86,7 @@ function pickHeadingFromLocation(heading: Location.LocationHeadingObject): numbe
 export default function QiblaScreen() {
   const { theme } = useApp();
   const { state, setCustomLocation, requestPrayerSchedule } = usePrayer();
+  const [gpsCoords, setGpsCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [heading, setHeading] = useState(0);
   const [sensorStatus, setSensorStatus] = useState<QiblaSensorStatus>('loading');
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
@@ -107,8 +108,11 @@ export default function QiblaScreen() {
   const hasResolvedCity = Boolean(state.settings.selectedCity);
   const effectiveLocation = state.location;
   const effectiveLocationName = state.locationName;
-  const qiblaDirection = calculateQibla(effectiveLocation);
-  const distance = Math.round(distanceToKaaba(effectiveLocation));
+  const bearingLocation = gpsCoords
+    ? { ...effectiveLocation, latitude: gpsCoords.lat, longitude: gpsCoords.lon }
+    : effectiveLocation;
+  const qiblaDirection = calculateQibla(bearingLocation);
+  const distance = Math.round(distanceToKaaba(bearingLocation));
   const qiblaDirectionLabel = Math.round(qiblaDirection).toLocaleString('fa-AF');
   const headingLabel = Math.round(heading).toLocaleString('fa-AF');
   const distanceLabel = distance.toLocaleString('fa-AF');
@@ -294,6 +298,7 @@ export default function QiblaScreen() {
           city.name,
           city.key,
         );
+        setGpsCoords(null);
         setCityPickerVisible(false);
         setLocationResolveStatus('resolved');
         headingRef.current = null;
@@ -315,6 +320,26 @@ export default function QiblaScreen() {
     try {
       const result = await detectLocationAndFindCity();
       if (result.success && result.cityKey) {
+        if (result.coordinates) {
+          setGpsCoords(result.coordinates);
+          const city = getCity(result.cityKey);
+          if (city) {
+            await setCustomLocation(
+              {
+                latitude: result.coordinates.lat,
+                longitude: result.coordinates.lon,
+                altitude: city.altitude || 0,
+                timezone: city.timezone,
+              },
+              city.name,
+              result.cityKey,
+            );
+            setCityPickerVisible(false);
+            setLocationResolveStatus('resolved');
+            requestPrayerSchedule('qibla-gps-location').catch(() => {});
+            return;
+          }
+        }
         await saveQiblaCity(result.cityKey as CityKey);
         return;
       }

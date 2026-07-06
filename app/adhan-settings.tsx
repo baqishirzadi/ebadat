@@ -364,7 +364,7 @@ export default function AdhanSettingsScreen() {
         {/* Native adhan health + system test */}
         {Platform.OS === 'android' && adhanPreferences.masterEnabled && (
           <View style={[styles.exactAlarmCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <AdhanHealthBanner theme={theme} />
+            <AdhanHealthBanner />
             <View style={styles.exactAlarmContent}>
               <MaterialIcons name="schedule" size={24} color="#D4AF37" />
               <View style={styles.exactAlarmText}>

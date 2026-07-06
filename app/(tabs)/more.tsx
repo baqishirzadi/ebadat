@@ -139,11 +139,12 @@ export default function MoreScreen() {
   const quickActions = useMemo(() => [
     { icon: 'menu-book', label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith', accent: theme.tint },
     { icon: 'article', label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles', accent: theme.bookmark },
-    { icon: 'calendar-today', label: 'تقویم اسلامی', subtitle: 'مناسبت‌های مهم', route: '/calendar', accent: theme.surahHeader },
+    { icon: 'play-circle-filled', label: 'نعت و مناجات', subtitle: 'گوش دادن و تماشا', route: '/(tabs)/naat', accent: theme.playing },
+    { icon: 'calendar-today', label: 'جنتری', subtitle: 'تقویم اسلامی', route: '/(tabs)/jantari', accent: theme.surahHeader },
     { icon: 'explore', label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla', accent: theme.tint },
     { icon: 'school', label: 'آموزش نماز', subtitle: 'فقه و راهنما', route: '/(tabs)/prayer-learning', accent: theme.bookmark },
     { icon: 'bookmark', label: 'نشانه‌های من', subtitle: 'موارد ذخیره‌شده', route: '/(tabs)/bookmarks', accent: theme.surahHeader },
-  ], [theme.bookmark, theme.surahHeader, theme.tint]);
+  ], [theme.bookmark, theme.playing, theme.surahHeader, theme.tint]);
 
   const secondaryActions = useMemo(() => [
     { icon: 'access-alarm', label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings', accent: theme.tint },

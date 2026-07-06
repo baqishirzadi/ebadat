@@ -1,6 +1,6 @@
 /**
  * Tab Navigation Layout
- * Updated with Islamic-themed icons and RTL support
+ * 5-tab RTL navigation: Home · Quran · Jantari · Adhkar · More
  */
 
 import { HapticTab } from '@/components/haptic-tab';
@@ -16,15 +16,13 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const segments = useSegments();
 
-  // Determine if footer should be hidden based on current route
   const shouldHideFooter = useMemo(() => {
     const path = segments.join('/');
-    // Hide footer on these routes
     return (
       path.includes('quran/') ||
       path.includes('adhkar/') ||
       path.includes('prayer-learning') ||
-      path.includes('articles/') || // Hide footer when reading articles
+      path.includes('articles/') ||
       path.includes('dua-request/') ||
       path.includes('scholar/') ||
       path.includes('admin/') ||
@@ -66,26 +64,27 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'قرآن',
+          title: 'خانه',
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name="menu-book"
-              size={focused ? 28 : 24}
-              color={color}
-            />
+            <MaterialIcons name="home" size={focused ? 28 : 24} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="prayer"
+        name="quran-tab"
         options={{
-          title: 'نماز',
+          title: 'قرآن',
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name="access-time"
-              size={focused ? 28 : 24}
-              color={color}
-            />
+            <MaterialIcons name="menu-book" size={focused ? 28 : 24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="jantari"
+        options={{
+          title: 'جنتری',
+          tabBarIcon: ({ color, focused }) => (
+            <MaterialIcons name="calendar-month" size={focused ? 28 : 24} color={color} />
           ),
         }}
       />
@@ -94,37 +93,7 @@ export default function TabLayout() {
         options={{
           title: 'اذکار',
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name="auto-awesome"
-              size={focused ? 28 : 24}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="articles"
-        options={{
-          title: 'مقالات',
-          tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name="article"
-              size={focused ? 28 : 24}
-              color={color}
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="naat"
-        options={{
-          title: 'نعت و مناجات',
-          tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name="play-circle-filled"
-              size={focused ? 28 : 24}
-              color={color}
-            />
+            <MaterialIcons name="auto-awesome" size={focused ? 28 : 24} color={color} />
           ),
         }}
       />
@@ -133,16 +102,15 @@ export default function TabLayout() {
         options={{
           title: 'بیشتر',
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons
-              name="dashboard"
-              size={focused ? 28 : 24}
-              color={color}
-            />
+            <MaterialIcons name="dashboard" size={focused ? 28 : 24} color={color} />
           ),
         }}
       />
-      
-      {/* Hidden routes - accessible via navigation but not in tab bar */}
+
+      {/* Hidden routes */}
+      <Tabs.Screen name="articles" options={{ href: null }} />
+      <Tabs.Screen name="naat" options={{ href: null }} />
+      <Tabs.Screen name="prayer" options={{ href: null }} />
       <Tabs.Screen name="ahadith" options={{ href: null }} />
       <Tabs.Screen name="prayer-learning" options={{ href: null }} />
       <Tabs.Screen name="bookmarks" options={{ href: null }} />

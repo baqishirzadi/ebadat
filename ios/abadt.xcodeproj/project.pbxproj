@@ -15,6 +15,7 @@
 		5C1A995AA30C4CE497D5F9D9 /* QPCHafs18.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FDF95EC0DE1241C5B75B47AC /* QPCHafs18.ttf */; };
 		67110609A39B4AA5B5632CDB /* barakatullah_salim_18sec.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 36FD6C85C92A47DABA7ACD38 /* barakatullah_salim_18sec.mp3 */; };
 		88DEF67A0D7E400CB94A84F9 /* NotoNastaliqUrdu-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 961C4D789D714B179CF85826 /* NotoNastaliqUrdu-Regular.ttf */; };
+		A1B2C3D4E5F60718293A4B5C /* barakatullah_salim_18sec.caf in Resources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F60718293A4B5C6D /* barakatullah_salim_18sec.caf */; };
 		B24E2E79751F4483B6CDEB2C /* ScheherazadeNew-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E336123CAA1B4B59BF86DE6A /* ScheherazadeNew-Bold.ttf */; };
 		B37A6A0FC4628FFA7ACA03C4 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005447E1C111337BBF55F6D8 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
@@ -40,6 +41,7 @@
 		961C4D789D714B179CF85826 /* NotoNastaliqUrdu-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoNastaliqUrdu-Regular.ttf"; path = "../assets/fonts/NotoNastaliqUrdu-Regular.ttf"; sourceTree = "<group>"; };
 		A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Vazirmatn-Bold.ttf"; path = "../assets/fonts/Vazirmatn-Bold.ttf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = abadt/SplashScreen.storyboard; sourceTree = "<group>"; };
+		B2C3D4E5F60718293A4B5C6D /* barakatullah_salim_18sec.caf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = barakatullah_salim_18sec.caf; path = abadt/barakatullah_salim_18sec.caf; sourceTree = "<group>"; };
 		B526AFC308BE3B53D0D36606 /* libPods-abadt.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-abadt.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		BE0B422B353BBE3F7290F010 /* Pods-abadt.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-abadt.debug.xcconfig"; path = "Target Support Files/Pods-abadt/Pods-abadt.debug.xcconfig"; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				36FD6C85C92A47DABA7ACD38 /* barakatullah_salim_18sec.mp3 */,
+				B2C3D4E5F60718293A4B5C6D /* barakatullah_salim_18sec.caf */,
 				24618AC3ED0BFBE7DEFCD0CE /* PrivacyInfo.xcprivacy */,
 			);
 			name = abadt;
@@ -267,6 +270,7 @@
 				E6DCE0B9CA9B468389137939 /* Vazirmatn-Bold.ttf in Resources */,
 				88DEF67A0D7E400CB94A84F9 /* NotoNastaliqUrdu-Regular.ttf in Resources */,
 				67110609A39B4AA5B5632CDB /* barakatullah_salim_18sec.mp3 in Resources */,
+				A1B2C3D4E5F60718293A4B5C /* barakatullah_salim_18sec.caf in Resources */,
 				BDEA7F426C230A2FCEAEC264 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -366,6 +370,7 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/EXConstants.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXConstants/ExpoConstants_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/EXNotifications/ExpoNotifications_privacy.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/EXTaskManager/ExpoTaskManager_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoDevice/ExpoDevice_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoFileSystem/ExpoFileSystem_privacy.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ExpoLocalization/ExpoLocalization_privacy.bundle",
@@ -385,6 +390,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/EXConstants.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoConstants_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoNotifications_privacy.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoTaskManager_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoDevice_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoFileSystem_privacy.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoLocalization_privacy.bundle",
@@ -447,7 +453,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.afghandev.ebadat;
-				PRODUCT_NAME = "abadt";
+				PRODUCT_NAME = abadt;
 				SWIFT_OBJC_BRIDGING_HEADER = "abadt/abadt-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -480,7 +486,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.afghandev.ebadat;
-				PRODUCT_NAME = "abadt";
+				PRODUCT_NAME = abadt;
 				SWIFT_OBJC_BRIDGING_HEADER = "abadt/abadt-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

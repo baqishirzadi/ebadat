@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import { AhadithNotificationPreferences, Hadith } from '@/types/hadith';
 import { selectDailyHadith } from '@/utils/ahadith/selector';
 import { getContextTitleFa } from '@/utils/ahadith/labels';
+import { IOS_AHADITH_DAYS_AHEAD } from '@/utils/notificationBudget';
 
 const CHANNEL_ID = 'ahadith-daily-v1';
 const IDENTIFIER_PREFIX = 'ahadith-daily-';
@@ -71,7 +72,7 @@ async function clearPreviousScheduled(NotificationsModule: typeof import('expo-n
 export async function scheduleAhadithNotifications(
   hadiths: Hadith[],
   prefs: AhadithNotificationPreferences,
-  daysAhead = 30
+  daysAhead = Platform.OS === 'ios' ? IOS_AHADITH_DAYS_AHEAD : 30
 ): Promise<{ scheduled: number; enabled: boolean }> {
   const NotificationsModule = await loadNotificationsIfAvailable();
   if (!NotificationsModule) return { scheduled: 0, enabled: false };

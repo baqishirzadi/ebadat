@@ -13,6 +13,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { OnboardingStartupRedirect } from '@/components/onboarding/OnboardingStartupRedirect';
 import { FirstOpenAdhanSetup } from '@/components/prayer/FirstOpenAdhanSetup';
 import { SpiritualSplash } from '@/components/SpiritualSplash';
 import { AhadithProvider } from '@/context/AhadithContext';
@@ -22,6 +23,7 @@ import { DuaProvider } from '@/context/DuaContext';
 import { NaatProvider } from '@/context/NaatContext';
 import { PrayerProvider } from '@/context/PrayerContext';
 import { ScholarProvider } from '@/context/ScholarContext';
+import { StartupBootstrapProvider } from '@/context/StartupBootstrapContext';
 import { StartupPhaseProvider, useStartupPhase } from '@/context/StartupPhaseContext';
 import { StatsProvider } from '@/context/StatsContext';
 import { getKabulNoon } from '@/utils/afghanistanCalendar';
@@ -303,6 +305,7 @@ function RootLayoutNav() {
           animation: I18nManager.isRTL ? 'slide_from_right' : 'slide_from_left',
         }}
       >
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="quran" options={{ headerShown: false }} />
         <Stack.Screen name="adhkar" options={{ headerShown: false }} />
@@ -319,6 +322,7 @@ function RootLayoutNav() {
         {/* <Stack.Screen name="articles" options={{ headerShown: false }} /> */}
         {/* <Stack.Screen name="scholar" options={{ headerShown: false }} /> */}
       </Stack>
+      <OnboardingStartupRedirect />
       <FirstOpenAdhanSetup />
       {/* On Android, fill the area behind the status bar with the same color
           as the Quran header to avoid any white strip above the header. */}
@@ -330,15 +334,34 @@ function RootLayoutNav() {
 export default function RootLayout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [fontError, setFontError] = useState<string | null>(null);
+  const [bootstrap, setBootstrap] = useState({
+    needsOnboarding: false,
+    hasCity: false,
+    setupDone: false,
+    checked: false,
+  });
 
   useEffect(() => {
     async function loadFonts() {
       try {
+        const [cityKey, setupDone] = await Promise.all([
+          getSavedPrayerCityKey(),
+          isFirstOpenAdhanSetupDone(),
+        ]);
+        const hasCity = Boolean(cityKey?.trim());
+        setBootstrap({
+          hasCity,
+          setupDone,
+          needsOnboarding: !hasCity && !setupDone,
+          checked: true,
+        });
+
         await Font.loadAsync(fontAssets);
         setFontsLoaded(true);
       } catch (error) {
         console.error('Error loading fonts:', error);
         setFontError(error instanceof Error ? error.message : 'Font loading failed');
+        setBootstrap((prev) => ({ ...prev, checked: true }));
         setFontsLoaded(true);
       } finally {
         // Delay hide until React has painted the first frame (prevents white flash on release builds)
@@ -366,6 +389,7 @@ export default function RootLayout() {
     <ErrorBoundary>
       <SafeAreaProvider>
         <StartupPhaseProvider>
+          <StartupBootstrapProvider value={bootstrap}>
           <AppProvider>
             <PrayerProvider>
               <StatsProvider>
@@ -383,6 +407,7 @@ export default function RootLayout() {
               </StatsProvider>
             </PrayerProvider>
           </AppProvider>
+          </StartupBootstrapProvider>
         </StartupPhaseProvider>
       </SafeAreaProvider>
     </ErrorBoundary>

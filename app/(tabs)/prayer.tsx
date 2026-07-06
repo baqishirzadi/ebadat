@@ -177,10 +177,7 @@ export default function NamazScreen() {
         </LinearGradient>
 
         <View style={styles.contentWrapper}>
-          <AdhanHealthBanner
-            theme={theme}
-            onSelectCity={() => setShowCityModal(true)}
-          />
+          <AdhanHealthBanner onSelectCity={() => setShowCityModal(true)} />
           <View style={[styles.unresolvedCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <MaterialIcons name="location-city" size={28} color={theme.tint} />
             <CenteredText style={[styles.unresolvedTitle, { color: theme.text }]}>

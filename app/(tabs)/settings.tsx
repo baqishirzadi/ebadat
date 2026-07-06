@@ -376,21 +376,56 @@ export default function SettingsScreen() {
         </View>
       )}
 
+      {/* Hijri offset */}
+      <View style={[styles.noticeCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: Spacing.sm }]}>تنظیم تاریخ قمری</Text>
+        <Text style={[styles.noticeText, { color: theme.textSecondary, marginBottom: Spacing.sm }]}>
+          اگر تاریخ قمری با رویت ماه افغانستان متفاوت است، یک روز جابه‌جا کنید.
+        </Text>
+        <View style={{ flexDirection: 'row-reverse', justifyContent: 'space-between', gap: Spacing.xs }}>
+          {[-2, -1, 0, 1, 2].map((value) => (
+            <Pressable
+              key={value}
+              onPress={() => updateSettings({ hijriOffsetDays: value })}
+              style={{
+                flex: 1,
+                borderWidth: 1,
+                borderColor: theme.cardBorder,
+                borderRadius: BorderRadius.md,
+                paddingVertical: Spacing.sm,
+                alignItems: 'center',
+                backgroundColor:
+                  prayerState.settings.hijriOffsetDays === value ? theme.tint : theme.backgroundSecondary,
+              }}
+            >
+              <Text
+                style={{
+                  color: prayerState.settings.hijriOffsetDays === value ? '#fff' : theme.text,
+                  fontFamily: 'Vazirmatn-Bold',
+                }}
+              >
+                {value > 0 ? `+${value}` : value}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+
       {/* Adhan Settings Link */}
       <Pressable
         onPress={() => router.push('/adhan-settings')}
-        style={[styles.adhanSettingsLink, { backgroundColor: '#0F1F14', borderColor: '#D4AF37' }]}
+        style={[styles.adhanSettingsLink, { backgroundColor: theme.surahHeader, borderColor: theme.accent }]}
       >
         <View style={styles.adhanSettingsContent}>
-          <MaterialIcons name="notifications-active" size={28} color="#D4AF37" />
+          <MaterialIcons name="notifications-active" size={28} color={theme.accent} />
           <View style={styles.adhanSettingsText}>
-            <Text style={styles.adhanSettingsTitle}>تنظیمات اذان</Text>
-            <Text style={styles.adhanSettingsSubtitle}>
+            <Text style={[styles.adhanSettingsTitle, { color: '#fff' }]}>تنظیمات اذان</Text>
+            <Text style={[styles.adhanSettingsSubtitle, { color: 'rgba(255,255,255,0.8)' }]}>
               صدای اذان و یادآوری برای هر نماز
             </Text>
           </View>
         </View>
-        <MaterialIcons name="chevron-left" size={24} color="#D4AF37" />
+        <MaterialIcons name="chevron-left" size={24} color={theme.accent} />
       </Pressable>
 
       {/* Hanafi Asr Notice */}
