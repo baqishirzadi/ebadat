@@ -16,8 +16,10 @@ function mapWeekdayToDariGridColumn(date: Date | null): number {
     return 0;
   }
 
-  // Kabul weekday index is Sun=0 ... Sat=6; visual grid is Sat-first (ش=Sat).
-  return (6 - getKabulWeekdayIndex(date)) % 7;
+  // Kabul weekday index is Sun=0 ... Sat=6; visual grid is Sat-first, reading
+  // right-to-left as: ش(Sat) ی(Sun) د(Mon) س(Tue) چ(Wed) پ(Thu) ج(Fri).
+  // Column 0 = rightmost = Saturday. So Sat(6)->0, Sun(0)->1, ... Fri(5)->6.
+  return (getKabulWeekdayIndex(date) + 1) % 7;
 }
 
 export function getCalendarMonthGridMeta(

@@ -28,8 +28,8 @@ export function ContinueReadingCard() {
       <RtlView style={styles.inner}>
         <MaterialIcons name="menu-book" size={28} color={theme.playing} />
         <RtlView style={styles.textBlock}>
-          <RtlText style={[styles.title, { color: theme.text }]}>ادامه تلاوت</RtlText>
-          <RtlText style={[styles.subtitle, { color: theme.textSecondary }]}>
+          <RtlText align="center" style={[styles.title, { color: theme.text }]}>ادامه تلاوت</RtlText>
+          <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
             سوره {toArabicNumerals(position.surahNumber)} • آیه {toArabicNumerals(position.ayahNumber)}
           </RtlText>
         </RtlView>

@@ -33,19 +33,6 @@ import { useApp } from '@/context/AppContext';
 
 // Prayer order for display
 const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
-const BLOCKER_LABELS: Record<string, string> = {
-  notifications_module_unavailable: 'هسته اعلان در دسترس نیست',
-  prayer_times_unavailable: 'اوقات شرعی آماده نیست',
-  city_unresolved: 'شهر انتخاب نشده',
-  notification_blocked: 'اعلان‌های دستگاه بلاک است',
-  notification_denied: 'اجازه اعلان داده نشده',
-  master_disabled: 'یادآوری اذان غیرفعال است',
-  native_module_unavailable: 'هسته بومی اذان در دسترس نیست',
-};
-const WARNING_LABELS: Record<string, string> = {
-  exact_alarm_missing: 'آلارم دقیق غیرفعال است (حالت عادی)',
-  exact_alarm_unknown: 'وضعیت آلارم دقیق نامشخص است (حالت عادی)',
-};
 
 export default function AdhanSettingsScreen() {
   const { theme } = useApp();
@@ -69,31 +56,6 @@ export default function AdhanSettingsScreen() {
   }, []);
 
   const { adhanPreferences } = state;
-  const exactAlarmStatusLabel = state.exactAlarmStatus === 'granted'
-    ? 'فعال'
-    : state.exactAlarmStatus === 'missing'
-      ? 'غیرفعال'
-      : state.exactAlarmStatus === 'unknown'
-        ? 'نامشخص'
-        : 'نیاز نیست';
-  const scheduleModeLabel =
-    state.scheduleAudit?.scheduleMode === 'fallback'
-      ? 'عادی (ممکن است کمی تأخیر داشته باشد)'
-      : 'دقیق';
-  const schedulerBackendLabel = state.scheduleAudit?.schedulerBackend === 'native_exact_android'
-    ? 'هسته بومی دقیق (اندروید)'
-    : 'هسته اکسپو';
-  const blockerCodes = state.scheduleAudit?.blockers || [];
-  const warningCodes = state.scheduleAudit?.warnings || [];
-  const blockerLabel =
-    blockerCodes.length > 0
-      ? blockerCodes.map((code) => BLOCKER_LABELS[code] || code).join('، ')
-      : 'ندارد';
-  const warningLabel =
-    warningCodes.length > 0
-      ? warningCodes.map((code) => WARNING_LABELS[code] || code).join('، ')
-      : 'ندارد';
-  const exactDebugState = state.scheduleAudit?.exactDebugState;
   const adhanTestStatusLabel = state.adhanTestStatus.error
     ? `خطا: ${state.adhanTestStatus.error}`
     : state.adhanTestStatus.playbackOk === true
@@ -140,10 +102,6 @@ export default function AdhanSettingsScreen() {
     }
     Alert.alert('خطا', 'فعلاً امکان زمان‌بندی تست سیستمی اذان وجود ندارد.');
   }, [scheduleAdhanSystemTest]);
-
-  const handleScheduleAudit = useCallback(async () => {
-    await requestPrayerSchedule('manual-audit');
-  }, [requestPrayerSchedule]);
 
   const handleRecheckAndSchedule = useCallback(async () => {
     await requestPrayerSchedule('exact-recheck');
@@ -409,147 +367,6 @@ export default function AdhanSettingsScreen() {
                 </Pressable>
               </View>
             )}
-          </View>
-        )}
-
-        {/* Scheduling Audit */}
-        {adhanPreferences.masterEnabled && (
-          <View style={[styles.auditCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <View style={styles.auditHeader}>
-              <MaterialIcons name="fact-check" size={22} color="#D4AF37" />
-              <Text style={[styles.auditTitle, { color: theme.text }]}>وضعیت زمان‌بندی اعلان‌ها</Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>آلارم دقیق:</Text>
-              <Text
-                style={[
-                  styles.auditValue,
-                  { color: state.exactAlarmStatus === 'missing' ? '#d32f2f' : theme.text },
-                ]}
-              >
-                {exactAlarmStatusLabel}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>حالت زمان‌بندی:</Text>
-              <Text style={[styles.auditValue, { color: theme.text }]}>
-                {state.scheduleAudit ? scheduleModeLabel : '---'}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>هسته زمان‌بندی:</Text>
-              <Text style={[styles.auditValue, { color: theme.text }]}>
-                {state.scheduleAudit ? schedulerBackendLabel : '---'}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>انتظار / زمان‌بندی (همه):</Text>
-              <Text style={[styles.auditValue, { color: theme.text }]}>
-                {state.scheduleAudit ? `${state.scheduleAudit.expectedCount} / ${state.scheduleAudit.scheduledCount}` : '---'}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>انتظار / زمان‌بندی (اذان):</Text>
-              <Text style={[styles.auditValue, { color: theme.text }]}>
-                {state.scheduleAudit ? `${state.scheduleAudit.expectedAdhanCount} / ${state.scheduleAudit.scheduledAdhanCount}` : '---'}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>تکراری:</Text>
-              <Text style={[styles.auditValue, { color: theme.text }]}>
-                {state.scheduleAudit ? String(state.scheduleAudit.duplicateCount) : '---'}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>بومی دقیق (اذان):</Text>
-              <Text style={[styles.auditValue, { color: theme.text }]}>
-                {state.scheduleAudit
-                  ? `${state.scheduleAudit.nativeExactScheduledCount} (اختلاف: ${state.scheduleAudit.nativeExactMismatchCount})`
-                  : '---'}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>اذان بومی / یادآوری اکسپو:</Text>
-              <Text style={[styles.auditValue, { color: theme.text }]}>
-                {state.scheduleAudit
-                  ? `${state.scheduleAudit.scheduledAdhanNativeCount} / ${state.scheduleAudit.scheduledReminderExpoCount}`
-                  : '---'}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>مانع زمان‌بندی:</Text>
-              <Text style={[styles.auditValue, { color: blockerCodes.length ? '#d32f2f' : theme.text }]}>
-                {state.scheduleAudit ? blockerLabel : '---'}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>هشدار زمان‌بندی:</Text>
-              <Text style={[styles.auditValue, { color: warningCodes.length ? '#8d4f00' : theme.text }]}>
-                {state.scheduleAudit ? warningLabel : '---'}
-              </Text>
-            </View>
-
-            {exactDebugState && (
-              <>
-                <View style={styles.auditRow}>
-                  <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>هسته بومی اذان:</Text>
-                  <Text style={[styles.auditValue, { color: exactDebugState.nativeModuleAvailable ? theme.text : '#d32f2f' }]}>
-                    {exactDebugState.nativeModuleAvailable ? 'فعال' : 'غیرفعال'}
-                  </Text>
-                </View>
-                <View style={styles.auditRow}>
-                  <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>اعلان دستگاه:</Text>
-                  <Text style={[styles.auditValue, { color: exactDebugState.notificationsEnabled ? theme.text : '#d32f2f' }]}>
-                    {exactDebugState.notificationsEnabled ? 'فعال' : 'غیرفعال'}
-                  </Text>
-                </View>
-              </>
-            )}
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>بیشترین Drift:</Text>
-              <Text style={[styles.auditValue, { color: theme.text }]}>
-                {state.scheduleAudit ? `${state.scheduleAudit.maxDriftSeconds} ثانیه` : '---'}
-              </Text>
-            </View>
-
-            <View style={styles.auditRow}>
-              <Text style={[styles.auditLabel, { color: theme.textSecondary }]}>تاخیر آخرین اذان:</Text>
-              <Text style={[styles.auditValue, { color: theme.text }]}>
-                {state.lastAdhanDelaySeconds !== null ? `${state.lastAdhanDelaySeconds} ثانیه` : '---'}
-              </Text>
-            </View>
-
-            <Pressable
-              onPress={handleScheduleAudit}
-              disabled={state.isScheduling}
-              style={[
-                styles.auditButton,
-                { backgroundColor: state.isScheduling ? '#8ca69b' : '#1a4d3e' },
-              ]}
-            >
-              {state.isScheduling ? (
-                <>
-                  <ActivityIndicator size="small" color="#fff" />
-                  <Text style={styles.auditButtonText}>در حال بازبینی...</Text>
-                </>
-              ) : (
-                <>
-                  <MaterialIcons name="refresh" size={20} color="#fff" />
-                  <Text style={styles.auditButtonText}>بازبینی مجدد</Text>
-                </>
-              )}
-            </Pressable>
           </View>
         )}
 
@@ -882,54 +699,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    fontWeight: '600',
-  },
-  auditCard: {
-    marginHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
-    padding: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    gap: Spacing.xs,
-  },
-  auditHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.xs,
-  },
-  auditTitle: {
-    fontSize: Typography.ui.body,
-    fontFamily: 'Vazirmatn',
-    fontWeight: '700',
-  },
-  auditRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  auditLabel: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-  },
-  auditValue: {
-    fontSize: Typography.ui.body,
-    fontFamily: 'Vazirmatn',
-    fontWeight: '600',
-  },
-  auditButton: {
-    marginTop: Spacing.sm,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.xs,
-    padding: Spacing.sm,
-    borderRadius: BorderRadius.md,
-  },
-  auditButtonText: {
-    color: '#fff',
-    fontSize: Typography.ui.body,
-    fontFamily: 'Vazirmatn',
     fontWeight: '600',
   },
   earlyReminder: {

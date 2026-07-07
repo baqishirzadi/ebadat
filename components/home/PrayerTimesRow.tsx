@@ -2,10 +2,11 @@ import { router } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
-import { RtlText } from '@/components/ui/RtlText';
+import { PrayerChip } from '@/components/home/PrayerChip';
 import { RtlView } from '@/components/ui/RtlView';
-import { BorderRadius, Spacing, Typography } from '@/constants/theme';
-import { useApp } from '@/context/AppContext';
+import { Spacing } from '@/constants/theme';
+import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
+import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
 import { PRAYER_LABELS_DARI, PrayerTimes } from '@/utils/prayerTimes';
 
 const PRAYERS = [
@@ -16,25 +17,11 @@ const PRAYERS = [
   { key: 'isha' as const, label: PRAYER_LABELS_DARI.isha },
 ];
 
-function formatTime(date: Date): string {
-  return date.toLocaleTimeString('fa-AF', { hour: '2-digit', minute: '2-digit', hour12: false });
-}
-
-function getCurrentPrayerKey(times: PrayerTimes, now: Date): string | null {
-  const order = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
-  let current: string | null = null;
-  for (const key of order) {
-    if (times[key] <= now) current = key;
-  }
-  return current;
-}
-
 interface PrayerTimesRowProps {
   prayerTimes: PrayerTimes | null;
 }
 
 export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
-  const { theme } = useApp();
   const now = new Date();
   const current = prayerTimes ? getCurrentPrayerKey(prayerTimes, now) : null;
 
@@ -45,23 +32,12 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
           const time = prayerTimes?.[prayer.key];
           const active = current === prayer.key;
           return (
-            <RtlView
+            <PrayerChip
               key={prayer.key}
-              style={[
-                styles.chip,
-                {
-                  backgroundColor: active ? theme.tint : theme.card,
-                  borderColor: active ? theme.tint : theme.cardBorder,
-                },
-              ]}
-            >
-              <RtlText align="center" style={[styles.chipLabel, { color: active ? '#fff' : theme.text }]}>
-                {prayer.label}
-              </RtlText>
-              <RtlText align="center" style={[styles.chipTime, { color: active ? '#fff' : theme.textSecondary }]}>
-                {time ? formatTime(time) : '--:--'}
-              </RtlText>
-            </RtlView>
+              label={prayer.label}
+              time={time ? formatPrayerTime12h(time) : '--:--'}
+              active={active}
+            />
           );
         })}
       </RtlView>
@@ -75,22 +51,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     gap: 4,
     marginBottom: Spacing.md,
-  },
-  chip: {
-    flex: 1,
-    borderWidth: 1,
-    borderRadius: BorderRadius.lg,
-    paddingVertical: Spacing.xs,
-    paddingHorizontal: 2,
-    alignItems: 'center',
-  },
-  chipLabel: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: 11,
-  },
-  chipTime: {
-    fontFamily: 'Vazirmatn',
-    fontSize: 10,
-    fontVariant: ['tabular-nums'],
   },
 });

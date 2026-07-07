@@ -8,12 +8,15 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
-import { calculateQibla } from '@/utils/prayerTimes';
+import { normalizeCityKey } from '@/utils/cities';
+import { getDisplayQiblaBearing } from '@/utils/prayerTimes';
 
 export function QiblaCard() {
   const { theme } = useApp();
   const { state } = usePrayer();
-  const bearing = Math.round(calculateQibla(state.location));
+  const bearing = Math.round(
+    getDisplayQiblaBearing(state.location, normalizeCityKey(state.settings.selectedCity)),
+  );
 
   return (
     <Pressable
@@ -25,8 +28,8 @@ export function QiblaCard() {
           <MaterialIcons name="navigation" size={28} color={theme.accent} style={{ transform: [{ rotate: `${bearing}deg` }] }} />
         </RtlView>
         <RtlView style={styles.textBlock}>
-          <RtlText style={[styles.title, { color: theme.text }]}>قبله‌نما</RtlText>
-          <RtlText style={[styles.subtitle, { color: theme.textSecondary }]}>
+          <RtlText align="center" style={[styles.title, { color: theme.text }]}>قبله‌نما</RtlText>
+          <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
             جهت قبله: {bearing.toLocaleString('fa-AF')}°
           </RtlText>
         </RtlView>

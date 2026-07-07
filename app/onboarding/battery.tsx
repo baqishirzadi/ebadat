@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Linking, Platform, StyleSheet } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
@@ -19,7 +19,7 @@ export default function OnboardingBatteryScreen() {
     ensurePushRegistrationOnFirstOpen().catch(() => {});
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (Platform.OS !== 'android') {
       finish();
     }
@@ -34,7 +34,7 @@ export default function OnboardingBatteryScreen() {
       step={5}
       totalSteps={5}
       title="بهینه‌سازی باتری (اختیاری)"
-      subtitle="برای اطمینان از پخش به‌موقع اذان در برخی گوشی‌ها، بهینه‌سازی باتری را برای عبادت غیرفعال کنید."
+      subtitle="برای اطمینان از پخش به‌موقع اذان، بهینه‌سازی باتری را برای عبادت غیرفعال کنید."
       primaryLabel="باز کردن تنظیمات باتری"
       onPrimary={async () => {
         const opened = await openBatteryOptimizationSettings();
@@ -49,9 +49,12 @@ export default function OnboardingBatteryScreen() {
       onBack={() => router.back()}
     >
       <RtlView style={styles.content}>
-        <RtlText style={styles.bullet}>• این مرحله اختیاری است</RtlText>
-        <RtlText style={styles.bullet}>• در گوشی‌های سامسونگ، شیائومی و هواوی توصیه می‌شود</RtlText>
-        <RtlText style={styles.bullet}>• می‌توانید بعداً از تنظیمات اذان راهنما را ببینید</RtlText>
+        <RtlText align="center" style={[styles.highlight, { color: '#b45309' }]}>
+          گوشی هواوی: حتماً بهینه‌سازی باتری را برای عبادت غیرفعال کنید
+        </RtlText>
+        <RtlText align="center" style={styles.bullet}>• این مرحله اختیاری است</RtlText>
+        <RtlText align="center" style={styles.bullet}>• در گوشی‌های سامسونگ، شیائومی و هواوی توصیه می‌شود</RtlText>
+        <RtlText align="center" style={styles.bullet}>• می‌توانید بعداً از تنظیمات اذان راهنما را ببینید</RtlText>
       </RtlView>
     </OnboardingShell>
   );
@@ -61,6 +64,12 @@ const styles = StyleSheet.create({
   content: {
     gap: Spacing.md,
     paddingTop: Spacing.md,
+  },
+  highlight: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.body,
+    lineHeight: 26,
+    marginBottom: Spacing.sm,
   },
   bullet: {
     fontFamily: 'Vazirmatn',

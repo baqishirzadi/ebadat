@@ -35,13 +35,13 @@ import {
   scheduleCalendarNotifications,
 } from '@/utils/calendarNotifications';
 import { getCalendarTruth } from '@/utils/calendarTruth';
-import { getCity } from '@/utils/cities';
+import { getCity, isAfghanCityKey, normalizeCityKey } from '@/utils/cities';
 import { HijriDate } from '@/utils/islamicCalendar';
 import {
   AFGHAN_CITIES,
   AsrMethod,
   calculatePrayerTimes,
-  calculateQibla,
+  getDisplayQiblaBearing,
   CalculationMethods,
   DEFAULT_LOCATION,
   Location as LocationType,
@@ -918,15 +918,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   }
 
   function toCityKey(selectedCity: string | null): string | undefined {
-    if (!selectedCity) return undefined;
-    if (selectedCity.startsWith('afghanistan_')) return selectedCity;
-    if (AFGHAN_CITIES[selectedCity]) {
-      return `afghanistan_${selectedCity}`;
-    }
-    if (getCity(selectedCity)) {
-      return selectedCity;
-    }
-    return undefined;
+    return normalizeCityKey(selectedCity);
   }
 
   async function loadPrayerTimesFor(
@@ -937,7 +929,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     try {
       const cityKey = toCityKey(selectedCity);
       const result = await getPrayerTimesForDate({ cityKey, location, date: new Date() });
-      dispatch({ type: 'SET_PRAYER_TIMES', payload: result.times });
+      dispatch({ type: 'SET_PRAYER_TIMES', payload: applyAfghanPrayerOffsets(result.times, cityKey) });
       dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
       console.error('Failed to load prayer times (agent):', error);
@@ -947,7 +939,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         settings.calculationMethod,
         settings.asrMethod
       );
-      const fallback = applyAfghanMaghribOffset(fallbackBase, toCityKey(selectedCity));
+      const fallback = applyAfghanPrayerOffsets(fallbackBase, toCityKey(selectedCity));
       dispatch({ type: 'SET_PRAYER_TIMES', payload: fallback });
     }
   }
@@ -1005,7 +997,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(effectiveSettings));
       }
 
-      const qibla = calculateQibla(location);
+      const qibla = getDisplayQiblaBearing(location, resolvedCityKey ?? effectiveSettings.selectedCity);
       dispatch({ type: 'SET_QIBLA', payload: qibla });
 
       const hijri = getCalendarTruth().hijri;
@@ -1013,9 +1005,9 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     } catch (error) {
       console.error('Failed to load prayer data:', error);
       dispatch({ type: 'INITIALIZE', payload: { location: DEFAULT_LOCATION, settings: DEFAULT_SETTINGS, adhanPreferences: DEFAULT_ADHAN_PREFERENCES, name: 'کابل' } });
-      await loadPrayerTimesFor(DEFAULT_LOCATION, DEFAULT_SETTINGS.selectedCity, DEFAULT_SETTINGS);
+      await loadPrayerTimesFor(DEFAULT_LOCATION, 'afghanistan_kabul', DEFAULT_SETTINGS);
 
-      const qibla = calculateQibla(DEFAULT_LOCATION);
+      const qibla = getDisplayQiblaBearing(DEFAULT_LOCATION, 'afghanistan_kabul');
       dispatch({ type: 'SET_QIBLA', payload: qibla });
 
       const hijri = getCalendarTruth().hijri;
@@ -1110,8 +1102,21 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   }, [state.location, state.settings.selectedCity]);
 
   const isAfghanistanCityKey = useCallback((cityKey?: string | null) => {
-    return Boolean(cityKey && cityKey.startsWith('afghanistan_'));
+    return isAfghanCityKey(cityKey);
   }, []);
+
+  const applyAfghanDhuhrOffset = useCallback(
+    (times: PrayerTimes, cityKey?: string | null): PrayerTimes => {
+      if (!isAfghanistanCityKey(cityKey)) {
+        return times;
+      }
+      return {
+        ...times,
+        dhuhr: new Date(times.dhuhr.getTime() + 20 * 60 * 1000),
+      };
+    },
+    [isAfghanistanCityKey],
+  );
 
   const applyAfghanMaghribOffset = useCallback(
     (times: PrayerTimes, cityKey?: string | null): PrayerTimes => {
@@ -1140,6 +1145,12 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     [isAfghanistanCityKey]
   );
 
+  const applyAfghanPrayerOffsets = useCallback(
+    (times: PrayerTimes, cityKey?: string | null): PrayerTimes =>
+      applyAfghanMaghribOffset(applyAfghanDhuhrOffset(times, cityKey), cityKey),
+    [applyAfghanDhuhrOffset, applyAfghanMaghribOffset],
+  );
+
   async function cancelScheduledNotificationsByPredicate(
     NotificationsModule: typeof import('expo-notifications'),
     shouldCancel: (notification: any, identifier: string) => boolean
@@ -1155,7 +1166,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   }
 
   function updateQibla() {
-    const qibla = calculateQibla(state.location);
+    const qibla = getDisplayQiblaBearing(state.location, state.settings.selectedCity);
     dispatch({ type: 'SET_QIBLA', payload: qibla });
   }
 
@@ -1567,7 +1578,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           location: state.location,
           date: targetDate,
         });
-        dayTimes = result.times;
+        dayTimes = applyAfghanPrayerOffsets(result.times, cityKey);
         dayTimeZone = result.timezone || dayTimeZone;
       } catch {
         const fallbackTimes = calculatePrayerTimes(
@@ -1576,7 +1587,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           state.settings.calculationMethod,
           state.settings.asrMethod
         );
-        dayTimes = applyAfghanMaghribOffset(fallbackTimes, cityKey);
+        dayTimes = applyAfghanPrayerOffsets(fallbackTimes, cityKey);
       }
 
       if (!areTimesOrdered(dayTimes)) {
@@ -1586,7 +1597,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           state.settings.calculationMethod,
           state.settings.asrMethod
         );
-        dayTimes = applyAfghanMaghribOffset(fallbackTimes, cityKey);
+        dayTimes = applyAfghanPrayerOffsets(fallbackTimes, cityKey);
       }
 
       const weekdayAnchor = buildDateFromLocalTimeInTimezone(targetDate, '12:00', dayTimeZone);
@@ -1677,7 +1688,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     return expected;
   }, [
     areTimesOrdered,
-    applyAfghanMaghribOffset,
+    applyAfghanPrayerOffsets,
     buildDateFromLocalTimeInTimezone,
     getDateKey,
     isFridayInTimezone,

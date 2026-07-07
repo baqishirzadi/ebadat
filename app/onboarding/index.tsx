@@ -1,6 +1,7 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { Image, Pressable, StyleSheet } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
 import { RtlText } from '@/components/ui/RtlText';
@@ -21,9 +22,16 @@ export default function OnboardingWelcomeScreen() {
       onPrimary={() => router.push('/onboarding/language' as never)}
     >
       <RtlView style={styles.hero}>
-        <RtlView style={[styles.logoFrame, { borderColor: theme.accent, backgroundColor: theme.card }]}>
-          <Image source={require('@/assets/images/icon.png')} style={styles.logo} resizeMode="contain" />
-        </RtlView>
+        <LinearGradient
+          colors={['#0F1F14', '#1a4d3e', '#0F1F14']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.gradientHeader}
+        >
+          <RtlView style={[styles.logoFrame, { borderColor: theme.accent, backgroundColor: theme.card }]}>
+            <Image source={require('@/assets/images/icon.png')} style={styles.logo} resizeMode="contain" />
+          </RtlView>
+        </LinearGradient>
         <RtlText align="center" style={[styles.tagline, { color: theme.textSecondary }]}>
           برای مسلمانان افغان در سراسر جهان
         </RtlText>
@@ -38,6 +46,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.lg,
+  },
+  gradientHeader: {
+    width: '100%',
+    borderRadius: BorderRadius.xl,
+    paddingVertical: Spacing.xl,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   logoFrame: {
     width: 120,

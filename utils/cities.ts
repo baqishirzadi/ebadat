@@ -213,6 +213,21 @@ export function getCity(fullKey: string): (City & { category: string; key: strin
   return ALL_CITIES[resolvedKey];
 }
 
+/** Normalize short/legacy keys (e.g. "kabul") to full keys ("afghanistan_kabul"). */
+export function normalizeCityKey(cityKey?: string | null): string | undefined {
+  if (!cityKey) return undefined;
+  if (cityKey.startsWith('afghanistan_') && getCity(cityKey)) return cityKey;
+  const prefixed = `afghanistan_${cityKey}`;
+  if (getCity(prefixed)) return prefixed;
+  if (getCity(cityKey)) return cityKey;
+  return undefined;
+}
+
+export function isAfghanCityKey(cityKey?: string | null): boolean {
+  const normalized = normalizeCityKey(cityKey);
+  return Boolean(normalized?.startsWith('afghanistan_'));
+}
+
 export const NEAREST_CITY_MAX_KM = 50;
 
 export interface NearestCityResult {

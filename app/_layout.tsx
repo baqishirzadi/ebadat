@@ -285,6 +285,8 @@ function RootLayoutNav() {
       const today = getCalendarTruth(getKabulNoon(new Date()));
       getCalendarMonthGridMeta('qamari', today.hijri.year, today.hijri.month);
       getCalendarMonthGridMeta('shamsi', today.shamsi.year, today.shamsi.month);
+      const greg = today.gregorianDate;
+      getCalendarMonthGridMeta('gregorian', greg.getUTCFullYear(), greg.getUTCMonth() + 1);
     });
 
     return () => {
@@ -315,7 +317,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="quran" options={{ headerShown: false }} />
         <Stack.Screen name="adhkar" options={{ headerShown: false }} />
-        <Stack.Screen name="qibla" options={{ headerShown: true }} />
+        <Stack.Screen name="qibla" options={{ headerShown: false }} />
         <Stack.Screen name="search" options={{ headerShown: true }} />
         <Stack.Screen name="counter" options={{ presentation: 'modal' }} />
         <Stack.Screen name="calendar" options={{ headerShown: true }} />
@@ -370,16 +372,19 @@ export default function RootLayout() {
         setBootstrap((prev) => ({ ...prev, checked: true }));
         setFontsLoaded(true);
       } finally {
-        // Delay hide until React has painted the first frame (prevents white flash on release builds)
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            SplashScreen.hideAsync();
-          });
-        });
+        SplashScreen.hideAsync().catch(() => {});
       }
     }
 
     loadFonts();
+
+    // Huawei/slow devices: never block on splash if font load hangs
+    const splashFallback = setTimeout(() => {
+      SplashScreen.hideAsync().catch(() => {});
+      setFontsLoaded(true);
+    }, 4000);
+
+    return () => clearTimeout(splashFallback);
   }, []);
 
   if (!fontsLoaded) {

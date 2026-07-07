@@ -1,15 +1,16 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
-
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
+import { formatLiveClock } from '@/utils/prayerDisplay';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -27,6 +28,14 @@ export function HomeHeader({ onCityPress }: HomeHeaderProps) {
   const { theme } = useApp();
   const { state } = usePrayer();
   const insets = useSafeAreaInsets();
+  const [clock, setClock] = useState(() => formatLiveClock(new Date()));
+
+  useFocusEffect(
+    useCallback(() => {
+      const timer = setInterval(() => setClock(formatLiveClock(new Date())), 30000);
+      return () => clearInterval(timer);
+    }, []),
+  );
 
   return (
     <RtlView style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
@@ -35,7 +44,9 @@ export function HomeHeader({ onCityPress }: HomeHeaderProps) {
           <MaterialIcons name="settings" size={24} color={theme.textSecondary} />
         </Pressable>
         <RtlView style={styles.center}>
-          <RtlText align="center" style={[styles.greeting, { color: theme.textSecondary }]}>{getGreeting()}</RtlText>
+          <RtlText align="center" style={[styles.greeting, { color: theme.textSecondary }]}>
+            {getGreeting()} • {clock}
+          </RtlText>
           <RtlText align="center" style={[styles.title, { color: theme.text }]}>عبادت</RtlText>
         </RtlView>
         <Pressable
@@ -43,7 +54,7 @@ export function HomeHeader({ onCityPress }: HomeHeaderProps) {
           style={[styles.cityChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
         >
           <MaterialIcons name="location-on" size={16} color={theme.tint} />
-          <RtlText style={[styles.cityText, { color: theme.text }]} numberOfLines={1}>
+          <RtlText align="center" style={[styles.cityText, { color: theme.text }]} numberOfLines={1}>
             {state.locationName || 'انتخاب شهر'}
           </RtlText>
         </Pressable>
@@ -69,14 +80,10 @@ const styles = StyleSheet.create({
   greeting: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   title: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.subtitle,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   cityChip: {
     flexDirection: 'row',
@@ -91,8 +98,6 @@ const styles = StyleSheet.create({
   cityText: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
-    writingDirection: 'rtl',
     flexShrink: 1,
   },
 });

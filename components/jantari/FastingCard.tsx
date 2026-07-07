@@ -15,8 +15,8 @@ export function FastingCard() {
 
   return (
     <RtlView style={[styles.card, { backgroundColor: theme.card, borderColor: theme.tint }]}>
-      <RtlText style={[styles.title, { color: theme.tint }]}>روزه امروز</RtlText>
-      <RtlText style={[styles.reason, { color: theme.text }]}>{fasting.reasonDari}</RtlText>
+      <RtlText align="center" style={[styles.title, { color: theme.tint }]}>روزه امروز</RtlText>
+      <RtlText align="center" style={[styles.reason, { color: theme.text }]}>{fasting.reasonDari}</RtlText>
     </RtlView>
   );
 }

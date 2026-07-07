@@ -1,13 +1,14 @@
 import * as Location from 'expo-location';
 import { Magnetometer } from 'expo-sensors';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { AppState } from 'react-native';
-import { useSharedValue, withSpring } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AppState, Platform } from 'react-native';
+import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
 
 const DEAD_BAND = 1.5;
 const MAX_JUMP = 65;
-const ALIGNMENT_THRESHOLD = 3;
+const ALIGNMENT_THRESHOLD = 4;
+const ANIM_MS = 180;
 
 export type QiblaHeadingMode = 'location' | 'magnetometer' | 'none';
 export type QiblaAccuracyLevel = 'high' | 'medium' | 'low';
@@ -38,12 +39,25 @@ function accuracyFromSample(source: QiblaHeadingMode, accuracy?: number): QiblaA
   return 'low';
 }
 
+/** Platform-correct magnetometer → compass heading (degrees, 0=north). */
+function magnetometerToHeading(x: number, y: number): number {
+  if (Platform.OS === 'ios') {
+    return normalize((Math.atan2(x, y) * 180) / Math.PI);
+  }
+  return normalize((Math.atan2(-x, y) * 180) / Math.PI);
+}
+
+function pickLocationHeading(sample: Location.LocationHeadingObject): number {
+  const raw = sample.trueHeading >= 0 ? sample.trueHeading : sample.magHeading;
+  return normalize(raw);
+}
+
 export function useQiblaHeading(qiblaBearing: number, enabled: boolean) {
   const headingRotation = useSharedValue(0);
-  const needleRotation = useSharedValue(0);
   const continuousHeading = useRef(0);
   const alignedRef = useRef(false);
   const lowAccuracySince = useRef<number | null>(null);
+  const hasSampleRef = useRef(false);
 
   const [state, setState] = useState<QiblaHeadingState>({
     heading: 0,
@@ -59,15 +73,30 @@ export function useQiblaHeading(qiblaBearing: number, enabled: boolean) {
     (raw: number, mode: QiblaHeadingMode, accuracy?: number) => {
       const normalized = normalize(raw);
       const delta = shortestDelta(continuousHeading.current, normalized);
-      if (Math.abs(delta) > MAX_JUMP) return;
-      if (Math.abs(delta) < DEAD_BAND) return;
 
-      continuousHeading.current += delta;
-      const display = normalize(continuousHeading.current);
+      if (hasSampleRef.current && Math.abs(delta) > MAX_JUMP) return;
+      if (hasSampleRef.current && Math.abs(delta) < DEAD_BAND) return;
 
-      headingRotation.value = withSpring(-display, { damping: 18, stiffness: 120 });
-      const needleTarget = normalize(qiblaBearing - display);
-      needleRotation.value = withSpring(needleTarget, { damping: 18, stiffness: 120 });
+      if (!hasSampleRef.current) {
+        continuousHeading.current = normalized;
+        hasSampleRef.current = true;
+      } else {
+        const smoothing =
+          mode === 'location'
+            ? (accuracy ?? 0) >= 3
+              ? 0.4
+              : accuracy === 2
+                ? 0.28
+                : 0.18
+            : 0.22;
+        continuousHeading.current = normalize(continuousHeading.current + delta * smoothing);
+      }
+
+      const display = continuousHeading.current;
+      headingRotation.value = withTiming(-display, {
+        duration: ANIM_MS,
+        easing: Easing.out(Easing.cubic),
+      });
 
       const aligned = Math.abs(shortestDelta(display, qiblaBearing)) <= ALIGNMENT_THRESHOLD;
       if (aligned && !alignedRef.current) {
@@ -91,12 +120,12 @@ export function useQiblaHeading(qiblaBearing: number, enabled: boolean) {
         const sensorStatus =
           mode === 'magnetometer'
             ? 'ready'
-            : accuracy === undefined
+            : !hasSampleRef.current
               ? 'loading'
               : (accuracy ?? 0) >= 2
                 ? 'ready'
                 : accuracy === 1
-                  ? 'ready'
+                  ? 'calibrating'
                   : 'calibrating';
 
         if (
@@ -121,58 +150,76 @@ export function useQiblaHeading(qiblaBearing: number, enabled: boolean) {
         };
       });
     },
-    [headingRotation, needleRotation, qiblaBearing],
+    [headingRotation, qiblaBearing],
   );
 
   useEffect(() => {
     if (!enabled) return;
 
-    let subscription: { remove: () => void } | null = null;
+    let locationSub: { remove: () => void } | null = null;
     let magnetSub: { remove: () => void } | null = null;
     let cancelled = false;
+
+    const startMagnetometer = async () => {
+      const available = await Magnetometer.isAvailableAsync();
+      if (!available || cancelled) return false;
+      Magnetometer.setUpdateInterval(100);
+      magnetSub = Magnetometer.addListener((data) => {
+        if (cancelled) return;
+        applyHeading(magnetometerToHeading(data.x, data.y), 'magnetometer');
+      });
+      return true;
+    };
 
     const start = async () => {
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          setState((s) => ({ ...s, sensorStatus: 'unavailable', mode: 'none' }));
+          const ok = await startMagnetometer();
+          if (!ok) setState((s) => ({ ...s, sensorStatus: 'unavailable', mode: 'none' }));
           return;
         }
 
-        subscription = await Location.watchHeadingAsync((sample) => {
+        try {
+          const initial = await Location.getHeadingAsync();
+          if (!cancelled) {
+            applyHeading(pickLocationHeading(initial), 'location', initial.accuracy);
+          }
+        } catch {
+          // continue to watch
+        }
+
+        locationSub = await Location.watchHeadingAsync((sample) => {
           if (cancelled) return;
-          const heading = sample.trueHeading >= 0 ? sample.trueHeading : sample.magHeading;
-          applyHeading(heading, 'location', sample.accuracy);
+          applyHeading(pickLocationHeading(sample), 'location', sample.accuracy);
         });
       } catch {
-        try {
-          Magnetometer.setUpdateInterval(120);
-          magnetSub = Magnetometer.addListener((data) => {
-            if (cancelled) return;
-            const angle = normalize((Math.atan2(data.y, data.x) * 180) / Math.PI);
-            applyHeading(angle, 'magnetometer');
-          });
-        } catch {
-          setState((s) => ({ ...s, sensorStatus: 'unavailable', mode: 'none' }));
-        }
+        const ok = await startMagnetometer();
+        if (!ok) setState((s) => ({ ...s, sensorStatus: 'unavailable', mode: 'none' }));
       }
     };
 
     void start();
 
     const appSub = AppState.addEventListener('change', (next) => {
-      if (next === 'active' && !subscription && !magnetSub) {
+      if (next === 'active' && !locationSub && !magnetSub) {
+        hasSampleRef.current = false;
         void start();
       }
     });
 
     return () => {
       cancelled = true;
-      subscription?.remove();
+      locationSub?.remove();
       magnetSub?.remove();
       appSub.remove();
     };
   }, [applyHeading, enabled]);
 
-  return { ...state, headingRotation, needleRotation };
-}
+  // Reset smoothing when qibla bearing changes (city change)
+  useEffect(() => {
+    alignedRef.current = false;
+  }, [qiblaBearing]);
+
+  return { ...state, headingRotation };
+};

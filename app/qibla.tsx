@@ -1,6 +1,6 @@
 /**
  * Qibla Compass Screen
- * Reuses adhan/prayer city; requests location for live compass heading.
+ * Uses unified heading hook + vector compass dial.
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -9,274 +9,76 @@ import {
   StyleSheet,
   Dimensions,
   ActivityIndicator,
-  AppState,
   Alert,
   Pressable,
   Linking,
   ScrollView,
 } from 'react-native';
-import * as Location from 'expo-location';
-import { Image } from 'expo-image';
-import { Magnetometer } from 'expo-sensors';
-import { Stack, useFocusEffect } from 'expo-router';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
+import { router, useFocusEffect } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { usePrayer } from '@/context/PrayerContext';
-import { useApp } from '@/context/AppContext';
-import { calculateQibla, distanceToKaaba } from '@/utils/prayerTimes';
-import { Typography, Spacing } from '@/constants/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { CalibrationOverlay } from '@/components/qibla/CalibrationOverlay';
+import { QiblaDial } from '@/components/qibla/QiblaDial';
 import CenteredText from '@/components/CenteredText';
 import { CitySelectorModal } from '@/components/prayer/CitySelectorModal';
-import { CityKey, getCity } from '@/utils/cities';
+import { RtlView } from '@/components/ui/RtlView';
+import { RtlText } from '@/components/ui/RtlText';
+import { Typography, Spacing } from '@/constants/theme';
+import { useApp } from '@/context/AppContext';
+import { usePrayer } from '@/context/PrayerContext';
+import { useQiblaHeading } from '@/hooks/useQiblaHeading';
+import { CityKey, getCity, normalizeCityKey } from '@/utils/cities';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
+import { getDisplayQiblaBearing, distanceToKaaba } from '@/utils/prayerTimes';
 import { hydratePrayerCityFromStorage } from '@/utils/qiblaLocationReady';
 
-const KAABA_IMAGE = require('@/assets/images/kaaba.png');
-
 const { width } = Dimensions.get('window');
-const COMPASS_SIZE = width * 0.8;
-const DEAD_BAND_DEGREES = 1.5;
-const MAX_HEADING_JUMP = 65;
+const COMPASS_SIZE = Math.min(width * 0.82, 340);
 
-type QiblaSensorStatus = 'loading' | 'ready' | 'calibrating' | 'unstable' | 'unavailable';
 type LocationResolveStatus = 'idle' | 'resolving' | 'resolved' | 'denied';
-type HeadingSubscription = { remove: () => void } | null;
-type HeadingSampleSource = 'location' | 'magnetometer';
-
-function normalizeAngle(angle: number): number {
-  const normalized = angle % 360;
-  return normalized < 0 ? normalized + 360 : normalized;
-}
-
-function shortestAngleDelta(from: number, to: number): number {
-  return ((to - from + 540) % 360) - 180;
-}
-
-function animateAngle(sharedValue: Animated.SharedValue<number>, target: number) {
-  const delta = shortestAngleDelta(sharedValue.value, target);
-  sharedValue.value = withTiming(sharedValue.value + delta, {
-    duration: 220,
-    easing: Easing.out(Easing.cubic),
-  });
-}
-
-function getStatusFromAccuracy(source: HeadingSampleSource, accuracy?: number): QiblaSensorStatus {
-  if (source === 'magnetometer') {
-    return 'ready';
-  }
-  if ((accuracy ?? 0) >= 2) {
-    return 'ready';
-  }
-  if (accuracy === 1) {
-    return 'unstable';
-  }
-  return 'calibrating';
-}
-
-function pickHeadingFromLocation(heading: Location.LocationHeadingObject): number {
-  const preferred = heading.trueHeading >= 0 ? heading.trueHeading : heading.magHeading;
-  return normalizeAngle(preferred);
-}
 
 export default function QiblaScreen() {
   const { theme } = useApp();
+  const insets = useSafeAreaInsets();
   const { state, setCustomLocation, requestPrayerSchedule } = usePrayer();
   const [gpsCoords, setGpsCoords] = useState<{ lat: number; lon: number } | null>(null);
-  const [heading, setHeading] = useState(0);
-  const [sensorStatus, setSensorStatus] = useState<QiblaSensorStatus>('loading');
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
   const [isResolvingLocation, setIsResolvingLocation] = useState(false);
   const [isPreparing, setIsPreparing] = useState(false);
   const [headingPermissionDenied, setHeadingPermissionDenied] = useState(false);
+  const [compassActive, setCompassActive] = useState(false);
   const [locationResolveStatus, setLocationResolveStatus] = useState<LocationResolveStatus>(() =>
     state.settings.selectedCity ? 'resolved' : 'idle',
   );
-  const compassRotation = useSharedValue(0);
-  const needleRotation = useSharedValue(0);
-  const subscriptionRef = useRef<HeadingSubscription>(null);
-  const headingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const headingRef = useRef<number | null>(null);
-  const focusedRef = useRef(false);
-  const rejectedSamplesRef = useRef(0);
   const prepareInFlightRef = useRef(false);
 
   const hasResolvedCity = Boolean(state.settings.selectedCity);
-  const effectiveLocation = state.location;
-  const effectiveLocationName = state.locationName;
   const bearingLocation = gpsCoords
-    ? { ...effectiveLocation, latitude: gpsCoords.lat, longitude: gpsCoords.lon }
-    : effectiveLocation;
-  const qiblaDirection = calculateQibla(bearingLocation);
+    ? { ...state.location, latitude: gpsCoords.lat, longitude: gpsCoords.lon }
+    : state.location;
+  const qiblaDirection = getDisplayQiblaBearing(
+    bearingLocation,
+    normalizeCityKey(state.settings.selectedCity),
+  );
   const distance = Math.round(distanceToKaaba(bearingLocation));
+
+  const {
+    heading,
+    headingRotation,
+    isAligned,
+    showCalibration,
+    sensorStatus,
+    isDegraded,
+  } = useQiblaHeading(qiblaDirection, compassActive);
+
+  const hasLiveCompass = sensorStatus !== 'unavailable' && sensorStatus !== 'loading';
+  const isSensorWarming = sensorStatus === 'loading';
+  const needsCitySetup = !hasResolvedCity && locationResolveStatus === 'denied' && !isPreparing;
+
   const qiblaDirectionLabel = Math.round(qiblaDirection).toLocaleString('fa-AF');
   const headingLabel = Math.round(heading).toLocaleString('fa-AF');
   const distanceLabel = distance.toLocaleString('fa-AF');
-  const hasLiveCompass = sensorStatus !== 'unavailable' && headingRef.current !== null;
-  const isSensorWarming = sensorStatus === 'loading' && !hasLiveCompass;
-  const needsCitySetup = !hasResolvedCity && locationResolveStatus === 'denied' && !isPreparing;
-
-  const clearHeadingTimeout = useCallback(() => {
-    if (headingTimeoutRef.current) {
-      clearTimeout(headingTimeoutRef.current);
-      headingTimeoutRef.current = null;
-    }
-  }, []);
-
-  const stopSensorUpdates = useCallback(() => {
-    clearHeadingTimeout();
-    subscriptionRef.current?.remove();
-    subscriptionRef.current = null;
-  }, [clearHeadingTimeout]);
-
-  const commitHeading = useCallback(
-    (nextHeading: number) => {
-      setHeading(nextHeading);
-      animateAngle(compassRotation, -nextHeading);
-      animateAngle(needleRotation, normalizeAngle(qiblaDirection - nextHeading));
-    },
-    [compassRotation, needleRotation, qiblaDirection],
-  );
-
-  const consumeHeadingSample = useCallback(
-    (rawHeading: number, source: HeadingSampleSource, accuracy?: number) => {
-      const normalized = normalizeAngle(rawHeading);
-      const currentStatus = getStatusFromAccuracy(source, accuracy);
-      const previousHeading = headingRef.current;
-
-      if (previousHeading === null) {
-        clearHeadingTimeout();
-        headingRef.current = normalized;
-        rejectedSamplesRef.current = 0;
-        commitHeading(normalized);
-        setSensorStatus(currentStatus);
-        return;
-      }
-
-      const delta = shortestAngleDelta(previousHeading, normalized);
-      const maxJump = source === 'location' ? MAX_HEADING_JUMP : MAX_HEADING_JUMP - 10;
-
-      if (Math.abs(delta) > maxJump) {
-        rejectedSamplesRef.current += 1;
-        setSensorStatus('unstable');
-        return;
-      }
-
-      rejectedSamplesRef.current = 0;
-      if (Math.abs(delta) < DEAD_BAND_DEGREES) {
-        setSensorStatus(currentStatus);
-        return;
-      }
-
-      const smoothing =
-        source === 'location'
-          ? accuracy && accuracy >= 3
-            ? 0.35
-            : accuracy === 2
-              ? 0.26
-              : 0.18
-          : 0.22;
-
-      const smoothedHeading = normalizeAngle(previousHeading + delta * smoothing);
-      headingRef.current = smoothedHeading;
-      commitHeading(smoothedHeading);
-      setSensorStatus(currentStatus);
-    },
-    [clearHeadingTimeout, commitHeading],
-  );
-
-  const requestCompassPermissions = useCallback(async (): Promise<boolean> => {
-    try {
-      const existing = await Location.getForegroundPermissionsAsync();
-      if (existing.status === 'granted') {
-        setHeadingPermissionDenied(false);
-        return true;
-      }
-      const requested = await Location.requestForegroundPermissionsAsync();
-      const granted = requested.status === 'granted';
-      setHeadingPermissionDenied(!granted);
-      return granted;
-    } catch {
-      setHeadingPermissionDenied(true);
-      return false;
-    }
-  }, []);
-
-  const startMagnetometerFallback = useCallback(async () => {
-    const available = await Magnetometer.isAvailableAsync();
-    if (!available) {
-      clearHeadingTimeout();
-      setSensorStatus('unavailable');
-      return false;
-    }
-
-    Magnetometer.setUpdateInterval(120);
-    subscriptionRef.current = Magnetometer.addListener((data) => {
-      const rawHeading = Math.atan2(-data.x, data.y) * (180 / Math.PI);
-      consumeHeadingSample(rawHeading, 'magnetometer');
-    });
-    setSensorStatus((current) => (current === 'loading' ? 'ready' : current));
-    return true;
-  }, [clearHeadingTimeout, consumeHeadingSample]);
-
-  const startHeadingUpdates = useCallback(async () => {
-    stopSensorUpdates();
-    setSensorStatus(headingRef.current === null ? 'loading' : 'ready');
-
-    headingTimeoutRef.current = setTimeout(() => {
-      if (headingRef.current !== null) return;
-      setSensorStatus('unavailable');
-      stopSensorUpdates();
-    }, 6500);
-
-    await requestCompassPermissions();
-
-    try {
-      const initialHeading = await Location.getHeadingAsync();
-      consumeHeadingSample(
-        pickHeadingFromLocation(initialHeading),
-        'location',
-        initialHeading.accuracy,
-      );
-
-      subscriptionRef.current = await Location.watchHeadingAsync(
-        (sample) => {
-          consumeHeadingSample(pickHeadingFromLocation(sample), 'location', sample.accuracy);
-        },
-        () => {
-          setSensorStatus('unstable');
-        },
-      );
-      return;
-    } catch (error) {
-      if (__DEV__) {
-        console.log('[Qibla] Location heading unavailable; trying magnetometer fallback:', error);
-      }
-    }
-
-    try {
-      const started = await startMagnetometerFallback();
-      if (!started) {
-        setSensorStatus('unavailable');
-      }
-    } catch (error) {
-      if (__DEV__) {
-        console.log('[Qibla] Magnetometer fallback unavailable:', error);
-      }
-      clearHeadingTimeout();
-      setSensorStatus('unavailable');
-    }
-  }, [
-    clearHeadingTimeout,
-    consumeHeadingSample,
-    requestCompassPermissions,
-    startMagnetometerFallback,
-    stopSensorUpdates,
-  ]);
 
   const saveQiblaCity = useCallback(
     async (cityKey: CityKey) => {
@@ -301,7 +103,6 @@ export default function QiblaScreen() {
         setGpsCoords(null);
         setCityPickerVisible(false);
         setLocationResolveStatus('resolved');
-        headingRef.current = null;
         requestPrayerSchedule('qibla-city-selected').catch(() => {});
         return true;
       } catch {
@@ -351,7 +152,7 @@ export default function QiblaScreen() {
     } finally {
       setIsResolvingLocation(false);
     }
-  }, [saveQiblaCity]);
+  }, [saveQiblaCity, setCustomLocation, requestPrayerSchedule]);
 
   const prepareQibla = useCallback(async () => {
     if (prepareInFlightRef.current) return;
@@ -361,10 +162,7 @@ export default function QiblaScreen() {
     try {
       let cityReady = Boolean(state.settings.selectedCity);
       if (!cityReady) {
-        cityReady = await hydratePrayerCityFromStorage(
-          setCustomLocation,
-          state.settings.selectedCity,
-        );
+        cityReady = await hydratePrayerCityFromStorage(setCustomLocation, state.settings.selectedCity);
       }
 
       if (!cityReady) {
@@ -388,16 +186,14 @@ export default function QiblaScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      focusedRef.current = true;
+      setCompassActive(true);
       void prepareQibla();
-      void startHeadingUpdates();
 
       return () => {
-        focusedRef.current = false;
+        setCompassActive(false);
         prepareInFlightRef.current = false;
-        stopSensorUpdates();
       };
-    }, [prepareQibla, startHeadingUpdates, stopSensorUpdates]),
+    }, [prepareQibla]),
   );
 
   useEffect(() => {
@@ -406,131 +202,55 @@ export default function QiblaScreen() {
     }
   }, [state.settings.selectedCity]);
 
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextState) => {
-      if (!focusedRef.current) return;
-      if (nextState === 'active') {
-        void startHeadingUpdates();
-        return;
-      }
-      stopSensorUpdates();
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, [startHeadingUpdates, stopSensorUpdates]);
-
-  useEffect(() => {
-    if (headingRef.current === null) {
-      needleRotation.value = withTiming(qiblaDirection, { duration: 280, easing: Easing.out(Easing.cubic) });
-      return;
-    }
-    commitHeading(headingRef.current);
-  }, [commitHeading, needleRotation, qiblaDirection]);
-
-  const compassStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${compassRotation.value}deg` }],
-  }));
-
-  const needleStyle = useAnimatedStyle(() => ({
-    transform: [{ rotate: `${needleRotation.value}deg` }],
-  }));
-
-  const qiblaOffset = Math.abs(shortestAngleDelta(heading, qiblaDirection));
-  const isAligned = hasLiveCompass && sensorStatus === 'ready' && qiblaOffset <= 5;
-
-  const statusColor =
-    sensorStatus === 'calibrating' || sensorStatus === 'unstable'
+  const statusColor = isAligned
+    ? '#22C55E'
+    : sensorStatus === 'calibrating' || isDegraded
       ? '#D97706'
-      : isAligned
-        ? '#22C55E'
-        : theme.tint;
+      : theme.tint;
 
   const statusText = !hasLiveCompass
     ? 'جهت قبله بر اساس شهر شما؛ برای قطب‌نمای زنده گوشی را آرام بچرخانید'
     : sensorStatus === 'calibrating'
       ? 'قطب‌نما در حال کالیبراسیون است'
-      : sensorStatus === 'unstable'
-        ? 'حسگر ناپایدار است؛ گوشی را آرام حرکت دهید'
+      : isDegraded
+        ? 'حسگر مغناطیسی؛ برای دقت بیشتر گوشی را صاف نگه دارید'
         : isAligned
-          ? 'جهت قبله صحیح است'
-          : 'دستگاه را بچرخانید';
+          ? 'جهت قبله صحیح است — کعبه در بالا'
+          : 'گوشی را بچرخانید تا کعبه به نشانگر بالا برسد';
 
   const hintText =
-    !hasLiveCompass || sensorStatus === 'calibrating' || sensorStatus === 'unstable'
+    showCalibration || sensorStatus === 'calibrating'
       ? 'اگر قطب‌نما دقیق نیست، دستگاه را به شکل ۸ حرکت دهید'
       : 'همان شهر اذان برای جهت قبله استفاده می‌شود';
 
-  const renderCompass = () => (
-    <View style={styles.compassContainer}>
-      <Animated.View style={[styles.compass, compassStyle]}>
-        <View style={[styles.compassCircle, { borderColor: theme.cardBorder }]}>
-          <CenteredText style={[styles.cardinalN, { color: '#EF4444' }]}>N</CenteredText>
-          <CenteredText style={[styles.cardinalE, { color: theme.textSecondary }]}>E</CenteredText>
-          <CenteredText style={[styles.cardinalS, { color: theme.textSecondary }]}>S</CenteredText>
-          <CenteredText style={[styles.cardinalW, { color: theme.textSecondary }]}>W</CenteredText>
+  const header = (
+    <RtlView style={[styles.header, { backgroundColor: theme.surahHeader, paddingTop: insets.top + Spacing.xs }]}>
+      <Pressable onPress={() => router.back()} hitSlop={10} style={styles.headerBack}>
+        <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+      </Pressable>
+      <RtlText align="center" style={styles.headerTitle}>قبله‌نما</RtlText>
+      <View style={styles.headerBack} />
+    </RtlView>
+  );
 
-          {[...Array(72)].map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.degreeMark,
-                {
-                  transform: [
-                    { rotate: `${i * 5}deg` },
-                    { translateY: -COMPASS_SIZE / 2 + 10 },
-                  ],
-                  backgroundColor: i % 18 === 0 ? theme.text : theme.cardBorder,
-                  height: i % 18 === 0 ? 12 : i % 6 === 0 ? 8 : 4,
-                },
-              ]}
-            />
-          ))}
-        </View>
-      </Animated.View>
-
-      <Animated.View style={[styles.needleContainer, needleStyle]}>
-        <View style={[styles.needle, { backgroundColor: isAligned ? '#22C55E' : theme.tint }]}>
-          <MaterialIcons name="navigation" size={32} color="#fff" />
-        </View>
-        <View style={[styles.needleTail, { backgroundColor: isAligned ? '#22C55E' : theme.tint }]} />
-      </Animated.View>
-
-      <View
-        style={[
-          styles.centerIcon,
-          {
-            backgroundColor: theme.background,
-            borderColor: theme.cardBorder,
-            shadowColor: theme.text,
-          },
-        ]}
-      >
-        <Image source={KAABA_IMAGE} style={styles.kaabaImage} contentFit="contain" transition={200} />
-      </View>
-
-      {isSensorWarming && (
-        <View style={[styles.compassOverlay, { backgroundColor: `${theme.background}CC` }]}>
-          <ActivityIndicator size="large" color={theme.tint} />
-          <CenteredText style={[styles.compassOverlayText, { color: theme.textSecondary }]}>
-            در حال آماده‌سازی قطب‌نما...
-          </CenteredText>
-        </View>
-      )}
-    </View>
+  const cityModal = (
+    <CitySelectorModal
+      visible={cityPickerVisible}
+      selectedCity={(state.settings.selectedCity as CityKey | null) ?? null}
+      title="شهر قبله‌نما را انتخاب کنید"
+      testID="qibla-city-selector"
+      onSelectCity={(cityKey) => {
+        saveQiblaCity(cityKey).catch(() => {});
+      }}
+      onClose={() => setCityPickerVisible(false)}
+    />
   );
 
   if (needsCitySetup) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <Stack.Screen
-          options={{
-            title: 'قبله‌نما',
-            headerStyle: { backgroundColor: theme.surahHeader },
-            headerTintColor: '#fff',
-          }}
-        />
+      <View style={{ flex: 1, backgroundColor: theme.background }}>
+        {header}
+        <View style={styles.container}>
         <View style={[styles.setupPanel, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
           <MaterialIcons name="explore" size={48} color={theme.tint} />
           <CenteredText style={[styles.setupTitle, { color: theme.text }]}>قبله‌نما</CenteredText>
@@ -549,10 +269,10 @@ export default function QiblaScreen() {
             {isResolvingLocation ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <>
+              <RtlView style={styles.actionRow}>
                 <MaterialIcons name="my-location" size={22} color="#fff" />
                 <CenteredText style={styles.primaryActionText}>استفاده از موقعیت من</CenteredText>
-              </>
+              </RtlView>
             )}
           </Pressable>
           <Pressable
@@ -567,49 +287,30 @@ export default function QiblaScreen() {
             <CenteredText style={[styles.secondaryActionText, { color: theme.text }]}>انتخاب شهر</CenteredText>
           </Pressable>
         </View>
-        <CitySelectorModal
-          visible={cityPickerVisible}
-          selectedCity={(state.settings.selectedCity as CityKey | null) ?? null}
-          title="شهر قبله‌نما را انتخاب کنید"
-          testID="qibla-city-selector"
-          onSelectCity={(cityKey) => {
-            saveQiblaCity(cityKey).catch(() => {});
-          }}
-          onClose={() => setCityPickerVisible(false)}
-        />
+        </View>
+        {cityModal}
       </View>
     );
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={[styles.scrollContent, { backgroundColor: theme.background }]}
-      bounces={false}
-    >
-      <Stack.Screen
-        options={{
-          title: 'قبله‌نما',
-          headerStyle: { backgroundColor: theme.surahHeader },
-          headerTintColor: '#fff',
-        }}
-      />
+    <View style={{ flex: 1, backgroundColor: theme.background }}>
+      {header}
+      <ScrollView contentContainerStyle={[styles.scrollContent, { backgroundColor: theme.background }]} bounces={false}>
+      <CalibrationOverlay visible={showCalibration} />
 
       {(isPreparing || state.isLoading) && (
-        <View style={[styles.locationBanner, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+        <RtlView style={[styles.banner, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
           <ActivityIndicator size="small" color={theme.tint} />
-          <CenteredText style={[styles.locationBannerText, { color: theme.textSecondary }]}>
-            در حال آماده‌سازی شهر اذان...
-          </CenteredText>
-        </View>
+          <CenteredText style={[styles.bannerText, { color: theme.textSecondary }]}>در حال آماده‌سازی شهر اذان...</CenteredText>
+        </RtlView>
       )}
 
       {locationResolveStatus === 'resolving' && !isPreparing && (
-        <View style={[styles.locationBanner, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+        <RtlView style={[styles.banner, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
           <ActivityIndicator size="small" color={theme.tint} />
-          <CenteredText style={[styles.locationBannerText, { color: theme.textSecondary }]}>
-            در حال یافتن نزدیک‌ترین شهر...
-          </CenteredText>
-        </View>
+          <CenteredText style={[styles.bannerText, { color: theme.textSecondary }]}>در حال یافتن نزدیک‌ترین شهر...</CenteredText>
+        </RtlView>
       )}
 
       {headingPermissionDenied && (
@@ -617,14 +318,12 @@ export default function QiblaScreen() {
           testID="qibla-heading-permission-banner"
           onPress={() => Linking.openSettings().catch(() => {})}
           style={({ pressed }) => [
-            styles.locationBanner,
+            styles.banner,
             { backgroundColor: theme.backgroundSecondary, borderColor: theme.tint, opacity: pressed ? 0.85 : 1 },
           ]}
         >
           <MaterialIcons name="location-disabled" size={20} color={theme.tint} />
-          <CenteredText style={[styles.locationBannerText, { color: theme.text }]}>
-            برای قطب‌نمای زنده، اجازه موقعیت را در تنظیمات فعال کنید
-          </CenteredText>
+          <CenteredText style={[styles.bannerText, { color: theme.text }]}>برای قطب‌نمای زنده، اجازه موقعیت را فعال کنید</CenteredText>
         </Pressable>
       )}
 
@@ -638,11 +337,9 @@ export default function QiblaScreen() {
       >
         <MaterialIcons name="location-on" size={20} color={theme.tint} />
         <View style={styles.locationChipLabels}>
-          <CenteredText style={[styles.locationChipText, { color: theme.text }]}>{effectiveLocationName}</CenteredText>
+          <CenteredText style={[styles.locationChipText, { color: theme.text }]}>{state.locationName}</CenteredText>
           {hasResolvedCity && (
-            <CenteredText style={[styles.locationChipCaption, { color: theme.textSecondary }]}>
-              همان شهر اذان شما
-            </CenteredText>
+            <CenteredText style={[styles.locationChipCaption, { color: theme.textSecondary }]}>همان شهر اذان شما</CenteredText>
           )}
         </View>
         <MaterialIcons name="keyboard-arrow-down" size={22} color={theme.textSecondary} />
@@ -652,24 +349,33 @@ export default function QiblaScreen() {
         {distanceLabel} کیلومتر تا کعبه
       </CenteredText>
 
-      {renderCompass()}
+      <View style={styles.compassContainer}>
+        <QiblaDial
+          size={COMPASS_SIZE}
+          heading={heading}
+          headingRotation={headingRotation}
+          qiblaBearing={qiblaDirection}
+        />
+        {isSensorWarming && (
+          <View style={[styles.compassOverlay, { backgroundColor: `${theme.background}CC` }]}>
+            <ActivityIndicator size="large" color={theme.tint} />
+            <CenteredText style={[styles.compassOverlayText, { color: theme.textSecondary }]}>
+              در حال آماده‌سازی قطب‌نما...
+            </CenteredText>
+          </View>
+        )}
+      </View>
 
-      <View style={[styles.statusContainer, { backgroundColor: statusColor }]}>
+      <RtlView style={[styles.statusContainer, { backgroundColor: statusColor }]}>
         <MaterialIcons
-          name={
-            isAligned
-              ? 'check-circle'
-              : sensorStatus === 'calibrating' || sensorStatus === 'unstable'
-                ? 'sync'
-                : 'explore'
-          }
+          name={isAligned ? 'check-circle' : sensorStatus === 'calibrating' ? 'sync' : 'explore'}
           size={24}
           color="#fff"
         />
         <CenteredText style={styles.statusText}>{statusText}</CenteredText>
-      </View>
+      </RtlView>
 
-      <View style={styles.degreeInfo}>
+      <RtlView style={styles.degreeInfo}>
         <View style={styles.degreeItem}>
           <CenteredText style={[styles.degreeLabel, { color: theme.textSecondary }]}>جهت قبله</CenteredText>
           <CenteredText style={[styles.degreeValue, { color: theme.text }]}>{qiblaDirectionLabel}°</CenteredText>
@@ -681,25 +387,48 @@ export default function QiblaScreen() {
             {hasLiveCompass ? `${headingLabel}°` : '—'}
           </CenteredText>
         </View>
-      </View>
+      </RtlView>
 
       <CenteredText style={[styles.hint, { color: theme.textSecondary }]}>{hintText}</CenteredText>
-
-      <CitySelectorModal
-        visible={cityPickerVisible}
-        selectedCity={(state.settings.selectedCity as CityKey | null) ?? null}
-        title="شهر قبله‌نما را انتخاب کنید"
-        testID="qibla-city-selector"
-        onSelectCity={(cityKey) => {
-          saveQiblaCity(cityKey).catch(() => {});
-        }}
-        onClose={() => setCityPickerVisible(false)}
-      />
-    </ScrollView>
+      <CenteredText style={[styles.mosqueNote, { color: theme.textSecondary }]}>
+        اگر با جهت مسجد شما فرق داشت، قطب‌نما را کالیبره کنید و از فلز/آهن‌ربا دور شوید؛ تداخل مغناطیسی محل می‌تواند نتیجه را چند درجه جابجا کند.
+      </CenteredText>
+      {cityModal}
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.sm,
+  },
+  mosqueNote: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    lineHeight: 20,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    marginTop: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    opacity: 0.8,
+  },
+  headerBack: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    flex: 1,
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.subtitle,
+    color: '#fff',
+  },
   container: {
     flex: 1,
     alignItems: 'center',
@@ -733,8 +462,54 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
   },
+  primaryAction: {
+    width: '100%',
+    borderRadius: 14,
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  primaryActionText: {
+    color: '#fff',
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.body,
+  },
+  secondaryAction: {
+    width: '100%',
+    borderWidth: 1,
+    borderRadius: 14,
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
+  },
+  secondaryActionText: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.body,
+  },
+  banner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: Spacing.md,
+    maxWidth: width * 0.92,
+  },
+  bannerText: {
+    flex: 1,
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    lineHeight: 20,
+    textAlign: 'right',
+    writingDirection: 'rtl',
+  },
   locationChip: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,
@@ -757,25 +532,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     marginTop: 2,
   },
-  locationBanner: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginBottom: Spacing.md,
-    maxWidth: width * 0.92,
-  },
-  locationBannerText: {
-    flex: 1,
-    fontFamily: 'Vazirmatn',
-    fontSize: Typography.ui.caption,
-    lineHeight: 20,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
   distanceText: {
     fontSize: Typography.ui.caption,
     marginBottom: Spacing.md,
@@ -785,6 +541,7 @@ const styles = StyleSheet.create({
     height: COMPASS_SIZE,
     justifyContent: 'center',
     alignItems: 'center',
+    direction: 'ltr',
   },
   compassOverlay: {
     ...StyleSheet.absoluteFillObject,
@@ -796,87 +553,6 @@ const styles = StyleSheet.create({
   compassOverlayText: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-  },
-  compass: {
-    width: COMPASS_SIZE,
-    height: COMPASS_SIZE,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-  },
-  compassCircle: {
-    width: COMPASS_SIZE - 20,
-    height: COMPASS_SIZE - 20,
-    borderRadius: (COMPASS_SIZE - 20) / 2,
-    borderWidth: 3,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cardinalN: {
-    position: 'absolute',
-    top: 20,
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  cardinalE: {
-    position: 'absolute',
-    right: 20,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  cardinalS: {
-    position: 'absolute',
-    bottom: 20,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  cardinalW: {
-    position: 'absolute',
-    left: 20,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  degreeMark: {
-    position: 'absolute',
-    width: 2,
-    borderRadius: 1,
-  },
-  needleContainer: {
-    position: 'absolute',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  needle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: -COMPASS_SIZE / 3,
-  },
-  needleTail: {
-    width: 4,
-    height: COMPASS_SIZE / 3 - 30,
-    borderRadius: 2,
-    marginTop: -5,
-  },
-  centerIcon: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    borderWidth: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    zIndex: 2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  kaabaImage: {
-    width: 52,
-    height: 52,
   },
   statusContainer: {
     flexDirection: 'row',
@@ -906,51 +582,25 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
   },
   degreeLabel: {
+    fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
+    marginBottom: 4,
   },
   degreeValue: {
-    fontSize: Typography.ui.heading,
-    fontWeight: '700',
-    marginTop: Spacing.xs,
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.title,
   },
   degreeDivider: {
     width: 1,
     height: 40,
   },
   hint: {
+    fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
     textAlign: 'center',
-    marginTop: Spacing.lg,
-    paddingHorizontal: Spacing.xl,
     writingDirection: 'rtl',
-  },
-  primaryAction: {
-    marginTop: Spacing.sm,
-    minHeight: 50,
-    width: '100%',
-    borderRadius: 25,
-    paddingHorizontal: Spacing.xl,
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
-  },
-  primaryActionText: {
-    color: '#fff',
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.body,
-  },
-  secondaryAction: {
-    minHeight: 44,
-    width: '100%',
-    borderRadius: 22,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.md,
-  },
-  secondaryActionText: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.body,
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    lineHeight: 20,
   },
 });

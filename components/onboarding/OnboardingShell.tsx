@@ -68,8 +68,12 @@ export function OnboardingShell({
       </RtlView>
 
       <RtlView style={styles.header}>
-        <RtlText style={[styles.title, { color: theme.text }]}>{title}</RtlText>
-        {subtitle ? <RtlText style={[styles.subtitle, { color: theme.textSecondary }]}>{subtitle}</RtlText> : null}
+        <RtlText align="center" style={[styles.title, { color: theme.text }]}>{title}</RtlText>
+        {subtitle ? (
+          <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
+            {subtitle}
+          </RtlText>
+        ) : null}
       </RtlView>
 
       <RtlView style={styles.body}>{children}</RtlView>

@@ -1,6 +1,7 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
 import { RtlText } from '@/components/ui/RtlText';
@@ -35,6 +36,9 @@ export default function OnboardingLanguageScreen() {
       onBack={() => router.back()}
     >
       <RtlView style={styles.list}>
+        <View style={[styles.iconCircle, { backgroundColor: `${theme.tint}18` }]}>
+          <MaterialIcons name="translate" size={40} color={theme.tint} />
+        </View>
         {OPTIONS.map((option) => {
           const active = selected === option.key;
           return (
@@ -49,8 +53,8 @@ export default function OnboardingLanguageScreen() {
                 },
               ]}
             >
-              <RtlText style={[styles.optionLabel, { color: theme.text }]}>{option.label}</RtlText>
-              <RtlText style={[styles.optionHint, { color: theme.textSecondary }]}>{option.hint}</RtlText>
+              <RtlText align="center" style={[styles.optionLabel, { color: theme.text }]}>{option.label}</RtlText>
+              <RtlText align="center" style={[styles.optionHint, { color: theme.textSecondary }]}>{option.hint}</RtlText>
             </Pressable>
           );
         })}
@@ -62,12 +66,24 @@ export default function OnboardingLanguageScreen() {
 const styles = StyleSheet.create({
   list: {
     gap: Spacing.md,
+    alignItems: 'center',
+  },
+  iconCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginBottom: Spacing.sm,
   },
   option: {
     borderWidth: 2,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: 4,
+    width: '100%',
+    alignItems: 'center',
   },
   optionLabel: {
     fontFamily: 'Vazirmatn-Bold',
