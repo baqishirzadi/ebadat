@@ -1,0 +1,69 @@
+{
+  "regions": [
+    {
+      "id": "iran",
+      "name": "ایران",
+      "nameEn": "Iran"
+    },
+    {
+      "id": "turkey",
+      "name": "ترکیه",
+      "nameEn": "Turkey"
+    },
+    {
+      "id": "uk",
+      "name": "انگلستان",
+      "nameEn": "United Kingdom"
+    },
+    {
+      "id": "france",
+      "name": "فرانسه",
+      "nameEn": "France"
+    },
+    {
+      "id": "netherlands",
+      "name": "هلند",
+      "nameEn": "Netherlands"
+    },
+    {
+      "id": "germany",
+      "name": "آلمان",
+      "nameEn": "Germany"
+    },
+    {
+      "id": "pakistan",
+      "name": "پاکستان",
+      "nameEn": "Pakistan"
+    },
+    {
+      "id": "gulf",
+      "name": "خلیج",
+      "nameEn": "Gulf"
+    },
+    {
+      "id": "europe",
+      "name": "اروپا",
+      "nameEn": "Europe"
+    },
+    {
+      "id": "asia",
+      "name": "آسیا",
+      "nameEn": "Asia"
+    },
+    {
+      "id": "americas",
+      "name": "آمریکا",
+      "nameEn": "Americas"
+    },
+    {
+      "id": "oceania",
+      "name": "اقیانوسیه",
+      "nameEn": "Oceania"
+    },
+    {
+      "id": "africa",
+      "name": "آفریقا",
+      "nameEn": "Africa"
+    }
+  ]
+}
