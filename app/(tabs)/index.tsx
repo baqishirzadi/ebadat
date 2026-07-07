@@ -2,27 +2,36 @@
  * Home Dashboard — daily hub
  */
 
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet } from 'react-native';
+import React, { memo, useState } from 'react';
+import { InteractionManager, Platform, ScrollView, StyleSheet } from 'react-native';
 
 import { AdhanHealthBanner } from '@/components/prayer/AdhanHealthBanner';
 import { CitySelectorModal } from '@/components/prayer/CitySelectorModal';
 import {
   ContinueReadingCard,
-  DateStrip,
   HomeHeader,
   NextPrayerCard,
   PrayerTimesRow,
   QiblaCard,
   QuickActions,
+  TodayDateCard,
 } from '@/components/home';
+import { RtlView } from '@/components/ui/RtlView';
 import { Spacing } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { CityKey, getCity } from '@/utils/cities';
 
-export default function HomeDashboardScreen() {
+function HomeDashboardScreen() {
   const { state, setCustomLocation } = usePrayer();
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
+  const [showHealthBanner, setShowHealthBanner] = useState(false);
+
+  React.useEffect(() => {
+    const task = InteractionManager.runAfterInteractions(() => {
+      setShowHealthBanner(true);
+    });
+    return () => task.cancel();
+  }, []);
 
   return (
     <>
@@ -30,15 +39,18 @@ export default function HomeDashboardScreen() {
         style={styles.scroll}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
+        removeClippedSubviews={Platform.OS === 'android'}
       >
-        <HomeHeader onCityPress={() => setCityPickerVisible(true)} />
-        <DateStrip />
-        <NextPrayerCard prayerTimes={state.prayerTimes} />
-        <PrayerTimesRow prayerTimes={state.prayerTimes} />
-        <QiblaCard />
-        <ContinueReadingCard />
-        <QuickActions />
-        <AdhanHealthBanner />
+        <RtlView>
+          <HomeHeader onCityPress={() => setCityPickerVisible(true)} />
+          <TodayDateCard />
+          <NextPrayerCard prayerTimes={state.prayerTimes} />
+          <PrayerTimesRow prayerTimes={state.prayerTimes} />
+          <QiblaCard />
+          <ContinueReadingCard />
+          <QuickActions />
+          {showHealthBanner ? <AdhanHealthBanner /> : null}
+        </RtlView>
       </ScrollView>
 
       <CitySelectorModal
@@ -67,6 +79,8 @@ export default function HomeDashboardScreen() {
     </>
   );
 }
+
+export default memo(HomeDashboardScreen);
 
 const styles = StyleSheet.create({
   scroll: {

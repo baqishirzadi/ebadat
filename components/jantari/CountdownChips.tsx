@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { getCalendarTruth } from '@/utils/calendarTruth';
+import { useTodayCalendar } from '@/hooks/useTodayCalendar';
 import { getNextSpecialDay, hijriToGregorian, SPECIAL_DAYS } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
 
@@ -15,7 +17,7 @@ function daysUntil(target: Date): number {
 
 export function CountdownChips() {
   const { theme } = useApp();
-  const truth = getCalendarTruth();
+  const truth = useTodayCalendar();
 
   const chips = useMemo(() => {
     const results: { label: string; days: number }[] = [];
@@ -46,20 +48,20 @@ export function CountdownChips() {
   if (chips.length === 0) return null;
 
   return (
-    <View style={styles.row}>
+    <RtlView style={styles.row}>
       {chips.map((chip) => (
         <View key={chip.label} style={[styles.chip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-          <Text style={[styles.days, { color: theme.tint }]}>{toArabicNumerals(chip.days)} روز</Text>
-          <Text style={[styles.label, { color: theme.textSecondary }]}>{chip.label}</Text>
+          <RtlText align="center" style={[styles.days, { color: theme.tint }]}>{toArabicNumerals(chip.days)} روز</RtlText>
+          <RtlText align="center" style={[styles.label, { color: theme.textSecondary }]}>{chip.label}</RtlText>
         </View>
       ))}
-    </View>
+    </RtlView>
   );
 }
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
     paddingHorizontal: Spacing.md,

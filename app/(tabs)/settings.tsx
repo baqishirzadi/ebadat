@@ -376,40 +376,7 @@ export default function SettingsScreen() {
         </View>
       )}
 
-      {/* Hijri offset */}
-      <View style={[styles.noticeCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-        <Text style={[styles.sectionTitle, { color: theme.text, marginBottom: Spacing.sm }]}>تنظیم تاریخ قمری</Text>
-        <Text style={[styles.noticeText, { color: theme.textSecondary, marginBottom: Spacing.sm }]}>
-          اگر تاریخ قمری با رویت ماه افغانستان متفاوت است، یک روز جابه‌جا کنید.
-        </Text>
-        <View style={{ flexDirection: 'row-reverse', justifyContent: 'space-between', gap: Spacing.xs }}>
-          {[-2, -1, 0, 1, 2].map((value) => (
-            <Pressable
-              key={value}
-              onPress={() => updateSettings({ hijriOffsetDays: value })}
-              style={{
-                flex: 1,
-                borderWidth: 1,
-                borderColor: theme.cardBorder,
-                borderRadius: BorderRadius.md,
-                paddingVertical: Spacing.sm,
-                alignItems: 'center',
-                backgroundColor:
-                  prayerState.settings.hijriOffsetDays === value ? theme.tint : theme.backgroundSecondary,
-              }}
-            >
-              <Text
-                style={{
-                  color: prayerState.settings.hijriOffsetDays === value ? '#fff' : theme.text,
-                  fontFamily: 'Vazirmatn-Bold',
-                }}
-              >
-                {value > 0 ? `+${value}` : value}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
+      {/* Calculation method section ends above */}
 
       {/* Adhan Settings Link */}
       <Pressable

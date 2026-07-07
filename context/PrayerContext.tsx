@@ -47,7 +47,6 @@ import {
   Location as LocationType,
   PrayerTimes,
 } from '@/utils/prayerTimes';
-import { clampHijriOffsetDays, setUserHijriOffsetDays } from '@/utils/hijriOffset';
 import { getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
 import {
   canUseNativeAdhanScheduler,
@@ -964,9 +963,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       ]);
 
       const settings = settingsJson ? { ...DEFAULT_SETTINGS, ...JSON.parse(settingsJson) } : DEFAULT_SETTINGS;
-      const effectiveHijriOffset = clampHijriOffsetDays(settings.hijriOffsetDays ?? 0);
-      let effectiveSettings = { ...settings, hijriOffsetDays: effectiveHijriOffset };
-      setUserHijriOffsetDays(effectiveHijriOffset);
+      let effectiveSettings = { ...settings, hijriOffsetDays: 0 };
       let shouldPersistSettings = false;
 
       let location = DEFAULT_LOCATION;
@@ -1323,15 +1320,9 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
 
   const updateSettings = useCallback(async (settings: Partial<PrayerSettings>) => {
     if (settings.hijriOffsetDays !== undefined) {
-      const clamped = clampHijriOffsetDays(settings.hijriOffsetDays);
-      settings = { ...settings, hijriOffsetDays: clamped };
-      setUserHijriOffsetDays(clamped);
-      try {
-        const prefs = await loadCalendarNotificationPreferences();
-        await scheduleCalendarNotifications(prefs.enabled);
-      } catch {
-        // Non-fatal
-      }
+      // Manual Hijri offset removed — built-in Afghan -1 day correction is always applied.
+      const { hijriOffsetDays: _ignored, ...rest } = settings;
+      settings = rest;
     }
 
     dispatch({ type: 'SET_SETTINGS', payload: settings });

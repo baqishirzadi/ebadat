@@ -27,6 +27,8 @@ interface MushafViewProps {
   onPlayAyah?: (surah: number, ayah: number) => void;
   activePlayingAyah?: number | null;
   onPageChange?: (page: number) => void;
+  contentPaddingTop?: number;
+  contentPaddingBottom?: number;
 }
 
 const MAX_SCROLL_RETRY_ATTEMPTS = 6;
@@ -76,6 +78,8 @@ export const MushafView = React.memo(function MushafView({
   onPlayAyah,
   activePlayingAyah = null,
   onPageChange,
+  contentPaddingTop = 0,
+  contentPaddingBottom = 0,
 }: MushafViewProps) {
   const { theme, state } = useApp();
   const { updatePosition } = useReadingPosition();
@@ -1014,7 +1018,11 @@ export const MushafView = React.memo(function MushafView({
           onViewableItemsChanged={handleViewableItemsChanged}
           viewabilityConfig={viewabilityConfig.current}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[
+            styles.scrollContent,
+            contentPaddingTop > 0 && { paddingTop: contentPaddingTop },
+            contentPaddingBottom > 0 && { paddingBottom: contentPaddingBottom },
+          ]}
           initialNumToRender={STABLE_LIST_RENDER_CONFIG.initialNumToRender}
           maxToRenderPerBatch={STABLE_LIST_RENDER_CONFIG.maxToRenderPerBatch}
           windowSize={STABLE_LIST_RENDER_CONFIG.windowSize}

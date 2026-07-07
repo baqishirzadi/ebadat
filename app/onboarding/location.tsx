@@ -1,9 +1,11 @@
 import { router } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Platform, Pressable, ScrollView, StyleSheet } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
 import { CitySelectorModal } from '@/components/prayer/CitySelectorModal';
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
@@ -99,13 +101,13 @@ export default function OnboardingLocationScreen() {
       onBack={() => router.back()}
     >
       {busy ? (
-        <View style={styles.loading}>
+        <RtlView style={styles.loading}>
           <ActivityIndicator color={theme.tint} />
-          <Text style={[styles.loadingText, { color: theme.textSecondary }]}>در حال آماده‌سازی...</Text>
-        </View>
+          <RtlText align="center" style={[styles.loadingText, { color: theme.textSecondary }]}>در حال آماده‌سازی...</RtlText>
+        </RtlView>
       ) : (
         <ScrollView contentContainerStyle={styles.quickList}>
-          <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>شهرهای پرکاربرد</Text>
+          <RtlText style={[styles.sectionTitle, { color: theme.textSecondary }]}>شهرهای پرکاربرد</RtlText>
           {QUICK_CITIES.map((cityKey) => {
             const city = getCity(cityKey);
             if (!city) return null;
@@ -115,7 +117,7 @@ export default function OnboardingLocationScreen() {
                 onPress={() => finalizeCity(cityKey)}
                 style={[styles.cityChip, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
               >
-                <Text style={[styles.cityName, { color: theme.text }]}>{city.name}</Text>
+                <RtlText style={[styles.cityName, { color: theme.text }]}>{city.name}</RtlText>
               </Pressable>
             );
           })}
@@ -146,8 +148,6 @@ const styles = StyleSheet.create({
   loadingText: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   quickList: {
     gap: Spacing.sm,
@@ -156,8 +156,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
-    writingDirection: 'rtl',
     marginBottom: Spacing.xs,
   },
   cityChip: {
@@ -169,7 +167,5 @@ const styles = StyleSheet.create({
   cityName: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
 });

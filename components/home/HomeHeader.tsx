@@ -1,8 +1,11 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
@@ -26,26 +29,26 @@ export function HomeHeader({ onCityPress }: HomeHeaderProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
-      <View style={styles.row}>
+    <RtlView style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
+      <RtlView style={styles.row}>
         <Pressable onPress={() => router.push('/(tabs)/settings')} hitSlop={8}>
           <MaterialIcons name="settings" size={24} color={theme.textSecondary} />
         </Pressable>
-        <View style={styles.center}>
-          <Text style={[styles.greeting, { color: theme.textSecondary }]}>{getGreeting()}</Text>
-          <Text style={[styles.title, { color: theme.text }]}>عبادت</Text>
-        </View>
+        <RtlView style={styles.center}>
+          <RtlText align="center" style={[styles.greeting, { color: theme.textSecondary }]}>{getGreeting()}</RtlText>
+          <RtlText align="center" style={[styles.title, { color: theme.text }]}>عبادت</RtlText>
+        </RtlView>
         <Pressable
           onPress={onCityPress}
           style={[styles.cityChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
         >
           <MaterialIcons name="location-on" size={16} color={theme.tint} />
-          <Text style={[styles.cityText, { color: theme.text }]} numberOfLines={1}>
+          <RtlText style={[styles.cityText, { color: theme.text }]} numberOfLines={1}>
             {state.locationName || 'انتخاب شهر'}
-          </Text>
+          </RtlText>
         </Pressable>
-      </View>
-    </View>
+      </RtlView>
+    </RtlView>
   );
 }
 
@@ -55,7 +58,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   row: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
@@ -76,7 +79,7 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
   },
   cityChip: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     maxWidth: 120,

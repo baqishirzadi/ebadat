@@ -406,6 +406,23 @@ export function calculatePrayerTimes(
 }
 
 // Get next prayer
+
+export const PRAYER_LABELS_DARI = {
+  fajr: 'صبح',
+  dhuhr: 'ظهر',
+  asr: 'عصر',
+  maghrib: 'شام',
+  isha: 'خفتن',
+} as const;
+
+export const PRAYER_LABELS_PASHTO = {
+  fajr: 'سهار',
+  dhuhr: 'غرمه',
+  asr: 'مازدیګر',
+  maghrib: 'ماښام',
+  isha: 'خفتن',
+} as const;
+
 export function getNextPrayer(prayerTimes: PrayerTimes, now: Date = new Date()): {
   name: string;
   time: Date;
@@ -414,12 +431,12 @@ export function getNextPrayer(prayerTimes: PrayerTimes, now: Date = new Date()):
   namePashto: string;
 } {
   const prayers = [
-    { key: 'fajr', nameArabic: 'الفجر', nameDari: 'صبح', namePashto: 'سهار' },
-    { key: 'sunrise', nameArabic: 'الشروق', nameDari: 'طلوع آفتاب', namePashto: 'لمر ختل' },
-    { key: 'dhuhr', nameArabic: 'الظهر', nameDari: 'ظهر', namePashto: 'غرمه' },
-    { key: 'asr', nameArabic: 'العصر', nameDari: 'عصر', namePashto: 'مازدیګر' },
-    { key: 'maghrib', nameArabic: 'المغرب', nameDari: 'مغرب', namePashto: 'ماښام' },
-    { key: 'isha', nameArabic: 'العشاء', nameDari: 'عشا', namePashto: 'خفتن' },
+    { key: 'fajr' as const, nameArabic: 'الفجر', nameDari: PRAYER_LABELS_DARI.fajr, namePashto: PRAYER_LABELS_PASHTO.fajr },
+    { key: 'sunrise' as const, nameArabic: 'الشروق', nameDari: 'طلوع آفتاب', namePashto: 'لمر ختل' },
+    { key: 'dhuhr' as const, nameArabic: 'الظهر', nameDari: PRAYER_LABELS_DARI.dhuhr, namePashto: PRAYER_LABELS_PASHTO.dhuhr },
+    { key: 'asr' as const, nameArabic: 'العصر', nameDari: PRAYER_LABELS_DARI.asr, namePashto: PRAYER_LABELS_PASHTO.asr },
+    { key: 'maghrib' as const, nameArabic: 'المغرب', nameDari: PRAYER_LABELS_DARI.maghrib, namePashto: PRAYER_LABELS_PASHTO.maghrib },
+    { key: 'isha' as const, nameArabic: 'العشاء', nameDari: PRAYER_LABELS_DARI.isha, namePashto: PRAYER_LABELS_PASHTO.isha },
   ];
 
   for (const prayer of prayers) {
@@ -442,8 +459,8 @@ export function getNextPrayer(prayerTimes: PrayerTimes, now: Date = new Date()):
     name: 'fajr',
     time: tomorrowFajr,
     nameArabic: 'الفجر',
-    nameDari: 'صبح',
-    namePashto: 'سهار',
+    nameDari: PRAYER_LABELS_DARI.fajr,
+    namePashto: PRAYER_LABELS_PASHTO.fajr,
   };
 }
 

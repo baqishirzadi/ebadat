@@ -19,11 +19,13 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { CITIES, CATEGORIES, getCity, searchCities, CityKey } from '@/utils/cities';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
-import CenteredText from '@/components/CenteredText';
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 
 interface CitySelectorModalProps {
   visible: boolean;
@@ -45,6 +47,7 @@ export function CitySelectorModal({
   testID,
 }: CitySelectorModalProps) {
   const { theme } = useApp();
+  const insets = useSafeAreaInsets();
   const [selectedCategory, setSelectedCategory] = useState<string>('afghanistan');
   const [searchQuery, setSearchQuery] = useState('');
   const [gpsLoading, setGpsLoading] = useState(false);
@@ -113,14 +116,9 @@ export function CitySelectorModal({
             pressed && styles.itemPressed,
           ]}
         >
-          <CenteredText
-            style={[
-              styles.cityItemText,
-              { color: isSelected ? '#fff' : theme.text },
-            ]}
-          >
+          <RtlText style={[styles.cityItemText, { color: isSelected ? '#fff' : theme.text }]}>
             {item.city.name}
-          </CenteredText>
+          </RtlText>
           {isSelected && <MaterialIcons name="check-circle" size={20} color="#fff" />}
         </Pressable>
       );
@@ -135,19 +133,18 @@ export function CitySelectorModal({
       presentationStyle="pageSheet"
       onRequestClose={allowClose ? onClose : undefined}
     >
-      <View testID={testID} style={[styles.container, { backgroundColor: theme.background }]}>
+      <RtlView testID={testID} style={[styles.container, { backgroundColor: theme.background }]}>
         <StatusBar style="light" />
-        {/* Header Wrapper - Extends to top */}
-        <View style={[styles.headerWrapper, { backgroundColor: theme.surahHeader }]}>
-          <View style={styles.header}>
+        <RtlView style={[styles.headerWrapper, { backgroundColor: theme.surahHeader, paddingTop: insets.top }]}>
+          <RtlView style={styles.header}>
             {allowClose ? (
               <Pressable onPress={onClose} style={styles.closeButton}>
                 <MaterialIcons name="close" size={24} color="#fff" />
               </Pressable>
             ) : (
-              <View style={styles.closeButton} />
+              <RtlView style={styles.closeButton} />
             )}
-            <CenteredText style={styles.headerTitle}>{title}</CenteredText>
+            <RtlText align="center" style={styles.headerTitle}>{title}</RtlText>
             <Pressable
               onPress={handleGpsPress}
               style={({ pressed }) => [
@@ -162,11 +159,10 @@ export function CitySelectorModal({
                 <MaterialIcons name="my-location" size={20} color="#fff" />
               )}
             </Pressable>
-          </View>
-        </View>
+          </RtlView>
+        </RtlView>
 
-        {/* Search Bar */}
-        <View style={[styles.searchContainer, { backgroundColor: theme.backgroundSecondary }]}>
+        <RtlView style={[styles.searchContainer, { backgroundColor: theme.backgroundSecondary }]}>
           <MaterialIcons name="search" size={20} color={theme.icon} />
           <TextInput
             style={[styles.searchInput, { color: theme.text }]}
@@ -181,9 +177,8 @@ export function CitySelectorModal({
               <MaterialIcons name="close" size={20} color={theme.icon} />
             </Pressable>
           )}
-        </View>
+        </RtlView>
 
-        {/* Category Tabs */}
         {!searchQuery.trim() && (
           <View style={[styles.categoryTabsContainer, { backgroundColor: theme.backgroundSecondary }]}>
             <ScrollView
@@ -205,7 +200,8 @@ export function CitySelectorModal({
                     pressed && styles.buttonPressed,
                   ]}
                 >
-                  <CenteredText
+                  <RtlText
+                    align="center"
                     style={[
                       styles.categoryTabText,
                       {
@@ -215,7 +211,7 @@ export function CitySelectorModal({
                     ]}
                   >
                     {category.name}
-                  </CenteredText>
+                  </RtlText>
                 </Pressable>
               ))}
             </ScrollView>
@@ -230,15 +226,15 @@ export function CitySelectorModal({
           renderItem={renderCity}
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
+            <RtlView style={styles.emptyContainer}>
               <MaterialIcons name="location-off" size={48} color={theme.textSecondary} />
-              <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
+              <RtlText align="center" style={[styles.emptyText, { color: theme.textSecondary }]}>
                 {searchQuery.trim() ? 'شهری یافت نشد' : 'شهری در این دسته وجود ندارد'}
-              </CenteredText>
-            </View>
+              </RtlText>
+            </RtlView>
           }
         />
-      </View>
+      </RtlView>
     </Modal>
   );
 }
@@ -247,14 +243,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  headerWrapper: {
-    paddingTop: Platform.OS === 'ios' ? 0 : RNStatusBar.currentHeight || 0,
-  },
+  headerWrapper: {},
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: Platform.OS === 'ios' ? 60 : Spacing.lg,
+    paddingTop: Spacing.md,
     paddingBottom: Spacing.md,
     paddingHorizontal: Spacing.lg,
     borderBottomLeftRadius: 28,

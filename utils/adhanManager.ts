@@ -42,8 +42,8 @@ export const PRAYER_NAMES: Record<PrayerName, {
   fajr: { dari: 'نماز صبح', pashto: 'د سهار لمونځ', arabic: 'صلاة الفجر' },
   dhuhr: { dari: 'نماز ظهر', pashto: 'د غرمې لمونځ', arabic: 'صلاة الظهر' },
   asr: { dari: 'نماز عصر', pashto: 'د مازدیګر لمونځ', arabic: 'صلاة العصر' },
-  maghrib: { dari: 'نماز مغرب', pashto: 'د ماښام لمونځ', arabic: 'صلاة المغرب' },
-  isha: { dari: 'نماز عشاء', pashto: 'د ماښام وروستی لمونځ', arabic: 'صلاة العشاء' },
+  maghrib: { dari: 'نماز شام', pashto: 'د ماښام لمونځ', arabic: 'صلاة المغرب' },
+  isha: { dari: 'نماز خفتن', pashto: 'د خفتن لمونځ', arabic: 'صلاة العشاء' },
 };
 
 // Settings for each prayer

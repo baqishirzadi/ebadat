@@ -1,8 +1,10 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 
@@ -39,18 +41,18 @@ export function OnboardingShell({
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background, paddingTop: insets.top + Spacing.md }]}>
-      <View style={styles.topRow}>
+    <RtlView style={[styles.container, { backgroundColor: theme.background, paddingTop: insets.top + Spacing.md }]}>
+      <RtlView style={styles.topRow}>
         {showBack && onBack ? (
           <Pressable onPress={onBack} style={styles.backButton} hitSlop={12}>
             <MaterialIcons name="arrow-forward" size={24} color={theme.text} />
           </Pressable>
         ) : (
-          <View style={styles.backPlaceholder} />
+          <RtlView style={styles.backPlaceholder} />
         )}
-        <View style={styles.dots}>
+        <RtlView style={styles.dots}>
           {Array.from({ length: totalSteps }).map((_, index) => (
-            <View
+            <RtlView
               key={index}
               style={[
                 styles.dot,
@@ -61,18 +63,18 @@ export function OnboardingShell({
               ]}
             />
           ))}
-        </View>
-        <View style={styles.backPlaceholder} />
-      </View>
+        </RtlView>
+        <RtlView style={styles.backPlaceholder} />
+      </RtlView>
 
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.text }]}>{title}</Text>
-        {subtitle ? <Text style={[styles.subtitle, { color: theme.textSecondary }]}>{subtitle}</Text> : null}
-      </View>
+      <RtlView style={styles.header}>
+        <RtlText style={[styles.title, { color: theme.text }]}>{title}</RtlText>
+        {subtitle ? <RtlText style={[styles.subtitle, { color: theme.textSecondary }]}>{subtitle}</RtlText> : null}
+      </RtlView>
 
-      <View style={styles.body}>{children}</View>
+      <RtlView style={styles.body}>{children}</RtlView>
 
-      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom, Spacing.lg) }]}>
+      <RtlView style={[styles.footer, { paddingBottom: Math.max(insets.bottom, Spacing.lg) }]}>
         <Pressable
           onPress={onPrimary}
           disabled={primaryDisabled}
@@ -81,15 +83,17 @@ export function OnboardingShell({
             { backgroundColor: theme.tint, opacity: primaryDisabled ? 0.5 : 1 },
           ]}
         >
-          <Text style={styles.primaryLabel}>{primaryLabel}</Text>
+          <RtlText align="center" style={styles.primaryLabel}>{primaryLabel}</RtlText>
         </Pressable>
         {secondaryLabel && onSecondary ? (
           <Pressable onPress={onSecondary} style={styles.secondaryButton}>
-            <Text style={[styles.secondaryLabel, { color: theme.textSecondary }]}>{secondaryLabel}</Text>
+            <RtlText align="center" style={[styles.secondaryLabel, { color: theme.textSecondary }]}>
+              {secondaryLabel}
+            </RtlText>
           </Pressable>
         ) : null}
-      </View>
-    </View>
+      </RtlView>
+    </RtlView>
   );
 }
 
@@ -99,7 +103,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.lg,
   },
   topRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.lg,
@@ -111,7 +115,7 @@ const styles = StyleSheet.create({
     width: 32,
   },
   dots: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
@@ -126,15 +130,11 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.heading,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   subtitle: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     lineHeight: 24,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   body: {
     flex: 1,
@@ -152,8 +152,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   secondaryButton: {
     paddingVertical: Spacing.sm,
@@ -162,7 +160,5 @@ const styles = StyleSheet.create({
   secondaryLabel: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
 });

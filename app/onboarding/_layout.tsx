@@ -6,7 +6,7 @@ export default function OnboardingLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        animation: I18nManager.isRTL ? 'slide_from_left' : 'slide_from_right',
+        animation: I18nManager.isRTL ? 'slide_from_right' : 'slide_from_left',
       }}
     >
       <Stack.Screen name="index" />

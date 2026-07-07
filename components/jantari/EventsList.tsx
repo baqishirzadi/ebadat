@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { getAfghanHolidaysForMonth } from '@/utils/afghanHolidays';
@@ -34,18 +36,20 @@ export function EventsList({ hijriMonth, shamsiMonth }: EventsListProps) {
   if (events.length === 0) return null;
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-      <Text style={[styles.title, { color: theme.text }]}>مناسبت‌های این ماه</Text>
+    <RtlView style={[styles.wrapper, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+      <RtlText style={[styles.title, { color: theme.text }]}>مناسبت‌های این ماه</RtlText>
       {events.map((event) => (
-        <View key={event.key} style={[styles.row, { borderBottomColor: theme.divider }]}>
-          <Text style={[styles.day, { color: theme.tint }]}>{toArabicNumerals(event.day)}</Text>
+        <RtlView key={event.key} style={[styles.row, { borderBottomColor: theme.divider }]}>
+          <RtlText align="center" style={[styles.day, { color: theme.tint }]}>
+            {toArabicNumerals(event.day)}
+          </RtlText>
           <View style={styles.textBlock}>
-            <Text style={[styles.eventTitle, { color: theme.text }]}>{event.title}</Text>
-            <Text style={[styles.subtitle, { color: theme.textSecondary }]}>{event.subtitle}</Text>
+            <RtlText style={[styles.eventTitle, { color: theme.text }]}>{event.title}</RtlText>
+            <RtlText style={[styles.subtitle, { color: theme.textSecondary }]}>{event.subtitle}</RtlText>
           </View>
-        </View>
+        </RtlView>
       ))}
-    </View>
+    </RtlView>
   );
 }
 
@@ -60,12 +64,10 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
-    textAlign: 'right',
-    writingDirection: 'rtl',
     marginBottom: Spacing.sm,
   },
   row: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
     paddingVertical: Spacing.sm,
@@ -75,7 +77,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
     width: 28,
-    textAlign: 'center',
   },
   textBlock: {
     flex: 1,
@@ -84,13 +85,9 @@ const styles = StyleSheet.create({
   eventTitle: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
   subtitle: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
 });

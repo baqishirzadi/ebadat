@@ -6,7 +6,9 @@ import {
   getKabulWeekdayIndex,
   getKabulDateKey,
 } from '@/utils/afghanistanCalendar';
-import { getUserHijriOffsetDays } from '@/utils/hijriOffset';
+
+/** Built-in Afghan Hijri correction: one day earlier than Umm al-Qura default. */
+const AFGHAN_HIJRI_DEFAULT_SHIFT = -1;
 
 /**
  * Islamic (Hijri) Calendar Utilities
@@ -288,7 +290,7 @@ function getHijriCorrectionShift(date: Date): number {
     if (!entry.endGregorian) return true;
     return compareDateKeys(dateKey, entry.endGregorian) <= 0;
   });
-  return (range?.shiftDays ?? 0) + getUserHijriOffsetDays();
+  return (range?.shiftDays ?? 0) + AFGHAN_HIJRI_DEFAULT_SHIFT;
 }
 
 export function invalidateIslamicCalendarCaches(): void {

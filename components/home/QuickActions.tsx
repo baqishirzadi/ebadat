@@ -1,23 +1,25 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 
 const ACTIONS = [
   { icon: 'auto-awesome' as const, label: 'اذکار', route: '/(tabs)/adhkar' },
   { icon: 'format-quote' as const, label: 'احادیث', route: '/(tabs)/ahadith' },
-  { icon: 'play-circle-filled' as const, label: 'نعت', route: '/(tabs)/naat' },
   { icon: 'favorite' as const, label: 'دعای خیر', route: '/dua-request' },
+  { icon: 'explore' as const, label: 'قبله‌نما', route: '/qibla' },
 ];
 
 export function QuickActions() {
   const { theme } = useApp();
 
   return (
-    <View style={styles.grid}>
+    <RtlView style={styles.grid}>
       {ACTIONS.map((action) => (
         <Pressable
           key={action.route}
@@ -25,16 +27,16 @@ export function QuickActions() {
           style={[styles.tile, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
         >
           <MaterialIcons name={action.icon} size={28} color={theme.tint} />
-          <Text style={[styles.label, { color: theme.text }]}>{action.label}</Text>
+          <RtlText align="center" style={[styles.label, { color: theme.text }]}>{action.label}</RtlText>
         </Pressable>
       ))}
-    </View>
+    </RtlView>
   );
 }
 
 const styles = StyleSheet.create({
   grid: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: Spacing.md,
     gap: Spacing.sm,
@@ -51,7 +53,5 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
 });

@@ -32,6 +32,12 @@ import { getCalendarTruth } from '@/utils/calendarTruth';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
 
+// Force RTL for Dari/Pashto/Arabic UI (required on some Android/Huawei builds)
+if (!I18nManager.isRTL) {
+  I18nManager.allowRTL(true);
+  I18nManager.forceRTL(true);
+}
+
 // ───────────────────────────────────────────────────
 // Global safety for unhandled promise rejections
 // Prevents noisy red-screen when network is offline
@@ -231,7 +237,7 @@ function RootLayoutNav() {
         if (!cancelled) {
           markInteractiveReady();
         }
-      }, 900);
+      }, Platform.OS === 'android' ? 100 : 400);
     });
 
     return () => {

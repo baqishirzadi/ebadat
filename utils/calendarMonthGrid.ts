@@ -1,5 +1,5 @@
 import { getShamsiMonthLength, shamsiToGregorian } from '@/utils/afghanSolarHijri';
-import { getKabulDateParts, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
+import { getKabulDateParts, getKabulNoon, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
 import { getHijriMonthLength, hijriToGregorian } from '@/utils/islamicCalendar';
 
 export type CalendarGridMode = 'qamari' | 'shamsi' | 'gregorian';
@@ -16,8 +16,8 @@ function mapWeekdayToDariGridColumn(date: Date | null): number {
     return 0;
   }
 
-  // Kabul weekday index is Sun=0 ... Sat=6 while the visual grid is Sat-first.
-  return (getKabulWeekdayIndex(date) + 1) % 7;
+  // Kabul weekday index is Sun=0 ... Sat=6; visual grid is Sat-first (ش=Sat).
+  return (6 - getKabulWeekdayIndex(date)) % 7;
 }
 
 export function getCalendarMonthGridMeta(
@@ -32,7 +32,7 @@ export function getCalendarMonthGridMeta(
   }
 
   if (mode === 'gregorian') {
-    const firstDay = new Date(displayYear, displayMonth - 1, 1);
+    const firstDay = getKabulNoon(new Date(Date.UTC(displayYear, displayMonth - 1, 1, 12, 0, 0)));
     const daysInMonth = new Date(displayYear, displayMonth, 0).getDate();
     const resolved = {
       daysInMonth,

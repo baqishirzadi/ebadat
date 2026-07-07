@@ -137,9 +137,9 @@ export default function MoreScreen() {
   }, [activeHijriDate, showDeferredSections]);
 
   const quickActions = useMemo(() => [
+    { icon: 'auto-awesome', label: 'اذکار', subtitle: 'اذکار روزانه', route: '/(tabs)/adhkar', accent: theme.tint },
     { icon: 'menu-book', label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith', accent: theme.tint },
     { icon: 'article', label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles', accent: theme.bookmark },
-    { icon: 'play-circle-filled', label: 'نعت و مناجات', subtitle: 'گوش دادن و تماشا', route: '/(tabs)/naat', accent: theme.playing },
     { icon: 'calendar-today', label: 'جنتری', subtitle: 'تقویم اسلامی', route: '/(tabs)/jantari', accent: theme.surahHeader },
     { icon: 'explore', label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla', accent: theme.tint },
     { icon: 'school', label: 'آموزش نماز', subtitle: 'فقه و راهنما', route: '/(tabs)/prayer-learning', accent: theme.bookmark },

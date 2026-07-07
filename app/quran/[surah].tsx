@@ -4,10 +4,11 @@
  * No English - All Arabic/Dari
  */
 
-import React, { useState, useCallback, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, StyleSheet, StatusBar, Pressable, Alert } from 'react-native';
-import { useFocusEffect, useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
 import { MushafView, AudioPlayer } from '@/components/quran';
@@ -15,6 +16,8 @@ import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { Spacing } from '@/constants/theme';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
+
+const SURAH_TOP_BAR_HEIGHT = 56;
 
 export default function QuranReaderScreen() {
   const {
@@ -31,7 +34,7 @@ export default function QuranReaderScreen() {
     resumeSource?: string | string[];
   }>();
   const router = useRouter();
-  const navigation = useNavigation();
+  const insets = useSafeAreaInsets();
   const { theme, state } = useApp();
   const { getSurah } = useQuranData();
 
@@ -237,67 +240,12 @@ export default function QuranReaderScreen() {
     }
   }, [surahNumber, router]);
 
-  useLayoutEffect(() => {
-    if (!surah || shouldGoBack) {
-      return;
-    }
+  const surahName = surahNameData
+    ? `سورة ${surahNameData.arabic}`
+    : `سوره ${toArabicNumerals(surahNumber)}`;
 
-    const surahName = surahNameData
-      ? `سورة ${surahNameData.arabic}`
-      : `سوره ${toArabicNumerals(surahNumber)}`;
-
-    navigation.setOptions({
-      headerTitle: () => (
-        <View style={styles.headerTitleWrapper}>
-          <Text
-            style={[
-              styles.headerTitleText,
-              { color: '#fff', fontFamily: 'ScheherazadeNew' },
-            ]}
-            numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.5}
-          >
-            {surahName}
-          </Text>
-        </View>
-      ),
-      headerStyle: { backgroundColor: theme.surahHeader, borderBottomLeftRadius: 28, borderBottomRightRadius: 28 },
-      headerTintColor: '#fff',
-      headerTitleContainerStyle: {
-        flex: 1,
-        minWidth: 160,
-        justifyContent: 'center',
-        alignItems: 'center',
-      },
-      headerLeftContainerStyle: { minWidth: 48 },
-      headerRightContainerStyle: { minWidth: 80 },
-      headerLeft: () => (
-        <Pressable onPress={() => router.back()} hitSlop={8}>
-          <MaterialIcons
-            name="arrow-forward"
-            size={24}
-            color="#fff"
-            style={{ marginRight: 16 }}
-          />
-        </Pressable>
-      ),
-      headerRight: () => (
-        <View style={styles.headerRight}>
-          {surahNumber > 1 && (
-            <Pressable onPress={goToPrevSurah} hitSlop={8}>
-              <MaterialIcons name="chevron-right" size={28} color="#fff" />
-            </Pressable>
-          )}
-          {surahNumber < 114 && (
-            <Pressable onPress={goToNextSurah} hitSlop={8}>
-              <MaterialIcons name="chevron-left" size={28} color="#fff" />
-            </Pressable>
-          )}
-        </View>
-      ),
-    });
-  }, [surah, shouldGoBack, surahNameData, surahNumber, theme.surahHeader, navigation, router, goToPrevSurah, goToNextSurah]);
+  const contentPaddingTop = insets.top + SURAH_TOP_BAR_HEIGHT + Spacing.sm;
+  const contentPaddingBottom = showAudioPlayer ? insets.bottom + 140 : Spacing.xxl;
 
   if (!surah || shouldGoBack) {
     return (
@@ -311,7 +259,41 @@ export default function QuranReaderScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar barStyle={state.preferences.theme === 'night' ? 'light-content' : 'dark-content'} />
+      <StatusBar barStyle="light-content" />
+
+      <View
+        style={[
+          styles.topBar,
+          {
+            paddingTop: insets.top,
+            height: insets.top + SURAH_TOP_BAR_HEIGHT,
+            backgroundColor: theme.surahHeader,
+          },
+        ]}
+      >
+        <Pressable onPress={() => router.back()} hitSlop={8} style={styles.topBarBackButton}>
+          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+        </Pressable>
+        <Text style={styles.topBarTitle} numberOfLines={1} ellipsizeMode="tail">
+          {surahName}
+        </Text>
+        <View style={styles.topBarNav}>
+          {surahNumber > 1 ? (
+            <Pressable onPress={goToPrevSurah} hitSlop={8}>
+              <MaterialIcons name="chevron-right" size={28} color="#fff" />
+            </Pressable>
+          ) : (
+            <View style={styles.navPlaceholder} />
+          )}
+          {surahNumber < 114 ? (
+            <Pressable onPress={goToNextSurah} hitSlop={8}>
+              <MaterialIcons name="chevron-left" size={28} color="#fff" />
+            </Pressable>
+          ) : (
+            <View style={styles.navPlaceholder} />
+          )}
+        </View>
+      </View>
 
       <MushafView
         key={`mushaf-${surahNumber}-${normalizedJumpToken ?? 'default'}`}
@@ -322,6 +304,8 @@ export default function QuranReaderScreen() {
         resumeSource={normalizedResumeSource === 'notification' ? 'notification' : undefined}
         onPlayAyah={handlePlayAyah}
         activePlayingAyah={activeAyahNumber}
+        contentPaddingTop={contentPaddingTop}
+        contentPaddingBottom={contentPaddingBottom}
       />
 
       {showAudioPlayer && currentlyPlaying && (
@@ -349,21 +333,44 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  headerTitleWrapper: {
-    flex: 1,
-    minWidth: 0,
-    width: '100%',
-    justifyContent: 'center',
+  topBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    zIndex: 80,
+    elevation: 80,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.md,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
-  headerTitleText: {
+  topBarBackButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topBarTitle: {
+    flex: 1,
+    marginHorizontal: Spacing.sm,
+    color: '#fff',
+    fontFamily: 'ScheherazadeNew',
     fontSize: 18,
-    fontWeight: '400' as const,
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
-  headerRight: {
+  topBarNav: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
+  },
+  navPlaceholder: {
+    width: 28,
+    height: 28,
   },
   loadingText: {
     fontSize: 16,

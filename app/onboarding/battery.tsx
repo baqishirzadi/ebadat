@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
 import React, { useEffect } from 'react';
-import { Linking, Platform, StyleSheet, Text, View } from 'react-native';
+import { Linking, Platform, StyleSheet } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { Spacing, Typography } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { openBatteryOptimizationSettings } from '@/utils/adhanHealth';
@@ -46,11 +48,11 @@ export default function OnboardingBatteryScreen() {
       showBack
       onBack={() => router.back()}
     >
-      <View style={styles.content}>
-        <Text style={styles.bullet}>• این مرحله اختیاری است</Text>
-        <Text style={styles.bullet}>• در گوشی‌های سامسونگ، شیائومی و هواوی توصیه می‌شود</Text>
-        <Text style={styles.bullet}>• می‌توانید بعداً از تنظیمات اذان راهنما را ببینید</Text>
-      </View>
+      <RtlView style={styles.content}>
+        <RtlText style={styles.bullet}>• این مرحله اختیاری است</RtlText>
+        <RtlText style={styles.bullet}>• در گوشی‌های سامسونگ، شیائومی و هواوی توصیه می‌شود</RtlText>
+        <RtlText style={styles.bullet}>• می‌توانید بعداً از تنظیمات اذان راهنما را ببینید</RtlText>
+      </RtlView>
     </OnboardingShell>
   );
 }
@@ -64,7 +66,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     lineHeight: 26,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
 });

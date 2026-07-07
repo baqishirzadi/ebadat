@@ -1,6 +1,6 @@
 /**
  * Tab Navigation Layout
- * 5-tab RTL navigation: Home · Quran · Jantari · Adhkar · More
+ * 5-tab RTL navigation: Home · Quran · Jantari · Naat · More
  */
 
 import { HapticTab } from '@/components/haptic-tab';
@@ -89,11 +89,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="adhkar"
+        name="naat"
         options={{
-          title: 'اذکار',
+          title: 'نعت',
           tabBarIcon: ({ color, focused }) => (
-            <MaterialIcons name="auto-awesome" size={focused ? 28 : 24} color={color} />
+            <MaterialIcons name="play-circle-filled" size={focused ? 28 : 24} color={color} />
           ),
         }}
       />
@@ -109,7 +109,7 @@ export default function TabLayout() {
 
       {/* Hidden routes */}
       <Tabs.Screen name="articles" options={{ href: null }} />
-      <Tabs.Screen name="naat" options={{ href: null }} />
+      <Tabs.Screen name="adhkar" options={{ href: null }} />
       <Tabs.Screen name="prayer" options={{ href: null }} />
       <Tabs.Screen name="ahadith" options={{ href: null }} />
       <Tabs.Screen name="prayer-learning" options={{ href: null }} />

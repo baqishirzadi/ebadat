@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
-import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, Pressable, StyleSheet } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 
@@ -18,14 +20,14 @@ export default function OnboardingWelcomeScreen() {
       primaryLabel="شروع"
       onPrimary={() => router.push('/onboarding/language' as never)}
     >
-      <View style={styles.hero}>
-        <View style={[styles.logoFrame, { borderColor: theme.accent, backgroundColor: theme.card }]}>
+      <RtlView style={styles.hero}>
+        <RtlView style={[styles.logoFrame, { borderColor: theme.accent, backgroundColor: theme.card }]}>
           <Image source={require('@/assets/images/icon.png')} style={styles.logo} resizeMode="contain" />
-        </View>
-        <Text style={[styles.tagline, { color: theme.textSecondary }]}>
+        </RtlView>
+        <RtlText align="center" style={[styles.tagline, { color: theme.textSecondary }]}>
           برای مسلمانان افغان در سراسر جهان
-        </Text>
-      </View>
+        </RtlText>
+      </RtlView>
     </OnboardingShell>
   );
 }
@@ -53,8 +55,6 @@ const styles = StyleSheet.create({
   tagline: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
-    textAlign: 'center',
-    writingDirection: 'rtl',
     paddingHorizontal: Spacing.lg,
   },
 });

@@ -1,4 +1,4 @@
-export const ABOUT_CREATOR_DARI_TITLE = 'درباره سازنده';
+export const ABOUT_CREATOR_DARI_TITLE = 'مقدمه';
 
 export const ABOUT_CREATOR_DARI_PARAGRAPHS: string[] = [
   'شیرزادِ هرات تنها یک جغرافیا نیست؛ یک راه است — راهِ خدمت، کرامت انسانی، و باز بودن در برای همه؛ برای پادشاه و گدا، پیر و جوان، غنی و فقیر.',
@@ -10,7 +10,7 @@ export const ABOUT_CREATOR_DARI_CREATOR_LABEL = 'سازنده:';
 export const ABOUT_CREATOR_DARI_CREATOR_NAME =
   'سیدعبدالباقی ابن سیدعبدالاله\nابن خلیفه صاحب سیدمحمد یتیم شیرزادی (رح)';
 
-export const ABOUT_CREATOR_PASHTO_TITLE = 'د جوړوونکي په اړه';
+export const ABOUT_CREATOR_PASHTO_TITLE = 'مقدمه';
 
 export const ABOUT_CREATOR_PASHTO_PARAGRAPHS: string[] = [
   'شېرزاد د هرات یوازې جغرافیه نه ده؛ دا یوه لاره ده — د خدمت، د انساني کرامت او د هر چا لپاره د پرانیستي دروازې لاره؛ د پاچا او سوالګر، زاړه او ځوان، شتمن او بېوزله لپاره.',

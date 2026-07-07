@@ -1,7 +1,8 @@
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { RtlText } from '@/components/ui/RtlText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
@@ -22,13 +23,13 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString('fa-AF', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
-interface NextPrayerCardProps {
-  prayerTimes: PrayerTimes | null;
-}
-
-export function NextPrayerCard({ prayerTimes }: NextPrayerCardProps) {
-  const { theme } = useApp();
-  const { state } = usePrayer();
+const CountdownText = memo(function CountdownText({
+  prayerTimes,
+  tint,
+}: {
+  prayerTimes: PrayerTimes;
+  tint: string;
+}) {
   const [now, setNow] = useState(() => new Date());
 
   useFocusEffect(
@@ -38,31 +39,48 @@ export function NextPrayerCard({ prayerTimes }: NextPrayerCardProps) {
     }, []),
   );
 
+  const next = getNextPrayer(prayerTimes, now);
+  const remaining = next.time.getTime() - now.getTime();
+
+  return (
+    <Text style={[styles.countdown, { color: tint }]}>{formatCountdown(remaining)}</Text>
+  );
+});
+
+interface NextPrayerCardProps {
+  prayerTimes: PrayerTimes | null;
+}
+
+function NextPrayerCardInner({ prayerTimes }: NextPrayerCardProps) {
+  const { theme } = useApp();
+  const { state } = usePrayer();
+
   if (!prayerTimes) {
     return (
       <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.accent }]}>
-        <Text style={[styles.empty, { color: theme.textSecondary }]}>اوقات نماز در دسترس نیست</Text>
+        <RtlText style={[styles.empty, { color: theme.textSecondary }]}>اوقات نماز در دسترس نیست</RtlText>
       </View>
     );
   }
 
-  const next = getNextPrayer(prayerTimes, now);
-  const remaining = next.time.getTime() - now.getTime();
+  const next = getNextPrayer(prayerTimes);
   const adhanOn = state.adhanPreferences.masterEnabled;
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.accent }]}>
       <View style={[styles.innerBorder, { borderColor: theme.accent }]} />
-      <Text style={[styles.label, { color: theme.textSecondary }]}>نماز بعدی</Text>
-      <Text style={[styles.prayerName, { color: theme.text }]}>{next.nameDari}</Text>
-      <Text style={[styles.time, { color: theme.accent }]}>{formatTime(next.time)}</Text>
-      <Text style={[styles.countdown, { color: theme.tint }]}>{formatCountdown(remaining)}</Text>
-      <Text style={[styles.hint, { color: theme.textSecondary }]}>
+      <RtlText align="center" style={[styles.label, { color: theme.textSecondary }]}>نماز بعدی</RtlText>
+      <RtlText align="center" style={[styles.prayerName, { color: theme.text }]}>{next.nameDari}</RtlText>
+      <RtlText align="center" style={[styles.time, { color: theme.accent }]}>{formatTime(next.time)}</RtlText>
+      <CountdownText prayerTimes={prayerTimes} tint={theme.tint} />
+      <RtlText align="center" style={[styles.hint, { color: theme.textSecondary }]}>
         {adhanOn ? 'اذان فعال است' : 'اذان غیرفعال است'}
-      </Text>
+      </RtlText>
     </View>
   );
 }
+
+export const NextPrayerCard = memo(NextPrayerCardInner);
 
 const styles = StyleSheet.create({
   card: {
@@ -89,19 +107,14 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   prayerName: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.heading,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   time: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 32,
-    textAlign: 'center',
   },
   countdown: {
     fontFamily: 'Vazirmatn-Bold',
@@ -112,15 +125,11 @@ const styles = StyleSheet.create({
   hint: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    writingDirection: 'rtl',
     marginTop: Spacing.xs,
   },
   empty: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
-    textAlign: 'center',
-    writingDirection: 'rtl',
     paddingVertical: Spacing.lg,
   },
 });

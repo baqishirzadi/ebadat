@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { Spacing, Typography } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { requestAdhanNotificationPermission } from '@/utils/prayerOnboarding';
@@ -46,11 +48,11 @@ export default function OnboardingNotificationsScreen() {
       showBack
       onBack={() => router.back()}
     >
-      <View style={styles.content}>
-        <Text style={styles.bullet}>• اذان پنج وقت نماز در زمان دقیق</Text>
-        <Text style={styles.bullet}>• یادآوری مناسبت‌های اسلامی</Text>
-        <Text style={styles.bullet}>• می‌توانید بعداً از تنظیمات گوشی تغییر دهید</Text>
-      </View>
+      <RtlView style={styles.content}>
+        <RtlText style={styles.bullet}>• اذان پنج وقت نماز در زمان دقیق</RtlText>
+        <RtlText style={styles.bullet}>• یادآوری مناسبت‌های اسلامی</RtlText>
+        <RtlText style={styles.bullet}>• می‌توانید بعداً از تنظیمات گوشی تغییر دهید</RtlText>
+      </RtlView>
     </OnboardingShell>
   );
 }
@@ -64,7 +66,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     lineHeight: 26,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
 });

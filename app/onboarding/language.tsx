@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
+import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import type { TranslationLanguage } from '@/types/quran';
@@ -32,7 +34,7 @@ export default function OnboardingLanguageScreen() {
       showBack
       onBack={() => router.back()}
     >
-      <View style={styles.list}>
+      <RtlView style={styles.list}>
         {OPTIONS.map((option) => {
           const active = selected === option.key;
           return (
@@ -47,12 +49,12 @@ export default function OnboardingLanguageScreen() {
                 },
               ]}
             >
-              <Text style={[styles.optionLabel, { color: theme.text }]}>{option.label}</Text>
-              <Text style={[styles.optionHint, { color: theme.textSecondary }]}>{option.hint}</Text>
+              <RtlText style={[styles.optionLabel, { color: theme.text }]}>{option.label}</RtlText>
+              <RtlText style={[styles.optionHint, { color: theme.textSecondary }]}>{option.hint}</RtlText>
             </Pressable>
           );
         })}
-      </View>
+      </RtlView>
     </OnboardingShell>
   );
 }
@@ -70,13 +72,9 @@ const styles = StyleSheet.create({
   optionLabel: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
   optionHint: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
 });
