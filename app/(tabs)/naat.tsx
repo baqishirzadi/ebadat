@@ -3,12 +3,12 @@
  * Offline-first, car-friendly listening
  */
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Text, ActivityIndicator, TextInput, FlatList, Modal, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useNaat, type NaatQueueSource } from '@/context/NaatContext';
 import { BorderRadius, Spacing, Typography, NAAT_GRADIENT } from '@/constants/theme';
@@ -64,6 +64,16 @@ export default function NaatScreen() {
     refresh,
   } = useNaat();
   const [query, setQuery] = useState('');
+  const verifiedOnFocusRef = useRef(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (verifiedOnFocusRef.current) return;
+      verifiedOnFocusRef.current = true;
+      void refresh();
+    }, [refresh]),
+  );
+
   const [selectedReciter, setSelectedReciter] = useState('همه');
   const [showNaatAdminPinModal, setShowNaatAdminPinModal] = useState(false);
   const [naatAdminPin, setNaatAdminPin] = useState('');

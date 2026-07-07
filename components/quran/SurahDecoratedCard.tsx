@@ -1,9 +1,10 @@
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import CenteredText from '@/components/CenteredText';
 import { useApp } from '@/context/AppContext';
 import { toArabicNumerals } from '@/data/surahNames';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { I18nManager, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import { I18nManager, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -55,23 +56,23 @@ export function SurahDecoratedCard({
       </View>
 
       <View style={styles.infoContainer}>
-        <Text style={[styles.title, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
+        <CenteredText style={[styles.title, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
           {title}
-        </Text>
-        <Text
+        </CenteredText>
+        <CenteredText
           style={[styles.subtitle, { color: theme.textSecondary }]}
           numberOfLines={subtitleNumberOfLines}
           ellipsizeMode="tail"
         >
           {subtitle}
-        </Text>
+        </CenteredText>
       </View>
 
       <View style={styles.badgeContainer}>
         <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
         <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
         <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <Text style={styles.numberText}>{toArabicNumerals(surahNumber)}</Text>
+          <CenteredText style={styles.numberText}>{toArabicNumerals(surahNumber)}</CenteredText>
         </View>
         <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
         <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
@@ -84,15 +85,15 @@ export function SurahDecoratedCard({
           {!!metaTop && (
             <View style={styles.metaRow}>
               {!!metaIcon && <MaterialIcons name={metaIcon} size={12} color={theme.textSecondary} />}
-              <Text style={[styles.metaText, { color: theme.textSecondary }]} numberOfLines={1}>
+              <CenteredText style={[styles.metaText, { color: theme.textSecondary }]} numberOfLines={1}>
                 {metaTop}
-              </Text>
+              </CenteredText>
             </View>
           )}
           {!!metaBottom && (
-            <Text style={[styles.metaText, styles.metaBottom, { color: theme.textSecondary }]} numberOfLines={1}>
+            <CenteredText style={[styles.metaText, styles.metaBottom, { color: theme.textSecondary }]} numberOfLines={1}>
               {metaBottom}
-            </Text>
+            </CenteredText>
           )}
         </View>
       )}
@@ -140,6 +141,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontFamily: 'ScheherazadeNew',
     textAlign: 'center',
+    writingDirection: 'rtl',
     width: '100%',
   },
   subtitle: {

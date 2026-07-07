@@ -1,11 +1,12 @@
 import AppCenteredText from '@/components/CenteredText';
 import { AudioPlayer, AyahRow, SurahDecoratedCard } from '@/components/quran';
+import { TranslationToggle } from '@/components/quran/TranslationToggle';
 import { Spacing, Typography } from '@/constants/theme';
 import { useApp, useReadingPosition } from '@/context/AppContext';
 import { getJuzRange } from '@/data/juzRanges';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import { useQuranData } from '@/hooks/useQuranData';
-import { Ayah, TranslationLanguage } from '@/types/quran';
+import { Ayah } from '@/types/quran';
 import { audioManager, getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
@@ -80,7 +81,7 @@ export default function JuzReaderScreen() {
   const navigation = useNavigation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { theme, state, setTranslationLanguage } = useApp();
+  const { theme, state } = useApp();
   const { updatePosition } = useReadingPosition();
   const { getAyahsByJuz, getTranslation } = useQuranData();
 
@@ -114,16 +115,6 @@ export default function JuzReaderScreen() {
   const notificationResumeSettledRef = useRef(true);
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50, minimumViewTime: 500 });
   const ayahFollowViewOffset = insets.top + JUZ_TOP_BAR_HEIGHT + AYAH_FOLLOW_EXTRA_TOP_OFFSET;
-  const currentTranslation = state.preferences.showTranslation;
-  const translationOptions: { key: TranslationLanguage; label: string }[] = useMemo(
-    () => [
-      { key: 'dari', label: 'فارسی (دری)' },
-      { key: 'pashto', label: 'پښتو' },
-      { key: 'both', label: 'هردو' },
-      { key: 'none', label: 'بدون ترجمه' },
-    ],
-    []
-  );
 
   const sections = useMemo<JuzSection[]>(() => {
     const bySurah = new Map<number, JuzSection>();
@@ -573,7 +564,7 @@ export default function JuzReaderScreen() {
         <View style={[styles.bismillahOrnamentLeft, { backgroundColor: `${theme.playing}6B` }]} />
         <View style={[styles.bismillahOrnamentRight, { backgroundColor: `${theme.playing}6B` }]} />
 
-        <Text style={[styles.bismillahText, { color: bismillahColor }]}>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</Text>
+        <AppCenteredText style={[styles.bismillahText, { color: bismillahColor }]}>بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</AppCenteredText>
       </View>
     );
   }, [theme.backgroundSecondary, theme.bismillah, theme.playing]);
@@ -637,42 +628,15 @@ export default function JuzReaderScreen() {
         >
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
-        <Text style={styles.topBarTitle} numberOfLines={1} ellipsizeMode="tail">
+        <AppCenteredText style={styles.topBarTitle} numberOfLines={1} ellipsizeMode="tail">
           جزء {toArabicNumerals(juzNumber)} • سوره {currentSurahArabic}
-        </Text>
+        </AppCenteredText>
         <View style={styles.topBarSpacer} />
       </View>
 
       <FlatList
         ref={flatListRef}
-        ListHeaderComponent={
-          <View style={[styles.translationToggle, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <Text style={[styles.toggleLabel, { color: theme.textSecondary }]}>ترجمه:</Text>
-            <View style={styles.toggleButtons}>
-              {translationOptions.map((option) => (
-                <Pressable
-                  key={option.key}
-                  onPress={() => setTranslationLanguage(option.key)}
-                  style={[
-                    styles.toggleButton,
-                    {
-                      backgroundColor: currentTranslation === option.key ? theme.tint : theme.backgroundSecondary,
-                    },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.toggleButtonText,
-                      { color: currentTranslation === option.key ? '#fff' : theme.text },
-                    ]}
-                  >
-                    {option.label}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-        }
+        ListHeaderComponent={<TranslationToggle />}
         data={flatItems}
         keyExtractor={(item) => item.key}
         renderItem={renderItem}
@@ -824,35 +788,5 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
     includeFontPadding: false,
     paddingBottom: 8,
-  },
-  translationToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.sm,
-    padding: Spacing.sm,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: Spacing.sm,
-  },
-  toggleLabel: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    marginRight: Spacing.xs,
-  },
-  toggleButtons: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-  },
-  toggleButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-    borderRadius: 8,
-  },
-  toggleButtonText: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    fontWeight: '500',
   },
 });

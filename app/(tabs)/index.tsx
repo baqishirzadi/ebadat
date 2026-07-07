@@ -14,6 +14,7 @@ import {
   PrayerTimesRow,
   QiblaCard,
   QuickActions,
+  SectionHeader,
   TodayDateCard,
 } from '@/components/home';
 import { RtlView } from '@/components/ui/RtlView';
@@ -45,9 +46,11 @@ function HomeDashboardScreen() {
           <HomeHeader onCityPress={() => setCityPickerVisible(true)} />
           <TodayDateCard />
           <NextPrayerCard prayerTimes={state.prayerTimes} />
+          <SectionHeader title="اوقات نماز" />
           <PrayerTimesRow prayerTimes={state.prayerTimes} />
           <QiblaCard />
           <ContinueReadingCard />
+          <SectionHeader title="دسترسی سریع" />
           <QuickActions />
           {showHealthBanner ? <AdhanHealthBanner /> : null}
         </RtlView>

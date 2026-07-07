@@ -27,7 +27,13 @@ import { useStats } from '@/context/StatsContext';
 import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
 import { getKabulDateParts, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
 import { getCalendarTruth } from '@/utils/calendarTruth';
-import { formatHijriDate, getUpcomingSpecialDays, hijriToGregorian, HIJRI_MONTHS } from '@/utils/islamicCalendar';
+import {
+  formatEventDateLabel,
+  formatEventDateParts,
+  getEventCategoryColor,
+  getUpcomingEvents,
+} from '@/utils/calendarEvents';
+import { formatHijriDate } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
 
 const WEEKDAY_DARI = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
@@ -50,27 +56,20 @@ type DeferredSectionKey = 'summary' | 'today' | 'upcoming' | 'support' | 'khatm'
 
 interface UpcomingDayCard {
   key: string;
-  day: number;
-  month: number;
   nameDari: string;
   descriptionDari: string;
   isFasting?: boolean;
   isEid?: boolean;
-  monthLabel: string;
-  shamsiWeekday: string | null;
+  dateLabel: string;
+  dateDay: string;
+  dateMonth?: string;
+  weekdayLabel: string;
+  badgeColor: string;
 }
 
 function formatGregorianDateDari(date: Date): string {
   const { day, month, year } = getKabulDateParts(date);
   return `${toArabicNumerals(day)} ${GREGORIAN_MONTHS_DARI[month - 1]} ${toArabicNumerals(year)}`;
-}
-
-function getShamsiAndWeekday(hijriYear: number, hijriMonth: number, hijriDay: number): string | null {
-  const greg = hijriToGregorian(hijriYear, hijriMonth, hijriDay);
-  if (!greg) return null;
-  const shamsi = gregorianToAfghanSolarHijri(greg);
-  const weekday = WEEKDAY_DARI[getKabulWeekdayIndex(greg)];
-  return `${formatAfghanSolarHijriDateWithPersianNumerals(shamsi, 'dari')} • ${weekday}`;
 }
 
 export default function MoreScreen() {
@@ -109,19 +108,19 @@ export default function MoreScreen() {
 
     let cancelled = false;
     const task = InteractionManager.runAfterInteractions(() => {
-      const baseYear = activeHijriDate.year;
-      const cards = getUpcomingSpecialDays(activeHijriDate, 3).map((day, index) => {
-        const hijriYear = day.month >= activeHijriDate.month ? baseYear : baseYear + 1;
+      const cards = getUpcomingEvents(truth.gregorianDate, 5).map((event) => {
+        const dateParts = formatEventDateParts(event);
         return {
-          key: `${hijriYear}-${day.month}-${day.day}-${index}`,
-          day: day.day,
-          month: day.month,
-          nameDari: day.nameDari,
-          descriptionDari: day.descriptionDari,
-          isFasting: day.isFasting,
-          isEid: day.isEid,
-          monthLabel: HIJRI_MONTHS[day.month - 1]?.dari ?? '',
-          shamsiWeekday: getShamsiAndWeekday(hijriYear, day.month, day.day),
+          key: event.id,
+          nameDari: event.titleDari,
+          descriptionDari: event.descriptionDari,
+          isFasting: event.isFasting,
+          isEid: event.isEid,
+          dateLabel: formatEventDateLabel(event),
+          dateDay: dateParts.day,
+          dateMonth: dateParts.month,
+          weekdayLabel: WEEKDAY_DARI[getKabulWeekdayIndex(event.gregorianDate)],
+          badgeColor: getEventCategoryColor(event.category, theme),
         };
       });
 
@@ -134,7 +133,7 @@ export default function MoreScreen() {
       cancelled = true;
       task.cancel();
     };
-  }, [activeHijriDate, showDeferredSections]);
+  }, [showDeferredSections, theme, truth.gregorianDate]);
 
   const quickActions = useMemo(() => [
     { icon: 'auto-awesome', label: 'اذکار', subtitle: 'اذکار روزانه', route: '/(tabs)/adhkar', accent: theme.tint },
@@ -354,11 +353,9 @@ export default function MoreScreen() {
                     <CenteredText style={[styles.upcomingDescription, { color: theme.textSecondary }]}>
                       {day.descriptionDari}
                     </CenteredText>
-                    {day.shamsiWeekday && (
-                      <CenteredText style={[styles.upcomingMeta, { color: theme.textSecondary }]}>
-                        {day.shamsiWeekday}
-                      </CenteredText>
-                    )}
+                    <CenteredText style={[styles.upcomingMeta, { color: theme.textSecondary }]}>
+                      {day.dateLabel} • {day.weekdayLabel}
+                    </CenteredText>
                   </View>
                   <View style={styles.upcomingBadgeWrap}>
                     {(day.isFasting || day.isEid) && (
@@ -368,9 +365,15 @@ export default function MoreScreen() {
                         color={day.isEid ? theme.bookmark : theme.tint}
                       />
                     )}
-                    <View style={[styles.upcomingDateBadge, { backgroundColor: theme.tint }]}>
-                      <CenteredText style={styles.upcomingDay}>{toArabicNumerals(day.day)}</CenteredText>
-                      <CenteredText style={styles.upcomingMonth}>{day.monthLabel}</CenteredText>
+                    <View style={[styles.upcomingDateBadge, { backgroundColor: day.badgeColor }]}>
+                      <CenteredText style={styles.upcomingDay} numberOfLines={1}>
+                        {day.dateDay}
+                      </CenteredText>
+                      {day.dateMonth ? (
+                        <CenteredText style={styles.upcomingMonth} numberOfLines={1}>
+                          {day.dateMonth}
+                        </CenteredText>
+                      ) : null}
                     </View>
                   </View>
                 </View>
@@ -731,23 +734,26 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   upcomingDateBadge: {
-    width: 64,
-    minHeight: 64,
-    borderRadius: 32,
+    width: 48,
+    minHeight: 52,
+    borderRadius: BorderRadius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 8,
+    paddingHorizontal: 4,
+    paddingVertical: 5,
   },
   upcomingDay: {
-    fontSize: Typography.ui.subtitle,
+    fontSize: 17,
     fontWeight: '700',
     color: '#fff',
+    lineHeight: 20,
   },
   upcomingMonth: {
-    fontSize: 10,
+    fontSize: 9,
     color: 'rgba(255,255,255,0.95)',
-    marginTop: 2,
+    marginTop: 1,
+    lineHeight: 12,
+    textAlign: 'center',
   },
   secondaryList: {
     gap: Spacing.sm,

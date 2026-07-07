@@ -26,7 +26,9 @@ export function QuickActions() {
           onPress={() => router.push(action.route as never)}
           style={[styles.tile, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
         >
-          <MaterialIcons name={action.icon} size={28} color={theme.tint} />
+          <RtlView style={[styles.iconCircle, { backgroundColor: `${theme.tint}18` }]}>
+            <MaterialIcons name={action.icon} size={26} color={theme.tint} />
+          </RtlView>
           <RtlText align="center" style={[styles.label, { color: theme.text }]}>{action.label}</RtlText>
         </Pressable>
       ))}
@@ -48,7 +50,14 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
+  },
+  iconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   label: {
     fontFamily: 'Vazirmatn-Bold',

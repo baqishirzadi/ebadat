@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useMemo, useState } from 'react';
 import { Platform, StyleSheet, View } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
@@ -10,21 +11,30 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
+import { getNextPrayer, type PrayerTimes } from '@/utils/prayerTimes';
 import { requestAdhanNotificationPermission } from '@/utils/prayerOnboarding';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 
-const SAMPLE_TIMES = [
-  { label: 'صبح', time: new Date(2026, 0, 1, 5, 3) },
-  { label: 'ظهر', time: new Date(2026, 0, 1, 12, 18) },
-  { label: 'عصر', time: new Date(2026, 0, 1, 16, 59) },
-  { label: 'شام', time: new Date(2026, 0, 1, 19, 13) },
-  { label: 'خفتن', time: new Date(2026, 0, 1, 20, 53) },
+const PRAYER_PREVIEW = [
+  { key: 'fajr', label: 'صبح', icon: 'wb-twilight' as const },
+  { key: 'dhuhr', label: 'ظهر', icon: 'wb-sunny' as const },
+  { key: 'asr', label: 'عصر', icon: 'wb-cloudy' as const },
+  { key: 'maghrib', label: 'شام', icon: 'nights-stay' as const },
+  { key: 'isha', label: 'خفتن', icon: 'bedtime' as const },
 ];
+
+const THEME_GRADIENT: [string, string, string] = ['#0F1F14', '#1a4d3e', '#2d6a4f'];
 
 export default function OnboardingNotificationsScreen() {
   const { theme } = useApp();
-  const { requestPrayerSchedule } = usePrayer();
+  const { requestPrayerSchedule, state } = usePrayer();
   const [busy, setBusy] = useState(false);
+
+  const prayerTimes = state.prayerTimes;
+  const nextKey = useMemo(() => {
+    if (!prayerTimes) return 'fajr';
+    return getNextPrayer(prayerTimes).name;
+  }, [prayerTimes]);
 
   const goNext = () => {
     requestPrayerSchedule('onboarding-complete').catch(() => {});
@@ -44,6 +54,20 @@ export default function OnboardingNotificationsScreen() {
     } finally {
       setBusy(false);
     }
+  };
+
+  const renderTime = (key: keyof PrayerTimes) => {
+    if (prayerTimes?.[key]) {
+      return formatPrayerTime12h(prayerTimes[key]);
+    }
+    const fallback: Record<string, Date> = {
+      fajr: new Date(2026, 0, 1, 5, 3),
+      dhuhr: new Date(2026, 0, 1, 12, 18),
+      asr: new Date(2026, 0, 1, 16, 59),
+      maghrib: new Date(2026, 0, 1, 19, 13),
+      isha: new Date(2026, 0, 1, 20, 53),
+    };
+    return formatPrayerTime12h(fallback[key] ?? new Date());
   };
 
   return (
@@ -69,18 +93,58 @@ export default function OnboardingNotificationsScreen() {
           اذان پنج وقت نماز در زمان دقیق
         </RtlText>
 
-        <RtlView style={[styles.previewCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          {SAMPLE_TIMES.map((item) => (
-            <RtlView key={item.label} style={styles.previewRow}>
-              <RtlText align="center" style={[styles.previewLabel, { color: theme.text }]}>
-                {item.label}
-              </RtlText>
-              <RtlText align="center" style={[styles.previewTime, { color: theme.tint }]}>
-                {formatPrayerTime12h(item.time)}
-              </RtlText>
-            </RtlView>
-          ))}
-        </RtlView>
+        <View style={[styles.previewShell, styles.shadow]}>
+          <LinearGradient colors={THEME_GRADIENT} style={styles.previewHeader}>
+            <MaterialIcons name="schedule" size={18} color="rgba(255,255,255,0.9)" />
+            <RtlText align="center" style={styles.previewHeaderText}>
+              اوقات نماز امروز
+            </RtlText>
+          </LinearGradient>
+
+          <RtlView style={[styles.previewBody, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            {PRAYER_PREVIEW.map((item, index) => {
+              const isNext = item.key === nextKey;
+              return (
+                <RtlView
+                  key={item.key}
+                  style={[
+                    styles.previewRow,
+                    isNext && { backgroundColor: `${theme.tint}12` },
+                    index < PRAYER_PREVIEW.length - 1 && {
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                      borderBottomColor: theme.divider,
+                    },
+                  ]}
+                >
+                  <MaterialIcons
+                    name={item.icon}
+                    size={20}
+                    color={isNext ? theme.bookmark : theme.textSecondary}
+                  />
+                  <RtlText
+                    align="center"
+                    style={[
+                      styles.previewLabel,
+                      { color: isNext ? theme.tint : theme.text },
+                      isNext && styles.previewLabelNext,
+                    ]}
+                  >
+                    {item.label}
+                  </RtlText>
+                  <RtlText
+                    align="center"
+                    style={[
+                      styles.previewTime,
+                      { color: isNext ? theme.bookmark : theme.tint },
+                    ]}
+                  >
+                    {renderTime(item.key as keyof PrayerTimes)}
+                  </RtlText>
+                </RtlView>
+              );
+            })}
+          </RtlView>
+        </View>
 
         <RtlText align="center" style={[styles.bullet, { color: theme.textSecondary }]}>
           • می‌توانید بعداً از تنظیمات اذان صدا را تغییر دهید
@@ -111,28 +175,60 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
   },
-  previewCard: {
+  previewShell: {
     width: '100%',
-    borderWidth: 1,
     borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
+    overflow: 'hidden',
+  },
+  shadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
+  },
+  previewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+  },
+  previewHeaderText: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.caption,
+    color: '#fff',
+  },
+  previewBody: {
+    borderWidth: 1,
+    borderTopWidth: 0,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
   },
   previewRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
-    gap: Spacing.lg,
-    paddingVertical: 4,
-    width: '100%',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+    gap: Spacing.sm,
   },
   previewLabel: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.caption,
+    fontSize: Typography.ui.body,
+    flex: 1,
+    textAlign: 'center',
+  },
+  previewLabelNext: {
+    fontFamily: 'Vazirmatn-Bold',
   },
   previewTime: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.caption,
+    fontSize: Typography.ui.body,
+    minWidth: 72,
+    textAlign: 'center',
   },
   bullet: {
     fontFamily: 'Vazirmatn',

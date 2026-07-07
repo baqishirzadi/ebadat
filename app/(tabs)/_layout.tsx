@@ -59,6 +59,8 @@ export default function TabLayout() {
         },
         headerShown: false,
         tabBarButton: HapticTab,
+        freezeOnBlur: true,
+        lazy: true,
       }}
     >
       <Tabs.Screen

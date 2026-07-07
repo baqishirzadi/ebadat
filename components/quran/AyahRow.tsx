@@ -16,7 +16,7 @@ import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
 import { stripQuranicMarks } from '@/utils/quranText';
-import CenteredText from '@/components/CenteredText';
+import { QuranText } from './QuranText';
 import { toArabicNumerals } from '@/utils/numbers';
 
 interface AyahRowProps {
@@ -30,25 +30,24 @@ interface AyahRowProps {
   onPlayPress?: () => void;
 }
 
-// Regex pattern to match Bismillah structure: بِسْمِ followed by 3 word groups (الله, الرحمن, الرحيم)
-// Pattern matches: بِسْمِ + [word1] + [word2] + [word3] + space, then captures the actual ayah content
 const BISMILLAH_REGEX = /^بِسْمِ(?:\s+[^\s]+){3}\s+(.+)/;
 
-// Strip Bismillah from ayah text if it's the first ayah (not for surah 1 and 9)
 function stripBismillah(text: string, surahNumber: number, ayahNumber: number): string {
-  // Only for ayah 1 of surahs 2-8 and 10-114
   if (ayahNumber !== 1 || surahNumber === 1 || surahNumber === 9) {
     return text;
   }
-  
-  // Use regex to match Bismillah structure and extract the actual ayah content
   const match = text.match(BISMILLAH_REGEX);
   if (match && match[1]) {
     return match[1].trim();
   }
-  
-  // Return original if pattern doesn't match (safety fallback)
   return text;
+}
+
+function arabicLineMetrics(fontSize: number) {
+  return {
+    lineHeight: Math.round(fontSize * 2.1),
+    paddingBottom: Math.round(fontSize * 0.15),
+  };
 }
 
 export const AyahRow = memo(function AyahRow({
@@ -63,12 +62,15 @@ export const AyahRow = memo(function AyahRow({
 }: AyahRowProps) {
   const { theme, state } = useApp();
   const { isBookmarked, addBookmark, removeBookmark, getBookmark } = useBookmarks();
-  
+
   const { dariFont, pashtoFont, arabicFontSize, translationFontSize, showTranslation } = state.preferences;
   const dariFontFamily = getDariFontFamily(dariFont);
   const pashtoFontFamily = getPashtoFontFamily(pashtoFont);
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
   const bookmarked = isBookmarked(surahNumber, ayah.number);
+  const arabicSize = Typography.arabic[arabicFontSize];
+  const translationSize = Typography.translation[translationFontSize];
+  const arabicMetrics = arabicLineMetrics(arabicSize);
 
   const handleBookmarkPress = () => {
     if (bookmarked) {
@@ -86,27 +88,27 @@ export const AyahRow = memo(function AyahRow({
   };
 
   const renderTranslation = (text: string | undefined, lang: 'dari' | 'pashto') => {
-    // Don't render if text is empty, undefined, or just whitespace
     if (!text || text.trim() === '') return null;
-    
+
     const fontFamily = lang === 'dari' ? dariFontFamily : pashtoFontFamily;
     return (
       <View style={styles.translationContainer}>
-        <CenteredText style={[styles.translationLabel, { color: theme.textSecondary, fontFamily }]}>
+        <QuranText style={[styles.translationLabel, { color: theme.textSecondary, fontFamily }]}>
           {lang === 'dari' ? 'فارسی (دری)' : 'پښتو'}
-        </CenteredText>
-        <CenteredText
+        </QuranText>
+        <QuranText
           style={[
             styles.translationText,
             {
               color: theme.translationText,
-              fontSize: Typography.translation[translationFontSize],
+              fontSize: translationSize,
               fontFamily,
+              lineHeight: Math.round(translationSize * 1.65),
             },
           ]}
         >
           {text}
-        </CenteredText>
+        </QuranText>
       </View>
     );
   };
@@ -124,14 +126,12 @@ export const AyahRow = memo(function AyahRow({
         },
       ]}
     >
-      {/* Ayah Number Badge */}
       <View style={[styles.ayahBadge, { backgroundColor: theme.ayahNumber }]}>
         <Text style={styles.ayahNumber}>{toArabicNumerals(ayah.number)}</Text>
       </View>
 
-      {/* Arabic Text - CENTERED (Bismillah stripped from ayah 1 since it's in header) */}
       <View style={styles.arabicContainer}>
-        <CenteredText
+        <QuranText
           allowFontScaling={false}
           textBreakStrategy="simple"
           lineBreakStrategyIOS="none"
@@ -140,17 +140,18 @@ export const AyahRow = memo(function AyahRow({
             {
               fontFamily: quranFontFamily,
               color: theme.arabicText,
-              fontSize: Typography.arabic[arabicFontSize],
+              fontSize: arabicSize,
+              lineHeight: arabicMetrics.lineHeight,
+              paddingBottom: arabicMetrics.paddingBottom,
             },
           ]}
         >
           {stripBismillah(stripQuranicMarks(ayah.text, state.preferences.quranFont), surahNumber, ayah.number)}
-        </CenteredText>
+        </QuranText>
       </View>
 
-      {/* Translations */}
       {showTranslation !== 'none' && (
-        <View style={styles.translationsWrapper}>
+        <View style={[styles.translationsWrapper, { borderTopColor: theme.divider }]}>
           {(showTranslation === 'dari' || showTranslation === 'both') &&
             renderTranslation(dariTranslation, 'dari')}
           {(showTranslation === 'pashto' || showTranslation === 'both') &&
@@ -158,7 +159,6 @@ export const AyahRow = memo(function AyahRow({
         </View>
       )}
 
-      {/* Action Bar */}
       <View style={[styles.actionBar, { borderTopColor: theme.divider }]}>
         <Pressable
           onPress={onPlayPress}
@@ -195,7 +195,6 @@ export const AyahRow = memo(function AyahRow({
         </View>
       </View>
 
-      {/* Sajda Indicator */}
       {ayah.sajda && (
         <View style={[styles.sajdaIndicator, { backgroundColor: theme.tint }]}>
           <Text style={styles.sajdaText}>سجده</Text>
@@ -216,7 +215,7 @@ const styles = StyleSheet.create({
   ayahBadge: {
     position: 'absolute',
     top: Spacing.sm,
-    left: Spacing.sm,
+    right: Spacing.sm,
     width: 40,
     height: 40,
     borderRadius: 20,
@@ -231,39 +230,44 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   arabicContainer: {
-    paddingTop: 50, // Extra top padding for ayah number
+    paddingTop: 50,
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
+    alignItems: 'center',
+    width: '100%',
   },
   arabicText: {
-    textAlign: 'center', // CENTERED for better display
-    lineHeight: 68, // Reduced from 85 - balanced spacing, prevents text cut-off
+    textAlign: 'center',
     writingDirection: 'rtl',
-    letterSpacing: 1, // Spacing for diacritics not to overlap
-    includeFontPadding: false, // Android: prevent extra padding
-    paddingBottom: 6, // Prevents text cut-off at bottom
+    width: '100%',
   },
   translationsWrapper: {
     paddingHorizontal: Spacing.lg,
     paddingBottom: Spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    marginTop: Spacing.xs,
+    paddingTop: Spacing.sm,
   },
   translationContainer: {
     marginTop: Spacing.sm,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.xs,
+    alignItems: 'center',
+    width: '100%',
   },
   translationLabel: {
     fontSize: Typography.ui.caption,
     fontWeight: '600',
-    textAlign: 'center', // CENTERED
     marginBottom: Spacing.xs,
+    textAlign: 'center',
+    width: '100%',
   },
   translationText: {
-    textAlign: 'center', // CENTERED
-    lineHeight: 28,
+    textAlign: 'center',
     writingDirection: 'rtl',
+    width: '100%',
   },
   actionBar: {
-    flexDirection: 'row-reverse', // RTL layout
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
@@ -278,27 +282,24 @@ const styles = StyleSheet.create({
   },
   metaInfo: {
     flex: 1,
-    alignItems: 'flex-start', // Changed for RTL
-    paddingLeft: Spacing.sm,
+    alignItems: 'center',
   },
   metaText: {
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
-    writingDirection: 'rtl',
     fontFamily: 'Vazirmatn',
+    textAlign: 'center',
   },
   sajdaIndicator: {
     position: 'absolute',
-    top: Spacing.sm,
-    right: Spacing.sm, // Moved to right for RTL
+    bottom: Spacing.sm,
+    left: Spacing.sm,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: Spacing.xs,
+    paddingVertical: 2,
     borderRadius: BorderRadius.sm,
   },
   sajdaText: {
     color: '#fff',
     fontSize: Typography.ui.caption,
-    fontWeight: '600',
-    fontFamily: 'Vazirmatn',
+    fontFamily: 'Vazirmatn-Bold',
   },
 });

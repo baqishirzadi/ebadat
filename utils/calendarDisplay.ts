@@ -1,5 +1,5 @@
 import { getKabulDateParts } from '@/utils/afghanistanCalendar';
-import type { AfghanSolarHijriDate } from '@/utils/afghanSolarHijri';
+import { formatAfghanSolarHijriDateWithPersianNumerals, type AfghanSolarHijriDate } from '@/utils/afghanSolarHijri';
 import type { HijriDate } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
 
@@ -43,7 +43,13 @@ function padFa2(num: number): string {
   return num < 10 ? `${toArabicNumerals(0)}${s}` : s;
 }
 
+/** Afghan Shamsi with burj name: "۱۵ سرطان ۱۴۰۵" */
 export function formatShamsiSlash(date: AfghanSolarHijriDate): string {
+  return formatAfghanSolarHijriDateWithPersianNumerals(date, 'dari');
+}
+
+/** Numeric Shamsi: "۱۴۰۵/۰۴/۱۵" (internal/debug) */
+export function formatShamsiNumeric(date: AfghanSolarHijriDate): string {
   return `${toArabicNumerals(date.year)}/${padFa2(date.month)}/${padFa2(date.day)}`;
 }
 

@@ -11,20 +11,27 @@ import { AFGHAN_SOLAR_MONTHS } from '@/utils/afghanSolarHijri';
 import { addDaysToKabulDate, getKabulDateParts, getKabulNoon } from '@/utils/afghanistanCalendar';
 import { getCalendarMonthGridMeta, type CalendarGridMode } from '@/utils/calendarMonthGrid';
 import { gregorianToAfghanSolarHijri } from '@/utils/afghanSolarHijri';
-import { gregorianToHijri, hijriToGregorian, HIJRI_MONTHS, SPECIAL_DAYS } from '@/utils/islamicCalendar';
+import { getDayEventTypeFromParts, type DayEventType } from '@/utils/calendarEvents';
+import { debugLog } from '@/utils/debugLog';
+import { gregorianToHijri, hijriToGregorian, HIJRI_MONTHS } from '@/utils/islamicCalendar';
 import { shamsiToGregorian } from '@/utils/afghanSolarHijri';
 import { toArabicNumerals } from '@/utils/numbers';
 
 const WEEKDAY_HEADERS = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
 const FRIDAY_COLUMN = 6;
-const EVENT_COLOR = '#DC2626';
 
 const GREG_MONTHS_FA = [
   'جنوری', 'فبروری', 'مارچ', 'اپریل', 'می', 'جون',
   'جولای', 'اگست', 'سپتمبر', 'اکتوبر', 'نومبر', 'دسمبر',
 ];
 
-type DayCellData = { day: number; secondary?: string; isToday: boolean; isEvent: boolean; gregorianDate: Date } | null;
+type DayCellData = {
+  day: number;
+  secondary?: string;
+  isToday: boolean;
+  eventType: DayEventType | null;
+  gregorianDate: Date;
+} | null;
 
 const CELL_CACHE = new Map<string, DayCellData[]>();
 
@@ -38,87 +45,134 @@ function monthStartGreg(mode: CalendarGridMode, year: number, month: number): Da
   if (mode === 'shamsi') return shamsiToGregorian(year, month, 1);
   return getKabulNoon(new Date(Date.UTC(year, month - 1, 1, 12, 0, 0)));
 }
+function appendDayCell(
+  items: DayCellData[],
+  mode: CalendarGridMode,
+  day: number,
+  startGreg: Date,
+  todayKey: { shamsi: string; hijri: string; greg: string },
+): void {
+  const greg = addDaysToKabulDate(startGreg, day - 1);
+  const hijri = gregorianToHijri(greg);
+  const shamsi = gregorianToAfghanSolarHijri(greg);
+  let isToday = false;
+  let secondary: string | undefined;
+  const eventType = getDayEventTypeFromParts(hijri.month, hijri.day, shamsi.month, shamsi.day);
 
-function isSpecialHijri(month: number, day: number): boolean {
-  return SPECIAL_DAYS.some((d) => d.month === month && d.day === day);
+  if (mode === 'shamsi') {
+    isToday = `${shamsi.year}-${shamsi.month}-${shamsi.day}` === todayKey.shamsi;
+    secondary = toArabicNumerals(hijri.day);
+  } else if (mode === 'qamari') {
+    isToday = `${hijri.year}-${hijri.month}-${hijri.day}` === todayKey.hijri;
+    secondary = toArabicNumerals(shamsi.day);
+  } else {
+    const parts = getKabulDateParts(greg);
+    isToday = parts.dateKey === todayKey.greg;
+    secondary = toArabicNumerals(hijri.day);
+  }
+
+  items.push({ day, secondary, isToday, eventType, gregorianDate: greg });
 }
 
-function buildCells(
+function scheduleBuildCells(
   mode: CalendarGridMode,
   year: number,
   month: number,
   todayKey: { shamsi: string; hijri: string; greg: string },
-): DayCellData[] {
+  onComplete: (cells: DayCellData[]) => void,
+): () => void {
   const cacheKey = `${mode}:${year}:${month}:${todayKey.shamsi}:${todayKey.hijri}:${todayKey.greg}`;
   const cached = CELL_CACHE.get(cacheKey);
-  if (cached) return cached;
+  if (cached) {
+    onComplete(cached);
+    return () => {};
+  }
 
   const meta = getCalendarMonthGridMeta(mode, year, month);
   const startGreg = monthStartGreg(mode, year, month);
   const items: DayCellData[] = [];
-
   for (let i = 0; i < meta.firstDayOffset; i++) items.push(null);
 
-  if (!startGreg) {
-    for (let day = 1; day <= meta.daysInMonth; day++) {
-      items.push({ day, isToday: false, isEvent: false, gregorianDate: getKabulNoon(new Date()) });
-    }
+  let cancelled = false;
+  let day = 1;
+  let timer: ReturnType<typeof setTimeout> | null = null;
+
+  const finish = () => {
     CELL_CACHE.set(cacheKey, items);
-    return items;
-  }
+    if (!cancelled) onComplete(items);
+  };
 
-  for (let day = 1; day <= meta.daysInMonth; day++) {
-    const greg = addDaysToKabulDate(startGreg, day - 1);
-    let isToday = false;
-    let secondary: string | undefined;
-    let isEvent = false;
+  const processChunk = () => {
+    if (cancelled) return;
 
-    if (mode === 'shamsi') {
-      const shamsi = gregorianToAfghanSolarHijri(greg);
-      isToday = `${shamsi.year}-${shamsi.month}-${shamsi.day}` === todayKey.shamsi;
-      const hijri = gregorianToHijri(greg);
-      secondary = toArabicNumerals(hijri.day);
-      isEvent = isSpecialHijri(hijri.month, hijri.day);
-    } else if (mode === 'qamari') {
-      const hijri = gregorianToHijri(greg);
-      isToday = `${hijri.year}-${hijri.month}-${hijri.day}` === todayKey.hijri;
-      const shamsi = gregorianToAfghanSolarHijri(greg);
-      secondary = toArabicNumerals(shamsi.day);
-      isEvent = isSpecialHijri(hijri.month, hijri.day);
-    } else {
-      const parts = getKabulDateParts(greg);
-      isToday = parts.dateKey === todayKey.greg;
-      const hijri = gregorianToHijri(greg);
-      secondary = toArabicNumerals(hijri.day);
-      isEvent = isSpecialHijri(hijri.month, hijri.day);
+    if (!startGreg) {
+      for (; day <= meta.daysInMonth; day++) {
+        items.push({ day, isToday: false, eventType: null, gregorianDate: getKabulNoon(new Date()) });
+      }
+      finish();
+      return;
     }
 
-    items.push({ day, secondary, isToday, isEvent, gregorianDate: greg });
-  }
+    const chunkEnd = Math.min(day + 6, meta.daysInMonth);
+    for (; day <= chunkEnd; day++) {
+      appendDayCell(items, mode, day, startGreg, todayKey);
+    }
 
-  CELL_CACHE.set(cacheKey, items);
-  return items;
+    if (day <= meta.daysInMonth) {
+      timer = setTimeout(processChunk, 0);
+    } else {
+      finish();
+    }
+  };
+
+  timer = setTimeout(processChunk, 0);
+
+  return () => {
+    cancelled = true;
+    if (timer) clearTimeout(timer);
+  };
 }
 
 interface GridDayCellProps {
   cell: DayCellData;
   column: number;
+  theme: ReturnType<typeof useApp>['theme'];
   onPress?: (date: Date) => void;
 }
 
-const GridDayCell = memo(function GridDayCell({ cell, column, onPress }: GridDayCellProps) {
-  const { theme } = useApp();
+function eventAccentColor(eventType: DayEventType, theme: { tint: string; bookmark: string }): string {
+  if (eventType === 'afghan') return theme.bookmark;
+  if (eventType === 'islamic' || eventType === 'both') return theme.tint;
+  return theme.tint;
+}
+
+function eventCellBackground(
+  eventType: DayEventType | null,
+  theme: { tint: string; bookmark: string },
+): string | undefined {
+  if (!eventType) return undefined;
+  if (eventType === 'afghan') return `${theme.bookmark}22`;
+  if (eventType === 'islamic' || eventType === 'both') return `${theme.tint}18`;
+  return `${theme.tint}18`;
+}
+
+const GridDayCell = memo(function GridDayCell({ cell, column, theme, onPress }: GridDayCellProps) {
   const isFriday = column === FRIDAY_COLUMN;
+
+  const eventBg = !cell?.isToday && cell?.eventType ? eventCellBackground(cell.eventType, theme) : undefined;
+  const eventColor = cell?.eventType ? eventAccentColor(cell.eventType, theme) : undefined;
 
   const primaryColor = cell?.isToday
     ? '#fff'
-    : isFriday
-      ? EVENT_COLOR
-      : theme.text;
+    : cell?.eventType && eventColor
+      ? eventColor
+      : isFriday
+        ? theme.textSecondary
+        : theme.text;
   const secondaryColor = cell?.isToday
     ? 'rgba(255,255,255,0.85)'
     : isFriday
-      ? EVENT_COLOR
+      ? theme.textSecondary
       : theme.textSecondary;
 
   return (
@@ -129,26 +183,26 @@ const GridDayCell = memo(function GridDayCell({ cell, column, onPress }: GridDay
           style={({ pressed }) => [
             styles.dayCell,
             cell.isToday && styles.todayCell,
-            cell.isToday && { backgroundColor: theme.tint },
-            !cell.isToday && isFriday && { backgroundColor: `${EVENT_COLOR}14` },
+            cell.isToday && { backgroundColor: theme.tint, borderColor: theme.bookmark },
+            !cell.isToday && eventBg && { backgroundColor: eventBg },
+            !cell.isToday && !eventBg && isFriday && { backgroundColor: `${theme.tint}10` },
             pressed && { opacity: 0.85 },
           ]}
         >
-          <RtlText align="center" style={[styles.dayPrimary, { color: primaryColor }]}>
+          <RtlText
+            align="center"
+            style={[
+              styles.dayPrimary,
+              { color: primaryColor },
+              cell.eventType && !cell.isToday && styles.eventDayPrimary,
+            ]}
+          >
             {toArabicNumerals(cell.day)}
           </RtlText>
           {cell.secondary ? (
             <RtlText align="center" style={[styles.daySecondary, { color: secondaryColor }]}>
               {cell.secondary}
             </RtlText>
-          ) : null}
-          {cell.isEvent ? (
-            <View
-              style={[
-                styles.eventDot,
-                { backgroundColor: cell.isToday ? '#fff' : EVENT_COLOR },
-              ]}
-            />
           ) : null}
         </Pressable>
       ) : null}
@@ -167,6 +221,8 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
   const [deferredMode, setDeferredMode] = useState(mode);
   const [isBuilding, setIsBuilding] = useState(false);
   const [monthOffset, setMonthOffset] = useState(0);
+  const [cells, setCells] = useState<DayCellData[]>([]);
+  const [gridMeta, setGridMeta] = useState({ year: 0, month: 0, monthTitle: '' });
 
   useEffect(() => {
     if (mode === deferredMode) return;
@@ -179,7 +235,16 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
     return () => task.cancel();
   }, [mode, deferredMode]);
 
-  const { year, month, monthTitle, cells } = useMemo(() => {
+  const todayKey = useMemo(
+    () => ({
+      shamsi: `${truth.shamsi.year}-${truth.shamsi.month}-${truth.shamsi.day}`,
+      hijri: `${truth.hijri.year}-${truth.hijri.month}-${truth.hijri.day}`,
+      greg: getKabulDateParts(truth.gregorianDate).dateKey,
+    }),
+    [truth],
+  );
+
+  useEffect(() => {
     let baseYear = truth.hijri.year;
     let baseMonth = truth.hijri.month;
     if (deferredMode === 'shamsi') {
@@ -200,19 +265,39 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
           ? `${AFGHAN_SOLAR_MONTHS[m - 1]?.dari ?? ''} ${toArabicNumerals(y)}`
           : `${GREG_MONTHS_FA[m - 1]} ${toArabicNumerals(y)}`;
 
-    const todayKey = {
-      shamsi: `${truth.shamsi.year}-${truth.shamsi.month}-${truth.shamsi.day}`,
-      hijri: `${truth.hijri.year}-${truth.hijri.month}-${truth.hijri.day}`,
-      greg: getKabulDateParts(truth.gregorianDate).dateKey,
-    };
+    setGridMeta({ year: y, month: m, monthTitle: title });
+    setIsBuilding(true);
 
-    return {
-      year: y,
-      month: m,
-      monthTitle: title,
-      cells: buildCells(deferredMode, y, m, todayKey),
+    let cancelled = false;
+    const buildStart = Date.now();
+    const cancelBuild = scheduleBuildCells(deferredMode, y, m, todayKey, (built) => {
+      // #region agent log
+      debugLog({
+        location: 'MonthGrid.tsx:buildCells',
+        message: 'grid built',
+        data: {
+          mode: deferredMode,
+          year: y,
+          month: m,
+          cellCount: built.length,
+          buildMs: Date.now() - buildStart,
+        },
+        hypothesisId: 'B',
+      });
+      // #endregion
+      if (!cancelled) {
+        setCells(built);
+        setIsBuilding(false);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      cancelBuild();
     };
-  }, [deferredMode, monthOffset, truth]);
+  }, [deferredMode, monthOffset, todayKey, truth.gregorianDate, truth.hijri.month, truth.hijri.year, truth.shamsi.month, truth.shamsi.year]);
+
+  const { year, month, monthTitle } = gridMeta;
 
   return (
     <RtlView style={[styles.wrapper, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -236,17 +321,6 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
         </Pressable>
       </RtlView>
 
-      <RtlView style={styles.legendRow}>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: EVENT_COLOR }]} />
-          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>مناسبت اسلامی</RtlText>
-        </View>
-        <View style={styles.legendItem}>
-          <View style={[styles.legendDot, { backgroundColor: theme.tint }]} />
-          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>امروز</RtlText>
-        </View>
-      </RtlView>
-
       <RtlView style={styles.weekHeader}>
         {WEEKDAY_HEADERS.map((d, i) => (
           <RtlText
@@ -254,7 +328,7 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
             align="center"
             style={[
               styles.weekday,
-              { color: i === FRIDAY_COLUMN ? EVENT_COLOR : theme.textSecondary },
+              { color: i === FRIDAY_COLUMN ? theme.textSecondary : theme.textSecondary },
             ]}
           >
             {d}
@@ -273,11 +347,27 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
               key={`cell-${deferredMode}-${year}-${month}-${index}`}
               cell={cell}
               column={index % 7}
+              theme={theme}
               onPress={onDayPress}
             />
           ))}
         </RtlView>
       )}
+
+      <RtlView style={styles.legendRow}>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendSwatch, { backgroundColor: `${theme.tint}18`, borderColor: theme.tint }]} />
+          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>مناسبت اسلامی</RtlText>
+        </View>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendSwatch, { backgroundColor: `${theme.bookmark}22`, borderColor: theme.bookmark }]} />
+          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>تعطیل ملی</RtlText>
+        </View>
+        <View style={styles.legendItem}>
+          <View style={[styles.legendSwatch, { backgroundColor: theme.tint, borderColor: theme.bookmark, borderWidth: 2 }]} />
+          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>امروز</RtlText>
+        </View>
+      </RtlView>
 
       {monthOffset !== 0 ? (
         <Pressable onPress={() => setMonthOffset(0)} style={styles.todayLink}>
@@ -318,18 +408,24 @@ const styles = StyleSheet.create({
   },
   legendRow: {
     flexDirection: 'row',
-    gap: Spacing.md,
-    marginBottom: Spacing.sm,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
+    paddingTop: Spacing.xs,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(0,0,0,0.08)',
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-  legendDot: {
-    width: 8,
-    height: 8,
+  legendSwatch: {
+    width: 14,
+    height: 14,
     borderRadius: 4,
+    borderWidth: 1,
   },
   legendText: {
     fontFamily: 'Vazirmatn',
@@ -360,25 +456,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 2,
+    position: 'relative',
   },
   todayCell: {
     borderWidth: 2,
-    borderColor: '#D4AF37',
   },
   dayPrimary: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 15,
   },
+  eventDayPrimary: {
+    fontFamily: 'Vazirmatn-Bold',
+  },
   daySecondary: {
     fontFamily: 'Vazirmatn',
     fontSize: 10,
     marginTop: 1,
-  },
-  eventDot: {
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    marginTop: 2,
   },
   loading: {
     minHeight: 200,

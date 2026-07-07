@@ -28,7 +28,10 @@ import { StartupPhaseProvider, useStartupPhase } from '@/context/StartupPhaseCon
 import { StatsProvider } from '@/context/StatsContext';
 import { getKabulNoon } from '@/utils/afghanistanCalendar';
 import { getCalendarMonthGridMeta } from '@/utils/calendarMonthGrid';
+import { warmCalendarEventsCache } from '@/utils/calendarEvents';
 import { getCalendarTruth } from '@/utils/calendarTruth';
+import '@/utils/cityDatabase';
+import { preloadPopularSurahs } from '@/hooks/useSurahData';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
 
@@ -273,8 +276,17 @@ function RootLayoutNav() {
 
     void runDeferredStartup();
 
+    const preloadTask = InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        if (!cancelled) {
+          preloadPopularSurahs();
+        }
+      }, 800);
+    });
+
     return () => {
       cancelled = true;
+      preloadTask.cancel();
     };
   }, [isInteractiveReady, showSpiritualSplash]);
 
@@ -287,6 +299,7 @@ function RootLayoutNav() {
       getCalendarMonthGridMeta('shamsi', today.shamsi.year, today.shamsi.month);
       const greg = today.gregorianDate;
       getCalendarMonthGridMeta('gregorian', greg.getUTCFullYear(), greg.getUTCMonth() + 1);
+      warmCalendarEventsCache(today.gregorianDate);
     });
 
     return () => {

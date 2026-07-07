@@ -5,12 +5,13 @@
  */
 
 import React, { memo } from 'react';
-import { View, StyleSheet, Pressable, Text } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
-import { TranslationLanguage } from '@/types/quran';
+import { RtlView } from '@/components/ui/RtlView';
+import { TranslationToggle } from './TranslationToggle';
 import { toArabicNumerals } from '@/utils/numbers';
 
 interface SurahHeaderProps {
@@ -31,19 +32,10 @@ export const SurahHeader = memo(function SurahHeader({
   showBismillah = true,
   onPlayPress,
 }: SurahHeaderProps) {
-  const { theme, state, setTranslationLanguage } = useApp();
-  const currentTranslation = state.preferences.showTranslation;
-  
-  // Translation toggle options - Dari, Pashto, Both, or Arabic only
-  const translationOptions: { key: TranslationLanguage; label: string }[] = [
-    { key: 'dari', label: 'فارسی (دری)' },
-    { key: 'pashto', label: 'پښتو' },
-    { key: 'both', label: 'هردو' },
-    { key: 'none', label: 'بدون ترجمه' },
-  ];
+  const { theme, state } = useApp();
 
   return (
-    <View style={styles.wrapper}>
+    <RtlView style={styles.wrapper}>
       {/* Main Header Card */}
       <View style={[styles.container, { backgroundColor: theme.surahHeader }]}>
         {/* Decorative Corner Elements */}
@@ -62,14 +54,16 @@ export const SurahHeader = memo(function SurahHeader({
         {/* Arabic Name + Play Button - same row for alignment */}
         <View style={styles.nameRow}>
           <View style={styles.arabicNameWrapper}>
-            <Text
-              style={[styles.arabicName, { color: theme.surahHeaderText }]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.65}
-            >
-              سُورَةُ {name}
-            </Text>
+            <View style={styles.arabicIsolate}>
+              <CenteredText
+                style={[styles.arabicName, { color: theme.surahHeaderText }]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.65}
+              >
+                سُورَةُ {name}
+              </CenteredText>
+            </View>
           </View>
           {onPlayPress && (
             <Pressable
@@ -117,36 +111,8 @@ export const SurahHeader = memo(function SurahHeader({
         </View>
       )}
       
-      {/* Translation Toggle Bar */}
-      <View style={[styles.translationToggle, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-        <Text style={[styles.toggleLabel, { color: theme.textSecondary }]}>ترجمه:</Text>
-        <View style={styles.toggleButtons}>
-          {translationOptions.map((option) => (
-            <Pressable
-              key={option.key}
-              onPress={() => setTranslationLanguage(option.key)}
-              style={[
-                styles.toggleButton,
-                {
-                  backgroundColor: currentTranslation === option.key ? theme.tint : theme.backgroundSecondary,
-                },
-              ]}
-            >
-              <Text
-                style={[
-                  styles.toggleButtonText,
-                  {
-                    color: currentTranslation === option.key ? '#fff' : theme.text,
-                  },
-                ]}
-              >
-                {option.label}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-    </View>
+      <TranslationToggle />
+    </RtlView>
   );
 });
 
@@ -230,11 +196,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  arabicIsolate: {
+    width: '100%',
+    direction: 'ltr',
+    alignItems: 'center',
+  },
   arabicName: {
     fontSize: Typography.ui.display,
     fontWeight: '700',
     fontFamily: 'ScheherazadeNew',
     textAlign: 'center',
+    writingDirection: 'rtl',
   },
   metaContainer: {
     flexDirection: 'row',
@@ -278,36 +250,5 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     includeFontPadding: false,
     paddingBottom: 8, // Reduced padding - prevents cut-off without taking too much space
-  },
-  // Translation toggle styles
-  translationToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.sm,
-    padding: Spacing.sm,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    gap: Spacing.sm,
-  },
-  toggleLabel: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    marginRight: Spacing.xs,
-  },
-  toggleButtons: {
-    flexDirection: 'row',
-    gap: Spacing.xs,
-  },
-  toggleButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-    borderRadius: BorderRadius.md,
-  },
-  toggleButtonText: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    fontWeight: '500',
   },
 });

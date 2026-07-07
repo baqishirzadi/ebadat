@@ -3,7 +3,7 @@
  * Full-screen modal for selecting cities with categories, search, and GPS
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -22,7 +22,14 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { CITIES, CATEGORIES, getCity, searchCities, CityKey } from '@/utils/cities';
+import { getCity, CityKey } from '@/utils/cities';
+import {
+  getAllCategories,
+  getCitiesForRegion,
+  loadAllCityRegions,
+  loadCityRegion,
+  searchWorldCities,
+} from '@/utils/cityDatabase';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
@@ -35,6 +42,7 @@ interface CitySelectorModalProps {
   allowClose?: boolean;
   title?: string;
   testID?: string;
+  initialCategory?: string;
 }
 
 export function CitySelectorModal({
@@ -45,12 +53,55 @@ export function CitySelectorModal({
   allowClose = true,
   title = 'انتخاب شهر',
   testID,
+  initialCategory = 'afghanistan',
 }: CitySelectorModalProps) {
   const { theme } = useApp();
   const insets = useSafeAreaInsets();
-  const [selectedCategory, setSelectedCategory] = useState<string>('afghanistan');
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [searchQuery, setSearchQuery] = useState('');
   const [gpsLoading, setGpsLoading] = useState(false);
+  const [regionReady, setRegionReady] = useState(false);
+  const categories = useMemo(() => getAllCategories(), []);
+
+  useEffect(() => {
+    if (!visible) {
+      setRegionReady(false);
+      return;
+    }
+
+    let cancelled = false;
+    const load = async () => {
+      await Promise.all([
+        loadCityRegion('iran'),
+        loadCityRegion('uk'),
+        loadCityRegion('france'),
+        loadCityRegion('netherlands'),
+        loadCityRegion('turkey'),
+      ]);
+      if (!cancelled) setRegionReady(true);
+    };
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [visible]);
+
+  useEffect(() => {
+    if (!visible || selectedCategory === 'afghanistan') return;
+    void loadCityRegion(selectedCategory);
+  }, [visible, selectedCategory]);
+
+  useEffect(() => {
+    if (!visible || !searchQuery.trim()) return;
+    void loadAllCityRegions();
+  }, [visible, searchQuery]);
+
+  useEffect(() => {
+    if (visible) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [visible, initialCategory]);
 
   const handleGpsPress = useCallback(async () => {
     setGpsLoading(true);
@@ -89,14 +140,10 @@ export function CitySelectorModal({
 
   const categoryCities = useMemo(() => {
     if (searchQuery.trim()) {
-      const results = searchCities(searchQuery);
-      return results.map(r => ({ key: r.key, city: r.city }));
+      return searchWorldCities(searchQuery);
     }
-    return Object.entries(CITIES[selectedCategory]?.cities || {}).map(([key, city]) => ({
-      key: `${selectedCategory}_${key}`,
-      city,
-    }));
-  }, [selectedCategory, searchQuery]);
+    return getCitiesForRegion(selectedCategory);
+  }, [selectedCategory, searchQuery, regionReady]);
 
   const renderCity = useCallback(
     ({ item }: { item: { key: string; city: any } }) => {
@@ -116,7 +163,7 @@ export function CitySelectorModal({
             pressed && styles.itemPressed,
           ]}
         >
-          <RtlText style={[styles.cityItemText, { color: isSelected ? '#fff' : theme.text }]}>
+          <RtlText align="center" style={[styles.cityItemText, { color: isSelected ? '#fff' : theme.text }]}>
             {item.city.name}
           </RtlText>
           {isSelected && <MaterialIcons name="check-circle" size={20} color="#fff" />}
@@ -187,7 +234,7 @@ export function CitySelectorModal({
               style={styles.categoryTabs}
               contentContainerStyle={styles.categoryTabsContent}
             >
-              {CATEGORIES.map((category) => (
+              {categories.map((category) => (
                 <Pressable
                   key={category.id}
                   onPress={() => setSelectedCategory(category.id)}
@@ -319,7 +366,7 @@ const styles = StyleSheet.create({
   cityItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: Spacing.md,
     marginBottom: Spacing.sm,
     borderRadius: BorderRadius.md,
@@ -331,6 +378,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     fontWeight: '500',
     fontFamily: 'Vazirmatn',
+    textAlign: 'center',
   },
   itemPressed: {
     opacity: 0.8,

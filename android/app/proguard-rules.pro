@@ -11,4 +11,23 @@
 -keep class com.swmansion.reanimated.** { *; }
 -keep class com.facebook.react.turbomodule.** { *; }
 
+# React Native / Hermes
+-keep class com.facebook.hermes.unicode.** { *; }
+-keep class com.facebook.jni.** { *; }
+-keep class com.facebook.react.** { *; }
+-dontwarn com.facebook.react.**
+
+# Expo
+-keep class expo.modules.** { *; }
+-dontwarn expo.modules.**
+
+# react-native-track-player
+-keep class com.doublesymmetry.trackplayer.** { *; }
+-dontwarn com.doublesymmetry.trackplayer.**
+
+# Keep native methods
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
 # Add any project specific keep options here:

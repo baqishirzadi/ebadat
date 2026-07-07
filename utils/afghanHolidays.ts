@@ -22,10 +22,24 @@ export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
   },
   {
     shamsiMonth: 1,
-    shamsiDay: 2,
-    nameDari: 'روز بزرگداشت مولانا جلال‌الدین بلخی',
-    namePashto: 'د مولانا جلال الدین بلخي لمانځه',
-    descriptionDari: 'روز فرهنگی و ادبی',
+    shamsiDay: 24,
+    nameDari: 'آغاز دروس معارف',
+    namePashto: 'د معارف درسونو پیل',
+    descriptionDari: 'آغاز سال تحصیلی در افغانستان',
+  },
+  {
+    shamsiMonth: 3,
+    shamsiDay: 14,
+    nameDari: 'روز مادر',
+    namePashto: 'د مور ورځ',
+    descriptionDari: 'روز بزرگداشت مادران',
+  },
+  {
+    shamsiMonth: 4,
+    shamsiDay: 26,
+    nameDari: 'روز مبارزه با مواد مخدر',
+    namePashto: 'د مخدره توکو پر ضد ورځ',
+    descriptionDari: 'روز جهانی و ملی مبارزه با مواد مخدر',
   },
   {
     shamsiMonth: 2,
@@ -33,6 +47,13 @@ export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
     nameDari: 'روز بزرگداشت خیام',
     namePashto: 'د خیام لمانځه',
     descriptionDari: 'روز فرهنگی',
+  },
+  {
+    shamsiMonth: 1,
+    shamsiDay: 2,
+    nameDari: 'روز بزرگداشت مولانا جلال‌الدین بلخی',
+    namePashto: 'د مولانا جلال الدین بلخي لمانځه',
+    descriptionDari: 'روز فرهنگی و ادبی',
   },
   {
     shamsiMonth: 5,

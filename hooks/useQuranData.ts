@@ -228,6 +228,8 @@ export function useQuranData() {
 /**
  * Convert new SurahData format to legacy Surah format for backward compatibility
  */
+const legacySurahCache = new Map<number, Surah>();
+
 function toLegacyAyah(ayah: SurahData['ayahs'][number]): Ayah {
   return {
     number: ayah.number,
@@ -241,7 +243,10 @@ function toLegacyAyah(ayah: SurahData['ayahs'][number]): Ayah {
 }
 
 function convertToLegacyFormat(surahData: SurahData): Surah {
-  return {
+  const cached = legacySurahCache.get(surahData.number);
+  if (cached) return cached;
+
+  const surah: Surah = {
     number: surahData.number,
     name: surahData.name,
     englishName: '', // Not available
@@ -263,4 +268,7 @@ function convertToLegacyFormat(surahData: SurahData): Surah {
       })),
     },
   };
+
+  legacySurahCache.set(surahData.number, surah);
+  return surah;
 }

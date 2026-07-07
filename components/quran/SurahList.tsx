@@ -13,9 +13,11 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View, I18nManager, Platform } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View, I18nManager, Platform } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import CenteredText from '@/components/CenteredText';
+import { RtlView } from '@/components/ui/RtlView';
 import { SearchButton } from './SearchButton';
 import { JuzList } from './JuzList';
 
@@ -58,16 +60,16 @@ const SurahItem = React.memo(function SurahItem({
 
       {/* Surah name - center (flex: 1, text centered) */}
       <View style={styles.infoContainer}>
-        <Text style={[styles.arabicName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
+        <CenteredText style={[styles.arabicName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
           سوره {surah.arabic}
-        </Text>
-        <Text
+        </CenteredText>
+        <CenteredText
           style={[styles.dariName, { color: theme.textSecondary }]}
           numberOfLines={2}
           ellipsizeMode="tail"
         >
           {surah.dari} ({surah.meaning})
-        </Text>
+        </CenteredText>
       </View>
 
       {/* Number badge - left */}
@@ -75,7 +77,7 @@ const SurahItem = React.memo(function SurahItem({
         <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
         <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
         <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <Text style={styles.numberText}>{toArabicNumerals(surah.number)}</Text>
+          <CenteredText style={styles.numberText}>{toArabicNumerals(surah.number)}</CenteredText>
         </View>
         <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
         <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
@@ -91,13 +93,13 @@ const SurahItem = React.memo(function SurahItem({
             size={12}
             color={theme.textSecondary}
           />
-          <Text style={[styles.metaText, { color: theme.textSecondary }]}>
+          <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
             {surah.revelationType}
-          </Text>
+          </CenteredText>
         </View>
-        <Text style={[styles.ayahCount, { color: theme.textSecondary }]}>
+        <CenteredText style={[styles.ayahCount, { color: theme.textSecondary }]}>
           {toArabicNumerals(surah.ayahCount)} آیات
-        </Text>
+        </CenteredText>
       </View>
 
       {/* Continue Reading Badge - absolute */}
@@ -206,10 +208,10 @@ export function SurahList() {
       style={styles.headerWrapper}
     >
       <View style={[styles.header, { paddingTop: headerPaddingTop }]}>
-        <Text style={styles.headerTitle}>القرآن الکریم</Text>
-        <Text style={styles.headerSubtitle}>
+        <CenteredText style={styles.headerTitle}>القرآن الکریم</CenteredText>
+        <CenteredText style={styles.headerSubtitle}>
           {toArabicNumerals(114)} سوره • {toArabicNumerals(6236)} آیات
-        </Text>
+        </CenteredText>
       </View>
 
       {position.surahNumber > 0 && (
@@ -224,12 +226,12 @@ export function SurahList() {
           <View style={styles.continueContent}>
             <MaterialIcons name="bookmark" size={24} color={theme.playing} />
             <View style={styles.continueInfo}>
-              <Text style={[styles.continueTitle, { color: theme.text }]}>
+              <CenteredText style={[styles.continueTitle, { color: theme.text }]}>
                 ادامه تلاوت
-              </Text>
-              <Text style={[styles.continueDetails, { color: theme.textSecondary }]}>
+              </CenteredText>
+              <CenteredText style={[styles.continueDetails, { color: theme.textSecondary }]}>
                 سوره {toArabicNumerals(position.surahNumber)} • آیه {toArabicNumerals(position.ayahNumber)}
-              </Text>
+              </CenteredText>
             </View>
           </View>
           <MaterialIcons name="play-circle-filled" size={40} color={theme.playing} />
@@ -244,9 +246,9 @@ export function SurahList() {
             { backgroundColor: browseMode === 'surah' ? theme.tint : 'transparent' },
           ]}
         >
-          <Text style={[styles.modeButtonText, { color: browseMode === 'surah' ? '#fff' : theme.textSecondary }]}>
+          <CenteredText style={[styles.modeButtonText, { color: browseMode === 'surah' ? '#fff' : theme.textSecondary }]}>
             سوره
-          </Text>
+          </CenteredText>
         </Pressable>
         <Pressable
           onPress={() => handleBrowseModeChange('juz')}
@@ -255,9 +257,9 @@ export function SurahList() {
             { backgroundColor: browseMode === 'juz' ? theme.tint : 'transparent' },
           ]}
         >
-          <Text style={[styles.modeButtonText, { color: browseMode === 'juz' ? '#fff' : theme.textSecondary }]}>
+          <CenteredText style={[styles.modeButtonText, { color: browseMode === 'juz' ? '#fff' : theme.textSecondary }]}>
             جزء
-          </Text>
+          </CenteredText>
         </Pressable>
       </View>
 
@@ -571,14 +573,16 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.title,
     fontWeight: '600',
     fontFamily: 'ScheherazadeNew',
-    textAlign: 'center', // Center-aligned text
+    textAlign: 'center',
+    writingDirection: 'rtl',
     width: '100%',
   },
   dariName: {
     fontSize: Typography.ui.caption,
     marginTop: 2,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center', // Center-aligned text
+    textAlign: 'center',
+    writingDirection: 'rtl',
     width: '100%',
   },
   metaContainer: {

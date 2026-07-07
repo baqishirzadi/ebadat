@@ -34,7 +34,7 @@ export const CITIES: Record<string, CityCategory> = {
       herat: { lat: 34.3482, lon: 62.1997, name: 'هرات', nameEn: 'Herat', timezone: 'Asia/Kabul', altitude: 920, isImportant: true },
       kandahar: { lat: 31.6295, lon: 65.7372, name: 'قندهار', nameEn: 'Kandahar', timezone: 'Asia/Kabul', altitude: 1005, isImportant: true },
       mazar: { lat: 36.7081, lon: 67.1101, name: 'مزار شریف', nameEn: 'Mazar-i-Sharif', timezone: 'Asia/Kabul', altitude: 380, isImportant: true },
-      jalalabad: { lat: 34.4415, lon: 70.4361, name: 'جلال‌آباد', nameEn: 'Jalalabad', timezone: 'Asia/Kabul', altitude: 575 },
+      jalalabad: { lat: 34.4415, lon: 70.4361, name: 'جلال‌آباد', nameEn: 'Jalalabad', timezone: 'Asia/Kabul', altitude: 575, isImportant: true },
       kunduz: { lat: 36.7281, lon: 68.8577, name: 'قندوز', nameEn: 'Kunduz', timezone: 'Asia/Kabul', altitude: 395 },
       ghazni: { lat: 33.5469, lon: 68.4269, name: 'غزنی', nameEn: 'Ghazni', timezone: 'Asia/Kabul', altitude: 2219 },
       bamiyan: { lat: 34.8213, lon: 67.8213, name: 'بامیان', nameEn: 'Bamiyan', timezone: 'Asia/Kabul', altitude: 2550 },
@@ -207,10 +207,9 @@ export const LEGACY_CITY_KEY_ALIASES: Record<string, string> = {
   europe_berlin: 'germany_berlin',
 };
 
-// Get city by full key (resolves legacy aliases)
+// Get city by full key (resolves legacy aliases + world database)
 export function getCity(fullKey: string): (City & { category: string; key: string }) | undefined {
-  const resolvedKey = LEGACY_CITY_KEY_ALIASES[fullKey] ?? fullKey;
-  return ALL_CITIES[resolvedKey];
+  return resolveCityKey(fullKey);
 }
 
 /** Normalize short/legacy keys (e.g. "kabul") to full keys ("afghanistan_kabul"). */
@@ -258,6 +257,18 @@ export function findNearestCity(lat: number, lon: number): NearestCityResult {
 /** @deprecated Use findNearestCity() which returns { key, distanceKm } */
 export function findNearestCityLegacy(lat: number, lon: number): string | null {
   return findNearestCity(lat, lon).key;
+}
+
+type WorldCityResolver = (key: string) => (City & { category: string; key: string }) | undefined;
+let worldCityResolver: WorldCityResolver | null = null;
+
+export function registerWorldCityResolver(resolver: WorldCityResolver): void {
+  worldCityResolver = resolver;
+}
+
+export function resolveCityKey(fullKey: string): (City & { category: string; key: string }) | undefined {
+  const resolvedKey = LEGACY_CITY_KEY_ALIASES[fullKey] ?? fullKey;
+  return ALL_CITIES[resolvedKey] ?? worldCityResolver?.(resolvedKey);
 }
 
 // Calculate distance between two coordinates (Haversine formula)
@@ -326,6 +337,18 @@ function getBestCitySearchScore(normalizedQuery: string, city: City): number {
 
 // Search cities by name with normalized matching and ranked results
 export function searchCities(query: string): Array<{ key: string; city: City & { category: string } }> {
+  if (worldCityResolver) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { searchWorldCities, isRegionLoaded } = require('./cityDatabase') as typeof import('./cityDatabase');
+      if (isRegionLoaded('iran') || isRegionLoaded('europe')) {
+        return searchWorldCities(query);
+      }
+    } catch {
+      // fall through to bundled search
+    }
+  }
+
   const normalizedQuery = normalizeSearchText(query);
   if (!normalizedQuery) return [];
 

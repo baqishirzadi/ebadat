@@ -27,7 +27,7 @@ config.transformer = {
   getTransformOptions: async () => ({
     transform: {
       experimentalImportSupport: false,
-      inlineRequires: false, // Changed to false for better compatibility
+      inlineRequires: true,
     },
   }),
 };

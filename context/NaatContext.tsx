@@ -276,13 +276,15 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const lastPlaybackErrorAt = useRef<number>(0);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (options?: { skipVerify?: boolean }) => {
     setLoading(true);
     setSyncError(null);
 
     try {
       await ensureNaatDirectory();
-      await verifyDownloads();
+      if (!options?.skipVerify) {
+        await verifyDownloads();
+      }
 
       const [cachedCatalog, localMeta] = await Promise.all([
         loadCatalog(),
@@ -365,7 +367,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
     const task = InteractionManager.runAfterInteractions(() => {
       if (!cancelled) {
-        refresh().catch(() => setLoading(false));
+        refresh({ skipVerify: true }).catch(() => setLoading(false));
       }
     });
 

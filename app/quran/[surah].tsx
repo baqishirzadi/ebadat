@@ -4,7 +4,7 @@
  * No English - All Arabic/Dari
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, StatusBar, Pressable, Alert } from 'react-native';
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -61,7 +61,7 @@ export default function QuranReaderScreen() {
         : normalizedJumpParam === 'search_exact'
           ? 'search_exact'
           : 'default';
-  const surah = getSurah(surahNumber);
+  const surah = useMemo(() => getSurah(surahNumber), [getSurah, surahNumber]);
   const surahNameData = getSurahName(surahNumber);
 
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);

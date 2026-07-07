@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -17,7 +17,8 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
-import { CATEGORIES, CITIES, CityKey, getCity } from '@/utils/cities';
+import { CityKey, getCity } from '@/utils/cities';
+import { getAllCategories, getCitiesForRegion, loadCityRegion } from '@/utils/cityDatabase';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 import {
   markFirstOpenAdhanSetupDone,
@@ -29,11 +30,14 @@ const FEATURED_CATEGORIES = [
   'afghanistan',
   'iran',
   'turkey',
-  'europe',
+  'uk',
+  'france',
+  'netherlands',
   'germany',
-  'usa',
-  'canada',
-  'australia',
+  'europe',
+  'pakistan',
+  'americas',
+  'oceania',
 ] as const;
 
 export default function OnboardingLocationScreen() {
@@ -43,26 +47,44 @@ export default function OnboardingLocationScreen() {
   const [busy, setBusy] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('afghanistan');
   const [pendingCityKey, setPendingCityKey] = useState<CityKey | null>(null);
+  const [regionReady, setRegionReady] = useState(false);
 
   const categoryOptions = useMemo(
-    () => CATEGORIES.filter((c) => FEATURED_CATEGORIES.includes(c.id as typeof FEATURED_CATEGORIES[number])),
+    () => getAllCategories().filter((c) => FEATURED_CATEGORIES.includes(c.id as typeof FEATURED_CATEGORIES[number])),
     [],
   );
 
-  const citiesInCategory = useMemo(() => {
-    const cat = CATEGORIES.find((c) => c.id === selectedCategory);
-    if (!cat) return [];
-    const entries = Object.entries(CITIES[selectedCategory]?.cities || {});
-    const sorted = entries.sort(([, a], [, b]) => {
-      if (a.isImportant && !b.isImportant) return -1;
-      if (!a.isImportant && b.isImportant) return 1;
-      return a.name.localeCompare(b.name, 'fa');
-    });
-    return sorted.map(([key, city]) => ({
-      key: `${selectedCategory}_${key}` as CityKey,
-      city,
-    }));
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      await Promise.all([
+        loadCityRegion('iran'),
+        loadCityRegion('uk'),
+        loadCityRegion('france'),
+        loadCityRegion('netherlands'),
+        loadCityRegion('turkey'),
+      ]);
+      if (!cancelled) setRegionReady(true);
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (selectedCategory === 'afghanistan') return;
+    void loadCityRegion(selectedCategory);
   }, [selectedCategory]);
+
+  const citiesInCategory = useMemo(() => {
+    const cities = getCitiesForRegion(selectedCategory);
+    return cities.sort((a, b) => {
+      if (a.city.isImportant && !b.city.isImportant) return -1;
+      if (!a.city.isImportant && b.city.isImportant) return 1;
+      return a.city.name.localeCompare(b.city.name, 'fa');
+    });
+  }, [selectedCategory, regionReady]);
 
   const finalizeCity = useCallback(
     async (cityKey: CityKey) => {
@@ -154,11 +176,7 @@ export default function OnboardingLocationScreen() {
           <RtlText align="center" style={[styles.sectionTitle, { color: theme.text }]}>
             کشور / منطقه
           </RtlText>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.countryRow}
-          >
+          <RtlView style={styles.countryGrid}>
             {categoryOptions.map((cat) => {
               const active = selectedCategory === cat.id;
               return (
@@ -182,7 +200,7 @@ export default function OnboardingLocationScreen() {
                 </Pressable>
               );
             })}
-          </ScrollView>
+          </RtlView>
 
           {selectedPreview ? (
             <RtlView style={[styles.selectedCard, { backgroundColor: `${theme.tint}15`, borderColor: theme.tint }]}>
@@ -215,11 +233,6 @@ export default function OnboardingLocationScreen() {
                   <RtlText align="center" style={[styles.cityName, { color: active ? '#fff' : theme.text }]}>
                     {city.name}
                   </RtlText>
-                  {city.isImportant ? (
-                    <RtlText align="center" style={[styles.cityHint, { color: active ? 'rgba(255,255,255,0.85)' : theme.textSecondary }]}>
-                      پرکاربرد
-                    </RtlText>
-                  ) : null}
                 </Pressable>
               );
             })}
@@ -285,16 +298,20 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: Spacing.xs,
   },
-  countryRow: {
+  countryGrid: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
     gap: Spacing.xs,
-    paddingVertical: Spacing.xs,
   },
   countryChip: {
     borderWidth: 1,
     borderRadius: BorderRadius.full,
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
-    minWidth: 88,
+    width: '31%',
+    minWidth: 100,
     alignItems: 'center',
   },
   countryText: {
@@ -315,7 +332,7 @@ const styles = StyleSheet.create({
   selectedText: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
-    flex: 1,
+    textAlign: 'center',
   },
   cityGrid: {
     width: '100%',
@@ -336,10 +353,6 @@ const styles = StyleSheet.create({
   cityName: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
-  },
-  cityHint: {
-    fontFamily: 'Vazirmatn',
-    fontSize: 10,
   },
   searchAllBtn: {
     width: '100%',

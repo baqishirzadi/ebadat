@@ -1,7 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { RtlText } from '@/components/ui/RtlText';
@@ -9,12 +9,13 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
-import { getPrayerGradientColors, getPrayerProgress } from '@/utils/prayerDisplay';
+import { getPrayerProgress } from '@/utils/prayerDisplay';
 import { getNextPrayer, PrayerTimes } from '@/utils/prayerTimes';
 import { toArabicNumeralsString } from '@/utils/numbers';
 
-const RING_SIZE = 72;
-const STROKE = 4;
+const THEME_GRADIENT: [string, string, string] = ['#0F1F14', '#1a4d3e', '#2d6a4f'];
+const RING_SIZE = 128;
+const STROKE = 5;
 
 function formatCountdown(ms: number): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -29,42 +30,57 @@ function formatCountdown(ms: number): string {
   return toArabicNumeralsString(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
 }
 
-function ProgressRing({ progress, color }: { progress: number; color: string }) {
-  const radius = (RING_SIZE - STROKE) / 2;
+function ProgressRingWithCountdown({
+  progress,
+  ringColor,
+  countdown,
+}: {
+  progress: number;
+  ringColor: string;
+  countdown: string;
+}) {
+  const radius = (RING_SIZE - STROKE * 2) / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference * (1 - progress);
 
   return (
-    <Svg width={RING_SIZE} height={RING_SIZE}>
-      <Circle
-        cx={RING_SIZE / 2}
-        cy={RING_SIZE / 2}
-        r={radius}
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth={STROKE}
-        fill="none"
-      />
-      <Circle
-        cx={RING_SIZE / 2}
-        cy={RING_SIZE / 2}
-        r={radius}
-        stroke={color}
-        strokeWidth={STROKE}
-        fill="none"
-        strokeDasharray={`${circumference} ${circumference}`}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        rotation="-90"
-        origin={`${RING_SIZE / 2}, ${RING_SIZE / 2}`}
-      />
-    </Svg>
+    <View style={styles.ringContainer}>
+      <Svg width={RING_SIZE} height={RING_SIZE}>
+        <Circle
+          cx={RING_SIZE / 2}
+          cy={RING_SIZE / 2}
+          r={radius}
+          stroke="rgba(255,255,255,0.2)"
+          strokeWidth={STROKE}
+          fill="none"
+        />
+        <Circle
+          cx={RING_SIZE / 2}
+          cy={RING_SIZE / 2}
+          r={radius}
+          stroke={ringColor}
+          strokeWidth={STROKE}
+          fill="none"
+          strokeDasharray={`${circumference} ${circumference}`}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          rotation="-90"
+          origin={`${RING_SIZE / 2}, ${RING_SIZE / 2}`}
+        />
+      </Svg>
+      <View style={styles.ringCenter} pointerEvents="none">
+        <Text style={styles.countdownInside}>{countdown}</Text>
+      </View>
+    </View>
   );
 }
 
 const CountdownBlock = memo(function CountdownBlock({
   prayerTimes,
+  ringColor,
 }: {
   prayerTimes: PrayerTimes;
+  ringColor: string;
 }) {
   const [now, setNow] = useState(() => new Date());
 
@@ -80,10 +96,11 @@ const CountdownBlock = memo(function CountdownBlock({
   const progress = getPrayerProgress(prayerTimes, now);
 
   return (
-    <View style={styles.countdownRow}>
-      <ProgressRing progress={progress} color="#D4AF37" />
-      <RtlText align="center" style={styles.countdown}>{formatCountdown(remaining)}</RtlText>
-    </View>
+    <ProgressRingWithCountdown
+      progress={progress}
+      ringColor={ringColor}
+      countdown={formatCountdown(remaining)}
+    />
   );
 });
 
@@ -98,7 +115,7 @@ function NextPrayerCardInner({ prayerTimes }: NextPrayerCardProps) {
   if (!prayerTimes) {
     return (
       <View style={[styles.cardShell, styles.shadow]}>
-        <LinearGradient colors={['#0F1F14', '#1a4d3e']} style={styles.card}>
+        <LinearGradient colors={THEME_GRADIENT} style={styles.card}>
           <RtlText align="center" style={styles.empty}>اوقات نماز در دسترس نیست</RtlText>
         </LinearGradient>
       </View>
@@ -107,15 +124,16 @@ function NextPrayerCardInner({ prayerTimes }: NextPrayerCardProps) {
 
   const next = getNextPrayer(prayerTimes);
   const adhanOn = state.adhanPreferences.masterEnabled;
-  const gradient = getPrayerGradientColors(prayerTimes);
 
   return (
     <View style={[styles.cardShell, styles.shadow]}>
-      <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.card}>
+      <LinearGradient colors={THEME_GRADIENT} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.card}>
         <RtlText align="center" style={styles.label}>نماز بعدی</RtlText>
         <RtlText align="center" style={styles.prayerName}>{next.nameDari}</RtlText>
-        <RtlText align="center" style={styles.time}>{formatPrayerTime12h(next.time)}</RtlText>
-        <CountdownBlock prayerTimes={prayerTimes} />
+        <RtlText align="center" style={[styles.time, { color: theme.bookmark }]}>
+          {formatPrayerTime12h(next.time)}
+        </RtlText>
+        <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} />
         <RtlText align="center" style={styles.hint}>
           {adhanOn ? 'اذان فعال است' : 'اذان غیرفعال است'}
         </RtlText>
@@ -143,7 +161,7 @@ const styles = StyleSheet.create({
   card: {
     padding: Spacing.lg,
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: Spacing.sm,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     borderColor: 'rgba(212,175,55,0.35)',
@@ -160,20 +178,28 @@ const styles = StyleSheet.create({
   },
   time: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: 36,
-    color: '#D4AF37',
+    fontSize: 32,
+    marginBottom: Spacing.xs,
   },
-  countdownRow: {
-    flexDirection: 'row',
+  ringContainer: {
+    width: RING_SIZE,
+    height: RING_SIZE,
     alignItems: 'center',
-    gap: Spacing.md,
-    marginTop: Spacing.xs,
+    justifyContent: 'center',
+    marginVertical: Spacing.sm,
   },
-  countdown: {
+  ringCenter: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  countdownInside: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.subtitle,
+    fontSize: 20,
     color: '#fff',
     fontVariant: ['tabular-nums'],
+    textAlign: 'center',
+    paddingHorizontal: 4,
   },
   hint: {
     fontFamily: 'Vazirmatn',

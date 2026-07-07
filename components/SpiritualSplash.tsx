@@ -112,7 +112,7 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
           runOnJS(onComplete)();
         }
       });
-    }, 2500);
+    }, 1200);
 
     return () => clearTimeout(timeout);
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -4,7 +4,7 @@
  */
 
 import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator, ViewToken } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator, ViewToken } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp, useReadingPosition } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
@@ -14,6 +14,7 @@ import { SurahHeader } from './SurahHeader';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { Surah, Ayah } from '@/types/quran';
 import { stripQuranicMarks } from '@/utils/quranText';
+import { QuranText } from './QuranText';
 import CenteredText from '@/components/CenteredText';
 import { toArabicNumerals } from '@/utils/numbers';
 
@@ -42,10 +43,10 @@ const FOLLOW_MAX_ATTEMPTS = 5;
 const FOLLOW_RETRY_DELAYS_MS = [80, 160, 260, 420, 620];
 const FOLLOW_VISIBLE_STABLE_TICKS = 2;
 const STABLE_LIST_RENDER_CONFIG = {
-  initialNumToRender: 12,
-  maxToRenderPerBatch: 8,
-  windowSize: 9,
-  removeClippedSubviews: false,
+  initialNumToRender: 8,
+  maxToRenderPerBatch: 6,
+  windowSize: 7,
+  removeClippedSubviews: true,
 } as const;
 
 // Regex pattern to match Bismillah structure: بِسْمِ followed by 3 word groups (الله, الرحمن, الرحيم)
@@ -942,7 +943,7 @@ export const MushafView = React.memo(function MushafView({
                     pressed && { opacity: 0.8 },
                   ]}
                 >
-                  <CenteredText
+                  <QuranText
                     allowFontScaling={false}
                     textBreakStrategy="simple"
                     lineBreakStrategyIOS="none"
@@ -952,14 +953,14 @@ export const MushafView = React.memo(function MushafView({
                         fontFamily: quranFontFamily,
                         color: theme.arabicText,
                         fontSize: Typography.arabic[arabicFontSize],
+                        lineHeight: Math.round(Typography.arabic[arabicFontSize] * 2.1),
+                        paddingBottom: Math.round(Typography.arabic[arabicFontSize] * 0.15),
                       },
                     ]}
                   >
                     {stripBismillah(stripQuranicMarks(ayah.text, state.preferences.quranFont), surahNumber, ayah.number)}
-                    <CenteredText style={[styles.ayahEndMark, { color: theme.ayahNumber }]}>
-                      {' '}﴿{toArabicNumerals(ayah.number)}﴾{' '}
-                    </CenteredText>
-                  </CenteredText>
+                    {' '}﴿{toArabicNumerals(ayah.number)}﴾
+                  </QuranText>
                 </Pressable>
               ))}
             </View>
@@ -1124,19 +1125,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   mushafAyah: {
-    flexDirection: 'row-reverse', // RTL: text flows from right
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
+    width: '100%',
+    alignItems: 'center',
     paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.sm,
   },
   mushafAyahText: {
-    textAlign: 'center', // CENTERED
-    lineHeight: 62, // Reduced from 75 - balanced spacing, prevents text cut-off
+    textAlign: 'center',
     writingDirection: 'rtl',
-    letterSpacing: 1, // Spacing for diacritics not to overlap
-    includeFontPadding: false, // Android: prevent extra padding
-    paddingBottom: 5, // Prevents text cut-off at bottom
+    width: '100%',
   },
   ayahEndMark: {
     fontSize: 16,

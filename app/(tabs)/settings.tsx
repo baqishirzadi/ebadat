@@ -42,6 +42,8 @@ export default function SettingsScreen() {
     setDariFont,
     setPashtoFont,
     setTranslationLanguage,
+    setArabicFontSize,
+    setTranslationFontSize,
   } = useApp();
   const { state: prayerState, updateSettings } = usePrayer();
   const router = useRouter();
@@ -67,6 +69,13 @@ export default function SettingsScreen() {
   const pashtoFonts: { id: PashtoFontFamily; name: string; sample: string }[] = [
     { id: 'amiri', name: PashtoFonts.amiri.displayNamePashto, sample: 'د خدای په نوم' },
     { id: 'nastaliq', name: PashtoFonts.nastaliq.displayNamePashto, sample: 'د خدای په نوم' },
+  ];
+
+  const fontSizes: { id: 'small' | 'medium' | 'large' | 'xlarge'; name: string }[] = [
+    { id: 'small', name: 'کوچک' },
+    { id: 'medium', name: 'متوسط' },
+    { id: 'large', name: 'بزرگ' },
+    { id: 'xlarge', name: 'خیلی بزرگ' },
   ];
 
   const calculationMethods = Object.keys(CalculationMethods).map(key => ({
@@ -274,6 +283,88 @@ export default function SettingsScreen() {
                 <Text style={[styles.optionText, { color: theme.text }]}>{f.name}</Text>
               </View>
               {state.preferences.pashtoFont === f.id && (
+                <MaterialIcons name="check" size={20} color={theme.tint} />
+              )}
+            </Pressable>
+          ))}
+        </View>
+      )}
+
+      {/* Arabic font size */}
+      <Pressable
+        onPress={() => toggleSection('arabicSize')}
+        style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+      >
+        <MaterialIcons name="format-size" size={24} color={theme.tint} />
+        <View style={styles.sectionInfo}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>اندازه متن عربی قرآن</Text>
+          <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+            {fontSizes.find((s) => s.id === state.preferences.arabicFontSize)?.name}
+          </Text>
+        </View>
+        <MaterialIcons
+          name={expandedSection === 'arabicSize' ? 'expand-less' : 'expand-more'}
+          size={24}
+          color={theme.icon}
+        />
+      </Pressable>
+      {expandedSection === 'arabicSize' && (
+        <View style={[styles.optionsList, { backgroundColor: theme.card }]}>
+          {fontSizes.map((s) => (
+            <Pressable
+              key={s.id}
+              onPress={() => setArabicFontSize(s.id)}
+              style={[
+                styles.optionItem,
+                { borderBottomColor: theme.divider },
+                state.preferences.arabicFontSize === s.id && { backgroundColor: theme.backgroundSecondary },
+              ]}
+            >
+              <Text style={[styles.optionText, { color: state.preferences.arabicFontSize === s.id ? theme.tint : theme.text }]}>
+                {s.name} ({Typography.arabic[s.id]}px)
+              </Text>
+              {state.preferences.arabicFontSize === s.id && (
+                <MaterialIcons name="check" size={20} color={theme.tint} />
+              )}
+            </Pressable>
+          ))}
+        </View>
+      )}
+
+      {/* Translation font size */}
+      <Pressable
+        onPress={() => toggleSection('translationSize')}
+        style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+      >
+        <MaterialIcons name="text-fields" size={24} color={theme.tint} />
+        <View style={styles.sectionInfo}>
+          <Text style={[styles.sectionTitle, { color: theme.text }]}>اندازه متن ترجمه</Text>
+          <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+            {fontSizes.find((s) => s.id === state.preferences.translationFontSize)?.name}
+          </Text>
+        </View>
+        <MaterialIcons
+          name={expandedSection === 'translationSize' ? 'expand-less' : 'expand-more'}
+          size={24}
+          color={theme.icon}
+        />
+      </Pressable>
+      {expandedSection === 'translationSize' && (
+        <View style={[styles.optionsList, { backgroundColor: theme.card }]}>
+          {fontSizes.map((s) => (
+            <Pressable
+              key={s.id}
+              onPress={() => setTranslationFontSize(s.id)}
+              style={[
+                styles.optionItem,
+                { borderBottomColor: theme.divider },
+                state.preferences.translationFontSize === s.id && { backgroundColor: theme.backgroundSecondary },
+              ]}
+            >
+              <Text style={[styles.optionText, { color: state.preferences.translationFontSize === s.id ? theme.tint : theme.text }]}>
+                {s.name} ({Typography.translation[s.id]}px)
+              </Text>
+              {state.preferences.translationFontSize === s.id && (
                 <MaterialIcons name="check" size={20} color={theme.tint} />
               )}
             </Pressable>
