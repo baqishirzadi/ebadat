@@ -1,7 +1,7 @@
 {
   "name": "ebadatapp",
   "main": "AppEntry.js",
-  "version": "1.0.7",
+  "version": "1.0.0",
   "scripts": {
     "start": "expo start",
     "start:clear": "expo start --clear",
@@ -19,6 +19,7 @@
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
     "build:apk": "cd android && ./gradlew assembleRelease",
+    "build:aab": "cd android && ./gradlew bundleRelease",
     "ios": "expo run:ios",
     "ios:sim": "expo run:ios --device \"iPhone 17 Pro Max\"",
     "ios:sim:no-cache": "expo run:ios --device \"iPhone 17 Pro Max\" --no-build-cache",
