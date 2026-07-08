@@ -1,28 +1,32 @@
 /**
  * GPS Location Utilities
- * Handles GPS-based city detection and nearest city finding
+ * Handles GPS-based city detection with reverse geocode + nearest city matching
  */
 
 import * as Location from 'expo-location';
-import { getCity, CityKey } from './cities';
-import { findNearestWorldCity, loadAllCityRegions, NEAREST_WORLD_CITY_MAX_KM } from './cityDatabase';
 import { Platform } from 'react-native';
+
+import { getCity, type CityKey } from './cities';
+import {
+  findNearestWorldCityWithFallback,
+  findProvinceByAdmin,
+  loadCriticalCityRegions,
+  NEAREST_WORLD_CITY_FALLBACK_MAX_KM,
+  NEAREST_WORLD_CITY_MAX_KM,
+} from './cityDatabase';
 
 export interface LocationResult {
   success: boolean;
   cityKey: CityKey | null;
   cityName?: string;
+  citySubtitle?: string;
   coordinates?: { lat: number; lon: number };
+  warning?: boolean;
   error?: string;
 }
 
-/**
- * Request location permission and get current location
- */
 export async function requestLocationPermission(): Promise<boolean> {
-  if (Platform.OS === 'web') {
-    return false; // Web doesn't support location in the same way
-  }
+  if (Platform.OS === 'web') return false;
 
   try {
     const { status } = await Location.requestForegroundPermissionsAsync();
@@ -33,12 +37,93 @@ export async function requestLocationPermission(): Promise<boolean> {
   }
 }
 
-/**
- * Get current location and find nearest city
- */
+export async function isLocationEnabled(): Promise<boolean> {
+  if (Platform.OS === 'web') {
+    return 'geolocation' in navigator;
+  }
+
+  try {
+    return await Location.hasServicesEnabledAsync();
+  } catch {
+    return false;
+  }
+}
+
+async function resolveCityFromCoords(
+  lat: number,
+  lon: number,
+): Promise<LocationResult> {
+  await loadCriticalCityRegions();
+
+  let countryCode: string | undefined;
+  let regionName: string | undefined;
+
+  try {
+    const places = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lon });
+    const place = places[0];
+    if (place) {
+      countryCode = place.isoCountryCode ?? undefined;
+      regionName = place.region ?? place.subregion ?? undefined;
+    }
+  } catch {
+    // reverse geocode optional — fall back to nearest city
+  }
+
+  if (countryCode && regionName) {
+    const provinceMatch = findProvinceByAdmin(countryCode, regionName);
+    if (provinceMatch) {
+      const city = getCity(provinceMatch.key);
+      return {
+        success: true,
+        cityKey: provinceMatch.key as CityKey,
+        cityName: city?.name ?? provinceMatch.city.name,
+        citySubtitle: provinceMatch.city.countryName,
+        coordinates: { lat, lon },
+      };
+    }
+  }
+
+  const nearest = findNearestWorldCityWithFallback(lat, lon, countryCode);
+
+  if (!nearest.key) {
+    return {
+      success: false,
+      cityKey: null,
+      error: nearest.distanceKm > NEAREST_WORLD_CITY_FALLBACK_MAX_KM
+        ? `هیچ شهر یا استانی در شعاع ${NEAREST_WORLD_CITY_FALLBACK_MAX_KM} کیلومتری یافت نشد`
+        : 'شهر یا استانی یافت نشد',
+    };
+  }
+
+  const city = getCity(nearest.key);
+  return {
+    success: true,
+    cityKey: nearest.key as CityKey,
+    cityName: city?.name ?? 'نامشخص',
+    citySubtitle: city?.admin1 ?? city?.country,
+    coordinates: { lat, lon },
+    warning: nearest.warning,
+    error: nearest.warning
+      ? `شهر/استان نزدیک در فاصله ${Math.round(nearest.distanceKm)} کیلومتر یافت شد؛ در صورت نیاز دستی تغییر دهید`
+      : undefined,
+  };
+}
+
 export async function detectLocationAndFindCity(): Promise<LocationResult> {
   try {
-    // Request permission
+    if (Platform.OS === 'web') {
+      return { success: false, cityKey: null, error: 'GPS در وب پشتیبانی نمی‌شود' };
+    }
+
+    const servicesOn = await isLocationEnabled();
+    if (!servicesOn) {
+      return {
+        success: false,
+        cityKey: null,
+        error: 'لطفاً موقعیت‌یاب (GPS) دستگاه را روشن کنید',
+      };
+    }
+
     const hasPermission = await requestLocationPermission();
     if (!hasPermission) {
       return {
@@ -48,37 +133,11 @@ export async function detectLocationAndFindCity(): Promise<LocationResult> {
       };
     }
 
-    // Get current position
     const location = await Location.getCurrentPositionAsync({
       accuracy: Location.Accuracy.Balanced,
     });
 
-    const lat = location.coords.latitude;
-    const lon = location.coords.longitude;
-
-    await loadAllCityRegions();
-
-    // Find nearest city within supported radius
-    const { key: nearestCityKey, distanceKm } = findNearestWorldCity(lat, lon);
-    
-    if (!nearestCityKey) {
-      return {
-        success: false,
-        cityKey: null,
-        error: distanceKm > NEAREST_WORLD_CITY_MAX_KM
-          ? `هیچ شهری در شعاع ${NEAREST_WORLD_CITY_MAX_KM} کیلومتری یافت نشد`
-          : 'شهری یافت نشد',
-      };
-    }
-
-    const city = getCity(nearestCityKey);
-    
-    return {
-      success: true,
-      cityKey: nearestCityKey,
-      cityName: city?.name || 'نامشخص',
-      coordinates: { lat, lon },
-    };
+    return resolveCityFromCoords(location.coords.latitude, location.coords.longitude);
   } catch (error) {
     console.error('Error detecting location:', error);
     return {
@@ -89,18 +148,4 @@ export async function detectLocationAndFindCity(): Promise<LocationResult> {
   }
 }
 
-/**
- * Check if location services are enabled
- */
-export async function isLocationEnabled(): Promise<boolean> {
-  if (Platform.OS === 'web') {
-    return 'geolocation' in navigator;
-  }
-
-  try {
-    const enabled = await Location.hasServicesEnabledAsync();
-    return enabled;
-  } catch {
-    return false;
-  }
-}
+export { NEAREST_WORLD_CITY_MAX_KM, NEAREST_WORLD_CITY_FALLBACK_MAX_KM };

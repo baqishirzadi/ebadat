@@ -4,10 +4,10 @@ import { useEffect, useRef } from 'react';
 import { useStartupBootstrap } from '@/context/StartupBootstrapContext';
 
 /**
- * Redirects first-install users to /onboarding before tabs render.
+ * Redirects first-install users to onboarding before tabs render.
  */
 export function OnboardingStartupRedirect() {
-  const { needsOnboarding, checked } = useStartupBootstrap();
+  const { needsOnboarding, hasCity, checked } = useStartupBootstrap();
   const router = useRouter();
   const segments = useSegments();
   const redirectedRef = useRef(false);
@@ -19,9 +19,13 @@ export function OnboardingStartupRedirect() {
     const inOnboarding = path.startsWith('onboarding');
     if (!inOnboarding) {
       redirectedRef.current = true;
-      router.replace('/onboarding' as never);
+      if (hasCity) {
+        router.replace('/onboarding/notifications' as never);
+      } else {
+        router.replace('/onboarding' as never);
+      }
     }
-  }, [checked, needsOnboarding, router, segments]);
+  }, [checked, needsOnboarding, hasCity, router, segments]);
 
   return null;
 }

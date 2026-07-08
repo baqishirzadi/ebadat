@@ -9,11 +9,13 @@ import { Spacing, Typography } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { openBatteryOptimizationSettings } from '@/utils/adhanHealth';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
+import { markFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
 
 export default function OnboardingBatteryScreen() {
   const { requestPrayerSchedule } = usePrayer();
 
-  const finish = () => {
+  const finish = async () => {
+    await markFirstOpenAdhanSetupDone();
     router.replace('/(tabs)');
     requestPrayerSchedule('onboarding-complete').catch(() => {});
     ensurePushRegistrationOnFirstOpen().catch(() => {});

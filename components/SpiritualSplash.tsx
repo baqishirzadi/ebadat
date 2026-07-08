@@ -4,7 +4,7 @@
  * With elegant golden frame design
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { View, StyleSheet, Text, Dimensions, Linking, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
@@ -78,6 +78,7 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   const insets = useSafeAreaInsets();
   const [phrase] = useState(() => PHRASES[Math.floor(Math.random() * PHRASES.length)]);
   const [isExiting, setIsExiting] = useState(false);
+  const completedRef = useRef(false);
   
   const opacity = useSharedValue(1); // Start visible so no blank screen when native splash hides (EAS/physical devices)
   const frameScale = useSharedValue(0.9);
@@ -87,6 +88,12 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   const translationOpacity = useSharedValue(1);
   const creditOpacity = useSharedValue(1);
   const glowOpacity = useSharedValue(0);
+
+  const finish = useCallback(() => {
+    if (completedRef.current) return;
+    completedRef.current = true;
+    onComplete();
+  }, [onComplete]);
 
   useEffect(() => {
     // Animate in sequence (container stays visible from frame 0 for EAS/physical devices)
@@ -105,16 +112,26 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
     creditOpacity.value = withDelay(1100, withTiming(1, { duration: 600 }));
 
     // Fade out and complete
-    const timeout = setTimeout(() => {
+    const exitTimeout = setTimeout(() => {
       setIsExiting(true);
       opacity.value = withTiming(0, { duration: 250 }, (finished) => {
         if (finished) {
-          runOnJS(onComplete)();
+          runOnJS(finish)();
         }
       });
     }, 1200);
 
-    return () => clearTimeout(timeout);
+    // Reanimated callbacks can occasionally fail on some devices during startup.
+    // This guarantees the splash cannot trap the app forever.
+    const hardTimeout = setTimeout(() => {
+      setIsExiting(true);
+      finish();
+    }, 2200);
+
+    return () => {
+      clearTimeout(exitTimeout);
+      clearTimeout(hardTimeout);
+    };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

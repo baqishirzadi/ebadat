@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { RtlText } from '@/components/ui/RtlText';
@@ -21,6 +21,7 @@ interface OnboardingShellProps {
   onSecondary?: () => void;
   showBack?: boolean;
   onBack?: () => void;
+  scrollable?: boolean;
 }
 
 export function OnboardingShell({
@@ -36,9 +37,12 @@ export function OnboardingShell({
   onSecondary,
   showBack = false,
   onBack,
+  scrollable = true,
 }: OnboardingShellProps) {
   const { theme } = useApp();
   const insets = useSafeAreaInsets();
+
+  const footerPaddingBottom = Math.max(insets.bottom, Spacing.lg);
 
   return (
     <RtlView style={[styles.container, { backgroundColor: theme.background, paddingTop: insets.top + Spacing.md }]}>
@@ -76,9 +80,20 @@ export function OnboardingShell({
         ) : null}
       </RtlView>
 
-      <RtlView style={styles.body}>{children}</RtlView>
+      {scrollable ? (
+        <ScrollView
+          style={styles.body}
+          contentContainerStyle={[styles.bodyContent, { paddingBottom: Spacing.md }]}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {children}
+        </ScrollView>
+      ) : (
+        <RtlView style={styles.body}>{children}</RtlView>
+      )}
 
-      <RtlView style={[styles.footer, { paddingBottom: Math.max(insets.bottom, Spacing.lg) }]}>
+      <RtlView style={[styles.footer, { paddingBottom: footerPaddingBottom }]}>
         <Pressable
           onPress={onPrimary}
           disabled={primaryDisabled}
@@ -142,6 +157,9 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
+  },
+  bodyContent: {
+    flexGrow: 1,
   },
   footer: {
     gap: Spacing.sm,

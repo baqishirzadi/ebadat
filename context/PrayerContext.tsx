@@ -36,6 +36,8 @@ import {
 } from '@/utils/calendarNotifications';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import { getCity, isAfghanCityKey, normalizeCityKey } from '@/utils/cities';
+import { preloadRegionForCityKey } from '@/utils/cityDatabase';
+import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 import { HijriDate } from '@/utils/islamicCalendar';
 import {
   AFGHAN_CITIES,
@@ -966,6 +968,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       const resolvedCityKey = normalizedSettingsCityKey || normalizedGlobalCityKey;
 
       if (resolvedCityKey) {
+        await preloadRegionForCityKey(resolvedCityKey);
         const selected = getCity(resolvedCityKey);
         if (selected) {
           location = {
@@ -1389,79 +1392,38 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     dispatch({ type: 'SET_ERROR', payload: null });
 
     try {
-      if (Platform.OS === 'web') {
-        if (!navigator.geolocation) {
-          dispatch({ type: 'SET_ERROR', payload: 'مرورگر شما از موقعیت پشتیبانی نمی‌کند' });
-          dispatch({ type: 'SET_LOADING', payload: false });
-          return;
-        }
-
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const location: LocationType = {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              altitude: position.coords.altitude || 0,
-            };
-            dispatch({ type: 'SET_LOCATION', payload: { location, name: 'موقعیت فعلی' } });
-            await AsyncStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify({ location, name: 'موقعیت فعلی' }));
-            dispatch({ type: 'SET_LOADING', payload: false });
-          },
-          () => {
-            dispatch({ type: 'SET_ERROR', payload: 'اجازه دسترسی به موقعیت داده نشد' });
-            dispatch({ type: 'SET_LOADING', payload: false });
-          }
-        );
+      const result = await detectLocationAndFindCity();
+      if (!result.success || !result.cityKey) {
+        dispatch({ type: 'SET_ERROR', payload: result.error || 'خطا در تشخیص موقعیت' });
         return;
       }
 
-      const hasPermission = await requestLocationPermission();
-      if (!hasPermission) {
-        dispatch({ type: 'SET_ERROR', payload: 'اجازه دسترسی به موقعیت داده نشد' });
-        dispatch({ type: 'SET_LOADING', payload: false });
+      await preloadRegionForCityKey(result.cityKey);
+      const city = getCity(result.cityKey);
+      if (!city) {
+        dispatch({ type: 'SET_ERROR', payload: 'شهر یا استان یافت شد ولی در پایگاه داده ثبت نشده است' });
         return;
       }
-
-      if (!Location) {
-        dispatch({ type: 'SET_ERROR', payload: 'ماژول موقعیت در دسترس نیست' });
-        dispatch({ type: 'SET_LOADING', payload: false });
-        return;
-      }
-
-      const position = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
-      });
 
       const location: LocationType = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        altitude: position.coords.altitude || 0,
+        latitude: city.lat,
+        longitude: city.lon,
+        altitude: city.altitude || 0,
+        timezone: city.timezone,
       };
 
-      let name = 'موقعیت فعلی';
-      try {
-        const [geocode] = await Location.reverseGeocodeAsync({
-          latitude: location.latitude,
-          longitude: location.longitude,
-        });
-        if (geocode) {
-          name = geocode.city || geocode.subregion || geocode.region || name;
-        }
-      } catch {
-        // Use default name
-      }
+      await setCustomLocation(location, city.name, city.key);
+      await loadPrayerTimesFor(location, city.key, { ...state.settings, selectedCity: city.key });
 
-      dispatch({ type: 'SET_LOCATION', payload: { location, name } });
-      await AsyncStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify({ location, name }));
+      const qibla = getDisplayQiblaBearing(location, city.key);
+      dispatch({ type: 'SET_QIBLA', payload: qibla });
     } catch (error) {
       console.error('Location detection error:', error);
       dispatch({ type: 'SET_ERROR', payload: 'خطا در تشخیص موقعیت' });
     } finally {
-      if (Platform.OS !== 'web') {
-        dispatch({ type: 'SET_LOADING', payload: false });
-      }
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [requestLocationPermission]);
+  }, [setCustomLocation, state.settings]);
 
   const isValidDate = useCallback((date: Date): boolean => {
     return date instanceof Date && !isNaN(date.getTime()) && date.getTime() > 0;

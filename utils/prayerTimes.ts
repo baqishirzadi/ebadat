@@ -12,7 +12,6 @@ import {
   SunnahTimes,
 } from 'adhan';
 
-import { isAfghanCityKey } from '@/utils/cities';
 
 // Calculation method parameters
 export interface CalculationParams {
@@ -496,8 +495,6 @@ export function getTimeUntilPrayer(prayerTime: Date, now: Date = new Date()): {
 }
 
 // Calculate Qibla direction (bearing FROM user TO Kaaba)
-export const AFGHAN_QIBLA_OFFSET_DEG = 32;
-
 export function calculateQibla(location: Location): number {
   const KAABA_LAT = 21.4225;
   const KAABA_LNG = 39.8262;
@@ -519,13 +516,10 @@ export function calculateQibla(location: Location): number {
   return qibla;
 }
 
-/** Display bearing with Afghanistan local calibration (+32° for mosque compass alignment). */
+/** Display bearing using the standard Kaaba bearing calculation. */
 export function getDisplayQiblaBearing(location: Location, cityKey?: string | null): number {
-  const base = calculateQibla(location);
-  if (isAfghanCityKey(cityKey)) {
-    return (base + AFGHAN_QIBLA_OFFSET_DEG) % 360;
-  }
-  return base;
+  void cityKey;
+  return calculateQibla(location);
 }
 
 // Distance to Kaaba in kilometers

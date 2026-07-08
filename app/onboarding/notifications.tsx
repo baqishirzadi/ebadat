@@ -12,7 +12,7 @@ import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { getNextPrayer, type PrayerTimes } from '@/utils/prayerTimes';
-import { requestAdhanNotificationPermission } from '@/utils/prayerOnboarding';
+import { requestAdhanNotificationPermission, markFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 
 const PRAYER_PREVIEW = [
@@ -36,7 +36,10 @@ export default function OnboardingNotificationsScreen() {
     return getNextPrayer(prayerTimes).name;
   }, [prayerTimes]);
 
-  const goNext = () => {
+  const goNext = async () => {
+    if (Platform.OS !== 'android') {
+      await markFirstOpenAdhanSetupDone();
+    }
     requestPrayerSchedule('onboarding-complete').catch(() => {});
     ensurePushRegistrationOnFirstOpen().catch(() => {});
     if (Platform.OS === 'android') {
@@ -60,14 +63,7 @@ export default function OnboardingNotificationsScreen() {
     if (prayerTimes?.[key]) {
       return formatPrayerTime12h(prayerTimes[key]);
     }
-    const fallback: Record<string, Date> = {
-      fajr: new Date(2026, 0, 1, 5, 3),
-      dhuhr: new Date(2026, 0, 1, 12, 18),
-      asr: new Date(2026, 0, 1, 16, 59),
-      maghrib: new Date(2026, 0, 1, 19, 13),
-      isha: new Date(2026, 0, 1, 20, 53),
-    };
-    return formatPrayerTime12h(fallback[key] ?? new Date());
+    return '—';
   };
 
   return (

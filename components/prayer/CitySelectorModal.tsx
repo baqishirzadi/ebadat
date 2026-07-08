@@ -1,6 +1,6 @@
 /**
  * City Selector Modal
- * Full-screen modal for selecting cities with categories, search, and GPS
+ * Provinces/states + major cities with search and GPS
  */
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
@@ -10,12 +10,12 @@ import {
   Modal,
   Pressable,
   TextInput,
-  FlatList,
+  SectionList,
   ScrollView,
   ActivityIndicator,
   Alert,
+  KeyboardAvoidingView,
   Platform,
-  StatusBar as RNStatusBar,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -25,8 +25,11 @@ import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { getCity, CityKey } from '@/utils/cities';
 import {
   getAllCategories,
-  getCitiesForRegion,
+  getCityDisplaySubtitle,
+  getMajorCitiesForRegion,
+  getProvincesForRegion,
   loadAllCityRegions,
+  loadCriticalCityRegions,
   loadCityRegion,
   searchWorldCities,
 } from '@/utils/cityDatabase';
@@ -44,6 +47,8 @@ interface CitySelectorModalProps {
   testID?: string;
   initialCategory?: string;
 }
+
+type CityRow = { key: string; city: { name: string; category: string } };
 
 export function CitySelectorModal({
   visible,
@@ -71,13 +76,7 @@ export function CitySelectorModal({
 
     let cancelled = false;
     const load = async () => {
-      await Promise.all([
-        loadCityRegion('iran'),
-        loadCityRegion('uk'),
-        loadCityRegion('france'),
-        loadCityRegion('netherlands'),
-        loadCityRegion('turkey'),
-      ]);
+      await loadCriticalCityRegions();
       if (!cancelled) setRegionReady(true);
     };
     void load();
@@ -109,9 +108,10 @@ export function CitySelectorModal({
       const result = await detectLocationAndFindCity();
       if (result.success && result.cityKey) {
         const city = getCity(result.cityKey);
+        const warning = result.warning ? `\n\n${result.error}` : '';
         Alert.alert(
           'موقعیت یافت شد',
-          `شهر نزدیک: ${city?.name || 'نامشخص'}\nآیا می‌خواهید این شهر را انتخاب کنید؟`,
+          `شهر/استان نزدیک: ${city?.name || result.cityName || 'نامشخص'}${warning}\nآیا می‌خواهید این مکان را انتخاب کنید؟`,
           [
             { text: 'لغو', style: 'cancel' },
             {
@@ -126,28 +126,46 @@ export function CitySelectorModal({
                 }
               },
             },
-          ]
+          ],
         );
       } else {
         Alert.alert('خطا', result.error || 'امکان تشخیص موقعیت وجود ندارد');
       }
-    } catch (error) {
+    } catch {
       Alert.alert('خطا', 'خطا در تشخیص موقعیت');
     } finally {
       setGpsLoading(false);
     }
   }, [onSelectCity]);
 
-  const categoryCities = useMemo(() => {
-    if (searchQuery.trim()) {
-      return searchWorldCities(searchQuery);
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    return searchWorldCities(searchQuery);
+  }, [searchQuery, regionReady]);
+
+  const browseSections = useMemo(() => {
+    if (searchQuery.trim()) return [];
+
+    if (selectedCategory === 'afghanistan') {
+      const provinces = getProvincesForRegion('afghanistan');
+      if (provinces.length > 0) {
+        return [{ title: 'ولایت‌ها', data: provinces }];
+      }
+      return [];
     }
-    return getCitiesForRegion(selectedCategory);
+
+    const provinces = getProvincesForRegion(selectedCategory);
+    const majors = getMajorCitiesForRegion(selectedCategory);
+    const sections: Array<{ title: string; data: CityRow[] }> = [];
+    if (provinces.length > 0) sections.push({ title: 'استان‌ها / ایالت‌ها', data: provinces });
+    if (majors.length > 0) sections.push({ title: 'شهرهای بزرگ', data: majors });
+    return sections;
   }, [selectedCategory, searchQuery, regionReady]);
 
   const renderCity = useCallback(
-    ({ item }: { item: { key: string; city: any } }) => {
+    ({ item }: { item: CityRow }) => {
       const isSelected = selectedCity === item.key;
+      const subtitle = getCityDisplaySubtitle(item.key);
       return (
         <Pressable
           onPress={() => {
@@ -163,14 +181,25 @@ export function CitySelectorModal({
             pressed && styles.itemPressed,
           ]}
         >
-          <RtlText align="center" style={[styles.cityItemText, { color: isSelected ? '#fff' : theme.text }]}>
-            {item.city.name}
-          </RtlText>
+          <RtlView style={styles.cityTextWrap}>
+            <RtlText align="center" style={[styles.cityItemText, { color: isSelected ? '#fff' : theme.text }]}>
+              {item.city.name}
+            </RtlText>
+            {subtitle ? (
+              <RtlText
+                align="center"
+                style={[styles.citySubtitle, { color: isSelected ? 'rgba(255,255,255,0.85)' : theme.textSecondary }]}
+                numberOfLines={1}
+              >
+                {subtitle}
+              </RtlText>
+            ) : null}
+          </RtlView>
           {isSelected && <MaterialIcons name="check-circle" size={20} color="#fff" />}
         </Pressable>
       );
     },
-    [selectedCity, theme, onSelectCity, onClose]
+    [selectedCity, theme, onSelectCity, onClose],
   );
 
   return (
@@ -180,6 +209,11 @@ export function CitySelectorModal({
       presentationStyle="pageSheet"
       onRequestClose={allowClose ? onClose : undefined}
     >
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 10 : 0}
+      >
       <RtlView testID={testID} style={[styles.container, { backgroundColor: theme.background }]}>
         <StatusBar style="light" />
         <RtlView style={[styles.headerWrapper, { backgroundColor: theme.surahHeader, paddingTop: insets.top }]}>
@@ -194,10 +228,7 @@ export function CitySelectorModal({
             <RtlText align="center" style={styles.headerTitle}>{title}</RtlText>
             <Pressable
               onPress={handleGpsPress}
-              style={({ pressed }) => [
-                styles.gpsButton,
-                pressed && styles.buttonPressed,
-              ]}
+              style={({ pressed }) => [styles.gpsButton, pressed && styles.buttonPressed]}
               disabled={gpsLoading}
             >
               {gpsLoading ? (
@@ -213,7 +244,7 @@ export function CitySelectorModal({
           <MaterialIcons name="search" size={20} color={theme.icon} />
           <TextInput
             style={[styles.searchInput, { color: theme.text }]}
-            placeholder="جستجوی شهر..."
+            placeholder="جستجوی شهر یا استان..."
             placeholderTextColor={theme.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -265,13 +296,19 @@ export function CitySelectorModal({
           </View>
         )}
 
-        {/* City List */}
-        <FlatList
+        <SectionList
           testID="city-selector-list"
-          data={categoryCities}
+          sections={searchQuery.trim() ? [{ title: 'نتایج جستجو', data: searchResults }] : browseSections}
           keyExtractor={(item) => item.key}
           renderItem={renderCity}
+          renderSectionHeader={({ section: { title } }) => (
+            <RtlText align="center" style={[styles.sectionHeader, { color: theme.textSecondary, backgroundColor: theme.background }]}>
+              {title}
+            </RtlText>
+          )}
           contentContainerStyle={styles.listContent}
+          stickySectionHeadersEnabled={false}
+          keyboardShouldPersistTaps="handled"
           ListEmptyComponent={
             <RtlView style={styles.emptyContainer}>
               <MaterialIcons name="location-off" size={48} color={theme.textSecondary} />
@@ -282,14 +319,13 @@ export function CitySelectorModal({
           }
         />
       </RtlView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   headerWrapper: {},
   header: {
     flexDirection: 'row',
@@ -302,24 +338,9 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 28,
     overflow: 'hidden',
   },
-  closeButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: Typography.ui.title,
-    fontWeight: '700',
-    color: '#fff',
-    fontFamily: 'Vazirmatn',
-  },
-  gpsButton: {
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  closeButton: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
+  headerTitle: { fontSize: Typography.ui.title, fontWeight: '700', color: '#fff', fontFamily: 'Vazirmatn' },
+  gpsButton: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -330,23 +351,10 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     gap: Spacing.sm,
   },
-  searchInput: {
-    flex: 1,
-    fontSize: Typography.ui.body,
-    fontFamily: 'Vazirmatn',
-  },
-  categoryTabsContainer: {
-    paddingVertical: Spacing.xs,
-    marginBottom: Spacing.xs,
-  },
-  categoryTabs: {
-    maxHeight: 60,
-  },
-  categoryTabsContent: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    gap: Spacing.sm,
-  },
+  searchInput: { flex: 1, fontSize: Typography.ui.body, fontFamily: 'Vazirmatn' },
+  categoryTabsContainer: { paddingVertical: Spacing.xs, marginBottom: Spacing.xs },
+  categoryTabs: { maxHeight: 60 },
+  categoryTabsContent: { paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, gap: Spacing.sm },
   categoryTab: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
@@ -354,14 +362,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     minWidth: 100,
   },
-  categoryTabText: {
-    fontSize: Typography.ui.body,
-    fontWeight: '600',
-    fontFamily: 'Vazirmatn',
-  },
-  listContent: {
-    padding: Spacing.md,
-    paddingBottom: Spacing.xxl,
+  categoryTabText: { fontSize: Typography.ui.body, fontWeight: '600', fontFamily: 'Vazirmatn' },
+  listContent: { padding: Spacing.md, paddingBottom: Spacing.xxl },
+  sectionHeader: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.caption,
+    paddingVertical: Spacing.sm,
+    marginBottom: Spacing.xs,
   },
   cityItem: {
     flexDirection: 'row',
@@ -373,27 +380,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     gap: Spacing.sm,
   },
-  cityItemText: {
-    flex: 1,
-    fontSize: Typography.ui.body,
-    fontWeight: '500',
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-  },
-  itemPressed: {
-    opacity: 0.8,
-  },
-  buttonPressed: {
-    opacity: 0.8,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.xxl,
-  },
-  emptyText: {
-    fontSize: Typography.ui.body,
-    marginTop: Spacing.md,
-    fontFamily: 'Vazirmatn',
-  },
+  cityTextWrap: { flex: 1, gap: 2, alignItems: 'center' },
+  cityItemText: { fontSize: Typography.ui.body, fontWeight: '500', fontFamily: 'Vazirmatn', textAlign: 'center' },
+  citySubtitle: { fontSize: Typography.ui.caption, fontFamily: 'Vazirmatn', textAlign: 'center' },
+  itemPressed: { opacity: 0.8 },
+  buttonPressed: { opacity: 0.8 },
+  emptyContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.xxl },
+  emptyText: { fontSize: Typography.ui.body, marginTop: Spacing.md, fontFamily: 'Vazirmatn' },
 });

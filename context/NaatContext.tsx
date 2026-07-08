@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, AppState, InteractionManager } from 'react-native';
+import { Alert, AppState, InteractionManager, Platform } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import * as FileSystem from 'expo-file-system/legacy';
 import TrackPlayer, { Event, State, type AddTrack } from 'react-native-track-player';
@@ -39,18 +39,22 @@ type NaatSessionState = {
   canSkipPrevious: boolean;
 };
 
-type NaatContextValue = {
+type NaatCatalogContextValue = {
   naats: Naat[];
   loading: boolean;
   syncError: string | null;
   syncSource: 'supabase' | 'cache' | 'fallback';
-  player: PlayerState;
-  session: NaatSessionState;
-  ensurePlayerReady: (reason?: string) => Promise<void>;
   refresh: () => Promise<void>;
   createItem: (draft: NaatDraft) => Promise<void>;
   updateItem: (id: string, patch: Partial<Naat>) => Promise<void>;
   removeItem: (id: string) => Promise<void>;
+  download: (naat: Naat) => Promise<void>;
+};
+
+type NaatPlaybackContextValue = {
+  player: PlayerState;
+  session: NaatSessionState;
+  ensurePlayerReady: (reason?: string) => Promise<void>;
   play: (naat: Naat) => Promise<void>;
   playFromQueue: (items: Naat[], selectedId: string, source: NaatQueueSource) => Promise<void>;
   togglePlayPause: () => Promise<void>;
@@ -60,20 +64,37 @@ type NaatContextValue = {
   resume: () => Promise<void>;
   stop: () => Promise<void>;
   seek: (millis: number) => void;
-  download: (naat: Naat) => Promise<void>;
 };
 
-const NaatContext = createContext<NaatContextValue | null>(null);
+export type NaatContextValue = NaatCatalogContextValue & NaatPlaybackContextValue;
+const NaatCatalogContext = createContext<NaatCatalogContextValue | null>(null);
+const NaatPlaybackContext = createContext<NaatPlaybackContextValue | null>(null);
 
-export function useNaat() {
-  const ctx = useContext(NaatContext);
+export function useNaatCatalog() {
+  const ctx = useContext(NaatCatalogContext);
   if (!ctx) {
-    throw new Error('useNaat must be used within NaatProvider');
+    throw new Error('useNaatCatalog must be used within NaatProvider');
   }
   return ctx;
 }
 
-const TRACK_POLL_INTERVAL_MS = 250;
+export function useNaatPlayer() {
+  const ctx = useContext(NaatPlaybackContext);
+  if (!ctx) {
+    throw new Error('useNaatPlayer must be used within NaatProvider');
+  }
+  return ctx;
+}
+
+export function useNaat() {
+  const catalog = useNaatCatalog();
+  const playback = useNaatPlayer();
+  return useMemo(() => ({ ...catalog, ...playback }), [catalog, playback]);
+}
+
+const TRACK_POLL_INTERVAL_MS = Platform.OS === 'android' ? 800 : 500;
+const PLAYER_PROGRESS_QUANTIZE_MS = Platform.OS === 'android' ? 500 : 300;
+const DOWNLOAD_PROGRESS_THROTTLE_MS = 350;
 const SUPABASE_FETCH_TIMEOUT_MS = 8000;
 const PLAYBACK_START_TIMEOUT_MS = 12000;
 const PLAYBACK_START_POLL_MS = 300;
@@ -253,6 +274,11 @@ function makeSession(queueIds: string[], currentId: string | null, source: NaatQ
   };
 }
 
+function quantizeMillis(value: number): number {
+  if (value <= 0) return 0;
+  return Math.floor(value / PLAYER_PROGRESS_QUANTIZE_MS) * PLAYER_PROGRESS_QUANTIZE_MS;
+}
+
 export function NaatProvider({ children }: { children: React.ReactNode }) {
   const { isInteractiveReady } = useStartupPhase();
   const [naats, setNaats] = useState<Naat[]>([]);
@@ -275,6 +301,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const lastSavedPosition = useRef<number>(0);
   const lastPlaybackErrorAt = useRef<number>(0);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const downloadProgressTickRef = useRef<Record<string, number>>({});
 
   const refresh = useCallback(async (options?: { skipVerify?: boolean }) => {
     setLoading(true);
@@ -399,13 +426,12 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
 
       if (!activeNaat) {
         currentNaatRef.current = null;
-        setPlayer((prev) => ({
-          ...prev,
-          current: null,
-          isPlaying: false,
-          positionMillis: 0,
-          durationMillis: 0,
-        }));
+        setPlayer((prev) => {
+          if (prev.current === null && !prev.isPlaying && prev.positionMillis === 0 && prev.durationMillis === 0) {
+            return prev;
+          }
+          return { ...prev, current: null, isPlaying: false, positionMillis: 0, durationMillis: 0 };
+        });
         setSession(EMPTY_SESSION);
         return;
       }
@@ -422,18 +448,30 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         setSession(makeSession(queueIds, activeNaat.id, source));
       }
 
-      const positionMillis = Math.floor(progress.position * 1000);
+      const positionMillis = quantizeMillis(Math.floor(progress.position * 1000));
       const durationMillis = progress.duration > 0
         ? Math.floor(progress.duration * 1000)
         : (activeNaat.duration_seconds ?? 0) * 1000;
 
-      setPlayer((prev) => ({
-        ...prev,
-        current: activeNaat,
-        isPlaying: playbackState.state === State.Playing,
-        positionMillis,
-        durationMillis: durationMillis || prev.durationMillis,
-      }));
+      setPlayer((prev) => {
+        const nextDuration = durationMillis || prev.durationMillis;
+        const nextPlaying = playbackState.state === State.Playing;
+        if (
+          prev.current?.id === activeNaat.id &&
+          prev.isPlaying === nextPlaying &&
+          prev.positionMillis === positionMillis &&
+          prev.durationMillis === nextDuration
+        ) {
+          return prev;
+        }
+        return {
+          ...prev,
+          current: activeNaat,
+          isPlaying: nextPlaying,
+          positionMillis,
+          durationMillis: nextDuration,
+        };
+      });
     } catch {
       // ignore if player is not ready yet
     }
@@ -644,20 +682,18 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     });
 
     const playbackStateSub = TrackPlayer.addEventListener(Event.PlaybackState, (event) => {
-      setPlayer((prev) => ({
-        ...prev,
-        isPlaying: event.state === State.Playing,
-      }));
+      setPlayer((prev) => {
+        const isPlaying = event.state === State.Playing;
+        if (prev.isPlaying === isPlaying) return prev;
+        return { ...prev, isPlaying };
+      });
     });
 
     const playbackErrorSub = TrackPlayer.addEventListener(Event.PlaybackError, (event) => {
       if (__DEV__) {
         console.log('[NaatPlayer] Native playback error:', event);
       }
-      setPlayer((prev) => ({
-        ...prev,
-        isPlaying: false,
-      }));
+      setPlayer((prev) => (prev.isPlaying ? { ...prev, isPlaying: false } : prev));
 
       const now = Date.now();
       if (now - lastPlaybackErrorAt.current > 5000) {
@@ -681,16 +717,19 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
 
     const poll = async () => {
       try {
+        if (AppState.currentState !== 'active') return;
         const activeTrack = await TrackPlayer.getActiveTrack();
         const resolvedNaat = findNaatByTrack(activeTrack) ?? currentNaatRef.current;
         if (!resolvedNaat) return;
 
         currentNaatRef.current = resolvedNaat;
 
-        const progress = await TrackPlayer.getProgress();
-        const state = await TrackPlayer.getPlaybackState();
+        const [progress, state] = await Promise.all([
+          TrackPlayer.getProgress(),
+          TrackPlayer.getPlaybackState(),
+        ]);
 
-        const positionMillis = Math.floor(progress.position * 1000);
+        const positionMillis = quantizeMillis(Math.floor(progress.position * 1000));
         const durationMillis = progress.duration > 0
           ? Math.floor(progress.duration * 1000)
           : (resolvedNaat.duration_seconds ?? 0) * 1000;
@@ -700,13 +739,25 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           upsertLocalMeta(resolvedNaat.id, { lastPositionMillis: positionMillis }).catch(() => {});
         }
 
-        setPlayer((prev) => ({
-          ...prev,
-          current: resolvedNaat,
-          isPlaying: state.state === State.Playing,
-          positionMillis,
-          durationMillis: durationMillis || prev.durationMillis,
-        }));
+        setPlayer((prev) => {
+          const nextDuration = durationMillis || prev.durationMillis;
+          const nextPlaying = state.state === State.Playing;
+          if (
+            prev.current?.id === resolvedNaat.id &&
+            prev.isPlaying === nextPlaying &&
+            prev.positionMillis === positionMillis &&
+            prev.durationMillis === nextDuration
+          ) {
+            return prev;
+          }
+          return {
+            ...prev,
+            current: resolvedNaat,
+            isPlaying: nextPlaying,
+            positionMillis,
+            durationMillis: nextDuration,
+          };
+        });
 
         if (durationMillis > 0 && !resolvedNaat.duration_seconds) {
           const seconds = Math.floor(durationMillis / 1000);
@@ -842,13 +893,25 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       currentNaatRef.current = selectedNaat;
       lastSavedPosition.current = selectedNaat.lastPositionMillis ?? 0;
       setSession(makeSession(queueIds, selectedNaat.id, source));
-      setPlayer((prev) => ({
-        ...prev,
-        current: selectedNaat,
-        isPlaying: true,
-        positionMillis: selectedNaat.lastPositionMillis ?? 0,
-        durationMillis: (selectedNaat.duration_seconds ?? 0) * 1000,
-      }));
+      setPlayer((prev) => {
+        const nextPosition = quantizeMillis(selectedNaat.lastPositionMillis ?? 0);
+        const nextDuration = (selectedNaat.duration_seconds ?? 0) * 1000;
+        if (
+          prev.current?.id === selectedNaat.id &&
+          prev.isPlaying &&
+          prev.positionMillis === nextPosition &&
+          prev.durationMillis === nextDuration
+        ) {
+          return prev;
+        }
+        return {
+          ...prev,
+          current: selectedNaat,
+          isPlaying: true,
+          positionMillis: nextPosition,
+          durationMillis: nextDuration,
+        };
+      });
     } catch (error: any) {
       if (error?.message === 'offline') {
         Alert.alert('آفلاین', 'ابتدا دانلود نمایید');
@@ -874,10 +937,10 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     try {
       await ensurePlayerReady('pause');
       await TrackPlayer.pause();
-      setPlayer((prev) => ({ ...prev, isPlaying: false }));
+      setPlayer((prev) => (prev.isPlaying ? { ...prev, isPlaying: false } : prev));
     } catch (err) {
       if (__DEV__) console.log('TrackPlayer pause:', err);
-      setPlayer((prev) => ({ ...prev, isPlaying: false }));
+      setPlayer((prev) => (prev.isPlaying ? { ...prev, isPlaying: false } : prev));
     }
   }, [ensurePlayerReady]);
 
@@ -890,7 +953,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         await TrackPlayer.seekTo(0);
       }
       await TrackPlayer.play();
-      setPlayer((prev) => ({ ...prev, isPlaying: true }));
+      setPlayer((prev) => (prev.isPlaying ? prev : { ...prev, isPlaying: true }));
     } catch {
       // Ignore
     }
@@ -952,7 +1015,8 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const seek = useCallback((millis: number) => {
     const dur = player.durationMillis || 0;
     const clamped = dur > 0 ? Math.max(0, Math.min(millis, dur)) : Math.max(0, millis);
-    setPlayer((prev) => ({ ...prev, positionMillis: clamped }));
+    const quantized = quantizeMillis(clamped);
+    setPlayer((prev) => (prev.positionMillis === quantized ? prev : { ...prev, positionMillis: quantized }));
     ensurePlayerReady('seek')
       .then(() => TrackPlayer.seekTo(clamped / 1000))
       .catch(() => {});
@@ -982,6 +1046,12 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           const pct = progress.totalBytesExpectedToWrite
             ? progress.totalBytesWritten / progress.totalBytesExpectedToWrite
             : 0;
+          const now = Date.now();
+          const lastTick = downloadProgressTickRef.current[naat.id] ?? 0;
+          if (now - lastTick < DOWNLOAD_PROGRESS_THROTTLE_MS && pct < 0.99) {
+            return;
+          }
+          downloadProgressTickRef.current[naat.id] = now;
           upsertLocalMeta(naat.id, { downloadProgress: pct }).catch(() => {});
           setNaats((prev) =>
             prev.map((item) => (item.id === naat.id ? { ...item, downloadProgress: pct } : item)),
@@ -1021,6 +1091,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
             : item,
         ),
       );
+      delete downloadProgressTickRef.current[naat.id];
       Alert.alert('موفق', 'نعت ذخیره شد و آفلاین قابل پخش است');
     } catch (error: any) {
       if (error?.message === 'offline') {
@@ -1034,23 +1105,28 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       if (__DEV__) {
         console.log('Naat download failed', error);
       }
+      delete downloadProgressTickRef.current[naat.id];
       await upsertLocalMeta(naat.id, { downloadProgress: undefined });
       Alert.alert('خطا', 'دانلود ناموفق است. لطفاً مطمئن شوید لینک فایل عمومی است.');
     }
   }, [resolveAudioSource]);
 
-  const value = useMemo<NaatContextValue>(() => ({
+  const catalogValue = useMemo<NaatCatalogContextValue>(() => ({
     naats,
     loading,
     syncError,
     syncSource,
-    player,
-    session,
-    ensurePlayerReady,
     refresh,
     createItem,
     updateItem,
     removeItem,
+    download,
+  }), [naats, loading, syncError, syncSource, refresh, createItem, updateItem, removeItem, download]);
+
+  const playbackValue = useMemo<NaatPlaybackContextValue>(() => ({
+    player,
+    session,
+    ensurePlayerReady,
     play,
     playFromQueue,
     togglePlayPause,
@@ -1060,8 +1136,11 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     resume,
     stop,
     seek,
-    download,
-  }), [naats, loading, syncError, syncSource, player, session, ensurePlayerReady, refresh, createItem, updateItem, removeItem, play, playFromQueue, togglePlayPause, skipNext, skipPrevious, pause, resume, stop, seek, download]);
+  }), [player, session, ensurePlayerReady, play, playFromQueue, togglePlayPause, skipNext, skipPrevious, pause, resume, stop, seek]);
 
-  return <NaatContext.Provider value={value}>{children}</NaatContext.Provider>;
+  return (
+    <NaatCatalogContext.Provider value={catalogValue}>
+      <NaatPlaybackContext.Provider value={playbackValue}>{children}</NaatPlaybackContext.Provider>
+    </NaatCatalogContext.Provider>
+  );
 }

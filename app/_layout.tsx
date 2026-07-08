@@ -23,6 +23,7 @@ import { DuaProvider } from '@/context/DuaContext';
 import { NaatProvider } from '@/context/NaatContext';
 import { PrayerProvider } from '@/context/PrayerContext';
 import { ScholarProvider } from '@/context/ScholarContext';
+import { useStartupBootstrap } from '@/context/StartupBootstrapContext';
 import { StartupBootstrapProvider } from '@/context/StartupBootstrapContext';
 import { StartupPhaseProvider, useStartupPhase } from '@/context/StartupPhaseContext';
 import { StatsProvider } from '@/context/StatsContext';
@@ -35,10 +36,24 @@ import { preloadPopularSurahs } from '@/hooks/useSurahData';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
 
+const STARTUP_EPOCH_MS = Date.now();
+const STARTUP_TIMING_ENABLED = true;
+function startupMark(label: string): void {
+  if (!STARTUP_TIMING_ENABLED) return;
+  const elapsed = Date.now() - STARTUP_EPOCH_MS;
+  console.warn(`[Startup][${elapsed}ms] ${label}`);
+}
+
 // Force RTL for Dari/Pashto/Arabic UI (required on some Android/Huawei builds)
 if (!I18nManager.isRTL) {
+  startupMark('RTL not active; enabling RTL support');
   I18nManager.allowRTL(true);
-  I18nManager.forceRTL(true);
+  const rtlGuard = globalThis as typeof globalThis & { __EBADAT_RTL_FORCE_DONE__?: boolean };
+  if (!rtlGuard.__EBADAT_RTL_FORCE_DONE__) {
+    rtlGuard.__EBADAT_RTL_FORCE_DONE__ = true;
+    I18nManager.forceRTL(true);
+    startupMark('Applied one-time RTL force');
+  }
 }
 
 // ───────────────────────────────────────────────────
@@ -86,22 +101,22 @@ if (__DEV__) {
 
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
+startupMark('Splash screen hold started');
 
-// Font assets - All fonts needed for Arabic, Dari, and Pashto
-const fontAssets = {
-  // Arabic Quran Fonts
+// Critical fonts needed for first paint / onboarding.
+const criticalFontAssets = {
   'ScheherazadeNew': require('@/assets/fonts/ScheherazadeNew-Regular.ttf'),
+  'Vazirmatn': require('@/assets/fonts/Vazirmatn-Regular.ttf'),
+  'Vazirmatn-Bold': require('@/assets/fonts/Vazirmatn-Bold.ttf'),
+  'NotoNastaliqUrdu': require('@/assets/fonts/NotoNastaliqUrdu-Regular.ttf'),
+};
+
+// Heavier fonts used outside startup can load after first paint.
+const deferredFontAssets = {
   'ScheherazadeNew-Bold': require('@/assets/fonts/ScheherazadeNew-Bold.ttf'),
   'QPCHafs': require('@/assets/fonts/QPCHafs18.ttf'),
   'Amiri': require('@/assets/fonts/Amiri-Regular.ttf'),
   'Amiri-Bold': require('@/assets/fonts/Amiri-Bold.ttf'),
-  
-  // Dari/Farsi Font (Modern & Beautiful)
-  'Vazirmatn': require('@/assets/fonts/Vazirmatn-Regular.ttf'),
-  'Vazirmatn-Bold': require('@/assets/fonts/Vazirmatn-Bold.ttf'),
-  
-  // Pashto Font (Nastaliq style - kept for option)
-  'NotoNastaliqUrdu': require('@/assets/fonts/NotoNastaliqUrdu-Regular.ttf'),
 };
 
 // Default RTL text style - Apply this to all text components
@@ -112,7 +127,8 @@ export const RTL_TEXT_STYLE = {
 
 function RootLayoutNav() {
   const { theme, state } = useApp();
-  const { isInteractiveReady, markInteractiveReady } = useStartupPhase();
+  const { isInteractiveReady, markInteractiveReady, markSplashCompleted, markDeferredInit, phase } = useStartupPhase();
+  const { needsOnboarding, checked: bootstrapChecked } = useStartupBootstrap();
   const router = useRouter();
   const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
   const lastHandledNotificationKeyRef = useRef<string>('');
@@ -231,6 +247,23 @@ function RootLayoutNav() {
   }, [handleNotificationResponse, showSpiritualSplash]);
 
   useEffect(() => {
+    if (!bootstrapChecked || !needsOnboarding || !showSpiritualSplash) return;
+    startupMark('Onboarding pending; skipping extra spiritual splash');
+    markSplashCompleted();
+    setShowSpiritualSplash(false);
+  }, [bootstrapChecked, markSplashCompleted, needsOnboarding, showSpiritualSplash]);
+
+  useEffect(() => {
+    if (!showSpiritualSplash) return;
+    const splashWatchdog = setTimeout(() => {
+      startupMark('Splash watchdog fired; forcing splash complete');
+      markSplashCompleted();
+      setShowSpiritualSplash(false);
+    }, 6000);
+    return () => clearTimeout(splashWatchdog);
+  }, [markSplashCompleted, showSpiritualSplash]);
+
+  useEffect(() => {
     if (showSpiritualSplash || isInteractiveReady) return;
 
     let cancelled = false;
@@ -239,6 +272,7 @@ function RootLayoutNav() {
       idleTimer = setTimeout(() => {
         if (!cancelled) {
           markInteractiveReady();
+          startupMark('Interactive ready');
         }
       }, Platform.OS === 'android' ? 100 : 400);
     });
@@ -267,6 +301,7 @@ function RootLayoutNav() {
         if (cityKey || setupDone) {
           await ensurePushRegistrationOnFirstOpen();
         }
+        markDeferredInit();
       } catch (error) {
         if (__DEV__) {
           console.warn('[Startup] Deferred first-open setup failed', error);
@@ -278,7 +313,7 @@ function RootLayoutNav() {
 
     const preloadTask = InteractionManager.runAfterInteractions(() => {
       setTimeout(() => {
-        if (!cancelled) {
+        if (!cancelled && bootstrapChecked && !needsOnboarding) {
           preloadPopularSurahs();
         }
       }, 800);
@@ -288,9 +323,10 @@ function RootLayoutNav() {
       cancelled = true;
       preloadTask.cancel();
     };
-  }, [isInteractiveReady, showSpiritualSplash]);
+  }, [bootstrapChecked, isInteractiveReady, markDeferredInit, needsOnboarding, showSpiritualSplash]);
 
   useEffect(() => {
+    if (bootstrapChecked && needsOnboarding) return;
     let cancelled = false;
     const task = InteractionManager.runAfterInteractions(() => {
       if (cancelled) return;
@@ -306,12 +342,18 @@ function RootLayoutNav() {
       cancelled = true;
       task.cancel();
     };
-  }, []);
+  }, [bootstrapChecked, needsOnboarding]);
 
   if (showSpiritualSplash) {
     return (
       <>
-        <SpiritualSplash onComplete={() => setShowSpiritualSplash(false)} />
+        <SpiritualSplash
+          onComplete={() => {
+            startupMark('Spiritual splash completed');
+            markSplashCompleted();
+            setShowSpiritualSplash(false);
+          }}
+        />
         <StatusBar style="light" />
       </>
     );
@@ -348,12 +390,15 @@ function RootLayoutNav() {
       {/* On Android, fill the area behind the status bar with the same color
           as the Quran header to avoid any white strip above the header. */}
       <StatusBar style={statusBarStyle} />
+      {__DEV__ ? <StartupDebugBadge phase={phase} interactiveReady={isInteractiveReady} /> : null}
     </>
   );
 }
 
 export default function RootLayout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [fontPhaseDone, setFontPhaseDone] = useState(false);
+  const [deferredFontsLoaded, setDeferredFontsLoaded] = useState(false);
   const [fontError, setFontError] = useState<string | null>(null);
   const [bootstrap, setBootstrap] = useState({
     needsOnboarding: false,
@@ -365,26 +410,17 @@ export default function RootLayout() {
   useEffect(() => {
     async function loadFonts() {
       try {
-        const [cityKey, setupDone] = await Promise.all([
-          getSavedPrayerCityKey(),
-          isFirstOpenAdhanSetupDone(),
-        ]);
-        const hasCity = Boolean(cityKey?.trim());
-        setBootstrap({
-          hasCity,
-          setupDone,
-          needsOnboarding: !hasCity && !setupDone,
-          checked: true,
-        });
-
-        await Font.loadAsync(fontAssets);
+        startupMark('Font loading started');
+        await Font.loadAsync(criticalFontAssets);
         setFontsLoaded(true);
+        setFontPhaseDone(true);
+        startupMark('Critical font loading completed');
       } catch (error) {
         console.error('Error loading fonts:', error);
         setFontError(error instanceof Error ? error.message : 'Font loading failed');
-        setBootstrap((prev) => ({ ...prev, checked: true }));
         setFontsLoaded(true);
       } finally {
+        startupMark('Splash hide requested after font phase');
         SplashScreen.hideAsync().catch(() => {});
       }
     }
@@ -393,19 +429,111 @@ export default function RootLayout() {
 
     // Huawei/slow devices: never block on splash if font load hangs
     const splashFallback = setTimeout(() => {
+      startupMark('Splash fallback triggered');
       SplashScreen.hideAsync().catch(() => {});
       setFontsLoaded(true);
+      setFontPhaseDone(true);
     }, 4000);
 
     return () => clearTimeout(splashFallback);
   }, []);
 
+  useEffect(() => {
+    if (fontsLoaded) return;
+    const hardWatchdog = setTimeout(() => {
+      startupMark('Font hard-watchdog fired; forcing app shell');
+      setFontError((current) => current ?? 'font-watchdog-timeout');
+      setFontsLoaded(true);
+      setFontPhaseDone(true);
+      SplashScreen.hideAsync().catch(() => {});
+    }, 10000);
+    return () => clearTimeout(hardWatchdog);
+  }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (!fontsLoaded) return;
+
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      const bootstrapStartup = async () => {
+        startupMark('Bootstrap state read started');
+        try {
+          const [cityKey, setupDone] = await Promise.all([
+            getSavedPrayerCityKey(),
+            isFirstOpenAdhanSetupDone(),
+          ]);
+          if (cancelled) return;
+
+          const hasCity = Boolean(cityKey?.trim());
+          setBootstrap({
+            hasCity,
+            setupDone,
+            needsOnboarding: !setupDone,
+            checked: true,
+          });
+          startupMark('Bootstrap state read completed');
+        } catch {
+          if (!cancelled) {
+            setBootstrap((prev) => ({ ...prev, checked: true }));
+          }
+          startupMark('Bootstrap state read failed');
+        }
+      };
+      void bootstrapStartup();
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, [fontsLoaded]);
+
+  useEffect(() => {
+    if (!fontsLoaded || deferredFontsLoaded) return;
+
+    let cancelled = false;
+    const task = InteractionManager.runAfterInteractions(() => {
+      setTimeout(() => {
+        if (cancelled) return;
+        Font.loadAsync(deferredFontAssets)
+          .then(() => {
+            if (!cancelled) {
+              setDeferredFontsLoaded(true);
+              startupMark('Deferred font loading completed');
+            }
+          })
+          .catch(() => {});
+      }, 1200);
+    });
+
+    return () => {
+      cancelled = true;
+      task.cancel();
+    };
+  }, [deferredFontsLoaded, fontsLoaded]);
+
+  useEffect(() => {
+    if (!fontsLoaded || bootstrap.checked) return;
+    const bootstrapWatchdog = setTimeout(() => {
+      startupMark('Bootstrap watchdog fired; marking checked');
+      setBootstrap((prev) => ({ ...prev, checked: true }));
+    }, 7000);
+    return () => clearTimeout(bootstrapWatchdog);
+  }, [bootstrap.checked, fontsLoaded]);
+
   if (!fontsLoaded) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#ffffff" />
-        <Text style={styles.loadingText}>در حال بارگذاری...</Text>
-      </View>
+      <SafeAreaProvider>
+        <View style={styles.loadingContainer}>
+          <SpiritualSplash onComplete={() => {}} />
+          {fontError ? (
+            <View style={styles.loadingFallback}>
+              <ActivityIndicator size="small" color="#ffffff" />
+              <Text style={styles.loadingText}>در حال بارگذاری...</Text>
+            </View>
+          ) : null}
+        </View>
+      </SafeAreaProvider>
     );
   }
 
@@ -413,6 +541,7 @@ export default function RootLayout() {
     <ErrorBoundary>
       <SafeAreaProvider>
         <StartupPhaseProvider>
+          <StartupPhaseBridge fontPhaseDone={fontPhaseDone} />
           <StartupBootstrapProvider value={bootstrap}>
           <AppProvider>
             <PrayerProvider>
@@ -438,17 +567,65 @@ export default function RootLayout() {
   );
 }
 
+function StartupPhaseBridge({ fontPhaseDone }: { fontPhaseDone: boolean }) {
+  const { markFontsLoaded } = useStartupPhase();
+
+  useEffect(() => {
+    if (fontPhaseDone) {
+      markFontsLoaded();
+    }
+  }, [fontPhaseDone, markFontsLoaded]);
+
+  return null;
+}
+
+function StartupDebugBadge({
+  phase,
+  interactiveReady,
+}: {
+  phase: string;
+  interactiveReady: boolean;
+}) {
+  const elapsed = Date.now() - STARTUP_EPOCH_MS;
+  return (
+    <View style={styles.debugBadge}>
+      <Text style={styles.debugText}>startup: {phase}</Text>
+      <Text style={styles.debugText}>interactive: {interactiveReady ? 'yes' : 'no'}</Text>
+      <Text style={styles.debugText}>elapsed: {elapsed}ms</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#1a4d3e',
+  },
+  loadingFallback: {
+    position: 'absolute',
+    bottom: 24,
+    alignSelf: 'center',
+    alignItems: 'center',
+    gap: 8,
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
     color: 'rgba(255,255,255,0.9)',
     textAlign: 'center',
+  },
+  debugBadge: {
+    position: 'absolute',
+    left: 10,
+    bottom: 10,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    gap: 2,
+  },
+  debugText: {
+    color: '#fff',
+    fontSize: 11,
   },
 });

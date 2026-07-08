@@ -10,7 +10,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
-import { useNaat, type NaatQueueSource } from '@/context/NaatContext';
+import { useNaatCatalog, useNaatPlayer, type NaatQueueSource } from '@/context/NaatContext';
 import { BorderRadius, Spacing, Typography, NAAT_GRADIENT } from '@/constants/theme';
 import { Naat } from '@/types/naat';
 import { NaatCard } from '@/components/naat/NaatCard';
@@ -48,21 +48,8 @@ export default function NaatScreen() {
   const headerGradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const {
-    naats,
-    loading,
-    syncError,
-    player,
-    session,
-    playFromQueue,
-    togglePlayPause,
-    skipNext,
-    skipPrevious,
-    download,
-    seek,
-    stop,
-    refresh,
-  } = useNaat();
+  const { naats, loading, syncError, download, refresh } = useNaatCatalog();
+  const { player, session, playFromQueue, togglePlayPause, skipNext, skipPrevious, seek, stop } = useNaatPlayer();
   const [query, setQuery] = useState('');
   const verifiedOnFocusRef = useRef(false);
 
@@ -125,6 +112,27 @@ export default function NaatScreen() {
     setShowNaatAdminPinModal(false);
     setNaatAdminPin('');
   };
+
+  const renderNaatItem = useCallback(({ item }: { item: Naat }) => {
+    const isActive = player.current?.id === item.id;
+    return (
+      <View style={styles.section}>
+        <NaatCard
+          naat={item}
+          isActive={isActive}
+          isPlaying={isActive ? player.isPlaying : false}
+          onPlay={() => {
+            if (isActive) {
+              togglePlayPause().catch(() => {});
+              return;
+            }
+            playFromQueue(filtered, item.id, 'filtered').catch(() => {});
+          }}
+          onDownload={() => download(item)}
+        />
+      </View>
+    );
+  }, [player.current?.id, player.isPlaying, togglePlayPause, playFromQueue, filtered, download]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -243,117 +251,23 @@ export default function NaatScreen() {
               </View>
             </View>
           )}
-          renderItem={({ item }) => {
-            const isActive = player.current?.id === item.id;
-            return (
-              <View style={styles.section}>
-                <NaatCard
-                  naat={item}
-                  isActive={isActive}
-                  isPlaying={isActive ? player.isPlaying : false}
-                  onPlay={() => {
-                    if (isActive) {
-                      togglePlayPause().catch(() => {});
-                      return;
-                    }
-                    playFromQueue(filtered, item.id, 'filtered').catch(() => {});
-                  }}
-                  onDownload={() => download(item)}
-                />
-              </View>
-            );
-          }}
+          renderItem={renderNaatItem}
         />
       )}
 
-      {player.current && (
-        <View
-          testID="naat-player-dock"
-          style={[
-            styles.playerDock,
-            {
-              bottom: insets.bottom + 82,
-              backgroundColor: theme.card,
-              borderColor: theme.cardBorder,
-              shadowColor: theme.text,
-            },
-          ]}
-        >
-          <NaatProgressBar
-            positionMillis={player.positionMillis}
-            durationMillis={player.durationMillis || (player.current.duration_seconds ? player.current.duration_seconds * 1000 : 0)}
-            onSeek={(millis) => seek(millis)}
-            fillColor={theme.tint}
-            trackColor={theme.backgroundSecondary}
-            textColor={theme.textSecondary}
-          />
-
-          <View style={styles.playerMainRow}>
-            <Pressable
-              testID="naat-player-queue-button"
-              accessibilityLabel="صف پخش نعت"
-              onPress={() => setQueueVisible(true)}
-              style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
-            >
-              <MaterialIcons name="queue-music" size={22} color={theme.tint} />
-            </Pressable>
-
-            <View style={styles.playerInfo}>
-              <Text style={[styles.playerTitle, { color: theme.text }]} numberOfLines={1}>
-                {player.current.title_fa}
-              </Text>
-              <Text style={[styles.playerSubtitle, { color: theme.textSecondary }]} numberOfLines={1}>
-                {player.current.reciter_name} • {queueLabel}
-              </Text>
-            </View>
-
-            <View style={styles.playerControls}>
-              <Pressable
-                testID="naat-player-previous-button"
-                accessibilityLabel="نعت قبلی"
-                onPress={() => {
-                  skipPrevious().catch(() => {});
-                }}
-                disabled={!session.canSkipPrevious}
-                style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipPrevious ? 1 : 0.42 }]}
-              >
-                <MaterialIcons name="skip-previous" size={22} color={theme.textSecondary} />
-              </Pressable>
-              <Pressable
-                testID="naat-player-toggle-button"
-                accessibilityLabel={player.isPlaying ? 'توقف نعت' : 'پخش نعت'}
-                onPress={() => {
-                  togglePlayPause().catch(() => {});
-                }}
-                style={[styles.playerPlayButton, { backgroundColor: theme.tint }]}
-              >
-                <MaterialIcons name={player.isPlaying ? 'pause' : 'play-arrow'} size={28} color="#fff" />
-              </Pressable>
-              <Pressable
-                testID="naat-player-next-button"
-                accessibilityLabel="نعت بعدی"
-                onPress={() => {
-                  skipNext().catch(() => {});
-                }}
-                disabled={!session.canSkipNext}
-                style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipNext ? 1 : 0.42 }]}
-              >
-                <MaterialIcons name="skip-next" size={22} color={theme.textSecondary} />
-              </Pressable>
-              <Pressable
-                testID="naat-player-stop-button"
-                accessibilityLabel="بستن پلیر نعت"
-                onPress={() => {
-                  stop().catch(() => {});
-                }}
-                style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
-              >
-                <MaterialIcons name="stop" size={22} color={theme.textSecondary} />
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      )}
+      <NaatPlayerDock
+        player={player}
+        session={session}
+        queueLabel={queueLabel}
+        bottomInset={insets.bottom}
+        theme={theme}
+        setQueueVisible={setQueueVisible}
+        seek={seek}
+        skipPrevious={skipPrevious}
+        togglePlayPause={togglePlayPause}
+        skipNext={skipNext}
+        stop={stop}
+      />
 
       <NaatQueueSheet
         visible={queueVisible}
@@ -404,6 +318,119 @@ export default function NaatScreen() {
     </View>
   );
 }
+
+const NaatPlayerDock = React.memo(function NaatPlayerDock({
+  player,
+  session,
+  queueLabel,
+  bottomInset,
+  theme,
+  setQueueVisible,
+  seek,
+  skipPrevious,
+  togglePlayPause,
+  skipNext,
+  stop,
+}: {
+  player: ReturnType<typeof useNaatPlayer>['player'];
+  session: ReturnType<typeof useNaatPlayer>['session'];
+  queueLabel: string;
+  bottomInset: number;
+  theme: ReturnType<typeof useApp>['theme'];
+  setQueueVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  seek: ReturnType<typeof useNaatPlayer>['seek'];
+  skipPrevious: ReturnType<typeof useNaatPlayer>['skipPrevious'];
+  togglePlayPause: ReturnType<typeof useNaatPlayer>['togglePlayPause'];
+  skipNext: ReturnType<typeof useNaatPlayer>['skipNext'];
+  stop: ReturnType<typeof useNaatPlayer>['stop'];
+}) {
+  if (!player.current) return null;
+  return (
+    <View
+      testID="naat-player-dock"
+      style={[
+        styles.playerDock,
+        {
+          bottom: bottomInset + 82,
+          backgroundColor: theme.card,
+          borderColor: theme.cardBorder,
+          shadowColor: theme.text,
+        },
+      ]}
+    >
+      <NaatProgressBar
+        positionMillis={player.positionMillis}
+        durationMillis={player.durationMillis || (player.current.duration_seconds ? player.current.duration_seconds * 1000 : 0)}
+        onSeek={(millis) => seek(millis)}
+        fillColor={theme.tint}
+        trackColor={theme.backgroundSecondary}
+        textColor={theme.textSecondary}
+      />
+      <View style={styles.playerMainRow}>
+        <Pressable
+          testID="naat-player-queue-button"
+          accessibilityLabel="صف پخش نعت"
+          onPress={() => setQueueVisible(true)}
+          style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
+        >
+          <MaterialIcons name="queue-music" size={22} color={theme.tint} />
+        </Pressable>
+        <View style={styles.playerInfo}>
+          <Text style={[styles.playerTitle, { color: theme.text }]} numberOfLines={1}>
+            {player.current.title_fa}
+          </Text>
+          <Text style={[styles.playerSubtitle, { color: theme.textSecondary }]} numberOfLines={1}>
+            {player.current.reciter_name} • {queueLabel}
+          </Text>
+        </View>
+        <View style={styles.playerControls}>
+          <Pressable
+            testID="naat-player-previous-button"
+            accessibilityLabel="نعت قبلی"
+            onPress={() => {
+              skipPrevious().catch(() => {});
+            }}
+            disabled={!session.canSkipPrevious}
+            style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipPrevious ? 1 : 0.42 }]}
+          >
+            <MaterialIcons name="skip-previous" size={22} color={theme.textSecondary} />
+          </Pressable>
+          <Pressable
+            testID="naat-player-toggle-button"
+            accessibilityLabel={player.isPlaying ? 'توقف نعت' : 'پخش نعت'}
+            onPress={() => {
+              togglePlayPause().catch(() => {});
+            }}
+            style={[styles.playerPlayButton, { backgroundColor: theme.tint }]}
+          >
+            <MaterialIcons name={player.isPlaying ? 'pause' : 'play-arrow'} size={28} color="#fff" />
+          </Pressable>
+          <Pressable
+            testID="naat-player-next-button"
+            accessibilityLabel="نعت بعدی"
+            onPress={() => {
+              skipNext().catch(() => {});
+            }}
+            disabled={!session.canSkipNext}
+            style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipNext ? 1 : 0.42 }]}
+          >
+            <MaterialIcons name="skip-next" size={22} color={theme.textSecondary} />
+          </Pressable>
+          <Pressable
+            testID="naat-player-stop-button"
+            accessibilityLabel="بستن پلیر نعت"
+            onPress={() => {
+              stop().catch(() => {});
+            }}
+            style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
+          >
+            <MaterialIcons name="stop" size={22} color={theme.textSecondary} />
+          </Pressable>
+        </View>
+      </View>
+    </View>
+  );
+});
 
 const styles = StyleSheet.create({
   container: {
