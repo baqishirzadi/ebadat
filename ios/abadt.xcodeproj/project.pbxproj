@@ -13,6 +13,7 @@
 		W1D2G3E4XT004 /* WidgetShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR004 /* WidgetShared.swift */; };
 		W1D2G3E4XT005 /* Vazirmatn-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7AAF416978A422FB6AE300F /* Vazirmatn-Regular.ttf */; };
 		W1D2G3E4XT006 /* Vazirmatn-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */; };
+		W1D2G3E4XT008 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */; };
 		W1D2G3E4XT007 /* EbadatPrayerWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		W1D2G3T4A5M6O7D8U9L0E1F2 /* WidgetDataModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */; };
 		W1D2G3T4A5M6O7D8U9L0E1M3 /* WidgetDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */; };
@@ -71,6 +72,7 @@
 		W1D2G3E4XFR004 /* WidgetShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetShared.swift; sourceTree = "<group>"; };
 		W1D2G3E4XFR005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		W1D2G3E4XFR006 /* EbadatPrayerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EbadatPrayerWidget.entitlements; sourceTree = "<group>"; };
+		W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EbadatPrayerWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -116,6 +118,7 @@
 				W1D2G3E4XFR004 /* WidgetShared.swift */,
 				W1D2G3E4XFR005 /* Info.plist */,
 				W1D2G3E4XFR006 /* EbadatPrayerWidget.entitlements */,
+				W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */,
 			);
 			path = EbadatPrayerWidget;
 			sourceTree = "<group>";
@@ -360,6 +363,7 @@
 			files = (
 				W1D2G3E4XT005 /* Vazirmatn-Regular.ttf in Resources */,
 				W1D2G3E4XT006 /* Vazirmatn-Bold.ttf in Resources */,
+				W1D2G3E4XT008 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -523,6 +527,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXContainerItemProxy section */
+		W1D2G3E4XPRX01 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = W1D2G3E4XTGT01;
+			remoteInfo = EbadatPrayerWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		W1D2G3E4XDEP01 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = W1D2G3E4XTGT01 /* EbadatPrayerWidgetExtension */;
+			targetProxy = W1D2G3E4XPRX01 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -790,18 +812,6 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
-		};
-		W1D2G3E4XDEP01 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = W1D2G3E4XTGT01 /* EbadatPrayerWidgetExtension */;
-			targetProxy = W1D2G3E4XPRX01 /* PBXContainerItemProxy */;
-		};
-		W1D2G3E4XPRX01 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = W1D2G3E4XTGT01;
-			remoteInfo = EbadatPrayerWidgetExtension;
 		};
 /* End XCConfigurationList section */
 	};

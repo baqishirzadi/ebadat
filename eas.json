@@ -16,13 +16,23 @@
       "distribution": "internal"
     },
     "production": {
+      "autoIncrement": true,
+      "ios": {
+        "distribution": "store",
+        "buildConfiguration": "Release"
+      },
       "android": {
         "buildType": "app-bundle"
-      },
-      "autoIncrement": true
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "ascAppId": "6788835524",
+        "appleId": "alaaddinplus@gmail.com",
+        "appleTeamId": "598LGYF8JQ"
+      }
+    }
   }
 }

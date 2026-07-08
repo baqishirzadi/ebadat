@@ -42,7 +42,9 @@
     "verify:patches": "node scripts/verify-patches-clean.js",
     "verify:prayer-engine-parity": "node scripts/verify-prayer-engine-parity.js",
     "verify:qibla-math": "node scripts/verify-qibla-math.js",
-    "verify:ios-adhan": "cat docs/ios-adhan-verification.md"
+    "verify:ios-adhan": "cat docs/ios-adhan-verification.md",
+    "build:ios:production": "eas build --platform ios --profile production --non-interactive",
+    "submit:ios": "eas submit --platform ios --profile production --latest --non-interactive"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -83,6 +85,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
+    "react-native-android-widget": "^0.20.3",
     "react-native-gesture-handler": "~2.28.0",
     "react-native-reanimated": "~3.19.0",
     "react-native-safe-area-context": "~5.6.0",
