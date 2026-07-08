@@ -17,6 +17,7 @@ import { Pressable, StyleSheet, TextInput, View, I18nManager, Platform } from 'r
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
+import { getUthmaniFont } from '@/hooks/useFonts';
 import { RtlView } from '@/components/ui/RtlView';
 import { SearchButton } from './SearchButton';
 import { JuzList } from './JuzList';
@@ -362,7 +363,7 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: '700',
     color: '#fff',
-    fontFamily: 'ScheherazadeNew',
+    fontFamily: getUthmaniFont(),
     writingDirection: 'rtl',
   },
   headerSubtitle: {
@@ -572,7 +573,7 @@ const styles = StyleSheet.create({
   arabicName: {
     fontSize: Typography.ui.title,
     fontWeight: '600',
-    fontFamily: 'ScheherazadeNew',
+    fontFamily: getUthmaniFont(),
     textAlign: 'center',
     writingDirection: 'rtl',
     width: '100%',

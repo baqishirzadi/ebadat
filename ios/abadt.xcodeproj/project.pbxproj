@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		W1D2G3E4XT001 /* EbadatPrayerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR001 /* EbadatPrayerWidget.swift */; };
+		W1D2G3E4XT002 /* PrayerTimesWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */; };
+		W1D2G3E4XT003 /* PrayerTimesWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */; };
+		W1D2G3E4XT004 /* WidgetShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR004 /* WidgetShared.swift */; };
+		W1D2G3E4XT005 /* Vazirmatn-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7AAF416978A422FB6AE300F /* Vazirmatn-Regular.ttf */; };
+		W1D2G3E4XT006 /* Vazirmatn-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */; };
+		W1D2G3E4XT007 /* EbadatPrayerWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		W1D2G3T4A5M6O7D8U9L0E1F2 /* WidgetDataModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */; };
+		W1D2G3T4A5M6O7D8U9L0E1M3 /* WidgetDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3AF7E1B4280648218DDAE879 /* Amiri-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EAA20087D1EB4669933289B6 /* Amiri-Bold.ttf */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
@@ -52,11 +61,41 @@
 		EAA20087D1EB4669933289B6 /* Amiri-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Amiri-Bold.ttf"; path = "../assets/fonts/Amiri-Bold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = abadt/AppDelegate.swift; sourceTree = "<group>"; };
+		W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WidgetDataModule.swift; path = abadt/WidgetDataModule.swift; sourceTree = "<group>"; };
+		W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WidgetDataModule.m; path = abadt/WidgetDataModule.m; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* abadt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "abadt-Bridging-Header.h"; path = "abadt/abadt-Bridging-Header.h"; sourceTree = "<group>"; };
 		FDF95EC0DE1241C5B75B47AC /* QPCHafs18.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = QPCHafs18.ttf; path = ../assets/fonts/QPCHafs18.ttf; sourceTree = "<group>"; };
+		W1D2G3E4XFR001 /* EbadatPrayerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EbadatPrayerWidget.swift; sourceTree = "<group>"; };
+		W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesWidgetProvider.swift; sourceTree = "<group>"; };
+		W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesWidgetView.swift; sourceTree = "<group>"; };
+		W1D2G3E4XFR004 /* WidgetShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetShared.swift; sourceTree = "<group>"; };
+		W1D2G3E4XFR005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		W1D2G3E4XFR006 /* EbadatPrayerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EbadatPrayerWidget.entitlements; sourceTree = "<group>"; };
+		W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EbadatPrayerWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		W1D2G3E4XEMB01 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				W1D2G3E4XT007 /* EbadatPrayerWidget.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		W1D2G3E4XFWK01 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -68,10 +107,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		W1D2G3E4XGRP01 /* EbadatPrayerWidget */ = {
+			isa = PBXGroup;
+			children = (
+				W1D2G3E4XFR001 /* EbadatPrayerWidget.swift */,
+				W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */,
+				W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */,
+				W1D2G3E4XFR004 /* WidgetShared.swift */,
+				W1D2G3E4XFR005 /* Info.plist */,
+				W1D2G3E4XFR006 /* EbadatPrayerWidget.entitlements */,
+			);
+			path = EbadatPrayerWidget;
+			sourceTree = "<group>";
+		};
 		13B07FAE1A68108700A75B9A /* abadt */ = {
 			isa = PBXGroup;
 			children = (
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
+				W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */,
+				W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */,
 				F11748442D0722820044C1D9 /* abadt-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -146,6 +200,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07FAE1A68108700A75B9A /* abadt */,
+				W1D2G3E4XGRP01 /* EbadatPrayerWidget */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -162,6 +217,7 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* abadt.app */,
+				W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -210,15 +266,34 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				800E24972A6A228C8D4807E9 /* [CP] Copy Pods Resources */,
 				058D24F583EFC518102AF760 /* [CP] Embed Pods Frameworks */,
+				W1D2G3E4XEMB01 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				W1D2G3E4XDEP01 /* PBXTargetDependency */,
 			);
 			name = abadt;
 			productName = abadt;
 			productReference = 13B07F961A680F5B00A75B9A /* abadt.app */;
 			productType = "com.apple.product-type.application";
+		};
+		W1D2G3E4XTGT01 /* EbadatPrayerWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = W1D2G3E4XCFGL01 /* Build configuration list for PBXNativeTarget "EbadatPrayerWidgetExtension" */;
+			buildPhases = (
+				W1D2G3E4XSRC01 /* Sources */,
+				W1D2G3E4XFWK01 /* Frameworks */,
+				W1D2G3E4XRES01 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EbadatPrayerWidgetExtension;
+			productName = EbadatPrayerWidgetExtension;
+			productReference = W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -230,6 +305,9 @@
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
+					};
+					W1D2G3E4XTGT01 = {
+						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
@@ -247,6 +325,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* abadt */,
+				W1D2G3E4XTGT01 /* EbadatPrayerWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -272,6 +351,15 @@
 				67110609A39B4AA5B5632CDB /* barakatullah_salim_18sec.mp3 in Resources */,
 				A1B2C3D4E5F60718293A4B5C /* barakatullah_salim_18sec.caf in Resources */,
 				BDEA7F426C230A2FCEAEC264 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W1D2G3E4XRES01 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W1D2G3E4XT005 /* Vazirmatn-Regular.ttf in Resources */,
+				W1D2G3E4XT006 /* Vazirmatn-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -417,7 +505,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
+				W1D2G3T4A5M6O7D8U9L0E1F2 /* WidgetDataModule.swift in Sources */,
+				W1D2G3T4A5M6O7D8U9L0E1M3 /* WidgetDataModule.m in Sources */,
 				B37A6A0FC4628FFA7ACA03C4 /* ExpoModulesProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		W1D2G3E4XSRC01 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				W1D2G3E4XT001 /* EbadatPrayerWidget.swift in Sources */,
+				W1D2G3E4XT002 /* PrayerTimesWidgetProvider.swift in Sources */,
+				W1D2G3E4XT003 /* PrayerTimesWidgetView.swift in Sources */,
+				W1D2G3E4XT004 /* WidgetShared.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,7 +533,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = abadt/abadt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3F4D8X5MG9;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -445,7 +546,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -470,7 +571,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = abadt/abadt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 12;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 3F4D8X5MG9;
 				INFOPLIST_FILE = abadt/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -478,7 +579,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.0;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -614,6 +715,52 @@
 			};
 			name = Release;
 		};
+		W1D2G3E4XDBG01 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = EbadatPrayerWidget/EbadatPrayerWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3F4D8X5MG9;
+				INFOPLIST_FILE = EbadatPrayerWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.afghandev.ebadat.EbadatPrayerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		W1D2G3E4XREL01 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = EbadatPrayerWidget/EbadatPrayerWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3F4D8X5MG9;
+				INFOPLIST_FILE = EbadatPrayerWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.afghandev.ebadat.EbadatPrayerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -634,6 +781,27 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		W1D2G3E4XCFGL01 /* Build configuration list for PBXNativeTarget "EbadatPrayerWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				W1D2G3E4XDBG01 /* Debug */,
+				W1D2G3E4XREL01 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		W1D2G3E4XDEP01 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = W1D2G3E4XTGT01 /* EbadatPrayerWidgetExtension */;
+			targetProxy = W1D2G3E4XPRX01 /* PBXContainerItemProxy */;
+		};
+		W1D2G3E4XPRX01 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = W1D2G3E4XTGT01;
+			remoteInfo = EbadatPrayerWidgetExtension;
 		};
 /* End XCConfigurationList section */
 	};

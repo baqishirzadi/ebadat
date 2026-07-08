@@ -5,4 +5,5 @@
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
   <string name="ExpoLocalization_supportsRTL" translatable="false">true</string>
   <string name="ExpoLocalization_forcesRTL" translatable="false">true</string>
+  <string name="widget_prayertimeswidget_description" translatable="false">تاریخ امروز و اوقات نماز</string>
 </resources>

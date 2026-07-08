@@ -13,6 +13,8 @@ import CenteredText from '@/components/CenteredText';
 import { RtlView } from '@/components/ui/RtlView';
 import { TranslationToggle } from './TranslationToggle';
 import { toArabicNumerals } from '@/utils/numbers';
+import { getQuranFontFamily } from '@/hooks/useFonts';
+import { QuranText } from './QuranText';
 
 interface SurahHeaderProps {
   number: number;
@@ -33,6 +35,7 @@ export const SurahHeader = memo(function SurahHeader({
   onPlayPress,
 }: SurahHeaderProps) {
   const { theme, state } = useApp();
+  const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
 
   return (
     <RtlView style={styles.wrapper}>
@@ -55,14 +58,14 @@ export const SurahHeader = memo(function SurahHeader({
         <View style={styles.nameRow}>
           <View style={styles.arabicNameWrapper}>
             <View style={styles.arabicIsolate}>
-              <CenteredText
-                style={[styles.arabicName, { color: theme.surahHeaderText }]}
+              <QuranText
+                style={[styles.arabicName, { color: theme.surahHeaderText, fontFamily: quranFontFamily }]}
                 numberOfLines={1}
                 adjustsFontSizeToFit
                 minimumFontScale={0.65}
               >
                 سُورَةُ {name}
-              </CenteredText>
+              </QuranText>
             </View>
           </View>
           {onPlayPress && (
@@ -105,9 +108,9 @@ export const SurahHeader = memo(function SurahHeader({
           - Surah At-Tawbah (9) - no Bismillah by divine order */}
       {showBismillah && number !== 1 && number !== 9 && (
         <View style={[styles.bismillahContainer, { backgroundColor: theme.backgroundSecondary }]}>
-          <CenteredText style={[styles.bismillah, { color: theme.bismillah }]}>
+          <QuranText style={[styles.bismillah, { color: theme.bismillah, fontFamily: quranFontFamily }]}>
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-          </CenteredText>
+          </QuranText>
         </View>
       )}
       
@@ -204,7 +207,7 @@ const styles = StyleSheet.create({
   arabicName: {
     fontSize: Typography.ui.display,
     fontWeight: '700',
-    fontFamily: 'ScheherazadeNew',
+    fontFamily: getQuranFontFamily('scheherazade'),
     textAlign: 'center',
     writingDirection: 'rtl',
   },
@@ -244,11 +247,9 @@ const styles = StyleSheet.create({
   },
   bismillah: {
     fontSize: Typography.arabic.large,
-    fontFamily: 'ScheherazadeNew',
     textAlign: 'center',
-    lineHeight: 73, // Optimized height
-    letterSpacing: 1,
+    lineHeight: 58,
     includeFontPadding: false,
-    paddingBottom: 8, // Reduced padding - prevents cut-off without taking too much space
+    paddingBottom: 2,
   },
 });

@@ -6,6 +6,7 @@
 import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts } from '@/constants/theme';
+import { Platform } from 'react-native';
 import {
   Bookmark,
   ReadingPosition,
@@ -285,6 +286,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         preferencesNormalized = true;
       }
 
+      if (Platform.OS === 'ios' && rawPreferences.quranFont === 'qpcHafs') {
+        preferences = {
+          ...preferences,
+          quranFont: 'scheherazade',
+        };
+        preferencesNormalized = true;
+      }
+
       const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
       const lastPosition = positionJson ? JSON.parse(positionJson) : DEFAULT_POSITION;
 
@@ -314,7 +323,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const setQuranFont = (font: QuranFontFamily) => {
-    dispatch({ type: 'SET_FONT', payload: font });
+    const nextFont = Platform.OS === 'ios' && font === 'qpcHafs' ? 'scheherazade' : font;
+    dispatch({ type: 'SET_FONT', payload: nextFont });
   };
 
   const setDariFont = (font: DariFontFamily) => {

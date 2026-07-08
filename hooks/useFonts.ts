@@ -4,11 +4,25 @@
  */
 
 import { QuranFonts, DariFonts, PashtoFonts, QuranFontFamily, DariFontFamily, PashtoFontFamily } from '@/constants/theme';
+import { Platform } from 'react-native';
+
+const IOS_QURAN_FONT_FAMILIES = {
+  scheherazade: 'Scheherazade New',
+  qpcHafs: 'KFGQPC HAFS Uthmanic Script',
+} as const;
 
 /**
  * Get the actual font family name for Quran text
  */
 export function getQuranFontFamily(fontKey: QuranFontFamily): string {
+  if (Platform.OS === 'ios') {
+    if (fontKey === 'qpcHafs') {
+      return IOS_QURAN_FONT_FAMILIES.scheherazade;
+    }
+    if (fontKey === 'scheherazade') {
+      return IOS_QURAN_FONT_FAMILIES.scheherazade;
+    }
+  }
   return QuranFonts[fontKey]?.name || 'ScheherazadeNew';
 }
 
@@ -16,7 +30,7 @@ export function getQuranFontFamily(fontKey: QuranFontFamily): string {
  * Get Scheherazade (Uthmani Taha) font for Quran
  */
 export function getUthmaniFont(): string {
-  return 'ScheherazadeNew';
+  return Platform.OS === 'ios' ? IOS_QURAN_FONT_FAMILIES.scheherazade : 'ScheherazadeNew';
 }
 
 /**

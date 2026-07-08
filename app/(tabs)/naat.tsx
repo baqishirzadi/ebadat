@@ -385,15 +385,15 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
         </View>
         <View style={styles.playerControls}>
           <Pressable
-            testID="naat-player-previous-button"
-            accessibilityLabel="نعت قبلی"
+            testID="naat-player-next-button"
+            accessibilityLabel="نعت بعدی"
             onPress={() => {
-              skipPrevious().catch(() => {});
+              skipNext().catch(() => {});
             }}
-            disabled={!session.canSkipPrevious}
-            style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipPrevious ? 1 : 0.42 }]}
+            disabled={!session.canSkipNext}
+            style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipNext ? 1 : 0.42 }]}
           >
-            <MaterialIcons name="skip-previous" size={22} color={theme.textSecondary} />
+            <MaterialIcons name="skip-next" size={22} color={theme.textSecondary} />
           </Pressable>
           <Pressable
             testID="naat-player-toggle-button"
@@ -406,15 +406,15 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
             <MaterialIcons name={player.isPlaying ? 'pause' : 'play-arrow'} size={28} color="#fff" />
           </Pressable>
           <Pressable
-            testID="naat-player-next-button"
-            accessibilityLabel="نعت بعدی"
+            testID="naat-player-previous-button"
+            accessibilityLabel="نعت قبلی"
             onPress={() => {
-              skipNext().catch(() => {});
+              skipPrevious().catch(() => {});
             }}
-            disabled={!session.canSkipNext}
-            style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipNext ? 1 : 0.42 }]}
+            disabled={!session.canSkipPrevious}
+            style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary, opacity: session.canSkipPrevious ? 1 : 0.42 }]}
           >
-            <MaterialIcons name="skip-next" size={22} color={theme.textSecondary} />
+            <MaterialIcons name="skip-previous" size={22} color={theme.textSecondary} />
           </Pressable>
           <Pressable
             testID="naat-player-stop-button"
@@ -687,7 +687,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   playerControls: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },

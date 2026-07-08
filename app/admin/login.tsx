@@ -14,7 +14,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
@@ -26,6 +26,7 @@ const ADMIN_STORAGE_KEY = '@ebadat/admin_session';
 export default function AdminLoginScreen() {
   const { theme } = useApp();
   const router = useRouter();
+  const navigation = useNavigation();
 
   const [email, setEmail] = useState('');
   const [pin, setPin] = useState('');
@@ -33,6 +34,14 @@ export default function AdminLoginScreen() {
   const [showPin, setShowPin] = useState(false);
 
   const ADMIN_PIN = '0852';
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/more');
+  };
 
   const handleLogin = async () => {
     if (!pin.trim()) {
@@ -129,7 +138,7 @@ export default function AdminLoginScreen() {
           )}
         </Pressable>
 
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
           <CenteredText style={[styles.backButtonText, { color: theme.textSecondary }]}>
             بازگشت
           </CenteredText>

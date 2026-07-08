@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Linking, Platform, StyleSheet } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
@@ -14,18 +14,18 @@ import { markFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
 export default function OnboardingBatteryScreen() {
   const { requestPrayerSchedule } = usePrayer();
 
-  const finish = async () => {
+  const finish = useCallback(async () => {
     await markFirstOpenAdhanSetupDone();
     router.replace('/(tabs)');
     requestPrayerSchedule('onboarding-complete').catch(() => {});
     ensurePushRegistrationOnFirstOpen().catch(() => {});
-  };
+  }, [requestPrayerSchedule]);
 
   React.useEffect(() => {
     if (Platform.OS !== 'android') {
       finish();
     }
-  }, []);
+  }, [finish]);
 
   if (Platform.OS !== 'android') {
     return null;
@@ -35,8 +35,8 @@ export default function OnboardingBatteryScreen() {
     <OnboardingShell
       step={5}
       totalSteps={5}
-      title="بهینه‌سازی باتری (اختیاری)"
-      subtitle="برای اطمینان از پخش به‌موقع اذان، بهینه‌سازی باتری را برای عبادت غیرفعال کنید."
+      title="تنظیمات باتری (اختیاری)"
+      subtitle="در بعضی گوشی‌ها، محدودیت‌های باتری ممکن است پخش به‌موقع اذان را مختل کند."
       primaryLabel="باز کردن تنظیمات باتری"
       onPrimary={async () => {
         const opened = await openBatteryOptimizationSettings();
@@ -48,15 +48,14 @@ export default function OnboardingBatteryScreen() {
       secondaryLabel="بعداً"
       onSecondary={finish}
       showBack
-      onBack={() => router.back()}
     >
       <RtlView style={styles.content}>
         <RtlText align="center" style={[styles.highlight, { color: '#b45309' }]}>
-          گوشی هواوی: حتماً بهینه‌سازی باتری را برای عبادت غیرفعال کنید
+          اگر اذان با تاخیر پخش می‌شود، محدودیت‌های باتری را برای عبادت کمتر کنید
         </RtlText>
         <RtlText align="center" style={styles.bullet}>• این مرحله اختیاری است</RtlText>
-        <RtlText align="center" style={styles.bullet}>• در گوشی‌های سامسونگ، شیائومی و هواوی توصیه می‌شود</RtlText>
-        <RtlText align="center" style={styles.bullet}>• می‌توانید بعداً از تنظیمات اذان راهنما را ببینید</RtlText>
+        <RtlText align="center" style={styles.bullet}>• بعضی گوشی‌ها اعلان‌ها و پخش پس‌زمینه را محدود می‌کنند</RtlText>
+        <RtlText align="center" style={styles.bullet}>• می‌توانید بعداً هم این راهنما را از تنظیمات اذان باز کنید</RtlText>
       </RtlView>
     </OnboardingShell>
   );

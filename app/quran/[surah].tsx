@@ -6,11 +6,12 @@
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { View, Text, StyleSheet, StatusBar, Pressable, Alert } from 'react-native';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 import { MushafView, AudioPlayer } from '@/components/quran';
 import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { Spacing } from '@/constants/theme';
@@ -34,9 +35,11 @@ export default function QuranReaderScreen() {
     resumeSource?: string | string[];
   }>();
   const router = useRouter();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { theme, state } = useApp();
   const { getSurah } = useQuranData();
+  const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
 
   const normalizedSurahParam = Array.isArray(surahParam) ? surahParam[0] : surahParam;
   const normalizedAyahParam = Array.isArray(ayahParam) ? ayahParam[0] : ayahParam;
@@ -99,10 +102,15 @@ export default function QuranReaderScreen() {
   }, [surah, shouldGoBack]);
 
   useEffect(() => {
-    if (shouldGoBack) {
+    if (!shouldGoBack) return;
+
+    if (navigation.canGoBack()) {
       router.back();
+      return;
     }
-  }, [shouldGoBack, router]);
+
+    router.replace('/(tabs)/quran-tab');
+  }, [navigation, router, shouldGoBack]);
 
   useEffect(() => {
     void audioManager.initialize();
@@ -271,10 +279,20 @@ export default function QuranReaderScreen() {
           },
         ]}
       >
-        <Pressable onPress={() => router.back()} hitSlop={8} style={styles.topBarBackButton}>
+        <Pressable
+          onPress={() => {
+            if (navigation.canGoBack()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/quran-tab');
+            }
+          }}
+          hitSlop={8}
+          style={styles.topBarBackButton}
+        >
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
-        <Text style={styles.topBarTitle} numberOfLines={1} ellipsizeMode="tail">
+        <Text style={[styles.topBarTitle, { fontFamily: quranFontFamily }]} numberOfLines={1} ellipsizeMode="tail">
           {surahName}
         </Text>
         <View style={styles.topBarNav}>
@@ -358,7 +376,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: Spacing.sm,
     color: '#fff',
-    fontFamily: 'ScheherazadeNew',
     fontSize: 18,
     textAlign: 'center',
     writingDirection: 'rtl',

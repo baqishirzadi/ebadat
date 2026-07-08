@@ -6,7 +6,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -19,8 +19,17 @@ export default function DuaRequestsScreen() {
   const { theme, themeMode } = useApp();
   const { state, refreshRequests, syncPending } = useDua();
   const router = useRouter();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = React.useState(false);
+
+  const handleBack = React.useCallback(() => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/more');
+  }, [navigation, router]);
 
   useEffect(() => {
     refreshRequests();
@@ -83,7 +92,7 @@ export default function DuaRequestsScreen() {
         colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
         style={styles.header}
       >
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
         <View pointerEvents="none" style={styles.headerTitleContainer}>

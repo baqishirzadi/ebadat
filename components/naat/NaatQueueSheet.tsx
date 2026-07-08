@@ -22,7 +22,7 @@ export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }:
       <View style={[styles.sheet, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
         <View style={styles.handle} />
         <View style={styles.header}>
-          <Pressable onPress={onClose} style={styles.closeButton}>
+          <Pressable testID="naat-queue-close-button" onPress={onClose} style={styles.closeButton}>
             <MaterialIcons name="close" size={22} color={theme.text} />
           </Pressable>
           <View style={styles.headerTextWrap}>
@@ -42,6 +42,7 @@ export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }:
             const isActive = item.id === currentId;
             return (
               <Pressable
+                testID={`naat-queue-row-${index + 1}`}
                 onPress={() => onSelect(item.id)}
                 style={[
                   styles.row,
@@ -64,7 +65,11 @@ export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }:
                     {item.reciter_name}
                   </Text>
                 </View>
-                {isActive && <MaterialIcons name="graphic-eq" size={20} color={theme.tint} />}
+                {isActive && (
+                  <View testID={`naat-queue-row-active-${index + 1}`}>
+                    <MaterialIcons name="graphic-eq" size={20} color={theme.tint} />
+                  </View>
+                )}
               </Pressable>
             );
           }}

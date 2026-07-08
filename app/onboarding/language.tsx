@@ -33,7 +33,6 @@ export default function OnboardingLanguageScreen() {
       primaryLabel="ادامه"
       onPrimary={handleContinue}
       showBack
-      onBack={() => router.back()}
     >
       <RtlView style={styles.list}>
         <View style={[styles.iconCircle, { backgroundColor: `${theme.tint}18` }]}>

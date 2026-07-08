@@ -13,7 +13,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useScholar } from '@/context/ScholarContext';
@@ -28,6 +28,7 @@ export default function EditArticleScreen() {
   const { theme } = useApp();
   const { state: scholarState } = useScholar();
   const router = useRouter();
+  const navigation = useNavigation();
   const [article, setArticle] = useState<any>(null);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
@@ -59,6 +60,14 @@ export default function EditArticleScreen() {
     }
   }
 
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/scholar/dashboard');
+  };
+
   const handleSave = async () => {
     if (!title.trim() || !body.trim()) {
       Alert.alert('خطا', 'لطفاً عنوان و متن مقاله را وارد کنید');
@@ -74,7 +83,7 @@ export default function EditArticleScreen() {
         language,
       });
       Alert.alert('موفق', 'مقاله به‌روزرسانی شد');
-      router.back();
+      handleBack();
     } catch (error) {
       Alert.alert('خطا', 'خطا در به‌روزرسانی مقاله');
     } finally {

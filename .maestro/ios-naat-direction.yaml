@@ -1,0 +1,80 @@
+appId: com.afghandev.ebadat
+---
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 8000
+- extendedWaitUntil:
+    visible:
+      text: "به عبادت خوش آمدید"
+    timeout: 20000
+- tapOn:
+    text: "شروع"
+- extendedWaitUntil:
+    visible:
+      text: "زبان برنامه"
+    timeout: 15000
+- tapOn:
+    text: "ادامه"
+- extendedWaitUntil:
+    visible:
+      text: "انتخاب کشور و شهر"
+    timeout: 15000
+- tapOn:
+    text: "کابل"
+- tapOn:
+    text: "ادامه با کابل"
+- extendedWaitUntil:
+    visible:
+      text: "فعال‌سازی اذان"
+    timeout: 15000
+- tapOn:
+    text: "فعال‌سازی اعلان‌ها"
+- tapOn:
+    text: "Allow"
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: "naat-screen-list"
+    timeout: 40000
+- tapOn:
+    id: "naat-card-play-button"
+- extendedWaitUntil:
+    visible:
+      id: "naat-player-dock"
+    timeout: 12000
+- tapOn:
+    id: "naat-player-queue-button"
+- extendedWaitUntil:
+    visible:
+      id: "naat-queue-row-active-1"
+    timeout: 10000
+- tapOn:
+    id: "naat-queue-close-button"
+- tapOn:
+    id: "naat-player-next-button"
+- tapOn:
+    id: "naat-player-queue-button"
+- extendedWaitUntil:
+    visible:
+      id: "naat-queue-row-active-2"
+    timeout: 10000
+- tapOn:
+    id: "naat-queue-close-button"
+- tapOn:
+    id: "naat-player-previous-button"
+- tapOn:
+    id: "naat-player-queue-button"
+- extendedWaitUntil:
+    visible:
+      id: "naat-queue-row-active-1"
+    timeout: 10000
+- tapOn:
+    id: "naat-queue-close-button"
+- tapOn:
+    id: "naat-player-stop-button"
+- assertNotVisible:
+    id: "naat-player-dock"

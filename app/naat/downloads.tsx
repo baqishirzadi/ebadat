@@ -30,7 +30,16 @@ export default function NaatDownloadsScreen() {
   return (
     <View testID="ios-naat-downloads-ready" style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack?.()) {
+              router.back();
+            } else {
+              router.replace('/naat');
+            }
+          }}
+          style={styles.backButton}
+        >
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
         <Text style={styles.headerTitle}>دانلودها</Text>

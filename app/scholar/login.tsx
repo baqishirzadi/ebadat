@@ -14,7 +14,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useScholar } from '@/context/ScholarContext';
@@ -25,6 +25,7 @@ export default function ScholarLoginScreen() {
   const { theme } = useApp();
   const { login, state } = useScholar();
   const router = useRouter();
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -41,6 +42,14 @@ export default function ScholarLoginScreen() {
     } catch (error: any) {
       Alert.alert('خطا', error.message || 'خطا در ورود');
     }
+  };
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/more');
   };
 
   return (
@@ -126,7 +135,7 @@ export default function ScholarLoginScreen() {
           </CenteredText>
         )}
 
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
           <CenteredText style={[styles.backButtonText, { color: theme.textSecondary }]}>
             بازگشت
           </CenteredText>

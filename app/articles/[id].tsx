@@ -119,7 +119,13 @@ export default function ArticleReadingScreen() {
         ]}
       >
         <Pressable
-          onPress={() => router.back()}
+          onPress={() => {
+            if (router.canGoBack?.()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/articles');
+            }
+          }}
           style={({ pressed }) => [
             styles.backButton,
             { backgroundColor: 'rgba(0,0,0,0.25)' },

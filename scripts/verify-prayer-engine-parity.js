@@ -9,6 +9,7 @@ const FIXTURES = [
   { cityKey: 'afghanistan_kabul', lat: 34.5553, lon: 69.2075, date: '2026-07-06' },
   { cityKey: 'afghanistan_herat', lat: 34.3482, lon: 62.1997, date: '2026-07-06' },
   { cityKey: 'afghanistan_kandahar', lat: 31.6289, lon: 65.7372, date: '2026-12-25' },
+  { cityKey: 'pakistan_karachi', lat: 24.8607, lon: 67.0011, date: '2026-07-06' },
 ];
 
 function computeJsTimes(lat, lon, dateKey, cityKey) {
@@ -18,11 +19,11 @@ function computeJsTimes(lat, lon, dateKey, cityKey) {
   params.madhab = Madhab.Hanafi;
   const times = new PrayerTimes(coordinates, new Date(year, month - 1, day), params);
   let maghrib = times.maghrib;
-  if (cityKey.startsWith('afghanistan_')) {
-    maghrib = new Date(maghrib.getTime() + 4 * 60 * 1000);
+  let dhuhr = times.dhuhr;
+  if (cityKey === 'afghanistan_kabul') {
+    dhuhr = new Date(dhuhr.getTime() + 20 * 60 * 1000);
   }
   const weekday = new Date(year, month - 1, day).getDay();
-  let dhuhr = times.dhuhr;
   if (weekday === 5) {
     dhuhr = new Date(year, month - 1, day, 13, 0, 0, 0);
   }

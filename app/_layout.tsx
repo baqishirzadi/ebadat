@@ -4,13 +4,16 @@
  * With FULL RTL support for Arabic, Dari, and Pashto
  */
 
-import * as Font from 'expo-font';
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, I18nManager, InteractionManager, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+if (Platform.OS === 'android') {
+  require('@/widgets/widgetTaskHandler');
+}
 
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OnboardingStartupRedirect } from '@/components/onboarding/OnboardingStartupRedirect';
@@ -23,8 +26,7 @@ import { DuaProvider } from '@/context/DuaContext';
 import { NaatProvider } from '@/context/NaatContext';
 import { PrayerProvider } from '@/context/PrayerContext';
 import { ScholarProvider } from '@/context/ScholarContext';
-import { useStartupBootstrap } from '@/context/StartupBootstrapContext';
-import { StartupBootstrapProvider } from '@/context/StartupBootstrapContext';
+import { StartupBootstrapProvider, useStartupBootstrap } from '@/context/StartupBootstrapContext';
 import { StartupPhaseProvider, useStartupPhase } from '@/context/StartupPhaseContext';
 import { StatsProvider } from '@/context/StatsContext';
 import { getKabulNoon } from '@/utils/afghanistanCalendar';
@@ -102,22 +104,6 @@ if (__DEV__) {
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
 startupMark('Splash screen hold started');
-
-// Critical fonts needed for first paint / onboarding.
-const criticalFontAssets = {
-  'ScheherazadeNew': require('@/assets/fonts/ScheherazadeNew-Regular.ttf'),
-  'Vazirmatn': require('@/assets/fonts/Vazirmatn-Regular.ttf'),
-  'Vazirmatn-Bold': require('@/assets/fonts/Vazirmatn-Bold.ttf'),
-  'NotoNastaliqUrdu': require('@/assets/fonts/NotoNastaliqUrdu-Regular.ttf'),
-};
-
-// Heavier fonts used outside startup can load after first paint.
-const deferredFontAssets = {
-  'ScheherazadeNew-Bold': require('@/assets/fonts/ScheherazadeNew-Bold.ttf'),
-  'QPCHafs': require('@/assets/fonts/QPCHafs18.ttf'),
-  'Amiri': require('@/assets/fonts/Amiri-Regular.ttf'),
-  'Amiri-Bold': require('@/assets/fonts/Amiri-Bold.ttf'),
-};
 
 // Default RTL text style - Apply this to all text components
 export const RTL_TEXT_STYLE = {
@@ -398,8 +384,6 @@ function RootLayoutNav() {
 export default function RootLayout() {
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const [fontPhaseDone, setFontPhaseDone] = useState(false);
-  const [deferredFontsLoaded, setDeferredFontsLoaded] = useState(false);
-  const [fontError, setFontError] = useState<string | null>(null);
   const [bootstrap, setBootstrap] = useState({
     needsOnboarding: false,
     hasCity: false,
@@ -408,47 +392,12 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    async function loadFonts() {
-      try {
-        startupMark('Font loading started');
-        await Font.loadAsync(criticalFontAssets);
-        setFontsLoaded(true);
-        setFontPhaseDone(true);
-        startupMark('Critical font loading completed');
-      } catch (error) {
-        console.error('Error loading fonts:', error);
-        setFontError(error instanceof Error ? error.message : 'Font loading failed');
-        setFontsLoaded(true);
-      } finally {
-        startupMark('Splash hide requested after font phase');
-        SplashScreen.hideAsync().catch(() => {});
-      }
-    }
-
-    loadFonts();
-
-    // Huawei/slow devices: never block on splash if font load hangs
-    const splashFallback = setTimeout(() => {
-      startupMark('Splash fallback triggered');
-      SplashScreen.hideAsync().catch(() => {});
-      setFontsLoaded(true);
-      setFontPhaseDone(true);
-    }, 4000);
-
-    return () => clearTimeout(splashFallback);
+    startupMark('Using bundled native fonts');
+    setFontsLoaded(true);
+    setFontPhaseDone(true);
+    startupMark('Splash hide requested after bundled font phase');
+    SplashScreen.hideAsync().catch(() => {});
   }, []);
-
-  useEffect(() => {
-    if (fontsLoaded) return;
-    const hardWatchdog = setTimeout(() => {
-      startupMark('Font hard-watchdog fired; forcing app shell');
-      setFontError((current) => current ?? 'font-watchdog-timeout');
-      setFontsLoaded(true);
-      setFontPhaseDone(true);
-      SplashScreen.hideAsync().catch(() => {});
-    }, 10000);
-    return () => clearTimeout(hardWatchdog);
-  }, [fontsLoaded]);
 
   useEffect(() => {
     if (!fontsLoaded) return;
@@ -489,30 +438,6 @@ export default function RootLayout() {
   }, [fontsLoaded]);
 
   useEffect(() => {
-    if (!fontsLoaded || deferredFontsLoaded) return;
-
-    let cancelled = false;
-    const task = InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => {
-        if (cancelled) return;
-        Font.loadAsync(deferredFontAssets)
-          .then(() => {
-            if (!cancelled) {
-              setDeferredFontsLoaded(true);
-              startupMark('Deferred font loading completed');
-            }
-          })
-          .catch(() => {});
-      }, 1200);
-    });
-
-    return () => {
-      cancelled = true;
-      task.cancel();
-    };
-  }, [deferredFontsLoaded, fontsLoaded]);
-
-  useEffect(() => {
     if (!fontsLoaded || bootstrap.checked) return;
     const bootstrapWatchdog = setTimeout(() => {
       startupMark('Bootstrap watchdog fired; marking checked');
@@ -526,12 +451,10 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <View style={styles.loadingContainer}>
           <SpiritualSplash onComplete={() => {}} />
-          {fontError ? (
-            <View style={styles.loadingFallback}>
-              <ActivityIndicator size="small" color="#ffffff" />
-              <Text style={styles.loadingText}>در حال بارگذاری...</Text>
-            </View>
-          ) : null}
+          <View style={styles.loadingFallback}>
+            <ActivityIndicator size="small" color="#ffffff" />
+            <Text style={styles.loadingText}>در حال بارگذاری...</Text>
+          </View>
         </View>
       </SafeAreaProvider>
     );

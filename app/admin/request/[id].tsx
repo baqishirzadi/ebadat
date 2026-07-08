@@ -15,7 +15,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useNavigation, useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
@@ -28,7 +28,16 @@ import { buildDuaResponse, detectLanguage, ensureSignature } from '@/utils/duaAd
 export default function AdminRequestResponseScreen() {
   const { theme } = useApp();
   const router = useRouter();
+  const navigation = useNavigation();
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/admin/dashboard');
+  };
 
   const [request, setRequest] = useState<DuaRequest | null>(null);
   const [response, setResponse] = useState('');
@@ -83,7 +92,7 @@ export default function AdminRequestResponseScreen() {
       console.log('Response saved. Notification will be sent via Edge Function.');
 
       Alert.alert('موفق', 'پاسخ با موفقیت ثبت شد و به کاربر اطلاع داده شد', [
-        { text: 'باشه', onPress: () => router.back() },
+        { text: 'باشه', onPress: handleBack },
       ]);
     } catch (error) {
       console.error('Failed to submit response:', error);
@@ -111,7 +120,7 @@ export default function AdminRequestResponseScreen() {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Pressable onPress={handleBack} style={styles.backButton}>
             <MaterialIcons name="arrow-forward" size={24} color="#fff" />
           </Pressable>
           <CenteredText style={styles.headerTitle}>پاسخ به درخواست</CenteredText>
@@ -128,7 +137,7 @@ export default function AdminRequestResponseScreen() {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Pressable onPress={handleBack} style={styles.backButton}>
             <MaterialIcons name="arrow-forward" size={24} color="#fff" />
           </Pressable>
           <CenteredText style={styles.headerTitle}>پاسخ به درخواست</CenteredText>
@@ -153,7 +162,7 @@ export default function AdminRequestResponseScreen() {
     >
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
         <CenteredText style={styles.headerTitle}>پاسخ به درخواست</CenteredText>

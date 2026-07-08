@@ -5,7 +5,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { View, StyleSheet, Pressable, Dimensions } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, useNavigation, useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Animated, {
   useAnimatedStyle,
@@ -35,6 +35,8 @@ const DHIKR_OPTIONS = [
 export default function CounterScreen() {
   const { theme } = useApp();
   const { addDhikr } = useStats();
+  const navigation = useNavigation();
+  const router = useRouter();
   const [count, setCount] = useState(0);
   const [selectedDhikr, setSelectedDhikr] = useState(DHIKR_OPTIONS[0]);
   const [showOptions, setShowOptions] = useState(false);
@@ -82,6 +84,13 @@ export default function CounterScreen() {
 
   const progress = Math.min((count / selectedDhikr.target) * 100, 100);
   const rounds = Math.floor(count / selectedDhikr.target);
+  const handleBack = useCallback(() => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/adhkar');
+  }, [navigation, router]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -91,6 +100,11 @@ export default function CounterScreen() {
           headerStyle: { backgroundColor: theme.surahHeader },
           headerTintColor: '#fff',
           presentation: 'modal',
+          headerLeft: () => (
+            <Pressable onPress={handleBack} hitSlop={10} style={styles.headerBackButton}>
+              <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+            </Pressable>
+          ),
         }}
       />
 
@@ -200,6 +214,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: Spacing.lg,
+  },
+  headerBackButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   dhikrSelector: {
     flexDirection: 'row',

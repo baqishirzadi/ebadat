@@ -2,6 +2,7 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { JuzRange } from '@/data/juzRanges';
 import { SURAH_NAMES, toArabicNumerals } from '@/data/surahNames';
+import { getUthmaniFont } from '@/hooks/useFonts';
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -148,7 +149,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   calligraphy: {
-    fontFamily: 'ScheherazadeNew',
+    fontFamily: getUthmaniFont(),
     fontSize: 26,
     textAlign: 'center',
     writingDirection: 'rtl',

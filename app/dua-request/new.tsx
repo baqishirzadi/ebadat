@@ -18,7 +18,7 @@ import {
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
@@ -32,6 +32,15 @@ export default function NewDuaRequestScreen() {
   const { theme, themeMode } = useApp();
   const { submitRequest } = useDua();
   const router = useRouter();
+  const navigation = useNavigation();
+
+  const handleBack = React.useCallback(() => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/dua-request');
+  }, [navigation, router]);
 
   const [category, setCategory] = useState<DuaCategory | null>(null);
   const [message, setMessage] = useState('');
@@ -94,7 +103,7 @@ export default function NewDuaRequestScreen() {
         [{ text: 'باشه' }]
       );
       // Still navigate back
-      router.back();
+      handleBack();
     } finally {
       setIsSubmitting(false);
     }
@@ -114,7 +123,7 @@ export default function NewDuaRequestScreen() {
         colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
         style={styles.header}
       >
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
         <View style={styles.headerCenter}>

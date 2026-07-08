@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArticleReader } from '@/components/articles/ArticleReader';
 import {
@@ -61,6 +61,7 @@ export default function ArticleAdminScreen() {
   const { theme } = useApp();
   const { state, refreshArticles, refreshScholars } = useArticles();
   const router = useRouter();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
   const [articles, setArticles] = useState<Article[]>([]);
@@ -119,6 +120,14 @@ export default function ArticleAdminScreen() {
 
   const handleLogout = () => {
     clearAdminSession();
+    router.replace('/articles');
+  };
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
     router.replace('/articles');
   };
 
@@ -266,7 +275,7 @@ export default function ArticleAdminScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}> 
       <View style={[styles.header, { backgroundColor: theme.surahHeader, paddingTop: insets.top + Spacing.sm }]}> 
-        <Pressable onPress={() => router.back()} style={styles.headerIconButton}>
+        <Pressable onPress={handleBack} style={styles.headerIconButton}>
           <MaterialIcons name="arrow-forward" size={22} color="#fff" />
         </Pressable>
         <CenteredText style={styles.headerTitle}>مدیریت مقالات</CenteredText>

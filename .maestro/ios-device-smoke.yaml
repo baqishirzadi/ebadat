@@ -6,11 +6,27 @@ appId: com.afghandev.ebadat
     timeout: 8000
 - extendedWaitUntil:
     visible:
-      id: "first-open-adhan-setup"
+      text: "به عبادت خوش آمدید"
     timeout: 25000
 - takeScreenshot: ios-device-first-open-adhan
 - tapOn:
-    id: "first-open-use-kabul"
+    text: "شروع"
+- tapOn:
+    text: "ادامه"
+- extendedWaitUntil:
+    visible:
+      text: "انتخاب کشور و شهر"
+    timeout: 15000
+- tapOn:
+    text: "کابل"
+- tapOn:
+    text: "ادامه با کابل"
+- extendedWaitUntil:
+    visible:
+      text: "فعال‌سازی اذان"
+    timeout: 15000
+- tapOn:
+    text: "فعال‌سازی اعلان‌ها"
 - tapOn:
     text: "Allow"
     optional: true
@@ -19,11 +35,11 @@ appId: com.afghandev.ebadat
     optional: true
 - extendedWaitUntil:
     visible:
-      id: "ios-home-ready"
-    timeout: 25000
+      id: "naat-screen-list"
+    timeout: 40000
 - assertNotVisible: "Console Error"
 - assertNotVisible: "Console Warning"
-- takeScreenshot: ios-device-home
+- takeScreenshot: ios-device-naat-home
 
 - tapOn:
     point: "75%,94%"

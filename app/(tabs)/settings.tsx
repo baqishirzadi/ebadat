@@ -25,6 +25,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -32,6 +33,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 
 export default function SettingsScreen() {
   const {
@@ -48,6 +50,7 @@ export default function SettingsScreen() {
   const { state: prayerState, updateSettings } = usePrayer();
   const router = useRouter();
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const isIOS = Platform.OS === 'ios';
 
   const themes: { id: ThemeMode; name: string; icon: string }[] = [
     { id: 'light', name: 'روشن', icon: 'light-mode' },
@@ -175,24 +178,41 @@ export default function SettingsScreen() {
           {quranFonts.map((f) => (
             <Pressable
               key={f.id}
-              onPress={() => setQuranFont(f.id)}
+              onPress={() => {
+                if (isIOS && f.id === 'qpcHafs') return;
+                setQuranFont(f.id);
+              }}
+              disabled={isIOS && f.id === 'qpcHafs'}
               style={[
                 styles.optionItem,
                 { borderBottomColor: theme.divider },
                 state.preferences.quranFont === f.id && { backgroundColor: theme.backgroundSecondary },
+                isIOS && f.id === 'qpcHafs' && { opacity: 0.45 },
               ]}
             >
               <View style={styles.fontPreview}>
-                <Text style={[styles.fontSample, { color: theme.text, fontFamily: QuranFonts[f.id].name }]}>
+                <Text style={[styles.fontSample, { color: theme.text, fontFamily: getQuranFontFamily(f.id) }]}>
                   {f.sample}
                 </Text>
                 <Text style={[styles.optionText, { color: theme.text }]}>{f.name}</Text>
+                {isIOS && f.id === 'qpcHafs' ? (
+                  <Text style={[styles.fontHint, { color: theme.textSecondary }]}>
+                    در iPhone فعلاً از خط استاندارد عثمان طه استفاده می‌شود
+                  </Text>
+                ) : null}
               </View>
               {state.preferences.quranFont === f.id && (
                 <MaterialIcons name="check" size={20} color={theme.tint} />
               )}
             </Pressable>
           ))}
+          {isIOS ? (
+            <View style={[styles.fontNotice, { borderTopColor: theme.divider }]}>
+              <Text style={[styles.fontNoticeText, { color: theme.textSecondary }]}>
+                برای نمایش زیباتر و پایدارتر در iOS، صفحه قرآن فعلاً با خط استاندارد عثمان طه نشان داده می‌شود.
+              </Text>
+            </View>
+          ) : null}
         </View>
       )}
 
@@ -576,6 +596,23 @@ const styles = StyleSheet.create({
     fontSize: Typography.arabic.small,
     marginBottom: 4,
     textAlign: 'center',
+  },
+  fontHint: {
+    marginTop: 2,
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    fontFamily: 'Vazirmatn',
+  },
+  fontNotice: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  fontNoticeText: {
+    fontSize: Typography.ui.caption,
+    lineHeight: 20,
+    textAlign: 'right',
+    fontFamily: 'Vazirmatn',
   },
   noticeCard: {
     flexDirection: 'row-reverse',

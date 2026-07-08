@@ -10,6 +10,7 @@ class ExactAlarmPackage : ReactPackage {
     return listOf(
       ExactAlarmModule(reactContext),
       AdhanAlarmSchedulerModule(reactContext),
+      WidgetDataModule(reactContext),
     )
   }
 

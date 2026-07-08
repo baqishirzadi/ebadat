@@ -13,7 +13,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useScholar } from '@/context/ScholarContext';
@@ -27,12 +27,21 @@ export default function NewArticleScreen() {
   const { theme } = useApp();
   const { state: scholarState } = useScholar();
   const router = useRouter();
+  const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [category, setCategory] = useState<ArticleCategory>('iman');
   const [language, setLanguage] = useState<ArticleLanguage>('dari');
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/scholar/dashboard');
+  };
 
   const handleSaveDraft = async () => {
     if (!scholarState.scholar) return;
@@ -51,7 +60,7 @@ export default function NewArticleScreen() {
         published: false,
       });
       Alert.alert('موفق', 'پیش‌نویس ذخیره شد');
-      router.back();
+      handleBack();
     } catch (error) {
       Alert.alert('خطا', 'خطا در ذخیره پیش‌نویس');
     } finally {

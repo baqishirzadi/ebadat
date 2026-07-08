@@ -25,7 +25,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.afghandev.ebadat",
       "entitlements": {
-        "com.apple.developer.usernotifications.time-sensitive": true
+        "com.apple.developer.usernotifications.time-sensitive": true,
+        "com.apple.security.application-groups": [
+          "group.com.afghandev.ebadat"
+        ]
       },
       "infoPlist": {
         "UIBackgroundModes": [
@@ -116,6 +119,29 @@
         }
       ],
       "./plugins/withSplashScreenBackground",
+      "./plugins/withPrayerWidget",
+      [
+        "react-native-android-widget",
+        {
+          "fonts": [
+            "./assets/fonts/Vazirmatn-Regular.ttf",
+            "./assets/fonts/Vazirmatn-Bold.ttf"
+          ],
+          "widgets": [
+            {
+              "name": "PrayerTimesWidget",
+              "label": "اوقات نماز",
+              "description": "تاریخ امروز و اوقات نماز",
+              "minWidth": "320dp",
+              "minHeight": "120dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal|vertical",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ],
       [
         "expo-location",
         {

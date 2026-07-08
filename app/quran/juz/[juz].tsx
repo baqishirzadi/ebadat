@@ -5,6 +5,7 @@ import { Spacing, Typography } from '@/constants/theme';
 import { useApp, useReadingPosition } from '@/context/AppContext';
 import { getJuzRange } from '@/data/juzRanges';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
+import { getUthmaniFont } from '@/hooks/useFonts';
 import { useQuranData } from '@/hooks/useQuranData';
 import { Ayah } from '@/types/quran';
 import { audioManager, getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
@@ -781,7 +782,7 @@ const styles = StyleSheet.create({
     borderRadius: 3.5,
   },
   bismillahText: {
-    fontFamily: 'ScheherazadeNew',
+    fontFamily: getUthmaniFont(),
     fontSize: 30,
     lineHeight: 64,
     textAlign: 'center',

@@ -2,7 +2,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useMemo, useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
 import { RtlText } from '@/components/ui/RtlText';
@@ -37,23 +37,33 @@ export default function OnboardingNotificationsScreen() {
   }, [prayerTimes]);
 
   const goNext = async () => {
-    if (Platform.OS !== 'android') {
-      await markFirstOpenAdhanSetupDone();
-    }
+    await markFirstOpenAdhanSetupDone();
     requestPrayerSchedule('onboarding-complete').catch(() => {});
     ensurePushRegistrationOnFirstOpen().catch(() => {});
-    if (Platform.OS === 'android') {
-      router.push('/onboarding/battery' as never);
-      return;
-    }
     router.replace('/(tabs)');
   };
 
   const handleEnable = async () => {
     setBusy(true);
     try {
-      await requestAdhanNotificationPermission();
-      goNext();
+      const result = await requestAdhanNotificationPermission();
+      if (result === 'granted' || result === 'skipped') {
+        await goNext();
+        return;
+      }
+
+      if (result === 'blocked') {
+        Alert.alert(
+          'اجازه اعلان غیرفعال است',
+          'برای پخش به‌موقع اذان، اعلان‌های عبادت را از Settings دوباره فعال کنید.'
+        );
+        return;
+      }
+
+      Alert.alert(
+        'اعلان‌ها فعال نشد',
+        'بدون اجازه اعلان، اذان به‌موقع پخش نمی‌شود. می‌توانید دوباره تلاش کنید یا بدون اعلان ادامه دهید.'
+      );
     } finally {
       setBusy(false);
     }
@@ -69,7 +79,7 @@ export default function OnboardingNotificationsScreen() {
   return (
     <OnboardingShell
       step={4}
-      totalSteps={5}
+      totalSteps={4}
       title="فعال‌سازی اذان"
       subtitle="برای شنیدن اذان به‌موقع، اجازه اعلان را فعال کنید. این مرحله برای همه کاربران ضروری است."
       primaryLabel={busy ? 'در حال آماده‌سازی...' : 'فعال‌سازی اعلان‌ها'}
@@ -78,7 +88,6 @@ export default function OnboardingNotificationsScreen() {
       secondaryLabel="ادامه بدون اعلان"
       onSecondary={goNext}
       showBack
-      onBack={() => router.back()}
     >
       <RtlView style={styles.content}>
         <View style={[styles.iconCircle, { backgroundColor: `${theme.tint}18` }]}>
@@ -146,7 +155,7 @@ export default function OnboardingNotificationsScreen() {
           • می‌توانید بعداً از تنظیمات اذان صدا را تغییر دهید
         </RtlText>
         <RtlText align="center" style={[styles.bullet, { color: theme.textSecondary }]}>
-          • در گوشی‌های هواوی، بهینه‌سازی باتری را در مرحله بعد غیرفعال کنید
+          • اگر گوشی شما اعلان‌ها را محدود می‌کند، بعداً می‌توانید تنظیمات باتری را از بخش اذان بررسی کنید
         </RtlText>
       </RtlView>
     </OnboardingShell>

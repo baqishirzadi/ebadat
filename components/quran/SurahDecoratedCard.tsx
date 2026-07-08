@@ -2,6 +2,7 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
 import { useApp } from '@/context/AppContext';
 import { toArabicNumerals } from '@/data/surahNames';
+import { getUthmaniFont } from '@/hooks/useFonts';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { I18nManager, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
@@ -139,7 +140,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Typography.ui.title,
     fontWeight: '600',
-    fontFamily: 'ScheherazadeNew',
+    fontFamily: getUthmaniFont(),
     textAlign: 'center',
     writingDirection: 'rtl',
     width: '100%',

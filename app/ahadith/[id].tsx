@@ -98,7 +98,16 @@ export default function HadithDetailScreen() {
         colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
         style={[styles.header, { paddingTop: insets.top + 10 }]}
       >
-        <Pressable onPress={() => router.back()} style={styles.headerIconButton}>
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack?.()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/ahadith');
+            }
+          }}
+          style={styles.headerIconButton}
+        >
           <MaterialIcons name="arrow-forward" size={22} color="#fff" />
         </Pressable>
         <CText style={styles.headerTitle}>حدیث</CText>

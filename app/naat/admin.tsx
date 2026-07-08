@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { View, StyleSheet, TextInput, Pressable, ScrollView, Text, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useNaat } from '@/context/NaatContext';
@@ -15,7 +15,16 @@ import { NaatDraft } from '@/types/naat';
 export default function NaatAdminScreen() {
   const { theme } = useApp();
   const router = useRouter();
+  const navigation = useNavigation();
   const { naats, createItem, updateItem, removeItem } = useNaat();
+
+  const handleBack = () => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/naat');
+  };
 
   const [titleFa, setTitleFa] = useState('');
   const [titlePs, setTitlePs] = useState('');
@@ -95,7 +104,7 @@ export default function NaatAdminScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
         <Text style={styles.headerTitle}>مدیریت نعت‌ها</Text>

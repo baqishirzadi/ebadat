@@ -225,7 +225,17 @@ export default function QiblaScreen() {
 
   const header = (
     <RtlView style={[styles.header, { backgroundColor: theme.surahHeader, paddingTop: insets.top + Spacing.xs }]}>
-      <Pressable onPress={() => router.back()} hitSlop={10} style={styles.headerBack}>
+      <Pressable
+        onPress={() => {
+          if (router.canGoBack?.()) {
+            router.back();
+          } else {
+            router.replace('/(tabs)');
+          }
+        }}
+        hitSlop={10}
+        style={styles.headerBack}
+      >
         <MaterialIcons name="arrow-forward" size={24} color="#fff" />
       </Pressable>
       <RtlText align="center" style={styles.headerTitle}>قبله‌نما</RtlText>

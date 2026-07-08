@@ -158,7 +158,6 @@ export default function OnboardingLocationScreen() {
       }}
       primaryDisabled={saving}
       showBack
-      onBack={() => router.back()}
       scrollable={false}
     >
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>

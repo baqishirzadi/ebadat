@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { I18nManager, PanResponder, StyleSheet, Text, View } from 'react-native';
+import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 
 type Props = {
@@ -58,8 +58,10 @@ export function NaatProgressBar({
       const effectiveWidth = width || trackWidth;
       if (!effectiveWidth) return 0;
       const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
-      const rawRatio = x / effectiveWidth;
-      return I18nManager.isRTL ? 1 - rawRatio : rawRatio;
+      // The bar is rendered forced-LTR (left-anchored fill/thumb), and pageX/left
+      // from measureInWindow are absolute window pixels that are not mirrored, so the
+      // raw ratio already matches the visual regardless of the app's forced-RTL layout.
+      return x / effectiveWidth;
     },
     [trackWidth],
   );

@@ -1,6 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet } from 'react-native';
+import { useNavigation } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { RtlText } from '@/components/ui/RtlText';
@@ -41,14 +42,27 @@ export function OnboardingShell({
 }: OnboardingShellProps) {
   const { theme } = useApp();
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
 
   const footerPaddingBottom = Math.max(insets.bottom, Spacing.lg);
 
   return (
     <RtlView style={[styles.container, { backgroundColor: theme.background, paddingTop: insets.top + Spacing.md }]}>
       <RtlView style={styles.topRow}>
-        {showBack && onBack ? (
-          <Pressable onPress={onBack} style={styles.backButton} hitSlop={12}>
+        {showBack ? (
+          <Pressable
+            onPress={() => {
+              if (onBack) {
+                onBack();
+                return;
+              }
+              if (navigation.canGoBack()) {
+                navigation.goBack();
+              }
+            }}
+            style={styles.backButton}
+            hitSlop={12}
+          >
             <MaterialIcons name="arrow-forward" size={24} color={theme.text} />
           </Pressable>
         ) : (

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,6 +27,7 @@ interface PublishSummary {
 
 export default function HadithAdminScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { theme, themeMode } = useApp();
   const { syncRemoteHadiths } = useAhadith();
@@ -48,7 +49,11 @@ export default function HadithAdminScreen() {
   );
 
   const handleBack = () => {
-    router.back();
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/ahadith' as any);
   };
 
   const handleLogout = () => {

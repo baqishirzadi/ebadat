@@ -4,8 +4,8 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, FlatList, Pressable } from 'react-native';
-import { useLocalSearchParams, Stack } from 'expo-router';
+import { View, StyleSheet, FlatList, Pressable, I18nManager } from 'react-native';
+import { useLocalSearchParams, Stack, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useApp } from '@/context/AppContext';
@@ -38,7 +38,17 @@ export default function AdhkarDetailScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
   const { theme, state } = useApp();
   const { addDhikr } = useStats();
+  const navigation = useNavigation();
+  const router = useRouter();
   const fontFamily = getQuranFontFamily(state.preferences.quranFont);
+
+  const handleBack = useCallback(() => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/(tabs)/adhkar');
+  }, [navigation, router]);
   
   const categoryInfo = adhkarData.categories.find(c => c.id === category) as Category | undefined;
   const adhkarList = (adhkarData.adhkar as Record<string, Dhikr[]>)[category || ''] || [];
@@ -91,7 +101,7 @@ export default function AdhkarDetailScreen() {
         ]}
       >
         {/* Progress bar */}
-        <View style={[styles.progressBar, { backgroundColor: `${categoryInfo?.color}20` }]}>
+        <View style={[styles.progressBar, { backgroundColor: `${categoryInfo?.color}20` }, styles.ltrProgress]}>
           <View
             style={[
               styles.progressFill,
@@ -125,13 +135,22 @@ export default function AdhkarDetailScreen() {
 
         {/* Reference and virtue */}
         <View style={styles.metaContainer}>
-          <CenteredText style={[styles.reference, { color: theme.textSecondary }]}>
-            📖 {item.reference}
-          </CenteredText>
-          {item.virtue && (
-            <CenteredText style={[styles.virtue, { color: categoryInfo?.color }]}>
-              ✨ {item.virtue.substring(0, 50)}...
+          <View style={styles.metaRow}>
+            <MaterialIcons name="menu-book" size={16} color={theme.textSecondary} />
+            <CenteredText style={[styles.reference, { color: theme.textSecondary }]}>
+              {item.reference}
             </CenteredText>
+          </View>
+          {item.virtue && (
+            <View style={styles.metaRow}>
+              <MaterialIcons name="auto-awesome" size={16} color={categoryInfo?.color} />
+              <CenteredText
+                numberOfLines={2}
+                style={[styles.virtue, { color: categoryInfo?.color }]}
+              >
+                {item.virtue}
+              </CenteredText>
+            </View>
           )}
         </View>
 
@@ -173,6 +192,11 @@ export default function AdhkarDetailScreen() {
           title: categoryInfo.nameDari,
           headerStyle: { backgroundColor: categoryInfo.color },
           headerTintColor: '#fff',
+          headerLeft: () => (
+            <Pressable onPress={handleBack} hitSlop={10} style={styles.headerBackButton}>
+              <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+            </Pressable>
+          ),
         }}
       />
 
@@ -182,7 +206,7 @@ export default function AdhkarDetailScreen() {
           <CenteredText style={styles.progressLabel}>پیشرفت کلی</CenteredText>
           <CenteredText style={styles.progressValue}>{Math.round(totalProgress)}%</CenteredText>
         </View>
-        <View style={[styles.totalProgressBar, { backgroundColor: 'rgba(255,255,255,0.3)' }]}>
+        <View style={[styles.totalProgressBar, { backgroundColor: 'rgba(255,255,255,0.3)' }, styles.ltrProgress]}>
           <View
             style={[
               styles.totalProgressFill,
@@ -206,6 +230,12 @@ export default function AdhkarDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  headerBackButton: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   progressHeader: {
     paddingHorizontal: Spacing.lg,
@@ -287,12 +317,23 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(0,0,0,0.05)',
     gap: Spacing.xs,
   },
+  metaRow: {
+    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+  },
+  ltrProgress: {
+    direction: 'ltr',
+  },
   reference: {
     fontSize: Typography.ui.caption,
-},
+    flexShrink: 1,
+  },
   virtue: {
     fontSize: Typography.ui.caption,
-fontStyle: 'italic',
+    fontStyle: 'italic',
+    flexShrink: 1,
   },
   counterContainer: {
     flexDirection: 'row',

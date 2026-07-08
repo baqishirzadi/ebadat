@@ -1,0 +1,74 @@
+appId: com.afghandev.ebadat
+---
+- launchApp:
+    clearState: true
+- waitForAnimationToEnd:
+    timeout: 8000
+- extendedWaitUntil:
+    visible:
+      text: "به عبادت خوش آمدید"
+    timeout: 20000
+- tapOn:
+    text: "شروع"
+- extendedWaitUntil:
+    visible:
+      text: "زبان برنامه"
+    timeout: 15000
+- tapOn:
+    text: "ادامه"
+- extendedWaitUntil:
+    visible:
+      text: "انتخاب کشور و شهر"
+    timeout: 15000
+- tapOn:
+    text: "کابل"
+- tapOn:
+    text: "ادامه با کابل"
+- extendedWaitUntil:
+    visible:
+      text: "فعال‌سازی اذان"
+    timeout: 15000
+- tapOn:
+    text: "ادامه بدون اعلان"
+- extendedWaitUntil:
+    visible:
+      id: "naat-screen-list"
+    timeout: 40000
+
+- tapOn:
+    point: "8%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 10000
+- tapOn:
+    text: "اذکار"
+- extendedWaitUntil:
+    visible:
+      text: "اذکار پرکاربرد"
+    timeout: 10000
+- tapOn:
+    text: "اذکار ابتدایی"
+- extendedWaitUntil:
+    visible:
+      text: "پیشرفت کلی"
+    timeout: 10000
+- tapOn:
+    point: "8%,9%"
+- extendedWaitUntil:
+    visible:
+      text: "اذکار پرکاربرد"
+    timeout: 10000
+- tapOn:
+    text: "شمارنده ذکر"
+- extendedWaitUntil:
+    visible:
+      text: "لمس کنید"
+    timeout: 10000
+- tapOn:
+    point: "8%,9%"
+- extendedWaitUntil:
+    visible:
+      text: "اذکار پرکاربرد"
+    timeout: 10000
+- assertNotVisible: "Console Error"

@@ -10,7 +10,7 @@ import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
 import { DUA_CATEGORIES, DuaRequest, GENDER_INFO, STATUS_INFO } from '@/types/dua';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -25,7 +25,16 @@ export default function DuaRequestDetailScreen() {
   const { theme } = useApp();
   const { getRequestById, refreshRequests } = useDua();
   const router = useRouter();
+  const navigation = useNavigation();
   const { id } = useLocalSearchParams<{ id: string }>();
+
+  const handleBack = useCallback(() => {
+    if (navigation.canGoBack()) {
+      router.back();
+      return;
+    }
+    router.replace('/dua-request');
+  }, [navigation, router]);
 
   const [request, setRequest] = useState<DuaRequest | null>(null);
   const [loading, setLoading] = useState(true);
@@ -76,7 +85,7 @@ export default function DuaRequestDetailScreen() {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Pressable onPress={handleBack} style={styles.backButton}>
             <MaterialIcons name="arrow-forward" size={24} color="#fff" />
           </Pressable>
           <CenteredText style={styles.headerTitle}>جزئیات درخواست</CenteredText>
@@ -96,7 +105,7 @@ export default function DuaRequestDetailScreen() {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Pressable onPress={handleBack} style={styles.backButton}>
             <MaterialIcons name="arrow-forward" size={24} color="#fff" />
           </Pressable>
           <CenteredText style={styles.headerTitle}>جزئیات درخواست</CenteredText>
@@ -120,7 +129,7 @@ export default function DuaRequestDetailScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
         <CenteredText style={styles.headerTitle}>جزئیات درخواست</CenteredText>
