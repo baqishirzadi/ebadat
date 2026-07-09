@@ -9,6 +9,7 @@ import { View, StyleSheet, Text, Dimensions, Linking, Pressable } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -20,7 +21,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-// Spiritual phrases to show randomly
 const PHRASES = [
   {
     arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
@@ -47,13 +47,17 @@ const PHRASES = [
     dari: 'ای خداوند بزرگ، بر محمد، خاندان پاکش و یاران گرامی او درود و رحمت بفرست.',
     pashto: 'ای لوی خدا، پر محمد، د هغه پاک کورنۍ او د هغه ګران ملګرو برکت او رحمت ولیږه.',
   },
-];
+] as const;
+
+const SPLASH_PHRASE = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+const SPLASH_VISIBLE_MS = 2800;
+const SPLASH_FADE_MS = 400;
 
 interface SpiritualSplashProps {
   onComplete: () => void;
+  onReady?: () => void;
 }
 
-// Golden corner decoration component
 const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight' }) => {
   const rotations = {
     topLeft: '0deg',
@@ -61,7 +65,7 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
     bottomRight: '180deg',
     bottomLeft: '270deg',
   };
-  
+
   return (
     <View style={[styles.cornerContainer, styles[position]]}>
       <View style={[styles.corner, { transform: [{ rotate: rotations[position] }] }]}>
@@ -73,13 +77,13 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
   );
 };
 
-export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
+export function SpiritualSplash({ onComplete, onReady }: SpiritualSplashProps) {
   const insets = useSafeAreaInsets();
-  const [phrase] = useState(() => PHRASES[Math.floor(Math.random() * PHRASES.length)]);
   const [isExiting, setIsExiting] = useState(false);
   const completedRef = useRef(false);
-  
-  const opacity = useSharedValue(1); // Start visible so no blank screen when native splash hides (EAS/physical devices)
+  const readyRef = useRef(false);
+
+  const opacity = useSharedValue(1);
   const frameScale = useSharedValue(0.9);
   const appNameOpacity = useSharedValue(1);
   const appNameScale = useSharedValue(0.95);
@@ -87,8 +91,6 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   const translationOpacity = useSharedValue(1);
   const creditOpacity = useSharedValue(1);
   const glowOpacity = useSharedValue(0);
-  const kaabaFloatY = useSharedValue(8);
-  const kaabaScale = useSharedValue(0.95);
 
   const finish = useCallback(() => {
     if (completedRef.current) return;
@@ -96,13 +98,31 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
     onComplete();
   }, [onComplete]);
 
+  const beginExit = useCallback(() => {
+    if (completedRef.current) return;
+    setIsExiting(true);
+    opacity.value = withTiming(0, { duration: SPLASH_FADE_MS, easing: Easing.out(Easing.cubic) }, (finished) => {
+      if (finished) {
+        runOnJS(finish)();
+      }
+    });
+  }, [finish, opacity]);
+
+  const handleLayout = useCallback(() => {
+    if (readyRef.current) return;
+    readyRef.current = true;
+    onReady?.();
+  }, [onReady]);
+
   useEffect(() => {
-    // Animate in sequence (container stays visible from frame 0 for EAS/physical devices)
     appNameOpacity.value = withDelay(50, withTiming(1, { duration: 380, easing: Easing.out(Easing.cubic) }));
-    appNameScale.value = withDelay(100, withSequence(
-      withTiming(1.03, { duration: 260, easing: Easing.out(Easing.cubic) }),
-      withTiming(1, { duration: 150 })
-    ));
+    appNameScale.value = withDelay(
+      100,
+      withSequence(
+        withTiming(1.03, { duration: 260, easing: Easing.out(Easing.cubic) }),
+        withTiming(1, { duration: 150 })
+      )
+    );
     frameScale.value = withSequence(
       withDelay(130, withTiming(1.01, { duration: 260, easing: Easing.out(Easing.cubic) })),
       withTiming(1, { duration: 150 })
@@ -111,28 +131,9 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
     arabicOpacity.value = withDelay(180, withTiming(1, { duration: 320 }));
     translationOpacity.value = withDelay(280, withTiming(1, { duration: 320 }));
     creditOpacity.value = withDelay(360, withTiming(1, { duration: 320 }));
-    kaabaScale.value = withDelay(120, withTiming(1, { duration: 300, easing: Easing.out(Easing.cubic) }));
-    kaabaFloatY.value = withDelay(
-      280,
-      withSequence(
-        withTiming(0, { duration: 300, easing: Easing.out(Easing.sin) }),
-        withTiming(5, { duration: 300, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0, { duration: 220, easing: Easing.out(Easing.sin) })
-      )
-    );
 
-    // Complete quickly without alpha fade to avoid end-of-splash flash.
-    const exitTimeout = setTimeout(() => {
-      setIsExiting(true);
-      finish();
-    }, 980);
-
-    // Reanimated callbacks can occasionally fail on some devices during startup.
-    // This guarantees the splash cannot trap the app forever.
-    const hardTimeout = setTimeout(() => {
-      setIsExiting(true);
-      finish();
-    }, 1800);
+    const exitTimeout = setTimeout(beginExit, SPLASH_VISIBLE_MS);
+    const hardTimeout = setTimeout(beginExit, 4500);
 
     return () => {
       clearTimeout(exitTimeout);
@@ -170,21 +171,16 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
     transform: [{ scale: appNameScale.value }],
   }));
 
-  const kaabaStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: kaabaFloatY.value }, { scale: kaabaScale.value }],
-    opacity: glowOpacity.value,
-  }));
-
   return (
     <Animated.View
       pointerEvents={isExiting ? 'none' : 'auto'}
+      onLayout={handleLayout}
       style={[
         styles.container,
         containerStyle,
         { paddingTop: Math.max(48, insets.top + 12), paddingBottom: Math.max(16, insets.bottom + 8) },
       ]}
     >
-      {/* Gradient Background */}
       <LinearGradient
         colors={['#0a1f18', '#1a4d3e', '#0d2a20']}
         style={StyleSheet.absoluteFill}
@@ -192,13 +188,11 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
         end={{ x: 1, y: 1 }}
       />
 
-      {/* App Name - Prominent at top */}
       <Animated.View style={[styles.appNameSection, appNameStyle]}>
         <Text style={styles.appName}>عبادت</Text>
         <Text style={styles.appSubtitle}>قرآن کریم و اوقات نماز</Text>
       </Animated.View>
 
-      {/* Subtle geometric pattern */}
       <View style={styles.patternContainer}>
         {[...Array(8)].map((_, i) => (
           <View
@@ -206,7 +200,7 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
             style={[
               styles.patternCircle,
               {
-                top: `${15 + (i * 10)}%`,
+                top: `${15 + i * 10}%`,
                 left: i % 2 === 0 ? '-20%' : undefined,
                 right: i % 2 === 1 ? '-20%' : undefined,
                 opacity: 0.03,
@@ -216,68 +210,44 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
         ))}
       </View>
 
-      {/* Main Content Frame */}
       <Animated.View style={[styles.frameContainer, frameStyle]}>
-        {/* Golden glow effect */}
         <Animated.View style={[styles.frameGlow, glowStyle]} />
-        
-        {/* Golden Frame */}
+
         <View style={styles.frame}>
-          {/* Corner Decorations */}
           <GoldenCorner position="topLeft" />
           <GoldenCorner position="topRight" />
           <GoldenCorner position="bottomLeft" />
           <GoldenCorner position="bottomRight" />
-          
-          {/* Frame Border Lines */}
+
           <View style={styles.frameBorderTop} />
           <View style={styles.frameBorderBottom} />
           <View style={styles.frameBorderLeft} />
           <View style={styles.frameBorderRight} />
 
-          {/* Inner Content */}
           <View style={styles.frameContent}>
-            <Animated.View style={[styles.kaabaWrap, kaabaStyle]}>
-              <LinearGradient
-                colors={['#1a1a1a', '#111', '#262626']}
-                style={styles.kaabaBody}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-              />
-              <View style={styles.kaabaBand} />
-            </Animated.View>
-            {/* Star decoration above */}
             <Text style={styles.starDecoration}>✦</Text>
-            
-            {/* Arabic Text */}
+
             <Animated.View style={arabicStyle}>
-              <Text style={styles.arabicText}>
-                {phrase.arabic}
-              </Text>
+              <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
             </Animated.View>
 
-            {/* Decorative line */}
             <View style={styles.decorativeLine}>
               <View style={styles.lineLeft} />
               <Text style={styles.lineCenter}>۞</Text>
               <View style={styles.lineRight} />
             </View>
 
-            {/* Translations */}
             <Animated.View style={[styles.translationContainer, translationStyle]}>
-              <CenteredText style={styles.dariText}>{phrase.dari}</CenteredText>
-              <CenteredText style={styles.pashtoText}>{phrase.pashto}</CenteredText>
+              <CenteredText style={styles.dariText}>{SPLASH_PHRASE.dari}</CenteredText>
+              <CenteredText style={styles.pashtoText}>{SPLASH_PHRASE.pashto}</CenteredText>
             </Animated.View>
           </View>
         </View>
       </Animated.View>
 
-      {/* Developer Credit */}
       <Animated.View style={[styles.creditContainer, creditStyle]}>
         <View style={styles.creditCard}>
-          <CenteredText style={styles.creditDeveloper}>
-            سازنده شرکت نرم افزار
-          </CenteredText>
+          <CenteredText style={styles.creditDeveloper}>سازنده شرکت نرم افزار</CenteredText>
           <Pressable
             onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
             style={styles.creditLinkButton}
@@ -346,7 +316,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     overflow: 'hidden',
   },
-  // Corner decorations
   cornerContainer: {
     position: 'absolute',
     width: 40,
@@ -405,7 +374,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: GOLD_LIGHT,
   },
-  // Frame border lines
   frameBorderTop: {
     position: 'absolute',
     top: 8,
@@ -442,28 +410,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 4,
-  },
-  kaabaWrap: {
-    width: 58,
-    height: 58,
-    marginBottom: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  kaabaBody: {
-    width: 52,
-    height: 52,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: `${GOLD}55`,
-  },
-  kaabaBand: {
-    position: 'absolute',
-    top: 16,
-    width: 52,
-    height: 6,
-    backgroundColor: `${GOLD}CC`,
-    borderRadius: 3,
   },
   starDecoration: {
     color: GOLD,
@@ -506,19 +452,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   dariText: {
-    fontSize: 15,
+    fontSize: 18,
     color: GOLD_LIGHT,
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 30,
     fontFamily: 'Amiri',
     writingDirection: 'rtl',
   },
   pashtoText: {
-    fontSize: 14,
+    fontSize: 18,
     color: `${GOLD_LIGHT}90`,
     textAlign: 'center',
-    marginTop: 8,
-    lineHeight: 32,
+    marginTop: 10,
+    lineHeight: 36,
     fontFamily: 'NotoNastaliqUrdu',
     writingDirection: 'rtl',
   },
@@ -540,7 +486,7 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
   },
   appSubtitle: {
-    fontSize: 14,
+    fontSize: 16,
     color: GOLD_LIGHT,
     marginTop: 8,
     fontFamily: 'Amiri',

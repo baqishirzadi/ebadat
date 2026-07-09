@@ -30,6 +30,7 @@ import { AdhanHealthBanner } from '@/components/prayer/AdhanHealthBanner';
 import { fetchAdhanHealth, openBatteryOptimizationSettings, openOemAutostartSettings, snoozeBatteryNudge } from '@/utils/adhanHealth';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
 // Prayer order for display
 const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
@@ -56,6 +57,8 @@ export default function AdhanSettingsScreen() {
   }, []);
 
   const { adhanPreferences } = state;
+  const switchTrackColor = { false: theme.divider, true: theme.tint };
+  const switchThumbColor = (enabled: boolean) => (enabled ? theme.accent : '#f4f3f4');
   const adhanTestStatusLabel = state.adhanTestStatus.error
     ? `خطا: ${state.adhanTestStatus.error}`
     : state.adhanTestStatus.playbackOk === true
@@ -152,7 +155,7 @@ export default function AdhanSettingsScreen() {
               <MaterialIcons
                 name="volume-up"
                 size={20}
-                color="#D4AF37"
+                color={theme.accent}
               />
             )}
             <MaterialIcons
@@ -174,27 +177,10 @@ export default function AdhanSettingsScreen() {
               <Switch
                 value={settings.enabled}
                 onValueChange={(v) => handlePrayerNotificationToggle(prayer, v)}
-                trackColor={{ false: theme.divider, true: '#1a4d3e' }}
-                thumbColor={settings.enabled ? '#D4AF37' : '#f4f3f4'}
+                trackColor={switchTrackColor}
+                thumbColor={switchThumbColor(settings.enabled)}
               />
             </View>
-
-            {/* Voice Selection */}
-            {settings.enabled && (
-              <View style={[styles.voiceSelector, { backgroundColor: theme.backgroundSecondary }]}>
-                <View style={styles.voiceSelectorContent}>
-                  <MaterialIcons name="record-voice-over" size={20} color={theme.tint} />
-                  <View style={styles.voiceSelectorText}>
-                    <Text style={[styles.voiceSelectorLabel, { color: theme.textSecondary }]}>
-                      انتخاب مؤذن
-                    </Text>
-                    <Text style={[styles.voiceSelectorValue, { color: theme.text }]}>
-                      {ADHAN_VOICES[settings.selectedVoice]?.nameDari || 'برکت‌الله سلیم (رح)'}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            )}
 
             {/* Test Button */}
             {settings.enabled && (
@@ -202,7 +188,7 @@ export default function AdhanSettingsScreen() {
                 onPress={() => handleTestVoice(settings.selectedVoice, prayer)}
                 style={[
                   styles.testButton,
-                  { backgroundColor: isTestingVoice === settings.selectedVoice ? '#D4AF37' : '#1a4d3e' }
+                  { backgroundColor: isTestingVoice === settings.selectedVoice ? theme.accent : theme.tint }
                 ]}
               >
                 {isTestingVoice === settings.selectedVoice ? (
@@ -226,30 +212,26 @@ export default function AdhanSettingsScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: 'تنظیمات اذان',
-          headerStyle: { backgroundColor: '#0F1F14' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontFamily: 'Vazirmatn', fontSize: 18 },
-          headerBackTitle: 'برگشت',
-        }}
-      />
-      
-      <ScrollView testID="ios-adhan-settings-ready" style={[styles.container, { backgroundColor: theme.background }]}>
-        {/* Header */}
-        <View style={[styles.header, { backgroundColor: '#0F1F14' }]}>
-          <MaterialIcons name="notifications-active" size={40} color="#D4AF37" />
-          <Text style={styles.headerTitle}>یادآوری نماز و اذان</Text>
-          <Text style={styles.headerSubtitle}>
-            تنظیمات صدا و یادآوری برای هر نماز
-          </Text>
-        </View>
+      <Stack.Screen options={{ headerShown: false }} />
+
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <ScreenHeader
+          icon="notifications-active"
+          title="یادآوری نماز و اذان"
+          subtitle="تنظیمات صدا و یادآوری برای هر نماز"
+        />
+
+      <ScrollView
+        testID="ios-adhan-settings-ready"
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
 
         {/* Master Toggle */}
         <View style={[styles.masterToggle, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
           <View style={styles.masterToggleInfo}>
-            <MaterialIcons name="notifications" size={24} color={adhanPreferences.masterEnabled ? '#D4AF37' : theme.icon} />
+            <MaterialIcons name="notifications" size={24} color={adhanPreferences.masterEnabled ? theme.accent : theme.icon} />
             <Text style={[styles.masterToggleLabel, { color: theme.text }]}>
               فعال‌سازی همه یادآوری‌ها
             </Text>
@@ -257,8 +239,8 @@ export default function AdhanSettingsScreen() {
           <Switch
             value={adhanPreferences.masterEnabled}
             onValueChange={handleMasterToggle}
-            trackColor={{ false: theme.divider, true: '#1a4d3e' }}
-            thumbColor={adhanPreferences.masterEnabled ? '#D4AF37' : '#f4f3f4'}
+            trackColor={switchTrackColor}
+            thumbColor={switchThumbColor(adhanPreferences.masterEnabled)}
           />
         </View>
 
@@ -266,7 +248,7 @@ export default function AdhanSettingsScreen() {
         {adhanPreferences.masterEnabled && (
           <View style={[styles.globalVoice, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <View style={styles.globalVoiceContent}>
-              <MaterialIcons name="record-voice-over" size={24} color="#D4AF37" />
+              <MaterialIcons name="record-voice-over" size={24} color={theme.accent} />
               <View style={styles.globalVoiceText}>
                 <Text style={[styles.globalVoiceLabel, { color: theme.textSecondary }]}>
                   مؤذن پیش‌فرض
@@ -282,7 +264,7 @@ export default function AdhanSettingsScreen() {
         {Platform.OS !== 'android' && adhanPreferences.masterEnabled && (
           <View style={[styles.exactAlarmCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <View style={styles.exactAlarmContent}>
-              <MaterialIcons name="notifications-active" size={24} color="#D4AF37" />
+              <MaterialIcons name="notifications-active" size={24} color={theme.accent} />
               <View style={styles.exactAlarmText}>
                 <Text style={[styles.exactAlarmLabel, { color: theme.text }]}>
                   تست اعلان اذان
@@ -295,7 +277,7 @@ export default function AdhanSettingsScreen() {
             <Pressable
               testID="adhan-system-test-button"
               onPress={handleSystemAdhanTest}
-              style={[styles.exactAlarmButton, { backgroundColor: '#0b6e4f' }]}
+              style={[styles.exactAlarmButton, { backgroundColor: theme.tint }]}
             >
               <MaterialIcons name="notifications-active" size={20} color="#fff" />
               <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
@@ -324,7 +306,7 @@ export default function AdhanSettingsScreen() {
           <View style={[styles.exactAlarmCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <AdhanHealthBanner />
             <View style={styles.exactAlarmContent}>
-              <MaterialIcons name="schedule" size={24} color="#D4AF37" />
+              <MaterialIcons name="schedule" size={24} color={theme.accent} />
               <View style={styles.exactAlarmText}>
                 <Text style={[styles.exactAlarmLabel, { color: theme.text }]}>
                   وضعیت اذان سیستمی
@@ -336,7 +318,7 @@ export default function AdhanSettingsScreen() {
             </View>
             <Pressable
               onPress={openNotificationSettings}
-              style={[styles.exactAlarmButton, { backgroundColor: '#1a4d3e' }]}
+              style={[styles.exactAlarmButton, { backgroundColor: theme.tint }]}
             >
               <MaterialIcons name="settings" size={20} color="#fff" />
               <Text style={styles.exactAlarmButtonText}>باز کردن تنظیمات</Text>
@@ -344,7 +326,7 @@ export default function AdhanSettingsScreen() {
             <Pressable
               testID="adhan-system-test-button"
               onPress={handleSystemAdhanTest}
-              style={[styles.exactAlarmButton, { backgroundColor: '#0b6e4f' }]}
+              style={[styles.exactAlarmButton, { backgroundColor: theme.tint }]}
             >
               <MaterialIcons name="notifications-active" size={20} color="#fff" />
               <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
@@ -360,7 +342,7 @@ export default function AdhanSettingsScreen() {
                 </Text>
                 <Pressable
                   onPress={handleRecheckAndSchedule}
-                  style={[styles.exactAlarmRetryButton, { backgroundColor: '#1a4d3e' }]}
+                  style={[styles.exactAlarmRetryButton, { backgroundColor: theme.tint }]}
                 >
                   <MaterialIcons name="refresh" size={18} color="#fff" />
                   <Text style={styles.exactAlarmRetryButtonText}>بررسی دوباره و زمان‌بندی</Text>
@@ -387,8 +369,8 @@ export default function AdhanSettingsScreen() {
             <Switch
               value={adhanPreferences.earlyReminder}
               onValueChange={handleEarlyReminderToggle}
-              trackColor={{ false: theme.divider, true: '#1a4d3e' }}
-              thumbColor={adhanPreferences.earlyReminder ? '#D4AF37' : '#f4f3f4'}
+              trackColor={switchTrackColor}
+              thumbColor={switchThumbColor(adhanPreferences.earlyReminder)}
             />
           </View>
         )}
@@ -405,7 +387,7 @@ export default function AdhanSettingsScreen() {
             {(state.notificationPermission === 'blocked' || state.notificationPermission === 'denied') && (
               <Pressable
                 onPress={openNotificationSettings}
-                style={[styles.openSettingsButton, { backgroundColor: '#1a4d3e' }]}
+                style={[styles.openSettingsButton, { backgroundColor: theme.tint }]}
               >
                 <MaterialIcons name="settings" size={20} color="#fff" />
                 <Text style={styles.openSettingsButtonText}>
@@ -418,7 +400,7 @@ export default function AdhanSettingsScreen() {
 
         {/* Info Note */}
         <View style={[styles.infoNote, { backgroundColor: theme.backgroundSecondary }]}>
-          <MaterialIcons name="info" size={20} color="#D4AF37" />
+          <MaterialIcons name="info" size={20} color={theme.accent} />
           <Text style={[styles.infoNoteText, { color: theme.textSecondary }]}>
             برای نمازهای فعال، اعلان وقت نماز همیشه با صدای مؤذن پخش می‌شود.
           </Text>
@@ -426,7 +408,7 @@ export default function AdhanSettingsScreen() {
 
         {Platform.OS === 'android' && showBatteryNudge && (
           <View style={[styles.infoNote, { backgroundColor: theme.backgroundSecondary, marginTop: Spacing.sm }]}>
-            <MaterialIcons name="battery-charging-full" size={20} color="#D4AF37" />
+            <MaterialIcons name="battery-charging-full" size={20} color={theme.accent} />
             <Text style={[styles.infoNoteText, { color: theme.textSecondary }]}>
               اگر اذان گاهی با تأخیر می‌آید، بهینه‌سازی باتری را برای عبادت غیرفعال کنید.
             </Text>
@@ -456,6 +438,7 @@ export default function AdhanSettingsScreen() {
 
         <View style={styles.bottomPadding} />
       </ScrollView>
+      </View>
 
     </>
   );
@@ -464,6 +447,9 @@ export default function AdhanSettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: Spacing.xl,
   },
   header: {
     padding: Spacing.lg,
@@ -747,72 +733,6 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 100,
-  },
-  
-  // Modal styles
-  modalOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.lg,
-  },
-  modalContent: {
-    width: '100%',
-    maxWidth: 400,
-    borderRadius: BorderRadius.xl,
-    overflow: 'hidden',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.md,
-    backgroundColor: '#0F1F14',
-  },
-  modalTitle: {
-    fontSize: Typography.ui.subtitle,
-    fontWeight: 'bold',
-    color: '#fff',
-    fontFamily: 'Vazirmatn',
-  },
-  voiceOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.md,
-    borderBottomWidth: 1,
-  },
-  voiceOptionInfo: {
-    flex: 1,
-  },
-  voiceOptionName: {
-    fontSize: Typography.ui.body,
-    fontWeight: '600',
-    fontFamily: 'Vazirmatn',
-  },
-  voiceOptionDesc: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    marginTop: 2,
-  },
-  voiceOptionActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  voiceTestBtn: {
-    padding: Spacing.xs,
-  },
-  voiceNote: {
-    padding: Spacing.md,
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
   },
   errorCard: {
     margin: Spacing.md,

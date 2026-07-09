@@ -59,7 +59,7 @@ export default function TabLayout() {
         },
         headerShown: false,
         tabBarButton: HapticTab,
-        freezeOnBlur: Platform.OS !== 'ios',
+        freezeOnBlur: true,
         lazy: true,
       }}
     >
@@ -116,8 +116,6 @@ export default function TabLayout() {
       <Tabs.Screen name="ahadith" options={{ href: null }} />
       <Tabs.Screen name="prayer-learning" options={{ href: null }} />
       <Tabs.Screen name="bookmarks" options={{ href: null }} />
-      <Tabs.Screen name="explore" options={{ href: null }} />
-      <Tabs.Screen name="settings" options={{ href: null }} />
     </Tabs>
   );
 }

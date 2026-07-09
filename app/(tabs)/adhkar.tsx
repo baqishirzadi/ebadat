@@ -6,11 +6,11 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Pressable, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
-import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import adhkarData from '@/data/adhkar.json';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 
 // Category type
 interface AdhkarCategory {
@@ -23,7 +23,7 @@ interface AdhkarCategory {
 }
 
 export default function AdhkarScreen() {
-  const { theme, themeMode } = useApp();
+  const { theme } = useApp();
   const router = useRouter();
   const categories = adhkarData.categories as AdhkarCategory[];
 
@@ -36,28 +36,11 @@ export default function AdhkarScreen() {
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      <LinearGradient
-        colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
-        style={styles.header}
-      >
-        <Pressable
-          onPress={() => {
-            if (router.canGoBack?.()) {
-              router.back();
-            } else {
-              router.replace('/(tabs)/more');
-            }
-          }}
-          style={styles.headerBackButton}
-          hitSlop={10}
-        >
-          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
-        </Pressable>
-        <MaterialIcons name="auto-awesome" size={36} color="#fff" />
-        <Text style={styles.headerTitle}>اذکار</Text>
-        <Text style={styles.headerSubtitle}>یادآوری‌های روزانه</Text>
-      </LinearGradient>
+      <ScreenHeader
+        icon="auto-awesome"
+        title="اذکار"
+        subtitle="یادآوری‌های روزانه"
+      />
 
       {/* Featured Adhkar Section */}
       <View style={styles.section}>

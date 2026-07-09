@@ -25,7 +25,9 @@ import {
   AdhanPreferences,
   DEFAULT_ADHAN_PREFERENCES,
   getEarlyReminderContent,
+  getJummahNotificationContent,
   getNotificationContent,
+  getNotificationHeading,
   loadAdhanPreferences,
   PrayerName,
   saveAdhanPreferences
@@ -50,6 +52,7 @@ import {
   PrayerTimes,
 } from '@/utils/prayerTimes';
 import { getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
+import { applyPrayerTimeOffsets, shouldApplyKabulDhuhrOffset } from '@/utils/prayerOffsets';
 import { pushWidgetSnapshot } from '@/utils/pushWidgetSnapshot';
 import {
   canUseNativeAdhanScheduler,
@@ -132,13 +135,7 @@ const CHANNEL_IDS = {
   JUMMAH_REMINDER: 'jummah-reminder-v2',
 } as const;
 
-const JUMMAH_NOTIFICATION_COPY = {
-  title: 'نماز جمعه',
-  body: 'وقت نماز جمعه است. به سوی ذکر و عبادت خدا بشتابید و داد و ستد را رها سازید',
-} as const;
-
-const KABUL_COORDS = { latitude: 34.5553, longitude: 69.2075 };
-const KABUL_GPS_RADIUS_KM = 45;
+const JUMMAH_NOTIFICATION_COPY = getJummahNotificationContent();
 
 function buildNativeAdhanConfig(
   location: LocationType,
@@ -191,6 +188,7 @@ interface ExpectedPrayerNotification {
   triggerDate: Date;
   channelId: string;
   title: string;
+  subtitle?: string;
   body: string;
   sound: string | boolean;
   interruptionLevel?: 'timeSensitive';
@@ -937,7 +935,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       const result = await getPrayerTimesForDate({ cityKey, location, date: new Date() });
       dispatch({
         type: 'SET_PRAYER_TIMES',
-        payload: applyAfghanistanPrayerOffsets(result.times, cityKey, location),
+        payload: applyPrayerTimeOffsets(result.times, cityKey, location),
       });
       dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
@@ -948,7 +946,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         settings.calculationMethod,
         settings.asrMethod
       );
-      const fallback = applyAfghanistanPrayerOffsets(fallbackBase, toCityKey(selectedCity), location);
+      const fallback = applyPrayerTimeOffsets(fallbackBase, toCityKey(selectedCity), location);
       dispatch({ type: 'SET_PRAYER_TIMES', payload: fallback });
     }
   }
@@ -1114,46 +1112,6 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
   const isAfghanistanCityKey = useCallback((cityKey?: string | null) => {
     return (normalizeCityKey(cityKey) ?? '').startsWith('afghanistan_');
   }, []);
-
-  const isKabulCityKey = useCallback((cityKey?: string | null) => {
-    return normalizeCityKey(cityKey) === 'afghanistan_kabul';
-  }, []);
-
-  const isWithinKabulRadius = useCallback((location: LocationType): boolean => {
-    const toRad = (value: number) => (value * Math.PI) / 180;
-    const earthRadiusKm = 6371;
-    const dLat = toRad(location.latitude - KABUL_COORDS.latitude);
-    const dLon = toRad(location.longitude - KABUL_COORDS.longitude);
-    const lat1 = toRad(KABUL_COORDS.latitude);
-    const lat2 = toRad(location.latitude);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return earthRadiusKm * c <= KABUL_GPS_RADIUS_KM;
-  }, []);
-
-  const shouldApplyKabulDhuhrOffset = useCallback(
-    (cityKey?: string | null, location?: LocationType): boolean => {
-      if (isKabulCityKey(cityKey)) return true;
-      if (cityKey) return false;
-      return isWithinKabulRadius(location ?? state.location);
-    },
-    [isKabulCityKey, isWithinKabulRadius, state.location]
-  );
-
-  const applyAfghanistanPrayerOffsets = useCallback(
-    (times: PrayerTimes, cityKey?: string | null, location?: LocationType): PrayerTimes => {
-      if (!shouldApplyKabulDhuhrOffset(cityKey, location)) {
-        return times;
-      }
-      return {
-        ...times,
-        dhuhr: new Date(times.dhuhr.getTime() + 20 * 60 * 1000),
-      };
-    },
-    [shouldApplyKabulDhuhrOffset],
-  );
 
   async function cancelScheduledNotificationsByPredicate(
     NotificationsModule: typeof import('expo-notifications'),
@@ -1551,7 +1509,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           location: state.location,
           date: targetDate,
         });
-        dayTimes = applyAfghanistanPrayerOffsets(result.times, cityKey, state.location);
+        dayTimes = applyPrayerTimeOffsets(result.times, cityKey, state.location);
         dayTimeZone = result.timezone || dayTimeZone;
       } catch {
         const fallbackTimes = calculatePrayerTimes(
@@ -1560,7 +1518,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           state.settings.calculationMethod,
           state.settings.asrMethod
         );
-        dayTimes = applyAfghanistanPrayerOffsets(fallbackTimes, cityKey, state.location);
+        dayTimes = applyPrayerTimeOffsets(fallbackTimes, cityKey, state.location);
       }
 
       if (!areTimesOrdered(dayTimes)) {
@@ -1570,7 +1528,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           state.settings.calculationMethod,
           state.settings.asrMethod
         );
-        dayTimes = applyAfghanistanPrayerOffsets(fallbackTimes, cityKey, state.location);
+        dayTimes = applyPrayerTimeOffsets(fallbackTimes, cityKey, state.location);
       }
 
       const weekdayAnchor = buildDateFromLocalTimeInTimezone(targetDate, '12:00', dayTimeZone);
@@ -1615,6 +1573,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
             triggerDate: scheduleTime,
             channelId,
             title: content.title,
+            subtitle: content.subtitle,
             body: content.body,
             sound: shouldPlaySound ? adhanSoundFilename : false,
             ...(Platform.OS === 'ios' && shouldPlaySound
@@ -1638,10 +1597,14 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           );
           if (reminderTime > now && isValidDate(reminderTime)) {
             const reminderContent = isFridayJummah
-              ? {
-                title: 'یادآوری نماز',
-                body: `${adhanPreferences.earlyReminderMinutes} دقیقه تا نماز جمعه`,
-              }
+              ? (() => {
+                const heading = getNotificationHeading('یادآوری نماز');
+                return {
+                  title: heading.title,
+                  subtitle: heading.subtitle,
+                  body: `${adhanPreferences.earlyReminderMinutes} دقیقه تا نماز جمعه`,
+                };
+              })()
               : getEarlyReminderContent(prayerKey, adhanPreferences.earlyReminderMinutes);
             const reminderId = isFridayJummah
               ? `adhan-jummah-${dayKey}-reminder`
@@ -1654,6 +1617,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
               triggerDate: reminderTime,
               channelId: CHANNEL_IDS.PRAYER_REMINDER,
               title: reminderContent.title,
+              subtitle: reminderContent.subtitle,
               body: reminderContent.body,
               sound: false,
               data: {
@@ -1671,7 +1635,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     return expected;
   }, [
     areTimesOrdered,
-    applyAfghanistanPrayerOffsets,
+    applyPrayerTimeOffsets,
     buildDateFromLocalTimeInTimezone,
     getDateKey,
     isFridayInTimezone,
@@ -1994,7 +1958,8 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         .map((id) => NotificationsModule.cancelScheduledNotificationAsync(id))
     );
 
-    for (const item of toCreate) {
+    for (let index = 0; index < toCreate.length; index++) {
+      const item = toCreate[index];
       if (__DEV__) {
         console.log(
           `[AdhanSchedule] run=${runId} reason=${reason} identifier=${item.id} prayer=${item.prayerKey} channelId=${item.channelId} type=${item.type}`
@@ -2003,7 +1968,8 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       await NotificationsModule.scheduleNotificationAsync({
         identifier: item.id,
         content: {
-          title: item.title,
+          ...(item.title ? { title: item.title } : {}),
+          ...(item.subtitle ? { subtitle: item.subtitle } : {}),
           body: item.body,
           sound: item.sound,
           ...(Platform.OS === 'android' && item.type === 'adhan' ? { vibrate: [] } : {}),
@@ -2022,6 +1988,11 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           ...(Platform.OS === 'android' && { channelId: item.channelId }),
         },
       });
+      if ((index + 1) % 5 === 0) {
+        await new Promise<void>((resolve) => {
+          requestAnimationFrame(() => resolve());
+        });
+      }
     }
 
     let nativeExactMismatchCount = 0;
@@ -2272,7 +2243,13 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
       await NotificationsModule.scheduleNotificationAsync({
         identifier: `adhan-system-test-${Date.now()}`,
         content: {
-          title: 'تست اذان',
+          ...(() => {
+            const heading = getNotificationHeading('تست اذان');
+            return {
+              ...(heading.title ? { title: heading.title } : {}),
+              ...(heading.subtitle ? { subtitle: heading.subtitle } : {}),
+            };
+          })(),
           body: 'اگر این اعلان با صدا رسید، تنظیمات سیستم درست است.',
           sound: getAdhanSoundFilename(Platform.OS),
           data: {

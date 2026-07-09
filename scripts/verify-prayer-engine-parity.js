@@ -20,6 +20,7 @@ function computeJsTimes(lat, lon, dateKey, cityKey) {
   const times = new PrayerTimes(coordinates, new Date(year, month - 1, day), params);
   let maghrib = times.maghrib;
   let dhuhr = times.dhuhr;
+  maghrib = new Date(maghrib.getTime() + 3 * 60 * 1000);
   if (cityKey === 'afghanistan_kabul') {
     dhuhr = new Date(dhuhr.getTime() + 20 * 60 * 1000);
   }

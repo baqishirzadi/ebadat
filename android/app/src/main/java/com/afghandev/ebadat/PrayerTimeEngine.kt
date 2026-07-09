@@ -13,7 +13,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 object PrayerTimeEngine {
-  private const val AFGHAN_MAGHRIB_OFFSET_MINUTES = 4
+  private const val MAGHRIB_OFFSET_MINUTES = 3
   private const val AFGHAN_DHUHR_OFFSET_MINUTES = 20
   private const val JUMMAH_HOUR = 13
   private const val JUMMAH_MINUTE = 0
@@ -53,13 +53,16 @@ object PrayerTimeEngine {
       PrayerKey.ISHA to prayerTimes.isha.toEpochMilliseconds(),
     )
 
+    val maghribMs = raw[PrayerKey.MAGHRIB]
+    if (maghribMs != null) {
+      raw[PrayerKey.MAGHRIB] = maghribMs + MAGHRIB_OFFSET_MINUTES * 60_000L
+    }
+
     if (isAfghanistanCityKey(cityKey)) {
       val dhuhrMs = raw[PrayerKey.DHUHR]
       if (dhuhrMs != null) {
         raw[PrayerKey.DHUHR] = dhuhrMs + AFGHAN_DHUHR_OFFSET_MINUTES * 60_000L
       }
-      val maghribMs = raw[PrayerKey.MAGHRIB] ?: return raw
-      raw[PrayerKey.MAGHRIB] = maghribMs + AFGHAN_MAGHRIB_OFFSET_MINUTES * 60_000L
     }
 
     val isFriday = date.dayOfWeek == DayOfWeek.FRIDAY

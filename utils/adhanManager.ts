@@ -5,6 +5,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Platform } from 'react-native';
 
 // Storage key
 export const ADHAN_STORAGE_KEY = '@ebadat/adhan_settings';
@@ -209,11 +210,29 @@ export function getBestAvailableVoice(): AdhanVoice {
   return 'barakatullah'; // Fallback to barakatullah
 }
 
+export const ADHAN_NOTIFICATION_APP_TITLE = 'عبادت';
+
+function formatNotificationHeading(heading: string): { title: string; subtitle?: string } {
+  if (Platform.OS === 'ios') {
+    return { title: '', subtitle: heading };
+  }
+
+  return {
+    title: ADHAN_NOTIFICATION_APP_TITLE,
+    subtitle: heading,
+  };
+}
+
+export function getNotificationHeading(heading: string): { title: string; subtitle?: string } {
+  return formatNotificationHeading(heading);
+}
+
 /**
  * Get notification content for a prayer
  */
 export function getNotificationContent(prayer: PrayerName, playSound: boolean): {
   title: string;
+  subtitle?: string;
   body: string;
   sound: boolean;
 } {
@@ -224,9 +243,12 @@ export function getNotificationContent(prayer: PrayerName, playSound: boolean): 
     maghrib: 'وقت نماز شام است، پروردگار خویش را تسبیح گویید.',
     isha: 'وقت نماز خفتن است، دل را با یاد خدا آرام کنید.',
   };
-  
+
+  const heading = formatNotificationHeading('وقت نماز');
+
   return {
-    title: 'وقت نماز 🕌',
+    title: heading.title,
+    subtitle: heading.subtitle,
     body: prayerMessages[prayer],
     sound: playSound,
   };
@@ -235,14 +257,34 @@ export function getNotificationContent(prayer: PrayerName, playSound: boolean): 
 /**
  * Get early reminder content
  */
+export function getJummahNotificationContent(): {
+  title: string;
+  subtitle?: string;
+  body: string;
+} {
+  const heading = formatNotificationHeading('نماز جمعه');
+
+  return {
+    title: heading.title,
+    subtitle: heading.subtitle,
+    body: 'وقت نماز جمعه است. به سوی ذکر و عبادت خدا بشتابید و داد و ستد را رها سازید',
+  };
+}
+
+/**
+ * Get early reminder content
+ */
 export function getEarlyReminderContent(prayer: PrayerName, minutes: number): {
   title: string;
+  subtitle?: string;
   body: string;
 } {
   const prayerInfo = PRAYER_NAMES[prayer];
-  
+  const heading = formatNotificationHeading('یادآوری نماز');
+
   return {
-    title: 'یادآوری نماز',
+    title: heading.title,
+    subtitle: heading.subtitle,
     body: `${minutes} دقیقه تا ${prayerInfo.dari}`,
   };
 }

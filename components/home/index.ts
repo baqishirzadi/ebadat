@@ -1,5 +1,7 @@
 export { TodayDateCard } from './TodayDateCard';
 export { ContinueReadingCard } from './ContinueReadingCard';
+export { HanafiMuftiWidget } from './HanafiMuftiWidget';
+export { HomeGreenSection } from './HomeGreenSection';
 export { HomeHeader } from './HomeHeader';
 export { NextPrayerCard } from './NextPrayerCard';
 export { PrayerTimesRow } from './PrayerTimesRow';

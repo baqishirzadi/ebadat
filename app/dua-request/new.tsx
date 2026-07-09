@@ -17,19 +17,19 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation, useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
-import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { CategorySelector } from '@/components/dua/CategorySelector';
 import { DuaCategory, UserGender } from '@/types/dua';
 import CenteredText from '@/components/CenteredText';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import NetInfo from '@react-native-community/netinfo';
 
 export default function NewDuaRequestScreen() {
-  const { theme, themeMode } = useApp();
+  const { theme } = useApp();
   const { submitRequest } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
@@ -118,21 +118,12 @@ export default function NewDuaRequestScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
-      {/* Header */}
-      <LinearGradient
-        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
-        style={styles.header}
-      >
-        <Pressable onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
-        </Pressable>
-        <View style={styles.headerCenter}>
-          <MaterialIcons name="auto-awesome" size={20} color="#fff" />
-          <CenteredText style={styles.headerTitle}>درخواست دعا</CenteredText>
-          <CenteredText style={styles.headerSubtitle}>با نیت خالص، با دل آرام</CenteredText>
-        </View>
-        <View style={styles.headerRight} />
-      </LinearGradient>
+      <ScreenHeader
+        title="درخواست دعا"
+        subtitle="با نیت خالص، با دل آرام"
+        icon="auto-awesome"
+        onBack={handleBack}
+      />
 
       <ScrollView
         style={styles.scrollView}

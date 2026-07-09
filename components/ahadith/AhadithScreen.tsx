@@ -11,8 +11,6 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAhadith } from '@/context/AhadithContext';
 import { useApp } from '@/context/AppContext';
@@ -28,8 +26,8 @@ import { shareHadithCard } from '@/utils/ahadith/shareCard';
 import { alphaColor } from '@/utils/ahadith/theme';
 import { formatSourceLabel } from '@/utils/ahadith/labels';
 import CenteredText from '@/components/CenteredText';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { verifyHadithAdminPin } from '@/utils/hadithAdminService';
-import { NAAT_GRADIENT } from '@/constants/theme';
 
 function buildFocusedSelection(hadith: Hadith): DailyHadithSelection {
   return {
@@ -49,8 +47,7 @@ function buildFocusedSelection(hadith: Hadith): DailyHadithSelection {
 export function AhadithScreen() {
   const params = useLocalSearchParams<{ section?: string }>();
   const router = useRouter();
-  const { theme, themeMode } = useApp();
-  const insets = useSafeAreaInsets();
+  const { theme } = useApp();
   const {
     hadiths,
     dailySelection,
@@ -166,26 +163,11 @@ export function AhadithScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
-        <LinearGradient
-          colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
-          style={[styles.topHeader, { paddingTop: insets.top + 12 }]}
-        >
-          <Pressable
-            onPress={() => {
-              if (router.canGoBack?.()) {
-                router.back();
-              } else {
-                router.replace('/(tabs)/more');
-              }
-            }}
-            hitSlop={10}
-            style={styles.topHeaderBackButton}
-          >
-            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
-          </Pressable>
-          <CenteredText style={styles.topHeaderTitle}>احادیث</CenteredText>
-          <CenteredText style={styles.topHeaderSubtitle}>حدیث روز، متفق‌علیه، موضوعات و جستجو</CenteredText>
-        </LinearGradient>
+        <ScreenHeader
+          title="احادیث"
+          subtitle="حدیث روز، متفق‌علیه، موضوعات و جستجو"
+          icon="format-quote"
+        />
       </Pressable>
 
       <View style={styles.headerWrap}>

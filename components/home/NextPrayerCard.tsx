@@ -5,7 +5,13 @@ import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
 import { RtlText } from '@/components/ui/RtlText';
-import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { RtlView } from '@/components/ui/RtlView';
+import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
+import {
+  persianCenterCaptionText,
+  persianCenterSubtitleText,
+  persianCenterText,
+} from '@/constants/persianTextLayout';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
@@ -13,7 +19,6 @@ import { getPrayerProgress } from '@/utils/prayerDisplay';
 import { getNextPrayer, PrayerTimes } from '@/utils/prayerTimes';
 import { toArabicNumeralsString } from '@/utils/numbers';
 
-const THEME_GRADIENT: [string, string, string] = ['#0F1F14', '#1a4d3e', '#2d6a4f'];
 const RING_SIZE = 128;
 const STROKE = 5;
 
@@ -78,9 +83,11 @@ function ProgressRingWithCountdown({
 const CountdownBlock = memo(function CountdownBlock({
   prayerTimes,
   ringColor,
+  compact = false,
 }: {
   prayerTimes: PrayerTimes;
   ringColor: string;
+  compact?: boolean;
 }) {
   const [now, setNow] = useState(() => new Date());
 
@@ -94,29 +101,53 @@ const CountdownBlock = memo(function CountdownBlock({
   const next = getNextPrayer(prayerTimes, now);
   const remaining = next.time.getTime() - now.getTime();
   const progress = getPrayerProgress(prayerTimes, now);
+  const countdown = formatCountdown(remaining);
+
+  if (compact) {
+    return (
+      <View style={styles.compactCountdownWrap}>
+        <View style={styles.compactProgressTrack}>
+          <View style={[styles.compactProgressFill, { width: `${Math.round(progress * 100)}%`, backgroundColor: ringColor }]} />
+        </View>
+        <RtlText align="center" wrap={false} style={styles.compactCountdown}>{countdown}</RtlText>
+      </View>
+    );
+  }
 
   return (
     <ProgressRingWithCountdown
       progress={progress}
       ringColor={ringColor}
-      countdown={formatCountdown(remaining)}
+      countdown={countdown}
     />
   );
 });
 
 interface NextPrayerCardProps {
   prayerTimes: PrayerTimes | null;
+  variant?: 'full' | 'compact';
+  embedded?: boolean;
 }
 
-function NextPrayerCardInner({ prayerTimes }: NextPrayerCardProps) {
-  const { theme } = useApp();
+function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }: NextPrayerCardProps) {
+  const { theme, themeMode } = useApp();
   const { state } = usePrayer();
+  const gradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
+  const isCompact = variant === 'compact';
 
   if (!prayerTimes) {
+    const emptyContent = (
+      <RtlText align="center" style={styles.empty}>اوقات نماز در دسترس نیست</RtlText>
+    );
+
+    if (embedded) {
+      return <View style={styles.embeddedCompact}>{emptyContent}</View>;
+    }
+
     return (
       <View style={[styles.cardShell, styles.shadow]}>
-        <LinearGradient colors={THEME_GRADIENT} style={styles.card}>
-          <RtlText align="center" style={styles.empty}>اوقات نماز در دسترس نیست</RtlText>
+        <LinearGradient colors={gradient} style={isCompact ? styles.cardCompact : styles.card}>
+          {emptyContent}
         </LinearGradient>
       </View>
     );
@@ -125,18 +156,49 @@ function NextPrayerCardInner({ prayerTimes }: NextPrayerCardProps) {
   const next = getNextPrayer(prayerTimes);
   const adhanOn = state.adhanPreferences.masterEnabled;
 
-  return (
-    <View style={[styles.cardShell, styles.shadow]}>
-      <LinearGradient colors={THEME_GRADIENT} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.card}>
-        <RtlText align="center" style={styles.label}>نماز بعدی</RtlText>
-        <RtlText align="center" style={styles.prayerName}>{next.nameDari}</RtlText>
-        <RtlText align="center" style={[styles.time, { color: theme.bookmark }]}>
+  const compactContent = (
+    <RtlView style={styles.compactContainer}>
+      <RtlText align="center" style={styles.compactLabel}>نماز بعدی</RtlText>
+      <RtlView style={styles.compactNameRow}>
+        <RtlText align="center" style={styles.compactPrayerName}>{next.nameDari}</RtlText>
+        <RtlText align="center" style={[styles.compactTime, { color: theme.bookmark }]}>
           {formatPrayerTime12h(next.time)}
         </RtlText>
-        <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} />
-        <RtlText align="center" style={styles.hint}>
-          {adhanOn ? 'اذان فعال است' : 'اذان غیرفعال است'}
-        </RtlText>
+      </RtlView>
+      <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} compact />
+      <RtlText align="center" style={styles.compactHint}>
+        {adhanOn ? 'اذان فعال' : 'اذان خاموش'}
+      </RtlText>
+    </RtlView>
+  );
+
+  const fullContent = (
+    <>
+      <RtlText align="center" style={styles.label}>نماز بعدی</RtlText>
+      <RtlText align="center" style={styles.prayerName}>{next.nameDari}</RtlText>
+      <RtlText align="center" style={[styles.time, { color: theme.bookmark }]}>
+        {formatPrayerTime12h(next.time)}
+      </RtlText>
+      <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} />
+      <RtlText align="center" style={styles.hint}>
+        {adhanOn ? 'اذان فعال است' : 'اذان غیرفعال است'}
+      </RtlText>
+    </>
+  );
+
+  if (embedded && isCompact) {
+    return <RtlView style={styles.embeddedCompact}>{compactContent}</RtlView>;
+  }
+
+  return (
+    <View style={[embedded ? null : styles.cardShell, embedded ? null : styles.shadow]}>
+      <LinearGradient
+        colors={gradient}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={isCompact ? styles.cardCompact : styles.card}
+      >
+        {isCompact ? compactContent : fullContent}
       </LinearGradient>
     </View>
   );
@@ -165,6 +227,19 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     borderColor: 'rgba(212,175,55,0.35)',
+  },
+  cardCompact: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+  },
+  embeddedCompact: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.xs,
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    width: '100%',
   },
   label: {
     fontFamily: 'Vazirmatn',
@@ -212,5 +287,62 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     color: 'rgba(255,255,255,0.7)',
     paddingVertical: Spacing.lg,
+  },
+  compactContainer: {
+    gap: 4,
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    width: '100%',
+  },
+  compactNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    alignSelf: 'stretch',
+  },
+  compactLabel: {
+    ...persianCenterCaptionText,
+    color: 'rgba(255,255,255,0.7)',
+  },
+  compactPrayerName: {
+    ...persianCenterSubtitleText,
+    fontFamily: 'Vazirmatn-Bold',
+    color: '#fff',
+  },
+  compactTime: {
+    ...persianCenterText,
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.heading,
+    fontVariant: ['tabular-nums'],
+  },
+  compactCountdownWrap: {
+    marginTop: 4,
+    gap: 5,
+    alignSelf: 'stretch',
+    alignItems: 'center',
+  },
+  compactProgressTrack: {
+    height: 3,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    overflow: 'hidden',
+    width: '100%',
+  },
+  compactProgressFill: {
+    height: '100%',
+    borderRadius: 2,
+  },
+  compactCountdown: {
+    ...persianCenterText,
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 15,
+    color: 'rgba(255,255,255,0.9)',
+    fontVariant: ['tabular-nums'],
+  },
+  compactHint: {
+    ...persianCenterText,
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.55)',
   },
 });

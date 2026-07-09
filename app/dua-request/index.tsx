@@ -5,18 +5,18 @@
 
 import React, { useEffect } from 'react';
 import { View, StyleSheet, FlatList, ActivityIndicator, Pressable, RefreshControl } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
-import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { RequestCard } from '@/components/dua/RequestCard';
 import CenteredText from '@/components/CenteredText';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function DuaRequestsScreen() {
-  const { theme, themeMode } = useApp();
+  const { theme } = useApp();
   const { state, refreshRequests, syncPending } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
@@ -87,24 +87,16 @@ export default function DuaRequestsScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      <LinearGradient
-        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
-        style={styles.header}
-      >
-        <Pressable onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
-        </Pressable>
-        <View pointerEvents="none" style={styles.headerTitleContainer}>
-          <CenteredText style={styles.headerTitle}>دعای خیر و مشورت شرعی</CenteredText>
-        </View>
-        <Pressable
-          onPress={() => router.push('/dua-request/new')}
-          style={styles.newButtonHeader}
-        >
-          <MaterialIcons name="add" size={24} color="#fff" />
-        </Pressable>
-      </LinearGradient>
+      <ScreenHeader
+        variant="toolbar"
+        title="دعای خیر و مشورت شرعی"
+        onBack={handleBack}
+        rightAction={
+          <Pressable onPress={() => router.push('/dua-request/new')} style={styles.newButtonHeader}>
+            <MaterialIcons name="add" size={24} color="#fff" />
+          </Pressable>
+        }
+      />
 
       {/* Description */}
       <View style={[styles.description, { backgroundColor: theme.backgroundSecondary }]}>

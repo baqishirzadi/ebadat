@@ -9,8 +9,8 @@ import { AdhanHealthBanner } from '@/components/prayer/AdhanHealthBanner';
 import { CitySelectorModal } from '@/components/prayer/CitySelectorModal';
 import {
   ContinueReadingCard,
+  HomeGreenSection,
   HomeHeader,
-  NextPrayerCard,
   PrayerTimesRow,
   QiblaCard,
   QuickActions,
@@ -45,7 +45,7 @@ function HomeDashboardScreen() {
         <RtlView>
           <HomeHeader onCityPress={() => setCityPickerVisible(true)} />
           <TodayDateCard />
-          <NextPrayerCard prayerTimes={state.prayerTimes} />
+          <HomeGreenSection prayerTimes={state.prayerTimes} />
           <SectionHeader title="اوقات نماز" />
           <PrayerTimesRow prayerTimes={state.prayerTimes} />
           <QiblaCard />

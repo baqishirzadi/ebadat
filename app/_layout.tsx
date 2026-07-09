@@ -7,7 +7,7 @@
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, I18nManager, InteractionManager, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
+import { AppState, I18nManager, InteractionManager, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -117,6 +117,14 @@ function RootLayoutNav() {
   const { needsOnboarding, checked: bootstrapChecked } = useStartupBootstrap();
   const router = useRouter();
   const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
+  const nativeSplashHiddenRef = useRef(false);
+
+  const hideNativeSplashOnce = useCallback(() => {
+    if (nativeSplashHiddenRef.current) return;
+    nativeSplashHiddenRef.current = true;
+    SplashScreen.hideAsync().catch(() => {});
+    startupMark('Native splash hidden after spiritual splash layout');
+  }, []);
   const lastHandledNotificationKeyRef = useRef<string>('');
   const pendingNotificationResponseRef = useRef<import('expo-notifications').NotificationResponse | null>(null);
   const appStateRef = useRef(AppState.currentState);
@@ -240,6 +248,11 @@ function RootLayoutNav() {
   }, [bootstrapChecked, markSplashCompleted, needsOnboarding, showSpiritualSplash]);
 
   useEffect(() => {
+    if (showSpiritualSplash) return;
+    hideNativeSplashOnce();
+  }, [hideNativeSplashOnce, showSpiritualSplash]);
+
+  useEffect(() => {
     if (!showSpiritualSplash) return;
     const splashWatchdog = setTimeout(() => {
       startupMark('Splash watchdog fired; forcing splash complete');
@@ -334,6 +347,7 @@ function RootLayoutNav() {
     return (
       <>
         <SpiritualSplash
+          onReady={hideNativeSplashOnce}
           onComplete={() => {
             startupMark('Spiritual splash completed');
             markSplashCompleted();
@@ -395,8 +409,6 @@ export default function RootLayout() {
     startupMark('Using bundled native fonts');
     setFontsLoaded(true);
     setFontPhaseDone(true);
-    startupMark('Splash hide requested after bundled font phase');
-    SplashScreen.hideAsync().catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -449,13 +461,7 @@ export default function RootLayout() {
   if (!fontsLoaded) {
     return (
       <SafeAreaProvider>
-        <View style={styles.loadingContainer}>
-          <SpiritualSplash onComplete={() => {}} />
-          <View style={styles.loadingFallback}>
-            <ActivityIndicator size="small" color="#ffffff" />
-            <Text style={styles.loadingText}>در حال بارگذاری...</Text>
-          </View>
-        </View>
+        <View style={styles.loadingContainer} />
       </SafeAreaProvider>
     );
   }

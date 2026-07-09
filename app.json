@@ -13,6 +13,8 @@
       "router": {},
       "supabaseUrl": "https://igsmyoghkkyetsyqbqlm.supabase.co",
       "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlnc215b2doa2t5ZXRzeXFicWxtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NjAxNzAsImV4cCI6MjA4NTMzNjE3MH0.zml0JOZenwBARf_AX9T1lY0R2cnDN2aRHiJZyu_Xcz8",
+      "hanafiMuftiUrl": "https://sifmemjhejnopduwoajr.supabase.co/functions/v1/hanafi-mufti",
+      "hanafiMuftiAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNpZm1lbWpoZWpub3BkdXdvYWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MDYyODEsImV4cCI6MjA4MzI4MjI4MX0.aTKRvCMSab7bA1t0m9b2C7xwF26WExZ55BPkae_FkmY",
       "eas": {
         "projectId": "e114c255-a536-442c-853f-4f62efb37c6b"
       }

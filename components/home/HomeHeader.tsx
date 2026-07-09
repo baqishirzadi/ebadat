@@ -40,7 +40,7 @@ export function HomeHeader({ onCityPress }: HomeHeaderProps) {
   return (
     <RtlView style={[styles.container, { paddingTop: insets.top + Spacing.sm }]}>
       <RtlView style={styles.row}>
-        <Pressable onPress={() => router.push('/(tabs)/settings')} hitSlop={8}>
+        <Pressable onPress={() => router.push('/settings')} hitSlop={8}>
           <MaterialIcons name="settings" size={24} color={theme.textSecondary} />
         </Pressable>
         <RtlView style={styles.center}>

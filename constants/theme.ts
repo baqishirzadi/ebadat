@@ -366,3 +366,10 @@ export const RTLStyles = {
   textAlign: 'right' as const,
   writingDirection: 'rtl' as const,
 };
+
+// RTL container for views that need explicit direction (not inherited from I18nManager alone)
+export const RTL_CONTAINER = Platform.select({
+  ios: { direction: 'rtl' as const },
+  android: { direction: 'rtl' as const },
+  default: {},
+}) as import('react-native').ViewStyle;

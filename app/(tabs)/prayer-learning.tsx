@@ -7,10 +7,10 @@ import CenteredText from '@/components/CenteredText';
 import { DuaFeatureTile } from '@/components/dua/FeatureTile';
 import { PrayerStepGuide, PrayerTextBlock } from '@/components/prayer';
 import type { PashtoFontFamily } from '@/constants/theme';
-import { BorderRadius, NAAT_GRADIENT, PashtoFonts, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, PashtoFonts, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -110,29 +110,11 @@ export default function PrayerLearningScreen() {
   const renderCategoryList = () => (
     <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <LinearGradient
-        colors={NAAT_GRADIENT[state.preferences.theme] ?? NAAT_GRADIENT.light}
-        style={styles.header}
-      >
-        <Pressable
-          onPress={() => {
-            if (router.canGoBack?.()) {
-              router.back();
-            } else {
-              router.replace('/(tabs)/more');
-            }
-          }}
-          style={styles.rootBackButton}
-          hitSlop={10}
-        >
-          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
-        </Pressable>
-        <MaterialIcons name="mosque" size={40} color="#fff" />
-        <CenteredText style={styles.headerTitle}>آموزش نماز</CenteredText>
-        <CenteredText style={styles.headerSubtitle}>
-          طبق مذهب امام ابو حنیفه رحمه‌الله
-        </CenteredText>
-      </LinearGradient>
+      <ScreenHeader
+        icon="school"
+        title="آموزش نماز"
+        subtitle="طبق مذهب امام ابو حنیفه رحمه‌الله"
+      />
 
       {/* Categories Grid */}
       <View style={styles.categoriesContainer}>

@@ -5,16 +5,16 @@
 
 import React, { useCallback } from 'react';
 import { View, StyleSheet, FlatList, Pressable, Alert } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp, useBookmarks } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
-import { Typography, Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
+import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { stripQuranicMarks } from '@/utils/quranText';
 import { Bookmark } from '@/types/quran';
 import CenteredText from '@/components/CenteredText';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { toArabicNumerals } from '@/utils/numbers';
 
 // Format date
@@ -28,7 +28,7 @@ const formatDate = (timestamp: number): string => {
 };
 
 export default function BookmarksScreen() {
-  const { theme, themeMode, state } = useApp();
+  const { theme, state } = useApp();
   const { bookmarks, removeBookmark } = useBookmarks();
   const { getSurah, getAyah } = useQuranData();
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
@@ -138,32 +138,15 @@ export default function BookmarksScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Header */}
-      <LinearGradient
-        colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
-        style={styles.header}
-      >
-        <Pressable
-          onPress={() => {
-            if (router.canGoBack?.()) {
-              router.back();
-            } else {
-              router.replace('/(tabs)/more');
-            }
-          }}
-          style={styles.headerBackButton}
-          hitSlop={10}
-        >
-          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
-        </Pressable>
-        <MaterialIcons name="bookmark" size={36} color="#fff" />
-        <CenteredText style={styles.headerTitle}>نشانه‌ها</CenteredText>
-        <CenteredText style={styles.headerSubtitle}>
-          {bookmarks.length > 0
+      <ScreenHeader
+        icon="bookmark"
+        title="نشانه‌ها"
+        subtitle={
+          bookmarks.length > 0
             ? `${toArabicNumerals(bookmarks.length)} نشانه ذخیره شده`
-            : 'هیچ نشانه‌ای ذخیره نشده'}
-        </CenteredText>
-      </LinearGradient>
+            : 'هیچ نشانه‌ای ذخیره نشده'
+        }
+      />
 
       {bookmarks.length === 0 ? (
         <View style={styles.emptyContainer}>

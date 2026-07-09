@@ -59,7 +59,7 @@ type JuzListItem =
     };
 
 const AYAH_FOLLOW_VIEW_POSITION = 0;
-const JUZ_TOP_BAR_HEIGHT = 60;
+const JUZ_TOP_BAR_HEIGHT = 56;
 const AYAH_FOLLOW_EXTRA_TOP_OFFSET = 8;
 const FOLLOW_HARD_SNAP_DELAY = 120;
 

@@ -12,9 +12,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CenteredText from '@/components/CenteredText';
 import { CitySelectorModal, AdhanHealthBanner } from '@/components/prayer';
-import { LinearGradient } from 'expo-linear-gradient';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { NAAT_GRADIENT , Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
@@ -102,7 +102,7 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
 };
 
 export default function NamazScreen() {
-  const { theme, themeMode } = useApp();
+  const { theme } = useApp();
   const router = useRouter();
   const { setCity, setCustomLocation } = usePrayer();
   const { 
@@ -167,14 +167,12 @@ export default function NamazScreen() {
   if (!selectedCity) {
     return (
       <View testID="ios-prayer-ready" style={[styles.container, { backgroundColor: theme.background }]}>
-        <LinearGradient
-          colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
-          style={styles.header}
-        >
-          <MaterialIcons name="schedule" size={40} color="#fff" />
-          <CenteredText style={styles.headerTitle}>اوقات نماز</CenteredText>
-          <CenteredText style={styles.headerSubtitle}>شهر انتخاب نشده</CenteredText>
-        </LinearGradient>
+        <ScreenHeader
+          showBack={false}
+          icon="schedule"
+          title="اوقات نماز"
+          subtitle="شهر انتخاب نشده"
+        />
 
         <View style={styles.contentWrapper}>
           <AdhanHealthBanner onSelectCity={() => setShowCityModal(true)} />
@@ -248,16 +246,12 @@ export default function NamazScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header - هم‌وزن با دیگر تب‌ها */}
-        <LinearGradient
-          colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
-          style={styles.header}
-        >
-          <MaterialIcons name="schedule" size={40} color="#fff" />
-          <CenteredText style={styles.headerTitle}>اوقات نماز</CenteredText>
-          <CenteredText style={styles.headerSubtitle}>
-            {selectedCityData?.name || 'شهر نامشخص'}
-          </CenteredText>
-        </LinearGradient>
+        <ScreenHeader
+          showBack={false}
+          icon="schedule"
+          title="اوقات نماز"
+          subtitle={selectedCityData?.name || 'شهر نامشخص'}
+        />
 
         {/* Content with horizontal padding */}
         <View style={styles.contentWrapper}>

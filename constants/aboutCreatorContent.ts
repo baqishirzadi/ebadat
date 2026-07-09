@@ -21,3 +21,21 @@ export const ABOUT_CREATOR_PASHTO_PARAGRAPHS: string[] = [
 export const ABOUT_CREATOR_PASHTO_CREATOR_LABEL = 'جوړوونکی:';
 export const ABOUT_CREATOR_PASHTO_CREATOR_NAME =
   'سیدعبدالباقي ابن سیدعبدالاله\nابن خلیفه صاحب سیدمحمد یتیم شیرزادي (رح)';
+
+export const CREATOR_MESSAGE_DARI_TITLE = 'سخنی از سازنده';
+
+export const CREATOR_MESSAGE_DARI_BODY =
+  'هدف من از ساخت این برنامه، فراهم کردن ابزاری ساده و قابل اعتماد برای عبادت مسلمانان است. این اثر را به روح پدربزرگم خلیفه صاحب سید محمد یتیم جان (رح) تقدیم می‌کنم و از الله متعال می‌خواهم توفیق ادامه راه ایشان را نصیبم گرداند.';
+
+export const CREATOR_MESSAGE_DARI_SIGNATURE = 'سید عبدالـباقی فرزند سید عبدالاله شیرزادی';
+
+export const CREATOR_MESSAGE_PASHTO_TITLE = 'د جوړوونکي پیغام';
+
+export const CREATOR_MESSAGE_PASHTO_BODY =
+  'زما د دې پروګرام په جوړولو کې موخه د مسلمانانو د عبادت لپاره یوه ساده او باوري وسیله چمتو کول دي. زه دا کار د خپل نیکه، خلیفه صاحب سید محمد یتیم جان شیرزادی (رح) روح ته وقف کوم، او له الله تعالی څخه غواړم چې ماته د هغه د نیکی لارې د دوام لپاره توفیق راکړي.';
+
+export const CREATOR_MESSAGE_PASHTO_SIGNATURE = 'سید عبدالباقی د سید عبدالاله شیرزادی زوي';
+
+export const CREATOR_COMPANY_LABEL = 'سازنده شرکت نرم افزار';
+export const CREATOR_COMPANY_LINK = 'WWW.AFGHAN.DEV';
+export const CREATOR_COMPANY_URL = 'https://www.afghan.dev';

@@ -17,15 +17,15 @@ import {
   TextInput,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
 import { useArticles } from '@/context/ArticlesContext';
 import { Article, Scholar, ARTICLE_CATEGORIES } from '@/types/articles';
-import { Spacing, BorderRadius, NAAT_GRADIENT } from '@/constants/theme';
+import { Spacing, BorderRadius } from '@/constants/theme';
 import { ArticleCard } from '@/components/articles/ArticleCard';
 import { CategoryFilter } from '@/components/articles/CategoryFilter';
 import CenteredText from '@/components/CenteredText';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { isArticlesRemoteEnabled } from '@/utils/articleService';
 import { verifyPin } from '@/utils/articleAdminService';
 
@@ -245,7 +245,7 @@ const PINNED_SCHOLAR_FILTERS: Record<string, { authorIds?: string[]; authorNames
 const normalizeName = (value?: string) => (value || '').replace(/\s+/g, ' ').trim().toLowerCase();
 
 export default function ArticlesFeed() {
-  const { theme, themeMode } = useApp();
+  const { theme } = useApp();
   const { state, refreshArticles, syncArticles, isBookmarked } = useArticles();
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -434,6 +434,16 @@ export default function ArticlesFeed() {
     extrapolate: 'clamp',
   });
 
+  const articlesTitleHeader = (
+    <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
+      <ScreenHeader
+        title="مقالات"
+        subtitle="مقالات و نوشته‌های علما"
+        icon="article"
+      />
+    </Pressable>
+  );
+
   const renderListHeader = () => (
     <Animated.View
       style={[
@@ -444,38 +454,7 @@ export default function ArticlesFeed() {
         },
       ]}
     >
-      <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
-        <LinearGradient
-          colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
-          style={styles.header}
-        >
-          <Pressable
-            onPress={() => {
-              if (router.canGoBack?.()) {
-                router.back();
-              } else {
-                router.replace('/(tabs)/more');
-              }
-            }}
-            style={styles.headerBackButton}
-            hitSlop={10}
-          >
-            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
-          </Pressable>
-          <View style={styles.headerPattern} pointerEvents="none">
-            <View style={[styles.patternLine, styles.patternLine1]} />
-            <View style={[styles.patternLine, styles.patternLine2]} />
-            <View style={[styles.patternLine, styles.patternLine3]} />
-            <View style={[styles.patternLine, styles.patternLine4]} />
-            <View style={[styles.patternCorner, styles.patternTopLeft]} />
-            <View style={[styles.patternCorner, styles.patternTopRight]} />
-            <View style={[styles.patternCorner, styles.patternBottomLeft]} />
-            <View style={[styles.patternCorner, styles.patternBottomRight]} />
-          </View>
-          <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
-          <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
-        </LinearGradient>
-      </Pressable>
+      {articlesTitleHeader}
 
       <CategoryFilter
         selectedCategory={selectedCategory}
@@ -512,38 +491,7 @@ export default function ArticlesFeed() {
 
   const renderStaticHeader = () => (
     <View style={styles.headerWrapper}>
-      <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
-        <LinearGradient
-          colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
-          style={styles.header}
-        >
-          <Pressable
-            onPress={() => {
-              if (router.canGoBack?.()) {
-                router.back();
-              } else {
-                router.replace('/(tabs)/more');
-              }
-            }}
-            style={styles.headerBackButton}
-            hitSlop={10}
-          >
-            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
-          </Pressable>
-          <View style={styles.headerPattern} pointerEvents="none">
-            <View style={[styles.patternLine, styles.patternLine1]} />
-            <View style={[styles.patternLine, styles.patternLine2]} />
-            <View style={[styles.patternLine, styles.patternLine3]} />
-            <View style={[styles.patternLine, styles.patternLine4]} />
-            <View style={[styles.patternCorner, styles.patternTopLeft]} />
-            <View style={[styles.patternCorner, styles.patternTopRight]} />
-            <View style={[styles.patternCorner, styles.patternBottomLeft]} />
-            <View style={[styles.patternCorner, styles.patternBottomRight]} />
-          </View>
-          <CenteredText style={styles.headerTitle}>مقالات</CenteredText>
-          <CenteredText style={styles.headerSubtitle}>مقالات و نوشته‌های علما</CenteredText>
-        </LinearGradient>
-      </Pressable>
+      {articlesTitleHeader}
 
       <CategoryFilter
         selectedCategory={selectedCategory}

@@ -4,12 +4,19 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Pressable, InteractionManager, SectionList, Platform, Linking } from 'react-native';
+import { View, StyleSheet, Pressable, InteractionManager, SectionList, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
 import CenteredText from '@/components/CenteredText';
+import {
+  CreatorCompanyCard,
+  CreatorMessageCard,
+  MoreHubRow,
+  MoreHubTile,
+  MoreSectionTitle,
+} from '@/components/more';
 import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
@@ -42,7 +49,7 @@ const GREGORIAN_MONTHS_DARI = [
   'دسمبر',
 ];
 
-type DeferredSectionKey = 'summary' | 'today' | 'upcoming' | 'support' | 'khatm' | 'creator';
+type DeferredSectionKey = 'summary' | 'today' | 'upcoming' | 'support' | 'creatorMessage' | 'creatorCompany';
 
 interface UpcomingDayCard {
   key: string;
@@ -64,7 +71,7 @@ function formatGregorianDateDari(date: Date): string {
 
 export default function MoreScreen() {
   const { theme, themeMode } = useApp();
-  const { state: stats, dashboardSnapshot } = useStats();
+  const { dashboardSnapshot } = useStats();
   const { state: prayer } = usePrayer();
   const router = useRouter();
   const [showDeferredSections, setShowDeferredSections] = useState(false);
@@ -131,21 +138,22 @@ export default function MoreScreen() {
   }, [showDeferredSections, theme, truth.gregorianDate]);
 
   const quickActions = useMemo(() => [
-    { icon: 'auto-awesome', label: 'اذکار', subtitle: 'اذکار روزانه', route: '/(tabs)/adhkar', accent: theme.tint },
-    { icon: 'menu-book', label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith', accent: theme.tint },
-    { icon: 'article', label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles', accent: theme.bookmark },
-    { icon: 'calendar-today', label: 'جنتری', subtitle: 'تقویم اسلامی', route: '/(tabs)/jantari', accent: theme.surahHeader },
-    { icon: 'explore', label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla', accent: theme.tint },
-    { icon: 'school', label: 'آموزش نماز', subtitle: 'فقه و راهنما', route: '/(tabs)/prayer-learning', accent: theme.bookmark },
-    { icon: 'bookmark', label: 'نشانه‌های من', subtitle: 'موارد ذخیره‌شده', route: '/(tabs)/bookmarks', accent: theme.surahHeader },
-  ], [theme.bookmark, theme.playing, theme.surahHeader, theme.tint]);
+    { icon: 'menu-book' as const, label: 'مفتی هوشمند حنفی', subtitle: 'سوال دینی و فقهی', route: '/mufti-chat' },
+    { icon: 'auto-awesome' as const, label: 'اذکار', subtitle: 'اذکار روزانه', route: '/(tabs)/adhkar' },
+    { icon: 'format-quote' as const, label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith' },
+    { icon: 'article' as const, label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles' },
+    { icon: 'calendar-today' as const, label: 'جنتری', subtitle: 'تقویم اسلامی', route: '/(tabs)/jantari' },
+    { icon: 'explore' as const, label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla' },
+    { icon: 'school' as const, label: 'آموزش نماز', subtitle: 'فقه و راهنما', route: '/(tabs)/prayer-learning' },
+    { icon: 'bookmark' as const, label: 'نشانه‌های من', subtitle: 'موارد ذخیره‌شده', route: '/(tabs)/bookmarks' },
+  ], []);
 
   const secondaryActions = useMemo(() => [
-    { icon: 'access-alarm', label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings', accent: theme.tint },
-    { icon: 'favorite', label: 'دعای خیر و مشورت شرعی', subtitle: 'ارسال درخواست دعا', route: '/dua-request', accent: theme.bookmark },
-    { icon: 'admin-panel-settings', label: 'پنل مدیریت', subtitle: 'بخش مدیریتی', route: '/admin/login', accent: theme.surahHeader },
-    { icon: 'settings', label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/(tabs)/settings', accent: theme.tint },
-  ], [theme.bookmark, theme.surahHeader, theme.tint]);
+    { icon: 'access-alarm' as const, label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings' },
+    { icon: 'favorite' as const, label: 'دعای خیر و مشورت شرعی', subtitle: 'ارسال درخواست دعا', route: '/dua-request' },
+    { icon: 'admin-panel-settings' as const, label: 'پنل مدیریت', subtitle: 'بخش مدیریتی', route: '/admin/login' },
+    { icon: 'settings' as const, label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/settings' },
+  ], []);
 
   const summaryCards = useMemo(() => [
     { icon: 'menu-book', label: 'آیات خوانده‌شده', value: dashboardSnapshot.summary.totalAyahsRead },
@@ -193,7 +201,7 @@ export default function MoreScreen() {
     if (upcomingCards.length > 0) {
       items.push('upcoming');
     }
-    items.push('support', 'khatm', 'creator');
+    items.push('support', 'creatorMessage', 'creatorCompany');
 
     return [{ key: 'dashboard', data: items }];
   }, [showDeferredSections, upcomingCards.length]);
@@ -259,31 +267,21 @@ export default function MoreScreen() {
       </View>
 
       <View style={styles.section}>
-        <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>میان‌بُرهای اصلی</CenteredText>
+        <MoreSectionTitle title="میان‌بُرهای اصلی" />
         <View style={styles.quickGrid}>
           {quickActions.map((item) => (
-            <Pressable
+            <MoreHubTile
               key={item.label}
+              icon={item.icon}
+              label={item.label}
+              subtitle={item.subtitle}
               testID={
-                item.route === '/adhan-settings'
-                  ? 'ios-open-adhan-settings'
-                  : item.route === '/(tabs)/ahadith'
-                    ? 'ios-open-ahadith'
-                    : undefined
+                item.route === '/(tabs)/ahadith'
+                  ? 'ios-open-ahadith'
+                  : undefined
               }
               onPress={() => router.push(item.route as any)}
-              style={({ pressed }) => [
-                styles.quickCard,
-                { backgroundColor: theme.card, borderColor: theme.cardBorder },
-                pressed && styles.pressedCard,
-              ]}
-            >
-              <View style={[styles.featureIconWrap, { backgroundColor: `${item.accent}14`, borderColor: `${item.accent}38` }]}>
-                <MaterialIcons name={item.icon as any} size={24} color={item.accent} />
-              </View>
-              <CenteredText style={[styles.quickLabel, { color: theme.text }]}>{item.label}</CenteredText>
-              <CenteredText style={[styles.quickSubtitle, { color: theme.textSecondary }]}>{item.subtitle}</CenteredText>
-            </Pressable>
+            />
           ))}
         </View>
       </View>
@@ -294,14 +292,14 @@ export default function MoreScreen() {
     if (item === 'summary') {
       return (
         <View style={styles.section}>
-          <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>خلاصه پیشرفت</CenteredText>
+          <MoreSectionTitle title="خلاصه پیشرفت" />
           <View style={styles.summaryGrid}>
             {summaryCards.map((card) => (
               <View
                 key={card.label}
                 style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
               >
-                <View style={[styles.summaryIconWrap, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+                <View style={[styles.summaryIconWrap, { backgroundColor: `${theme.tint}18`, borderColor: `${theme.tint}30` }]}>
                   <MaterialIcons name={card.icon as any} size={22} color={theme.tint} />
                 </View>
                 <CenteredText style={[styles.summaryValue, { color: theme.text }]}>{toArabicNumerals(card.value)}</CenteredText>
@@ -316,7 +314,7 @@ export default function MoreScreen() {
     if (item === 'today') {
       return (
         <View style={styles.section}>
-          <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>مرور امروز</CenteredText>
+          <MoreSectionTitle title="مرور امروز" />
           <View style={[styles.todayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             {todayRows.map((row, index) => (
               <View key={row.label}>
@@ -335,7 +333,7 @@ export default function MoreScreen() {
     if (item === 'upcoming') {
       return (
         <View style={styles.section}>
-          <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>مناسبت‌های آینده</CenteredText>
+          <MoreSectionTitle title="مناسبت‌های آینده" />
           <View style={styles.upcomingList}>
             {upcomingCards.map((day) => {
               return (
@@ -382,65 +380,34 @@ export default function MoreScreen() {
     if (item === 'support') {
       return (
         <View style={styles.section}>
-          <CenteredText style={[styles.sectionTitle, { color: theme.textSecondary }]}>راهنما و پشتیبانی</CenteredText>
+          <MoreSectionTitle title="راهنما و پشتیبانی" />
           <View style={styles.secondaryList}>
             {secondaryActions.map((action) => (
-              <Pressable
+              <MoreHubRow
                 key={action.label}
+                icon={action.icon}
+                label={action.label}
+                subtitle={action.subtitle}
                 testID={action.route === '/adhan-settings' ? 'ios-open-adhan-settings-secondary' : undefined}
                 onPress={() => router.push(action.route as any)}
-                style={({ pressed }) => [
-                  styles.secondaryRow,
-                  { backgroundColor: theme.card, borderColor: theme.cardBorder },
-                  pressed && styles.pressedCard,
-                ]}
-              >
-                <MaterialIcons name="chevron-left" size={22} color={theme.icon} />
-                <View style={styles.secondaryTextWrap}>
-                  <CenteredText style={[styles.secondaryLabel, { color: theme.text }]}>{action.label}</CenteredText>
-                  <CenteredText style={[styles.secondarySubtitle, { color: theme.textSecondary }]}>{action.subtitle}</CenteredText>
-                </View>
-                <View style={[styles.featureIconWrapSmall, { backgroundColor: `${action.accent}14`, borderColor: `${action.accent}38` }]}>
-                  <MaterialIcons name={action.icon as any} size={22} color={action.accent} />
-                </View>
-              </Pressable>
+              />
             ))}
           </View>
         </View>
       );
     }
 
-    if (item === 'khatm') {
+    if (item === 'creatorMessage') {
       return (
         <View style={styles.section}>
-          <View style={[styles.khatmCard, { backgroundColor: theme.card, borderColor: theme.bookmark }]}>
-            <MaterialIcons name="auto-stories" size={30} color={theme.bookmark} />
-            <View style={styles.khatmTextWrap}>
-              <CenteredText style={[styles.khatmValue, { color: theme.text }]}>
-                {toArabicNumerals(stats.overall.khatmCount)} ختم کامل قرآن
-              </CenteredText>
-              <CenteredText style={[styles.khatmLabel, { color: theme.textSecondary }]}>این شمار از تمام ختم‌های ثبت‌شده در برنامه است</CenteredText>
-            </View>
-          </View>
+          <CreatorMessageCard />
         </View>
       );
     }
 
     return (
       <View style={styles.section}>
-        <View style={[styles.creatorCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <CenteredText style={[styles.creatorCompactText, { color: theme.text }]}>
-            سازنده شرکت نرم افزار
-          </CenteredText>
-          <Pressable
-            onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
-            style={({ pressed }) => [styles.creatorLinkButton, pressed && styles.pressedCard]}
-          >
-            <CenteredText style={[styles.creatorCompactLink, { color: theme.bookmark }]}>
-              WWW.AFGHAN.DEV
-            </CenteredText>
-          </Pressable>
-        </View>
+        <CreatorCompanyCard />
       </View>
     );
   };
@@ -584,50 +551,10 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xl,
     paddingHorizontal: Spacing.md,
   },
-  sectionTitle: {
-    fontSize: Typography.ui.caption,
-    fontWeight: '700',
-    marginBottom: Spacing.md,
-    textTransform: 'uppercase',
-  },
   quickGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
-  },
-  quickCard: {
-    width: '48%',
-    borderRadius: BorderRadius.xl,
-    borderWidth: 1,
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.md,
-    alignItems: 'center',
-  },
-  featureIconWrap: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.sm,
-  },
-  featureIconWrapSmall: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  quickLabel: {
-    fontSize: Typography.ui.body,
-    fontWeight: '700',
-  },
-  quickSubtitle: {
-    fontSize: Typography.ui.caption,
-    marginTop: Spacing.xs,
-    lineHeight: 22,
   },
   summaryGrid: {
     flexDirection: 'row',
@@ -740,113 +667,5 @@ const styles = StyleSheet.create({
   },
   secondaryList: {
     gap: Spacing.sm,
-  },
-  secondaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    padding: Spacing.md,
-    gap: Spacing.md,
-  },
-  secondaryTextWrap: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  secondaryLabel: {
-    fontSize: Typography.ui.body,
-    fontWeight: '700',
-  },
-  secondarySubtitle: {
-    fontSize: Typography.ui.caption,
-    marginTop: 4,
-    lineHeight: 20,
-  },
-  khatmCard: {
-    marginTop: Spacing.xl,
-    marginHorizontal: Spacing.md,
-    borderRadius: BorderRadius.xl,
-    borderWidth: 2,
-    padding: Spacing.lg,
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  khatmTextWrap: {
-    alignItems: 'center',
-  },
-  khatmValue: {
-    fontSize: Typography.ui.title,
-    fontWeight: '700',
-  },
-  khatmLabel: {
-    marginTop: 4,
-    fontSize: Typography.ui.caption,
-    lineHeight: 21,
-  },
-  creatorCard: {
-    borderRadius: BorderRadius.xl,
-    borderWidth: 1,
-    padding: Spacing.lg,
-    alignItems: 'center',
-  },
-  creatorCompactText: {
-    fontSize: Typography.ui.body,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-  },
-  creatorLinkButton: {
-    marginTop: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
-  },
-  creatorCompactLink: {
-    fontSize: Typography.ui.subtitle,
-    fontWeight: '700',
-  },
-  creatorHeader: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    gap: Spacing.xs,
-    marginBottom: Spacing.md,
-  },
-  creatorTitle: {
-    fontSize: Typography.ui.subtitle,
-    fontWeight: '700',
-    fontFamily: 'Vazirmatn',
-  },
-  creatorParagraph: {
-    fontSize: Typography.ui.body,
-    fontFamily: 'Vazirmatn',
-    lineHeight: 30,
-    marginBottom: Spacing.sm,
-  },
-  creatorLabel: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    fontWeight: '700',
-    marginTop: Spacing.xs,
-  },
-  creatorNameDari: {
-    fontSize: Typography.ui.body,
-    fontFamily: 'NotoNastaliqUrdu',
-    lineHeight: 38,
-    marginTop: Spacing.xs,
-    includeFontPadding: false,
-  },
-  creatorNamePashto: {
-    fontSize: Typography.ui.body,
-    fontFamily: 'NotoNastaliqUrdu',
-    lineHeight: 38,
-    marginTop: Spacing.xs,
-    includeFontPadding: false,
-  },
-  creatorDivider: {
-    width: '70%',
-    height: 1,
-    marginVertical: Spacing.md,
-  },
-  pressedCard: {
-    opacity: 0.92,
-    transform: [{ scale: 0.985 }],
   },
 });
