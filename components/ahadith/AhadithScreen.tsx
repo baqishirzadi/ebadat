@@ -170,6 +170,19 @@ export function AhadithScreen() {
           colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
           style={[styles.topHeader, { paddingTop: insets.top + 12 }]}
         >
+          <Pressable
+            onPress={() => {
+              if (router.canGoBack?.()) {
+                router.back();
+              } else {
+                router.replace('/(tabs)/more');
+              }
+            }}
+            hitSlop={10}
+            style={styles.topHeaderBackButton}
+          >
+            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+          </Pressable>
           <CenteredText style={styles.topHeaderTitle}>احادیث</CenteredText>
           <CenteredText style={styles.topHeaderSubtitle}>حدیث روز، متفق‌علیه، موضوعات و جستجو</CenteredText>
         </LinearGradient>
@@ -367,6 +380,15 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     alignItems: 'center',
     gap: 4,
+  },
+  topHeaderBackButton: {
+    position: 'absolute',
+    right: 14,
+    top: 14,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   topHeaderTitle: {
     color: '#ffffff',

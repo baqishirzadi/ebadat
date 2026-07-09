@@ -11,7 +11,7 @@ import { BorderRadius, NAAT_GRADIENT, PashtoFonts, Spacing, Typography } from '@
 import { useApp } from '@/context/AppContext';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useFocusEffect } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -62,6 +62,7 @@ const iconMap: Record<string, IconName> = {
 
 export default function PrayerLearningScreen() {
   const { theme, state } = useApp();
+  const router = useRouter();
   const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
@@ -113,6 +114,19 @@ export default function PrayerLearningScreen() {
         colors={NAAT_GRADIENT[state.preferences.theme] ?? NAAT_GRADIENT.light}
         style={styles.header}
       >
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack?.()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/more');
+            }
+          }}
+          style={styles.rootBackButton}
+          hitSlop={10}
+        >
+          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+        </Pressable>
         <MaterialIcons name="mosque" size={40} color="#fff" />
         <CenteredText style={styles.headerTitle}>آموزش نماز</CenteredText>
         <CenteredText style={styles.headerSubtitle}>
@@ -513,6 +527,13 @@ const styles = StyleSheet.create({
     right: Spacing.md,
     top: 60,
     padding: Spacing.sm,
+  },
+  rootBackButton: {
+    position: 'absolute',
+    right: Spacing.md,
+    top: 54,
+    padding: Spacing.sm,
+    zIndex: 2,
   },
   categoriesContainer: {
     flexDirection: 'row',

@@ -18,5 +18,6 @@ struct EbadatPrayerWidget: Widget {
     .configurationDisplayName("اوقات نماز")
     .description("تاریخ امروز و اوقات نماز")
     .supportedFamilies([.systemMedium])
+    .contentMarginsDisabled()
   }
 }

@@ -59,7 +59,7 @@ export default function TabLayout() {
         },
         headerShown: false,
         tabBarButton: HapticTab,
-        freezeOnBlur: true,
+        freezeOnBlur: Platform.OS !== 'ios',
         lazy: true,
       }}
     >

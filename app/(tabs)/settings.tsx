@@ -102,6 +102,19 @@ export default function SettingsScreen() {
         colors={NAAT_GRADIENT[state.preferences.theme] ?? NAAT_GRADIENT.light}
         style={styles.header}
       >
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack?.()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/more');
+            }
+          }}
+          style={styles.headerBackButton}
+          hitSlop={10}
+        >
+          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+        </Pressable>
         <MaterialIcons name="settings" size={36} color="#fff" />
         <Text style={styles.headerTitle}>تنظیمات</Text>
       </LinearGradient>
@@ -543,6 +556,15 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     textAlign: 'center',
     fontFamily: 'Vazirmatn',
+  },
+  headerBackButton: {
+    position: 'absolute',
+    right: Spacing.md,
+    top: 54,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   sectionHeader: {
     flexDirection: 'row-reverse',

@@ -41,6 +41,19 @@ export default function AdhkarScreen() {
         colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
         style={styles.header}
       >
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack?.()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/more');
+            }
+          }}
+          style={styles.headerBackButton}
+          hitSlop={10}
+        >
+          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+        </Pressable>
         <MaterialIcons name="auto-awesome" size={36} color="#fff" />
         <Text style={styles.headerTitle}>اذکار</Text>
         <Text style={styles.headerSubtitle}>یادآوری‌های روزانه</Text>
@@ -177,6 +190,15 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     color: 'rgba(255,255,255,0.8)',
     marginTop: Spacing.xs,
+  },
+  headerBackButton: {
+    position: 'absolute',
+    right: Spacing.md,
+    top: 54,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   section: {
     marginTop: Spacing.lg,

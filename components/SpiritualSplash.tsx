@@ -15,7 +15,6 @@ import Animated, {
   withSequence,
   withDelay,
   Easing,
-  runOnJS,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -88,6 +87,8 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   const translationOpacity = useSharedValue(1);
   const creditOpacity = useSharedValue(1);
   const glowOpacity = useSharedValue(0);
+  const kaabaFloatY = useSharedValue(8);
+  const kaabaScale = useSharedValue(0.95);
 
   const finish = useCallback(() => {
     if (completedRef.current) return;
@@ -97,36 +98,41 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
 
   useEffect(() => {
     // Animate in sequence (container stays visible from frame 0 for EAS/physical devices)
-    appNameOpacity.value = withDelay(100, withTiming(1, { duration: 600, easing: Easing.out(Easing.cubic) }));
+    appNameOpacity.value = withDelay(50, withTiming(1, { duration: 380, easing: Easing.out(Easing.cubic) }));
     appNameScale.value = withDelay(100, withSequence(
-      withTiming(1.05, { duration: 400, easing: Easing.out(Easing.cubic) }),
-      withTiming(1, { duration: 200 })
+      withTiming(1.03, { duration: 260, easing: Easing.out(Easing.cubic) }),
+      withTiming(1, { duration: 150 })
     ));
     frameScale.value = withSequence(
-      withDelay(300, withTiming(1.02, { duration: 400, easing: Easing.out(Easing.cubic) })),
-      withTiming(1, { duration: 200 })
+      withDelay(130, withTiming(1.01, { duration: 260, easing: Easing.out(Easing.cubic) })),
+      withTiming(1, { duration: 150 })
     );
-    glowOpacity.value = withDelay(400, withTiming(1, { duration: 600 }));
-    arabicOpacity.value = withDelay(500, withTiming(1, { duration: 500 }));
-    translationOpacity.value = withDelay(800, withTiming(1, { duration: 500 }));
-    creditOpacity.value = withDelay(1100, withTiming(1, { duration: 600 }));
+    glowOpacity.value = withDelay(140, withTiming(1, { duration: 500 }));
+    arabicOpacity.value = withDelay(180, withTiming(1, { duration: 320 }));
+    translationOpacity.value = withDelay(280, withTiming(1, { duration: 320 }));
+    creditOpacity.value = withDelay(360, withTiming(1, { duration: 320 }));
+    kaabaScale.value = withDelay(120, withTiming(1, { duration: 300, easing: Easing.out(Easing.cubic) }));
+    kaabaFloatY.value = withDelay(
+      280,
+      withSequence(
+        withTiming(0, { duration: 300, easing: Easing.out(Easing.sin) }),
+        withTiming(5, { duration: 300, easing: Easing.inOut(Easing.sin) }),
+        withTiming(0, { duration: 220, easing: Easing.out(Easing.sin) })
+      )
+    );
 
-    // Fade out and complete
+    // Complete quickly without alpha fade to avoid end-of-splash flash.
     const exitTimeout = setTimeout(() => {
       setIsExiting(true);
-      opacity.value = withTiming(0, { duration: 250 }, (finished) => {
-        if (finished) {
-          runOnJS(finish)();
-        }
-      });
-    }, 1200);
+      finish();
+    }, 980);
 
     // Reanimated callbacks can occasionally fail on some devices during startup.
     // This guarantees the splash cannot trap the app forever.
     const hardTimeout = setTimeout(() => {
       setIsExiting(true);
       finish();
-    }, 2200);
+    }, 1800);
 
     return () => {
       clearTimeout(exitTimeout);
@@ -162,6 +168,11 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
   const appNameStyle = useAnimatedStyle(() => ({
     opacity: appNameOpacity.value,
     transform: [{ scale: appNameScale.value }],
+  }));
+
+  const kaabaStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: kaabaFloatY.value }, { scale: kaabaScale.value }],
+    opacity: glowOpacity.value,
   }));
 
   return (
@@ -226,6 +237,15 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
 
           {/* Inner Content */}
           <View style={styles.frameContent}>
+            <Animated.View style={[styles.kaabaWrap, kaabaStyle]}>
+              <LinearGradient
+                colors={['#1a1a1a', '#111', '#262626']}
+                style={styles.kaabaBody}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              />
+              <View style={styles.kaabaBand} />
+            </Animated.View>
             {/* Star decoration above */}
             <Text style={styles.starDecoration}>✦</Text>
             
@@ -255,22 +275,15 @@ export function SpiritualSplash({ onComplete }: SpiritualSplashProps) {
       {/* Developer Credit */}
       <Animated.View style={[styles.creditContainer, creditStyle]}>
         <View style={styles.creditCard}>
-          <CenteredText style={styles.creditIntro}>
-            برای تسهیل عبادات مردم شریف افغانستان
-          </CenteredText>
-          <View style={styles.creditDivider} />
           <CenteredText style={styles.creditDeveloper}>
-            سازنده: شرکت نرم‌افزار افغان دِو
+            سازنده شرکت نرم افزار
           </CenteredText>
           <Pressable
             onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
             style={styles.creditLinkButton}
           >
-            <CenteredText style={styles.creditLink}>www.afghan.dev</CenteredText>
+            <CenteredText style={styles.creditLink}>WWW.AFGHAN.DEV</CenteredText>
           </Pressable>
-          <CenteredText style={styles.creditDua}>
-            انشاءالله قبول درگاه حق تعالی باشد
-          </CenteredText>
         </View>
       </Animated.View>
     </Animated.View>
@@ -430,20 +443,42 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 4,
   },
+  kaabaWrap: {
+    width: 58,
+    height: 58,
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  kaabaBody: {
+    width: 52,
+    height: 52,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: `${GOLD}55`,
+  },
+  kaabaBand: {
+    position: 'absolute',
+    top: 16,
+    width: 52,
+    height: 6,
+    backgroundColor: `${GOLD}CC`,
+    borderRadius: 3,
+  },
   starDecoration: {
     color: GOLD,
-    fontSize: 18,
-    marginBottom: 12,
+    fontSize: 16,
+    marginBottom: 8,
   },
   arabicText: {
-    fontSize: 28,
+    fontSize: 27,
     color: '#fff',
-    fontFamily: 'ScheherazadeNew',
+    fontFamily: 'Amiri-Bold',
     textAlign: 'center',
-    lineHeight: 58,
+    lineHeight: 54,
     writingDirection: 'rtl',
     paddingHorizontal: 8,
-    paddingVertical: 8,
+    paddingVertical: 4,
   },
   decorativeLine: {
     flexDirection: 'row',
@@ -471,11 +506,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   dariText: {
-    fontSize: 16,
+    fontSize: 15,
     color: GOLD_LIGHT,
     textAlign: 'center',
-    lineHeight: 28,
-    fontFamily: 'Vazirmatn',
+    lineHeight: 26,
+    fontFamily: 'Amiri',
     writingDirection: 'rtl',
   },
   pashtoText: {
@@ -494,11 +529,11 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   appName: {
-    fontSize: 48,
+    fontSize: 44,
     color: '#fff',
-    fontFamily: 'ScheherazadeNew',
+    fontFamily: 'Amiri-Bold',
     textAlign: 'center',
-    letterSpacing: 2,
+    letterSpacing: 1.2,
     textShadowColor: 'rgba(212, 175, 55, 0.4)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 12,
@@ -508,7 +543,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: GOLD_LIGHT,
     marginTop: 8,
-    fontFamily: 'Vazirmatn',
+    fontFamily: 'Amiri',
     letterSpacing: 0.5,
     opacity: 0.95,
   },
@@ -523,62 +558,30 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: `${GOLD}40`,
-    paddingVertical: 14,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     alignItems: 'center',
     width: '100%',
   },
-  creditIntro: {
-    fontSize: 11,
-    color: `${GOLD_LIGHT}cc`,
-    lineHeight: 18,
-    fontFamily: 'Vazirmatn',
-    writingDirection: 'rtl',
-    textAlign: 'center',
-  },
-  creditDivider: {
-    width: 48,
-    height: 1,
-    backgroundColor: `${GOLD}50`,
-    marginVertical: 10,
-  },
   creditDeveloper: {
-    fontSize: 13,
+    fontSize: 14,
     color: GOLD_LIGHT,
-    lineHeight: 22,
-    fontFamily: 'Vazirmatn',
+    lineHeight: 24,
+    fontFamily: 'Amiri',
     fontWeight: '600',
     writingDirection: 'rtl',
     textAlign: 'center',
   },
-  creditLineage: {
-    fontSize: 11,
-    color: `${GOLD}cc`,
-    lineHeight: 18,
-    marginTop: 4,
-    fontFamily: 'Vazirmatn',
-    writingDirection: 'rtl',
-    textAlign: 'center',
-  },
   creditLinkButton: {
-    marginTop: 4,
+    marginTop: 2,
     paddingHorizontal: 8,
     paddingVertical: 2,
   },
   creditLink: {
-    fontSize: 12,
+    fontSize: 13,
     color: GOLD,
     lineHeight: 18,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-  },
-  creditDua: {
-    fontSize: 10,
-    color: `${GOLD}99`,
-    marginTop: 8,
-    fontFamily: 'Vazirmatn',
-    fontStyle: 'italic',
-    writingDirection: 'rtl',
+    fontFamily: 'Amiri-Bold',
     textAlign: 'center',
   },
 });

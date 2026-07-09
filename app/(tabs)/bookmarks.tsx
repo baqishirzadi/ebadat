@@ -143,6 +143,19 @@ export default function BookmarksScreen() {
         colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
         style={styles.header}
       >
+        <Pressable
+          onPress={() => {
+            if (router.canGoBack?.()) {
+              router.back();
+            } else {
+              router.replace('/(tabs)/more');
+            }
+          }}
+          style={styles.headerBackButton}
+          hitSlop={10}
+        >
+          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+        </Pressable>
         <MaterialIcons name="bookmark" size={36} color="#fff" />
         <CenteredText style={styles.headerTitle}>نشانه‌ها</CenteredText>
         <CenteredText style={styles.headerSubtitle}>
@@ -199,6 +212,15 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     color: 'rgba(255,255,255,0.8)',
     marginTop: Spacing.xs,
+  },
+  headerBackButton: {
+    position: 'absolute',
+    right: Spacing.md,
+    top: 54,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   listContent: {
     padding: Spacing.md,

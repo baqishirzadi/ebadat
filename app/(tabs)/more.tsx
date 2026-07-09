@@ -4,22 +4,12 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Pressable, InteractionManager, SectionList } from 'react-native';
+import { View, StyleSheet, Pressable, InteractionManager, SectionList, Platform, Linking } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 
 import CenteredText from '@/components/CenteredText';
-import {
-  ABOUT_CREATOR_DARI_CREATOR_LABEL,
-  ABOUT_CREATOR_DARI_CREATOR_NAME,
-  ABOUT_CREATOR_DARI_PARAGRAPHS,
-  ABOUT_CREATOR_DARI_TITLE,
-  ABOUT_CREATOR_PASHTO_CREATOR_LABEL,
-  ABOUT_CREATOR_PASHTO_CREATOR_NAME,
-  ABOUT_CREATOR_PASHTO_PARAGRAPHS,
-  ABOUT_CREATOR_PASHTO_TITLE,
-} from '@/constants/aboutCreatorContent';
 import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
@@ -91,6 +81,11 @@ export default function MoreScreen() {
         : 'اذان آماده';
 
   useEffect(() => {
+    if (Platform.OS === 'ios') {
+      setShowDeferredSections(true);
+      return;
+    }
+
     const task = InteractionManager.runAfterInteractions(() => {
       setShowDeferredSections(true);
     });
@@ -433,31 +428,18 @@ export default function MoreScreen() {
 
     return (
       <View style={styles.section}>
-        <View style={[styles.creatorCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}> 
-          <View style={styles.creatorHeader}>
-            <MaterialIcons name="favorite" size={18} color={theme.bookmark} />
-            <CenteredText style={[styles.creatorTitle, { color: theme.bookmark }]}>{ABOUT_CREATOR_DARI_TITLE}</CenteredText>
-          </View>
-
-          {ABOUT_CREATOR_DARI_PARAGRAPHS.map((paragraph, index) => (
-            <CenteredText key={`dari-${index}`} style={[styles.creatorParagraph, { color: theme.textSecondary }]}>
-              {paragraph}
+        <View style={[styles.creatorCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          <CenteredText style={[styles.creatorCompactText, { color: theme.text }]}>
+            سازنده شرکت نرم افزار
+          </CenteredText>
+          <Pressable
+            onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
+            style={({ pressed }) => [styles.creatorLinkButton, pressed && styles.pressedCard]}
+          >
+            <CenteredText style={[styles.creatorCompactLink, { color: theme.bookmark }]}>
+              WWW.AFGHAN.DEV
             </CenteredText>
-          ))}
-
-          <CenteredText style={[styles.creatorLabel, { color: theme.text }]}>{ABOUT_CREATOR_DARI_CREATOR_LABEL}</CenteredText>
-          <CenteredText style={[styles.creatorNameDari, { color: theme.bookmark }]}>{ABOUT_CREATOR_DARI_CREATOR_NAME}</CenteredText>
-
-          <View style={[styles.creatorDivider, { backgroundColor: theme.divider }]} />
-
-          <CenteredText style={[styles.creatorTitle, { color: theme.tint }]}>{ABOUT_CREATOR_PASHTO_TITLE}</CenteredText>
-          {ABOUT_CREATOR_PASHTO_PARAGRAPHS.map((paragraph, index) => (
-            <CenteredText key={`pashto-${index}`} style={[styles.creatorParagraph, { color: theme.textSecondary }]}>
-              {paragraph}
-            </CenteredText>
-          ))}
-          <CenteredText style={[styles.creatorLabel, { color: theme.text }]}>{ABOUT_CREATOR_PASHTO_CREATOR_LABEL}</CenteredText>
-          <CenteredText style={[styles.creatorNamePashto, { color: theme.tint }]}>{ABOUT_CREATOR_PASHTO_CREATOR_NAME}</CenteredText>
+          </Pressable>
         </View>
       </View>
     );
@@ -468,6 +450,7 @@ export default function MoreScreen() {
       testID="ios-more-ready"
       style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.contentContainer}
+      keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       initialNumToRender={2}
       maxToRenderPerBatch={2}
@@ -805,6 +788,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: Spacing.lg,
     alignItems: 'center',
+  },
+  creatorCompactText: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+  },
+  creatorLinkButton: {
+    marginTop: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+  },
+  creatorCompactLink: {
+    fontSize: Typography.ui.subtitle,
+    fontWeight: '700',
   },
   creatorHeader: {
     flexDirection: 'row-reverse',

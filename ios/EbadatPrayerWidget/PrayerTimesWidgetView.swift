@@ -5,15 +5,16 @@ struct PrayerTimesWidgetView: View {
   let entry: PrayerTimesWidgetEntry
 
   private var snapshot: WidgetSnapshot? { entry.snapshot }
+  private var widgetBackground: LinearGradient {
+    LinearGradient(
+      colors: [Color(red: 0.06, green: 0.12, blue: 0.08), Color(red: 0.10, green: 0.30, blue: 0.24)],
+      startPoint: .topLeading,
+      endPoint: .bottomTrailing
+    )
+  }
 
   var body: some View {
     ZStack {
-      LinearGradient(
-        colors: [Color(red: 0.06, green: 0.12, blue: 0.08), Color(red: 0.10, green: 0.30, blue: 0.24)],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-      )
-
       if let snapshot {
         VStack(alignment: .center, spacing: 8) {
           VStack(spacing: 2) {
@@ -53,6 +54,8 @@ struct PrayerTimesWidgetView: View {
         .environment(\.layoutDirection, .rightToLeft)
       }
     }
+    .ifAvailableWidgetBackground(widgetBackground)
+    .background(widgetBackground)
     .widgetURL(URL(string: "ebadat:///(tabs)/jantari"))
   }
 }
@@ -75,10 +78,19 @@ private struct PrayerChipView: View {
     .padding(.vertical, 6)
     .background(active ? Color.white : Color.white.opacity(0.12))
     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-    .overlay(
-      RoundedRectangle(cornerRadius: 10, style: .continuous)
-        .stroke(Color.white.opacity(active ? 0 : 0.2), lineWidth: 1)
-    )
+  }
+}
+
+private extension View {
+  @ViewBuilder
+  func ifAvailableWidgetBackground(_ background: LinearGradient) -> some View {
+    if #available(iOSApplicationExtension 17.0, *) {
+      self.containerBackground(for: .widget) {
+        background
+      }
+    } else {
+      self
+    }
   }
 }
 

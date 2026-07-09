@@ -121,6 +121,7 @@ export const MushafView = React.memo(function MushafView({
     jumpMode === 'exact' || jumpMode === 'continue' || jumpMode === 'search_exact'
       ? 'scroll'
       : viewMode;
+  const ayahFollowViewOffset = Math.max(0, contentPaddingTop);
 
   const mushafPages = useMemo(() => {
     if (!surah) return [] as { page: number; ayahs: Ayah[] }[];
@@ -222,13 +223,15 @@ export const MushafView = React.memo(function MushafView({
       flatListRef.current.scrollToIndex({
         index: targetIndex,
         animated,
-        ...(effectiveViewMode === 'scroll' ? { viewPosition: 0 } : {}),
+        ...(effectiveViewMode === 'scroll'
+          ? { viewPosition: 0, viewOffset: ayahFollowViewOffset }
+          : {}),
       });
       return true;
     } catch {
       return false;
     }
-  }, [getScrollIndexForAyah, effectiveViewMode]);
+  }, [ayahFollowViewOffset, getScrollIndexForAyah, effectiveViewMode]);
 
   const completeJumpSession = useCallback((ayahNumber: number) => {
     const shouldSettleNotificationResume =
@@ -428,7 +431,9 @@ export const MushafView = React.memo(function MushafView({
               flatListRef.current?.scrollToIndex({
                 index: Math.min(targetIndex, coarseIndex),
                 animated: false,
-                ...(effectiveViewMode === 'scroll' ? { viewPosition: 0 } : {}),
+                ...(effectiveViewMode === 'scroll'
+                  ? { viewPosition: 0, viewOffset: ayahFollowViewOffset }
+                  : {}),
               });
             } catch {
               // ignore and continue to direct target retry
@@ -440,7 +445,9 @@ export const MushafView = React.memo(function MushafView({
           flatListRef.current?.scrollToIndex({
             index: targetIndex,
             animated: false,
-            ...(effectiveViewMode === 'scroll' ? { viewPosition: 0 } : {}),
+            ...(effectiveViewMode === 'scroll'
+              ? { viewPosition: 0, viewOffset: ayahFollowViewOffset }
+              : {}),
           });
         } catch {
           scheduleExactJumpRetry(sessionId, ayahNumber);
@@ -453,7 +460,15 @@ export const MushafView = React.memo(function MushafView({
 
       retryTimerRef.current = timer;
     },
-    [clearScrollRetryTimers, effectiveViewMode, getScrollIndexForAyah, jumpToken, logJumpDev, markJumpFailed]
+    [
+      ayahFollowViewOffset,
+      clearScrollRetryTimers,
+      effectiveViewMode,
+      getScrollIndexForAyah,
+      jumpToken,
+      logJumpDev,
+      markJumpFailed,
+    ]
   );
 
   const startExactJumpSession = useCallback((ayahNumber: number) => {

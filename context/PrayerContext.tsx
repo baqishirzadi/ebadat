@@ -137,6 +137,9 @@ const JUMMAH_NOTIFICATION_COPY = {
   body: 'وقت نماز جمعه است. به سوی ذکر و عبادت خدا بشتابید و داد و ستد را رها سازید',
 } as const;
 
+const KABUL_COORDS = { latitude: 34.5553, longitude: 69.2075 };
+const KABUL_GPS_RADIUS_KM = 45;
+
 function buildNativeAdhanConfig(
   location: LocationType,
   cityKey: string,
@@ -932,7 +935,10 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     try {
       const cityKey = toCityKey(selectedCity);
       const result = await getPrayerTimesForDate({ cityKey, location, date: new Date() });
-      dispatch({ type: 'SET_PRAYER_TIMES', payload: applyAfghanistanPrayerOffsets(result.times, cityKey) });
+      dispatch({
+        type: 'SET_PRAYER_TIMES',
+        payload: applyAfghanistanPrayerOffsets(result.times, cityKey, location),
+      });
       dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
       console.error('Failed to load prayer times (agent):', error);
@@ -942,7 +948,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         settings.calculationMethod,
         settings.asrMethod
       );
-      const fallback = applyAfghanistanPrayerOffsets(fallbackBase, toCityKey(selectedCity));
+      const fallback = applyAfghanistanPrayerOffsets(fallbackBase, toCityKey(selectedCity), location);
       dispatch({ type: 'SET_PRAYER_TIMES', payload: fallback });
     }
   }
@@ -1113,9 +1119,32 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     return normalizeCityKey(cityKey) === 'afghanistan_kabul';
   }, []);
 
+  const isWithinKabulRadius = useCallback((location: LocationType): boolean => {
+    const toRad = (value: number) => (value * Math.PI) / 180;
+    const earthRadiusKm = 6371;
+    const dLat = toRad(location.latitude - KABUL_COORDS.latitude);
+    const dLon = toRad(location.longitude - KABUL_COORDS.longitude);
+    const lat1 = toRad(KABUL_COORDS.latitude);
+    const lat2 = toRad(location.latitude);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return earthRadiusKm * c <= KABUL_GPS_RADIUS_KM;
+  }, []);
+
+  const shouldApplyKabulDhuhrOffset = useCallback(
+    (cityKey?: string | null, location?: LocationType): boolean => {
+      if (isKabulCityKey(cityKey)) return true;
+      if (cityKey) return false;
+      return isWithinKabulRadius(location ?? state.location);
+    },
+    [isKabulCityKey, isWithinKabulRadius, state.location]
+  );
+
   const applyAfghanistanPrayerOffsets = useCallback(
-    (times: PrayerTimes, cityKey?: string | null): PrayerTimes => {
-      if (!isKabulCityKey(cityKey)) {
+    (times: PrayerTimes, cityKey?: string | null, location?: LocationType): PrayerTimes => {
+      if (!shouldApplyKabulDhuhrOffset(cityKey, location)) {
         return times;
       }
       return {
@@ -1123,7 +1152,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
         dhuhr: new Date(times.dhuhr.getTime() + 20 * 60 * 1000),
       };
     },
-    [isKabulCityKey],
+    [shouldApplyKabulDhuhrOffset],
   );
 
   async function cancelScheduledNotificationsByPredicate(
@@ -1495,9 +1524,6 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     if (!state.prayerTimes || !state.adhanPreferences.masterEnabled) return [];
 
     const cityKey = toCityKey(state.settings.selectedCity);
-    if (!cityKey) {
-      return [];
-    }
     const useNativeEngine = Platform.OS === 'android' && canUseNativeAdhanScheduler();
     const { adhanPreferences } = state;
     const fallbackTimeZone =
@@ -1525,7 +1551,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           location: state.location,
           date: targetDate,
         });
-        dayTimes = applyAfghanistanPrayerOffsets(result.times, cityKey);
+        dayTimes = applyAfghanistanPrayerOffsets(result.times, cityKey, state.location);
         dayTimeZone = result.timezone || dayTimeZone;
       } catch {
         const fallbackTimes = calculatePrayerTimes(
@@ -1534,7 +1560,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           state.settings.calculationMethod,
           state.settings.asrMethod
         );
-        dayTimes = applyAfghanistanPrayerOffsets(fallbackTimes, cityKey);
+        dayTimes = applyAfghanistanPrayerOffsets(fallbackTimes, cityKey, state.location);
       }
 
       if (!areTimesOrdered(dayTimes)) {
@@ -1544,7 +1570,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           state.settings.calculationMethod,
           state.settings.asrMethod
         );
-        dayTimes = applyAfghanistanPrayerOffsets(fallbackTimes, cityKey);
+        dayTimes = applyAfghanistanPrayerOffsets(fallbackTimes, cityKey, state.location);
       }
 
       const weekdayAnchor = buildDateFromLocalTimeInTimezone(targetDate, '12:00', dayTimeZone);
@@ -1557,6 +1583,16 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
           ? buildDateFromLocalTimeInTimezone(targetDate, '13:00', dayTimeZone)
           : new Date(dayTimes[prayerKey]);
         if (!isValidDate(scheduleTime) || scheduleTime <= now) continue;
+
+        if (__DEV__ && Platform.OS === 'ios' && prayerKey === 'dhuhr') {
+          console.log('[DhuhrSchedule][iOS]', {
+            dayOffset,
+            cityKey: cityKey ?? null,
+            usingKabulOffset: shouldApplyKabulDhuhrOffset(cityKey, state.location),
+            isFridayJummah,
+            triggerAt: scheduleTime.toISOString(),
+          });
+        }
 
         const dayKey = getDateKey(scheduleTime);
 
@@ -1640,6 +1676,7 @@ async function configureAndroidNotificationChannels(NotificationsModule: typeof 
     getDateKey,
     isFridayInTimezone,
     isValidDate,
+    shouldApplyKabulDhuhrOffset,
     state,
   ]);
 

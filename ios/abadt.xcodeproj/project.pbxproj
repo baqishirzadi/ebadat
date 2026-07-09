@@ -7,16 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		W1D2G3E4XT001 /* EbadatPrayerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR001 /* EbadatPrayerWidget.swift */; };
-		W1D2G3E4XT002 /* PrayerTimesWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */; };
-		W1D2G3E4XT003 /* PrayerTimesWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */; };
-		W1D2G3E4XT004 /* WidgetShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR004 /* WidgetShared.swift */; };
-		W1D2G3E4XT005 /* Vazirmatn-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7AAF416978A422FB6AE300F /* Vazirmatn-Regular.ttf */; };
-		W1D2G3E4XT006 /* Vazirmatn-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */; };
-		W1D2G3E4XT008 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */; };
-		W1D2G3E4XT007 /* EbadatPrayerWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		W1D2G3T4A5M6O7D8U9L0E1F2 /* WidgetDataModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */; };
-		W1D2G3T4A5M6O7D8U9L0E1M3 /* WidgetDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		3AF7E1B4280648218DDAE879 /* Amiri-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EAA20087D1EB4669933289B6 /* Amiri-Bold.ttf */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
@@ -36,7 +26,41 @@
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		F4E774B4891047A89D9DC004 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9035DA2D9AF546ECB81744CF /* InfoPlist.strings */; };
 		FA8AC0BB6ED241E7B6C25557 /* Amiri-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 25348C55611241EFBD8E0EFC /* Amiri-Regular.ttf */; };
+		W1D2G3E4XT001 /* EbadatPrayerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR001 /* EbadatPrayerWidget.swift */; };
+		W1D2G3E4XT002 /* PrayerTimesWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */; };
+		W1D2G3E4XT003 /* PrayerTimesWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */; };
+		W1D2G3E4XT004 /* WidgetShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR004 /* WidgetShared.swift */; };
+		W1D2G3E4XT005 /* Vazirmatn-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7AAF416978A422FB6AE300F /* Vazirmatn-Regular.ttf */; };
+		W1D2G3E4XT006 /* Vazirmatn-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */; };
+		W1D2G3E4XT007 /* EbadatPrayerWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		W1D2G3E4XT008 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */; };
+		W1D2G3T4A5M6O7D8U9L0E1F2 /* WidgetDataModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */; };
+		W1D2G3T4A5M6O7D8U9L0E1M3 /* WidgetDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		W1D2G3E4XPRX01 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = W1D2G3E4XTGT01;
+			remoteInfo = EbadatPrayerWidgetExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		W1D2G3E4XEMB01 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				W1D2G3E4XT007 /* EbadatPrayerWidget.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		005447E1C111337BBF55F6D8 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-abadt/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
@@ -62,8 +86,6 @@
 		EAA20087D1EB4669933289B6 /* Amiri-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Amiri-Bold.ttf"; path = "../assets/fonts/Amiri-Bold.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = abadt/AppDelegate.swift; sourceTree = "<group>"; };
-		W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WidgetDataModule.swift; path = abadt/WidgetDataModule.swift; sourceTree = "<group>"; };
-		W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WidgetDataModule.m; path = abadt/WidgetDataModule.m; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* abadt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "abadt-Bridging-Header.h"; path = "abadt/abadt-Bridging-Header.h"; sourceTree = "<group>"; };
 		FDF95EC0DE1241C5B75B47AC /* QPCHafs18.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = QPCHafs18.ttf; path = ../assets/fonts/QPCHafs18.ttf; sourceTree = "<group>"; };
 		W1D2G3E4XFR001 /* EbadatPrayerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EbadatPrayerWidget.swift; sourceTree = "<group>"; };
@@ -74,30 +96,11 @@
 		W1D2G3E4XFR006 /* EbadatPrayerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EbadatPrayerWidget.entitlements; sourceTree = "<group>"; };
 		W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EbadatPrayerWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WidgetDataModule.m; path = abadt/WidgetDataModule.m; sourceTree = "<group>"; };
+		W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WidgetDataModule.swift; path = abadt/WidgetDataModule.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		W1D2G3E4XEMB01 /* Embed App Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				W1D2G3E4XT007 /* EbadatPrayerWidget.appex in Embed App Extensions */,
-			);
-			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFrameworksBuildPhase section */
-		W1D2G3E4XFWK01 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -106,23 +109,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		W1D2G3E4XFWK01 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		W1D2G3E4XGRP01 /* EbadatPrayerWidget */ = {
-			isa = PBXGroup;
-			children = (
-				W1D2G3E4XFR001 /* EbadatPrayerWidget.swift */,
-				W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */,
-				W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */,
-				W1D2G3E4XFR004 /* WidgetShared.swift */,
-				W1D2G3E4XFR005 /* Info.plist */,
-				W1D2G3E4XFR006 /* EbadatPrayerWidget.entitlements */,
-				W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */,
-			);
-			path = EbadatPrayerWidget;
-			sourceTree = "<group>";
-		};
 		13B07FAE1A68108700A75B9A /* abadt */ = {
 			isa = PBXGroup;
 			children = (
@@ -252,6 +248,20 @@
 			);
 			name = ps.lproj;
 			path = "";
+			sourceTree = "<group>";
+		};
+		W1D2G3E4XGRP01 /* EbadatPrayerWidget */ = {
+			isa = PBXGroup;
+			children = (
+				W1D2G3E4XFR001 /* EbadatPrayerWidget.swift */,
+				W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */,
+				W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */,
+				W1D2G3E4XFR004 /* WidgetShared.swift */,
+				W1D2G3E4XFR005 /* Info.plist */,
+				W1D2G3E4XFR006 /* EbadatPrayerWidget.entitlements */,
+				W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */,
+			);
+			path = EbadatPrayerWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -528,16 +538,6 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXContainerItemProxy section */
-		W1D2G3E4XPRX01 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = W1D2G3E4XTGT01;
-			remoteInfo = EbadatPrayerWidgetExtension;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXTargetDependency section */
 		W1D2G3E4XDEP01 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -752,6 +752,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.afghandev.ebadat.EbadatPrayerWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -775,6 +776,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0.0;
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.afghandev.ebadat.EbadatPrayerWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

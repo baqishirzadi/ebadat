@@ -16,6 +16,7 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
@@ -448,6 +449,19 @@ export default function ArticlesFeed() {
           colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
           style={styles.header}
         >
+          <Pressable
+            onPress={() => {
+              if (router.canGoBack?.()) {
+                router.back();
+              } else {
+                router.replace('/(tabs)/more');
+              }
+            }}
+            style={styles.headerBackButton}
+            hitSlop={10}
+          >
+            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+          </Pressable>
           <View style={styles.headerPattern} pointerEvents="none">
             <View style={[styles.patternLine, styles.patternLine1]} />
             <View style={[styles.patternLine, styles.patternLine2]} />
@@ -503,6 +517,19 @@ export default function ArticlesFeed() {
           colors={NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light}
           style={styles.header}
         >
+          <Pressable
+            onPress={() => {
+              if (router.canGoBack?.()) {
+                router.back();
+              } else {
+                router.replace('/(tabs)/more');
+              }
+            }}
+            style={styles.headerBackButton}
+            hitSlop={10}
+          >
+            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+          </Pressable>
           <View style={styles.headerPattern} pointerEvents="none">
             <View style={[styles.patternLine, styles.patternLine1]} />
             <View style={[styles.patternLine, styles.patternLine2]} />
@@ -836,6 +863,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
     writingDirection: 'rtl',
+  },
+  headerBackButton: {
+    position: 'absolute',
+    right: Spacing.md,
+    top: 54,
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 3,
   },
   scholarsSection: {
     paddingHorizontal: Spacing.lg,

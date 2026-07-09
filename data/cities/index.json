@@ -41,6 +41,16 @@
       "nameEn": "Gulf"
     },
     {
+      "id": "russia",
+      "name": "روسیه",
+      "nameEn": "Russia"
+    },
+    {
+      "id": "central-asia",
+      "name": "آسیای مرکزی",
+      "nameEn": "Central Asia"
+    },
+    {
       "id": "europe",
       "name": "اروپا",
       "nameEn": "Europe"
