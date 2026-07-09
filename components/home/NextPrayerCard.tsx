@@ -159,9 +159,9 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
   const compactContent = (
     <RtlView style={styles.compactContainer}>
       <RtlText align="center" style={styles.compactLabel}>نماز بعدی</RtlText>
-      <RtlView style={styles.compactNameRow}>
-        <RtlText align="center" style={styles.compactPrayerName}>{next.nameDari}</RtlText>
-        <RtlText align="center" style={[styles.compactTime, { color: theme.bookmark }]}>
+      <RtlView style={styles.compactNameBlock}>
+        <RtlText align="center" wrap={false} style={styles.compactPrayerName}>{next.nameDari}</RtlText>
+        <RtlText align="center" wrap={false} style={[styles.compactTime, { color: theme.bookmark }]}>
           {formatPrayerTime12h(next.time)}
         </RtlText>
       </RtlView>
@@ -294,12 +294,11 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: '100%',
   },
-  compactNameRow: {
-    flexDirection: 'row',
+  compactNameBlock: {
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.sm,
+    gap: 2,
     alignSelf: 'stretch',
+    paddingHorizontal: Spacing.sm,
   },
   compactLabel: {
     ...persianCenterCaptionText,
@@ -313,7 +312,7 @@ const styles = StyleSheet.create({
   compactTime: {
     ...persianCenterText,
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.heading,
+    fontSize: Typography.ui.subtitle,
     fontVariant: ['tabular-nums'],
   },
   compactCountdownWrap: {

@@ -6,6 +6,7 @@ import {
   Pressable,
   StyleSheet,
   TextInput,
+  View,
 } from 'react-native';
 
 import { RtlText } from '@/components/ui/RtlText';
@@ -47,10 +48,10 @@ function HanafiMuftiWidgetInner() {
   return (
     <RtlView style={styles.container}>
       <RtlView style={styles.headerBlock}>
-        <RtlView style={styles.titleRow}>
-          <RtlText align="center" style={styles.title}>مفتی هوشمند حنفی</RtlText>
+        <View style={styles.titleRow}>
+          <RtlText align="center" wrap={false} style={styles.title}>مفتی هوشمند حنفی</RtlText>
           <MaterialIcons name="menu-book" size={18} color="rgba(255,255,255,0.9)" />
-        </RtlView>
+        </View>
         <RtlText align="center" style={styles.subtitle}>{subtitle}</RtlText>
         <Pressable onPress={openFullChat} hitSlop={8} style={styles.expandLinkWrap}>
           <RtlText align="center" style={styles.expandLink}>مشاهده گفتگو</RtlText>
@@ -116,17 +117,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titleRow: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    alignSelf: 'stretch',
+    alignSelf: 'center',
   },
   title: {
     ...persianCenterSubtitleText,
     fontFamily: 'Vazirmatn-Bold',
     color: '#fff',
-    flexShrink: 1,
   },
   subtitle: {
     ...persianCenterCaptionText,
