@@ -1,0 +1,81 @@
+appId: com.afghandev.ebadat
+---
+# Preconditions: device unlocked, app onboarded. Run `adb shell wm dismiss-keyguard` first on Samsung.
+- launchApp:
+    stopApp: false
+- waitForAnimationToEnd:
+    timeout: 8000
+- tapOn:
+    point: "10%,94%"
+- waitForAnimationToEnd:
+    timeout: 5000
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 30000
+- takeScreenshot: android-nav-more-tab
+- tapOn:
+    text: "احادیث"
+- extendedWaitUntil:
+    visible:
+      id: "ios-ahadith-ready"
+    timeout: 15000
+- takeScreenshot: android-nav-ahadith
+- back
+- waitForAnimationToEnd:
+    timeout: 3000
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 15000
+- tapOn:
+    text: "اذکار"
+- extendedWaitUntil:
+    visible:
+      text: "اذکار پرکاربرد"
+    timeout: 15000
+- takeScreenshot: android-nav-adhkar
+- back
+- waitForAnimationToEnd:
+    timeout: 3000
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 15000
+- tapOn:
+    point: "90%,94%"
+- extendedWaitUntil:
+    visible:
+      text: "امروز"
+    timeout: 15000
+- takeScreenshot: android-nav-home
+- tapOn:
+    point: "70%,94%"
+- extendedWaitUntil:
+    visible:
+      text: "قرآن"
+    timeout: 15000
+- takeScreenshot: android-nav-quran
+- tapOn:
+    point: "50%,94%"
+- extendedWaitUntil:
+    visible:
+      text: "جنتری"
+    timeout: 15000
+- takeScreenshot: android-nav-jantari
+- tapOn:
+    point: "30%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "naat-screen-list"
+    timeout: 20000
+- takeScreenshot: android-nav-naat
+- tapOn:
+    point: "10%,94%"
+- waitForAnimationToEnd:
+    timeout: 3000
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 15000
+- takeScreenshot: android-nav-more-final

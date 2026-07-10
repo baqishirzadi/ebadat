@@ -17,7 +17,25 @@ class AdhanAlarmSchedulerModule(private val reactContext: ReactApplicationContex
   fun setAdhanConfig(config: ReadableMap, promise: Promise) {
     try {
       val parsed = AdhanConfig.fromReadableMap(config)
-      AdhanConfigStore.get(reactContext).save(parsed)
+      val store = AdhanConfigStore.get(reactContext)
+      val existing = store.load()
+      if (existing != null && existing.toJson().toString() == parsed.toJson().toString()) {
+        promise.resolve(
+          AdhanScheduleResult(
+            reason = "config-sync-unchanged",
+            scheduledCount = 0,
+            cancelledCount = 0,
+            expectedCount = AdhanAlarmScheduler.getStored(reactContext)
+              .count { it.type == "adhan" && !it.id.startsWith("__adhan_") },
+            nextAlarmAtMs = AdhanAlarmScheduler.getStored(reactContext)
+              .filter { it.type == "adhan" }
+              .minByOrNull { it.triggerAtMs }
+              ?.triggerAtMs,
+          ).toWritableMap(),
+        )
+        return
+      }
+      store.save(parsed)
       val result = AdhanScheduleManager.ensureScheduled(reactContext.applicationContext, "config-sync")
       promise.resolve(result.toWritableMap())
     } catch (error: Exception) {
@@ -42,6 +60,37 @@ class AdhanAlarmSchedulerModule(private val reactContext: ReactApplicationContex
       promise.resolve(result.toWritableMap())
     } catch (error: Exception) {
       promise.reject("adhan_maintenance_failed", error)
+    }
+  }
+
+  @ReactMethod
+  fun scheduleSystemTestAlarm(delayMs: Double, promise: Promise) {
+    try {
+      AdhanNotificationChannels.ensureCreated(reactContext.applicationContext)
+      AdhanAlarmScheduler.cancel(reactContext, AdhanAlarmScheduler.SYSTEM_TEST_ALARM_ID)
+
+      val delay = delayMs.toLong().coerceAtLeast(1000L)
+      val triggerAtMs = System.currentTimeMillis() + delay
+      val scheduleMode =
+        if (AdhanAlarmScheduler.canScheduleExactAlarms(reactContext)) "exact" else "fallback_inexact"
+
+      val payload = AdhanAlarmPayload(
+        id = AdhanAlarmScheduler.SYSTEM_TEST_ALARM_ID,
+        triggerAtMs = triggerAtMs,
+        title = "تست اذان",
+        body = "اگر این اعلان با صدا رسید، تنظیمات سیستم درست است.",
+        channelId = AdhanNotificationChannels.ADHAN_REGULAR,
+        scheduleMode = scheduleMode,
+        type = "adhan",
+        expectedFireAtMs = triggerAtMs,
+        prayer = "fajr",
+        voice = "barakatullah",
+      )
+
+      AdhanAlarmScheduler.schedule(reactContext.applicationContext, payload)
+      promise.resolve(true)
+    } catch (error: Exception) {
+      promise.reject("adhan_system_test_failed", error)
     }
   }
 

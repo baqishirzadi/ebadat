@@ -73,6 +73,7 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.VIBRATE",
         "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.USE_EXACT_ALARM",
         "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.WAKE_LOCK",

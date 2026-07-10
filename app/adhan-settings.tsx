@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
   Alert,
   Platform,
+  InteractionManager,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, useFocusEffect } from 'expo-router';
@@ -42,7 +43,7 @@ export default function AdhanSettingsScreen() {
     updateAdhanPreferences,
     openNotificationSettings,
     scheduleAdhanSystemTest,
-    requestPrayerSchedule,
+    refreshAdhanSettingsSchedule,
   } = usePrayer();
   
   const [isTestingVoice, setIsTestingVoice] = useState<AdhanVoice | null>(null);
@@ -73,10 +74,30 @@ export default function AdhanSettingsScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      requestPrayerSchedule('adhan-settings-focus').catch((error) => {
-        console.warn('Failed to refresh schedule on settings focus:', error);
+      if (Platform.OS === 'ios') {
+        refreshAdhanSettingsSchedule().catch((error) => {
+          console.warn('Failed to refresh schedule on settings focus:', error);
+        });
+        return;
+      }
+
+      let cancelled = false;
+      let timer: ReturnType<typeof setTimeout> | null = null;
+      const task = InteractionManager.runAfterInteractions(() => {
+        timer = setTimeout(() => {
+          if (cancelled) return;
+          refreshAdhanSettingsSchedule().catch((error) => {
+            console.warn('Failed to refresh schedule on settings focus:', error);
+          });
+        }, 500);
       });
-    }, [requestPrayerSchedule])
+
+      return () => {
+        cancelled = true;
+        task.cancel();
+        if (timer) clearTimeout(timer);
+      };
+    }, [refreshAdhanSettingsSchedule]),
   );
 
   // Toggle master notifications

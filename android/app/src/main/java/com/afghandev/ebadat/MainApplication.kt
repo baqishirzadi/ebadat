@@ -4,6 +4,7 @@ import com.facebook.react.modules.i18nmanager.I18nUtil
 
 import android.app.Application
 import android.content.res.Configuration
+import android.util.Log
 
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -64,6 +65,21 @@ class MainApplication : Application(), ReactApplication {
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
     AdhanNotificationChannels.ensureCreated(this)
     AdhanScheduleManager.enqueuePeriodicMaintenance(this)
+    Thread {
+      try {
+        val health = AdhanHealthReporter.collect(this)
+        if (
+          health.configPresent &&
+          health.masterEnabled &&
+          health.notificationsEnabled &&
+          health.scheduledAlarmCount == 0
+        ) {
+          AdhanScheduleManager.ensureScheduled(this, "cold-start-watchdog")
+        }
+      } catch (error: Exception) {
+        Log.e("MainApplication", "Cold-start adhan watchdog failed", error)
+      }
+    }.start()
   }
 
   override fun onConfigurationChanged(newConfig: Configuration) {

@@ -207,8 +207,12 @@ export default function MoreScreen() {
   }, [showDeferredSections, upcomingCards.length]);
 
   const listHeader = (
-    <>
-      <LinearGradient colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light} style={styles.header}>
+    <View pointerEvents="box-none">
+      <LinearGradient
+        colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
+        style={styles.header}
+        pointerEvents="none"
+      >
         <View style={styles.headerBadge}>
           <MaterialIcons name="dashboard" size={16} color="#fff" />
           <CenteredText style={styles.headerBadgeText}>مرکز امکانات</CenteredText>
@@ -285,7 +289,7 @@ export default function MoreScreen() {
           ))}
         </View>
       </View>
-    </>
+    </View>
   );
 
   const renderDeferredSection = ({ item }: { item: DeferredSectionKey }) => {

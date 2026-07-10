@@ -71,6 +71,7 @@ interface NativeAdhanSchedulerModule {
   setAdhanConfig?: (config: NativeAdhanConfigInput) => Promise<NativeAdhanScheduleResult>;
   getAdhanHealth?: () => Promise<NativeAdhanHealth>;
   runMaintenanceNow?: () => Promise<NativeAdhanScheduleResult>;
+  scheduleSystemTestAlarm?: (delayMs: number) => Promise<boolean>;
   scheduleAdhanAlarms?: (alarms: NativeAdhanAlarmInput[], mode: AdhanScheduleMode) => Promise<string[]>;
   scheduleExactAdhanAlarms?: (alarms: NativeAdhanAlarmInput[]) => Promise<string[]>;
   cancelAdhanAlarms?: (ids: string[]) => Promise<boolean>;
@@ -87,6 +88,37 @@ function getNativeModule(): NativeAdhanSchedulerModule | null {
 export function canUseNativeAdhanScheduler(): boolean {
   const module = getNativeModule();
   return Boolean(module?.setAdhanConfig && module?.getAdhanHealth);
+}
+
+const SKIPPED_NATIVE_SYNC_RESULT: NativeAdhanScheduleResult = {
+  reason: 'config-sync-unchanged',
+  scheduledCount: 0,
+  cancelledCount: 0,
+  expectedCount: 0,
+  nextAlarmAtMs: null,
+};
+
+let lastSyncedConfigFingerprint: string | null = null;
+
+/** Stable fingerprint for native adhan config (excludes volatile configVersion). */
+export function getNativeAdhanConfigFingerprint(config: NativeAdhanConfigInput): string {
+  const { configVersion: _version, ...rest } = config;
+  return JSON.stringify(rest);
+}
+
+export function clearNativeAdhanConfigCache(): void {
+  lastSyncedConfigFingerprint = null;
+}
+
+export function stableNativeAdhanConfigVersion(
+  config: Omit<NativeAdhanConfigInput, 'configVersion'>,
+): number {
+  const fingerprint = JSON.stringify(config);
+  let hash = 0;
+  for (let index = 0; index < fingerprint.length; index += 1) {
+    hash = (hash * 31 + fingerprint.charCodeAt(index)) | 0;
+  }
+  return hash >>> 0;
 }
 
 function normalizeScheduleResult(raw: NativeAdhanScheduleResult): NativeAdhanScheduleResult {
@@ -126,7 +158,14 @@ export async function syncNativeAdhanConfig(
   if (!module?.setAdhanConfig) {
     throw new Error('Native Adhan config sync is unavailable');
   }
+
+  const fingerprint = getNativeAdhanConfigFingerprint(config);
+  if (fingerprint === lastSyncedConfigFingerprint) {
+    return SKIPPED_NATIVE_SYNC_RESULT;
+  }
+
   const result = await module.setAdhanConfig(config);
+  lastSyncedConfigFingerprint = fingerprint;
   return normalizeScheduleResult(result);
 }
 
@@ -156,6 +195,14 @@ export async function runNativeAdhanMaintenance(): Promise<NativeAdhanScheduleRe
   }
   const result = await module.runMaintenanceNow();
   return normalizeScheduleResult(result);
+}
+
+export async function scheduleNativeSystemTestAlarm(delayMs = 25000): Promise<void> {
+  const module = getNativeModule();
+  if (!module?.scheduleSystemTestAlarm) {
+    throw new Error('Native system test alarm is unavailable');
+  }
+  await module.scheduleSystemTestAlarm(delayMs);
 }
 
 export async function getNativeExactAdhanAlarms(): Promise<NativeAdhanAlarmInput[]> {

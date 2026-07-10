@@ -2,7 +2,9 @@ package com.afghandev.ebadat
 
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 class PrayerTimeEngineTest {
   @Test
   fun rollingSchedule_respectsMasterDisabled() {

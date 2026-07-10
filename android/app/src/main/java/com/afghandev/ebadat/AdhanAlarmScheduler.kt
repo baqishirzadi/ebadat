@@ -10,6 +10,8 @@ import kotlin.math.abs
 
 object AdhanAlarmScheduler {
   private const val TAG = "AdhanAlarmScheduler"
+  private const val SHOW_INTENT_REQUEST_CODE = 0xAD00AD
+  const val SYSTEM_TEST_ALARM_ID = "__adhan_system_test__"
   const val ACTION_FIRE_ADHAN = "com.afghandev.ebadat.action.FIRE_ADHAN"
   const val EXTRA_ID = "adhan_alarm_id"
   const val EXTRA_PAYLOAD_JSON = "adhan_alarm_payload_json"
@@ -37,7 +39,11 @@ object AdhanAlarmScheduler {
         throw SecurityException("SCHEDULE_EXACT_ALARM permission is required")
       }
 
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        val showIntent = buildShowPendingIntent(context)
+        val alarmClockInfo = AlarmManager.AlarmClockInfo(payload.triggerAtMs, showIntent)
+        alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
       } else {
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
@@ -103,6 +109,14 @@ object AdhanAlarmScheduler {
 
     store(context).pruneExpired(now)
     return rescheduled
+  }
+
+  private fun buildShowPendingIntent(context: Context): PendingIntent {
+    val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+      ?: Intent(context, MainActivity::class.java)
+    launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+    val flags = PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    return PendingIntent.getActivity(context, SHOW_INTENT_REQUEST_CODE, launchIntent, flags)
   }
 
   private fun store(context: Context): AdhanAlarmStore {

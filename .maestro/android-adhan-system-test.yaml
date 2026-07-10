@@ -1,0 +1,18 @@
+appId: com.afghandev.ebadat
+---
+- openLink: ebadat://adhan-settings
+- extendedWaitUntil:
+    visible:
+      id: "ios-adhan-settings-ready"
+    timeout: 15000
+- takeScreenshot: android-device-adhan-settings
+- scrollUntilVisible:
+    element:
+      id: "adhan-system-test-button"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "adhan-system-test-button"
+- waitForAnimationToEnd:
+    timeout: 35000
+- takeScreenshot: android-device-adhan-test-after-wait

@@ -1,0 +1,97 @@
+appId: com.afghandev.ebadat
+---
+- launchApp:
+    clearState: true
+    permissions:
+      notifications: allow
+      location: allow
+- waitForAnimationToEnd:
+    timeout: 8000
+- extendedWaitUntil:
+    visible:
+      text: "به عبادت خوش آمدید"
+    timeout: 25000
+- takeScreenshot: android-device-first-open-adhan
+- tapOn:
+    text: "شروع"
+- extendedWaitUntil:
+    visible:
+      text: "زبان برنامه"
+    timeout: 15000
+- tapOn:
+    text: "ادامه"
+- extendedWaitUntil:
+    visible:
+      text: "انتخاب کشور و شهر"
+    timeout: 15000
+- tapOn:
+    text: "کابل"
+- tapOn:
+    text: "ادامه با کابل"
+- extendedWaitUntil:
+    visible:
+      text: "فعال‌سازی اذان"
+    timeout: 15000
+- tapOn:
+    text: "فعال‌سازی اعلان‌ها"
+- tapOn:
+    text: "Allow"
+    optional: true
+- tapOn:
+    text: "ALLOW"
+    optional: true
+- tapOn:
+    text: "허용"
+    optional: true
+- tapOn:
+    text: "확인"
+    optional: true
+- tapOn:
+    text: "While using the app"
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: "naat-screen-list"
+    timeout: 40000
+- assertNotVisible: "Console Error"
+- assertNotVisible: "Console Warning"
+- takeScreenshot: android-device-naat-home
+
+- tapOn:
+    point: "8%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 15000
+- assertNotVisible: "Console Error"
+- takeScreenshot: android-device-more
+- tapOn:
+    id: "ios-open-adhan-settings"
+- extendedWaitUntil:
+    visible:
+      id: "ios-adhan-settings-ready"
+    timeout: 15000
+- takeScreenshot: android-device-adhan-settings
+- tapOn:
+    id: "adhan-system-test-button"
+- tapOn:
+    text: "Allow"
+    optional: true
+- tapOn:
+    text: "ALLOW"
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: "adhan-system-test-status"
+    timeout: 45000
+- waitForAnimationToEnd:
+    timeout: 30000
+- assertNotVisible: "Console Error"
+- assertNotVisible: "Console Warning"
+- takeScreenshot: android-device-adhan-test

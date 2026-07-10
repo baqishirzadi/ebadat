@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { PanResponder, StyleSheet, Text, View } from 'react-native';
+import { I18nManager, PanResponder, Platform, StyleSheet, Text, View } from 'react-native';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 
 type Props = {
@@ -58,10 +58,13 @@ export function NaatProgressBar({
       const effectiveWidth = width || trackWidth;
       if (!effectiveWidth) return 0;
       const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
-      // The bar is rendered forced-LTR (left-anchored fill/thumb), and pageX/left
-      // from measureInWindow are absolute window pixels that are not mirrored, so the
-      // raw ratio already matches the visual regardless of the app's forced-RTL layout.
-      return x / effectiveWidth;
+      const rawRatio = x / effectiveWidth;
+      // iOS: forced-LTR bar + pageX align without inversion (fixed in 1a9445e).
+      // Android under forceRTL: touch coords are still mirrored → invert ratio only there.
+      if (Platform.OS === 'android' && I18nManager.isRTL) {
+        return 1 - rawRatio;
+      }
+      return rawRatio;
     },
     [trackWidth],
   );

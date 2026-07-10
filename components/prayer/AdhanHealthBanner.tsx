@@ -11,6 +11,7 @@ import {
   fetchAdhanHealth,
   getHealthBannerMessage,
   openBatteryOptimizationSettings,
+  openExactAlarmSettings,
   openNotificationSettings,
   openOemAutostartSettings,
   snoozeBatteryNudge,
@@ -47,6 +48,13 @@ export function AdhanHealthBanner({ onSelectCity }: AdhanHealthBannerProps) {
   const handleHealthAction = async () => {
     if (health.issues.includes('notification_denied')) {
       await openNotificationSettings();
+      return;
+    }
+    if (health.issues.includes('exact_alarm_missing')) {
+      const opened = await openExactAlarmSettings();
+      if (!opened) {
+        await openNotificationSettings();
+      }
       return;
     }
     if (health.issues.includes('config_missing') && onSelectCity) {

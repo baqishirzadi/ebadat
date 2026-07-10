@@ -120,7 +120,9 @@ export async function fetchAdhanHealth(): Promise<AdhanHealthState> {
 
   const health = await getNativeAdhanHealth();
   const shouldShowHealthBanner = health.issues.some((issue) =>
-    ['notification_denied', 'no_alarms_scheduled', 'config_missing'].includes(issue),
+    ['notification_denied', 'no_alarms_scheduled', 'config_missing', 'exact_alarm_missing'].includes(
+      issue,
+    ),
   );
   const shouldShowBatteryNudge = await shouldPromptBatteryOptimization(health);
 
@@ -150,6 +152,18 @@ export async function shouldPromptBatteryOptimization(health: NativeAdhanHealth)
 export async function snoozeBatteryNudge(): Promise<void> {
   const until = Date.now() + BATTERY_NUDGE_SNOOZE_DAYS * 24 * 60 * 60 * 1000;
   await AsyncStorage.setItem(BATTERY_NUDGE_SNOOZE_KEY, String(until));
+}
+
+export async function openExactAlarmSettings(): Promise<boolean> {
+  if (Platform.OS !== 'android') return false;
+  const module = (NativeModules as {
+    ExactAlarmModule?: { openExactAlarmSettings?: () => Promise<boolean> };
+  }).ExactAlarmModule;
+
+  if (typeof module?.openExactAlarmSettings === 'function') {
+    return module.openExactAlarmSettings();
+  }
+  return false;
 }
 
 export async function openNotificationSettings(): Promise<void> {
@@ -200,6 +214,12 @@ export function getHealthBannerMessage(issues: string[]): { title: string; body:
     return {
       title: 'اعلان‌ها غیرفعال است',
       body: 'برای دریافت اذان، اجازه اعلان را در تنظیمات گوشی فعال کنید.',
+    };
+  }
+  if (issues.includes('exact_alarm_missing')) {
+    return {
+      title: 'اذان دقیق غیرفعال است',
+      body: 'برای پخش به‌موقع اذان، اجازه «زنگ هشدار و ساعت» را در تنظیمات اندروید فعال کنید.',
     };
   }
   if (issues.includes('no_alarms_scheduled')) {

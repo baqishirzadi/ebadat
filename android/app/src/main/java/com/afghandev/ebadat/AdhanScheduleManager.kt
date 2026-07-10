@@ -16,7 +16,7 @@ import kotlin.math.abs
 
 object AdhanScheduleManager {
   private const val TAG = "AdhanScheduleManager"
-  private const val ROLLING_DAYS = 3
+  private const val ROLLING_DAYS = 7
   private const val MAINTENANCE_ALARM_ID = "__adhan_daily_maintenance__"
   private const val MAINTENANCE_HOUR = 0
   private const val MAINTENANCE_MINUTE = 5
