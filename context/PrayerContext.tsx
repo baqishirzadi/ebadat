@@ -337,6 +337,23 @@ type PrayerAction =
   | { type: 'INITIALIZE'; payload: { location: LocationType; settings: PrayerSettings; adhanPreferences: AdhanPreferences; name: string } };
 
 // Reducer
+function nextTriggerSummary(next: Partial<Record<PrayerName, number>>): string {
+  return (['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as PrayerName[])
+    .map((prayer) => next[prayer] ?? '')
+    .join('|');
+}
+
+function scheduleAuditContentKey(audit: PrayerScheduleAudit | null): string {
+  if (!audit) return '';
+  return [
+    audit.scheduleMode,
+    audit.scheduledCount,
+    audit.blockers.join(','),
+    audit.warnings.join(','),
+    nextTriggerSummary(audit.nextTriggerByPrayer),
+  ].join('::');
+}
+
 function prayerReducer(state: PrayerState, action: PrayerAction): PrayerState {
   switch (action.type) {
     case 'SET_LOADING':
@@ -361,8 +378,13 @@ function prayerReducer(state: PrayerState, action: PrayerAction): PrayerState {
       return { ...state, notificationPermission: action.payload };
     case 'SET_EXACT_ALARM_STATUS':
       return { ...state, exactAlarmStatus: action.payload };
-    case 'SET_SCHEDULE_AUDIT':
-      return { ...state, scheduleAudit: action.payload };
+    case 'SET_SCHEDULE_AUDIT': {
+      const nextAudit = action.payload;
+      if (scheduleAuditContentKey(state.scheduleAudit) === scheduleAuditContentKey(nextAudit)) {
+        return state;
+      }
+      return { ...state, scheduleAudit: nextAudit };
+    }
     case 'SET_ADHAN_TEST_STATUS':
       return { ...state, adhanTestStatus: { ...state.adhanTestStatus, ...action.payload } };
     case 'SET_LAST_ADHAN_DELAY_SECONDS':

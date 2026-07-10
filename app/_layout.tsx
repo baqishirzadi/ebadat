@@ -241,13 +241,6 @@ function RootLayoutNav() {
   }, [handleNotificationResponse, showSpiritualSplash]);
 
   useEffect(() => {
-    if (!bootstrapChecked || !needsOnboarding || !showSpiritualSplash) return;
-    startupMark('Onboarding pending; skipping extra spiritual splash');
-    markSplashCompleted();
-    setShowSpiritualSplash(false);
-  }, [bootstrapChecked, markSplashCompleted, needsOnboarding, showSpiritualSplash]);
-
-  useEffect(() => {
     if (showSpiritualSplash) return;
     hideNativeSplashOnce();
   }, [hideNativeSplashOnce, showSpiritualSplash]);

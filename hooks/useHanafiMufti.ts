@@ -5,6 +5,7 @@
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
 
 import { askHanafiMufti, isHanafiMuftiConfigured } from '@/utils/hanafiMufti';
+import { formatChatPlainText } from '@/utils/formatChatPlainText';
 import {
   clearHanafiMuftiMessages,
   loadHanafiMuftiMessages,
@@ -124,7 +125,7 @@ export function useHanafiMufti() {
 
         const assistantMessage: StoredHanafiMuftiMessage = {
           role: 'assistant',
-          content: assistantText.trim() || 'پاسخی دریافت نشد.',
+          content: formatChatPlainText(assistantText.trim()) || 'پاسخی دریافت نشد.',
           createdAt: Date.now(),
         };
 

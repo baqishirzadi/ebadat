@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -48,14 +48,20 @@ export function CreatorMessageCard() {
 
       <View style={[styles.divider, { backgroundColor: theme.divider }]} />
 
-      <View style={styles.block}>
+      <View style={[styles.block, styles.pashtoBlock]}>
         <CenteredText style={[styles.blockTitlePashto, { color: theme.tint }]}>
           {CREATOR_MESSAGE_PASHTO_TITLE}
         </CenteredText>
-        <CenteredText style={[styles.bodyPashto, { color: theme.text }]}>
+        <CenteredText
+          style={[styles.bodyPashto, { color: theme.text }]}
+          {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
+        >
           {CREATOR_MESSAGE_PASHTO_BODY}
         </CenteredText>
-        <CenteredText style={[styles.signaturePashto, { color: theme.bookmark }]}>
+        <CenteredText
+          style={[styles.signaturePashto, { color: theme.bookmark }]}
+          {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
+        >
           {CREATOR_MESSAGE_PASHTO_SIGNATURE}
         </CenteredText>
       </View>
@@ -121,13 +127,14 @@ const styles = StyleSheet.create({
   blockTitlePashto: {
     fontSize: Typography.ui.subtitle,
     fontFamily: 'NotoNastaliqUrdu',
-    marginBottom: Spacing.sm,
+    lineHeight: 44,
+    marginBottom: Spacing.md,
     includeFontPadding: false,
   },
   bodyPashto: {
     fontSize: Typography.ui.body,
     fontFamily: 'NotoNastaliqUrdu',
-    lineHeight: 34,
+    lineHeight: 46,
     textAlign: 'center',
     writingDirection: 'rtl',
     includeFontPadding: false,
@@ -136,9 +143,13 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
     fontSize: Typography.ui.body,
     fontFamily: 'NotoNastaliqUrdu',
-    lineHeight: 32,
+    lineHeight: 40,
     textAlign: 'center',
     writingDirection: 'rtl',
     includeFontPadding: false,
+  },
+  pashtoBlock: {
+    paddingBottom: Spacing.md,
+    paddingTop: Spacing.xs,
   },
 });

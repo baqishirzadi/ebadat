@@ -24,7 +24,11 @@ import { detectLanguage } from '@/utils/duaAdvisor';
 const SUBTITLE_DARI = 'سوال دینی تان را بپرسید';
 const SUBTITLE_PASHTO = 'خپله دیني پوښتنه وکړئ';
 
-function HanafiMuftiWidgetInner() {
+interface HanafiMuftiWidgetProps {
+  onInputFocus?: () => void;
+}
+
+function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
   const { isStreaming, error, isConfigured, sendMessage, dismissError } = useHanafiMufti();
   const [input, setInput] = useState('');
 
@@ -87,6 +91,7 @@ function HanafiMuftiWidgetInner() {
           style={styles.input}
           value={input}
           onChangeText={setInput}
+          onFocus={onInputFocus}
           placeholder="سوال فقهی خود را بنویسید..."
           placeholderTextColor="rgba(255,255,255,0.45)"
           multiline

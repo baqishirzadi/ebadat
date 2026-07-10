@@ -22,7 +22,7 @@ import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { useStats } from '@/context/StatsContext';
 import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
-import { getKabulDateParts, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
+import { getKabulDateKey, getKabulDateParts, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import {
   formatEventDateLabel,
@@ -76,16 +76,20 @@ export default function MoreScreen() {
   const router = useRouter();
   const [showDeferredSections, setShowDeferredSections] = useState(false);
   const [upcomingCards, setUpcomingCards] = useState<UpcomingDayCard[]>([]);
-  const truth = getCalendarTruth(new Date());
-  const activeHijriDate = prayer.hijriDate ?? truth.hijri;
+
+  const kabulDayKey = getKabulDateKey(new Date());
+  const truth = useMemo(() => getCalendarTruth(new Date()), [kabulDayKey]);
   const weekdayLabel = WEEKDAY_DARI[truth.weekday];
-  const locationLabel = prayer.locationName?.trim() || 'کابل';
-  const scheduleModeLabel =
-    prayer.scheduleAudit?.scheduleMode === 'exact'
-      ? 'اذان دقیق'
-      : prayer.scheduleAudit?.scheduleMode === 'fallback'
-        ? 'اذان عادی'
-        : 'اذان آماده';
+  const locationLabel = useMemo(
+    () => prayer.locationName?.trim() || 'کابل',
+    [prayer.locationName],
+  );
+  const scheduleModeLabel = useMemo(() => {
+    const mode = prayer.scheduleAudit?.scheduleMode;
+    if (mode === 'exact') return 'اذان دقیق';
+    if (mode === 'fallback') return 'اذان عادی';
+    return 'اذان آماده';
+  }, [prayer.scheduleAudit?.scheduleMode]);
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -135,7 +139,7 @@ export default function MoreScreen() {
       cancelled = true;
       task.cancel();
     };
-  }, [showDeferredSections, theme, truth.gregorianDate]);
+  }, [showDeferredSections, truth.gregorianDate, theme.tint, theme.bookmark]);
 
   const quickActions = useMemo(() => [
     { icon: 'menu-book' as const, label: 'مفتی هوشمند حنفی', subtitle: 'سوال دینی و فقهی', route: '/mufti-chat' },
@@ -206,90 +210,107 @@ export default function MoreScreen() {
     return [{ key: 'dashboard', data: items }];
   }, [showDeferredSections, upcomingCards.length]);
 
-  const listHeader = (
-    <View pointerEvents="box-none">
-      <LinearGradient
-        colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
-        style={styles.header}
-        pointerEvents="none"
-      >
-        <View style={styles.headerBadge}>
-          <MaterialIcons name="dashboard" size={16} color="#fff" />
-          <CenteredText style={styles.headerBadgeText}>مرکز امکانات</CenteredText>
-        </View>
-        <CenteredText style={styles.headerTitle}>بیشتر</CenteredText>
-        <CenteredText style={styles.headerSubtitle}>میان‌بُرهای مهم، پیگیری پیشرفت و همراه همیشگی عبادت</CenteredText>
-      </LinearGradient>
-
-      <View style={[styles.heroCard, { backgroundColor: theme.card, borderColor: theme.cardBorder, shadowColor: theme.tint }]}> 
-        <View style={styles.heroChipRow}>
-          <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-            <MaterialIcons name="today" size={16} color={theme.tint} />
-            <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{weekdayLabel}</CenteredText>
+  const listHeader = useMemo(
+    () => (
+      <View pointerEvents="box-none">
+        <LinearGradient
+          colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
+          style={styles.header}
+          pointerEvents="none"
+        >
+          <View style={styles.headerBadge}>
+            <MaterialIcons name="dashboard" size={16} color="#fff" />
+            <CenteredText style={styles.headerBadgeText}>مرکز امکانات</CenteredText>
           </View>
-          <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-            <MaterialIcons name="place" size={16} color={theme.tint} />
-            <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{locationLabel}</CenteredText>
-          </View>
-          <Pressable
-            testID="ios-open-adhan-settings"
-            accessibilityRole="button"
-            onPress={() => router.push('/adhan-settings')}
-            style={({ pressed }) => [
-              styles.heroChip,
-              { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder },
-              pressed && styles.pressedChip,
-            ]}
-          >
-            <MaterialIcons name="notifications-active" size={16} color={theme.bookmark} />
-            <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{scheduleModeLabel}</CenteredText>
-          </Pressable>
-        </View>
+          <CenteredText style={styles.headerTitle}>بیشتر</CenteredText>
+          <CenteredText style={styles.headerSubtitle}>میان‌بُرهای مهم، پیگیری پیشرفت و همراه همیشگی عبادت</CenteredText>
+        </LinearGradient>
 
-        <CenteredText style={[styles.heroLead, { color: theme.textSecondary }]}>امروز در یک نگاه</CenteredText>
-        <CenteredText style={[styles.heroHijri, { color: theme.text }]}>{formatHijriDate(truth.hijri, 'dari')}</CenteredText>
-        <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
-          {formatAfghanSolarHijriDateWithPersianNumerals(truth.shamsi, 'dari')}
-        </CenteredText>
-        <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
-          {formatGregorianDateDari(truth.gregorianDate)}
-        </CenteredText>
-
-        <View style={styles.heroMetricsRow}>
-          {heroMetrics.map((metric) => (
-            <View
-              key={metric.label}
-              style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
-            >
-              <CenteredText style={[styles.heroMetricValue, { color: metric.color }]}>
-                {metric.value}
-              </CenteredText>
-              <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>{metric.label}</CenteredText>
+        <View style={[styles.heroCard, { backgroundColor: theme.card, borderColor: theme.cardBorder, shadowColor: theme.tint }]}>
+          <View style={styles.heroChipRow}>
+            <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+              <MaterialIcons name="today" size={16} color={theme.tint} />
+              <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{weekdayLabel}</CenteredText>
             </View>
-          ))}
-        </View>
-      </View>
+            <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+              <MaterialIcons name="place" size={16} color={theme.tint} />
+              <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{locationLabel}</CenteredText>
+            </View>
+            <Pressable
+              testID="ios-open-adhan-settings"
+              accessibilityRole="button"
+              onPress={() => router.push('/adhan-settings')}
+              style={({ pressed }) => [
+                styles.heroChip,
+                { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder },
+                pressed && styles.pressedChip,
+              ]}
+            >
+              <MaterialIcons name="notifications-active" size={16} color={theme.bookmark} />
+              <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{scheduleModeLabel}</CenteredText>
+            </Pressable>
+          </View>
 
-      <View style={styles.section}>
-        <MoreSectionTitle title="میان‌بُرهای اصلی" />
-        <View style={styles.quickGrid}>
-          {quickActions.map((item) => (
-            <MoreHubTile
-              key={item.label}
-              icon={item.icon}
-              label={item.label}
-              subtitle={item.subtitle}
-              testID={
-                item.route === '/(tabs)/ahadith'
-                  ? 'ios-open-ahadith'
-                  : undefined
-              }
-              onPress={() => router.push(item.route as any)}
-            />
-          ))}
+          <CenteredText style={[styles.heroLead, { color: theme.textSecondary }]}>امروز در یک نگاه</CenteredText>
+          <CenteredText style={[styles.heroHijri, { color: theme.text }]}>
+            {formatHijriDate(truth.hijri, 'dari')}
+          </CenteredText>
+          <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
+            {formatAfghanSolarHijriDateWithPersianNumerals(truth.shamsi, 'dari')}
+          </CenteredText>
+          <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
+            {formatGregorianDateDari(truth.gregorianDate)}
+          </CenteredText>
+
+          <View style={styles.heroMetricsRow}>
+            {heroMetrics.map((metric) => (
+              <View
+                key={metric.label}
+                style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
+              >
+                <CenteredText style={[styles.heroMetricValue, { color: metric.color }]}>
+                  {metric.value}
+                </CenteredText>
+                <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>{metric.label}</CenteredText>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <MoreSectionTitle title="میان‌بُرهای اصلی" />
+          <View style={styles.quickGrid}>
+            {quickActions.map((item) => (
+              <MoreHubTile
+                key={item.label}
+                icon={item.icon}
+                label={item.label}
+                subtitle={item.subtitle}
+                testID={
+                  item.route === '/(tabs)/ahadith'
+                    ? 'ios-open-ahadith'
+                    : undefined
+                }
+                onPress={() => router.push(item.route as any)}
+              />
+            ))}
+          </View>
         </View>
       </View>
-    </View>
+    ),
+    [
+      theme,
+      themeMode,
+      weekdayLabel,
+      locationLabel,
+      scheduleModeLabel,
+      heroMetrics,
+      truth.hijri,
+      truth.shamsi,
+      truth.gregorianDate,
+      quickActions,
+      router,
+    ],
   );
 
   const renderDeferredSection = ({ item }: { item: DeferredSectionKey }) => {
@@ -423,6 +444,8 @@ export default function MoreScreen() {
       contentContainerStyle={styles.contentContainer}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
+      nestedScrollEnabled={Platform.OS === 'android'}
+      removeClippedSubviews={Platform.OS === 'android'}
       initialNumToRender={2}
       maxToRenderPerBatch={2}
       windowSize={4}

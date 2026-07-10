@@ -1,6 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import React, { memo, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, InteractionManager, Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  InteractionManager,
+  LayoutChangeEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
@@ -136,6 +144,7 @@ function scheduleBuildCells(
 interface GridDayCellProps {
   cell: DayCellData;
   column: number;
+  colWidth: number;
   theme: ReturnType<typeof useApp>['theme'];
   onPress?: (date: Date) => void;
 }
@@ -156,7 +165,7 @@ function eventCellBackground(
   return `${theme.tint}18`;
 }
 
-const GridDayCell = memo(function GridDayCell({ cell, column, theme, onPress }: GridDayCellProps) {
+const GridDayCell = memo(function GridDayCell({ cell, column, colWidth, theme, onPress }: GridDayCellProps) {
   const isFriday = column === FRIDAY_COLUMN;
 
   const eventBg = !cell?.isToday && cell?.eventType ? eventCellBackground(cell.eventType, theme) : undefined;
@@ -176,7 +185,7 @@ const GridDayCell = memo(function GridDayCell({ cell, column, theme, onPress }: 
       : theme.textSecondary;
 
   return (
-    <View style={styles.cell}>
+    <View style={[styles.cell, colWidth > 0 ? { width: colWidth } : null]}>
       {cell ? (
         <Pressable
           onPress={() => onPress?.(cell.gregorianDate)}
@@ -223,6 +232,14 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
   const [monthOffset, setMonthOffset] = useState(0);
   const [cells, setCells] = useState<DayCellData[]>([]);
   const [gridMeta, setGridMeta] = useState({ year: 0, month: 0, monthTitle: '' });
+  const [gridInnerWidth, setGridInnerWidth] = useState(0);
+
+  const colWidth = gridInnerWidth > 0 ? gridInnerWidth / 7 : 0;
+
+  const handleGridLayout = useCallback((event: LayoutChangeEvent) => {
+    const nextWidth = Math.floor(event.nativeEvent.layout.width);
+    setGridInnerWidth((prev) => (prev === nextWidth ? prev : nextWidth));
+  }, []);
 
   useEffect(() => {
     if (mode === deferredMode) return;
@@ -321,38 +338,44 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
         </Pressable>
       </RtlView>
 
-      <RtlView style={styles.weekHeader}>
-        {WEEKDAY_HEADERS.map((d, i) => (
-          <RtlText
-            key={d}
-            align="center"
-            style={[
-              styles.weekday,
-              { color: i === FRIDAY_COLUMN ? theme.textSecondary : theme.textSecondary },
-            ]}
-          >
-            {d}
-          </RtlText>
-        ))}
-      </RtlView>
-
-      {isBuilding ? (
-        <RtlView style={styles.loading}>
-          <ActivityIndicator size="small" color={theme.tint} />
-        </RtlView>
-      ) : (
-        <RtlView style={styles.grid}>
-          {cells.map((cell, index) => (
-            <GridDayCell
-              key={`cell-${deferredMode}-${year}-${month}-${index}`}
-              cell={cell}
-              column={index % 7}
-              theme={theme}
-              onPress={onDayPress}
-            />
+      <View style={styles.gridLayout} onLayout={handleGridLayout}>
+        <View style={styles.weekHeader}>
+          {WEEKDAY_HEADERS.map((d, i) => (
+            <View
+              key={i}
+              style={[styles.weekdayCell, colWidth > 0 ? { width: colWidth } : styles.weekdayCellFlex]}
+            >
+              <Text
+                style={[
+                  styles.weekday,
+                  { color: i === FRIDAY_COLUMN ? theme.textSecondary : theme.textSecondary },
+                ]}
+              >
+                {d}
+              </Text>
+            </View>
           ))}
-        </RtlView>
-      )}
+        </View>
+
+        {isBuilding ? (
+          <View style={styles.loading}>
+            <ActivityIndicator size="small" color={theme.tint} />
+          </View>
+        ) : (
+          <View style={styles.grid}>
+            {cells.map((cell, index) => (
+              <GridDayCell
+                key={`cell-${deferredMode}-${year}-${month}-${index}`}
+                cell={cell}
+                column={index % 7}
+                colWidth={colWidth}
+                theme={theme}
+                onPress={onDayPress}
+              />
+            ))}
+          </View>
+        )}
+      </View>
 
       <RtlView style={styles.legendRow}>
         <View style={styles.legendItem}>
@@ -431,21 +454,34 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: 10,
   },
+  gridLayout: {
+    width: '100%',
+    overflow: 'visible',
+  },
   weekHeader: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
+    width: '100%',
     marginBottom: 4,
   },
+  weekdayCell: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  weekdayCellFlex: {
+    flex: 1,
+  },
   weekday: {
-    width: `${100 / 7}%` as `${number}%`,
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 11,
+    textAlign: 'center',
+    includeFontPadding: false,
   },
   grid: {
-    flexDirection: 'row',
+    flexDirection: 'row-reverse',
     flexWrap: 'wrap',
+    width: '100%',
   },
   cell: {
-    width: `${100 / 7}%` as `${number}%`,
     aspectRatio: 1,
     padding: 2,
   },

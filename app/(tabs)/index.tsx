@@ -2,8 +2,16 @@
  * Home Dashboard — daily hub
  */
 
-import React, { memo, useState } from 'react';
-import { InteractionManager, Platform, ScrollView, StyleSheet } from 'react-native';
+import React, { memo, useCallback, useRef, useState } from 'react';
+import {
+  InteractionManager,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AdhanHealthBanner } from '@/components/prayer/AdhanHealthBanner';
 import { CitySelectorModal } from '@/components/prayer/CitySelectorModal';
@@ -24,8 +32,23 @@ import { CityKey, getCity } from '@/utils/cities';
 
 function HomeDashboardScreen() {
   const { state, setCustomLocation } = usePrayer();
+  const insets = useSafeAreaInsets();
+  const scrollRef = useRef<ScrollView>(null);
+  const greenSectionYRef = useRef(0);
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
   const [showHealthBanner, setShowHealthBanner] = useState(false);
+
+  const tabBarHeight =
+    Platform.OS === 'ios' ? 88 + Math.max(insets.bottom - 20, 0) : 64 + insets.bottom;
+
+  const handleMuftiInputFocus = useCallback(() => {
+    requestAnimationFrame(() => {
+      scrollRef.current?.scrollTo({
+        y: Math.max(0, greenSectionYRef.current - Spacing.md),
+        animated: true,
+      });
+    });
+  }, []);
 
   React.useEffect(() => {
     const task = InteractionManager.runAfterInteractions(() => {
@@ -36,25 +59,42 @@ function HomeDashboardScreen() {
 
   return (
     <>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        removeClippedSubviews={Platform.OS === 'android'}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? tabBarHeight : 0}
       >
-        <RtlView>
-          <HomeHeader onCityPress={() => setCityPickerVisible(true)} />
-          <TodayDateCard />
-          <HomeGreenSection prayerTimes={state.prayerTimes} />
-          <SectionHeader title="اوقات نماز" />
-          <PrayerTimesRow prayerTimes={state.prayerTimes} />
-          <QiblaCard />
-          <ContinueReadingCard />
-          <SectionHeader title="دسترسی سریع" />
-          <QuickActions />
-          {showHealthBanner ? <AdhanHealthBanner /> : null}
-        </RtlView>
-      </ScrollView>
+        <ScrollView
+          ref={scrollRef}
+          style={styles.scroll}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          removeClippedSubviews={Platform.OS === 'android'}
+        >
+          <RtlView>
+            <HomeHeader onCityPress={() => setCityPickerVisible(true)} />
+            <TodayDateCard />
+            <View
+              onLayout={(event) => {
+                greenSectionYRef.current = event.nativeEvent.layout.y;
+              }}
+            >
+              <HomeGreenSection
+                prayerTimes={state.prayerTimes}
+                onMuftiInputFocus={handleMuftiInputFocus}
+              />
+            </View>
+            <SectionHeader title="اوقات نماز" />
+            <PrayerTimesRow prayerTimes={state.prayerTimes} />
+            <QiblaCard />
+            <ContinueReadingCard />
+            <SectionHeader title="دسترسی سریع" />
+            <QuickActions />
+            {showHealthBanner ? <AdhanHealthBanner /> : null}
+          </RtlView>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       <CitySelectorModal
         visible={cityPickerVisible}
@@ -86,6 +126,9 @@ function HomeDashboardScreen() {
 export default memo(HomeDashboardScreen);
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
   scroll: {
     flex: 1,
   },

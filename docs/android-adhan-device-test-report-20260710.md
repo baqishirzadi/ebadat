@@ -111,6 +111,31 @@ New regression flow: `.maestro/android-navigation-smoke.yaml` (requires unlocked
 
 ---
 
+## More Tab Freeze Regression Fix (2026-07-10 late)
+
+### Repro (before fix)
+
+On SM-S928N release APK: More tab scrolled but **tab bar and button taps did not navigate** (`uiautomator dump` reported "could not get idle state"). Root cause: JS thread busy from SectionList relayout — unmemoized `ListHeaderComponent` plus redundant `SET_SCHEDULE_AUDIT` dispatches on every schedule tick.
+
+### Fixes
+
+| Area | Change |
+|------|--------|
+| `more.tsx` | Memoize `listHeader`, calendar truth (per Kabul day), `scheduleModeLabel`, `locationLabel`; Android `nestedScrollEnabled` + `removeClippedSubviews` |
+| `PrayerContext.tsx` | Skip `SET_SCHEDULE_AUDIT` when meaningful audit fields unchanged |
+| `adhan-settings.tsx` | Restore missing `{scheduleMode === 'fallback' && (` wrapper around warning block |
+
+### Verification (SM-S928N, release APK after fix)
+
+| Check | Result |
+|-------|--------|
+| More tab → Home tab (adb tap) | **PASS** — `خانه selected=true`, home content visible |
+| `uiautomator dump` idle on More | **PASS** — no "could not get idle state" |
+| Maestro: More tab loads (`ios-more-ready`) | **PASS** |
+| Release APK rebuild + reinstall | **PASS** |
+
+---
+
 ## Android Fixes Bundle (2026-07-10 evening)
 
 ### Touch freeze after adhan settings

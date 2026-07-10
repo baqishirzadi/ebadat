@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -31,6 +32,7 @@ import {
 import { useApp } from '@/context/AppContext';
 import { useHanafiMufti } from '@/hooks/useHanafiMufti';
 import { detectLanguage } from '@/utils/duaAdvisor';
+import { formatChatPlainText } from '@/utils/formatChatPlainText';
 import type { StoredHanafiMuftiMessage } from '@/utils/hanafiMuftiStorage';
 
 type ChatRow =
@@ -48,6 +50,8 @@ interface ChatBubbleProps {
 }
 
 function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
+  const displayText = isUser ? text : formatChatPlainText(text);
+
   return (
     <RtlView style={[styles.messageRow, isUser ? styles.userRow : styles.assistantRow]}>
       <RtlView
@@ -59,7 +63,7 @@ function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
         ]}
       >
         <RtlText align="right" style={[styles.bubbleText, { color: isUser ? '#fff' : theme.text }]}>
-          {text}
+          {displayText}
         </RtlText>
       </RtlView>
     </RtlView>
@@ -107,13 +111,27 @@ export default function MuftiChatScreen() {
     [input, messages],
   );
 
+  const scrollToBottom = useCallback(() => {
+    requestAnimationFrame(() => {
+      listRef.current?.scrollToEnd({ animated: true });
+    });
+  }, []);
+
   useEffect(() => {
     if (rows.length === 0) return;
-    const timer = setTimeout(() => {
-      listRef.current?.scrollToEnd({ animated: true });
-    }, 80);
+    const timer = setTimeout(scrollToBottom, 80);
     return () => clearTimeout(timer);
-  }, [rows.length, streamingContent]);
+  }, [rows.length, streamingContent, scrollToBottom]);
+
+  useEffect(() => {
+    const eventName = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const subscription = Keyboard.addListener(eventName, () => {
+      setTimeout(scrollToBottom, 50);
+    });
+    return () => subscription.remove();
+  }, [scrollToBottom]);
+
+  const headerOffset = insets.top + 100;
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
@@ -144,7 +162,7 @@ export default function MuftiChatScreen() {
           <RtlView style={[styles.messageRow, styles.assistantRow]}>
             <RtlView style={[styles.bubble, styles.assistantBubble, { backgroundColor: `${theme.tint}18`, borderColor: theme.cardBorder }]}>
               <RtlText align="right" style={[styles.bubbleText, { color: theme.text }]}>
-                {item.content}
+                {formatChatPlainText(item.content)}
               </RtlText>
             </RtlView>
           </RtlView>
@@ -180,8 +198,8 @@ export default function MuftiChatScreen() {
 
         <KeyboardAvoidingView
           style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? headerOffset : 0}
         >
           {isLoading ? (
             <View style={styles.centered}>
@@ -194,6 +212,9 @@ export default function MuftiChatScreen() {
                 data={rows}
                 keyExtractor={(item) => item.key}
                 renderItem={renderItem}
+                keyboardShouldPersistTaps="handled"
+                automaticallyAdjustKeyboardInsets
+                onContentSizeChange={scrollToBottom}
                 contentContainerStyle={[
                   styles.listContent,
                   rows.length === 0 && styles.listEmpty,
@@ -258,6 +279,7 @@ export default function MuftiChatScreen() {
               ]}
               value={input}
               onChangeText={setInput}
+              onFocus={scrollToBottom}
               placeholder="سوال فقهی خود را بنویسید..."
               placeholderTextColor={theme.textSecondary}
               multiline

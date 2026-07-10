@@ -44,6 +44,7 @@ export default function AdhanSettingsScreen() {
     openNotificationSettings,
     scheduleAdhanSystemTest,
     refreshAdhanSettingsSchedule,
+    requestPrayerSchedule,
   } = usePrayer();
   
   const [isTestingVoice, setIsTestingVoice] = useState<AdhanVoice | null>(null);
@@ -352,7 +353,10 @@ export default function AdhanSettingsScreen() {
               <MaterialIcons name="notifications-active" size={20} color="#fff" />
               <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
             </Pressable>
-            <Text style={[styles.exactAlarmHint, { color: theme.textSecondary }]}>
+            <Text
+              testID="adhan-system-test-status"
+              style={[styles.exactAlarmHint, { color: theme.textSecondary }]}
+            >
               {adhanTestStatusLabel}
             </Text>
             {state.scheduleAudit?.scheduleMode === 'fallback' && (

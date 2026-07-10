@@ -10,9 +10,10 @@ import { PrayerTimes } from '@/utils/prayerTimes';
 
 interface HomeGreenSectionProps {
   prayerTimes: PrayerTimes | null;
+  onMuftiInputFocus?: () => void;
 }
 
-function HomeGreenSectionInner({ prayerTimes }: HomeGreenSectionProps) {
+function HomeGreenSectionInner({ prayerTimes, onMuftiInputFocus }: HomeGreenSectionProps) {
   const { themeMode } = useApp();
   const gradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
 
@@ -26,7 +27,7 @@ function HomeGreenSectionInner({ prayerTimes }: HomeGreenSectionProps) {
       >
         <NextPrayerCard prayerTimes={prayerTimes} variant="compact" embedded />
         <View style={styles.divider} />
-        <HanafiMuftiWidget />
+        <HanafiMuftiWidget onInputFocus={onMuftiInputFocus} />
       </LinearGradient>
     </View>
   );
