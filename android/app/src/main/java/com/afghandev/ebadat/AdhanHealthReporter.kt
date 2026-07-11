@@ -38,6 +38,7 @@ data class AdhanHealth(
   val isIgnoringBatteryOptimizations: Boolean,
   val manufacturer: String,
   val issues: List<String>,
+  val lastMaintenanceFiredAtMs: Long?,
 ) {
   fun toWritableMap(): WritableMap {
     val map = Arguments.createMap()
@@ -53,6 +54,11 @@ data class AdhanHealth(
     map.putBoolean("masterEnabled", masterEnabled)
     map.putBoolean("isIgnoringBatteryOptimizations", isIgnoringBatteryOptimizations)
     map.putString("manufacturer", manufacturer)
+    if (lastMaintenanceFiredAtMs != null) {
+      map.putDouble("lastMaintenanceFiredAtMs", lastMaintenanceFiredAtMs.toDouble())
+    } else {
+      map.putNull("lastMaintenanceFiredAtMs")
+    }
     val issuesArray = Arguments.createArray()
     issues.forEach { issuesArray.pushString(it) }
     map.putArray("issues", issuesArray)
@@ -61,6 +67,8 @@ data class AdhanHealth(
 }
 
 object AdhanHealthReporter {
+  private const val MAINTENANCE_STALE_MS = 26L * 60L * 60L * 1000L
+
   fun collect(context: Context): AdhanHealth {
     val appContext = context.applicationContext
     AdhanNotificationChannels.ensureCreated(appContext)
@@ -73,6 +81,7 @@ object AdhanHealthReporter {
     val canScheduleExact = AdhanAlarmScheduler.canScheduleExactAlarms(appContext)
     val batteryOptimized = AdhanPowerHelper.isIgnoringBatteryOptimizations(appContext)
     val manufacturer = Build.MANUFACTURER.orEmpty()
+    val lastMaintenanceFiredAtMs = AdhanFiredLogStore.get(appContext).getLastMaintenanceFiredAtMs()
 
     val issues = mutableListOf<String>()
     if (!notificationsEnabled) {
@@ -89,8 +98,22 @@ object AdhanHealthReporter {
     if (config != null && config.masterEnabled && notificationsEnabled && futureAlarms.isEmpty()) {
       issues.add("no_alarms_scheduled")
     }
+    if (
+      config != null &&
+      config.masterEnabled &&
+      notificationsEnabled &&
+      lastMaintenanceFiredAtMs != null &&
+      nowMs - lastMaintenanceFiredAtMs > MAINTENANCE_STALE_MS
+    ) {
+      issues.add("alarms_not_firing")
+    }
     if (!batteryOptimized && AdhanPowerHelper.isAggressiveOem(manufacturer)) {
       issues.add("battery_optimization_active")
+    }
+
+    val channelHealth = AdhanNotificationChannels.collectChannelHealth(appContext)
+    if (!channelHealth.fajrHealthy || !channelHealth.regularHealthy) {
+      issues.add("channel_unhealthy")
     }
 
     return AdhanHealth(
@@ -103,6 +126,7 @@ object AdhanHealthReporter {
       isIgnoringBatteryOptimizations = batteryOptimized,
       manufacturer = manufacturer,
       issues = issues,
+      lastMaintenanceFiredAtMs = lastMaintenanceFiredAtMs,
     )
   }
 }

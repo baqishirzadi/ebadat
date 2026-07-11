@@ -75,6 +75,18 @@ class AdhanAlarmReceiver : BroadcastReceiver() {
             "AdhanDelay",
             "id=${payload.id} prayer=${payload.prayer} delaySeconds=$delaySeconds expected=${payload.expectedFireAtMs} actual=$nowMs",
           )
+          val firedType = when {
+            payload.id == AdhanAlarmScheduler.SYSTEM_TEST_ALARM_ID -> "system_test"
+            payload.type == "maintenance" -> "maintenance"
+            else -> "adhan"
+          }
+          AdhanFiredLogStore.get(context.applicationContext).append(
+            id = payload.id,
+            type = firedType,
+            expectedFireAtMs = payload.expectedFireAtMs,
+            actualFireAtMs = nowMs,
+            prayer = payload.prayer,
+          )
         } catch (error: SecurityException) {
           Log.e("AdhanAlarmReceiver", "Notification post denied", error)
         }

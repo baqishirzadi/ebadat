@@ -17,7 +17,7 @@ import kotlin.math.abs
 object AdhanScheduleManager {
   private const val TAG = "AdhanScheduleManager"
   private const val ROLLING_DAYS = 7
-  private const val MAINTENANCE_ALARM_ID = "__adhan_daily_maintenance__"
+  const val MAINTENANCE_ALARM_ID = "__adhan_daily_maintenance__"
   private const val MAINTENANCE_HOUR = 0
   private const val MAINTENANCE_MINUTE = 5
   const val ACTION_DAILY_MAINTENANCE = "com.afghandev.ebadat.action.DAILY_ADHAN_MAINTENANCE"
@@ -74,16 +74,8 @@ object AdhanScheduleManager {
     }
 
     for (expected in expectedPayloads) {
-      val existing = existingById[expected.id]
-      val needsSchedule = existing == null ||
-        kotlin.math.abs(existing.triggerAtMs - expected.triggerAtMs) > 5_000L ||
-        existing.title != expected.title ||
-        existing.body != expected.body ||
-        existing.channelId != expected.channelId
-      if (needsSchedule) {
-        AdhanAlarmScheduler.schedule(appContext, expected)
-        scheduledCount += 1
-      }
+      AdhanAlarmScheduler.schedule(appContext, expected)
+      scheduledCount += 1
     }
 
     val nextAlarmAtMs = expectedPayloads.minByOrNull { it.triggerAtMs }?.triggerAtMs
@@ -154,6 +146,14 @@ object AdhanScheduleManager {
   }
 
   fun handleMaintenanceAlarm(context: Context) {
+    val nowMs = System.currentTimeMillis()
+    AdhanFiredLogStore.get(context.applicationContext).append(
+      id = AdhanScheduleManager.MAINTENANCE_ALARM_ID,
+      type = "maintenance",
+      expectedFireAtMs = nowMs,
+      actualFireAtMs = nowMs,
+      prayer = null,
+    )
     ensureScheduled(context, "daily-maintenance")
     scheduleDailyMaintenanceAlarm(context)
   }

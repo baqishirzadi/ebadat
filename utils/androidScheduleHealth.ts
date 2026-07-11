@@ -24,6 +24,14 @@ export function evaluateAndroidActivationReschedule(params: {
     return { shouldReschedule: true, reason: 'android-no-alarms' };
   }
 
+  if (health.issues.includes('alarms_not_firing')) {
+    return { shouldReschedule: true, reason: 'android-alarms-not-firing' };
+  }
+
+  if (health.issues.includes('channel_unhealthy')) {
+    return { shouldReschedule: true, reason: 'android-channel-unhealthy' };
+  }
+
   if (health.issues.includes('exact_alarm_missing')) {
     return { shouldReschedule: true, reason: 'android-exact-missing' };
   }
@@ -46,7 +54,9 @@ export function shouldRescheduleFromSettingsHealth(
 ): boolean {
   if (
     health.issues.some((issue) =>
-      ['no_alarms_scheduled', 'exact_alarm_missing', 'config_missing'].includes(issue),
+      ['no_alarms_scheduled', 'exact_alarm_missing', 'config_missing', 'alarms_not_firing', 'channel_unhealthy'].includes(
+        issue,
+      ),
     )
   ) {
     return true;

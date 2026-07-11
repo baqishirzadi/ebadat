@@ -18,7 +18,7 @@ import {
   InteractionManager,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Stack, useFocusEffect } from 'expo-router';
+import { Stack, useFocusEffect, useRouter } from 'expo-router';
 import { usePrayer } from '@/context/PrayerContext';
 import {
   AdhanVoice,
@@ -38,6 +38,7 @@ const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 export default function AdhanSettingsScreen() {
   const { theme } = useApp();
+  const router = useRouter();
   const {
     state,
     updateAdhanPreferences,
@@ -327,6 +328,13 @@ export default function AdhanSettingsScreen() {
         {Platform.OS === 'android' && adhanPreferences.masterEnabled && (
           <View style={[styles.exactAlarmCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <AdhanHealthBanner />
+            <Pressable
+              onPress={() => router.push('/adhan-health')}
+              style={[styles.exactAlarmButton, { backgroundColor: theme.backgroundSecondary, borderWidth: 1, borderColor: theme.cardBorder }]}
+            >
+              <MaterialIcons name="health-and-safety" size={20} color={theme.tint} />
+              <Text style={[styles.exactAlarmButtonText, { color: theme.text }]}>بررسی سلامت اذان</Text>
+            </Pressable>
             <View style={styles.exactAlarmContent}>
               <MaterialIcons name="schedule" size={24} color={theme.accent} />
               <View style={styles.exactAlarmText}>

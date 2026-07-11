@@ -61,7 +61,6 @@ import { pushWidgetSnapshot } from '@/utils/pushWidgetSnapshot';
 import {
   canUseNativeAdhanScheduler,
   cancelNativeExactAdhanAlarms,
-  clearNativeAdhanConfigCache,
   getNativeAdhanHealth,
   getNativeExactAdhanAlarms,
   NativeAdhanConfigInput,
@@ -1356,7 +1355,6 @@ async function configureAndroidNotificationChannels(
           });
 
           if (shouldReschedule) {
-            clearNativeAdhanConfigCache();
             refreshPrayerTimes();
             try {
               await requestPrayerScheduleRef.current(reason);
@@ -1896,12 +1894,27 @@ async function configureAndroidNotificationChannels(
       await cancelNativeExactAdhanAlarms(currentNative.map((alarm) => alarm.id));
     };
 
+    const syncNativeAdhanMasterState = async (masterEnabled: boolean, cityKey: string) => {
+      if (!useNativeExactAdhan) {
+        if (!masterEnabled) {
+          await cancelAllAdhanFromNative();
+        }
+        return;
+      }
+
+      const nativeConfig = buildNativeAdhanConfig(state.location, cityKey, {
+        ...state.adhanPreferences,
+        masterEnabled,
+      });
+      await syncNativeAdhanConfig(nativeConfig);
+    };
+
     const resolvedCityKey = toCityKey(state.settings.selectedCity);
     if (!resolvedCityKey) {
       const scheduledAll = await NotificationsModule.getAllScheduledNotificationsAsync();
       const prayerScheduled = scheduledAll.filter(isPrayerRelatedNotification);
       await cancelAllPrayerFromExpo(prayerScheduled);
-      await cancelAllAdhanFromNative();
+      await syncNativeAdhanMasterState(false, state.settings.selectedCity || 'unknown');
       await applyBlockingResult(
         ['city_unresolved'],
         PRAYER_BLOCKER_MESSAGES.city_unresolved
@@ -1970,7 +1983,7 @@ async function configureAndroidNotificationChannels(
 
     if (!state.adhanPreferences.masterEnabled) {
       await cancelAllPrayerFromExpo(prayerScheduled);
-      await cancelAllAdhanFromNative();
+      await syncNativeAdhanMasterState(false, resolvedCityKey);
       const exactDebugState = await getExactAlarmDebugState(
         exactStatus,
         effectiveNotificationStatus,
@@ -2335,7 +2348,6 @@ async function configureAndroidNotificationChannels(
       : 0;
 
     if (shouldRescheduleFromSettingsHealth(health, enabledPrayerCount)) {
-      clearNativeAdhanConfigCache();
       await requestPrayerSchedule('adhan-settings-focus-recovery');
       return;
     }

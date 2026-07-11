@@ -2,9 +2,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NativeModules, Platform } from 'react-native';
 
 import {
+  forceNativeAdhanReschedule,
+  getNativeAdhanChannelHealth,
+  getNativeAdhanFiredEvents,
   getNativeAdhanHealth,
+  NativeAdhanChannelHealth,
+  NativeAdhanFiredEvent,
   NativeAdhanHealth,
+  openNativeAdhanChannelSettings,
   runNativeAdhanMaintenance,
+  scheduleNativeSystemTestAlarm,
 } from '@/utils/nativeAdhanScheduler';
 import { triggerPrayerScheduleFromBackground } from '@/utils/prayerScheduleCoordinator';
 
@@ -34,11 +41,29 @@ export type AdhanHealthIssue =
   | 'master_disabled'
   | 'no_alarms_scheduled'
   | 'battery_optimization_active'
-  | 'native_module_unavailable';
+  | 'native_module_unavailable'
+  | 'alarms_not_firing'
+  | 'channel_unhealthy';
 
 export interface AdhanHealthState extends NativeAdhanHealth {
   shouldShowBatteryNudge: boolean;
   shouldShowHealthBanner: boolean;
+}
+
+export interface AdhanHealthCheckItem {
+  id: string;
+  title: string;
+  body: string;
+  status: 'pass' | 'fail' | 'warn' | 'info';
+  fixLabel?: string;
+}
+
+export interface AdhanHealthReport {
+  health: AdhanHealthState;
+  channelHealth: NativeAdhanChannelHealth | null;
+  firedEvents: NativeAdhanFiredEvent[];
+  checks: AdhanHealthCheckItem[];
+  overallStatus: 'healthy' | 'warning' | 'critical';
 }
 
 export function isAggressiveOem(manufacturer: string): boolean {
@@ -92,6 +117,7 @@ async function fetchIOSAdhanHealth(): Promise<AdhanHealthState> {
     isIgnoringBatteryOptimizations: true,
     manufacturer: 'apple',
     issues,
+    lastMaintenanceFiredAtMs: null,
     shouldShowBatteryNudge: false,
     shouldShowHealthBanner,
   };
@@ -113,6 +139,7 @@ export async function fetchAdhanHealth(): Promise<AdhanHealthState> {
       isIgnoringBatteryOptimizations: true,
       manufacturer: '',
       issues: [],
+      lastMaintenanceFiredAtMs: null,
       shouldShowBatteryNudge: false,
       shouldShowHealthBanner: false,
     };
@@ -120,9 +147,14 @@ export async function fetchAdhanHealth(): Promise<AdhanHealthState> {
 
   const health = await getNativeAdhanHealth();
   const shouldShowHealthBanner = health.issues.some((issue) =>
-    ['notification_denied', 'no_alarms_scheduled', 'config_missing', 'exact_alarm_missing'].includes(
-      issue,
-    ),
+    [
+      'notification_denied',
+      'no_alarms_scheduled',
+      'config_missing',
+      'exact_alarm_missing',
+      'alarms_not_firing',
+      'channel_unhealthy',
+    ].includes(issue),
   );
   const shouldShowBatteryNudge = await shouldPromptBatteryOptimization(health);
 
@@ -209,6 +241,196 @@ export async function triggerAdhanMaintenance(): Promise<void> {
   }
 }
 
+export async function repairAdhanScheduling(): Promise<void> {
+  if (Platform.OS !== 'android') {
+    await triggerAdhanMaintenance();
+    return;
+  }
+  await forceNativeAdhanReschedule();
+}
+
+export async function openAdhanChannelSettings(): Promise<boolean> {
+  if (Platform.OS !== 'android') return false;
+  return openNativeAdhanChannelSettings();
+}
+
+function formatRelativeTime(timestampMs: number | null): string {
+  if (timestampMs == null) return 'هنوز ثبت نشده';
+  const diffMs = Date.now() - timestampMs;
+  if (diffMs < 60_000) return 'همین الان';
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 60) return `${minutes} دقیقه پیش`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 48) return `${hours} ساعت پیش`;
+  const days = Math.floor(hours / 24);
+  return `${days} روز پیش`;
+}
+
+function formatClockTime(timestampMs: number | null): string {
+  if (timestampMs == null) return '—';
+  return new Date(timestampMs).toLocaleTimeString('fa-AF', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
+  const health = await fetchAdhanHealth();
+  const channelHealth = Platform.OS === 'android' ? await getNativeAdhanChannelHealth() : null;
+  const firedEvents = Platform.OS === 'android' ? await getNativeAdhanFiredEvents() : [];
+  const checks: AdhanHealthCheckItem[] = [];
+
+  checks.push({
+    id: 'notifications',
+    title: 'اجازه اعلان',
+    body: health.notificationsEnabled
+      ? 'اعلان‌ها در سطح سیستم فعال است.'
+      : 'اعلان‌ها غیرفعال است؛ بدون آن اذان زمان‌بندی نمی‌شود.',
+    status: health.notificationsEnabled ? 'pass' : 'fail',
+    fixLabel: health.notificationsEnabled ? undefined : 'باز کردن تنظیمات',
+  });
+
+  if (Platform.OS === 'android' && channelHealth) {
+    const channelsOk = channelHealth.fajrHealthy && channelHealth.regularHealthy;
+    checks.push({
+      id: 'channels',
+      title: 'کانال‌های اذان',
+      body: channelsOk
+        ? 'کانال‌های اذان با صدا و اولویت بالا فعال هستند.'
+        : 'کانال اذان خاموش، بی‌صدا یا با اولویت پایین است.',
+      status: channelsOk ? 'pass' : 'fail',
+      fixLabel: channelsOk ? undefined : 'تنظیم کانال‌ها',
+    });
+  }
+
+  if (Platform.OS === 'android') {
+    const sdkInt = typeof Platform.Version === 'number' ? Platform.Version : 0;
+    if (health.canScheduleExactAlarms) {
+      checks.push({
+        id: 'exact_alarm',
+        title: 'زمان‌بندی دقیق',
+        body: 'دستگاه اجازه زمان‌بندی دقیق اذان را دارد.',
+        status: 'pass',
+      });
+    } else if (sdkInt >= 33) {
+      checks.push({
+        id: 'exact_alarm',
+        title: 'زمان‌بندی دقیق',
+        body: 'حالت عادی فعال است؛ اذان ممکن است کمی تأخیر داشته باشد.',
+        status: 'warn',
+      });
+    } else {
+      checks.push({
+        id: 'exact_alarm',
+        title: 'زمان‌بندی دقیق',
+        body: 'اجازه «زنگ هشدار و ساعت» فعال نیست؛ اذان ممکن است دقیق نباشد.',
+        status: 'fail',
+        fixLabel: 'فعال‌سازی',
+      });
+    }
+  }
+
+  if (Platform.OS === 'android') {
+    checks.push({
+      id: 'battery',
+      title: 'بهینه‌سازی باتری',
+      body: health.isIgnoringBatteryOptimizations
+        ? 'محدودیت باتری برای عبادت اعمال نشده است.'
+        : 'بهینه‌سازی باتری ممکن است اذان را متوقف کند.',
+      status: health.isIgnoringBatteryOptimizations ? 'pass' : 'warn',
+      fixLabel: health.isIgnoringBatteryOptimizations ? undefined : 'تنظیمات باتری',
+    });
+  }
+
+  checks.push({
+    id: 'config',
+    title: 'تنظیمات اذان',
+    body: health.configPresent && health.masterEnabled
+      ? 'اذان در برنامه فعال است.'
+      : health.configPresent
+        ? 'اذان در برنامه غیرفعال است.'
+        : 'تنظیمات اذان هنوز همگام نشده؛ شهر را انتخاب کنید.',
+    status: health.configPresent && health.masterEnabled ? 'pass' : health.configPresent ? 'info' : 'fail',
+  });
+
+  if (Platform.OS === 'android' && health.masterEnabled) {
+    const alarmsOk = health.scheduledAlarmCount > 0;
+    checks.push({
+      id: 'scheduled',
+      title: 'اذان‌های زمان‌بندی‌شده',
+      body: alarmsOk
+        ? `${health.scheduledAlarmCount} اذان آینده ثبت شده${health.nextAlarmAtMs ? `؛ بعدی ساعت ${formatClockTime(health.nextAlarmAtMs)}` : ''}.`
+        : 'هیچ اذانی زمان‌بندی نشده است.',
+      status: alarmsOk ? 'pass' : 'fail',
+      fixLabel: alarmsOk ? undefined : 'بازیابی',
+    });
+  }
+
+  if (Platform.OS === 'android' && health.masterEnabled) {
+    const lastAdhan = firedEvents.find((event) => event.type === 'adhan' || event.type === 'system_test');
+    const maintenanceStale = health.issues.includes('alarms_not_firing');
+    checks.push({
+      id: 'delivery',
+      title: 'تحویل واقعی اذان',
+      body: maintenanceStale
+        ? 'سیستم بیش از ۲۶ ساعت هیچ نگهداری/اذانی اجرا نکرده؛ ممکن است زنگ‌ها واقعاً نرسند.'
+        : lastAdhan
+          ? `آخرین اجرا ${formatRelativeTime(lastAdhan.actualFireAtMs)}${lastAdhan.delaySeconds > 0 ? ` (تأخیر ${lastAdhan.delaySeconds} ثانیه)` : ''}.`
+          : health.lastMaintenanceFiredAtMs
+            ? `نگهداری سیستم ${formatRelativeTime(health.lastMaintenanceFiredAtMs)} اجرا شد؛ هنوز اذانی ثبت نشده.`
+            : 'هنوز اذانی اجرا نشده؛ تست زنده را امتحان کنید.',
+      status: maintenanceStale ? 'fail' : lastAdhan ? 'pass' : 'info',
+      fixLabel: maintenanceStale || !lastAdhan ? 'تست زنده' : undefined,
+    });
+  }
+
+  const hasFail = checks.some((check) => check.status === 'fail');
+  const hasWarn = checks.some((check) => check.status === 'warn');
+  const overallStatus: AdhanHealthReport['overallStatus'] = hasFail
+    ? 'critical'
+    : hasWarn
+      ? 'warning'
+      : 'healthy';
+
+  return {
+    health,
+    channelHealth,
+    firedEvents,
+    checks,
+    overallStatus,
+  };
+}
+
+export async function runVerifiedAdhanSystemTest(
+  delayMs = 25000,
+  pollTimeoutMs = delayMs + 15000,
+): Promise<{ passed: boolean; event: NativeAdhanFiredEvent | null }> {
+  if (Platform.OS !== 'android') {
+    return { passed: false, event: null };
+  }
+
+  const before = await getNativeAdhanFiredEvents();
+  const beforeLatest = before[0]?.actualFireAtMs ?? 0;
+  await scheduleNativeSystemTestAlarm(delayMs);
+
+  const deadline = Date.now() + pollTimeoutMs;
+  while (Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const events = await getNativeAdhanFiredEvents();
+    const match = events.find(
+      (event) =>
+        event.type === 'system_test' &&
+        event.actualFireAtMs > beforeLatest &&
+        event.actualFireAtMs >= Date.now() - pollTimeoutMs,
+    );
+    if (match) {
+      return { passed: true, event: match };
+    }
+  }
+
+  return { passed: false, event: null };
+}
+
 export function getHealthBannerMessage(issues: string[]): { title: string; body: string } {
   if (issues.includes('notification_denied')) {
     return {
@@ -226,6 +448,18 @@ export function getHealthBannerMessage(issues: string[]): { title: string; body:
     return {
       title: 'اذان زمان‌بندی نشده',
       body: 'برای بازیابی اذان، یک‌بار برنامه را باز کنید یا دکمه زیر را بزنید.',
+    };
+  }
+  if (issues.includes('alarms_not_firing')) {
+    return {
+      title: 'اذان ممکن است نرسد',
+      body: 'سیستم چند روز است اذان را اجرا نکرده. بررسی سلامت را باز کنید و «بازیابی» را بزنید.',
+    };
+  }
+  if (issues.includes('channel_unhealthy')) {
+    return {
+      title: 'کانال اذان مشکل دارد',
+      body: 'صدا یا اولویت کانال اذان در تنظیمات گوشی تغییر کرده است.',
     };
   }
   if (issues.includes('config_missing')) {

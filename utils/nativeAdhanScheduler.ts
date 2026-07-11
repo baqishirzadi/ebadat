@@ -49,6 +49,22 @@ export interface NativeAdhanHealth {
   isIgnoringBatteryOptimizations: boolean;
   manufacturer: string;
   issues: string[];
+  lastMaintenanceFiredAtMs: number | null;
+}
+
+export interface NativeAdhanFiredEvent {
+  id: string;
+  type: string;
+  expectedFireAtMs: number;
+  actualFireAtMs: number;
+  delaySeconds: number;
+  prayer: string | null;
+}
+
+export interface NativeAdhanChannelHealth {
+  fajrHealthy: boolean;
+  regularHealthy: boolean;
+  issues: string[];
 }
 
 /** @deprecated Legacy payload shape kept for audit compatibility */
@@ -71,7 +87,11 @@ interface NativeAdhanSchedulerModule {
   setAdhanConfig?: (config: NativeAdhanConfigInput) => Promise<NativeAdhanScheduleResult>;
   getAdhanHealth?: () => Promise<NativeAdhanHealth>;
   runMaintenanceNow?: () => Promise<NativeAdhanScheduleResult>;
+  forceReschedule?: () => Promise<NativeAdhanScheduleResult>;
   scheduleSystemTestAlarm?: (delayMs: number) => Promise<boolean>;
+  getFiredEvents?: () => Promise<NativeAdhanFiredEvent[]>;
+  getChannelHealth?: () => Promise<NativeAdhanChannelHealth>;
+  openAdhanChannelSettings?: () => Promise<boolean>;
   scheduleAdhanAlarms?: (alarms: NativeAdhanAlarmInput[], mode: AdhanScheduleMode) => Promise<string[]>;
   scheduleExactAdhanAlarms?: (alarms: NativeAdhanAlarmInput[]) => Promise<string[]>;
   cancelAdhanAlarms?: (ids: string[]) => Promise<boolean>;
@@ -88,26 +108,6 @@ function getNativeModule(): NativeAdhanSchedulerModule | null {
 export function canUseNativeAdhanScheduler(): boolean {
   const module = getNativeModule();
   return Boolean(module?.setAdhanConfig && module?.getAdhanHealth);
-}
-
-const SKIPPED_NATIVE_SYNC_RESULT: NativeAdhanScheduleResult = {
-  reason: 'config-sync-unchanged',
-  scheduledCount: 0,
-  cancelledCount: 0,
-  expectedCount: 0,
-  nextAlarmAtMs: null,
-};
-
-let lastSyncedConfigFingerprint: string | null = null;
-
-/** Stable fingerprint for native adhan config (excludes volatile configVersion). */
-export function getNativeAdhanConfigFingerprint(config: NativeAdhanConfigInput): string {
-  const { configVersion: _version, ...rest } = config;
-  return JSON.stringify(rest);
-}
-
-export function clearNativeAdhanConfigCache(): void {
-  lastSyncedConfigFingerprint = null;
 }
 
 export function stableNativeAdhanConfigVersion(
@@ -148,6 +148,29 @@ function normalizeHealth(raw: NativeAdhanHealth): NativeAdhanHealth {
     isIgnoringBatteryOptimizations: Boolean(raw.isIgnoringBatteryOptimizations),
     manufacturer: String(raw.manufacturer || ''),
     issues: Array.isArray(raw.issues) ? raw.issues.map(String) : [],
+    lastMaintenanceFiredAtMs:
+      raw.lastMaintenanceFiredAtMs == null || Number.isNaN(Number(raw.lastMaintenanceFiredAtMs))
+        ? null
+        : Number(raw.lastMaintenanceFiredAtMs),
+  };
+}
+
+function normalizeFiredEvent(raw: NativeAdhanFiredEvent): NativeAdhanFiredEvent {
+  return {
+    id: String(raw.id || ''),
+    type: String(raw.type || 'adhan'),
+    expectedFireAtMs: Number(raw.expectedFireAtMs) || 0,
+    actualFireAtMs: Number(raw.actualFireAtMs) || 0,
+    delaySeconds: Number(raw.delaySeconds) || 0,
+    prayer: raw.prayer == null ? null : String(raw.prayer),
+  };
+}
+
+function normalizeChannelHealth(raw: NativeAdhanChannelHealth): NativeAdhanChannelHealth {
+  return {
+    fajrHealthy: Boolean(raw.fajrHealthy),
+    regularHealthy: Boolean(raw.regularHealthy),
+    issues: Array.isArray(raw.issues) ? raw.issues.map(String) : [],
   };
 }
 
@@ -159,13 +182,7 @@ export async function syncNativeAdhanConfig(
     throw new Error('Native Adhan config sync is unavailable');
   }
 
-  const fingerprint = getNativeAdhanConfigFingerprint(config);
-  if (fingerprint === lastSyncedConfigFingerprint) {
-    return SKIPPED_NATIVE_SYNC_RESULT;
-  }
-
   const result = await module.setAdhanConfig(config);
-  lastSyncedConfigFingerprint = fingerprint;
   return normalizeScheduleResult(result);
 }
 
@@ -182,10 +199,47 @@ export async function getNativeAdhanHealth(): Promise<NativeAdhanHealth> {
       isIgnoringBatteryOptimizations: true,
       manufacturer: '',
       issues: ['native_module_unavailable'],
+      lastMaintenanceFiredAtMs: null,
     };
   }
   const health = await module.getAdhanHealth();
   return normalizeHealth(health);
+}
+
+export async function forceNativeAdhanReschedule(): Promise<NativeAdhanScheduleResult> {
+  const module = getNativeModule();
+  if (!module?.forceReschedule) {
+    throw new Error('Native Adhan force reschedule is unavailable');
+  }
+  const result = await module.forceReschedule();
+  return normalizeScheduleResult(result);
+}
+
+export async function getNativeAdhanFiredEvents(): Promise<NativeAdhanFiredEvent[]> {
+  const module = getNativeModule();
+  if (!module?.getFiredEvents) {
+    return [];
+  }
+  const events = await module.getFiredEvents();
+  if (!Array.isArray(events)) return [];
+  return events.map(normalizeFiredEvent).filter((event) => event.id.length > 0);
+}
+
+export async function getNativeAdhanChannelHealth(): Promise<NativeAdhanChannelHealth> {
+  const module = getNativeModule();
+  if (!module?.getChannelHealth) {
+    return { fajrHealthy: false, regularHealthy: false, issues: ['native_module_unavailable'] };
+  }
+  const health = await module.getChannelHealth();
+  return normalizeChannelHealth(health);
+}
+
+export async function openNativeAdhanChannelSettings(): Promise<boolean> {
+  const module = getNativeModule();
+  if (!module?.openAdhanChannelSettings) {
+    return false;
+  }
+  return Boolean(await module.openAdhanChannelSettings());
 }
 
 export async function runNativeAdhanMaintenance(): Promise<NativeAdhanScheduleResult> {

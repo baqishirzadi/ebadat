@@ -1,4 +1,5 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -24,6 +25,7 @@ interface AdhanHealthBannerProps {
 
 export function AdhanHealthBanner({ onSelectCity }: AdhanHealthBannerProps) {
   const { theme } = useApp();
+  const router = useRouter();
   const [health, setHealth] = useState<AdhanHealthState | null>(null);
   const [dismissedBattery, setDismissedBattery] = useState(false);
 
@@ -57,6 +59,10 @@ export function AdhanHealthBanner({ onSelectCity }: AdhanHealthBannerProps) {
       }
       return;
     }
+    if (health.issues.includes('alarms_not_firing') || health.issues.includes('channel_unhealthy')) {
+      router.push('/adhan-health');
+      return;
+    }
     if (health.issues.includes('config_missing') && onSelectCity) {
       onSelectCity();
       return;
@@ -79,6 +85,14 @@ export function AdhanHealthBanner({ onSelectCity }: AdhanHealthBannerProps) {
             </View>
           </View>
           <Button label="رفع مشکل" onPress={() => handleHealthAction().catch(() => {})} />
+          {Platform.OS === 'android' ? (
+            <Pressable
+              onPress={() => router.push('/adhan-health')}
+              style={[styles.secondaryButton, { borderColor: theme.cardBorder }]}
+            >
+              <Text style={[styles.secondaryButtonText, { color: theme.text }]}>بررسی کامل سلامت</Text>
+            </Pressable>
+          ) : null}
         </View>
       ) : null}
 

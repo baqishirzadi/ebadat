@@ -107,6 +107,87 @@ object AdhanNotificationChannels {
     return NotificationManagerCompat.from(context).areNotificationsEnabled()
   }
 
+  data class ChannelHealth(
+    val fajrHealthy: Boolean,
+    val regularHealthy: Boolean,
+    val issues: List<String>,
+  )
+
+  fun collectChannelHealth(context: Context): ChannelHealth {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return ChannelHealth(fajrHealthy = true, regularHealthy = true, issues = emptyList())
+    }
+
+    val notificationManager =
+      context.getSystemService(NotificationManager::class.java) ?: return ChannelHealth(
+        fajrHealthy = false,
+        regularHealthy = false,
+        issues = listOf("notification_manager_unavailable"),
+      )
+
+    val issues = mutableListOf<String>()
+    val fajrHealthy = isAdhanChannelHealthy(notificationManager, ADHAN_FAJR, issues, "fajr")
+    val regularHealthy = isAdhanChannelHealthy(notificationManager, ADHAN_REGULAR, issues, "regular")
+
+    return ChannelHealth(
+      fajrHealthy = fajrHealthy,
+      regularHealthy = regularHealthy,
+      issues = issues,
+    )
+  }
+
+  fun openAdhanChannelSettings(context: Context): Boolean {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+      return false
+    }
+
+    return try {
+      val intent = android.content.Intent(android.provider.Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS).apply {
+        putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, context.packageName)
+        putExtra(android.provider.Settings.EXTRA_CHANNEL_ID, ADHAN_REGULAR)
+        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+      }
+      context.startActivity(intent)
+      true
+    } catch (_: Exception) {
+      try {
+        val fallbackIntent = android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+          data = android.net.Uri.parse("package:${context.packageName}")
+          addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        context.startActivity(fallbackIntent)
+        true
+      } catch (_: Exception) {
+        false
+      }
+    }
+  }
+
+  private fun isAdhanChannelHealthy(
+    notificationManager: NotificationManager,
+    channelId: String,
+    issues: MutableList<String>,
+    label: String,
+  ): Boolean {
+    val channel = notificationManager.getNotificationChannel(channelId)
+    if (channel == null) {
+      issues.add("${label}_channel_missing")
+      return false
+    }
+
+    if (channel.importance < NotificationManager.IMPORTANCE_HIGH) {
+      issues.add("${label}_importance_low")
+      return false
+    }
+
+    if (channel.sound == null) {
+      issues.add("${label}_sound_missing")
+      return false
+    }
+
+    return true
+  }
+
   private fun createChannelIfMissing(
     notificationManager: NotificationManager,
     channelId: String,

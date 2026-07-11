@@ -19,24 +19,15 @@ class AdhanAlarmSchedulerModule(private val reactContext: ReactApplicationContex
       val parsed = AdhanConfig.fromReadableMap(config)
       val store = AdhanConfigStore.get(reactContext)
       val existing = store.load()
-      if (existing != null && existing.toJson().toString() == parsed.toJson().toString()) {
-        promise.resolve(
-          AdhanScheduleResult(
-            reason = "config-sync-unchanged",
-            scheduledCount = 0,
-            cancelledCount = 0,
-            expectedCount = AdhanAlarmScheduler.getStored(reactContext)
-              .count { it.type == "adhan" && !it.id.startsWith("__adhan_") },
-            nextAlarmAtMs = AdhanAlarmScheduler.getStored(reactContext)
-              .filter { it.type == "adhan" }
-              .minByOrNull { it.triggerAtMs }
-              ?.triggerAtMs,
-          ).toWritableMap(),
-        )
-        return
+      if (existing == null || existing.toJson().toString() != parsed.toJson().toString()) {
+        store.save(parsed)
       }
-      store.save(parsed)
-      val result = AdhanScheduleManager.ensureScheduled(reactContext.applicationContext, "config-sync")
+      val reason = if (existing != null && existing.toJson().toString() == parsed.toJson().toString()) {
+        "config-sync-verify"
+      } else {
+        "config-sync"
+      }
+      val result = AdhanScheduleManager.ensureScheduled(reactContext.applicationContext, reason)
       promise.resolve(result.toWritableMap())
     } catch (error: Exception) {
       promise.reject("adhan_config_sync_failed", error)
@@ -60,6 +51,67 @@ class AdhanAlarmSchedulerModule(private val reactContext: ReactApplicationContex
       promise.resolve(result.toWritableMap())
     } catch (error: Exception) {
       promise.reject("adhan_maintenance_failed", error)
+    }
+  }
+
+  @ReactMethod
+  fun forceReschedule(promise: Promise) {
+    try {
+      val result = AdhanScheduleManager.ensureScheduled(reactContext.applicationContext, "force-reschedule")
+      promise.resolve(result.toWritableMap())
+    } catch (error: Exception) {
+      promise.reject("adhan_force_reschedule_failed", error)
+    }
+  }
+
+  @ReactMethod
+  fun getFiredEvents(promise: Promise) {
+    try {
+      val events = AdhanFiredLogStore.get(reactContext.applicationContext).getAll()
+      val result = Arguments.createArray()
+      events.forEach { event ->
+        val map = Arguments.createMap()
+        map.putString("id", event.id)
+        map.putString("type", event.type)
+        map.putDouble("expectedFireAtMs", event.expectedFireAtMs.toDouble())
+        map.putDouble("actualFireAtMs", event.actualFireAtMs.toDouble())
+        map.putDouble("delaySeconds", event.delaySeconds.toDouble())
+        if (event.prayer != null) {
+          map.putString("prayer", event.prayer)
+        } else {
+          map.putNull("prayer")
+        }
+        result.pushMap(map)
+      }
+      promise.resolve(result)
+    } catch (error: Exception) {
+      promise.reject("adhan_fired_events_failed", error)
+    }
+  }
+
+  @ReactMethod
+  fun getChannelHealth(promise: Promise) {
+    try {
+      val health = AdhanNotificationChannels.collectChannelHealth(reactContext.applicationContext)
+      val map = Arguments.createMap()
+      map.putBoolean("fajrHealthy", health.fajrHealthy)
+      map.putBoolean("regularHealthy", health.regularHealthy)
+      val issues = Arguments.createArray()
+      health.issues.forEach { issues.pushString(it) }
+      map.putArray("issues", issues)
+      promise.resolve(map)
+    } catch (error: Exception) {
+      promise.reject("adhan_channel_health_failed", error)
+    }
+  }
+
+  @ReactMethod
+  fun openAdhanChannelSettings(promise: Promise) {
+    try {
+      val opened = AdhanNotificationChannels.openAdhanChannelSettings(reactContext.applicationContext)
+      promise.resolve(opened)
+    } catch (error: Exception) {
+      promise.reject("adhan_channel_settings_open_failed", error)
     }
   }
 
