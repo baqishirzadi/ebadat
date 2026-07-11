@@ -6,7 +6,7 @@
 
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, createContext, useContext } from 'react';
 import { AppState, I18nManager, InteractionManager, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -111,12 +111,14 @@ export const RTL_TEXT_STYLE = {
   writingDirection: 'rtl' as const,
 };
 
-function RootLayoutNav() {
-  const { theme, state } = useApp();
-  const { isInteractiveReady, markInteractiveReady, markSplashCompleted, markDeferredInit, phase } = useStartupPhase();
-  const { needsOnboarding, checked: bootstrapChecked } = useStartupBootstrap();
-  const router = useRouter();
-  const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
+const SpiritualSplashActiveContext = createContext(true);
+
+function useSpiritualSplashActive(): boolean {
+  return useContext(SpiritualSplashActiveContext);
+}
+
+function SpiritualSplashOverlay({ onComplete }: { onComplete: () => void }) {
+  const { markSplashCompleted } = useStartupPhase();
   const nativeSplashHiddenRef = useRef(false);
 
   const hideNativeSplashOnce = useCallback(() => {
@@ -125,6 +127,43 @@ function RootLayoutNav() {
     SplashScreen.hideAsync().catch(() => {});
     startupMark('Native splash hidden after spiritual splash layout');
   }, []);
+
+  useEffect(() => {
+    const revealTimer = setTimeout(() => {
+      hideNativeSplashOnce();
+    }, 0);
+    const splashWatchdog = setTimeout(() => {
+      startupMark('Splash watchdog fired; forcing splash complete');
+      markSplashCompleted();
+      onComplete();
+    }, 6500);
+    return () => {
+      clearTimeout(revealTimer);
+      clearTimeout(splashWatchdog);
+    };
+  }, [hideNativeSplashOnce, markSplashCompleted, onComplete]);
+
+  return (
+    <>
+      <SpiritualSplash
+        onReady={hideNativeSplashOnce}
+        onComplete={() => {
+          startupMark('Spiritual splash completed');
+          markSplashCompleted();
+          onComplete();
+        }}
+      />
+      <StatusBar style="light" />
+    </>
+  );
+}
+
+function RootLayoutNav() {
+  const { theme, state } = useApp();
+  const { isInteractiveReady, markInteractiveReady, markDeferredInit, phase } = useStartupPhase();
+  const { needsOnboarding, checked: bootstrapChecked } = useStartupBootstrap();
+  const router = useRouter();
+  const showSpiritualSplash = useSpiritualSplashActive();
   const lastHandledNotificationKeyRef = useRef<string>('');
   const pendingNotificationResponseRef = useRef<import('expo-notifications').NotificationResponse | null>(null);
   const appStateRef = useRef(AppState.currentState);
@@ -241,21 +280,6 @@ function RootLayoutNav() {
   }, [handleNotificationResponse, showSpiritualSplash]);
 
   useEffect(() => {
-    if (showSpiritualSplash) return;
-    hideNativeSplashOnce();
-  }, [hideNativeSplashOnce, showSpiritualSplash]);
-
-  useEffect(() => {
-    if (!showSpiritualSplash) return;
-    const splashWatchdog = setTimeout(() => {
-      startupMark('Splash watchdog fired; forcing splash complete');
-      markSplashCompleted();
-      setShowSpiritualSplash(false);
-    }, 6000);
-    return () => clearTimeout(splashWatchdog);
-  }, [markSplashCompleted, showSpiritualSplash]);
-
-  useEffect(() => {
     if (showSpiritualSplash || isInteractiveReady) return;
 
     let cancelled = false;
@@ -336,22 +360,6 @@ function RootLayoutNav() {
     };
   }, [bootstrapChecked, needsOnboarding]);
 
-  if (showSpiritualSplash) {
-    return (
-      <>
-        <SpiritualSplash
-          onReady={hideNativeSplashOnce}
-          onComplete={() => {
-            startupMark('Spiritual splash completed');
-            markSplashCompleted();
-            setShowSpiritualSplash(false);
-          }}
-        />
-        <StatusBar style="light" />
-      </>
-    );
-  }
-
   return (
     <>
       <Stack
@@ -389,8 +397,9 @@ function RootLayoutNav() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
+  const [fontsLoaded, setFontsLoaded] = useState(true);
   const [fontPhaseDone, setFontPhaseDone] = useState(false);
+  const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
   const [bootstrap, setBootstrap] = useState({
     needsOnboarding: false,
     hasCity: false,
@@ -464,25 +473,31 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <StartupPhaseProvider>
           <StartupPhaseBridge fontPhaseDone={fontPhaseDone} />
-          <StartupBootstrapProvider value={bootstrap}>
-          <AppProvider>
-            <PrayerProvider>
-              <StatsProvider>
-                <DuaProvider>
-                  <NaatProvider>
-                    <AhadithProvider>
-                      <ArticlesProvider>
-                        <ScholarProvider>
-                          <RootLayoutNav />
-                        </ScholarProvider>
-                      </ArticlesProvider>
-                    </AhadithProvider>
-                  </NaatProvider>
-                </DuaProvider>
-              </StatsProvider>
-            </PrayerProvider>
-          </AppProvider>
-          </StartupBootstrapProvider>
+          {showSpiritualSplash ? (
+            <SpiritualSplashOverlay onComplete={() => setShowSpiritualSplash(false)} />
+          ) : (
+            <SpiritualSplashActiveContext.Provider value={false}>
+              <StartupBootstrapProvider value={bootstrap}>
+                <AppProvider>
+                  <PrayerProvider>
+                    <StatsProvider>
+                      <DuaProvider>
+                        <NaatProvider>
+                          <AhadithProvider>
+                            <ArticlesProvider>
+                              <ScholarProvider>
+                                <RootLayoutNav />
+                              </ScholarProvider>
+                            </ArticlesProvider>
+                          </AhadithProvider>
+                        </NaatProvider>
+                      </DuaProvider>
+                    </StatsProvider>
+                  </PrayerProvider>
+                </AppProvider>
+              </StartupBootstrapProvider>
+            </SpiritualSplashActiveContext.Provider>
+          )}
         </StartupPhaseProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
@@ -519,6 +534,14 @@ function StartupDebugBadge({
 }
 
 const styles = StyleSheet.create({
+  appRoot: {
+    flex: 1,
+  },
+  splashOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 9999,
+    elevation: 99,
+  },
   loadingContainer: {
     flex: 1,
     backgroundColor: '#1a4d3e',

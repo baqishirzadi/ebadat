@@ -48,7 +48,6 @@ const PHRASES = [
 
 const SPLASH_PHRASE = PHRASES[Math.floor(Math.random() * PHRASES.length)];
 const SPLASH_VISIBLE_MS = 2400;
-const SPLASH_FADE_IN_MS = 450;
 const SPLASH_FADE_MS = 400;
 
 interface SpiritualSplashProps {
@@ -62,7 +61,7 @@ export function SpiritualSplash({ onComplete, onReady }: SpiritualSplashProps) {
   const completedRef = useRef(false);
   const readyRef = useRef(false);
 
-  const opacity = useSharedValue(0);
+  const opacity = useSharedValue(1);
 
   const finish = useCallback(() => {
     if (completedRef.current) return;
@@ -87,8 +86,6 @@ export function SpiritualSplash({ onComplete, onReady }: SpiritualSplashProps) {
   }, [onReady]);
 
   useEffect(() => {
-    opacity.value = withTiming(1, { duration: SPLASH_FADE_IN_MS, easing: Easing.out(Easing.cubic) });
-
     const exitTimeout = setTimeout(beginExit, SPLASH_VISIBLE_MS);
     const hardTimeout = setTimeout(beginExit, 4500);
 
@@ -96,7 +93,7 @@ export function SpiritualSplash({ onComplete, onReady }: SpiritualSplashProps) {
       clearTimeout(exitTimeout);
       clearTimeout(hardTimeout);
     };
-  }, [beginExit, opacity]);
+  }, [beginExit]);
 
   const containerStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
