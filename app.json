@@ -2,11 +2,11 @@
   "expo": {
     "name": "عبادت",
     "slug": "NamazAfghanistan",
-    "version": "1.0.0",
+    "version": "1.0.9",
     "icon": "./assets/images/icon.png",
     "scheme": "ebadat",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "extra": {
       "supportsRTL": true,
       "forcesRTL": true,
@@ -60,7 +60,7 @@
     },
     "android": {
       "package": "com.afghandev.ebadat",
-      "versionCode": 1,
+      "versionCode": 16,
       "adaptiveIcon": {
         "backgroundColor": "#1a4d3e",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -136,10 +136,11 @@
               "label": "اوقات نماز",
               "description": "تاریخ امروز و اوقات نماز",
               "minWidth": "320dp",
-              "minHeight": "120dp",
+              "minHeight": "110dp",
               "targetCellWidth": 4,
               "targetCellHeight": 2,
-              "resizeMode": "horizontal|vertical",
+              "resizeMode": "horizontal",
+              "previewImage": "./assets/images/android-widget-preview.png",
               "updatePeriodMillis": 1800000
             }
           ]

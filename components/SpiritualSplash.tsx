@@ -58,6 +58,7 @@ interface SpiritualSplashProps {
 export function SpiritualSplash({ onComplete, onReady }: SpiritualSplashProps) {
   const insets = useSafeAreaInsets();
   const [isExiting, setIsExiting] = useState(false);
+  const [hasReady, setHasReady] = useState(false);
   const completedRef = useRef(false);
   const readyRef = useRef(false);
 
@@ -82,18 +83,21 @@ export function SpiritualSplash({ onComplete, onReady }: SpiritualSplashProps) {
   const handleLayout = useCallback(() => {
     if (readyRef.current) return;
     readyRef.current = true;
+    setHasReady(true);
     onReady?.();
   }, [onReady]);
 
   useEffect(() => {
+    if (!hasReady) return;
+
     const exitTimeout = setTimeout(beginExit, SPLASH_VISIBLE_MS);
-    const hardTimeout = setTimeout(beginExit, 4500);
+    const hardTimeout = setTimeout(beginExit, SPLASH_VISIBLE_MS + SPLASH_FADE_MS + 1700);
 
     return () => {
       clearTimeout(exitTimeout);
       clearTimeout(hardTimeout);
     };
-  }, [beginExit]);
+  }, [beginExit, hasReady]);
 
   const containerStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

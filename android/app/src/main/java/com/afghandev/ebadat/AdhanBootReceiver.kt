@@ -24,6 +24,7 @@ class AdhanBootReceiver : BroadcastReceiver() {
               "AdhanBootReceiver",
               "Recomputed alarms after action=$action scheduled=${result.scheduledCount} expected=${result.expectedCount}",
             )
+            WidgetReloadHelper.reloadPrayerWidget(context.applicationContext)
           } catch (error: Exception) {
             Log.e("AdhanBootReceiver", "Failed to recompute alarms after action=$action", error)
           } finally {

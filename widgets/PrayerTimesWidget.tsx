@@ -40,6 +40,9 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
     );
   }
 
+  const prayers = snapshot.prayers ?? [];
+  const prayersRtl = [...prayers].reverse();
+
   return (
     <FlexWidget
       style={{
@@ -47,7 +50,8 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
         width: 'match_parent',
         backgroundColor: TINT,
         flexDirection: 'column',
-        padding: 12,
+        paddingVertical: 10,
+        paddingHorizontal: 8,
         justifyContent: 'space-between',
       }}
       clickAction="OPEN_APP"
@@ -61,15 +65,19 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
       >
         <TextWidget
           text={snapshot.weekdayDari}
-          style={{ fontSize: 14, fontFamily: 'Vazirmatn-Bold', color: TEXT_SECONDARY }}
+          style={{ fontSize: 16, fontFamily: 'Vazirmatn-Bold', color: TEXT_SECONDARY }}
+        />
+        <TextWidget
+          text={snapshot.hijriDisplay}
+          style={{ fontSize: 24, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 2 }}
         />
         <TextWidget
           text={snapshot.shamsiDisplay}
-          style={{ fontSize: 20, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 2 }}
+          style={{ fontSize: 18, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY, marginTop: 2 }}
         />
         <TextWidget
-          text={`قمری: ${snapshot.hijriDisplay}`}
-          style={{ fontSize: 12, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 2 }}
+          text={snapshot.gregorianDisplay || ''}
+          style={{ fontSize: 14, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 2 }}
         />
       </FlexWidget>
 
@@ -80,7 +88,7 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
           justifyContent: 'space-between',
         }}
       >
-        {snapshot.prayers.map((prayer) => {
+        {prayersRtl.map((prayer) => {
           const active = snapshot.currentPrayer === prayer.key;
           return (
             <FlexWidget
@@ -89,8 +97,8 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
                 flex: 1,
                 marginHorizontal: 2,
                 backgroundColor: active ? ACTIVE_BG : INACTIVE_BG,
-                borderRadius: 10,
-                paddingVertical: 6,
+                borderRadius: 8,
+                paddingVertical: 4,
                 alignItems: 'center',
               }}
             >

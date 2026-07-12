@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { AppState, Platform } from 'react-native';
 
 import type { PrayerTimes } from '@/utils/prayerTimes';
 import { buildWidgetSnapshot } from '@/utils/widgetSnapshot';
@@ -14,11 +14,14 @@ async function refreshAndroidWidget(snapshot: ReturnType<typeof buildWidgetSnaps
     const { requestWidgetUpdate } = await import('react-native-android-widget');
     const React = await import('react');
     const { PrayerTimesWidget } = await import('@/widgets/PrayerTimesWidget');
+    const { refreshWidgetSnapshot } = await import('@/utils/widgetSnapshot');
+
+    const freshSnapshot = refreshWidgetSnapshot(snapshot);
 
     await requestWidgetUpdate({
       widgetName: 'PrayerTimesWidget',
       renderWidget: () =>
-        React.createElement(PrayerTimesWidget, { snapshot }),
+        React.createElement(PrayerTimesWidget, { snapshot: freshSnapshot }),
     });
   } catch (error) {
     console.warn('[pushWidgetSnapshot] Android widget refresh failed:', error);
@@ -40,5 +43,8 @@ export async function pushWidgetSnapshot(
   lastPushedAt = now;
   const snapshot = buildWidgetSnapshot(prayerTimes, cityName);
   await writeWidgetSnapshot(snapshot);
-  await refreshAndroidWidget(snapshot);
+
+  if (Platform.OS === 'android' && AppState.currentState === 'active') {
+    await refreshAndroidWidget(snapshot);
+  }
 }

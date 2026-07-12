@@ -6,7 +6,7 @@
 
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useRef, useState, createContext, useContext } from 'react';
+import { useCallback, useEffect, useRef, useState, createContext, useContext, type ReactNode } from 'react';
 import { AppState, I18nManager, InteractionManager, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -113,9 +113,13 @@ function useSpiritualSplashActive(): boolean {
   return useContext(SpiritualSplashActiveContext);
 }
 
+const SPLASH_WATCHDOG_MS = 6500;
+const SPLASH_ABSOLUTE_MAX_MS = 15000;
+
 function SpiritualSplashOverlay({ onComplete }: { onComplete: () => void }) {
   const { markSplashCompleted } = useStartupPhase();
   const nativeSplashHiddenRef = useRef(false);
+  const splashWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hideNativeSplashOnce = useCallback(() => {
     if (nativeSplashHiddenRef.current) return;
@@ -124,26 +128,47 @@ function SpiritualSplashOverlay({ onComplete }: { onComplete: () => void }) {
     startupMark('Native splash hidden after spiritual splash layout');
   }, []);
 
-  useEffect(() => {
-    const revealTimer = setTimeout(() => {
-      hideNativeSplashOnce();
-    }, 0);
-    const splashWatchdog = setTimeout(() => {
+  const forceComplete = useCallback(() => {
+    if (splashWatchdogRef.current) {
+      clearTimeout(splashWatchdogRef.current);
+      splashWatchdogRef.current = null;
+    }
+    markSplashCompleted();
+    onComplete();
+  }, [markSplashCompleted, onComplete]);
+
+  const handleSplashReady = useCallback(() => {
+    hideNativeSplashOnce();
+    if (splashWatchdogRef.current) return;
+    splashWatchdogRef.current = setTimeout(() => {
       startupMark('Splash watchdog fired; forcing splash complete');
-      markSplashCompleted();
-      onComplete();
-    }, 6500);
+      forceComplete();
+    }, SPLASH_WATCHDOG_MS);
+  }, [forceComplete, hideNativeSplashOnce]);
+
+  useEffect(() => {
+    const absoluteMaxTimer = setTimeout(() => {
+      startupMark('Splash absolute max timer fired; forcing splash complete');
+      forceComplete();
+    }, SPLASH_ABSOLUTE_MAX_MS);
+
     return () => {
-      clearTimeout(revealTimer);
-      clearTimeout(splashWatchdog);
+      clearTimeout(absoluteMaxTimer);
+      if (splashWatchdogRef.current) {
+        clearTimeout(splashWatchdogRef.current);
+      }
     };
-  }, [hideNativeSplashOnce, markSplashCompleted, onComplete]);
+  }, [forceComplete]);
 
   return (
     <>
       <SpiritualSplash
-        onReady={hideNativeSplashOnce}
+        onReady={handleSplashReady}
         onComplete={() => {
+          if (splashWatchdogRef.current) {
+            clearTimeout(splashWatchdogRef.current);
+            splashWatchdogRef.current = null;
+          }
           startupMark('Spiritual splash completed');
           markSplashCompleted();
           onComplete();
@@ -469,35 +494,42 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <StartupPhaseProvider>
           <StartupPhaseBridge fontPhaseDone={fontPhaseDone} />
-          <SpiritualSplashActiveContext.Provider value={showSpiritualSplash}>
-            <StartupBootstrapProvider value={bootstrap}>
-              <AppProvider>
-                <PrayerProvider>
-                  <StatsProvider>
-                    <DuaProvider>
-                      <NaatProvider>
-                        <AhadithProvider>
-                          <ArticlesProvider>
-                            <ScholarProvider>
-                              <RootLayoutNav />
-                            </ScholarProvider>
-                          </ArticlesProvider>
-                        </AhadithProvider>
-                      </NaatProvider>
-                    </DuaProvider>
-                  </StatsProvider>
-                </PrayerProvider>
-              </AppProvider>
-            </StartupBootstrapProvider>
-            {showSpiritualSplash ? (
-              <View style={styles.splashOverlay} pointerEvents="auto">
-                <SpiritualSplashOverlay onComplete={() => setShowSpiritualSplash(false)} />
-              </View>
-            ) : null}
-          </SpiritualSplashActiveContext.Provider>
+          <StartupBootstrapProvider value={bootstrap}>
+            <SpiritualSplashActiveContext.Provider value={showSpiritualSplash}>
+              {showSpiritualSplash ? (
+                <View style={styles.splashOverlay} pointerEvents="auto">
+                  <SpiritualSplashOverlay onComplete={() => setShowSpiritualSplash(false)} />
+                </View>
+              ) : (
+                <AppProviders>
+                  <RootLayoutNav />
+                </AppProviders>
+              )}
+            </SpiritualSplashActiveContext.Provider>
+          </StartupBootstrapProvider>
         </StartupPhaseProvider>
       </SafeAreaProvider>
     </ErrorBoundary>
+  );
+}
+
+function AppProviders({ children }: { children: ReactNode }) {
+  return (
+    <AppProvider>
+      <PrayerProvider>
+        <StatsProvider>
+          <DuaProvider>
+            <NaatProvider>
+              <AhadithProvider>
+                <ArticlesProvider>
+                  <ScholarProvider>{children}</ScholarProvider>
+                </ArticlesProvider>
+              </AhadithProvider>
+            </NaatProvider>
+          </DuaProvider>
+        </StatsProvider>
+      </PrayerProvider>
+    </AppProvider>
   );
 }
 
@@ -538,10 +570,11 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 9999,
     elevation: 99,
+    backgroundColor: '#0a1f18',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#1a4d3e',
+    backgroundColor: '#0a1f18',
   },
   loadingFallback: {
     position: 'absolute',

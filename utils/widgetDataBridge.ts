@@ -1,6 +1,6 @@
 import { NativeModules, Platform } from 'react-native';
 
-import type { WidgetSnapshot } from '@/utils/widgetSnapshot';
+import { parseWidgetSnapshot, type WidgetSnapshot } from '@/utils/widgetSnapshot';
 
 interface WidgetDataNativeModule {
   setSnapshot(json: string): Promise<boolean>;
@@ -25,7 +25,9 @@ export async function writeWidgetSnapshot(snapshot: WidgetSnapshot): Promise<voi
 
   try {
     await module.setSnapshot(JSON.stringify(snapshot));
-    await module.reloadWidget();
+    if (Platform.OS === 'ios') {
+      await module.reloadWidget();
+    }
   } catch (error) {
     console.warn('[WidgetDataBridge] Failed to write snapshot:', error);
   }
@@ -37,8 +39,7 @@ export async function readWidgetSnapshot(): Promise<WidgetSnapshot | null> {
 
   try {
     const raw = await module.getSnapshot();
-    if (!raw) return null;
-    return JSON.parse(raw) as WidgetSnapshot;
+    return parseWidgetSnapshot(raw);
   } catch {
     return null;
   }
