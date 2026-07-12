@@ -14,6 +14,8 @@ import {
   scheduleNativeSystemTestAlarm,
 } from '@/utils/nativeAdhanScheduler';
 import { triggerPrayerScheduleFromBackground } from '@/utils/prayerScheduleCoordinator';
+import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { isOemAutostartAcknowledged } from '@/utils/prayerOnboarding';
 
 const BATTERY_NUDGE_SNOOZE_KEY = '@ebadat/battery_nudge_snooze_until';
 const BATTERY_NUDGE_SNOOZE_DAYS = 7;
@@ -37,6 +39,7 @@ const AGGRESSIVE_OEMS = [
 export type AdhanHealthIssue =
   | 'notification_denied'
   | 'exact_alarm_missing'
+  | 'exact_alarm_degraded'
   | 'config_missing'
   | 'master_disabled'
   | 'no_alarms_scheduled'
@@ -48,6 +51,7 @@ export type AdhanHealthIssue =
 export interface AdhanHealthState extends NativeAdhanHealth {
   shouldShowBatteryNudge: boolean;
   shouldShowHealthBanner: boolean;
+  shouldShowExactAlarmBanner: boolean;
 }
 
 export interface AdhanHealthCheckItem {
@@ -120,6 +124,7 @@ async function fetchIOSAdhanHealth(): Promise<AdhanHealthState> {
     lastMaintenanceFiredAtMs: null,
     shouldShowBatteryNudge: false,
     shouldShowHealthBanner,
+    shouldShowExactAlarmBanner: false,
   };
 }
 
@@ -142,26 +147,24 @@ export async function fetchAdhanHealth(): Promise<AdhanHealthState> {
       lastMaintenanceFiredAtMs: null,
       shouldShowBatteryNudge: false,
       shouldShowHealthBanner: false,
+      shouldShowExactAlarmBanner: false,
     };
   }
 
   const health = await getNativeAdhanHealth();
-  const shouldShowHealthBanner = health.issues.some((issue) =>
-    [
-      'notification_denied',
-      'no_alarms_scheduled',
-      'config_missing',
-      'exact_alarm_missing',
-      'alarms_not_firing',
-      'channel_unhealthy',
-    ].includes(issue),
-  );
+  const sdkInt = typeof Platform.Version === 'number' ? Platform.Version : 0;
+  const shouldShowExactAlarmBanner =
+    sdkInt >= 31 &&
+    !health.canScheduleExactAlarms &&
+    health.issues.includes('exact_alarm_missing');
+  const shouldShowHealthBanner = false;
   const shouldShowBatteryNudge = await shouldPromptBatteryOptimization(health);
 
   return {
     ...health,
     shouldShowHealthBanner,
     shouldShowBatteryNudge,
+    shouldShowExactAlarmBanner,
   };
 }
 
@@ -184,6 +187,28 @@ export async function shouldPromptBatteryOptimization(health: NativeAdhanHealth)
 export async function snoozeBatteryNudge(): Promise<void> {
   const until = Date.now() + BATTERY_NUDGE_SNOOZE_DAYS * 24 * 60 * 60 * 1000;
   await AsyncStorage.setItem(BATTERY_NUDGE_SNOOZE_KEY, String(until));
+}
+
+export async function checkCanScheduleExactAlarms(): Promise<boolean> {
+  if (Platform.OS !== 'android') return true;
+  const module = (NativeModules as {
+    ExactAlarmModule?: { canScheduleExactAlarms?: () => Promise<boolean> };
+  }).ExactAlarmModule;
+  if (typeof module?.canScheduleExactAlarms === 'function') {
+    return module.canScheduleExactAlarms();
+  }
+  return false;
+}
+
+export async function checkBatteryOptimizationExempt(): Promise<boolean> {
+  if (Platform.OS !== 'android') return true;
+  const module = (NativeModules as {
+    ExactAlarmModule?: { isIgnoringBatteryOptimizations?: () => Promise<boolean> };
+  }).ExactAlarmModule;
+  if (typeof module?.isIgnoringBatteryOptimizations === 'function') {
+    return module.isIgnoringBatteryOptimizations();
+  }
+  return true;
 }
 
 export async function openExactAlarmSettings(): Promise<boolean> {
@@ -282,12 +307,12 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
 
   checks.push({
     id: 'notifications',
-    title: 'اجازه اعلان',
+    title: tAdhanPermission('adhanPermissions.health.notifications'),
     body: health.notificationsEnabled
       ? 'اعلان‌ها در سطح سیستم فعال است.'
       : 'اعلان‌ها غیرفعال است؛ بدون آن اذان زمان‌بندی نمی‌شود.',
     status: health.notificationsEnabled ? 'pass' : 'fail',
-    fixLabel: health.notificationsEnabled ? undefined : 'باز کردن تنظیمات',
+    fixLabel: health.notificationsEnabled ? undefined : tAdhanPermission('adhanPermissions.health.fix'),
   });
 
   if (Platform.OS === 'android' && channelHealth) {
@@ -305,27 +330,29 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
 
   if (Platform.OS === 'android') {
     const sdkInt = typeof Platform.Version === 'number' ? Platform.Version : 0;
+    const isDegraded = health.issues.includes('exact_alarm_degraded');
     if (health.canScheduleExactAlarms) {
       checks.push({
         id: 'exact_alarm',
-        title: 'زمان‌بندی دقیق',
+        title: tAdhanPermission('adhanPermissions.health.exactAlarm'),
         body: 'دستگاه اجازه زمان‌بندی دقیق اذان را دارد.',
         status: 'pass',
       });
-    } else if (sdkInt >= 33) {
+    } else if (isDegraded || (sdkInt >= 33 && health.scheduledAlarmCount > 0)) {
       checks.push({
         id: 'exact_alarm',
-        title: 'زمان‌بندی دقیق',
-        body: 'حالت عادی فعال است؛ اذان ممکن است کمی تأخیر داشته باشد.',
+        title: tAdhanPermission('adhanPermissions.health.exactAlarm'),
+        body: 'اذان با تأخیر احتمالی زمان‌بندی شده؛ برای دقت کامل «زنگ دقیق» را فعال کنید.',
         status: 'warn',
+        fixLabel: tAdhanPermission('adhanPermissions.health.fix'),
       });
     } else {
       checks.push({
         id: 'exact_alarm',
-        title: 'زمان‌بندی دقیق',
-        body: 'اجازه «زنگ هشدار و ساعت» فعال نیست؛ اذان ممکن است دقیق نباشد.',
+        title: tAdhanPermission('adhanPermissions.health.exactAlarm'),
+        body: 'اجازه «زنگ‌ها و یادآوری‌ها» فعال نیست؛ اذان ممکن است دقیق نباشد.',
         status: 'fail',
-        fixLabel: 'فعال‌سازی',
+        fixLabel: tAdhanPermission('adhanPermissions.health.fix'),
       });
     }
   }
@@ -333,13 +360,27 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
   if (Platform.OS === 'android') {
     checks.push({
       id: 'battery',
-      title: 'بهینه‌سازی باتری',
+      title: tAdhanPermission('adhanPermissions.health.battery'),
       body: health.isIgnoringBatteryOptimizations
         ? 'محدودیت باتری برای عبادت اعمال نشده است.'
         : 'بهینه‌سازی باتری ممکن است اذان را متوقف کند.',
       status: health.isIgnoringBatteryOptimizations ? 'pass' : 'warn',
-      fixLabel: health.isIgnoringBatteryOptimizations ? undefined : 'تنظیمات باتری',
+      fixLabel: health.isIgnoringBatteryOptimizations ? undefined : tAdhanPermission('adhanPermissions.health.fix'),
     });
+
+    const autostartAck = await isOemAutostartAcknowledged();
+    const needsAutostart = isAggressiveOem(health.manufacturer) && !autostartAck;
+    if (isAggressiveOem(health.manufacturer)) {
+      checks.push({
+        id: 'autostart',
+        title: tAdhanPermission('adhanPermissions.health.autostart'),
+        body: autostartAck
+          ? 'راهنمای شروع خودکار بررسی شد.'
+          : 'گوشی شما ممکن است اجرای پس‌زمینه را محدود کند.',
+        status: needsAutostart ? 'warn' : 'pass',
+        fixLabel: needsAutostart ? tAdhanPermission('adhanPermissions.health.fix') : undefined,
+      });
+    }
   }
 
   checks.push({

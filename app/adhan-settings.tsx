@@ -4,7 +4,7 @@
  * Designed with mosque-style calm aesthetic
  */
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,7 @@ import {
   InteractionManager,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Stack, useFocusEffect, useRouter } from 'expo-router';
+import { Stack, useFocusEffect } from 'expo-router';
 import { usePrayer } from '@/context/PrayerContext';
 import {
   AdhanVoice,
@@ -27,8 +27,7 @@ import {
   PRAYER_NAMES,
 } from '@/utils/adhanManager';
 import { testAdhanVoice, stopAdhan } from '@/utils/adhanAudio';
-import { AdhanHealthBanner } from '@/components/prayer/AdhanHealthBanner';
-import { fetchAdhanHealth, openBatteryOptimizationSettings, openOemAutostartSettings, snoozeBatteryNudge } from '@/utils/adhanHealth';
+import { AdhanNotificationHealthPanel } from '@/components/prayer/AdhanHealthUi';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
@@ -38,7 +37,6 @@ const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 export default function AdhanSettingsScreen() {
   const { theme } = useApp();
-  const router = useRouter();
   const {
     state,
     updateAdhanPreferences,
@@ -50,14 +48,6 @@ export default function AdhanSettingsScreen() {
   
   const [isTestingVoice, setIsTestingVoice] = useState<AdhanVoice | null>(null);
   const [expandedPrayer, setExpandedPrayer] = useState<PrayerName | null>(null);
-  const [showBatteryNudge, setShowBatteryNudge] = useState(false);
-
-  useEffect(() => {
-    if (Platform.OS !== 'android') return;
-    fetchAdhanHealth()
-      .then((health) => setShowBatteryNudge(health.shouldShowBatteryNudge))
-      .catch(() => {});
-  }, []);
 
   const { adhanPreferences } = state;
   const switchTrackColor = { false: theme.divider, true: theme.tint };
@@ -324,65 +314,15 @@ export default function AdhanSettingsScreen() {
           </View>
         )}
 
-        {/* Native adhan health + system test */}
+        {/* Native adhan health */}
         {Platform.OS === 'android' && adhanPreferences.masterEnabled && (
-          <View style={[styles.exactAlarmCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <AdhanHealthBanner />
-            <Pressable
-              onPress={() => router.push('/adhan-health')}
-              style={[styles.exactAlarmButton, { backgroundColor: theme.backgroundSecondary, borderWidth: 1, borderColor: theme.cardBorder }]}
-            >
-              <MaterialIcons name="health-and-safety" size={20} color={theme.tint} />
-              <Text style={[styles.exactAlarmButtonText, { color: theme.text }]}>بررسی سلامت اذان</Text>
-            </Pressable>
-            <View style={styles.exactAlarmContent}>
-              <MaterialIcons name="schedule" size={24} color={theme.accent} />
-              <View style={styles.exactAlarmText}>
-                <Text style={[styles.exactAlarmLabel, { color: theme.text }]}>
-                  وضعیت اذان سیستمی
-                </Text>
-                <Text style={[styles.exactAlarmDesc, { color: theme.textSecondary }]}>
-                  اذان به‌صورت خودکار با موتور بومی اندروید زمان‌بندی می‌شود.
-                </Text>
-              </View>
-            </View>
-            <Pressable
-              onPress={openNotificationSettings}
-              style={[styles.exactAlarmButton, { backgroundColor: theme.tint }]}
-            >
-              <MaterialIcons name="settings" size={20} color="#fff" />
-              <Text style={styles.exactAlarmButtonText}>باز کردن تنظیمات</Text>
-            </Pressable>
-            <Pressable
-              testID="adhan-system-test-button"
-              onPress={handleSystemAdhanTest}
-              style={[styles.exactAlarmButton, { backgroundColor: theme.tint }]}
-            >
-              <MaterialIcons name="notifications-active" size={20} color="#fff" />
-              <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
-            </Pressable>
-            <Text
-              testID="adhan-system-test-status"
-              style={[styles.exactAlarmHint, { color: theme.textSecondary }]}
-            >
-              {adhanTestStatusLabel}
-            </Text>
-            {state.scheduleAudit?.scheduleMode === 'fallback' && (
-              <View style={[styles.exactAlarmWarning, { backgroundColor: '#fff8e1', borderColor: '#f5c16c' }]}>
-                <MaterialIcons name="warning-amber" size={18} color="#b26a00" />
-                <Text style={[styles.exactAlarmWarningText, { color: '#8d4f00' }]}>
-                  حالت عادی فعال است؛ اذان‌ها پخش می‌شود اما ممکن است کمی تأخیر داشته باشد.
-                </Text>
-                <Pressable
-                  onPress={handleRecheckAndSchedule}
-                  style={[styles.exactAlarmRetryButton, { backgroundColor: theme.tint }]}
-                >
-                  <MaterialIcons name="refresh" size={18} color="#fff" />
-                  <Text style={styles.exactAlarmRetryButtonText}>بررسی دوباره و زمان‌بندی</Text>
-                </Pressable>
-              </View>
-            )}
-          </View>
+          <AdhanNotificationHealthPanel
+            onOpenNotificationSettings={openNotificationSettings}
+            onRunSystemTest={() => handleSystemAdhanTest().catch(() => {})}
+            testStatusLabel={adhanTestStatusLabel}
+            showFallbackWarning={state.scheduleAudit?.scheduleMode === 'fallback'}
+            onRecheckSchedule={() => handleRecheckAndSchedule().catch(() => {})}
+          />
         )}
 
         {/* Early Reminder */}
@@ -438,36 +378,6 @@ export default function AdhanSettingsScreen() {
             برای نمازهای فعال، اعلان وقت نماز همیشه با صدای مؤذن پخش می‌شود.
           </Text>
         </View>
-
-        {Platform.OS === 'android' && showBatteryNudge && (
-          <View style={[styles.infoNote, { backgroundColor: theme.backgroundSecondary, marginTop: Spacing.sm }]}>
-            <MaterialIcons name="battery-charging-full" size={20} color={theme.accent} />
-            <Text style={[styles.infoNoteText, { color: theme.textSecondary }]}>
-              اگر اذان گاهی با تأخیر می‌آید، بهینه‌سازی باتری را برای عبادت غیرفعال کنید.
-            </Text>
-            <Pressable
-              onPress={() => openBatteryOptimizationSettings().catch(() => {})}
-              style={[styles.openSettingsButton, { backgroundColor: '#1a4d3e', marginTop: Spacing.sm }]}
-            >
-              <Text style={styles.openSettingsButtonText}>تنظیمات باتری</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => openOemAutostartSettings().catch(() => {})}
-              style={[styles.openSettingsButton, { backgroundColor: theme.tint, marginTop: Spacing.xs }]}
-            >
-              <Text style={styles.openSettingsButtonText}>راهنمای گوشی</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => {
-                snoozeBatteryNudge().catch(() => {});
-                setShowBatteryNudge(false);
-              }}
-              style={{ marginTop: Spacing.xs, alignSelf: 'center' }}
-            >
-              <Text style={[styles.infoNoteText, { color: theme.textSecondary }]}>بعداً</Text>
-            </Pressable>
-          </View>
-        )}
 
         <View style={styles.bottomPadding} />
       </ScrollView>

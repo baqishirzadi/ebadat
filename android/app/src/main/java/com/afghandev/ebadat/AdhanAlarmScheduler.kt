@@ -36,7 +36,18 @@ object AdhanAlarmScheduler {
 
     if (scheduleMode == "exact") {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
-        throw SecurityException("SCHEDULE_EXACT_ALARM permission is required")
+        Log.w(TAG, "Exact alarm permission missing; downgrading to fallback_inexact for id=${payload.id}")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
+        } else {
+          alarmManager.set(AlarmManager.RTC_WAKEUP, payload.triggerAtMs, pendingIntent)
+        }
+        store(context).upsert(payload.copy(scheduleMode = "fallback_inexact"))
+        Log.i(
+          TAG,
+          "Scheduled adhan id=${payload.id} mode=fallback_inexact triggerAtMs=${payload.triggerAtMs}"
+        )
+        return
       }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

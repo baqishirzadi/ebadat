@@ -339,7 +339,7 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
       </RtlView>
 
       <View style={styles.gridLayout} onLayout={handleGridLayout}>
-        <View style={styles.weekHeader}>
+        <RtlView style={styles.weekHeader}>
           {WEEKDAY_HEADERS.map((d, i) => (
             <View
               key={i}
@@ -355,14 +355,14 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
               </Text>
             </View>
           ))}
-        </View>
+        </RtlView>
 
         {isBuilding ? (
           <View style={styles.loading}>
             <ActivityIndicator size="small" color={theme.tint} />
           </View>
         ) : (
-          <View style={styles.grid}>
+          <RtlView style={styles.grid}>
             {cells.map((cell, index) => (
               <GridDayCell
                 key={`cell-${deferredMode}-${year}-${month}-${index}`}
@@ -373,7 +373,7 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
                 onPress={onDayPress}
               />
             ))}
-          </View>
+          </RtlView>
         )}
       </View>
 
@@ -459,7 +459,7 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   weekHeader: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     width: '100%',
     marginBottom: 4,
   },
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   grid: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     width: '100%',
   },

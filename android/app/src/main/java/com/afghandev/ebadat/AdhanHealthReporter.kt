@@ -88,7 +88,11 @@ object AdhanHealthReporter {
       issues.add("notification_denied")
     }
     if (!canScheduleExact) {
-      issues.add("exact_alarm_missing")
+      if (config != null && config.masterEnabled && notificationsEnabled && futureAlarms.isNotEmpty()) {
+        issues.add("exact_alarm_degraded")
+      } else {
+        issues.add("exact_alarm_missing")
+      }
     }
     if (config == null) {
       issues.add("config_missing")

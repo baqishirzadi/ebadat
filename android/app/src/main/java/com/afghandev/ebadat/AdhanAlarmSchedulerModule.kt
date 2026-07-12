@@ -187,10 +187,10 @@ class AdhanAlarmSchedulerModule(private val reactContext: ReactApplicationContex
 
   private fun scheduleAdhanAlarmsInternal(alarms: ReadableArray, mode: String?, promise: Promise) {
     try {
-      val resolvedMode = normalizeMode(mode)
-      if (resolvedMode == "exact" && !AdhanAlarmScheduler.canScheduleExactAlarms(reactContext)) {
-        promise.reject("exact_alarm_missing", "Exact alarm permission is missing")
-        return
+      val resolvedMode = if (resolvedModeInput(mode) == "exact" && !AdhanAlarmScheduler.canScheduleExactAlarms(reactContext)) {
+        "fallback_inexact"
+      } else {
+        resolvedModeInput(mode)
       }
 
       val scheduledIds = Arguments.createArray()
@@ -208,7 +208,11 @@ class AdhanAlarmSchedulerModule(private val reactContext: ReactApplicationContex
     }
   }
 
-  private fun normalizeMode(mode: String?): String {
+  private fun resolvedModeInput(mode: String?): String {
     return if (mode == "fallback_inexact") "fallback_inexact" else "exact"
+  }
+
+  private fun normalizeMode(mode: String?): String {
+    return resolvedModeInput(mode)
   }
 }

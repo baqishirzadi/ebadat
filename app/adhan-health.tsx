@@ -5,14 +5,20 @@ import {
   ActivityIndicator,
   Alert,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
 
+import {
+  AdhanHealthActionRow,
+  AdhanHealthStatusChip,
+  healthStatusFromReport,
+} from '@/components/prayer/AdhanHealthUi';
+import { OemAutostartGuide } from '@/components/prayer/OemAutostartGuide';
 import { Button } from '@/components/ui/Button';
 import { RtlText } from '@/components/ui/RtlText';
+import { RtlView } from '@/components/ui/RtlView';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
@@ -29,6 +35,8 @@ import {
   repairAdhanScheduling,
   runVerifiedAdhanSystemTest,
 } from '@/utils/adhanHealth';
+import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { markOemAutostartAcknowledged } from '@/utils/prayerOnboarding';
 
 function statusIcon(status: AdhanHealthCheckItem['status']): keyof typeof MaterialIcons.glyphMap {
   switch (status) {
@@ -68,6 +76,12 @@ function overallLabel(status: AdhanHealthReport['overallStatus']): string {
     default:
       return 'مشکل جدی';
   }
+}
+
+function checkChipLabel(status: AdhanHealthCheckItem['status']): string {
+  return status === 'pass'
+    ? tAdhanPermission('adhanPermissions.health.statusPass')
+    : tAdhanPermission('adhanPermissions.health.statusWarn');
 }
 
 export default function AdhanHealthScreen() {
@@ -144,6 +158,11 @@ export default function AdhanHealthScreen() {
         case 'battery':
           await openBatteryOptimizationSettings();
           return;
+        case 'autostart':
+          await openOemAutostartSettings();
+          await markOemAutostartAcknowledged();
+          await refresh();
+          return;
         case 'scheduled':
         case 'delivery':
           await handleRepair();
@@ -152,14 +171,14 @@ export default function AdhanHealthScreen() {
           return;
       }
     },
-    [handleRepair],
+    [handleRepair, refresh],
   );
 
   if (Platform.OS !== 'android') {
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title="سلامت اذان" />
+        <ScreenHeader title={tAdhanPermission('adhanPermissions.health.title')} />
         <View style={[styles.centered, styles.rtlRoot, { backgroundColor: theme.background }]}>
           <RtlText align="center" style={[styles.unsupported, { color: theme.textSecondary }]}>
             بررسی سلامت اذان فقط در اندروید در دسترس است.
@@ -172,7 +191,7 @@ export default function AdhanHealthScreen() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <ScreenHeader title="سلامت اذان" />
+      <ScreenHeader title={tAdhanPermission('adhanPermissions.health.title')} />
       <ScrollView
         style={[styles.container, styles.rtlRoot, { backgroundColor: theme.background }]}
         contentContainerStyle={styles.content}
@@ -181,32 +200,18 @@ export default function AdhanHealthScreen() {
           {loading || !report ? (
             <ActivityIndicator color={theme.tint} style={styles.loader} />
           ) : (
-            <>
-              <View style={styles.summaryRow}>
-                <MaterialIcons
-                  name={report.overallStatus === 'healthy' ? 'verified' : 'health-and-safety'}
-                  size={28}
-                  color={
-                    report.overallStatus === 'healthy'
-                      ? PASS_COLOR
-                      : report.overallStatus === 'warning'
-                        ? theme.warning
-                        : FAIL_COLOR
-                  }
-                />
-                <View style={styles.summaryText}>
-                  <RtlText style={[styles.summaryTitle, { color: theme.text }]}>
-                    {overallLabel(report.overallStatus)}
-                  </RtlText>
-                  <RtlText style={[styles.summaryBody, { color: theme.textSecondary }]}>
-                    {report.health.scheduledAlarmCount > 0 && report.health.nextAlarmAtMs
-                      ? `اذان بعدی: ${new Date(report.health.nextAlarmAtMs).toLocaleString('fa-AF')}`
-                      : 'وضعیت زمان‌بندی را در زیر بررسی کنید.'}
-                  </RtlText>
-                </View>
-              </View>
+            <RtlView style={styles.summaryInner}>
+              <AdhanHealthStatusChip status={healthStatusFromReport(report)} />
+              <RtlText align="center" style={[styles.summaryTitle, { color: theme.text }]}>
+                {overallLabel(report.overallStatus)}
+              </RtlText>
+              <RtlText align="center" style={[styles.summaryBody, { color: theme.textSecondary }]}>
+                {report.health.scheduledAlarmCount > 0 && report.health.nextAlarmAtMs
+                  ? `اذان بعدی: ${new Date(report.health.nextAlarmAtMs).toLocaleString('fa-AF')}`
+                  : 'وضعیت زمان‌بندی را در زیر بررسی کنید.'}
+              </RtlText>
               <Button label="بروزرسانی" onPress={() => refresh().catch(() => {})} variant="secondary" />
-            </>
+            </RtlView>
           )}
         </View>
 
@@ -215,70 +220,92 @@ export default function AdhanHealthScreen() {
             key={check.id}
             style={[styles.checkCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
-            <View style={styles.checkRow}>
-              <MaterialIcons name={statusIcon(check.status)} size={24} color={statusColor(check.status, theme)} />
-              <View style={styles.checkText}>
-                <RtlText style={[styles.checkTitle, { color: theme.text }]}>{check.title}</RtlText>
-                <RtlText style={[styles.checkBody, { color: theme.textSecondary }]}>{check.body}</RtlText>
-              </View>
-            </View>
+            <RtlView
+              style={[
+                styles.checkChipWrap,
+                {
+                  backgroundColor: `${statusColor(check.status, theme)}14`,
+                  borderColor: statusColor(check.status, theme),
+                },
+              ]}
+            >
+              <MaterialIcons name={statusIcon(check.status)} size={15} color={statusColor(check.status, theme)} />
+              <RtlText align="center" style={[styles.checkChipText, { color: statusColor(check.status, theme) }]}>
+                {checkChipLabel(check.status)}
+              </RtlText>
+            </RtlView>
+            <RtlView style={styles.checkText}>
+              <RtlText align="center" style={[styles.checkTitle, { color: theme.text }]}>
+                {check.title}
+              </RtlText>
+              <RtlText align="center" style={[styles.checkBody, { color: theme.textSecondary }]}>
+                {check.body}
+              </RtlText>
+            </RtlView>
             {check.fixLabel ? (
-              <Pressable
+              <Button
+                label={check.fixLabel}
                 onPress={() => handleFix(check).catch(() => {})}
-                style={[styles.fixButton, { backgroundColor: theme.tint }]}
-              >
-                <RtlText align="center" style={styles.fixButtonText}>
-                  {check.fixLabel}
-                </RtlText>
-              </Pressable>
+                style={styles.fullWidthButton}
+              />
+            ) : null}
+            {check.id === 'autostart' && check.status === 'warn' ? (
+              <OemAutostartGuide manufacturer={report?.health.manufacturer ?? ''} />
             ) : null}
           </View>
         ))}
 
         {report && report.firedEvents.length > 0 ? (
           <View style={[styles.historyCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <RtlText style={[styles.historyTitle, { color: theme.text }]}>آخرین رویدادها</RtlText>
+            <RtlText align="center" style={[styles.historyTitle, { color: theme.text }]}>
+              آخرین رویدادها
+            </RtlText>
             {report.firedEvents.slice(0, 5).map((event) => (
-              <View key={`${event.id}-${event.actualFireAtMs}`} style={styles.historyRow}>
-                <RtlText style={[styles.historyTime, { color: theme.text }]}>
-                  {new Date(event.actualFireAtMs).toLocaleString('fa-AF')}
-                  {event.delaySeconds > 0 ? ` (+${event.delaySeconds}s)` : ''}
-                </RtlText>
-                <RtlText style={[styles.historyMeta, { color: theme.textSecondary }]}>
+              <RtlView key={`${event.id}-${event.actualFireAtMs}`} style={styles.historyRow}>
+                <RtlText align="center" style={[styles.historyMeta, { color: theme.textSecondary }]}>
                   {event.type === 'system_test'
                     ? 'تست سیستمی'
                     : event.type === 'maintenance'
                       ? 'نگهداری'
                       : event.prayer || 'اذان'}
                 </RtlText>
-              </View>
+                <RtlText align="center" style={[styles.historyTime, { color: theme.text }]}>
+                  {new Date(event.actualFireAtMs).toLocaleString('fa-AF')}
+                  {event.delaySeconds > 0 ? ` (+${event.delaySeconds}s)` : ''}
+                </RtlText>
+              </RtlView>
             ))}
           </View>
         ) : null}
 
         <View style={[styles.actionsCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <RtlText style={[styles.actionsTitle, { color: theme.text }]}>اقدامات</RtlText>
+          <RtlText align="center" style={[styles.actionsTitle, { color: theme.text }]}>
+            اقدامات
+          </RtlText>
           <Button
             label={repairing ? 'در حال بازیابی...' : 'بازیابی اذان'}
             onPress={() => handleRepair().catch(() => {})}
             disabled={repairing || testing}
+            style={styles.fullWidthButton}
           />
           <Button
             label={testing ? 'در حال تست...' : 'تست زنده (۲۵ ثانیه)'}
             onPress={() => handleLiveTest().catch(() => {})}
             disabled={repairing || testing}
             variant="secondary"
+            style={styles.fullWidthButton}
           />
-          <Pressable
-            onPress={() => openOemAutostartSettings().catch(() => {})}
-            style={[styles.linkButton, { borderColor: theme.cardBorder }]}
-          >
-            <RtlText align="center" style={[styles.linkButtonText, { color: theme.text }]}>
-              راهنمای گوشی (Autostart)
-            </RtlText>
-          </Pressable>
+          <View style={styles.fullWidthButton}>
+            <AdhanHealthActionRow
+              label="راهنمای گوشی (Autostart)"
+              icon="settings-suggest"
+              onPress={() => openOemAutostartSettings().catch(() => {})}
+            />
+          </View>
           {testResult ? (
-            <RtlText style={[styles.testResult, { color: theme.textSecondary }]}>{testResult}</RtlText>
+            <RtlText align="center" style={[styles.testResult, { color: theme.textSecondary }]}>
+              {testResult}
+            </RtlText>
           ) : null}
         </View>
       </ScrollView>
@@ -319,15 +346,9 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     alignSelf: 'stretch',
   },
-  summaryRow: {
-    flexDirection: 'row',
+  summaryInner: {
     alignItems: 'center',
     gap: Spacing.sm,
-  },
-  summaryText: {
-    flex: 1,
-    gap: 4,
-    alignItems: 'flex-end',
   },
   summaryTitle: {
     fontFamily: 'Vazirmatn-Bold',
@@ -343,16 +364,28 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     gap: Spacing.sm,
     alignSelf: 'stretch',
+    alignItems: 'center',
   },
-  checkRow: {
+  checkChipWrap: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    gap: 6,
+    paddingVertical: 5,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    overflow: 'hidden',
+  },
+  checkChipText: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.caption,
   },
   checkText: {
-    flex: 1,
+    alignItems: 'center',
     gap: 4,
-    alignItems: 'flex-end',
+    alignSelf: 'stretch',
   },
   checkTitle: {
     fontFamily: 'Vazirmatn-Bold',
@@ -363,23 +396,13 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     lineHeight: 22,
   },
-  fixButton: {
-    alignSelf: 'stretch',
-    borderRadius: BorderRadius.full,
-    paddingVertical: Spacing.sm,
-    alignItems: 'center',
-  },
-  fixButtonText: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.caption,
-    color: '#fff',
-  },
   historyCard: {
     borderWidth: 1,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: Spacing.xs,
     alignSelf: 'stretch',
+    alignItems: 'center',
   },
   historyTitle: {
     fontFamily: 'Vazirmatn-Bold',
@@ -387,20 +410,18 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.xs,
   },
   historyRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
+    alignItems: 'center',
+    gap: 2,
+    alignSelf: 'stretch',
+    paddingVertical: Spacing.xs,
   },
   historyMeta: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
-    flexShrink: 0,
   },
   historyTime: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    flex: 1,
   },
   actionsCard: {
     borderWidth: 1,
@@ -408,23 +429,19 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     gap: Spacing.sm,
     alignSelf: 'stretch',
+    alignItems: 'center',
   },
   actionsTitle: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
   },
-  linkButton: {
-    borderWidth: 1,
-    borderRadius: BorderRadius.full,
-    paddingVertical: Spacing.sm,
-    alignItems: 'center',
-  },
-  linkButtonText: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.caption,
-  },
   testResult: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
+    lineHeight: 20,
+  },
+  fullWidthButton: {
+    alignSelf: 'stretch',
+    width: '100%',
   },
 });

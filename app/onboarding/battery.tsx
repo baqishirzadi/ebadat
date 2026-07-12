@@ -1,61 +1,101 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useCallback } from 'react';
-import { Linking, Platform, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Linking, Platform, StyleSheet, View } from 'react-native';
 
+import { usePermissionStepResume } from '@/hooks/usePermissionStepResume';
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { Spacing, Typography } from '@/constants/theme';
+import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
-import { openBatteryOptimizationSettings } from '@/utils/adhanHealth';
+import { checkBatteryOptimizationExempt, openBatteryOptimizationSettings } from '@/utils/adhanHealth';
+import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
-import { markFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
+import {
+  getAndroidPermissionStepCount,
+  getNextPermissionStep,
+  markFirstOpenAdhanSetupDone,
+  setPermissionOnboardingProgress,
+} from '@/utils/prayerOnboarding';
 
 export default function OnboardingBatteryScreen() {
+  const { theme } = useApp();
   const { requestPrayerSchedule } = usePrayer();
+  const [totalSteps, setTotalSteps] = useState(6);
+  const [busy, setBusy] = useState(false);
+  const { status: exempt, refresh } = usePermissionStepResume(checkBatteryOptimizationExempt, false);
 
-  const finish = useCallback(async () => {
-    await markFirstOpenAdhanSetupDone();
-    router.replace('/(tabs)');
-    requestPrayerSchedule('onboarding-complete').catch(() => {});
-    ensurePushRegistrationOnFirstOpen().catch(() => {});
+  useEffect(() => {
+    if (Platform.OS !== 'android') {
+      router.replace('/(tabs)');
+      return;
+    }
+    getAndroidPermissionStepCount()
+      .then((count) => setTotalSteps(3 + count))
+      .catch(() => {});
+    setPermissionOnboardingProgress('battery').catch(() => {});
+  }, []);
+
+  const goNext = useCallback(async () => {
+    const next = await getNextPermissionStep('battery');
+    if (next === 'complete') {
+      await markFirstOpenAdhanSetupDone();
+      requestPrayerSchedule('onboarding-complete').catch(() => {});
+      ensurePushRegistrationOnFirstOpen().catch(() => {});
+      router.replace('/(tabs)');
+      return;
+    }
+    router.push(`/onboarding/${next}` as never);
   }, [requestPrayerSchedule]);
 
-  React.useEffect(() => {
-    if (Platform.OS !== 'android') {
-      finish();
+  const handleOpenSettings = async () => {
+    setBusy(true);
+    try {
+      const opened = await openBatteryOptimizationSettings();
+      if (!opened) {
+        await Linking.openSettings();
+      }
+      await refresh();
+    } finally {
+      setBusy(false);
     }
-  }, [finish]);
+  };
 
   if (Platform.OS !== 'android') {
     return null;
   }
 
+  const permissionStepIndex = Number(Platform.Version) >= 31 ? 6 : 5;
+
   return (
     <OnboardingShell
-      step={5}
-      totalSteps={5}
-      title="تنظیمات باتری (اختیاری)"
-      subtitle="در بعضی گوشی‌ها، محدودیت‌های باتری ممکن است پخش به‌موقع اذان را مختل کند."
-      primaryLabel="باز کردن تنظیمات باتری"
-      onPrimary={async () => {
-        const opened = await openBatteryOptimizationSettings();
-        if (!opened) {
-          await Linking.openSettings();
-        }
-        finish();
-      }}
-      secondaryLabel="بعداً"
-      onSecondary={finish}
+      step={permissionStepIndex}
+      totalSteps={totalSteps}
+      title={tAdhanPermission('adhanPermissions.battery.title')}
+      subtitle={tAdhanPermission('adhanPermissions.battery.body')}
+      primaryLabel={
+        exempt
+          ? tAdhanPermission('adhanPermissions.continue')
+          : busy
+            ? '...'
+            : tAdhanPermission('adhanPermissions.battery.button')
+      }
+      onPrimary={exempt ? goNext : handleOpenSettings}
+      primaryDisabled={busy}
+      secondaryLabel={tAdhanPermission('adhanPermissions.battery.skip')}
+      onSecondary={goNext}
       showBack
+      contentAlign="center"
     >
       <RtlView style={styles.content}>
-        <RtlText align="center" style={[styles.highlight, { color: '#b45309' }]}>
-          اگر اذان با تاخیر پخش می‌شود، محدودیت‌های باتری را برای عبادت کمتر کنید
+        <View style={[styles.iconCircle, { backgroundColor: `${theme.warning}18` }]}>
+          <MaterialIcons name="battery-alert" size={48} color={theme.warning} />
+        </View>
+        <RtlText align="center" style={[styles.status, { color: exempt ? '#1b7f4d' : theme.textSecondary }]}>
+          {exempt ? 'محدودیت باتری اعمال نشده است' : 'این مرحله اختیاری است؛ بعداً از بخش سلامت اذان هم می‌توانید تنظیم کنید.'}
         </RtlText>
-        <RtlText align="center" style={styles.bullet}>• این مرحله اختیاری است</RtlText>
-        <RtlText align="center" style={styles.bullet}>• بعضی گوشی‌ها اعلان‌ها و پخش پس‌زمینه را محدود می‌کنند</RtlText>
-        <RtlText align="center" style={styles.bullet}>• می‌توانید بعداً هم این راهنما را از تنظیمات اذان باز کنید</RtlText>
       </RtlView>
     </OnboardingShell>
   );
@@ -64,15 +104,17 @@ export default function OnboardingBatteryScreen() {
 const styles = StyleSheet.create({
   content: {
     gap: Spacing.md,
+    alignItems: 'center',
     paddingTop: Spacing.md,
   },
-  highlight: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.body,
-    lineHeight: 26,
-    marginBottom: Spacing.sm,
+  iconCircle: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  bullet: {
+  status: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     lineHeight: 26,

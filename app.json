@@ -2,7 +2,7 @@
   "expo": {
     "name": "عبادت",
     "slug": "NamazAfghanistan",
-    "version": "1.0.10",
+    "version": "1.0.13",
     "icon": "./assets/images/icon.png",
     "scheme": "ebadat",
     "userInterfaceStyle": "automatic",
@@ -60,7 +60,7 @@
     },
     "android": {
       "package": "com.afghandev.ebadat",
-      "versionCode": 18,
+      "versionCode": 21,
       "adaptiveIcon": {
         "backgroundColor": "#1a4d3e",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -73,7 +73,6 @@
         "android.permission.ACCESS_FINE_LOCATION",
         "android.permission.VIBRATE",
         "android.permission.RECEIVE_BOOT_COMPLETED",
-        "android.permission.USE_EXACT_ALARM",
         "android.permission.SCHEDULE_EXACT_ALARM",
         "android.permission.POST_NOTIFICATIONS",
         "android.permission.WAKE_LOCK",
@@ -108,16 +107,16 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
+          "imageWidth": 80,
           "resizeMode": "contain",
-          "backgroundColor": "#1a4d3e",
+          "backgroundColor": "#0a1f18",
           "android": {
-            "backgroundColor": "#1a4d3e",
+            "backgroundColor": "#0a1f18",
             "image": "./assets/images/splash-icon.png",
             "resizeMode": "contain"
           },
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#0a1f18"
           }
         }
       ],

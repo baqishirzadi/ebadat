@@ -1,8 +1,8 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useMemo, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Alert, Platform, StyleSheet, View } from 'react-native';
 
 import { OnboardingShell } from '@/components/onboarding/OnboardingShell';
 import { RtlText } from '@/components/ui/RtlText';
@@ -11,9 +11,13 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
+import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
 import { getNextPrayer, type PrayerTimes } from '@/utils/prayerTimes';
-import { requestAdhanNotificationPermission, markFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
-import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
+import {
+  getAndroidPermissionStepCount,
+  requestAdhanNotificationPermission,
+  setPermissionOnboardingProgress,
+} from '@/utils/prayerOnboarding';
 
 const PRAYER_PREVIEW = [
   { key: 'fajr', label: 'صبح', icon: 'wb-twilight' as const },
@@ -27,8 +31,18 @@ const THEME_GRADIENT: [string, string, string] = ['#0F1F14', '#1a4d3e', '#2d6a4f
 
 export default function OnboardingNotificationsScreen() {
   const { theme } = useApp();
-  const { requestPrayerSchedule, state } = usePrayer();
+  const { state } = usePrayer();
   const [busy, setBusy] = useState(false);
+  const [totalSteps, setTotalSteps] = useState(6);
+
+  useEffect(() => {
+    setPermissionOnboardingProgress('notifications').catch(() => {});
+    if (Platform.OS === 'android') {
+      getAndroidPermissionStepCount()
+        .then((count) => setTotalSteps(3 + count))
+        .catch(() => {});
+    }
+  }, []);
 
   const prayerTimes = state.prayerTimes;
   const nextKey = useMemo(() => {
@@ -37,10 +51,16 @@ export default function OnboardingNotificationsScreen() {
   }, [prayerTimes]);
 
   const goNext = async () => {
-    await markFirstOpenAdhanSetupDone();
-    requestPrayerSchedule('onboarding-complete').catch(() => {});
-    ensurePushRegistrationOnFirstOpen().catch(() => {});
-    router.replace('/(tabs)');
+    if (Platform.OS !== 'android') {
+      const { markFirstOpenAdhanSetupDone } = await import('@/utils/prayerOnboarding');
+      const { ensurePushRegistrationOnFirstOpen } = await import('@/utils/pushRegistry');
+      await markFirstOpenAdhanSetupDone();
+      ensurePushRegistrationOnFirstOpen().catch(() => {});
+      router.replace('/(tabs)');
+      return;
+    }
+    const next = Number(Platform.Version) >= 31 ? 'exact-alarms' : 'battery';
+    router.push(`/onboarding/${next}` as never);
   };
 
   const handleEnable = async () => {
@@ -55,14 +75,14 @@ export default function OnboardingNotificationsScreen() {
       if (result === 'blocked') {
         Alert.alert(
           'اجازه اعلان غیرفعال است',
-          'برای پخش به‌موقع اذان، اعلان‌های عبادت را از Settings دوباره فعال کنید.'
+          'برای پخش به‌موقع اذان، اعلان‌های عبادت را از Settings دوباره فعال کنید.',
         );
         return;
       }
 
       Alert.alert(
         'اعلان‌ها فعال نشد',
-        'بدون اجازه اعلان، اذان به‌موقع پخش نمی‌شود. می‌توانید دوباره تلاش کنید یا بدون اعلان ادامه دهید.'
+        'بدون اجازه اعلان، اذان به‌موقع پخش نمی‌شود. می‌توانید دوباره تلاش کنید یا بدون اعلان ادامه دهید.',
       );
     } finally {
       setBusy(false);
@@ -79,24 +99,23 @@ export default function OnboardingNotificationsScreen() {
   return (
     <OnboardingShell
       step={4}
-      totalSteps={4}
-      title="فعال‌سازی اذان"
-      subtitle="برای شنیدن اذان به‌موقع، اجازه اعلان را فعال کنید. این مرحله برای همه کاربران ضروری است."
-      primaryLabel={busy ? 'در حال آماده‌سازی...' : 'فعال‌سازی اعلان‌ها'}
+      totalSteps={totalSteps}
+      title={tAdhanPermission('adhanPermissions.notifications.title')}
+      subtitle={tAdhanPermission('adhanPermissions.notifications.body')}
+      primaryLabel={busy ? 'در حال آماده‌سازی...' : tAdhanPermission('adhanPermissions.notifications.button')}
       onPrimary={handleEnable}
       primaryDisabled={busy}
-      secondaryLabel="ادامه بدون اعلان"
+      secondaryLabel={tAdhanPermission('adhanPermissions.notifications.skip')}
       onSecondary={goNext}
       showBack
+      scrollable={false}
+      compactHeader
+      contentAlign="center"
     >
       <RtlView style={styles.content}>
         <View style={[styles.iconCircle, { backgroundColor: `${theme.tint}18` }]}>
-          <MaterialIcons name="notifications-active" size={48} color={theme.tint} />
+          <MaterialIcons name="notifications-active" size={36} color={theme.tint} />
         </View>
-
-        <RtlText align="center" style={[styles.lead, { color: theme.text }]}>
-          اذان پنج وقت نماز در زمان دقیق
-        </RtlText>
 
         <View style={[styles.previewShell, styles.shadow]}>
           <LinearGradient colors={THEME_GRADIENT} style={styles.previewHeader}>
@@ -150,13 +169,6 @@ export default function OnboardingNotificationsScreen() {
             })}
           </RtlView>
         </View>
-
-        <RtlText align="center" style={[styles.bullet, { color: theme.textSecondary }]}>
-          • می‌توانید بعداً از تنظیمات اذان صدا را تغییر دهید
-        </RtlText>
-        <RtlText align="center" style={[styles.bullet, { color: theme.textSecondary }]}>
-          • اگر گوشی شما اعلان‌ها را محدود می‌کند، بعداً می‌توانید تنظیمات باتری را از بخش اذان بررسی کنید
-        </RtlText>
       </RtlView>
     </OnboardingShell>
   );
@@ -164,21 +176,18 @@ export default function OnboardingNotificationsScreen() {
 
 const styles = StyleSheet.create({
   content: {
-    gap: Spacing.md,
+    gap: Spacing.sm,
     alignItems: 'center',
-    paddingTop: Spacing.sm,
+    flex: 1,
+    justifyContent: 'center',
   },
   iconCircle: {
-    width: 88,
-    height: 88,
-    borderRadius: 44,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-  },
-  lead: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.body,
   },
   previewShell: {
     width: '100%',
@@ -197,7 +206,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.xs,
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.xs,
     paddingHorizontal: Spacing.md,
   },
   previewHeaderText: {
@@ -208,21 +217,21 @@ const styles = StyleSheet.create({
   previewBody: {
     borderWidth: 1,
     borderTopWidth: 0,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
   },
   previewRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: Spacing.sm,
+    paddingVertical: 4,
     paddingHorizontal: Spacing.xs,
     borderRadius: BorderRadius.sm,
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   previewLabel: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.body,
+    fontSize: Typography.ui.caption,
     flex: 1,
     textAlign: 'center',
   },
@@ -231,13 +240,8 @@ const styles = StyleSheet.create({
   },
   previewTime: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.body,
-    minWidth: 72,
-    textAlign: 'center',
-  },
-  bullet: {
-    fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    lineHeight: 22,
+    minWidth: 64,
+    textAlign: 'center',
   },
 });

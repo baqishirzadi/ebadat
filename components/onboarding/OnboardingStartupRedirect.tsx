@@ -2,9 +2,11 @@ import { useRouter, useSegments } from 'expo-router';
 import { useEffect, useRef } from 'react';
 
 import { useStartupBootstrap } from '@/context/StartupBootstrapContext';
+import { getOnboardingResumeRoute } from '@/utils/prayerOnboarding';
 
 /**
  * Redirects first-install users to onboarding before tabs render.
+ * Grandfathered users (v3 setupDone) never enter this path.
  */
 export function OnboardingStartupRedirect() {
   const { needsOnboarding, hasCity, checked } = useStartupBootstrap();
@@ -20,7 +22,9 @@ export function OnboardingStartupRedirect() {
     if (!inOnboarding) {
       redirectedRef.current = true;
       if (hasCity) {
-        router.replace('/onboarding/notifications' as never);
+        getOnboardingResumeRoute()
+          .then((route) => router.replace(route as never))
+          .catch(() => router.replace('/onboarding/notifications' as never));
       } else {
         router.replace('/onboarding' as never);
       }

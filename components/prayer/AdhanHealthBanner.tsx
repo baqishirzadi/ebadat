@@ -10,24 +10,18 @@ import { useApp } from '@/context/AppContext';
 import {
   AdhanHealthState,
   fetchAdhanHealth,
-  getHealthBannerMessage,
-  openBatteryOptimizationSettings,
   openExactAlarmSettings,
-  openNotificationSettings,
-  openOemAutostartSettings,
-  snoozeBatteryNudge,
-  triggerAdhanMaintenance,
 } from '@/utils/adhanHealth';
+import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
 
 interface AdhanHealthBannerProps {
   onSelectCity?: () => void;
 }
 
-export function AdhanHealthBanner({ onSelectCity }: AdhanHealthBannerProps) {
+export function AdhanHealthBanner({ onSelectCity: _onSelectCity }: AdhanHealthBannerProps) {
   const { theme } = useApp();
   const router = useRouter();
   const [health, setHealth] = useState<AdhanHealthState | null>(null);
-  const [dismissedBattery, setDismissedBattery] = useState(false);
 
   const refresh = useCallback(async () => {
     const next = await fetchAdhanHealth();
@@ -38,97 +32,42 @@ export function AdhanHealthBanner({ onSelectCity }: AdhanHealthBannerProps) {
     refresh().catch(() => {});
   }, [refresh]);
 
-  if (!health) return null;
+  const handleExactAlarmAction = useCallback(async () => {
+    const opened = await openExactAlarmSettings();
+    if (!opened) {
+      await Linking.openSettings();
+    }
+    await refresh();
+  }, [refresh]);
 
-  const showHealth = health.shouldShowHealthBanner;
-  const showBattery = Platform.OS === 'android' && health.shouldShowBatteryNudge && !dismissedBattery;
-
-  if (!showHealth && !showBattery) return null;
-
-  const healthCopy = showHealth ? getHealthBannerMessage(health.issues) : null;
-
-  const handleHealthAction = async () => {
-    if (health.issues.includes('notification_denied')) {
-      await openNotificationSettings();
-      return;
-    }
-    if (health.issues.includes('exact_alarm_missing')) {
-      const opened = await openExactAlarmSettings();
-      if (!opened) {
-        await openNotificationSettings();
-      }
-      return;
-    }
-    if (health.issues.includes('alarms_not_firing') || health.issues.includes('channel_unhealthy')) {
-      router.push('/adhan-health');
-      return;
-    }
-    if (health.issues.includes('config_missing') && onSelectCity) {
-      onSelectCity();
-      return;
-    }
-    if (health.issues.includes('no_alarms_scheduled')) {
-      await triggerAdhanMaintenance();
-      await refresh();
-    }
-  };
+  if (Platform.OS !== 'android' || !health?.shouldShowExactAlarmBanner) {
+    return null;
+  }
 
   return (
     <View style={styles.stack}>
-      {showHealth && healthCopy ? (
-        <View style={[styles.card, { backgroundColor: theme.warningSurface, borderColor: theme.warning, gap: Spacing.sm }]}>
-          <View style={styles.row}>
-            <MaterialIcons name="notifications-off" size={22} color={theme.warning} />
-            <View style={styles.textBlock}>
-              <Text style={[styles.title, { color: theme.text }]}>{healthCopy.title}</Text>
-              <Text style={[styles.body, { color: theme.textSecondary }]}>{healthCopy.body}</Text>
-            </View>
+      <Card style={[styles.card, { backgroundColor: theme.warningSurface, borderColor: theme.warning }]}>
+        <View style={styles.row}>
+          <MaterialIcons name="alarm" size={22} color={theme.warning} />
+          <View style={styles.textBlock}>
+            <Text style={[styles.body, { color: theme.text }]}>
+              {tAdhanPermission('adhanPermissions.banner.body')}
+            </Text>
           </View>
-          <Button label="رفع مشکل" onPress={() => handleHealthAction().catch(() => {})} />
-          {Platform.OS === 'android' ? (
-            <Pressable
-              onPress={() => router.push('/adhan-health')}
-              style={[styles.secondaryButton, { borderColor: theme.cardBorder }]}
-            >
-              <Text style={[styles.secondaryButtonText, { color: theme.text }]}>بررسی کامل سلامت</Text>
-            </Pressable>
-          ) : null}
         </View>
-      ) : null}
-
-      {showBattery ? (
-        <Card style={styles.card}>
-          <View style={styles.row}>
-            <MaterialIcons name="battery-alert" size={22} color={theme.accent} />
-            <View style={styles.textBlock}>
-              <Text style={[styles.title, { color: theme.text }]}>بهینه‌سازی باتری</Text>
-              <Text style={[styles.body, { color: theme.textSecondary }]}>
-                برای اطمینان از پخش به‌موقع اذان، بهینه‌سازی باتری را برای عبادت غیرفعال کنید.
-              </Text>
-            </View>
-          </View>
-          <View style={styles.actions}>
-            <Button label="تنظیمات باتری" onPress={() => openBatteryOptimizationSettings().catch(() => {})} />
-            <Pressable
-              testID="adhan-battery-nudge-oem"
-              onPress={() => openOemAutostartSettings().catch(() => Linking.openSettings())}
-              style={[styles.secondaryButton, { borderColor: theme.cardBorder }]}
-            >
-              <Text style={[styles.secondaryButtonText, { color: theme.text }]}>راهنمای گوشی</Text>
-            </Pressable>
-            <Pressable
-              testID="adhan-battery-nudge-dismiss"
-              onPress={() => {
-                snoozeBatteryNudge().catch(() => {});
-                setDismissedBattery(true);
-              }}
-              style={styles.dismiss}
-            >
-              <Text style={[styles.dismissText, { color: theme.textSecondary }]}>بعداً</Text>
-            </Pressable>
-          </View>
-        </Card>
-      ) : null}
+        <Button
+          label={tAdhanPermission('adhanPermissions.banner.button')}
+          onPress={() => handleExactAlarmAction().catch(() => {})}
+        />
+        <Pressable
+          onPress={() => router.push('/adhan-health')}
+          style={[styles.secondaryButton, { borderColor: theme.cardBorder }]}
+        >
+          <Text style={[styles.secondaryButtonText, { color: theme.text }]}>
+            {tAdhanPermission('adhanPermissions.health.fullCheck')}
+          </Text>
+        </Pressable>
+      </Card>
     </View>
   );
 }
@@ -149,24 +88,13 @@ const styles = StyleSheet.create({
   },
   textBlock: {
     flex: 1,
-    gap: 4,
-  },
-  title: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.body,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
   body: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    lineHeight: 20,
+    lineHeight: 22,
     textAlign: 'right',
     writingDirection: 'rtl',
-  },
-  actions: {
-    gap: Spacing.xs,
-    alignItems: 'stretch',
   },
   secondaryButton: {
     borderWidth: 1,
@@ -177,16 +105,6 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  dismiss: {
-    alignSelf: 'center',
-    paddingVertical: Spacing.xs,
-  },
-  dismissText: {
-    fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
     textAlign: 'center',
     writingDirection: 'rtl',

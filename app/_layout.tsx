@@ -32,7 +32,7 @@ import { getCalendarTruth } from '@/utils/calendarTruth';
 import '@/utils/cityDatabase';
 import { preloadPopularSurahs } from '@/hooks/useSurahData';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
-import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
+import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone, runPermissionOnboardingGrandfatherMigration } from '@/utils/prayerOnboarding';
 
 const STARTUP_EPOCH_MS = Date.now();
 const STARTUP_TIMING_ENABLED = true;
@@ -113,13 +113,45 @@ function useSpiritualSplashActive(): boolean {
   return useContext(SpiritualSplashActiveContext);
 }
 
-const SPLASH_WATCHDOG_MS = 6500;
 const SPLASH_ABSOLUTE_MAX_MS = 15000;
+const SPLASH_APP_READY_MAX_MS = 12000;
 
-function SpiritualSplashOverlay({ onComplete }: { onComplete: () => void }) {
+function StartupSplashGate({ onAppReady }: { onAppReady: () => void }) {
+  const { isInteractiveReady } = useStartupPhase();
+  const { checked: bootstrapChecked } = useStartupBootstrap();
+  const firedRef = useRef(false);
+
+  useEffect(() => {
+    if (firedRef.current) return;
+    if (isInteractiveReady && bootstrapChecked) {
+      firedRef.current = true;
+      startupMark('Startup splash gate: app interactive and bootstrap ready');
+      onAppReady();
+    }
+  }, [bootstrapChecked, isInteractiveReady, onAppReady]);
+
+  useEffect(() => {
+    const watchdog = setTimeout(() => {
+      if (firedRef.current) return;
+      firedRef.current = true;
+      startupMark('Startup splash gate watchdog fired');
+      onAppReady();
+    }, SPLASH_APP_READY_MAX_MS);
+    return () => clearTimeout(watchdog);
+  }, [onAppReady]);
+
+  return null;
+}
+
+function SpiritualSplashOverlay({
+  onComplete,
+  dismiss,
+}: {
+  onComplete: () => void;
+  dismiss: boolean;
+}) {
   const { markSplashCompleted } = useStartupPhase();
   const nativeSplashHiddenRef = useRef(false);
-  const splashWatchdogRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const hideNativeSplashOnce = useCallback(() => {
     if (nativeSplashHiddenRef.current) return;
@@ -128,49 +160,26 @@ function SpiritualSplashOverlay({ onComplete }: { onComplete: () => void }) {
     startupMark('Native splash hidden after spiritual splash layout');
   }, []);
 
-  const forceComplete = useCallback(() => {
-    if (splashWatchdogRef.current) {
-      clearTimeout(splashWatchdogRef.current);
-      splashWatchdogRef.current = null;
-    }
-    markSplashCompleted();
-    onComplete();
-  }, [markSplashCompleted, onComplete]);
-
-  const handleSplashReady = useCallback(() => {
-    hideNativeSplashOnce();
-    if (splashWatchdogRef.current) return;
-    splashWatchdogRef.current = setTimeout(() => {
-      startupMark('Splash watchdog fired; forcing splash complete');
-      forceComplete();
-    }, SPLASH_WATCHDOG_MS);
-  }, [forceComplete, hideNativeSplashOnce]);
-
   useEffect(() => {
     const absoluteMaxTimer = setTimeout(() => {
       startupMark('Splash absolute max timer fired; forcing splash complete');
-      forceComplete();
+      onComplete();
     }, SPLASH_ABSOLUTE_MAX_MS);
 
-    return () => {
-      clearTimeout(absoluteMaxTimer);
-      if (splashWatchdogRef.current) {
-        clearTimeout(splashWatchdogRef.current);
-      }
-    };
-  }, [forceComplete]);
+    return () => clearTimeout(absoluteMaxTimer);
+  }, [onComplete]);
 
   return (
     <>
       <SpiritualSplash
-        onReady={handleSplashReady}
-        onComplete={() => {
-          if (splashWatchdogRef.current) {
-            clearTimeout(splashWatchdogRef.current);
-            splashWatchdogRef.current = null;
-          }
-          startupMark('Spiritual splash completed');
+        onReady={hideNativeSplashOnce}
+        onGreetingComplete={() => {
+          startupMark('Spiritual splash greeting complete; loading phase');
           markSplashCompleted();
+        }}
+        dismiss={dismiss}
+        onComplete={() => {
+          startupMark('Spiritual splash dismissed');
           onComplete();
         }}
       />
@@ -301,7 +310,7 @@ function RootLayoutNav() {
   }, [handleNotificationResponse, showSpiritualSplash]);
 
   useEffect(() => {
-    if (showSpiritualSplash || isInteractiveReady) return;
+    if (isInteractiveReady) return;
 
     let cancelled = false;
     let idleTimer: ReturnType<typeof setTimeout> | null = null;
@@ -321,10 +330,10 @@ function RootLayoutNav() {
         clearTimeout(idleTimer);
       }
     };
-  }, [isInteractiveReady, markInteractiveReady, showSpiritualSplash]);
+  }, [isInteractiveReady, markInteractiveReady]);
 
   useEffect(() => {
-    if (showSpiritualSplash || !isInteractiveReady) return;
+    if (!isInteractiveReady) return;
 
     let cancelled = false;
 
@@ -360,7 +369,7 @@ function RootLayoutNav() {
       cancelled = true;
       preloadTask.cancel();
     };
-  }, [bootstrapChecked, isInteractiveReady, markDeferredInit, needsOnboarding, showSpiritualSplash]);
+  }, [bootstrapChecked, isInteractiveReady, markDeferredInit, needsOnboarding]);
 
   useEffect(() => {
     if (bootstrapChecked && needsOnboarding) return;
@@ -421,6 +430,7 @@ export default function RootLayout() {
   const [fontsLoaded, setFontsLoaded] = useState(true);
   const [fontPhaseDone, setFontPhaseDone] = useState(false);
   const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
+  const [splashDismissReady, setSplashDismissReady] = useState(false);
   const [bootstrap, setBootstrap] = useState({
     needsOnboarding: false,
     hasCity: false,
@@ -438,37 +448,35 @@ export default function RootLayout() {
     if (!fontsLoaded) return;
 
     let cancelled = false;
-    const task = InteractionManager.runAfterInteractions(() => {
-      const bootstrapStartup = async () => {
-        startupMark('Bootstrap state read started');
-        try {
-          const [cityKey, setupDone] = await Promise.all([
-            getSavedPrayerCityKey(),
-            isFirstOpenAdhanSetupDone(),
-          ]);
-          if (cancelled) return;
+    const bootstrapStartup = async () => {
+      startupMark('Bootstrap state read started');
+      try {
+        const [cityKey, setupDone] = await Promise.all([
+          getSavedPrayerCityKey(),
+          isFirstOpenAdhanSetupDone(),
+        ]);
+        await runPermissionOnboardingGrandfatherMigration();
+        if (cancelled) return;
 
-          const hasCity = Boolean(cityKey?.trim());
-          setBootstrap({
-            hasCity,
-            setupDone,
-            needsOnboarding: !setupDone,
-            checked: true,
-          });
-          startupMark('Bootstrap state read completed');
-        } catch {
-          if (!cancelled) {
-            setBootstrap((prev) => ({ ...prev, checked: true }));
-          }
-          startupMark('Bootstrap state read failed');
+        const hasCity = Boolean(cityKey?.trim());
+        setBootstrap({
+          hasCity,
+          setupDone,
+          needsOnboarding: !setupDone,
+          checked: true,
+        });
+        startupMark('Bootstrap state read completed');
+      } catch {
+        if (!cancelled) {
+          setBootstrap((prev) => ({ ...prev, checked: true }));
         }
-      };
-      void bootstrapStartup();
-    });
+        startupMark('Bootstrap state read failed');
+      }
+    };
+    void bootstrapStartup();
 
     return () => {
       cancelled = true;
-      task.cancel();
     };
   }, [fontsLoaded]);
 
@@ -498,13 +506,16 @@ export default function RootLayout() {
             <SpiritualSplashActiveContext.Provider value={showSpiritualSplash}>
               {showSpiritualSplash ? (
                 <View style={styles.splashOverlay} pointerEvents="auto">
-                  <SpiritualSplashOverlay onComplete={() => setShowSpiritualSplash(false)} />
+                  <SpiritualSplashOverlay
+                    dismiss={splashDismissReady}
+                    onComplete={() => setShowSpiritualSplash(false)}
+                  />
                 </View>
-              ) : (
-                <AppProviders>
-                  <RootLayoutNav />
-                </AppProviders>
-              )}
+              ) : null}
+              <AppProviders>
+                <RootLayoutNav />
+                <StartupSplashGate onAppReady={() => setSplashDismissReady(true)} />
+              </AppProviders>
             </SpiritualSplashActiveContext.Provider>
           </StartupBootstrapProvider>
         </StartupPhaseProvider>

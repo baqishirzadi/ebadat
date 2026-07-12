@@ -13,7 +13,9 @@ export default function OnboardingLayout() {
       <Stack.Screen name="language" />
       <Stack.Screen name="location" />
       <Stack.Screen name="notifications" />
+      <Stack.Screen name="exact-alarms" />
       <Stack.Screen name="battery" />
+      <Stack.Screen name="autostart" />
     </Stack>
   );
 }

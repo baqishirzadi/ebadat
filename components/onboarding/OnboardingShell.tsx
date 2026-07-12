@@ -20,9 +20,12 @@ interface OnboardingShellProps {
   primaryDisabled?: boolean;
   secondaryLabel?: string;
   onSecondary?: () => void;
+  secondaryMuted?: boolean;
   showBack?: boolean;
   onBack?: () => void;
   scrollable?: boolean;
+  contentAlign?: 'stretch' | 'center';
+  compactHeader?: boolean;
 }
 
 export function OnboardingShell({
@@ -36,9 +39,12 @@ export function OnboardingShell({
   primaryDisabled = false,
   secondaryLabel,
   onSecondary,
+  secondaryMuted = false,
   showBack = false,
   onBack,
   scrollable = true,
+  contentAlign = 'stretch',
+  compactHeader = false,
 }: OnboardingShellProps) {
   const { theme } = useApp();
   const insets = useSafeAreaInsets();
@@ -48,7 +54,7 @@ export function OnboardingShell({
 
   return (
     <RtlView style={[styles.container, { backgroundColor: theme.background, paddingTop: insets.top + Spacing.md }]}>
-      <RtlView style={styles.topRow}>
+      <RtlView style={[styles.topRow, compactHeader && styles.topRowCompact]}>
         {showBack ? (
           <Pressable
             onPress={() => {
@@ -85,7 +91,7 @@ export function OnboardingShell({
         <RtlView style={styles.backPlaceholder} />
       </RtlView>
 
-      <RtlView style={styles.header}>
+      <RtlView style={[styles.header, compactHeader && styles.headerCompact]}>
         <RtlText align="center" style={[styles.title, { color: theme.text }]}>{title}</RtlText>
         {subtitle ? (
           <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
@@ -97,14 +103,18 @@ export function OnboardingShell({
       {scrollable ? (
         <ScrollView
           style={styles.body}
-          contentContainerStyle={[styles.bodyContent, { paddingBottom: Spacing.md }]}
+          contentContainerStyle={[
+            styles.bodyContent,
+            contentAlign === 'center' && styles.bodyContentCentered,
+            { paddingBottom: Spacing.md },
+          ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
         >
           {children}
         </ScrollView>
       ) : (
-        <RtlView style={styles.body}>{children}</RtlView>
+        <RtlView style={[styles.body, contentAlign === 'center' && styles.bodyContentCentered]}>{children}</RtlView>
       )}
 
       <RtlView style={[styles.footer, { paddingBottom: footerPaddingBottom }]}>
@@ -120,7 +130,13 @@ export function OnboardingShell({
         </Pressable>
         {secondaryLabel && onSecondary ? (
           <Pressable onPress={onSecondary} style={styles.secondaryButton}>
-            <RtlText align="center" style={[styles.secondaryLabel, { color: theme.textSecondary }]}>
+            <RtlText
+              align="center"
+              style={[
+                secondaryMuted ? styles.secondaryMuted : styles.secondaryLabel,
+                { color: theme.textSecondary },
+              ]}
+            >
               {secondaryLabel}
             </RtlText>
           </Pressable>
@@ -141,6 +157,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.lg,
   },
+  topRowCompact: {
+    marginBottom: Spacing.md,
+  },
   backButton: {
     padding: Spacing.xs,
   },
@@ -160,6 +179,9 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     marginBottom: Spacing.lg,
   },
+  headerCompact: {
+    marginBottom: Spacing.md,
+  },
   title: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.heading,
@@ -174,6 +196,9 @@ const styles = StyleSheet.create({
   },
   bodyContent: {
     flexGrow: 1,
+  },
+  bodyContentCentered: {
+    alignItems: 'center',
   },
   footer: {
     gap: Spacing.sm,
@@ -196,5 +221,10 @@ const styles = StyleSheet.create({
   secondaryLabel: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
+  },
+  secondaryMuted: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption - 1,
+    opacity: 0.75,
   },
 });

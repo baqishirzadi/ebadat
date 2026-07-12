@@ -4,7 +4,6 @@
 
 import React, { memo, useCallback, useRef, useState } from 'react';
 import {
-  InteractionManager,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -13,9 +12,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AdhanHealthBanner } from '@/components/prayer/AdhanHealthBanner';
 import { CitySelectorModal } from '@/components/prayer/CitySelectorModal';
 import {
+  AdhanStatusCard,
   ContinueReadingCard,
   HomeGreenSection,
   HomeHeader,
@@ -36,7 +35,6 @@ function HomeDashboardScreen() {
   const scrollRef = useRef<ScrollView>(null);
   const greenSectionYRef = useRef(0);
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
-  const [showHealthBanner, setShowHealthBanner] = useState(false);
 
   const tabBarHeight =
     Platform.OS === 'ios' ? 88 + Math.max(insets.bottom - 20, 0) : 64 + insets.bottom;
@@ -48,13 +46,6 @@ function HomeDashboardScreen() {
         animated: true,
       });
     });
-  }, []);
-
-  React.useEffect(() => {
-    const task = InteractionManager.runAfterInteractions(() => {
-      setShowHealthBanner(true);
-    });
-    return () => task.cancel();
   }, []);
 
   return (
@@ -89,9 +80,9 @@ function HomeDashboardScreen() {
             <PrayerTimesRow prayerTimes={state.prayerTimes} />
             <QiblaCard />
             <ContinueReadingCard />
+            <AdhanStatusCard />
             <SectionHeader title="دسترسی سریع" />
             <QuickActions />
-            {showHealthBanner ? <AdhanHealthBanner /> : null}
           </RtlView>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -1,6 +1,6 @@
 /**
  * Spiritual Splash Screen
- * Calm, standard opening screen with a brief Islamic greeting
+ * Calm opening: greeting phase then loading until app is interactive.
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -8,13 +8,16 @@ import { View, StyleSheet, Text, Dimensions, Linking, Pressable } from 'react-na
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
 import Animated, {
+  Easing,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
+  withRepeat,
   withTiming,
-  Easing,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+
+import { Spacing } from '@/constants/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -50,19 +53,31 @@ const SPLASH_PHRASE = PHRASES[Math.floor(Math.random() * PHRASES.length)];
 const SPLASH_VISIBLE_MS = 2400;
 const SPLASH_FADE_MS = 400;
 
+type SplashScreenPhase = 'greeting' | 'loading';
+
 interface SpiritualSplashProps {
   onComplete: () => void;
   onReady?: () => void;
+  onGreetingComplete?: () => void;
+  dismiss?: boolean;
 }
 
-export function SpiritualSplash({ onComplete, onReady }: SpiritualSplashProps) {
+export function SpiritualSplash({
+  onComplete,
+  onReady,
+  onGreetingComplete,
+  dismiss = false,
+}: SpiritualSplashProps) {
   const insets = useSafeAreaInsets();
+  const [screenPhase, setScreenPhase] = useState<SplashScreenPhase>('greeting');
   const [isExiting, setIsExiting] = useState(false);
   const [hasReady, setHasReady] = useState(false);
   const completedRef = useRef(false);
   const readyRef = useRef(false);
+  const greetingDoneRef = useRef(false);
 
   const opacity = useSharedValue(1);
+  const spin = useSharedValue(0);
 
   const finish = useCallback(() => {
     if (completedRef.current) return;
@@ -90,17 +105,33 @@ export function SpiritualSplash({ onComplete, onReady }: SpiritualSplashProps) {
   useEffect(() => {
     if (!hasReady) return;
 
-    const exitTimeout = setTimeout(beginExit, SPLASH_VISIBLE_MS);
-    const hardTimeout = setTimeout(beginExit, SPLASH_VISIBLE_MS + SPLASH_FADE_MS + 1700);
+    const exitTimeout = setTimeout(() => {
+      if (greetingDoneRef.current) return;
+      greetingDoneRef.current = true;
+      setScreenPhase('loading');
+      onGreetingComplete?.();
+    }, SPLASH_VISIBLE_MS);
 
-    return () => {
-      clearTimeout(exitTimeout);
-      clearTimeout(hardTimeout);
-    };
-  }, [beginExit, hasReady]);
+    return () => clearTimeout(exitTimeout);
+  }, [hasReady, onGreetingComplete]);
+
+  useEffect(() => {
+    if (screenPhase !== 'loading') return;
+    spin.value = withRepeat(withTiming(360, { duration: 1200, easing: Easing.linear }), -1, false);
+  }, [screenPhase, spin]);
+
+  useEffect(() => {
+    if (dismiss && screenPhase === 'loading') {
+      beginExit();
+    }
+  }, [beginExit, dismiss, screenPhase]);
 
   const containerStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
+  }));
+
+  const ringStyle = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${spin.value}deg` }],
   }));
 
   return (
@@ -120,40 +151,50 @@ export function SpiritualSplash({ onComplete, onReady }: SpiritualSplashProps) {
         end={{ x: 1, y: 1 }}
       />
 
-      <View style={styles.appNameSection}>
-        <Text style={styles.appName}>عبادت</Text>
-        <Text style={styles.appSubtitle}>قرآن کریم و اوقات نماز</Text>
-      </View>
+      {screenPhase === 'greeting' ? (
+        <>
+          <View style={styles.appNameSection}>
+            <Text style={styles.appName}>عبادت</Text>
+            <Text style={styles.appSubtitle}>قرآن کریم و اوقات نماز</Text>
+          </View>
 
-      <View style={styles.frameContainer}>
-        <View style={styles.frame}>
-          <View style={styles.frameContent}>
-            <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
+          <View style={styles.frameContainer}>
+            <View style={styles.frame}>
+              <View style={styles.frameContent}>
+                <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
 
-            <View style={styles.decorativeLine}>
-              <View style={styles.lineLeft} />
-              <View style={styles.lineRight} />
-            </View>
+                <View style={styles.decorativeLine}>
+                  <View style={styles.lineLeft} />
+                  <View style={styles.lineRight} />
+                </View>
 
-            <View style={styles.translationContainer}>
-              <CenteredText style={styles.dariText}>{SPLASH_PHRASE.dari}</CenteredText>
-              <CenteredText style={styles.pashtoText}>{SPLASH_PHRASE.pashto}</CenteredText>
+                <View style={styles.translationContainer}>
+                  <CenteredText style={styles.dariText}>{SPLASH_PHRASE.dari}</CenteredText>
+                  <CenteredText style={styles.pashtoText}>{SPLASH_PHRASE.pashto}</CenteredText>
+                </View>
+              </View>
             </View>
           </View>
-        </View>
-      </View>
 
-      <View style={styles.creditContainer}>
-        <View style={styles.creditCard}>
-          <CenteredText style={styles.creditDeveloper}>سازنده شرکت نرم افزار</CenteredText>
-          <Pressable
-            onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
-            style={styles.creditLinkButton}
-          >
-            <CenteredText style={styles.creditLink}>WWW.AFGHAN.DEV</CenteredText>
-          </Pressable>
+          <View style={styles.creditContainer}>
+            <View style={styles.creditCard}>
+              <CenteredText style={styles.creditDeveloper}>سازنده شرکت نرم افزار</CenteredText>
+              <Pressable
+                onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
+                style={styles.creditLinkButton}
+              >
+                <CenteredText style={styles.creditLink}>WWW.AFGHAN.DEV</CenteredText>
+              </Pressable>
+            </View>
+          </View>
+        </>
+      ) : (
+        <View style={styles.loadingSection}>
+          <Text style={styles.appName}>عبادت</Text>
+          <Animated.View style={[styles.loadingRing, ringStyle]} />
+          <CenteredText style={styles.loadingText}>در حال بارگذاری...</CenteredText>
         </View>
-      </View>
+      )}
     </Animated.View>
   );
 }
@@ -168,6 +209,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
     zIndex: 1000,
+  },
+  loadingSection: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+    paddingHorizontal: 24,
+  },
+  loadingRing: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    borderWidth: 3,
+    borderColor: `${GOLD}33`,
+    borderTopColor: GOLD,
+    borderRightColor: GOLD_LIGHT,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: GOLD_LIGHT,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   frameContainer: {
     flex: 1,
