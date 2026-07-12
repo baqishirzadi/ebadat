@@ -51,12 +51,13 @@
         "NSLocationWhenInUseUsageDescription": "برای محاسبه اوقات نماز و جهت قبله به موقعیت شما نیاز داریم",
         "NSLocationAlwaysUsageDescription": "برای یادآوری نماز به موقعیت شما نیاز داریم",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "برای یادآوری نماز به موقعیت شما نیاز داریم",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "CFBundleShortVersionString": "1.0.0"
       },
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "1"
+      "buildNumber": "9"
     },
     "android": {
       "package": "com.afghandev.ebadat",

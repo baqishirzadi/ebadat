@@ -118,7 +118,7 @@ export function useHanafiMufti() {
       signal: controller.signal,
       onDelta: (chunk) => {
         assistantText += chunk;
-        setStore({ streamingContent: assistantText });
+        setStore({ streamingContent: formatChatPlainText(assistantText) });
       },
       onDone: () => {
         if (controller.signal.aborted) return;

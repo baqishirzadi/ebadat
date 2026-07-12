@@ -31,14 +31,24 @@ export default function TabLayout() {
   }, [segments]);
 
   const tabBarStyle = useMemo(() => {
-    const baseStyle = {
-      direction: 'rtl' as const,
-      backgroundColor: theme.tabBar,
-      borderTopColor: theme.tabBarBorder,
-      paddingBottom: Platform.OS === 'ios' ? Math.max(insets.bottom, 20) : insets.bottom + 12,
-      paddingTop: 8,
-      height: Platform.OS === 'ios' ? 88 + Math.max(insets.bottom - 20, 0) : 64 + insets.bottom,
-    };
+    const baseStyle =
+      Platform.OS === 'ios'
+        ? {
+            direction: 'rtl' as const,
+            backgroundColor: theme.tabBar,
+            borderTopColor: theme.tabBarBorder,
+            paddingBottom: insets.bottom,
+            paddingTop: 0,
+            height: 49 + insets.bottom,
+          }
+        : {
+            direction: 'rtl' as const,
+            backgroundColor: theme.tabBar,
+            borderTopColor: theme.tabBarBorder,
+            paddingBottom: insets.bottom + 12,
+            paddingTop: 8,
+            height: 64 + insets.bottom,
+          };
 
     if (shouldHideFooter) {
       return { ...baseStyle, display: 'none' as const };
@@ -47,12 +57,18 @@ export default function TabLayout() {
     return baseStyle;
   }, [theme.tabBar, theme.tabBarBorder, insets.bottom, shouldHideFooter]);
 
+  const tabBarItemStyle = useMemo(
+    () => (Platform.OS === 'ios' ? { paddingTop: 2, paddingBottom: 2 } : undefined),
+    [],
+  );
+
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: theme.tabIconSelected,
         tabBarInactiveTintColor: theme.tabIconDefault,
         tabBarStyle,
+        tabBarItemStyle,
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',

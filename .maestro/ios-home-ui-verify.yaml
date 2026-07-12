@@ -1,0 +1,15 @@
+appId: com.afghandev.ebadat
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "اوقات نماز"
+    timeout: 45000
+- scroll
+- scroll
+- takeScreenshot: ios-home-adhan-tabbar-verify
+- tapOn:
+    point: "50%,65%"
+- waitForAnimationToEnd:
+    timeout: 2000
+- assertNotVisible: "بروزرسانی"

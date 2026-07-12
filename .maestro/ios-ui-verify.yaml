@@ -1,0 +1,47 @@
+appId: com.afghandev.ebadat
+---
+- launchApp
+- waitForAnimationToEnd:
+    timeout: 8000
+- takeScreenshot: ios-smoke-home-tabs
+
+- tapOn:
+    point: "50%,94%"
+- waitForAnimationToEnd:
+    timeout: 4000
+- takeScreenshot: ios-smoke-jantari-top
+- scrollUntilVisible:
+    element:
+      text: "ش"
+    direction: DOWN
+    timeout: 20000
+    optional: true
+- takeScreenshot: ios-smoke-jantari-calendar
+
+- tapOn:
+    point: "30%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "naat-screen-list"
+    timeout: 15000
+- takeScreenshot: ios-smoke-naat
+
+- tapOn:
+    point: "10%,94%"
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 15000
+- takeScreenshot: ios-smoke-more
+- tapOn:
+    id: "ios-open-adhan-settings"
+- extendedWaitUntil:
+    visible:
+      id: "ios-adhan-settings-ready"
+    timeout: 15000
+- takeScreenshot: ios-smoke-adhan-settings
+
+- openLink: ebadat://mufti-chat
+- waitForAnimationToEnd:
+    timeout: 4000
+- takeScreenshot: ios-smoke-mufti-chat

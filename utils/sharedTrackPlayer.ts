@@ -1,5 +1,11 @@
 import { AppState } from 'react-native';
-import TrackPlayer, { AppKilledPlaybackBehavior, Capability } from 'react-native-track-player';
+import TrackPlayer, {
+  AppKilledPlaybackBehavior,
+  Capability,
+  IOSCategory,
+  IOSCategoryMode,
+  IOSCategoryOptions,
+} from 'react-native-track-player';
 
 const PLAYER_SETUP_DEFER_MS = 400;
 const ACTIVE_SETUP_WAIT_MS = 2500;
@@ -135,6 +141,12 @@ export async function ensureSharedTrackPlayerReady(_reason: string = 'unknown'):
       await TrackPlayer.setupPlayer({
         autoHandleInterruptions: true,
         autoUpdateMetadata: true,
+        iosCategory: IOSCategory.Playback,
+        iosCategoryMode: IOSCategoryMode.Default,
+        iosCategoryOptions: [
+          IOSCategoryOptions.AllowBluetooth,
+          IOSCategoryOptions.AllowAirPlay,
+        ],
       });
     } catch (error) {
       if (!isAlreadyInitializedError(error)) {

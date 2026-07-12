@@ -131,7 +131,7 @@ export default function MuftiChatScreen() {
     return () => subscription.remove();
   }, [scrollToBottom]);
 
-  const headerOffset = insets.top + 100;
+  const headerOffset = insets.top + 56;
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
@@ -213,7 +213,6 @@ export default function MuftiChatScreen() {
                 keyExtractor={(item) => item.key}
                 renderItem={renderItem}
                 keyboardShouldPersistTaps="handled"
-                automaticallyAdjustKeyboardInsets
                 onContentSizeChange={scrollToBottom}
                 contentContainerStyle={[
                   styles.listContent,

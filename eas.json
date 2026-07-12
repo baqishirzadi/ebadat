@@ -16,7 +16,7 @@
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true,
+      "autoIncrement": false,
       "ios": {
         "distribution": "store",
         "buildConfiguration": "Release"

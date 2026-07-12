@@ -5,6 +5,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { HanafiMuftiRole } from '@/utils/hanafiMufti';
+import { formatChatPlainText } from '@/utils/formatChatPlainText';
 
 const STORAGE_KEY = '@ebadat/hanafi_mufti_messages';
 const MAX_MESSAGES = 40;
@@ -29,7 +30,7 @@ function normalizeMessages(raw: unknown): StoredHanafiMuftiMessage[] {
     if (!trimmed) continue;
     messages.push({
       role,
-      content: trimmed.slice(0, 4000),
+      content: (role === 'assistant' ? formatChatPlainText(trimmed) : trimmed).slice(0, 4000),
       createdAt: typeof createdAt === 'number' ? createdAt : Date.now(),
     });
   }

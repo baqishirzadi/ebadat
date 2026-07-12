@@ -2,8 +2,9 @@
  * Home Dashboard — daily hub
  */
 
-import React, { memo, useCallback, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -37,9 +38,9 @@ function HomeDashboardScreen() {
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
 
   const tabBarHeight =
-    Platform.OS === 'ios' ? 88 + Math.max(insets.bottom - 20, 0) : 64 + insets.bottom;
+    Platform.OS === 'ios' ? 49 + insets.bottom : 64 + insets.bottom;
 
-  const handleMuftiInputFocus = useCallback(() => {
+  const scrollMuftiIntoView = useCallback(() => {
     requestAnimationFrame(() => {
       scrollRef.current?.scrollTo({
         y: Math.max(0, greenSectionYRef.current - Spacing.md),
@@ -47,6 +48,18 @@ function HomeDashboardScreen() {
       });
     });
   }, []);
+
+  const handleMuftiInputFocus = useCallback(() => {
+    scrollMuftiIntoView();
+  }, [scrollMuftiIntoView]);
+
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+
+    const eventName = 'keyboardWillShow';
+    const subscription = Keyboard.addListener(eventName, scrollMuftiIntoView);
+    return () => subscription.remove();
+  }, [scrollMuftiIntoView]);
 
   return (
     <>
