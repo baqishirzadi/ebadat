@@ -1,0 +1,10 @@
+android/.gradle
+android/build
+android/app/build
+android/.kotlin
+ios/build
+ios/Pods
+*.png
+!assets/**/*.png
+.maestro/tests
+.git
