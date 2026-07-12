@@ -4,7 +4,13 @@ android/app/build
 android/.kotlin
 ios/build
 ios/Pods
-*.png
-!assets/**/*.png
+ios-smoke-*.png
+android-*.png
+ios-home-*.png
+ios-tab-*.png
+ios-adhan-*.png
+ios-naat-*.png
+ios-more.png
+ios-articles.png
 .maestro/tests
 .git
