@@ -709,6 +709,86 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     };
   }, [playerReady, findNaatByTrack, syncPlayerSnapshot]);
 
+  // Remote notification / lock-screen controls (main app context)
+  useEffect(() => {
+    if (!playerReady) return;
+
+    const subs = [
+      TrackPlayer.addEventListener(Event.RemotePlay, () => {
+        TrackPlayer.play().catch(() => {});
+      }),
+      TrackPlayer.addEventListener(Event.RemotePause, () => {
+        TrackPlayer.pause().catch(() => {});
+      }),
+      TrackPlayer.addEventListener(Event.RemoteStop, () => {
+        TrackPlayer.reset().catch(() => {});
+      }),
+      TrackPlayer.addEventListener(Event.RemoteSeek, (e) => {
+        TrackPlayer.seekTo(e.position).catch(() => {});
+      }),
+      TrackPlayer.addEventListener(Event.RemoteNext, () => {
+        TrackPlayer.skipToNext().catch(() => {});
+      }),
+      TrackPlayer.addEventListener(Event.RemotePrevious, async () => {
+        try {
+          const progress = await TrackPlayer.getProgress();
+          if (progress.position > 3) {
+            await TrackPlayer.seekTo(0);
+            return;
+          }
+          await TrackPlayer.skipToPrevious();
+        } catch {
+          TrackPlayer.seekTo(0).catch(() => {});
+        }
+      }),
+    ];
+
+    return () => {
+      subs.forEach((sub) => sub.remove());
+    };
+  }, [playerReady]);
+
+  // Progress updates from native player (works in background too)
+  useEffect(() => {
+    if (!playerReady) return;
+
+    const progressSub = TrackPlayer.addEventListener(Event.PlaybackProgressUpdated, (event) => {
+      const resolvedNaat = currentNaatRef.current;
+      if (!resolvedNaat) return;
+
+      const positionMillis = quantizeMillis(Math.floor(event.position * 1000));
+      const durationMillis = event.duration > 0
+        ? Math.floor(event.duration * 1000)
+        : (resolvedNaat.duration_seconds ?? 0) * 1000;
+
+      if (positionMillis - lastSavedPosition.current > 5000) {
+        lastSavedPosition.current = positionMillis;
+        upsertLocalMeta(resolvedNaat.id, { lastPositionMillis: positionMillis }).catch(() => {});
+      }
+
+      setPlayer((prev) => {
+        const nextDuration = durationMillis || prev.durationMillis;
+        if (
+          prev.current?.id === resolvedNaat.id &&
+          prev.positionMillis === positionMillis &&
+          prev.durationMillis === nextDuration
+        ) {
+          return prev;
+        }
+        return {
+          ...prev,
+          current: resolvedNaat,
+          positionMillis,
+          durationMillis: nextDuration,
+        };
+      });
+    });
+
+    return () => {
+      progressSub.remove();
+    };
+  }, [playerReady]);
+
   // Poll progress while a track is active
   useEffect(() => {
     if (!playerReady || !activeTrackId) {

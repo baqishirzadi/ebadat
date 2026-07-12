@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { I18nManager, PanResponder, Platform, StyleSheet, Text, View } from 'react-native';
+import { PanResponder, StyleSheet, Text, View } from 'react-native';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 
 type Props = {
@@ -32,8 +32,6 @@ export function NaatProgressBar({
 }: Props) {
   const [seekingRatio, setSeekingRatio] = useState<number | null>(null);
   const [trackWidth, setTrackWidth] = useState(0);
-  const trackRef = useRef<View>(null);
-  const trackMetricsRef = useRef({ left: 0, width: 0 });
   const seekRatioRef = useRef<number | null>(null);
   const lastSeekAtRef = useRef(0);
 
@@ -44,27 +42,11 @@ export function NaatProgressBar({
   const thumbSize = large ? 18 : 16;
   const thumbOffset = Math.max(0, Math.min(Math.max(trackWidth - thumbSize, 0), fillWidth - thumbSize / 2));
 
-  const updateTrackMetrics = useCallback(() => {
-    trackRef.current?.measureInWindow((x, _y, width) => {
-      if (!width) return;
-      trackMetricsRef.current = { left: x, width };
-      setTrackWidth(width);
-    });
-  }, []);
-
   const computeRatio = useCallback(
-    (pageX: number) => {
-      const { left, width } = trackMetricsRef.current;
-      const effectiveWidth = width || trackWidth;
-      if (!effectiveWidth) return 0;
-      const x = Math.max(0, Math.min(effectiveWidth, pageX - left));
-      const rawRatio = x / effectiveWidth;
-      // iOS: forced-LTR bar + pageX align without inversion (fixed in 1a9445e).
-      // Android under forceRTL: touch coords are still mirrored → invert ratio only there.
-      if (Platform.OS === 'android' && I18nManager.isRTL) {
-        return 1 - rawRatio;
-      }
-      return rawRatio;
+    (locationX: number) => {
+      if (!trackWidth) return 0;
+      const x = Math.max(0, Math.min(trackWidth, locationX));
+      return x / trackWidth;
     },
     [trackWidth],
   );
@@ -87,15 +69,14 @@ export function NaatProgressBar({
         onMoveShouldSetPanResponder: () => Boolean(onSeek && durationMillis > 0),
         onPanResponderGrant: (evt) => {
           if (!trackWidth || !onSeek || durationMillis <= 0) return;
-          updateTrackMetrics();
-          const ratio = computeRatio(evt.nativeEvent.pageX);
+          const ratio = computeRatio(evt.nativeEvent.locationX);
           seekRatioRef.current = ratio;
           setSeekingRatio(ratio);
           commitSeek(ratio, true);
         },
         onPanResponderMove: (evt) => {
           if (!trackWidth || !onSeek || durationMillis <= 0) return;
-          const ratio = computeRatio(evt.nativeEvent.pageX);
+          const ratio = computeRatio(evt.nativeEvent.locationX);
           seekRatioRef.current = ratio;
           setSeekingRatio(ratio);
           commitSeek(ratio);
@@ -115,24 +96,20 @@ export function NaatProgressBar({
           setSeekingRatio(null);
         },
       }),
-    [commitSeek, computeRatio, durationMillis, onSeek, trackWidth, updateTrackMetrics],
+    [commitSeek, computeRatio, durationMillis, onSeek, trackWidth],
   );
 
   return (
     <View style={styles.container}>
       <View style={{ direction: 'ltr', width: '100%' }}>
         <View
-          ref={trackRef}
           style={[
             styles.track,
             large && styles.trackLarge,
             { backgroundColor: trackColor },
           ]}
           onLayout={(e) => {
-            const width = e.nativeEvent.layout.width;
-            trackMetricsRef.current.width = width;
-            setTrackWidth(width);
-            requestAnimationFrame(updateTrackMetrics);
+            setTrackWidth(e.nativeEvent.layout.width);
           }}
           {...panResponder.panHandlers}
         >
