@@ -11,10 +11,6 @@ import { AppState, I18nManager, InteractionManager, LogBox, Platform, StyleSheet
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-if (Platform.OS === 'android') {
-  require('@/widgets/widgetTaskHandler');
-}
-
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { OnboardingStartupRedirect } from '@/components/onboarding/OnboardingStartupRedirect';
 import { FirstOpenAdhanSetup } from '@/components/prayer/FirstOpenAdhanSetup';
@@ -473,31 +469,32 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <StartupPhaseProvider>
           <StartupPhaseBridge fontPhaseDone={fontPhaseDone} />
-          {showSpiritualSplash ? (
-            <SpiritualSplashOverlay onComplete={() => setShowSpiritualSplash(false)} />
-          ) : (
-            <SpiritualSplashActiveContext.Provider value={false}>
-              <StartupBootstrapProvider value={bootstrap}>
-                <AppProvider>
-                  <PrayerProvider>
-                    <StatsProvider>
-                      <DuaProvider>
-                        <NaatProvider>
-                          <AhadithProvider>
-                            <ArticlesProvider>
-                              <ScholarProvider>
-                                <RootLayoutNav />
-                              </ScholarProvider>
-                            </ArticlesProvider>
-                          </AhadithProvider>
-                        </NaatProvider>
-                      </DuaProvider>
-                    </StatsProvider>
-                  </PrayerProvider>
-                </AppProvider>
-              </StartupBootstrapProvider>
-            </SpiritualSplashActiveContext.Provider>
-          )}
+          <SpiritualSplashActiveContext.Provider value={showSpiritualSplash}>
+            <StartupBootstrapProvider value={bootstrap}>
+              <AppProvider>
+                <PrayerProvider>
+                  <StatsProvider>
+                    <DuaProvider>
+                      <NaatProvider>
+                        <AhadithProvider>
+                          <ArticlesProvider>
+                            <ScholarProvider>
+                              <RootLayoutNav />
+                            </ScholarProvider>
+                          </ArticlesProvider>
+                        </AhadithProvider>
+                      </NaatProvider>
+                    </DuaProvider>
+                  </StatsProvider>
+                </PrayerProvider>
+              </AppProvider>
+            </StartupBootstrapProvider>
+            {showSpiritualSplash ? (
+              <View style={styles.splashOverlay} pointerEvents="auto">
+                <SpiritualSplashOverlay onComplete={() => setShowSpiritualSplash(false)} />
+              </View>
+            ) : null}
+          </SpiritualSplashActiveContext.Provider>
         </StartupPhaseProvider>
       </SafeAreaProvider>
     </ErrorBoundary>

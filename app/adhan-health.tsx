@@ -8,11 +8,11 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 
 import { Button } from '@/components/ui/Button';
+import { RtlText } from '@/components/ui/RtlText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
@@ -160,10 +160,10 @@ export default function AdhanHealthScreen() {
       <>
         <Stack.Screen options={{ headerShown: false }} />
         <ScreenHeader title="سلامت اذان" />
-        <View style={[styles.centered, { backgroundColor: theme.background }]}>
-          <Text style={[styles.unsupported, { color: theme.textSecondary }]}>
+        <View style={[styles.centered, styles.rtlRoot, { backgroundColor: theme.background }]}>
+          <RtlText align="center" style={[styles.unsupported, { color: theme.textSecondary }]}>
             بررسی سلامت اذان فقط در اندروید در دسترس است.
-          </Text>
+          </RtlText>
         </View>
       </>
     );
@@ -174,12 +174,12 @@ export default function AdhanHealthScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <ScreenHeader title="سلامت اذان" />
       <ScrollView
-        style={[styles.container, { backgroundColor: theme.background }]}
+        style={[styles.container, styles.rtlRoot, { backgroundColor: theme.background }]}
         contentContainerStyle={styles.content}
       >
         <View style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
           {loading || !report ? (
-            <ActivityIndicator color={theme.tint} />
+            <ActivityIndicator color={theme.tint} style={styles.loader} />
           ) : (
             <>
               <View style={styles.summaryRow}>
@@ -195,14 +195,14 @@ export default function AdhanHealthScreen() {
                   }
                 />
                 <View style={styles.summaryText}>
-                  <Text style={[styles.summaryTitle, { color: theme.text }]}>
+                  <RtlText style={[styles.summaryTitle, { color: theme.text }]}>
                     {overallLabel(report.overallStatus)}
-                  </Text>
-                  <Text style={[styles.summaryBody, { color: theme.textSecondary }]}>
+                  </RtlText>
+                  <RtlText style={[styles.summaryBody, { color: theme.textSecondary }]}>
                     {report.health.scheduledAlarmCount > 0 && report.health.nextAlarmAtMs
                       ? `اذان بعدی: ${new Date(report.health.nextAlarmAtMs).toLocaleString('fa-AF')}`
                       : 'وضعیت زمان‌بندی را در زیر بررسی کنید.'}
-                  </Text>
+                  </RtlText>
                 </View>
               </View>
               <Button label="بروزرسانی" onPress={() => refresh().catch(() => {})} variant="secondary" />
@@ -218,8 +218,8 @@ export default function AdhanHealthScreen() {
             <View style={styles.checkRow}>
               <MaterialIcons name={statusIcon(check.status)} size={24} color={statusColor(check.status, theme)} />
               <View style={styles.checkText}>
-                <Text style={[styles.checkTitle, { color: theme.text }]}>{check.title}</Text>
-                <Text style={[styles.checkBody, { color: theme.textSecondary }]}>{check.body}</Text>
+                <RtlText style={[styles.checkTitle, { color: theme.text }]}>{check.title}</RtlText>
+                <RtlText style={[styles.checkBody, { color: theme.textSecondary }]}>{check.body}</RtlText>
               </View>
             </View>
             {check.fixLabel ? (
@@ -227,7 +227,9 @@ export default function AdhanHealthScreen() {
                 onPress={() => handleFix(check).catch(() => {})}
                 style={[styles.fixButton, { backgroundColor: theme.tint }]}
               >
-                <Text style={styles.fixButtonText}>{check.fixLabel}</Text>
+                <RtlText align="center" style={styles.fixButtonText}>
+                  {check.fixLabel}
+                </RtlText>
               </Pressable>
             ) : null}
           </View>
@@ -235,27 +237,27 @@ export default function AdhanHealthScreen() {
 
         {report && report.firedEvents.length > 0 ? (
           <View style={[styles.historyCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <Text style={[styles.historyTitle, { color: theme.text }]}>آخرین رویدادها</Text>
+            <RtlText style={[styles.historyTitle, { color: theme.text }]}>آخرین رویدادها</RtlText>
             {report.firedEvents.slice(0, 5).map((event) => (
               <View key={`${event.id}-${event.actualFireAtMs}`} style={styles.historyRow}>
-                <Text style={[styles.historyMeta, { color: theme.textSecondary }]}>
+                <RtlText style={[styles.historyTime, { color: theme.text }]}>
+                  {new Date(event.actualFireAtMs).toLocaleString('fa-AF')}
+                  {event.delaySeconds > 0 ? ` (+${event.delaySeconds}s)` : ''}
+                </RtlText>
+                <RtlText style={[styles.historyMeta, { color: theme.textSecondary }]}>
                   {event.type === 'system_test'
                     ? 'تست سیستمی'
                     : event.type === 'maintenance'
                       ? 'نگهداری'
                       : event.prayer || 'اذان'}
-                </Text>
-                <Text style={[styles.historyTime, { color: theme.text }]}>
-                  {new Date(event.actualFireAtMs).toLocaleString('fa-AF')}
-                  {event.delaySeconds > 0 ? ` (+${event.delaySeconds}s)` : ''}
-                </Text>
+                </RtlText>
               </View>
             ))}
           </View>
         ) : null}
 
         <View style={[styles.actionsCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <Text style={[styles.actionsTitle, { color: theme.text }]}>اقدامات</Text>
+          <RtlText style={[styles.actionsTitle, { color: theme.text }]}>اقدامات</RtlText>
           <Button
             label={repairing ? 'در حال بازیابی...' : 'بازیابی اذان'}
             onPress={() => handleRepair().catch(() => {})}
@@ -271,10 +273,12 @@ export default function AdhanHealthScreen() {
             onPress={() => openOemAutostartSettings().catch(() => {})}
             style={[styles.linkButton, { borderColor: theme.cardBorder }]}
           >
-            <Text style={[styles.linkButtonText, { color: theme.text }]}>راهنمای گوشی (Autostart)</Text>
+            <RtlText align="center" style={[styles.linkButtonText, { color: theme.text }]}>
+              راهنمای گوشی (Autostart)
+            </RtlText>
           </Pressable>
           {testResult ? (
-            <Text style={[styles.testResult, { color: theme.textSecondary }]}>{testResult}</Text>
+            <RtlText style={[styles.testResult, { color: theme.textSecondary }]}>{testResult}</RtlText>
           ) : null}
         </View>
       </ScrollView>
@@ -283,6 +287,9 @@ export default function AdhanHealthScreen() {
 }
 
 const styles = StyleSheet.create({
+  rtlRoot: {
+    direction: 'rtl',
+  },
   container: {
     flex: 1,
   },
@@ -290,6 +297,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     gap: Spacing.sm,
     paddingBottom: Spacing.xl,
+    alignItems: 'stretch',
   },
   centered: {
     flex: 1,
@@ -297,66 +305,63 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: Spacing.lg,
   },
+  loader: {
+    alignSelf: 'center',
+  },
   unsupported: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   summaryCard: {
     borderWidth: 1,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: Spacing.sm,
+    alignSelf: 'stretch',
   },
   summaryRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
   },
   summaryText: {
     flex: 1,
     gap: 4,
+    alignItems: 'flex-end',
   },
   summaryTitle: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.subtitle,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
   summaryBody: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
   checkCard: {
     borderWidth: 1,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: Spacing.sm,
+    alignSelf: 'stretch',
   },
   checkRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
   },
   checkText: {
     flex: 1,
     gap: 4,
+    alignItems: 'flex-end',
   },
   checkTitle: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
   checkBody: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    lineHeight: 20,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    lineHeight: 22,
   },
   fixButton: {
     alignSelf: 'stretch',
@@ -368,49 +373,45 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
     color: '#fff',
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   historyCard: {
     borderWidth: 1,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: Spacing.xs,
+    alignSelf: 'stretch',
   },
   historyTitle: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
-    textAlign: 'right',
-    writingDirection: 'rtl',
     marginBottom: Spacing.xs,
   },
   historyRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
     gap: Spacing.sm,
   },
   historyMeta: {
-    fontFamily: 'Vazirmatn',
+    fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
-    writingDirection: 'rtl',
+    flexShrink: 0,
   },
   historyTime: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
     flex: 1,
-    textAlign: 'left',
   },
   actionsCard: {
     borderWidth: 1,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     gap: Spacing.sm,
+    alignSelf: 'stretch',
   },
   actionsTitle: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
   linkButton: {
     borderWidth: 1,
@@ -421,13 +422,9 @@ const styles = StyleSheet.create({
   linkButtonText: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
   testResult: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
-    writingDirection: 'rtl',
   },
 });

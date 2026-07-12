@@ -16,12 +16,12 @@ import {
   FlatList,
   Alert,
   Pressable,
-  StatusBar,
   StyleSheet,
   Text,
   View,
   ViewToken,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type JuzAyahItem = {
@@ -610,7 +610,7 @@ export default function JuzReaderScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar barStyle="light-content" />
+      <StatusBar style="light" />
 
       <View
         style={[

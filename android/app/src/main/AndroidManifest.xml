@@ -57,6 +57,11 @@
       </intent-filter>
       <meta-data android:name="android.appwidget.provider" android:resource="@xml/widgetprovider_prayertimeswidget"/>
     </receiver>
+    <service android:name="com.doublesymmetry.trackplayer.service.MusicService" android:enabled="true" android:exported="true" android:foregroundServiceType="mediaPlayback" android:stopWithTask="true" tools:node="replace">
+      <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>
+    </service>
     <service android:name="com.reactnativeandroidwidget.RNWidgetCollectionService" android:permission="android.permission.BIND_REMOTEVIEWS"/>
     <service android:name="expo.modules.audio.service.AudioRecordingService" tools:node="remove"/>
     <service android:name="expo.modules.audio.service.AudioControlsService" tools:node="remove"/>

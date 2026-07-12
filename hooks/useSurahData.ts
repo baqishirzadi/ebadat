@@ -282,21 +282,28 @@ export function preloadJuz30(): void {
 }
 
 /**
- * Preload popular surahs for instant access
+ * Preload popular surahs for instant access (skips Surah 2 — very large on low-end devices).
  */
 export function preloadPopularSurahs(): void {
-  const popularSurahs = [1, 2, 18, 36, 55, 56, 67, 78]; // Al-Fatiha, Al-Baqarah, Al-Kahf, Ya-Sin, etc.
-  
-  popularSurahs.forEach(num => {
+  const popularSurahs = [1, 18, 36, 55, 56, 67, 78];
+  let index = 0;
+
+  const loadNext = () => {
+    if (index >= popularSurahs.length) return;
+    const num = popularSurahs[index];
+    index += 1;
     try {
       const loader = surahFiles[num];
       if (loader && !surahCache.has(num)) {
         surahCache.set(num, loader());
       }
-    } catch (err) {
+    } catch {
       console.error(`خطا در پیش‌بارگیری سوره ${num}`);
     }
-  });
+    setTimeout(loadNext, 120);
+  };
+
+  loadNext();
 }
 
 /**

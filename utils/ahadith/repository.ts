@@ -1,9 +1,17 @@
-import dataset from '@/data/ahadith/hadiths.curated.v1.json';
 import { Hadith } from '@/types/hadith';
 
-const localHadiths = Object.freeze(
-  (dataset as Hadith[]).slice().sort((a, b) => a.daily_index - b.daily_index || a.id - b.id)
-);
+let localHadithsCache: readonly Hadith[] | null = null;
+
+function getLocalHadiths(): readonly Hadith[] {
+  if (!localHadithsCache) {
+    // Lazy-load to avoid parsing/sorting hadith JSON during app startup.
+    const dataset = require('@/data/ahadith/hadiths.curated.v1.json') as Hadith[];
+    localHadithsCache = Object.freeze(
+      dataset.slice().sort((a, b) => a.daily_index - b.daily_index || a.id - b.id),
+    );
+  }
+  return localHadithsCache;
+}
 
 let remoteHadiths: Hadith[] = [];
 let mergedCache: Hadith[] | null = null;
@@ -108,7 +116,7 @@ function getMergedHadiths(): Hadith[] {
   if (mergedCache) return mergedCache;
 
   const byId = new Map<number, Hadith>();
-  for (const hadith of localHadiths) {
+  for (const hadith of getLocalHadiths()) {
     byId.set(hadith.id, hadith);
   }
   for (const hadith of remoteHadiths) {
