@@ -12,7 +12,7 @@ index 0000000..0b8048d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/.gradle/9.2.0/fileHashes/fileHashes.bin differ
 diff --git a/node_modules/react-native-track-player/android/.gradle/9.2.0/fileHashes/fileHashes.lock b/node_modules/react-native-track-player/android/.gradle/9.2.0/fileHashes/fileHashes.lock
 new file mode 100644
-index 0000000..c9db16d
+index 0000000..00d634f
 Binary files /dev/null and b/node_modules/react-native-track-player/android/.gradle/9.2.0/fileHashes/fileHashes.lock differ
 diff --git a/node_modules/react-native-track-player/android/.gradle/9.2.0/gc.properties b/node_modules/react-native-track-player/android/.gradle/9.2.0/gc.properties
 new file mode 100644
@@ -41,7 +41,7 @@ index 0000000..0d259dd
 +o/classes
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/291bf789e90f86ee041fddd150a94736/transformed/classes/classes_dex/classes.dex b/node_modules/react-native-track-player/android/build/.transforms/291bf789e90f86ee041fddd150a94736/transformed/classes/classes_dex/classes.dex
 new file mode 100644
-index 0000000..e186b5d
+index 0000000..9fbfa00
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/291bf789e90f86ee041fddd150a94736/transformed/classes/classes_dex/classes.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/results.bin b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/results.bin
 new file mode 100644
@@ -124,71 +124,71 @@ index 0000000..101dbc3
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicEvents.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$add$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$add$1.dex
 new file mode 100644
-index 0000000..0e0c037
+index 0000000..20cd285
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$add$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.dex
 new file mode 100644
-index 0000000..5dc0b29
+index 0000000..7b16ce1
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.dex
 new file mode 100644
-index 0000000..f6affa5
+index 0000000..6fafac5
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.dex
 new file mode 100644
-index 0000000..cb7aab4
+index 0000000..105f9d8
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.dex
 new file mode 100644
-index 0000000..21505c8
+index 0000000..06fa985
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.dex
 new file mode 100644
-index 0000000..fd05bc9
+index 0000000..79b6bac
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.dex
 new file mode 100644
-index 0000000..f225a66
+index 0000000..904dfac
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.dex
 new file mode 100644
-index 0000000..e2fa18c
+index 0000000..b552302
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.dex
 new file mode 100644
-index 0000000..3df68fc
+index 0000000..4636347
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.dex
 new file mode 100644
-index 0000000..19b50ae
+index 0000000..4cde6fc
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.dex
 new file mode 100644
-index 0000000..f5b248e
+index 0000000..5744ff3
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.dex
 new file mode 100644
-index 0000000..d03366d
+index 0000000..7da0619
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.dex
 new file mode 100644
-index 0000000..ec72421
+index 0000000..fea3eb4
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.dex
 new file mode 100644
-index 0000000..aa8471b
+index 0000000..7beb501
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.dex
 new file mode 100644
-index 0000000..4b6a638
+index 0000000..21e3bbf
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$load$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$load$1.dex
 new file mode 100644
-index 0000000..1893ba8
+index 0000000..2e26321
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$load$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$move$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$move$1.dex
 new file mode 100644
-index 0000000..1217a07
+index 0000000..8490d60
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$move$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$onServiceConnected$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$onServiceConnected$1.dex
 new file mode 100644
@@ -200,87 +200,87 @@ index 0000000..e703cd5
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$onServiceDisconnected$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.dex
 new file mode 100644
-index 0000000..655e9c4
+index 0000000..86ce7d1
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$play$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$play$1.dex
 new file mode 100644
-index 0000000..ce6cff7
+index 0000000..2ec1746
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$play$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.dex
 new file mode 100644
-index 0000000..3533025
+index 0000000..36d48fa
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.dex
 new file mode 100644
-index 0000000..e9c3a18
+index 0000000..dab8806
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.dex
 new file mode 100644
-index 0000000..3eb8dd6
+index 0000000..bd20684
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.dex
 new file mode 100644
-index 0000000..8dea29c
+index 0000000..1a4297a
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.dex
 new file mode 100644
-index 0000000..092f104
+index 0000000..dca159e
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.dex
 new file mode 100644
-index 0000000..f75515e
+index 0000000..d3aa6c0
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.dex
 new file mode 100644
-index 0000000..5562c9a
+index 0000000..d0192e4
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.dex
 new file mode 100644
-index 0000000..c62bfe8
+index 0000000..882a7a4
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.dex
 new file mode 100644
-index 0000000..bff2b57
+index 0000000..c2f18f2
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.dex
 new file mode 100644
-index 0000000..0278787
+index 0000000..1c83d59
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.dex
 new file mode 100644
-index 0000000..307fe01
+index 0000000..e9f63a4
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.dex
 new file mode 100644
-index 0000000..4e88ea2
+index 0000000..2a128fd
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.dex
 new file mode 100644
-index 0000000..93ded0f
+index 0000000..98a03a0
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.dex
 new file mode 100644
-index 0000000..7b16e9a
+index 0000000..37170a9
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.dex
 new file mode 100644
-index 0000000..b2318e7
+index 0000000..42416a4
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.dex
 new file mode 100644
-index 0000000..4b37846
+index 0000000..36f2ab8
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.dex
 new file mode 100644
-index 0000000..c4ab090
+index 0000000..b540283
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.dex
 new file mode 100644
-index 0000000..78cc269
+index 0000000..62e914e
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule.dex
 new file mode 100644
-index 0000000..3bc7a23
+index 0000000..c2797ff
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/module/MusicModule.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/service/MusicService$AppKilledPlaybackBehavior.dex b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/service/MusicService$AppKilledPlaybackBehavior.dex
 new file mode 100644
@@ -424,7 +424,7 @@ index 0000000..73cd74e
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/doublesymmetry/trackplayer/utils/RejectionException.dex differ
 diff --git a/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
 new file mode 100644
-index 0000000..dfd4f21
+index 0000000..141be40
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/.transforms/e4b1ae791e4c049db659fd61ea5763ef/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin differ
 diff --git a/node_modules/react-native-track-player/android/build/generated/source/buildConfig/debug/com/doublesymmetry/trackplayer/BuildConfig.java b/node_modules/react-native-track-player/android/build/generated/source/buildConfig/debug/com/doublesymmetry/trackplayer/BuildConfig.java
 new file mode 100644
@@ -574,7 +574,7 @@ index 0000000..b0e2939
 \ No newline at end of file
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/aar_main_jar/release/syncReleaseLibJars/classes.jar b/node_modules/react-native-track-player/android/build/intermediates/aar_main_jar/release/syncReleaseLibJars/classes.jar
 new file mode 100644
-index 0000000..3600b7a
+index 0000000..432e985
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/aar_main_jar/release/syncReleaseLibJars/classes.jar differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties b/node_modules/react-native-track-player/android/build/intermediates/aar_metadata/debug/writeDebugAarMetadata/aar-metadata.properties
 new file mode 100644
@@ -621,11 +621,11 @@ new file mode 100644
 index 0000000..e69de29
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar b/node_modules/react-native-track-player/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar
 new file mode 100644
-index 0000000..d1aa76a
+index 0000000..1274c53
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/compile_library_classes_jar/debug/bundleLibCompileToJarDebug/classes.jar differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/compile_library_classes_jar/release/bundleLibCompileToJarRelease/classes.jar b/node_modules/react-native-track-player/android/build/intermediates/compile_library_classes_jar/release/bundleLibCompileToJarRelease/classes.jar
 new file mode 100644
-index 0000000..0e39570
+index 0000000..449a6d9
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/compile_library_classes_jar/release/bundleLibCompileToJarRelease/classes.jar differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar b/node_modules/react-native-track-player/android/build/intermediates/compile_r_class_jar/debug/generateDebugRFile/R.jar
 new file mode 100644
@@ -965,7 +965,7 @@ index 0000000..7bbb228
 +-dontnote java.lang.invoke.**
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/full_jar/release/createFullJarRelease/full.jar b/node_modules/react-native-track-player/android/build/intermediates/full_jar/release/createFullJarRelease/full.jar
 new file mode 100644
-index 0000000..40495c5
+index 0000000..abee3a4
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/full_jar/release/createFullJarRelease/full.jar differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties b/node_modules/react-native-track-player/android/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties
 new file mode 100644
@@ -7251,7 +7251,7 @@ index 0000000..0120c9f
 \ No newline at end of file
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/local_aar_for_lint/release/out.aar b/node_modules/react-native-track-player/android/build/intermediates/local_aar_for_lint/release/out.aar
 new file mode 100644
-index 0000000..d58e805
+index 0000000..7b591c5
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/local_aar_for_lint/release/out.aar differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt b/node_modules/react-native-track-player/android/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt
 new file mode 100644
@@ -7624,71 +7624,71 @@ index 0000000..1762f91
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicEvents.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$add$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$add$1.class
 new file mode 100644
-index 0000000..6f21ed0
+index 0000000..1bc7444
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$add$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.class
 new file mode 100644
-index 0000000..5a90d7b
+index 0000000..c06632d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.class
 new file mode 100644
-index 0000000..f6535be
+index 0000000..435ec90
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.class
 new file mode 100644
-index 0000000..d8651fd
+index 0000000..2ae6266
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.class
 new file mode 100644
-index 0000000..5d85cf2
+index 0000000..26e3db8
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.class
 new file mode 100644
-index 0000000..18a8e51
+index 0000000..3f3b0e2
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.class
 new file mode 100644
-index 0000000..a63fba4
+index 0000000..9c9b99b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.class
 new file mode 100644
-index 0000000..6f7d4f4
+index 0000000..426e3d6
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.class
 new file mode 100644
-index 0000000..d05df7b
+index 0000000..8a21290
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.class
 new file mode 100644
-index 0000000..fe5a324
+index 0000000..7bab2d7
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.class
 new file mode 100644
-index 0000000..f73da6e
+index 0000000..2bc4967
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.class
 new file mode 100644
-index 0000000..a058c1c
+index 0000000..21ab6ad
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.class
 new file mode 100644
-index 0000000..971ee46
+index 0000000..c80f29a
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.class
 new file mode 100644
-index 0000000..d71ad63
+index 0000000..f4a065e
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.class
 new file mode 100644
-index 0000000..22ac91e
+index 0000000..811a681
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$load$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$load$1.class
 new file mode 100644
-index 0000000..bb3fa58
+index 0000000..f7a7e0f
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$load$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$move$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$move$1.class
 new file mode 100644
-index 0000000..752aa7f
+index 0000000..d2ddb3a
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$move$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$onServiceConnected$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$onServiceConnected$1.class
 new file mode 100644
@@ -7700,87 +7700,87 @@ index 0000000..14334a2
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$onServiceDisconnected$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.class
 new file mode 100644
-index 0000000..eaaf24a
+index 0000000..800114b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$play$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$play$1.class
 new file mode 100644
-index 0000000..50423de
+index 0000000..983ee6d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$play$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.class
 new file mode 100644
-index 0000000..72611a0
+index 0000000..6d7b8f6
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.class
 new file mode 100644
-index 0000000..a847e69
+index 0000000..78bbd3b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.class
 new file mode 100644
-index 0000000..f55c8f1
+index 0000000..1079739
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.class
 new file mode 100644
-index 0000000..7d4f41e
+index 0000000..88e91e0
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.class
 new file mode 100644
-index 0000000..76f9286
+index 0000000..ce2eeb6
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.class
 new file mode 100644
-index 0000000..de04408
+index 0000000..b687827
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.class
 new file mode 100644
-index 0000000..b2c45fa
+index 0000000..9651086
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.class
 new file mode 100644
-index 0000000..30c2622
+index 0000000..10c7d23
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.class
 new file mode 100644
-index 0000000..7e93b77
+index 0000000..4481c44
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.class
 new file mode 100644
-index 0000000..e7351aa
+index 0000000..191e3ff
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.class
 new file mode 100644
-index 0000000..1506d2d
+index 0000000..705a415
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.class
 new file mode 100644
-index 0000000..5f8a409
+index 0000000..d601ba7
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.class
 new file mode 100644
-index 0000000..211457a
+index 0000000..d73326e
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.class
 new file mode 100644
-index 0000000..b7a84fc
+index 0000000..2360b28
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.class
 new file mode 100644
-index 0000000..fe707d0
+index 0000000..d9fe50f
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.class
 new file mode 100644
-index 0000000..8217e83
+index 0000000..68291de
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.class
 new file mode 100644
-index 0000000..cd9738e
+index 0000000..8cc6c48
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.class
 new file mode 100644
-index 0000000..15fbc20
+index 0000000..af04c6f
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule.class
 new file mode 100644
-index 0000000..c1451c8
+index 0000000..f3efb7b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/module/MusicModule.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/service/MusicService$AppKilledPlaybackBehavior.class b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/service/MusicService$AppKilledPlaybackBehavior.class
 new file mode 100644
@@ -7924,11 +7924,11 @@ index 0000000..6628b17
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_dir/debug/bundleLibRuntimeToDirDebug/com/doublesymmetry/trackplayer/utils/RejectionException.class differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar
 new file mode 100644
-index 0000000..632ad18
+index 0000000..1047eb7
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_jar/debug/bundleLibRuntimeToJarDebug/classes.jar differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_jar/release/bundleLibRuntimeToJarRelease/classes.jar b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_jar/release/bundleLibRuntimeToJarRelease/classes.jar
 new file mode 100644
-index 0000000..a22112d
+index 0000000..fd90dd1
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/intermediates/runtime_library_classes_jar/release/bundleLibRuntimeToJarRelease/classes.jar differ
 diff --git a/node_modules/react-native-track-player/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt b/node_modules/react-native-track-player/android/build/intermediates/symbol_list_with_package_name/debug/generateDebugRFile/package-aware-r.txt
 new file mode 100644
@@ -7954,7 +7954,7 @@ index 0000000..d16dca5
 +string rntp_temporary_channel_name
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab
 new file mode 100644
-index 0000000..44d4b67
+index 0000000..3e261bb
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream
 new file mode 100644
@@ -7970,7 +7970,7 @@ index 0000000..385642d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.values.at
 new file mode 100644
-index 0000000..65af052
+index 0000000..af67afd
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i
 new file mode 100644
@@ -7982,7 +7982,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab
 new file mode 100644
-index 0000000..be72ad7
+index 0000000..792cb5e
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream
 new file mode 100644
@@ -7998,7 +7998,7 @@ index 0000000..c14ff15
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.values.at
 new file mode 100644
-index 0000000..0dfccae
+index 0000000..15631d7
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i
 new file mode 100644
@@ -8010,7 +8010,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab
 new file mode 100644
-index 0000000..3f4edfd
+index 0000000..1eaef67
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream
 new file mode 100644
@@ -8026,7 +8026,7 @@ index 0000000..c14ff15
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at
 new file mode 100644
-index 0000000..7c2501a
+index 0000000..2fc0876
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i
 new file mode 100644
@@ -8094,7 +8094,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/inline-functions.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab
 new file mode 100644
-index 0000000..a007838
+index 0000000..3df4149
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream
 new file mode 100644
@@ -8110,7 +8110,7 @@ index 0000000..68c8906
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at
 new file mode 100644
-index 0000000..0a98a23
+index 0000000..d94f895
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i
 new file mode 100644
@@ -8150,7 +8150,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/package-parts.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab
 new file mode 100644
-index 0000000..d19ece0
+index 0000000..4e61498
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream
 new file mode 100644
@@ -8166,7 +8166,7 @@ index 0000000..be9fd94
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.at
 new file mode 100644
-index 0000000..3a5e841
+index 0000000..bbddcc6
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i
 new file mode 100644
@@ -8178,7 +8178,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab
 new file mode 100644
-index 0000000..d66fd9a
+index 0000000..8238a3b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream
 new file mode 100644
@@ -8194,7 +8194,7 @@ index 0000000..385642d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at
 new file mode 100644
-index 0000000..cc7e5b0
+index 0000000..e7b4333
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i
 new file mode 100644
@@ -8206,7 +8206,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab
 new file mode 100644
-index 0000000..2b6d57a
+index 0000000..207059a
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream
 new file mode 100644
@@ -8222,7 +8222,7 @@ index 0000000..a541356
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.values.at
 new file mode 100644
-index 0000000..1f49ccb
+index 0000000..1157b6a
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i
 new file mode 100644
@@ -8234,7 +8234,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab
 new file mode 100644
-index 0000000..bdab3d3
+index 0000000..cfae2ae
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream
 new file mode 100644
@@ -8250,7 +8250,7 @@ index 0000000..a363176
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.values.at
 new file mode 100644
-index 0000000..6392d62
+index 0000000..8e6f042
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i
 new file mode 100644
@@ -8262,16 +8262,16 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/counters.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/counters.tab
 new file mode 100644
-index 0000000..2345f6d
+index 0000000..6562d99
 --- /dev/null
 +++ b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/counters.tab
 @@ -0,0 +1,2 @@
-+17
++18
 +0
 \ No newline at end of file
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab
 new file mode 100644
-index 0000000..ef9738a
+index 0000000..3052219
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream
 new file mode 100644
@@ -8287,7 +8287,7 @@ index 0000000..385642d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.values.at
 new file mode 100644
-index 0000000..2adfebf
+index 0000000..5b7bdc3
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i
 new file mode 100644
@@ -8299,27 +8299,27 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab
 new file mode 100644
-index 0000000..957e63f
+index 0000000..35cfc28
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream
 new file mode 100644
-index 0000000..0043dfe
+index 0000000..99cb6e9
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream.len b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream.len
 new file mode 100644
-index 0000000..8f2199b
+index 0000000..c54fd0d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.len b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.len
 new file mode 100644
-index 0000000..385642d
+index 0000000..09407ef
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.values.at
 new file mode 100644
-index 0000000..907b072
+index 0000000..3d5758f
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i
 new file mode 100644
-index 0000000..dc7ae39
+index 0000000..504f86b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i.len b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i.len
 new file mode 100644
@@ -8327,7 +8327,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab
 new file mode 100644
-index 0000000..bcc98d5
+index 0000000..7e43328
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream
 new file mode 100644
@@ -8343,7 +8343,7 @@ index 0000000..4c13cd9
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.values.at
 new file mode 100644
-index 0000000..62b39a0
+index 0000000..11e1c61
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab_i
 new file mode 100644
@@ -8355,7 +8355,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/caches-jvm/lookups/lookups.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/last-build.bin b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/last-build.bin
 new file mode 100644
-index 0000000..fac98b5
+index 0000000..e95a8ca
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/cacheable/last-build.bin differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin
 new file mode 100644
@@ -8363,11 +8363,11 @@ index 0000000..e061469
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/local-state/build-history.bin b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/local-state/build-history.bin
 new file mode 100644
-index 0000000..ff69db0
+index 0000000..e9922ab
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileDebugKotlin/local-state/build-history.bin differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab
 new file mode 100644
-index 0000000..cf0238e
+index 0000000..06972fe
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.keystream
 new file mode 100644
@@ -8383,7 +8383,7 @@ index 0000000..385642d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.values.at
 new file mode 100644
-index 0000000..3362683
+index 0000000..4f553b3
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i
 new file mode 100644
@@ -8395,7 +8395,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/inputs/source-to-output.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab
 new file mode 100644
-index 0000000..be72ad7
+index 0000000..792cb5e
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.keystream
 new file mode 100644
@@ -8411,7 +8411,7 @@ index 0000000..c14ff15
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.values.at
 new file mode 100644
-index 0000000..0dfccae
+index 0000000..15631d7
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i
 new file mode 100644
@@ -8423,7 +8423,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-attributes.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab
 new file mode 100644
-index 0000000..3f4edfd
+index 0000000..1eaef67
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.keystream
 new file mode 100644
@@ -8439,7 +8439,7 @@ index 0000000..c14ff15
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at
 new file mode 100644
-index 0000000..7c2501a
+index 0000000..2fc0876
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/class-fq-name-to-source.tab_i
 new file mode 100644
@@ -8507,7 +8507,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/inline-functions.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab
 new file mode 100644
-index 0000000..a007838
+index 0000000..3df4149
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.keystream
 new file mode 100644
@@ -8523,7 +8523,7 @@ index 0000000..68c8906
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at
 new file mode 100644
-index 0000000..0a98a23
+index 0000000..d94f895
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/internal-name-to-source.tab_i
 new file mode 100644
@@ -8563,7 +8563,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/package-parts.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab
 new file mode 100644
-index 0000000..813e22b
+index 0000000..d8f63af
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.keystream
 new file mode 100644
@@ -8579,7 +8579,7 @@ index 0000000..be9fd94
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.at
 new file mode 100644
-index 0000000..973e903
+index 0000000..9172f91
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i
 new file mode 100644
@@ -8591,7 +8591,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/proto.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab
 new file mode 100644
-index 0000000..d66fd9a
+index 0000000..8238a3b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.keystream
 new file mode 100644
@@ -8607,7 +8607,7 @@ index 0000000..385642d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at
 new file mode 100644
-index 0000000..cc7e5b0
+index 0000000..e7b4333
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i
 new file mode 100644
@@ -8619,7 +8619,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/source-to-classes.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab
 new file mode 100644
-index 0000000..2b6d57a
+index 0000000..207059a
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.keystream
 new file mode 100644
@@ -8635,7 +8635,7 @@ index 0000000..a541356
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.values.at
 new file mode 100644
-index 0000000..1f49ccb
+index 0000000..1157b6a
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i
 new file mode 100644
@@ -8647,7 +8647,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/subtypes.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab
 new file mode 100644
-index 0000000..bdab3d3
+index 0000000..cfae2ae
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.keystream
 new file mode 100644
@@ -8663,7 +8663,7 @@ index 0000000..a363176
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.values.at
 new file mode 100644
-index 0000000..6392d62
+index 0000000..8e6f042
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i
 new file mode 100644
@@ -8675,16 +8675,16 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/jvm/kotlin/supertypes.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/counters.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/counters.tab
 new file mode 100644
-index 0000000..2345f6d
+index 0000000..6562d99
 --- /dev/null
 +++ b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/counters.tab
 @@ -0,0 +1,2 @@
-+17
++18
 +0
 \ No newline at end of file
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab
 new file mode 100644
-index 0000000..ef9738a
+index 0000000..3052219
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.keystream
 new file mode 100644
@@ -8700,7 +8700,7 @@ index 0000000..385642d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.values.at
 new file mode 100644
-index 0000000..2adfebf
+index 0000000..5b7bdc3
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i
 new file mode 100644
@@ -8712,27 +8712,27 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/file-to-id.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab
 new file mode 100644
-index 0000000..957e63f
+index 0000000..35cfc28
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream
 new file mode 100644
-index 0000000..0043dfe
+index 0000000..99cb6e9
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream.len b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream.len
 new file mode 100644
-index 0000000..8f2199b
+index 0000000..c54fd0d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.keystream.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.len b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.len
 new file mode 100644
-index 0000000..385642d
+index 0000000..09407ef
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.values.at
 new file mode 100644
-index 0000000..907b072
+index 0000000..3d5758f
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i
 new file mode 100644
-index 0000000..dc7ae39
+index 0000000..504f86b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i.len b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i.len
 new file mode 100644
@@ -8740,7 +8740,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/id-to-file.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab
 new file mode 100644
-index 0000000..bcc98d5
+index 0000000..7e43328
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab.keystream
 new file mode 100644
@@ -8756,7 +8756,7 @@ index 0000000..4c13cd9
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab.values.at b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab.values.at
 new file mode 100644
-index 0000000..62b39a0
+index 0000000..11e1c61
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab.values.at differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab_i b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab_i
 new file mode 100644
@@ -8768,7 +8768,7 @@ index 0000000..131e265
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/caches-jvm/lookups/lookups.tab_i.len differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/last-build.bin b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/last-build.bin
 new file mode 100644
-index 0000000..ce32b16
+index 0000000..26f2fb9
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/cacheable/last-build.bin differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin
 new file mode 100644
@@ -8776,7 +8776,7 @@ index 0000000..84e25aa
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/classpath-snapshot/shrunk-classpath-snapshot.bin differ
 diff --git a/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/local-state/build-history.bin b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/local-state/build-history.bin
 new file mode 100644
-index 0000000..764fdde
+index 0000000..3e1655b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/kotlin/compileReleaseKotlin/local-state/build-history.bin differ
 diff --git a/node_modules/react-native-track-player/android/build/outputs/logs/manifest-merger-debug-report.txt b/node_modules/react-native-track-player/android/build/outputs/logs/manifest-merger-debug-report.txt
 new file mode 100644
@@ -9557,6 +9557,10 @@ diff --git a/node_modules/react-native-track-player/android/build/tmp/compileRel
 new file mode 100644
 index 0000000..cf93e0d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/compileReleaseJavaWithJavac/previous-compilation-data.bin differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/META-INF/react-native-track-player_debug.kotlin_module b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/META-INF/react-native-track-player_debug.kotlin_module
+new file mode 100644
+index 0000000..8539fc3
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/META-INF/react-native-track-player_debug.kotlin_module differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/TrackPlayer.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/TrackPlayer.class
 new file mode 100644
 index 0000000..f28fd5d
@@ -9625,6 +9629,166 @@ diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-cla
 new file mode 100644
 index 0000000..1762f91
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicEvents.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$add$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$add$1.class
+new file mode 100644
+index 0000000..1bc7444
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$add$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.class
+new file mode 100644
+index 0000000..c06632d
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.class
+new file mode 100644
+index 0000000..435ec90
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.class
+new file mode 100644
+index 0000000..2ae6266
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.class
+new file mode 100644
+index 0000000..26e3db8
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.class
+new file mode 100644
+index 0000000..3f3b0e2
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.class
+new file mode 100644
+index 0000000..9c9b99b
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.class
+new file mode 100644
+index 0000000..426e3d6
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.class
+new file mode 100644
+index 0000000..8a21290
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.class
+new file mode 100644
+index 0000000..7bab2d7
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.class
+new file mode 100644
+index 0000000..2bc4967
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.class
+new file mode 100644
+index 0000000..21ab6ad
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.class
+new file mode 100644
+index 0000000..c80f29a
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.class
+new file mode 100644
+index 0000000..f4a065e
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.class
+new file mode 100644
+index 0000000..811a681
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$load$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$load$1.class
+new file mode 100644
+index 0000000..f7a7e0f
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$load$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$move$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$move$1.class
+new file mode 100644
+index 0000000..d2ddb3a
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$move$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$onServiceConnected$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$onServiceConnected$1.class
+new file mode 100644
+index 0000000..211e6f8
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$onServiceConnected$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$onServiceDisconnected$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$onServiceDisconnected$1.class
+new file mode 100644
+index 0000000..14334a2
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$onServiceDisconnected$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.class
+new file mode 100644
+index 0000000..800114b
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$play$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$play$1.class
+new file mode 100644
+index 0000000..983ee6d
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$play$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.class
+new file mode 100644
+index 0000000..6d7b8f6
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.class
+new file mode 100644
+index 0000000..78bbd3b
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.class
+new file mode 100644
+index 0000000..1079739
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.class
+new file mode 100644
+index 0000000..88e91e0
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.class
+new file mode 100644
+index 0000000..ce2eeb6
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.class
+new file mode 100644
+index 0000000..b687827
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.class
+new file mode 100644
+index 0000000..9651086
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.class
+new file mode 100644
+index 0000000..10c7d23
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.class
+new file mode 100644
+index 0000000..4481c44
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.class
+new file mode 100644
+index 0000000..191e3ff
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.class
+new file mode 100644
+index 0000000..705a415
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.class
+new file mode 100644
+index 0000000..d601ba7
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.class
+new file mode 100644
+index 0000000..d73326e
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.class
+new file mode 100644
+index 0000000..2360b28
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.class
+new file mode 100644
+index 0000000..d9fe50f
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.class
+new file mode 100644
+index 0000000..68291de
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.class
+new file mode 100644
+index 0000000..8cc6c48
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.class
+new file mode 100644
+index 0000000..af04c6f
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.class differ
+diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule.class
+new file mode 100644
+index 0000000..f3efb7b
+Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/module/MusicModule.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/service/MusicService$AppKilledPlaybackBehavior.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/debug/com/doublesymmetry/trackplayer/service/MusicService$AppKilledPlaybackBehavior.class
 new file mode 100644
 index 0000000..c087a6c
@@ -9839,71 +10003,71 @@ index 0000000..6566ab5
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicEvents.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$add$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$add$1.class
 new file mode 100644
-index 0000000..6f21ed0
+index 0000000..1bc7444
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$add$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.class
 new file mode 100644
-index 0000000..5a90d7b
+index 0000000..c06632d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$clearNowPlayingMetadata$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.class
 new file mode 100644
-index 0000000..f6535be
+index 0000000..435ec90
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrack$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.class
 new file mode 100644
-index 0000000..d8651fd
+index 0000000..2ae6266
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getActiveTrackIndex$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.class
 new file mode 100644
-index 0000000..5d85cf2
+index 0000000..26e3db8
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getBufferedPosition$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.class
 new file mode 100644
-index 0000000..18a8e51
+index 0000000..3f3b0e2
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getDuration$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.class
 new file mode 100644
-index 0000000..a63fba4
+index 0000000..9c9b99b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getPlayWhenReady$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.class
 new file mode 100644
-index 0000000..6f7d4f4
+index 0000000..426e3d6
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getPlaybackState$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.class
 new file mode 100644
-index 0000000..d05df7b
+index 0000000..8a21290
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getPosition$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.class
 new file mode 100644
-index 0000000..fe5a324
+index 0000000..7bab2d7
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getProgress$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.class
 new file mode 100644
-index 0000000..f73da6e
+index 0000000..2bc4967
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getQueue$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.class
 new file mode 100644
-index 0000000..a058c1c
+index 0000000..21ab6ad
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getRate$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.class
 new file mode 100644
-index 0000000..971ee46
+index 0000000..c80f29a
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getRepeatMode$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.class
 new file mode 100644
-index 0000000..d71ad63
+index 0000000..f4a065e
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getTrack$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.class
 new file mode 100644
-index 0000000..22ac91e
+index 0000000..811a681
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$getVolume$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$load$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$load$1.class
 new file mode 100644
-index 0000000..bb3fa58
+index 0000000..f7a7e0f
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$load$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$move$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$move$1.class
 new file mode 100644
-index 0000000..752aa7f
+index 0000000..d2ddb3a
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$move$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$onServiceConnected$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$onServiceConnected$1.class
 new file mode 100644
@@ -9915,87 +10079,87 @@ index 0000000..14334a2
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$onServiceDisconnected$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.class
 new file mode 100644
-index 0000000..eaaf24a
+index 0000000..800114b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$pause$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$play$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$play$1.class
 new file mode 100644
-index 0000000..50423de
+index 0000000..983ee6d
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$play$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.class
 new file mode 100644
-index 0000000..72611a0
+index 0000000..6d7b8f6
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$remove$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.class
 new file mode 100644
-index 0000000..a847e69
+index 0000000..78bbd3b
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$removeUpcomingTracks$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.class
 new file mode 100644
-index 0000000..f55c8f1
+index 0000000..1079739
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$reset$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.class
 new file mode 100644
-index 0000000..7d4f41e
+index 0000000..88e91e0
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$retry$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.class
 new file mode 100644
-index 0000000..76f9286
+index 0000000..ce2eeb6
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$seekBy$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.class
 new file mode 100644
-index 0000000..de04408
+index 0000000..b687827
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$seekTo$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.class
 new file mode 100644
-index 0000000..b2c45fa
+index 0000000..9651086
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setPlayWhenReady$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.class
 new file mode 100644
-index 0000000..30c2622
+index 0000000..10c7d23
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setQueue$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.class
 new file mode 100644
-index 0000000..7e93b77
+index 0000000..4481c44
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setRate$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.class
 new file mode 100644
-index 0000000..e7351aa
+index 0000000..191e3ff
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setRepeatMode$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.class
 new file mode 100644
-index 0000000..1506d2d
+index 0000000..705a415
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$setVolume$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.class
 new file mode 100644
-index 0000000..5f8a409
+index 0000000..d601ba7
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$skip$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.class
 new file mode 100644
-index 0000000..211457a
+index 0000000..d73326e
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$skipToNext$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.class
 new file mode 100644
-index 0000000..b7a84fc
+index 0000000..2360b28
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$skipToPrevious$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.class
 new file mode 100644
-index 0000000..fe707d0
+index 0000000..d9fe50f
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$stop$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.class
 new file mode 100644
-index 0000000..8217e83
+index 0000000..68291de
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$updateMetadataForTrack$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.class
 new file mode 100644
-index 0000000..cd9738e
+index 0000000..8cc6c48
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$updateNowPlayingMetadata$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.class
 new file mode 100644
-index 0000000..15fbc20
+index 0000000..af04c6f
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule$updateOptions$1.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule.class
 new file mode 100644
-index 0000000..503051f
+index 0000000..0154043
 Binary files /dev/null and b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/module/MusicModule.class differ
 diff --git a/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/service/MusicService$AppKilledPlaybackBehavior.class b/node_modules/react-native-track-player/android/build/tmp/kotlin-classes/release/com/doublesymmetry/trackplayer/service/MusicService$AppKilledPlaybackBehavior.class
 new file mode 100644
@@ -10577,3 +10741,34 @@ index b2409a0..a84ce28 100644
 +        }
      }
  }
+diff --git a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
+index afa6b0f..b037953 100644
+--- a/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
++++ b/node_modules/react-native-track-player/android/src/main/java/com/doublesymmetry/trackplayer/service/MusicService.kt
+@@ -141,7 +141,7 @@ class MusicService : HeadlessJsTaskService() {
+ 
+         val cacheConfig = CacheConfig(playerOptions?.getDouble(MAX_CACHE_SIZE_KEY)?.toLong())
+         val playerConfig = PlayerConfig(
+-            interceptPlayerActionsTriggeredExternally = true,
++            interceptPlayerActionsTriggeredExternally = false,
+             handleAudioBecomingNoisy = true,
+             handleAudioFocus = playerOptions?.getBoolean(AUTO_HANDLE_INTERRUPTIONS) ?: false,
+             audioContentType = when(playerOptions?.getString(ANDROID_AUDIO_CONTENT_TYPE)) {
+@@ -741,7 +741,7 @@ class MusicService : HeadlessJsTaskService() {
+ 
+     @MainThread
+     private fun emit(event: String, data: Bundle? = null) {
+-        reactNativeHost.reactInstanceManager.currentReactContext
++        reactContext
+             ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+             ?.emit(event, data?.let { Arguments.fromBundle(it) })
+     }
+@@ -751,7 +751,7 @@ class MusicService : HeadlessJsTaskService() {
+         val payload = Arguments.createArray()
+         data.forEach { payload.pushMap(Arguments.fromBundle(it)) }
+ 
+-        reactNativeHost.reactInstanceManager.currentReactContext
++        reactContext
+             ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+             ?.emit(event, payload)
+     }
