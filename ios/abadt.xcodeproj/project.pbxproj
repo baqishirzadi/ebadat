@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		A1C0N160X60RES001 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A1C0N160X60FIL001 /* AppIcon60x60@2x.png */; };
+		A1C0N176X76RES001 /* AppIcon76x76@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = A1C0N176X76FIL001 /* AppIcon76x76@2x~ipad.png */; };
 		3AF7E1B4280648218DDAE879 /* Amiri-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EAA20087D1EB4669933289B6 /* Amiri-Bold.ttf */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		3FB206E69276448F8222B277 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1D5F85730D754E9A9C3DF240 /* InfoPlist.strings */; };
@@ -66,6 +68,8 @@
 		005447E1C111337BBF55F6D8 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-abadt/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* abadt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = abadt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = abadt/Images.xcassets; sourceTree = "<group>"; };
+		A1C0N160X60FIL001 /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon60x60@2x.png"; path = "abadt/AppIcon60x60@2x.png"; sourceTree = "<group>"; };
+		A1C0N176X76FIL001 /* AppIcon76x76@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon76x76@2x~ipad.png"; path = "abadt/AppIcon76x76@2x~ipad.png"; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = abadt/Info.plist; sourceTree = "<group>"; };
 		1D5F85730D754E9A9C3DF240 /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = ps.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		24618AC3ED0BFBE7DEFCD0CE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = abadt/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -128,6 +132,8 @@
 				F11748442D0722820044C1D9 /* abadt-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
+				A1C0N160X60FIL001 /* AppIcon60x60@2x.png */,
+				A1C0N176X76FIL001 /* AppIcon76x76@2x~ipad.png */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				36FD6C85C92A47DABA7ACD38 /* barakatullah_salim_18sec.mp3 */,
@@ -350,6 +356,8 @@
 			files = (
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				A1C0N160X60RES001 /* AppIcon60x60@2x.png in Resources */,
+				A1C0N176X76RES001 /* AppIcon76x76@2x~ipad.png in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				F4E774B4891047A89D9DC004 /* InfoPlist.strings in Resources */,
 				3FB206E69276448F8222B277 /* InfoPlist.strings in Resources */,
@@ -550,6 +558,7 @@
 			baseConfigurationReference = BE0B422B353BBE3F7290F010 /* Pods-abadt.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = abadt/abadt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
@@ -588,6 +597,7 @@
 			baseConfigurationReference = CF7E6AF96529DF58EEEA72B5 /* Pods-abadt.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = abadt/abadt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
