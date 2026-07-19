@@ -146,9 +146,11 @@ function StartupSplashGate({ onAppReady }: { onAppReady: () => void }) {
 function SpiritualSplashOverlay({
   onComplete,
   dismiss,
+  onNativeSplashReady,
 }: {
   onComplete: () => void;
   dismiss: boolean;
+  onNativeSplashReady?: () => void;
 }) {
   const { markSplashCompleted } = useStartupPhase();
   const nativeSplashHiddenRef = useRef(false);
@@ -156,9 +158,8 @@ function SpiritualSplashOverlay({
   const hideNativeSplashOnce = useCallback(() => {
     if (nativeSplashHiddenRef.current) return;
     nativeSplashHiddenRef.current = true;
-    SplashScreen.hideAsync().catch(() => {});
-    startupMark('Native splash hidden after spiritual splash layout');
-  }, []);
+    onNativeSplashReady?.();
+  }, [onNativeSplashReady]);
 
   useEffect(() => {
     const absoluteMaxTimer = setTimeout(() => {
@@ -431,6 +432,9 @@ export default function RootLayout() {
   const [fontPhaseDone, setFontPhaseDone] = useState(false);
   const [showSpiritualSplash, setShowSpiritualSplash] = useState(true);
   const [splashDismissReady, setSplashDismissReady] = useState(false);
+  /** Mount heavy providers only after SpiritualSplash can paint / native splash can hide. */
+  const [providersReady, setProvidersReady] = useState(false);
+  const nativeSplashHiddenRef = useRef(false);
   const [bootstrap, setBootstrap] = useState({
     needsOnboarding: false,
     hasCity: false,
@@ -438,11 +442,47 @@ export default function RootLayout() {
     checked: false,
   });
 
+  const hideNativeSplashOnce = useCallback((reason: string) => {
+    if (nativeSplashHiddenRef.current) return;
+    nativeSplashHiddenRef.current = true;
+    SplashScreen.hideAsync().catch(() => {});
+    startupMark(`Native splash hidden (${reason})`);
+  }, []);
+
   useEffect(() => {
     startupMark('Using bundled native fonts');
     setFontsLoaded(true);
     setFontPhaseDone(true);
   }, []);
+
+  // Hard fallback: never leave the OS launch icon up more than 1.5s after JS root mounts.
+  useEffect(() => {
+    const fallback = setTimeout(() => {
+      hideNativeSplashOnce('1.5s-fallback');
+      setProvidersReady(true);
+    }, 1500);
+    return () => clearTimeout(fallback);
+  }, [hideNativeSplashOnce]);
+
+  // Unlock AppProviders on the next frame so SpiritualSplash can commit layout first.
+  useEffect(() => {
+    if (!fontsLoaded) return;
+    let cancelled = false;
+    const unlock = () => {
+      if (cancelled) return;
+      setProvidersReady(true);
+      startupMark('AppProviders mount unlocked');
+    };
+    const raf = requestAnimationFrame(() => {
+      requestAnimationFrame(unlock);
+    });
+    const quick = setTimeout(unlock, 32);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(raf);
+      clearTimeout(quick);
+    };
+  }, [fontsLoaded]);
 
   useEffect(() => {
     if (!fontsLoaded) return;
@@ -509,13 +549,21 @@ export default function RootLayout() {
                   <SpiritualSplashOverlay
                     dismiss={splashDismissReady}
                     onComplete={() => setShowSpiritualSplash(false)}
+                    onNativeSplashReady={() => {
+                      hideNativeSplashOnce('spiritual-splash-layout');
+                      setProvidersReady(true);
+                    }}
                   />
                 </View>
               ) : null}
-              <AppProviders>
-                <RootLayoutNav />
-                <StartupSplashGate onAppReady={() => setSplashDismissReady(true)} />
-              </AppProviders>
+              {providersReady ? (
+                <AppProviders>
+                  <RootLayoutNav />
+                  <StartupSplashGate onAppReady={() => setSplashDismissReady(true)} />
+                </AppProviders>
+              ) : (
+                <View style={styles.loadingContainer} />
+              )}
             </SpiritualSplashActiveContext.Provider>
           </StartupBootstrapProvider>
         </StartupPhaseProvider>

@@ -79,6 +79,7 @@ import { useStartupPhase } from '@/context/StartupPhaseContext';
 // Conditional imports - only load on native platforms
 // Skip notifications entirely in Expo Go to avoid SDK 53 error
 let Location: typeof import('expo-location') | null = null;
+let locationLoadAttempted = false;
 let Notifications: typeof import('expo-notifications') | null = null;
 
 // Detect if running in Expo Go
@@ -92,13 +93,17 @@ const isExpoGo = (): boolean => {
   }
 };
 
-// Load Location synchronously (safe)
-if (Platform.OS !== 'web') {
+function getExpoLocation(): typeof import('expo-location') | null {
+  if (locationLoadAttempted) return Location;
+  locationLoadAttempted = true;
+  if (Platform.OS === 'web') return null;
   try {
     Location = require('expo-location');
   } catch (error) {
     console.warn('expo-location unavailable:', error);
+    Location = null;
   }
+  return Location;
 }
 
 // Helper function to safely load Notifications (async to avoid SDK 53 error in Expo Go)
@@ -1269,26 +1274,51 @@ async function configureAndroidNotificationChannels(
   }, [updatePrayerTimes]);
 
   useEffect(() => {
-    if (!state.prayerTimes) return;
+    if (!isInteractiveReady || !state.prayerTimes) return;
+    // Single-day snapshot first (cheap); multi-day horizon after interactions.
     void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
       cityKey: toCityKey(state.settings.selectedCity),
       location: state.location,
       timezone: state.location.timezone,
+      horizonDays: 1,
     });
-  }, [state.prayerTimes, state.locationName, state.location, state.settings.selectedCity]);
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (status) => {
-      if (status !== 'active' || !state.prayerTimes) return;
+    const handle = InteractionManager.runAfterInteractions(() => {
       void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
         force: true,
         cityKey: toCityKey(state.settings.selectedCity),
         location: state.location,
         timezone: state.location.timezone,
+        horizonDays: 8,
+      });
+    });
+    return () => handle.cancel();
+  }, [
+    isInteractiveReady,
+    state.prayerTimes,
+    state.locationName,
+    state.location,
+    state.settings.selectedCity,
+  ]);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', (status) => {
+      if (status !== 'active' || !state.prayerTimes || !isInteractiveReady) return;
+      void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
+        force: true,
+        cityKey: toCityKey(state.settings.selectedCity),
+        location: state.location,
+        timezone: state.location.timezone,
+        horizonDays: 8,
       });
     });
     return () => subscription.remove();
-  }, [state.prayerTimes, state.locationName, state.location, state.settings.selectedCity]);
+  }, [
+    isInteractiveReady,
+    state.prayerTimes,
+    state.locationName,
+    state.location,
+    state.settings.selectedCity,
+  ]);
 
   // Reschedule Adhan notifications on app resume, day change, and iOS health checks
   useEffect(() => {
@@ -1516,13 +1546,13 @@ async function configureAndroidNotificationChannels(
       }
     }
 
-    if (!Location) {
+    if (!getExpoLocation()) {
       dispatch({ type: 'SET_PERMISSION', payload: 'denied' });
       return false;
     }
 
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
+      const { status } = await getExpoLocation()!.requestForegroundPermissionsAsync();
       dispatch({ type: 'SET_PERMISSION', payload: status === 'granted' ? 'granted' : 'denied' });
       return status === 'granted';
     } catch (error) {

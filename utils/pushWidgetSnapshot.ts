@@ -8,7 +8,6 @@ import { writeWidgetSnapshot } from '@/utils/widgetDataBridge';
 
 let lastPushedAt = 0;
 const MIN_PUSH_INTERVAL_MS = 15_000;
-const WIDGET_HORIZON_DAYS = 8;
 
 async function refreshAndroidWidget(snapshot: ReturnType<typeof buildWidgetSnapshot>): Promise<void> {
   if (Platform.OS !== 'android') return;
@@ -39,6 +38,8 @@ export async function pushWidgetSnapshot(
     cityKey?: string;
     location?: { latitude: number; longitude: number; timezone?: string };
     timezone?: string;
+    /** Days to prefetch into the widget snapshot. Default 1 (cold-start safe). */
+    horizonDays?: number;
   },
 ): Promise<void> {
   if (!prayerTimes) return;
@@ -54,15 +55,16 @@ export async function pushWidgetSnapshot(
     options?.location?.timezone ||
     'Asia/Kabul';
 
+  const horizonDays = Math.max(1, options?.horizonDays ?? 1);
   let multiDay: Array<{ dateKey: string; times: PrayerTimes; noonAnchor: Date }> | undefined;
   let sourceLabel: string | undefined;
-  if (options?.cityKey || options?.location) {
+  if ((options?.cityKey || options?.location) && horizonDays > 1) {
     try {
       const bundles = await getPrayerTimesForDateRange({
         cityKey: options.cityKey,
         location: options.location,
         startDate: new Date(),
-        days: WIDGET_HORIZON_DAYS,
+        days: horizonDays,
       });
       sourceLabel = bundles[0]?.sourceLabel;
       multiDay = bundles.map((bundle) => ({

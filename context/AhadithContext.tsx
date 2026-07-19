@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { AppState } from 'react-native';
+import { AppState, InteractionManager } from 'react-native';
 import { AhadithNotificationPreferences, AhadithSection, DailyHadithSelection, Hadith } from '@/types/hadith';
 import {
   getAllHadiths,
@@ -69,9 +69,9 @@ function getDateByOffset(offset: number): Date {
 
 export function AhadithProvider({ children }: { children: React.ReactNode }) {
   const { isInteractiveReady } = useStartupPhase();
-  const [hadiths, setHadiths] = useState<Hadith[]>(() => getAllHadiths());
-  const topics = useMemo(() => getHadithTopics(), [hadiths]);
-  const muttafaqHadiths = useMemo(() => getMuttafaqHadiths(), [hadiths]);
+  const [hadiths, setHadiths] = useState<Hadith[]>([]);
+  const topics = useMemo(() => (hadiths.length ? getHadithTopics() : []), [hadiths]);
+  const muttafaqHadiths = useMemo(() => (hadiths.length ? getMuttafaqHadiths() : []), [hadiths]);
 
   const [section, setSection] = useState<AhadithSection>('daily');
   const [dayOffset, setDayOffset] = useState(0);
@@ -85,48 +85,25 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
     useState<AhadithNotificationPreferences>(DEFAULT_NOTIFICATION_PREFS);
   const syncInFlightRef = React.useRef<Promise<void> | null>(null);
   const lastSyncAtRef = React.useRef(0);
+  const localSeedLoadedRef = React.useRef(false);
 
   const applyRemoteHadiths = useCallback((remoteHadiths: Hadith[]) => {
     setRemoteHadiths(remoteHadiths);
     setHadiths(getAllHadiths());
   }, []);
 
-  const syncRemoteHadiths = useCallback(
-    async (force = false): Promise<void> => {
-      if (syncInFlightRef.current) {
-        await syncInFlightRef.current;
-        return;
-      }
-
-      if (!force && Date.now() - lastSyncAtRef.current < REMOTE_SYNC_COOLDOWN_MS) {
-        return;
-      }
-
-      const job = (async () => {
-        const remoteItems = await syncPublishedHadiths();
-        applyRemoteHadiths(remoteItems);
-        lastSyncAtRef.current = Date.now();
-      })().catch((error) => {
-        if (__DEV__) {
-          console.warn('[Ahadith] Remote sync failed', error);
-        }
-      });
-
-      syncInFlightRef.current = job;
-      try {
-        await job;
-      } finally {
-        syncInFlightRef.current = null;
-      }
-    },
-    [applyRemoteHadiths]
-  );
-
   useEffect(() => {
+    if (!isInteractiveReady) return;
+
     let cancelled = false;
 
     const loadPersisted = async () => {
       try {
+        if (!localSeedLoadedRef.current) {
+          localSeedLoadedRef.current = true;
+          setHadiths(getAllHadiths());
+        }
+
         const [bookmarksRaw, notificationsRaw, remoteCached] = await Promise.all([
           AsyncStorage.getItem(STORAGE_KEYS.bookmarks),
           AsyncStorage.getItem(STORAGE_KEYS.notifications),
@@ -177,7 +154,54 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [applyRemoteHadiths, syncRemoteHadiths]);
+  }, [applyRemoteHadiths, isInteractiveReady]);
+
+  // Defer bundled dataset parse/index until after interactive (seed also loaded in loadPersisted).
+  useEffect(() => {
+    if (!isInteractiveReady || localSeedLoadedRef.current) return;
+    localSeedLoadedRef.current = true;
+    const handle = InteractionManager.runAfterInteractions(() => {
+      try {
+        setHadiths(getAllHadiths());
+      } catch (error) {
+        if (__DEV__) {
+          console.warn('[Ahadith] Failed to load local hadiths', error);
+        }
+      }
+    });
+    return () => handle.cancel();
+  }, [isInteractiveReady]);
+
+  const syncRemoteHadiths = useCallback(
+    async (force = false): Promise<void> => {
+      if (syncInFlightRef.current) {
+        await syncInFlightRef.current;
+        return;
+      }
+
+      if (!force && Date.now() - lastSyncAtRef.current < REMOTE_SYNC_COOLDOWN_MS) {
+        return;
+      }
+
+      const job = (async () => {
+        const remoteItems = await syncPublishedHadiths();
+        applyRemoteHadiths(remoteItems);
+        lastSyncAtRef.current = Date.now();
+      })().catch((error) => {
+        if (__DEV__) {
+          console.warn('[Ahadith] Remote sync failed', error);
+        }
+      });
+
+      syncInFlightRef.current = job;
+      try {
+        await job;
+      } finally {
+        syncInFlightRef.current = null;
+      }
+    },
+    [applyRemoteHadiths]
+  );
 
   useEffect(() => {
     if (!isInteractiveReady || isLoading) return;
