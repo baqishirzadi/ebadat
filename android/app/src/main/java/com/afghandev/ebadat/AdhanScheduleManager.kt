@@ -84,6 +84,8 @@ object AdhanScheduleManager {
       "ensureScheduled reason=$reason scheduled=$scheduledCount cancelled=$cancelledCount expected=${expectedPayloads.size}",
     )
 
+    WidgetReloadHelper.reloadPrayerWidget(appContext)
+
     return AdhanScheduleResult(
       reason = reason,
       scheduledCount = scheduledCount,

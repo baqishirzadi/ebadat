@@ -5,6 +5,7 @@ import { Pressable, StyleSheet } from 'react-native';
 import { PrayerChip } from '@/components/home/PrayerChip';
 import { RtlView } from '@/components/ui/RtlView';
 import { Spacing } from '@/constants/theme';
+import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
 import { PRAYER_LABELS_DARI, PrayerTimes } from '@/utils/prayerTimes';
@@ -22,8 +23,10 @@ interface PrayerTimesRowProps {
 }
 
 export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
+  const { state } = usePrayer();
   const now = new Date();
   const current = prayerTimes ? getCurrentPrayerKey(prayerTimes, now) : null;
+  const timeZone = state.location?.timezone;
 
   return (
     <Pressable onPress={() => router.push('/(tabs)/jantari' as never)}>
@@ -35,7 +38,7 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
             <PrayerChip
               key={prayer.key}
               label={prayer.label}
-              time={time ? formatPrayerTime12h(time) : '--:--'}
+              time={time ? formatPrayerTime12h(time, timeZone) : '--:--'}
               active={active}
             />
           );

@@ -6,7 +6,7 @@
 
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useCallback, useEffect, useRef, useState, createContext, useContext, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { AppState, I18nManager, InteractionManager, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -25,21 +25,21 @@ import { ScholarProvider } from '@/context/ScholarContext';
 import { StartupBootstrapProvider, useStartupBootstrap } from '@/context/StartupBootstrapContext';
 import { StartupPhaseProvider, useStartupPhase } from '@/context/StartupPhaseContext';
 import { StatsProvider } from '@/context/StatsContext';
+import { preloadPopularSurahs } from '@/hooks/useSurahData';
 import { getKabulNoon } from '@/utils/afghanistanCalendar';
-import { getCalendarMonthGridMeta } from '@/utils/calendarMonthGrid';
 import { warmCalendarEventsCache } from '@/utils/calendarEvents';
+import { getCalendarMonthGridMeta } from '@/utils/calendarMonthGrid';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import '@/utils/cityDatabase';
-import { preloadPopularSurahs } from '@/hooks/useSurahData';
-import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone, runPermissionOnboardingGrandfatherMigration } from '@/utils/prayerOnboarding';
+import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 
 const STARTUP_EPOCH_MS = Date.now();
 const STARTUP_TIMING_ENABLED = true;
 function startupMark(label: string): void {
   if (!STARTUP_TIMING_ENABLED) return;
   const elapsed = Date.now() - STARTUP_EPOCH_MS;
-  console.warn(`[Startup][${elapsed}ms] ${label}`);
+  console.error(`[Startup][${elapsed}ms] ${label}`);
 }
 
 // Force RTL for Dari/Pashto/Arabic UI (required on some Android/Huawei builds)

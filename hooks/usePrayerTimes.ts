@@ -1,15 +1,15 @@
 /**
  * Prayer Times Hook
- * Uses adhan library for accurate Hanafi prayer times
- * Supports all cities worldwide with Afghan diaspora
+ * Uses the canonical prayerTimesAgent (country-aware policies + offsets).
  */
 
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CityKey } from '@/utils/prayerTimesManager';
 import { PrayerTimesDisplay, getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
-import { CITIES, ALL_CITIES, searchCities } from '@/utils/cities';
+import { CITIES, ALL_CITIES, searchCities, getCity } from '@/utils/cities';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
+import { preloadRegionForCityKey } from '@/utils/cityDatabase';
 
 const SELECTED_CITY_KEY = 'selected_city';
 
@@ -21,12 +21,10 @@ export function usePrayerTimes() {
   const [loading, setLoading] = useState(true);
   const [gpsLoading, setGpsLoading] = useState(false);
 
-  // Load saved city on mount
   useEffect(() => {
     loadSavedCity();
   }, []);
 
-  // Recalculate when city changes
   useEffect(() => {
     let cancelled = false;
     const loadTimes = async () => {
@@ -39,6 +37,7 @@ export function usePrayerTimes() {
       }
       setLoading(true);
       try {
+        await preloadRegionForCityKey(selectedCity).catch(() => undefined);
         const result = await getPrayerTimesForDate({ cityKey: selectedCity, date: new Date() });
         if (!cancelled) {
           setPrayerTimes(result.display);
@@ -60,12 +59,9 @@ export function usePrayerTimes() {
   const loadSavedCity = async () => {
     try {
       const saved = await AsyncStorage.getItem(SELECTED_CITY_KEY);
-      if (saved && saved in ALL_CITIES) {
-        setSelectedCity(saved as CityKey);
-        return;
-      } else {
-        // Try legacy format
-        if (saved && saved.startsWith('afghanistan_')) {
+      if (saved) {
+        await preloadRegionForCityKey(saved).catch(() => undefined);
+        if (getCity(saved) || saved in ALL_CITIES || saved.startsWith('afghanistan_')) {
           setSelectedCity(saved as CityKey);
           return;
         }

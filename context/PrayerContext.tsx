@@ -55,8 +55,10 @@ import {
   Location as LocationType,
   PrayerTimes,
 } from '@/utils/prayerTimes';
-import { getPrayerTimesForDate } from '@/utils/prayerTimesAgent';
-import { applyPrayerTimeOffsets, shouldApplyKabulDhuhrOffset } from '@/utils/prayerOffsets';
+import { getPrayerTimesForDate, getPrayerTimesForDateRange } from '@/utils/prayerTimesAgent';
+import { applyPrayerTimeOffsets } from '@/utils/prayerOffsets';
+import { resolvePrayerCalculationPolicy } from '@/utils/prayerCalculationPolicy';
+import { addDaysToDateKey, buildDateFromLocalTimeInTimezone as buildZonedLocalTime, getDateKeyInTimezone } from '@/utils/prayerTimezone';
 import { pushWidgetSnapshot } from '@/utils/pushWidgetSnapshot';
 import {
   canUseNativeAdhanScheduler,
@@ -153,18 +155,25 @@ function buildNativeAdhanConfig(
   location: LocationType,
   cityKey: string,
   adhanPreferences: AdhanPreferences,
+  scheduleJson?: string,
 ): NativeAdhanConfigInput {
   const fajrContent = getNotificationContent('fajr', true);
   const dhuhrContent = getNotificationContent('dhuhr', true);
   const asrContent = getNotificationContent('asr', true);
   const maghribContent = getNotificationContent('maghrib', true);
   const ishaContent = getNotificationContent('isha', true);
+  const policy = resolvePrayerCalculationPolicy(cityKey, location);
 
   const base = {
     latitude: location.latitude,
     longitude: location.longitude,
     timezoneId: location.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
     cityKey,
+    countryCode: policy.countryCode,
+    calculationMethod: policy.adhanJsMethod,
+    madhab: policy.madhab,
+    policyVersion: policy.policyVersion,
+    scheduleJson: scheduleJson || '',
     masterEnabled: adhanPreferences.masterEnabled,
     fajrEnabled: adhanPreferences.fajr.enabled,
     dhuhrEnabled: adhanPreferences.dhuhr.enabled,
@@ -192,6 +201,31 @@ function buildNativeAdhanConfig(
     ...base,
     configVersion: stableNativeAdhanConfigVersion(base),
   };
+}
+
+async function buildCanonicalNativeScheduleJson(
+  cityKey: string,
+  location: LocationType,
+  days: number,
+): Promise<string> {
+  const bundles = await getPrayerTimesForDateRange({
+    cityKey,
+    location,
+    startDate: new Date(),
+    days,
+  });
+  return JSON.stringify({
+    policyVersion: bundles[0]?.policyVersion ?? 0,
+    source: bundles[0]?.sourceLabel ?? 'unknown',
+    days: bundles.map((bundle) => ({
+      dateKey: bundle.dateKey,
+      fajr: bundle.times.fajr.getTime(),
+      dhuhr: bundle.times.dhuhr.getTime(),
+      asr: bundle.times.asr.getTime(),
+      maghrib: bundle.times.maghrib.getTime(),
+      isha: bundle.times.isha.getTime(),
+    })),
+  });
 }
 
 type ExpectedNotificationType = 'adhan' | 'reminder';
@@ -1028,7 +1062,7 @@ async function configureAndroidNotificationChannels(
       const result = await getPrayerTimesForDate({ cityKey, location, date: new Date() });
       dispatch({
         type: 'SET_PRAYER_TIMES',
-        payload: applyPrayerTimeOffsets(result.times, cityKey, location),
+        payload: result.times,
       });
       dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
@@ -1136,12 +1170,9 @@ async function configureAndroidNotificationChannels(
     await loadPrayerTimesFor(state.location, state.settings.selectedCity, state.settings);
   }, [state.location, state.settings]);
 
-  const getDateKey = useCallback((date: Date) => {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  }, []);
+  const getDateKey = useCallback((date: Date, timeZone?: string) => {
+    return getDateKeyInTimezone(date, timeZone || state.location.timezone);
+  }, [state.location.timezone]);
 
   const getTimezoneOffsetMinutes = useCallback((timeZone: string | undefined, date: Date): number => {
     if (!timeZone) return date.getTimezoneOffset() * -1;
@@ -1239,16 +1270,25 @@ async function configureAndroidNotificationChannels(
 
   useEffect(() => {
     if (!state.prayerTimes) return;
-    void pushWidgetSnapshot(state.prayerTimes, state.locationName);
-  }, [state.prayerTimes, state.locationName]);
+    void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
+      cityKey: toCityKey(state.settings.selectedCity),
+      location: state.location,
+      timezone: state.location.timezone,
+    });
+  }, [state.prayerTimes, state.locationName, state.location, state.settings.selectedCity]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (status) => {
       if (status !== 'active' || !state.prayerTimes) return;
-      void pushWidgetSnapshot(state.prayerTimes, state.locationName, { force: true });
+      void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
+        force: true,
+        cityKey: toCityKey(state.settings.selectedCity),
+        location: state.location,
+        timezone: state.location.timezone,
+      });
     });
     return () => subscription.remove();
-  }, [state.prayerTimes, state.locationName]);
+  }, [state.prayerTimes, state.locationName, state.location, state.settings.selectedCity]);
 
   // Reschedule Adhan notifications on app resume, day change, and iOS health checks
   useEffect(() => {
@@ -1618,9 +1658,9 @@ async function configureAndroidNotificationChannels(
     const expected: ExpectedPrayerNotification[] = [];
 
     for (let dayOffset = 0; dayOffset < rollingDays; dayOffset++) {
-      const targetDate = new Date(now);
-      targetDate.setHours(12, 0, 0, 0);
-      targetDate.setDate(now.getDate() + dayOffset);
+      const startKey = getDateKeyInTimezone(now, fallbackTimeZone);
+      const dateKeyForDay = addDaysToDateKey(startKey, dayOffset);
+      const targetDate = buildZonedLocalTime(dateKeyForDay, '12:00', fallbackTimeZone);
 
       let dayTimes: PrayerTimes;
       let dayTimeZone = fallbackTimeZone;
@@ -1630,7 +1670,8 @@ async function configureAndroidNotificationChannels(
           location: state.location,
           date: targetDate,
         });
-        dayTimes = applyPrayerTimeOffsets(result.times, cityKey, state.location);
+        // Agent already applies country policy offsets.
+        dayTimes = result.times;
         dayTimeZone = result.timezone || dayTimeZone;
       } catch {
         const fallbackTimes = calculatePrayerTimes(
@@ -1658,22 +1699,20 @@ async function configureAndroidNotificationChannels(
       for (const prayerKey of enabledPrayers) {
         const prayerSettings = adhanPreferences[prayerKey];
         const isFridayJummah = prayerKey === 'dhuhr' && isFriday;
-        const scheduleTime = isFridayJummah
-          ? buildDateFromLocalTimeInTimezone(targetDate, '13:00', dayTimeZone)
-          : new Date(dayTimes[prayerKey]);
+        // Use canonical dhuhr (Afghanistan = 12:30 including Friday; no 13:00 override).
+        const scheduleTime = new Date(dayTimes[prayerKey]);
         if (!isValidDate(scheduleTime) || scheduleTime <= now) continue;
 
         if (__DEV__ && Platform.OS === 'ios' && prayerKey === 'dhuhr') {
           console.log('[DhuhrSchedule][iOS]', {
             dayOffset,
             cityKey: cityKey ?? null,
-            usingKabulOffset: shouldApplyKabulDhuhrOffset(cityKey, state.location),
             isFridayJummah,
             triggerAt: scheduleTime.toISOString(),
           });
         }
 
-        const dayKey = getDateKey(scheduleTime);
+        const dayKey = getDateKey(scheduleTime, dayTimeZone);
 
         if (!useNativeEngine) {
           const content = isFridayJummah
@@ -1761,7 +1800,6 @@ async function configureAndroidNotificationChannels(
     getDateKey,
     isFridayInTimezone,
     isValidDate,
-    shouldApplyKabulDhuhrOffset,
     state.prayerTimes,
     state.adhanPreferences,
     state.location,
@@ -1902,10 +1940,30 @@ async function configureAndroidNotificationChannels(
         return;
       }
 
-      const nativeConfig = buildNativeAdhanConfig(state.location, cityKey, {
-        ...state.adhanPreferences,
-        masterEnabled,
-      });
+      let scheduleJson = '';
+      if (masterEnabled) {
+        try {
+          scheduleJson = await buildCanonicalNativeScheduleJson(
+            cityKey,
+            state.location,
+            7,
+          );
+        } catch (error) {
+          if (__DEV__) {
+            console.warn('Failed to build canonical native schedule:', error);
+          }
+        }
+      }
+
+      const nativeConfig = buildNativeAdhanConfig(
+        state.location,
+        cityKey,
+        {
+          ...state.adhanPreferences,
+          masterEnabled,
+        },
+        scheduleJson,
+      );
       await syncNativeAdhanConfig(nativeConfig);
     };
 
@@ -2140,7 +2198,24 @@ async function configureAndroidNotificationChannels(
     let nativeExactScheduledCount = 0;
     let nativeExpectedCount = 0;
     if (useNativeExactAdhan) {
-      const nativeConfig = buildNativeAdhanConfig(state.location, resolvedCityKey, state.adhanPreferences);
+      let scheduleJson = '';
+      try {
+        scheduleJson = await buildCanonicalNativeScheduleJson(
+          resolvedCityKey,
+          state.location,
+          7,
+        );
+      } catch (error) {
+        if (__DEV__) {
+          console.warn('Failed to build canonical native schedule:', error);
+        }
+      }
+      const nativeConfig = buildNativeAdhanConfig(
+        state.location,
+        resolvedCityKey,
+        state.adhanPreferences,
+        scheduleJson,
+      );
       const nativeResult = await syncNativeAdhanConfig(nativeConfig);
       nativeExactScheduledCount = nativeResult.expectedCount;
       nativeExpectedCount = nativeResult.expectedCount;

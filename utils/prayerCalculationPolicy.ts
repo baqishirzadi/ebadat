@@ -1,0 +1,314 @@
+/**
+ * Country-aware prayer calculation policy.
+ * Single source of truth for AlAdhan method/school, local adhan-js method,
+ * Maghrib/Dhuhr adjustments, and Afghanistan fixed Dhuhr.
+ */
+
+import { getCity, isAfghanCityKey, normalizeCityKey } from '@/utils/cities';
+import type { Location as LocationType } from '@/utils/prayerTimes';
+
+export const PRAYER_POLICY_VERSION = 3;
+
+export type AdhanJsMethodName =
+  | 'MuslimWorldLeague'
+  | 'Egyptian'
+  | 'Karachi'
+  | 'UmmAlQura'
+  | 'Dubai'
+  | 'MoonsightingCommittee'
+  | 'NorthAmerica'
+  | 'Kuwait'
+  | 'Qatar'
+  | 'Singapore'
+  | 'Tehran'
+  | 'Turkey'
+  | 'Other';
+
+export type LocalMadhab = 'Hanafi' | 'Shafi';
+
+export type OnlineSourceKind = 'aladhan' | 'diyanet';
+
+export interface PrayerCalculationPolicy {
+  countryCode: string;
+  sourceLabel: string;
+  onlineSource: OnlineSourceKind;
+  /** AlAdhan calendar method id (ignored when onlineSource is diyanet). */
+  aladhanMethod: number;
+  /** AlAdhan school: 0 Shafi, 1 Hanafi */
+  aladhanSchool: number;
+  adhanJsMethod: AdhanJsMethodName;
+  madhab: LocalMadhab;
+  /** Maghrib minutes to add after source times (Afghanistan only). */
+  maghribOffsetMinutes: number;
+  /** Absolute Dhuhr at 12:30 in city timezone (every day including Friday). */
+  fixedDhuhrLocalTime: string | null;
+  policyVersion: number;
+}
+
+const DEFAULT_POLICY: PrayerCalculationPolicy = {
+  countryCode: 'XX',
+  sourceLabel: 'MWL',
+  onlineSource: 'aladhan',
+  aladhanMethod: 3,
+  aladhanSchool: 0,
+  adhanJsMethod: 'MuslimWorldLeague',
+  madhab: 'Shafi',
+  maghribOffsetMinutes: 0,
+  fixedDhuhrLocalTime: null,
+  policyVersion: PRAYER_POLICY_VERSION,
+};
+
+/** ISO country → policy (explicit authoritative mapping). */
+const COUNTRY_POLICIES: Record<string, Omit<PrayerCalculationPolicy, 'policyVersion'>> = {
+  AF: {
+    countryCode: 'AF',
+    sourceLabel: 'Karachi+AF',
+    onlineSource: 'aladhan',
+    aladhanMethod: 1,
+    aladhanSchool: 1,
+    adhanJsMethod: 'Karachi',
+    madhab: 'Hanafi',
+    maghribOffsetMinutes: 3,
+    fixedDhuhrLocalTime: '12:30',
+  },
+  TR: {
+    countryCode: 'TR',
+    sourceLabel: 'Diyanet',
+    onlineSource: 'diyanet',
+    aladhanMethod: 13,
+    aladhanSchool: 1,
+    adhanJsMethod: 'Turkey',
+    madhab: 'Hanafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  IR: {
+    countryCode: 'IR',
+    sourceLabel: 'Tehran',
+    onlineSource: 'aladhan',
+    aladhanMethod: 7,
+    aladhanSchool: 0,
+    adhanJsMethod: 'Tehran',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  SA: {
+    countryCode: 'SA',
+    sourceLabel: 'UmmAlQura',
+    onlineSource: 'aladhan',
+    aladhanMethod: 4,
+    aladhanSchool: 0,
+    adhanJsMethod: 'UmmAlQura',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  EG: {
+    countryCode: 'EG',
+    sourceLabel: 'Egyptian',
+    onlineSource: 'aladhan',
+    aladhanMethod: 5,
+    aladhanSchool: 0,
+    adhanJsMethod: 'Egyptian',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  KW: {
+    countryCode: 'KW',
+    sourceLabel: 'Kuwait',
+    onlineSource: 'aladhan',
+    aladhanMethod: 9,
+    aladhanSchool: 0,
+    adhanJsMethod: 'Kuwait',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  QA: {
+    countryCode: 'QA',
+    sourceLabel: 'Qatar',
+    onlineSource: 'aladhan',
+    aladhanMethod: 10,
+    aladhanSchool: 0,
+    adhanJsMethod: 'Qatar',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  AE: {
+    countryCode: 'AE',
+    sourceLabel: 'Dubai',
+    onlineSource: 'aladhan',
+    aladhanMethod: 8,
+    aladhanSchool: 0,
+    adhanJsMethod: 'Dubai',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  SG: {
+    countryCode: 'SG',
+    sourceLabel: 'MUIS',
+    onlineSource: 'aladhan',
+    aladhanMethod: 11,
+    aladhanSchool: 1,
+    adhanJsMethod: 'Singapore',
+    madhab: 'Hanafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  MY: {
+    countryCode: 'MY',
+    sourceLabel: 'JAKIM',
+    onlineSource: 'aladhan',
+    aladhanMethod: 11,
+    aladhanSchool: 1,
+    adhanJsMethod: 'Singapore',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  ID: {
+    countryCode: 'ID',
+    sourceLabel: 'KEMENAG',
+    onlineSource: 'aladhan',
+    aladhanMethod: 11,
+    aladhanSchool: 1,
+    adhanJsMethod: 'Singapore',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  US: {
+    countryCode: 'US',
+    sourceLabel: 'ISNA',
+    onlineSource: 'aladhan',
+    aladhanMethod: 2,
+    aladhanSchool: 0,
+    adhanJsMethod: 'NorthAmerica',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  CA: {
+    countryCode: 'CA',
+    sourceLabel: 'ISNA',
+    onlineSource: 'aladhan',
+    aladhanMethod: 2,
+    aladhanSchool: 0,
+    adhanJsMethod: 'NorthAmerica',
+    madhab: 'Shafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  PK: {
+    countryCode: 'PK',
+    sourceLabel: 'Karachi',
+    onlineSource: 'aladhan',
+    aladhanMethod: 1,
+    aladhanSchool: 1,
+    adhanJsMethod: 'Karachi',
+    madhab: 'Hanafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  IN: {
+    countryCode: 'IN',
+    sourceLabel: 'Karachi',
+    onlineSource: 'aladhan',
+    aladhanMethod: 1,
+    aladhanSchool: 1,
+    adhanJsMethod: 'Karachi',
+    madhab: 'Hanafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+  BD: {
+    countryCode: 'BD',
+    sourceLabel: 'Karachi',
+    onlineSource: 'aladhan',
+    aladhanMethod: 1,
+    aladhanSchool: 1,
+    adhanJsMethod: 'Karachi',
+    madhab: 'Hanafi',
+    maghribOffsetMinutes: 0,
+    fixedDhuhrLocalTime: null,
+  },
+};
+
+function normalizeCountryCode(raw?: string | null): string | undefined {
+  if (!raw) return undefined;
+  const code = raw.trim().toUpperCase();
+  if (code.length === 2) return code;
+  return undefined;
+}
+
+export function resolveCountryCode(
+  cityKey?: string | null,
+  location?: LocationType,
+): string {
+  const normalized = normalizeCityKey(cityKey) ?? cityKey ?? undefined;
+  if (isAfghanCityKey(normalized)) return 'AF';
+
+  if (normalized) {
+    const city = getCity(normalized);
+    const fromCity = normalizeCountryCode(city?.country);
+    if (fromCity) return fromCity;
+
+    const prefix = normalized.split('_')[0]?.toLowerCase();
+    const prefixMap: Record<string, string> = {
+      afghanistan: 'AF',
+      turkey: 'TR',
+      iran: 'IR',
+      saudi: 'SA',
+      egypt: 'EG',
+      kuwait: 'KW',
+      qatar: 'QA',
+      uae: 'AE',
+      emirates: 'AE',
+      singapore: 'SG',
+      malaysia: 'MY',
+      indonesia: 'ID',
+      pakistan: 'PK',
+      india: 'IN',
+      bangladesh: 'BD',
+      usa: 'US',
+      canada: 'CA',
+      germany: 'DE',
+      uk: 'GB',
+      britain: 'GB',
+    };
+    if (prefix && prefixMap[prefix]) return prefixMap[prefix];
+  }
+
+  // GPS near Kabul → treat as Afghanistan when no city key.
+  if (!normalized && location) {
+    const dLat = location.latitude - 34.5553;
+    const dLon = location.longitude - 69.2075;
+    const approxKm = Math.sqrt(dLat * dLat + dLon * dLon) * 111;
+    if (approxKm <= 45) return 'AF';
+  }
+
+  return 'XX';
+}
+
+export function resolvePrayerCalculationPolicy(
+  cityKey?: string | null,
+  location?: LocationType,
+): PrayerCalculationPolicy {
+  const countryCode = resolveCountryCode(cityKey, location);
+  const base = COUNTRY_POLICIES[countryCode] ?? {
+    ...DEFAULT_POLICY,
+    countryCode,
+  };
+  return {
+    ...base,
+    policyVersion: PRAYER_POLICY_VERSION,
+  };
+}
+
+export function policyCacheSegment(policy: PrayerCalculationPolicy): string {
+  return `p${policy.policyVersion}_${policy.countryCode}_${policy.sourceLabel}`;
+}

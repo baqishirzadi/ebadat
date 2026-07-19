@@ -31,7 +31,7 @@ function TodayPrayerTimesCardInner() {
           <PrayerChip
             key={key}
             label={PRAYER_LABELS_DARI[key]}
-            time={formatPrayerTime12h(prayerTimes[key])}
+            time={formatPrayerTime12h(prayerTimes[key], state.location?.timezone)}
             active={current === key}
           />
         ))}

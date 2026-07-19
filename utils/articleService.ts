@@ -7,7 +7,6 @@
 import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 import * as articleStorage from './articleStorage';
 import { Article, ArticleCategory, ArticleLanguage } from '@/types/articles';
-import articlesSeedData from '@/data/articles-seed.json';
 
 const ENABLE_ARTICLES_REMOTE = true;
 
@@ -208,7 +207,7 @@ export async function getArticleById(articleId: string): Promise<Article | null>
 function loadArticlesFromLocal(): Article[] {
   try {
     const now = new Date();
-    const articles: Article[] = articlesSeedData.articles.map((articleData) => {
+    const articles: Article[] = require('@/data/articles-seed.json').articles.map((articleData) => {
       // Generate a simple ID from title and author
       const id = `${articleData.authorId}_${articleData.title.substring(0, 20)}_${articleData.language}`.replace(/\s+/g, '_');
       

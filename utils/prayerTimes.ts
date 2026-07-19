@@ -424,7 +424,11 @@ export const PRAYER_LABELS_PASHTO = {
   isha: 'خفتن',
 } as const;
 
-export function getNextPrayer(prayerTimes: PrayerTimes, now: Date = new Date()): {
+export function getNextPrayer(
+  prayerTimes: PrayerTimes,
+  now: Date = new Date(),
+  options?: { tomorrowFajr?: Date },
+): {
   name: string;
   time: Date;
   nameArabic: string;
@@ -453,9 +457,9 @@ export function getNextPrayer(prayerTimes: PrayerTimes, now: Date = new Date()):
     }
   }
 
-  // Return tomorrow's Fajr
-  const tomorrowFajr = new Date(prayerTimes.fajr);
-  tomorrowFajr.setDate(tomorrowFajr.getDate() + 1);
+  const tomorrowFajr =
+    options?.tomorrowFajr ??
+    new Date(prayerTimes.fajr.getTime() + 24 * 60 * 60 * 1000);
   return {
     name: 'fajr',
     time: tomorrowFajr,

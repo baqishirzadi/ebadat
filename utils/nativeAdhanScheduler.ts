@@ -7,6 +7,12 @@ export interface NativeAdhanConfigInput {
   longitude: number;
   timezoneId: string;
   cityKey: string;
+  countryCode?: string;
+  calculationMethod?: string;
+  madhab?: string;
+  policyVersion?: number;
+  /** JSON string: { days: [{ dateKey, fajr, dhuhr, asr, maghrib, isha }] } */
+  scheduleJson?: string;
   masterEnabled: boolean;
   fajrEnabled: boolean;
   dhuhrEnabled: boolean;

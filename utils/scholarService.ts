@@ -6,7 +6,6 @@
 
 import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 import { Scholar } from '@/types/articles';
-import articlesSeedData from '@/data/articles-seed.json';
 
 const ENABLE_SCHOLARS_REMOTE = false;
 
@@ -63,7 +62,7 @@ export async function getScholarById(scholarId: string): Promise<Scholar | null>
 function loadScholarsFromLocal(): Scholar[] {
   try {
     const now = new Date();
-    const scholars: Scholar[] = articlesSeedData.scholars
+    const scholars: Scholar[] = require('@/data/articles-seed.json').scholars
       .filter(s => s.verified)
       .map((scholarData) => ({
         id: scholarData.id,

@@ -9,6 +9,11 @@ data class AdhanConfig(
   val longitude: Double,
   val timezoneId: String,
   val cityKey: String,
+  val countryCode: String = "",
+  val calculationMethod: String = "Karachi",
+  val madhab: String = "Hanafi",
+  val policyVersion: Long = 0L,
+  val scheduleJson: String? = null,
   val masterEnabled: Boolean,
   val fajrEnabled: Boolean,
   val dhuhrEnabled: Boolean,
@@ -84,6 +89,11 @@ data class AdhanConfig(
     json.put("longitude", longitude)
     json.put("timezoneId", timezoneId)
     json.put("cityKey", cityKey)
+    json.put("countryCode", countryCode)
+    json.put("calculationMethod", calculationMethod)
+    json.put("madhab", madhab)
+    json.put("policyVersion", policyVersion)
+    json.put("scheduleJson", scheduleJson ?: "")
     json.put("masterEnabled", masterEnabled)
     json.put("fajrEnabled", fajrEnabled)
     json.put("dhuhrEnabled", dhuhrEnabled)
@@ -127,6 +137,15 @@ data class AdhanConfig(
         longitude = longitude,
         timezoneId = timezoneId,
         cityKey = cityKey,
+        countryCode = map.getString("countryCode")?.trim().orEmpty(),
+        calculationMethod = map.getString("calculationMethod")?.trim().orEmpty().ifEmpty { "Karachi" },
+        madhab = map.getString("madhab")?.trim().orEmpty().ifEmpty { "Hanafi" },
+        policyVersion = if (map.hasKey("policyVersion") && !map.isNull("policyVersion")) {
+          map.getDouble("policyVersion").toLong()
+        } else {
+          0L
+        },
+        scheduleJson = map.getString("scheduleJson")?.takeIf { it.isNotBlank() },
         masterEnabled = readBoolean(map, "masterEnabled", true),
         fajrEnabled = readBoolean(map, "fajrEnabled", true),
         dhuhrEnabled = readBoolean(map, "dhuhrEnabled", true),
@@ -167,6 +186,11 @@ data class AdhanConfig(
           longitude = json.getDouble("longitude"),
           timezoneId = json.getString("timezoneId"),
           cityKey = json.getString("cityKey"),
+          countryCode = json.optString("countryCode", ""),
+          calculationMethod = json.optString("calculationMethod", "Karachi"),
+          madhab = json.optString("madhab", "Hanafi"),
+          policyVersion = json.optLong("policyVersion", 0L),
+          scheduleJson = json.optString("scheduleJson", "").takeIf { it.isNotBlank() },
           masterEnabled = json.optBoolean("masterEnabled", true),
           fajrEnabled = json.optBoolean("fajrEnabled", true),
           dhuhrEnabled = json.optBoolean("dhuhrEnabled", true),

@@ -1,19 +1,41 @@
 /**
- * Prayer Times Agent
- * Fetches AlAdhan API (Hanafi school), caches 30 days, validates against local calculations,
- * and falls back to local calculations if needed.
+ * Canonical prayer times agent.
+ * Country-aware AlAdhan / Diyanet fetch, policy adjustments, 30-day cache.
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import {
+  Coordinates,
+  CalculationMethod,
+  PrayerTimes as AdhanPrayerTimes,
+  Madhab,
+  SunnahTimes,
+} from 'adhan';
+
 import { getCity, City } from '@/utils/cities';
 import {
-  calculatePrayerTimes,
+  fetchDiyanetMonth,
+  resolveDiyanetDistrictId,
+} from '@/utils/diyanetClient';
+import {
+  PRAYER_POLICY_VERSION,
+  PrayerCalculationPolicy,
+  policyCacheSegment,
+  resolvePrayerCalculationPolicy,
+} from '@/utils/prayerCalculationPolicy';
+import { applyPrayerTimeOffsets } from '@/utils/prayerOffsets';
+import {
+  addDaysToDateKey,
+  buildDateFromLocalTimeInTimezone,
+  format12HourInTimeZone,
+  getDateKeyInTimezone,
+} from '@/utils/prayerTimezone';
+import {
+  AFGHAN_CITIES,
   Location as LocationType,
   PrayerTimes,
-  AFGHAN_CITIES,
 } from '@/utils/prayerTimes';
-import { Coordinates, CalculationMethod, PrayerTimes as AdhanPrayerTimes, Madhab, SunnahTimes } from 'adhan';
 import { toArabicNumeralsString } from './numbers';
 
 export interface PrayerTimesDisplay {
@@ -26,48 +48,56 @@ export interface PrayerTimesDisplay {
   date: string;
 }
 
+export type PrayerTimesSource =
+  | 'aladhan'
+  | 'diyanet'
+  | 'cache'
+  | 'fallback';
+
 export interface PrayerTimesBundle {
   dateKey: string;
   cityKey?: string;
   timezone?: string;
-  source: 'aladhan' | 'cache' | 'fallback';
+  source: PrayerTimesSource;
+  sourceLabel: string;
+  policyVersion: number;
   validated: boolean;
   times: PrayerTimes;
   display: PrayerTimesDisplay;
 }
 
-const CACHE_KEY = '@ebadat/prayer_times_cache_v2';
-const LEGACY_CACHE_KEY = '@ebadat/prayer_times_cache_v1';
+const CACHE_KEY = '@ebadat/prayer_times_cache_v3';
+const LEGACY_CACHE_KEYS = ['@ebadat/prayer_times_cache_v2', '@ebadat/prayer_times_cache_v1'];
 const CACHE_DAYS = 30;
 const ALADHAN_BASE = 'https://api.aladhan.com/v1';
-const ALADHAN_METHOD = 1; // Karachi
-const ALADHAN_SCHOOL = 1; // Hanafi
-const FALLBACK_TZ_OFFSETS: Record<string, number> = {
-  'Asia/Kabul': 270,
+
+type CachedTimings = {
+  fajr: string;
+  sunrise: string;
+  dhuhr: string;
+  asr: string;
+  maghrib: string;
+  isha: string;
 };
 
 type CachedDay = {
   date: string;
-  timings: {
-    fajr: string;
-    sunrise: string;
-    dhuhr: string;
-    asr: string;
-    maghrib: string;
-    isha: string;
-  };
+  timings: CachedTimings;
   timezone?: string;
   fetchedAt: number;
-  source: 'aladhan' | 'fallback';
+  source: 'aladhan' | 'diyanet' | 'fallback';
+  sourceLabel: string;
+  policyVersion: number;
   validated: boolean;
 };
 
 type CachePayload = {
-  version: 2;
+  version: 3;
   cities: Record<
     string,
     {
       updatedAt: number;
+      policySegment: string;
       days: Record<string, CachedDay>;
     }
   >;
@@ -84,45 +114,8 @@ async function isOnline(): Promise<boolean> {
   }
 }
 
-function getDateKey(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
-}
-
-function parseDateKey(dateKey: string): Date {
-  const [y, m, d] = dateKey.split('-').map((v) => parseInt(v, 10));
-  return new Date(y, m - 1, d);
-}
-
 function parseTimeValue(raw: string): string {
   return raw.split(' ')[0].trim();
-}
-
-function format12Hour(date: Date): string {
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
-  const minutesStr = minutes < 10 ? `0${minutes}` : String(minutes);
-  return `${hours}:${minutesStr} ${ampm}`;
-}
-
-function format12HourInTimeZone(date: Date, timeZone?: string): string {
-  if (!timeZone) return format12Hour(date);
-  try {
-    const formatted = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    }).format(date);
-    return formatted;
-  } catch {
-    return format12Hour(date);
-  }
 }
 
 function toDisplay(times: PrayerTimes, date: Date, timeZone?: string): PrayerTimesDisplay {
@@ -141,97 +134,49 @@ function parseGregorianDate(value: string): string {
   if (!value) return '';
   const parts = value.split('-');
   if (parts.length !== 3) return value;
-  if (parts[0].length === 4) {
-    return value;
-  }
+  if (parts[0].length === 4) return value;
   const [day, month, year] = parts;
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 }
 
-function getTimezoneOffsetMinutes(timeZone: string | undefined, date: Date): number {
-  if (!timeZone) return date.getTimezoneOffset() * -1;
-  try {
-    const dtf = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
-    const parts = dtf.formatToParts(date);
-    const lookup = (type: string) => parts.find((p) => p.type === type)?.value || '00';
-    const y = lookup('year');
-    const m = lookup('month');
-    const d = lookup('day');
-    const hh = lookup('hour');
-    const mm = lookup('minute');
-    const ss = lookup('second');
-    const asUTC = new Date(`${y}-${m}-${d}T${hh}:${mm}:${ss}Z`);
-    return Math.round((asUTC.getTime() - date.getTime()) / 60000);
-  } catch {
-    return FALLBACK_TZ_OFFSETS[timeZone] ?? date.getTimezoneOffset() * -1;
-  }
-}
-
-function buildDateFromLocalTime(date: Date, time: string, tzOffsetMinutes: number): Date {
-  const [hh, mm] = time.split(':').map((v) => parseInt(v, 10));
-  const utcMillis =
-    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), hh, mm) -
-    tzOffsetMinutes * 60 * 1000;
-  return new Date(utcMillis);
-}
-
 function minutesFromTimeString(time: string): number {
   const [hh, mm] = time.split(':').map((v) => parseInt(v, 10));
+  if (!Number.isFinite(hh) || !Number.isFinite(mm)) return NaN;
   return hh * 60 + mm;
-}
-
-function minutesInTimezone(date: Date, tzOffsetMinutes: number): number {
-  const utcMinutes = date.getUTCHours() * 60 + date.getUTCMinutes();
-  return (utcMinutes + tzOffsetMinutes + 1440) % 1440;
 }
 
 async function loadCache(): Promise<CachePayload> {
   try {
     const raw = await AsyncStorage.getItem(CACHE_KEY);
-    if (!raw) {
-      return { version: 2, cities: {} };
-    }
+    if (!raw) return { version: 3, cities: {} };
     const parsed = JSON.parse(raw) as CachePayload;
-    if (!parsed || parsed.version !== 2) {
-      return { version: 2, cities: {} };
-    }
+    if (!parsed || parsed.version !== 3) return { version: 3, cities: {} };
     return parsed;
   } catch {
-    return { version: 2, cities: {} };
+    return { version: 3, cities: {} };
   }
 }
 
 async function saveCache(cache: CachePayload): Promise<void> {
   await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cache));
-  try {
-    await AsyncStorage.removeItem(LEGACY_CACHE_KEY);
-  } catch {
-    // Best-effort cleanup only.
+  for (const legacy of LEGACY_CACHE_KEYS) {
+    try {
+      await AsyncStorage.removeItem(legacy);
+    } catch {
+      // Best-effort.
+    }
   }
 }
 
-function pruneCache(cache: CachePayload): CachePayload {
-  const today = new Date();
-  const minDate = new Date(today);
-  minDate.setDate(minDate.getDate() - CACHE_DAYS);
-  const minKey = getDateKey(minDate);
+function pruneCache(cache: CachePayload, timeZone?: string): CachePayload {
+  const todayKey = getDateKeyInTimezone(new Date(), timeZone);
+  const minKey = addDaysToDateKey(todayKey, -CACHE_DAYS);
 
   Object.keys(cache.cities).forEach((cityKey) => {
     const city = cache.cities[cityKey];
     const pruned: Record<string, CachedDay> = {};
     Object.entries(city.days).forEach(([dateKey, day]) => {
-      if (dateKey >= minKey) {
-        pruned[dateKey] = day;
-      }
+      if (dateKey >= minKey) pruned[dateKey] = day;
     });
     city.days = pruned;
   });
@@ -239,7 +184,10 @@ function pruneCache(cache: CachePayload): CachePayload {
   return cache;
 }
 
-function getCityInfo(cityKey?: string, location?: LocationType): { cityKey?: string; city?: City; location: LocationType } {
+function getCityInfo(
+  cityKey?: string,
+  location?: LocationType,
+): { cityKey?: string; city?: City & { category?: string; key?: string }; location: LocationType } {
   if (cityKey) {
     const city = getCity(cityKey);
     if (city) {
@@ -273,57 +221,58 @@ function getCityInfo(cityKey?: string, location?: LocationType): { cityKey?: str
   };
 }
 
-async function fetchAlAdhanMonth(city: City, date: Date): Promise<CachedDay[]> {
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  const params = new URLSearchParams({
-    latitude: String(city.lat),
-    longitude: String(city.lon),
-    method: String(ALADHAN_METHOD),
-    school: String(ALADHAN_SCHOOL),
-    month: String(month),
-    year: String(year),
-  });
-  if (city.timezone) {
-    params.append('timezonestring', city.timezone);
+function createAdhanParams(policy: PrayerCalculationPolicy) {
+  let params;
+  switch (policy.adhanJsMethod) {
+    case 'Egyptian':
+      params = CalculationMethod.Egyptian();
+      break;
+    case 'Karachi':
+      params = CalculationMethod.Karachi();
+      break;
+    case 'UmmAlQura':
+      params = CalculationMethod.UmmAlQura();
+      break;
+    case 'Dubai':
+      params = CalculationMethod.Dubai();
+      break;
+    case 'MoonsightingCommittee':
+      params = CalculationMethod.MoonsightingCommittee();
+      break;
+    case 'NorthAmerica':
+      params = CalculationMethod.NorthAmerica();
+      break;
+    case 'Kuwait':
+      params = CalculationMethod.Kuwait();
+      break;
+    case 'Qatar':
+      params = CalculationMethod.Qatar();
+      break;
+    case 'Singapore':
+      params = CalculationMethod.Singapore();
+      break;
+    case 'Tehran':
+      params = CalculationMethod.Tehran();
+      break;
+    case 'Turkey':
+      params = CalculationMethod.Turkey();
+      break;
+    case 'MuslimWorldLeague':
+    default:
+      params = CalculationMethod.MuslimWorldLeague();
+      break;
   }
-  const response = await fetch(`${ALADHAN_BASE}/calendar?${params.toString()}`);
-  if (!response.ok) {
-    throw new Error(`AlAdhan error: ${response.status}`);
-  }
-  const json = await response.json();
-  if (!json || !json.data) {
-    throw new Error('Invalid AlAdhan response');
-  }
-
-  const days: CachedDay[] = json.data.map((item: any) => {
-    const dateKey = parseGregorianDate(item.date?.gregorian?.date || '');
-    const timezone = item.meta?.timezone || city.timezone;
-    const timings = item.timings || {};
-    return {
-      date: dateKey,
-      timings: {
-        fajr: parseTimeValue(timings.Fajr || '00:00'),
-        sunrise: parseTimeValue(timings.Sunrise || '00:00'),
-        dhuhr: parseTimeValue(timings.Dhuhr || '00:00'),
-        asr: parseTimeValue(timings.Asr || '00:00'),
-        maghrib: parseTimeValue(timings.Maghrib || '00:00'),
-        isha: parseTimeValue(timings.Isha || '00:00'),
-      },
-      timezone,
-      fetchedAt: Date.now(),
-      source: 'aladhan',
-      validated: true,
-    };
-  });
-
-  return days.filter((d) => d.date);
+  params.madhab = policy.madhab === 'Hanafi' ? Madhab.Hanafi : Madhab.Shafi;
+  return params;
 }
 
-function calculateWithAdhan(location: LocationType, date: Date): PrayerTimes {
+export function calculateWithPolicy(
+  location: LocationType,
+  date: Date,
+  policy: PrayerCalculationPolicy,
+): PrayerTimes {
   const coordinates = new Coordinates(location.latitude, location.longitude);
-  const params = CalculationMethod.Karachi();
-  params.madhab = Madhab.Hanafi;
+  const params = createAdhanParams(policy);
   const prayerTimes = new AdhanPrayerTimes(coordinates, date, params);
   const sunnahTimes = new SunnahTimes(prayerTimes);
   return {
@@ -338,105 +287,191 @@ function calculateWithAdhan(location: LocationType, date: Date): PrayerTimes {
   };
 }
 
-function validateTimes(
-  cached: CachedDay,
-  location: LocationType,
-  date: Date
-): boolean {
-  try {
-    const tzOffset = getTimezoneOffsetMinutes(cached.timezone || location.timezone, date);
-    const apiMinutes = {
-      fajr: minutesFromTimeString(cached.timings.fajr),
-      sunrise: minutesFromTimeString(cached.timings.sunrise),
-      dhuhr: minutesFromTimeString(cached.timings.dhuhr),
-      asr: minutesFromTimeString(cached.timings.asr),
-      maghrib: minutesFromTimeString(cached.timings.maghrib),
-      isha: minutesFromTimeString(cached.timings.isha),
-    };
-
-    const adhanTimes = calculateWithAdhan(location, date);
-    const calcTimes = calculatePrayerTimes(date, location, 'Karachi', 'Hanafi');
-
-    const adhanMinutes = {
-      fajr: minutesInTimezone(adhanTimes.fajr, tzOffset),
-      sunrise: minutesInTimezone(adhanTimes.sunrise, tzOffset),
-      dhuhr: minutesInTimezone(adhanTimes.dhuhr, tzOffset),
-      asr: minutesInTimezone(adhanTimes.asr, tzOffset),
-      maghrib: minutesInTimezone(adhanTimes.maghrib, tzOffset),
-      isha: minutesInTimezone(adhanTimes.isha, tzOffset),
-    };
-
-    const calcMinutes = {
-      fajr: minutesInTimezone(calcTimes.fajr, tzOffset),
-      sunrise: minutesInTimezone(calcTimes.sunrise, tzOffset),
-      dhuhr: minutesInTimezone(calcTimes.dhuhr, tzOffset),
-      asr: minutesInTimezone(calcTimes.asr, tzOffset),
-      maghrib: minutesInTimezone(calcTimes.maghrib, tzOffset),
-      isha: minutesInTimezone(calcTimes.isha, tzOffset),
-    };
-
-    const keys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
-    let overThreshold = 0;
-    const threshold = 20;
-    keys.forEach((key) => {
-      const diffA = Math.abs(apiMinutes[key] - adhanMinutes[key]);
-      const diffB = Math.abs(apiMinutes[key] - calcMinutes[key]);
-      if (diffA > threshold && diffB > threshold) {
-        overThreshold += 1;
-      }
-    });
-
-    return overThreshold < 2;
-  } catch {
-    return true;
+async function fetchAlAdhanMonth(
+  city: City,
+  dateKeyMonth: string,
+  policy: PrayerCalculationPolicy,
+): Promise<CachedDay[]> {
+  const [yearStr, monthStr] = dateKeyMonth.split('-');
+  const year = parseInt(yearStr, 10);
+  const month = parseInt(monthStr, 10);
+  const params = new URLSearchParams({
+    latitude: String(city.lat),
+    longitude: String(city.lon),
+    method: String(policy.aladhanMethod),
+    school: String(policy.aladhanSchool),
+    month: String(month),
+    year: String(year),
+  });
+  if (city.timezone) {
+    params.append('timezonestring', city.timezone);
   }
+  const response = await fetch(`${ALADHAN_BASE}/calendar?${params.toString()}`);
+  if (!response.ok) {
+    throw new Error(`AlAdhan error: ${response.status}`);
+  }
+  const json = await response.json();
+  if (!json?.data) throw new Error('Invalid AlAdhan response');
+
+  return json.data
+    .map((item: any) => {
+      const dateKey = parseGregorianDate(item.date?.gregorian?.date || '');
+      const timezone = item.meta?.timezone || city.timezone;
+      const timings = item.timings || {};
+      return {
+        date: dateKey,
+        timings: {
+          fajr: parseTimeValue(timings.Fajr || '00:00'),
+          sunrise: parseTimeValue(timings.Sunrise || '00:00'),
+          dhuhr: parseTimeValue(timings.Dhuhr || '00:00'),
+          asr: parseTimeValue(timings.Asr || '00:00'),
+          maghrib: parseTimeValue(timings.Maghrib || '00:00'),
+          isha: parseTimeValue(timings.Isha || '00:00'),
+        },
+        timezone,
+        fetchedAt: Date.now(),
+        source: 'aladhan' as const,
+        sourceLabel: policy.sourceLabel,
+        policyVersion: policy.policyVersion,
+        validated: true,
+      };
+    })
+    .filter((d: CachedDay) => d.date);
 }
 
-async function ensureCache(cityKey: string, city: City, date: Date): Promise<CachePayload> {
-  const cache = pruneCache(await loadCache());
-  const cityCache = cache.cities[cityKey] || { updatedAt: 0, days: {} };
+async function fetchDiyanetMonthCached(
+  cityKey: string,
+  city: City & { key?: string },
+  dateKeyMonth: string,
+  policy: PrayerCalculationPolicy,
+): Promise<CachedDay[]> {
+  const districtId = await resolveDiyanetDistrictId(cityKey, { ...city, key: city.key || cityKey });
+  if (!districtId) {
+    throw new Error('Diyanet district unresolved');
+  }
+  const [yearStr, monthStr] = dateKeyMonth.split('-');
+  const days = await fetchDiyanetMonth(
+    districtId,
+    parseInt(yearStr, 10),
+    parseInt(monthStr, 10),
+  );
+  return days.map((day) => ({
+    date: day.date,
+    timings: day.timings,
+    timezone: city.timezone || 'Europe/Istanbul',
+    fetchedAt: Date.now(),
+    source: 'diyanet' as const,
+    sourceLabel: policy.sourceLabel,
+    policyVersion: policy.policyVersion,
+    validated: true,
+  }));
+}
 
-  const todayKey = getDateKey(date);
-  const end = new Date(date);
-  end.setDate(end.getDate() + CACHE_DAYS - 1);
+/** Source-independent structural validation (no Karachi comparison). */
+export function validateCachedTimings(timings: CachedTimings): boolean {
+  const keys: (keyof CachedTimings)[] = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  const minutes: number[] = [];
+  for (const key of keys) {
+    const value = timings[key];
+    if (!/^\d{1,2}:\d{2}$/.test(value)) return false;
+    const mins = minutesFromTimeString(value);
+    if (!Number.isFinite(mins) || mins < 0 || mins >= 24 * 60) return false;
+    minutes.push(mins);
+  }
+  // Strict increasing order across the day (allow wrap only for isha after maghrib already checked).
+  for (let i = 1; i < minutes.length; i += 1) {
+    if (minutes[i] <= minutes[i - 1]) return false;
+  }
+  // Daylight-ish bound: fajr before noon, maghrib after noon.
+  if (minutes[0] >= 12 * 60) return false;
+  if (minutes[4] < 12 * 60) return false;
+  return true;
+}
 
+function timingsToPrayerTimes(
+  timings: CachedTimings,
+  dateKey: string,
+  timezone: string | undefined,
+): PrayerTimes {
+  const fajrDate = buildDateFromLocalTimeInTimezone(dateKey, timings.fajr, timezone);
+  const maghribDate = buildDateFromLocalTimeInTimezone(dateKey, timings.maghrib, timezone);
+  const nightDurationMs = fajrDate.getTime() + 24 * 60 * 60 * 1000 - maghribDate.getTime();
+  return {
+    fajr: fajrDate,
+    sunrise: buildDateFromLocalTimeInTimezone(dateKey, timings.sunrise, timezone),
+    dhuhr: buildDateFromLocalTimeInTimezone(dateKey, timings.dhuhr, timezone),
+    asr: buildDateFromLocalTimeInTimezone(dateKey, timings.asr, timezone),
+    maghrib: maghribDate,
+    isha: buildDateFromLocalTimeInTimezone(dateKey, timings.isha, timezone),
+    midnight: new Date(maghribDate.getTime() + nightDurationMs / 2),
+    qiyam: new Date(fajrDate.getTime() - nightDurationMs / 3),
+  };
+}
+
+function finalizeTimes(
+  times: PrayerTimes,
+  cityKey: string | undefined,
+  location: LocationType,
+): PrayerTimes {
+  return applyPrayerTimeOffsets(times, cityKey, location);
+}
+
+async function ensureCache(
+  cityKey: string,
+  city: City & { key?: string },
+  dateKey: string,
+  policy: PrayerCalculationPolicy,
+): Promise<CachePayload> {
+  const timezone = city.timezone;
+  const cache = pruneCache(await loadCache(), timezone);
+  const segment = policyCacheSegment(policy);
+  let cityCache = cache.cities[cityKey];
+  if (!cityCache || cityCache.policySegment !== segment) {
+    cityCache = { updatedAt: 0, policySegment: segment, days: {} };
+  }
+
+  const endKey = addDaysToDateKey(dateKey, CACHE_DAYS - 1);
   const neededMonths = new Set<string>();
-  for (let d = new Date(date); d <= end; d.setDate(d.getDate() + 1)) {
-    const key = getDateKey(d);
-    const existingDay = cityCache.days[key];
-    if (!existingDay || existingDay.source !== 'aladhan') {
-      neededMonths.add(`${d.getFullYear()}-${d.getMonth() + 1}`);
+  for (let cursor = dateKey; cursor <= endKey; cursor = addDaysToDateKey(cursor, 1)) {
+    const existing = cityCache.days[cursor];
+    const usable =
+      existing &&
+      existing.policyVersion === policy.policyVersion &&
+      (existing.source === 'aladhan' || existing.source === 'diyanet') &&
+      validateCachedTimings(existing.timings);
+    if (!usable) {
+      neededMonths.add(cursor.slice(0, 7));
     }
   }
 
   const online = await isOnline();
   for (const monthKey of neededMonths) {
-    const [year, month] = monthKey.split('-').map((v) => parseInt(v, 10));
-    const monthDate = new Date(year, month - 1, 1);
+    if (!online) break;
     try {
-      if (!online) {
-        break;
-      }
-      const monthDays = await fetchAlAdhanMonth(city, monthDate);
+      const monthDays =
+        policy.onlineSource === 'diyanet'
+          ? await fetchDiyanetMonthCached(cityKey, city, monthKey, policy)
+          : await fetchAlAdhanMonth(city, monthKey, policy);
       monthDays.forEach((day) => {
-        cityCache.days[day.date] = day;
+        if (validateCachedTimings(day.timings)) {
+          cityCache.days[day.date] = { ...day, validated: true };
+        }
       });
       cityCache.updatedAt = Date.now();
     } catch (error) {
       if (__DEV__) {
-        console.warn('AlAdhan month fetch failed:', error);
+        console.warn('Prayer month fetch failed:', policy.sourceLabel, error);
       }
     }
   }
 
   cache.cities[cityKey] = cityCache;
   await saveCache(cache);
-
-  if (!cache.cities[cityKey].days[todayKey]) {
-    cache.cities[cityKey] = cityCache;
-  }
-
   return cache;
+}
+
+function localDateForDateKey(dateKey: string, timezone?: string): Date {
+  return buildDateFromLocalTimeInTimezone(dateKey, '12:00', timezone);
 }
 
 export async function getPrayerTimesForDate(params: {
@@ -444,65 +479,93 @@ export async function getPrayerTimesForDate(params: {
   location?: LocationType;
   date?: Date;
 }): Promise<PrayerTimesBundle> {
-  const date = params.date || new Date();
-  const dateKey = getDateKey(date);
+  const anchorDate = params.date || new Date();
   const { cityKey, city, location } = getCityInfo(params.cityKey, params.location);
+  const policy = resolvePrayerCalculationPolicy(cityKey, location);
+  const timezone = location.timezone || city?.timezone;
+  const dateKey = getDateKeyInTimezone(anchorDate, timezone);
 
   let cachedDay: CachedDay | undefined;
-  let source: PrayerTimesBundle['source'] = 'fallback';
+  let source: PrayerTimesSource = 'fallback';
   let validated = false;
-  let timezone = location.timezone;
 
   if (city && cityKey) {
-    const cache = await ensureCache(cityKey, city, date);
-    const cachedCandidate = cache.cities[cityKey]?.days[dateKey];
-    cachedDay = cachedCandidate?.source === 'aladhan' ? cachedCandidate : undefined;
-    if (cachedDay) {
-      timezone = cachedDay.timezone || timezone;
-      validated = validateTimes(cachedDay, location, date);
-      cachedDay.validated = validated;
-      source = cachedDay.source === 'aladhan' ? 'aladhan' : 'cache';
+    const cache = await ensureCache(cityKey, city, dateKey, policy);
+    const candidate = cache.cities[cityKey]?.days[dateKey];
+    if (
+      candidate &&
+      candidate.policyVersion === policy.policyVersion &&
+      (candidate.source === 'aladhan' || candidate.source === 'diyanet') &&
+      validateCachedTimings(candidate.timings)
+    ) {
+      cachedDay = candidate;
+      validated = true;
+      source = candidate.source;
+    } else if (candidate && validateCachedTimings(candidate.timings)) {
+      cachedDay = candidate;
+      validated = true;
+      source = 'cache';
     }
   }
 
   if (cachedDay && validated) {
-    const tzOffset = getTimezoneOffsetMinutes(timezone, date);
-    const fajrDate = buildDateFromLocalTime(date, cachedDay.timings.fajr, tzOffset);
-    const maghribDate = buildDateFromLocalTime(date, cachedDay.timings.maghrib, tzOffset);
-    const nightDurationMs = ((fajrDate.getTime() + 24 * 60 * 60 * 1000) - maghribDate.getTime());
-    const midnightDate = new Date(maghribDate.getTime() + nightDurationMs / 2);
-    const qiyamDate = new Date(fajrDate.getTime() - nightDurationMs / 3);
-    const times: PrayerTimes = {
-      fajr: fajrDate,
-      sunrise: buildDateFromLocalTime(date, cachedDay.timings.sunrise, tzOffset),
-      dhuhr: buildDateFromLocalTime(date, cachedDay.timings.dhuhr, tzOffset),
-      asr: buildDateFromLocalTime(date, cachedDay.timings.asr, tzOffset),
-      maghrib: maghribDate,
-      isha: buildDateFromLocalTime(date, cachedDay.timings.isha, tzOffset),
-      midnight: midnightDate,
-      qiyam: qiyamDate,
-    };
+    const tz = cachedDay.timezone || timezone;
+    const raw = timingsToPrayerTimes(cachedDay.timings, dateKey, tz);
+    const times = finalizeTimes(raw, cityKey, location);
     return {
       dateKey,
       cityKey,
-      timezone,
+      timezone: tz,
       source,
-      validated,
+      sourceLabel: cachedDay.sourceLabel || policy.sourceLabel,
+      policyVersion: policy.policyVersion,
+      validated: true,
       times,
-      display: toDisplay(times, date, timezone),
+      display: toDisplay(times, localDateForDateKey(dateKey, tz), tz),
     };
   }
 
-  // Fallback calculations (local)
-  const times = calculateWithAdhan(location, date);
+  const calcDate = localDateForDateKey(dateKey, timezone);
+  const raw = calculateWithPolicy(location, calcDate, policy);
+  const times = finalizeTimes(raw, cityKey, location);
 
   return {
     dateKey,
     cityKey,
     timezone,
     source: 'fallback',
+    sourceLabel: `${policy.sourceLabel}-local`,
+    policyVersion: PRAYER_POLICY_VERSION,
     validated: false,
     times,
-    display: toDisplay(times, date, timezone),
+    display: toDisplay(times, calcDate, timezone),
   };
+}
+
+/** Prefetch multi-day canonical times for widgets / native schedules. */
+export async function getPrayerTimesForDateRange(params: {
+  cityKey?: string;
+  location?: LocationType;
+  startDate?: Date;
+  days?: number;
+}): Promise<PrayerTimesBundle[]> {
+  const days = Math.max(1, params.days ?? 7);
+  const start = params.startDate || new Date();
+  const { location } = getCityInfo(params.cityKey, params.location);
+  const timezone = location.timezone;
+  const startKey = getDateKeyInTimezone(start, timezone);
+  const results: PrayerTimesBundle[] = [];
+
+  for (let i = 0; i < days; i += 1) {
+    const dateKey = addDaysToDateKey(startKey, i);
+    const noon = buildDateFromLocalTimeInTimezone(dateKey, '12:00', timezone);
+    results.push(
+      await getPrayerTimesForDate({
+        cityKey: params.cityKey,
+        location: params.location,
+        date: noon,
+      }),
+    );
+  }
+  return results;
 }

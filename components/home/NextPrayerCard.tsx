@@ -155,6 +155,7 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
 
   const next = getNextPrayer(prayerTimes);
   const adhanOn = state.adhanPreferences.masterEnabled;
+  const timeZone = state.location?.timezone;
 
   const compactContent = (
     <RtlView style={styles.compactContainer}>
@@ -162,7 +163,7 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
       <RtlView style={styles.compactNameBlock}>
         <RtlText align="center" wrap={false} style={styles.compactPrayerName}>{next.nameDari}</RtlText>
         <RtlText align="center" wrap={false} style={[styles.compactTime, { color: theme.bookmark }]}>
-          {formatPrayerTime12h(next.time)}
+          {formatPrayerTime12h(next.time, timeZone)}
         </RtlText>
       </RtlView>
       <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} compact />
@@ -177,7 +178,7 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
       <RtlText align="center" style={styles.label}>نماز بعدی</RtlText>
       <RtlText align="center" style={styles.prayerName}>{next.nameDari}</RtlText>
       <RtlText align="center" style={[styles.time, { color: theme.bookmark }]}>
-        {formatPrayerTime12h(next.time)}
+        {formatPrayerTime12h(next.time, timeZone)}
       </RtlText>
       <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} />
       <RtlText align="center" style={styles.hint}>

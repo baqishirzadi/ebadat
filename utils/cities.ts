@@ -96,6 +96,7 @@ Object.entries(CITIES).forEach(([categoryId, category]) => {
     const fullKey = `${categoryId}_${cityKey}`;
     ALL_CITIES[fullKey] = {
       ...city,
+      country: city.country ?? (categoryId === 'afghanistan' ? 'AF' : undefined),
       category: categoryId,
       key: fullKey,
     };
