@@ -105,6 +105,10 @@ export interface SearchResult {
   ayahNumber: number;
   text: string;
   matchedText: string;
+  matchedLanguage?: 'arabic' | 'dari' | 'pashto';
+  score?: number;
+  snippet?: string;
+  highlightRanges?: Array<{ start: number; end: number }>;
   translation?: {
     dari?: string;
     pashto?: string;

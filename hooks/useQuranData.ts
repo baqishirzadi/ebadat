@@ -10,7 +10,7 @@ import { QuranData, Surah, Ayah, SearchResult } from '@/types/quran';
 import metadata from '@/data/metadata.json';
 import { getJuzRange, JUZ_RANGES } from '@/data/juzRanges';
 import { getSurahSync, SurahData, SurahMetadata } from './useSurahData';
-import { searchArabicIndex, searchTranslationIndex } from '@/utils/quranSearchEngine';
+import { searchArabicIndex, searchTranslationIndex, searchQuranPaged, type QuranSearchMode } from '@/utils/quranSearchEngine';
 
 // Re-export the new hooks for convenience
 export { 
@@ -21,8 +21,14 @@ export {
   getSurahSync,
   searchQuran,
   getCacheStats,
-  clearSurahCache
+  pinSurahInCache,
 } from './useSurahData';
+import { clearSurahCache as clearRawSurahCache } from './useSurahData';
+
+export function clearSurahCache(): void {
+  clearRawSurahCache();
+  clearLegacySurahCache();
+}
 
 // Type the metadata
 const typedMetadata = metadata as {
@@ -151,6 +157,15 @@ export function useQuranData() {
     return searchTranslationIndex(query, language, limit);
   }, []);
 
+  const searchQuran = useCallback(async (
+    query: string,
+    mode: QuranSearchMode = 'all',
+    limit: number = 25,
+    offset: number = 0,
+  ) => {
+    return searchQuranPaged(query, { mode, limit, offset });
+  }, []);
+
   // Get translation for ayah
   const getTranslation = useCallback((
     surahNumber: number,
@@ -218,6 +233,7 @@ export function useQuranData() {
     getAyahsByJuz,
     searchArabic,
     searchTranslation,
+    searchQuran,
     getTranslation,
     getNextAyah,
     getPrevAyah,
@@ -229,7 +245,24 @@ export function useQuranData() {
  * Convert new SurahData format to legacy Surah format for backward compatibility
  */
 const legacySurahCache = new Map<number, Surah>();
+const LEGACY_CACHE_LIMIT = 12;
 
+function touchLegacyCache(surahNumber: number, surah: Surah): Surah {
+  if (legacySurahCache.has(surahNumber)) {
+    legacySurahCache.delete(surahNumber);
+  }
+  legacySurahCache.set(surahNumber, surah);
+  while (legacySurahCache.size > LEGACY_CACHE_LIMIT) {
+    const oldest = legacySurahCache.keys().next().value;
+    if (oldest === undefined) break;
+    legacySurahCache.delete(oldest);
+  }
+  return surah;
+}
+
+export function clearLegacySurahCache(): void {
+  legacySurahCache.clear();
+}
 function toLegacyAyah(ayah: SurahData['ayahs'][number]): Ayah {
   return {
     number: ayah.number,
@@ -244,7 +277,7 @@ function toLegacyAyah(ayah: SurahData['ayahs'][number]): Ayah {
 
 function convertToLegacyFormat(surahData: SurahData): Surah {
   const cached = legacySurahCache.get(surahData.number);
-  if (cached) return cached;
+  if (cached) return touchLegacyCache(surahData.number, cached);
 
   const surah: Surah = {
     number: surahData.number,
@@ -269,6 +302,5 @@ function convertToLegacyFormat(surahData: SurahData): Surah {
     },
   };
 
-  legacySurahCache.set(surahData.number, surah);
-  return surah;
+  return touchLegacyCache(surahData.number, surah);
 }

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "totalAyahs": 6236,
+  "totalSurahs": 114,
+  "generatedAt": "2026-07-19T17:19:29.148Z",
+  "dbPath": "assets/quran-search.db",
+  "sha256": "04cc0b33f1653f6503e5e788ef89a13a19ca194615b60be4e00744b7cd3c22ca",
+  "sample": {
+    "fatiha1ArabicNorm": "بسم الله الرحمان الرحیم",
+    "fatiha2ArabicNorm": "الحمد لله رب العالمین",
+    "fatiha4ArabicNorm": "مالک یوم الدین",
+    "fatiha6ArabicNorm": "اهدنا الصراط المستقیم"
+  }
+}

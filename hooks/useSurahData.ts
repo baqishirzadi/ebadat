@@ -163,9 +163,37 @@ const surahFiles: { [key: number]: any } = {
   114: () => require('@/data/surahs/114.json'),
 };
 
-// Memory cache for loaded surahs
+// Memory cache for loaded surahs (bounded LRU — search no longer needs all 114)
+const SURAH_CACHE_LIMIT = 12;
 const surahCache: Map<number, SurahData> = new Map();
+let pinnedSurahNumber: number | null = null;
 
+function touchSurahCache(surahNumber: number, data: SurahData): SurahData {
+  // Re-insert to mark as most recently used.
+  if (surahCache.has(surahNumber)) {
+    surahCache.delete(surahNumber);
+  }
+  surahCache.set(surahNumber, data);
+
+  while (surahCache.size > SURAH_CACHE_LIMIT) {
+    let evicted = false;
+    for (const key of surahCache.keys()) {
+      if (pinnedSurahNumber !== null && key === pinnedSurahNumber) {
+        continue;
+      }
+      surahCache.delete(key);
+      evicted = true;
+      break;
+    }
+    if (!evicted) break;
+  }
+
+  return data;
+}
+
+export function pinSurahInCache(surahNumber: number | null): void {
+  pinnedSurahNumber = surahNumber;
+}
 /**
  * Hook to access Quran metadata (surah list)
  * This data is always available instantly
@@ -200,7 +228,9 @@ export function useSurahData(surahNumber: number) {
 
       // Check cache first
       if (surahCache.has(num)) {
-        setSurah(surahCache.get(num)!);
+        const cached = surahCache.get(num)!;
+        touchSurahCache(num, cached);
+        setSurah(cached);
         setLoading(false);
         return;
       }
@@ -213,8 +243,8 @@ export function useSurahData(surahNumber: number) {
 
       const surahData = loader() as SurahData;
       
-      // Cache it
-      surahCache.set(num, surahData);
+      // Cache it (bounded LRU)
+      touchSurahCache(num, surahData);
       setSurah(surahData);
       setLoading(false);
     } catch (err) {
@@ -240,7 +270,8 @@ export function getSurahSync(surahNumber: number): SurahData | null {
 
   // Check cache
   if (surahCache.has(surahNumber)) {
-    return surahCache.get(surahNumber)!;
+    const cached = surahCache.get(surahNumber)!;
+    return touchSurahCache(surahNumber, cached);
   }
 
   // Load and cache
@@ -248,8 +279,7 @@ export function getSurahSync(surahNumber: number): SurahData | null {
     const loader = surahFiles[surahNumber];
     if (loader) {
       const surahData = loader() as SurahData;
-      surahCache.set(surahNumber, surahData);
-      return surahData;
+      return touchSurahCache(surahNumber, surahData);
     }
   } catch (err) {
     console.error(`خطا در بارگیری سوره ${surahNumber}:`, err);
@@ -271,7 +301,7 @@ export function preloadJuz30(): void {
     try {
       const loader = surahFiles[num];
       if (loader && !surahCache.has(num)) {
-        surahCache.set(num, loader());
+        touchSurahCache(num, loader());
       }
     } catch (err) {
       console.error(`خطا در پیش‌بارگیری سوره ${num}`);
@@ -295,7 +325,7 @@ export function preloadPopularSurahs(): void {
     try {
       const loader = surahFiles[num];
       if (loader && !surahCache.has(num)) {
-        surahCache.set(num, loader());
+        touchSurahCache(num, loader());
       }
     } catch {
       console.error(`خطا در پیش‌بارگیری سوره ${num}`);
@@ -322,73 +352,18 @@ export function getCacheStats() {
  */
 export function clearSurahCache(): void {
   surahCache.clear();
+  pinnedSurahNumber = null;
 }
 
 /**
- * Search in Quran text
- * @param query - Search query
- * @param language - 'arabic' | 'dari' | 'pashto' | 'all'
+ * @deprecated Use utils/quranSearchEngine searchQuranPaged — this full-corpus
+ * loader is retained only as a no-op shim to avoid accidental OOM call sites.
  */
 export function searchQuran(
-  query: string,
-  language: 'arabic' | 'dari' | 'pashto' | 'all' = 'all',
-  limit: number = 50
+  _query: string,
+  _language: 'arabic' | 'dari' | 'pashto' | 'all' = 'all',
+  _limit: number = 50
 ) {
-  const results: Array<{
-    surahNumber: number;
-    surahName: string;
-    ayahNumber: number;
-    text: string;
-    matchedIn: string;
-  }> = [];
-
-  if (!query || query.length < 2) return results;
-
-  const normalizedQuery = query.trim().toLowerCase();
-
-  // Search through all surahs
-  for (let i = 1; i <= 114 && results.length < limit; i++) {
-    const surah = getSurahSync(i);
-    if (!surah) continue;
-
-    for (const ayah of surah.ayahs) {
-      if (results.length >= limit) break;
-
-      let matched = false;
-      let matchedIn = '';
-
-      if (language === 'arabic' || language === 'all') {
-        if (ayah.text.includes(normalizedQuery)) {
-          matched = true;
-          matchedIn = 'arabic';
-        }
-      }
-
-      if (!matched && (language === 'dari' || language === 'all')) {
-        if (ayah.translation_dari?.toLowerCase().includes(normalizedQuery)) {
-          matched = true;
-          matchedIn = 'dari';
-        }
-      }
-
-      if (!matched && (language === 'pashto' || language === 'all')) {
-        if (ayah.translation_pashto?.toLowerCase().includes(normalizedQuery)) {
-          matched = true;
-          matchedIn = 'pashto';
-        }
-      }
-
-      if (matched) {
-        results.push({
-          surahNumber: surah.number,
-          surahName: surah.name,
-          ayahNumber: ayah.number,
-          text: ayah.text,
-          matchedIn,
-        });
-      }
-    }
-  }
-
-  return results;
+  console.warn('searchQuran() is deprecated; use searchQuranPaged from quranSearchEngine');
+  return [];
 }

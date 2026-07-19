@@ -116,9 +116,12 @@ export function getRegionIdForCityKey(cityKey: string): string | null {
   if (bundled) return bundled.category;
   const world = worldCityMap.get(cityKey);
   if (world) return world.category;
-  const underscore = cityKey.indexOf('_');
-  if (underscore > 0) return cityKey.slice(0, underscore);
-  return null;
+  // Prefer longest known region prefix (e.g. central-asia over central).
+  const knownRegions = Object.keys(REGION_LOADERS);
+  const match = knownRegions
+    .filter((regionId) => cityKey === regionId || cityKey.startsWith(`${regionId}_`))
+    .sort((a, b) => b.length - a.length)[0];
+  return match || null;
 }
 
 export async function loadCityRegion(regionId: string): Promise<WorldCity[]> {

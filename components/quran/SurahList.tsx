@@ -19,6 +19,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
 import { getUthmaniFont } from '@/hooks/useFonts';
 import { RtlView } from '@/components/ui/RtlView';
+import { normalizeArabicForSearch, normalizeDariForSearch } from '@/utils/quranSearchNormalize';
 import { SearchButton } from './SearchButton';
 import { JuzList } from './JuzList';
 
@@ -125,16 +126,23 @@ export function SurahList() {
   // Filter surahs based on search
   const filteredSurahs = useMemo(() => {
     if (!searchQuery.trim()) return SURAH_NAMES;
-    
+
     const query = searchQuery.trim();
-    return SURAH_NAMES.filter(
-      (surah) =>
-        surah.arabic.includes(query) ||
-        surah.dari.includes(query) ||
-        surah.meaning.includes(query) ||
+    const arabicQuery = normalizeArabicForSearch(query);
+    const dariQuery = normalizeDariForSearch(query);
+
+    return SURAH_NAMES.filter((surah) => {
+      const arabicName = normalizeArabicForSearch(surah.arabic);
+      const dariName = normalizeDariForSearch(surah.dari);
+      const meaning = normalizeDariForSearch(surah.meaning);
+
+      return (
+        (arabicQuery.length >= 1 && arabicName.includes(arabicQuery)) ||
+        (dariQuery.length >= 1 && (dariName.includes(dariQuery) || meaning.includes(dariQuery))) ||
         surah.number.toString() === query ||
         toArabicNumerals(surah.number).includes(query)
-    );
+      );
+    });
   }, [searchQuery]);
 
   const surahByNumber = useMemo(() => {
@@ -145,6 +153,9 @@ export function SurahList() {
     if (!searchQuery.trim()) return JUZ_RANGES;
 
     const query = searchQuery.trim();
+    const arabicQuery = normalizeArabicForSearch(query);
+    const dariQuery = normalizeDariForSearch(query);
+
     return JUZ_RANGES.filter((juz) => {
       const startSurah = surahByNumber.get(juz.startSurah);
       const endSurah = surahByNumber.get(juz.endSurah);
@@ -152,10 +163,12 @@ export function SurahList() {
       return (
         juz.juzNumber.toString() === query ||
         toArabicNumerals(juz.juzNumber).includes(query) ||
-        startSurah?.arabic.includes(query) ||
-        startSurah?.dari.includes(query) ||
-        endSurah?.arabic.includes(query) ||
-        endSurah?.dari.includes(query)
+        (startSurah &&
+          ((arabicQuery && normalizeArabicForSearch(startSurah.arabic).includes(arabicQuery)) ||
+            (dariQuery && normalizeDariForSearch(startSurah.dari).includes(dariQuery)))) ||
+        (endSurah &&
+          ((arabicQuery && normalizeArabicForSearch(endSurah.arabic).includes(arabicQuery)) ||
+            (dariQuery && normalizeDariForSearch(endSurah.dari).includes(dariQuery))))
       );
     });
   }, [searchQuery, surahByNumber]);

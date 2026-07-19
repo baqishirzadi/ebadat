@@ -504,6 +504,8 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   const scheduleJummahNotificationsRef = useRef<() => Promise<void>>(async () => { });
   const adhanChannelMigrationDoneRef = useRef(false);
   const startupScheduleBootstrappedRef = useRef(Platform.OS !== 'android');
+  /** True after AsyncStorage prefs/settings hydrate via INITIALIZE. */
+  const prayerPrefsHydratedRef = useRef(false);
   const lastScheduleRef = useRef<{ dateKey: string; locationKey: string } | null>(null);
   const lastPrayerScheduleAtRef = useRef(0);
   const scheduleDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1057,13 +1059,24 @@ async function configureAndroidNotificationChannels(
     return normalizeCityKey(selectedCity);
   }
 
+  /** Preload region first so world city keys resolve (e.g. central-asia_*). */
+  async function resolveCityKey(selectedCity: string | null): Promise<string | undefined> {
+    if (!selectedCity) return undefined;
+    try {
+      await preloadRegionForCityKey(selectedCity);
+    } catch {
+      // Keep going; normalize may still succeed for bundled cities.
+    }
+    return normalizeCityKey(selectedCity);
+  }
+
   async function loadPrayerTimesFor(
     location: LocationType,
     selectedCity: string | null,
     settings: PrayerSettings
   ) {
     try {
-      const cityKey = toCityKey(selectedCity);
+      const cityKey = await resolveCityKey(selectedCity);
       const result = await getPrayerTimesForDate({ cityKey, location, date: new Date() });
       dispatch({
         type: 'SET_PRAYER_TIMES',
@@ -1078,7 +1091,11 @@ async function configureAndroidNotificationChannels(
         settings.calculationMethod,
         settings.asrMethod
       );
-      const fallback = applyPrayerTimeOffsets(fallbackBase, toCityKey(selectedCity), location);
+      const fallback = applyPrayerTimeOffsets(
+        fallbackBase,
+        await resolveCityKey(selectedCity),
+        location
+      );
       dispatch({ type: 'SET_PRAYER_TIMES', payload: fallback });
     }
   }
@@ -1100,12 +1117,18 @@ async function configureAndroidNotificationChannels(
       let location = DEFAULT_LOCATION;
       let name = 'کابل';
 
+      // Preload from raw keys before normalize — world DB is lazy.
+      const rawCityCandidate = settings.selectedCity || globallySelectedCity;
+      if (rawCityCandidate) {
+        await preloadRegionForCityKey(rawCityCandidate).catch(() => undefined);
+      }
+
       const normalizedSettingsCityKey = toCityKey(settings.selectedCity);
       const normalizedGlobalCityKey = toCityKey(globallySelectedCity);
       const resolvedCityKey = normalizedSettingsCityKey || normalizedGlobalCityKey;
 
       if (resolvedCityKey) {
-        await preloadRegionForCityKey(resolvedCityKey);
+        await preloadRegionForCityKey(resolvedCityKey).catch(() => undefined);
         const selected = getCity(resolvedCityKey);
         if (selected) {
           location = {
@@ -1127,6 +1150,7 @@ async function configureAndroidNotificationChannels(
         name = saved.name;
       }
 
+      prayerPrefsHydratedRef.current = true;
       dispatch({ type: 'INITIALIZE', payload: { location, settings: effectiveSettings, adhanPreferences: adhanPrefs, name } });
       const parsedDelay = Number.parseInt(lastDelaySecondsRaw || '', 10);
       if (Number.isFinite(parsedDelay) && parsedDelay >= 0) {
@@ -1144,8 +1168,21 @@ async function configureAndroidNotificationChannels(
       dispatch({ type: 'SET_HIJRI_DATE', payload: hijri });
     } catch (error) {
       console.error('Failed to load prayer data:', error);
-      dispatch({ type: 'INITIALIZE', payload: { location: DEFAULT_LOCATION, settings: DEFAULT_SETTINGS, adhanPreferences: DEFAULT_ADHAN_PREFERENCES, name: 'کابل' } });
-      await loadPrayerTimesFor(DEFAULT_LOCATION, 'afghanistan_kabul', DEFAULT_SETTINGS);
+      const fallbackSettings: PrayerSettings = {
+        ...DEFAULT_SETTINGS,
+        selectedCity: 'afghanistan_kabul',
+      };
+      prayerPrefsHydratedRef.current = true;
+      dispatch({
+        type: 'INITIALIZE',
+        payload: {
+          location: DEFAULT_LOCATION,
+          settings: fallbackSettings,
+          adhanPreferences: DEFAULT_ADHAN_PREFERENCES,
+          name: 'کابل',
+        },
+      });
+      await loadPrayerTimesFor(DEFAULT_LOCATION, 'afghanistan_kabul', fallbackSettings);
 
       const qibla = getDisplayQiblaBearing(DEFAULT_LOCATION, 'afghanistan_kabul');
       dispatch({ type: 'SET_QIBLA', payload: qibla });
@@ -1940,6 +1977,11 @@ async function configureAndroidNotificationChannels(
       return;
     }
 
+    if (!prayerPrefsHydratedRef.current) {
+      console.warn('[AdhanSchedule] prefs not hydrated yet; skipping to avoid native alarm wipe');
+      return;
+    }
+
     if (!state.prayerTimes) {
       console.log('Skipping notification scheduling: prayer times not available');
       await applyBlockingResult(['prayer_times_unavailable'], null);
@@ -1997,12 +2039,14 @@ async function configureAndroidNotificationChannels(
       await syncNativeAdhanConfig(nativeConfig);
     };
 
-    const resolvedCityKey = toCityKey(state.settings.selectedCity);
+    const resolvedCityKey = await resolveCityKey(state.settings.selectedCity);
     if (!resolvedCityKey) {
-      const scheduledAll = await NotificationsModule.getAllScheduledNotificationsAsync();
-      const prayerScheduled = scheduledAll.filter(isPrayerRelatedNotification);
-      await cancelAllPrayerFromExpo(prayerScheduled);
-      await syncNativeAdhanMasterState(false, state.settings.selectedCity || 'unknown');
+      // Do not wipe native alarms for a transient/unresolved city — boot may already
+      // have valid alarms. Skip destructive sync until city hydrate succeeds.
+      console.warn(
+        '[AdhanSchedule] city unresolved; preserving native alarms. selectedCity=',
+        state.settings.selectedCity,
+      );
       await applyBlockingResult(
         ['city_unresolved'],
         PRAYER_BLOCKER_MESSAGES.city_unresolved
@@ -2070,6 +2114,16 @@ async function configureAndroidNotificationChannels(
     const prayerScheduled = scheduledAll.filter(isPrayerRelatedNotification);
 
     if (!state.adhanPreferences.masterEnabled) {
+      // Only persist masterEnabled=false after prefs hydrate — never wipe from
+      // pre-hydrate defaults or a half-loaded state.
+      if (!prayerPrefsHydratedRef.current) {
+        console.warn('[AdhanSchedule] master_disabled before prefs hydrate; skipping native wipe');
+        await applyBlockingResult(['master_disabled'], null, {
+          scheduleMode,
+          warnings: scheduleWarnings,
+        });
+        return;
+      }
       await cancelAllPrayerFromExpo(prayerScheduled);
       await syncNativeAdhanMasterState(false, resolvedCityKey);
       const exactDebugState = await getExactAlarmDebugState(

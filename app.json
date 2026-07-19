@@ -2,7 +2,7 @@
   "expo": {
     "name": "عبادت",
     "slug": "NamazAfghanistan",
-    "version": "1.0.13",
+    "version": "1.0.14",
     "icon": "./assets/images/icon.png",
     "scheme": "ebadat",
     "userInterfaceStyle": "automatic",
@@ -61,7 +61,7 @@
     },
     "android": {
       "package": "com.afghandev.ebadat",
-      "versionCode": 21,
+      "versionCode": 22,
       "adaptiveIcon": {
         "backgroundColor": "#1a4d3e",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -96,6 +96,12 @@
       "expo-localization",
       "./plugins/withForceRTL",
       "expo-router",
+      [
+        "expo-sqlite",
+        {
+          "enableFTS": true
+        }
+      ],
       [
         "expo-build-properties",
         {
@@ -268,7 +274,8 @@
         }
       ],
       "expo-asset",
-      "expo-background-task"
+      "expo-background-task",
+      "expo-sqlite"
     ],
     "experiments": {
       "typedRoutes": true

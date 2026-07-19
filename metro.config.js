@@ -19,6 +19,7 @@ config.resolver = {
     path.resolve(workspaceRoot, 'node_modules'),
   ],
   sourceExts: [...(config.resolver.sourceExts || []), 'mjs', 'cjs'],
+  assetExts: [...(config.resolver.assetExts || []).filter((ext) => ext !== 'db'), 'db'],
 };
 
 // Transformer options - simplified for better compatibility

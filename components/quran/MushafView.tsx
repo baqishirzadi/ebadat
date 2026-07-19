@@ -529,8 +529,12 @@ export const MushafView = React.memo(function MushafView({
   const handleJumpRetryPress = useCallback(() => {
     if (!surah || jumpFailureAyah === null) return;
     const clampedAyah = Math.min(Math.max(jumpFailureAyah, 1), surah.ayahs.length);
+    if (jumpMode === 'search_exact') {
+      startSearchExactJumpSession(clampedAyah);
+      return;
+    }
     startExactJumpSession(clampedAyah);
-  }, [jumpFailureAyah, startExactJumpSession, surah]);
+  }, [jumpFailureAyah, jumpMode, startExactJumpSession, startSearchExactJumpSession, surah]);
 
   // Deterministic initial scroll for deep-link ayah (supports both scroll and mushaf modes)
   useEffect(() => {
@@ -1012,6 +1016,23 @@ export const MushafView = React.memo(function MushafView({
           <View style={[styles.jumpFailureBanner, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <CenteredText style={[styles.jumpFailureText, { color: theme.text }]}>
               رفتن دقیق به آیه انجام نشد.
+            </CenteredText>
+            <Pressable
+              onPress={handleJumpRetryPress}
+              style={({ pressed }) => [
+                styles.jumpRetryButton,
+                { backgroundColor: theme.tint },
+                pressed && { opacity: 0.9 },
+              ]}
+            >
+              <CenteredText style={styles.jumpRetryButtonText}>تلاش دوباره</CenteredText>
+            </Pressable>
+          </View>
+        )}
+        {jumpMode === 'search_exact' && jumpFailureAyah !== null && (
+          <View style={[styles.jumpFailureBanner, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <CenteredText style={[styles.jumpFailureText, { color: theme.text }]}>
+              رفتن به نتیجه جستجو انجام نشد.
             </CenteredText>
             <Pressable
               onPress={handleJumpRetryPress}

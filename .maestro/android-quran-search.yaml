@@ -1,0 +1,24 @@
+appId: com.afghandev.ebadat
+---
+# Unicode search via deep-link query params (Maestro cannot type non-ASCII).
+- openLink: "ebadat://search?mode=arabic&q=%D9%85%D8%A7%D9%84%D9%83%20%D9%8A%D9%88%D9%85%20%D8%A7%D9%84%D8%AF%D9%8A%D9%86"
+- extendedWaitUntil:
+    visible: ".*الفاتحة.*"
+    timeout: 30000
+- takeScreenshot: android-quran-search-arabic
+- openLink: "ebadat://search?mode=dari&q=%D8%AC%D9%87%D8%A7%D9%86%DB%8C%D8%A7%D9%86"
+- extendedWaitUntil:
+    visible: ".*نتیجه.*"
+    timeout: 25000
+- takeScreenshot: android-quran-search-dari
+- openLink: "ebadat://search?mode=pashto&q=%D9%85%D9%87%D8%B1%D8%A8%D8%A7%D9%86"
+- extendedWaitUntil:
+    visible: ".*پښتو.*"
+    timeout: 25000
+- takeScreenshot: android-quran-search-pashto
+- tapOn:
+    text: ".*سوره.*"
+    index: 0
+- waitForAnimationToEnd:
+    timeout: 6000
+- takeScreenshot: android-quran-search-opened

@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 
 import {
   AdhanHealthStatusChip,
@@ -66,7 +66,12 @@ export function AdhanStatusCard() {
   const accent = borderColorForStatus(status, theme);
 
   return (
-    <RtlView style={[styles.card, { backgroundColor: theme.card, borderColor: accent }]}>
+    <Pressable
+      onPress={() => router.push('/adhan-health' as never)}
+      accessibilityRole="button"
+      accessibilityLabel="وضعیت اذان"
+      style={[styles.card, { backgroundColor: theme.card, borderColor: accent }]}
+    >
       <RtlView style={styles.inner}>
         <MaterialIcons name={iconForStatus(status)} size={32} color={accent} />
         <RtlView style={styles.textBlock}>
@@ -84,8 +89,9 @@ export function AdhanStatusCard() {
             </>
           )}
         </RtlView>
+        <MaterialIcons name="chevron-left" size={24} color={theme.textSecondary} />
       </RtlView>
-    </RtlView>
+    </Pressable>
   );
 }
 

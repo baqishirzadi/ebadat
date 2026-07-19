@@ -12,6 +12,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
+import { pinSurahInCache } from '@/hooks/useSurahData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { MushafView, AudioPlayer } from '@/components/quran';
 import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
@@ -67,6 +68,13 @@ export default function QuranReaderScreen() {
           : 'default';
   const surah = useMemo(() => getSurah(surahNumber), [getSurah, surahNumber]);
   const surahNameData = getSurahName(surahNumber);
+
+  useEffect(() => {
+    pinSurahInCache(surahNumber);
+    return () => {
+      pinSurahInCache(null);
+    };
+  }, [surahNumber]);
 
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
