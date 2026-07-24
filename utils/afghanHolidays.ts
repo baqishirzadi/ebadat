@@ -1,5 +1,6 @@
 /**
- * Afghan national and cultural holidays on the Shamsi (solar Hijri) calendar.
+ * Light non-political Shamsi (solar Hijri) cultural markers for Jantari.
+ * Religious occasions live on the Qamari calendar (SPECIAL_DAYS).
  */
 
 export interface AfghanHoliday {
@@ -8,7 +9,6 @@ export interface AfghanHoliday {
   nameDari: string;
   namePashto: string;
   descriptionDari: string;
-  isPublicHoliday?: boolean;
 }
 
 export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
@@ -18,88 +18,41 @@ export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
     nameDari: 'نوروز',
     namePashto: 'نوروز',
     descriptionDari: 'آغاز سال نو شمسی',
-    isPublicHoliday: true,
-  },
-  {
-    shamsiMonth: 1,
-    shamsiDay: 24,
-    nameDari: 'آغاز دروس معارف',
-    namePashto: 'د معارف درسونو پیل',
-    descriptionDari: 'آغاز سال تحصیلی در افغانستان',
-  },
-  {
-    shamsiMonth: 3,
-    shamsiDay: 14,
-    nameDari: 'روز مادر',
-    namePashto: 'د مور ورځ',
-    descriptionDari: 'روز بزرگداشت مادران',
-  },
-  {
-    shamsiMonth: 4,
-    shamsiDay: 26,
-    nameDari: 'روز مبارزه با مواد مخدر',
-    namePashto: 'د مخدره توکو پر ضد ورځ',
-    descriptionDari: 'روز جهانی و ملی مبارزه با مواد مخدر',
-  },
-  {
-    shamsiMonth: 2,
-    shamsiDay: 27,
-    nameDari: 'روز بزرگداشت خیام',
-    namePashto: 'د خیام لمانځه',
-    descriptionDari: 'روز فرهنگی',
-  },
-  {
-    shamsiMonth: 1,
-    shamsiDay: 2,
-    nameDari: 'روز بزرگداشت مولانا جلال‌الدین بلخی',
-    namePashto: 'د مولانا جلال الدین بلخي لمانځه',
-    descriptionDari: 'روز فرهنگی و ادبی',
   },
   {
     shamsiMonth: 5,
-    shamsiDay: 28,
-    nameDari: 'روز استقلال افغانستان',
-    namePashto: 'د افغانستان د خپلواکۍ ورځ',
-    descriptionDari: 'روز استقلال از بریتانیا (۱۹۱۹)',
-    isPublicHoliday: true,
+    shamsiDay: 24,
+    nameDari: 'روز فتح',
+    namePashto: 'د فتحې ورځ',
+    descriptionDari: 'یاد روز فتح و پایان حضور نظامی خارجی',
   },
   {
-    shamsiMonth: 6,
-    shamsiDay: 9,
-    nameDari: 'روز شهیدان',
-    namePashto: 'د شهیدانو ورځ',
-    descriptionDari: 'یادبود شهیدان',
-    isPublicHoliday: true,
+    shamsiMonth: 9,
+    shamsiDay: 30,
+    nameDari: 'شب چله (یلدا)',
+    namePashto: 'د چلې شپه (یلدا)',
+    descriptionDari: 'بلندترین شب زمستان',
   },
   {
-    shamsiMonth: 7,
-    shamsiDay: 26,
-    nameDari: 'روز پیروزی مجاهدین',
-    namePashto: 'د مجاهدینو د بریا ورځ',
-    descriptionDari: 'روز ملی',
-    isPublicHoliday: true,
-  },
-  {
-    shamsiMonth: 8,
-    shamsiDay: 8,
-    nameDari: 'روز پیروزی هشت‌م حمل',
-    namePashto: 'د اتم حمل د بریا ورځ',
-    descriptionDari: 'سقوط رژیم کمونیستی (۱۳۷۱)',
-    isPublicHoliday: true,
+    shamsiMonth: 10,
+    shamsiDay: 1,
+    nameDari: 'آغاز چله کلان',
+    namePashto: 'د لویې چلې پیل',
+    descriptionDari: 'آغاز چهل روز سرد بزرگ زمستان',
   },
   {
     shamsiMonth: 11,
-    shamsiDay: 16,
-    nameDari: 'روز بزرگداشت احمد شاه بابا',
-    namePashto: 'د احمد شاه بابا لمانځه',
-    descriptionDari: 'بنیان‌گذار دولت دورانی',
+    shamsiDay: 11,
+    nameDari: 'آغاز چله خرد',
+    namePashto: 'د وړې چلې پیل',
+    descriptionDari: 'آغاز بیست روز پایانی سرما پس از چله کلان',
   },
   {
     shamsiMonth: 12,
-    shamsiDay: 10,
-    nameDari: 'روز بزرگداشت علی جلالی',
-    namePashto: 'د علی جلالي لمانځه',
-    descriptionDari: 'روز فرهنگی',
+    shamsiDay: 24,
+    nameDari: 'یادبود ۲۴ حوت هرات',
+    namePashto: 'د هرات د ۲۴ حوت یاد',
+    descriptionDari: 'یاد فرهنگی مردم هرات',
   },
 ];
 

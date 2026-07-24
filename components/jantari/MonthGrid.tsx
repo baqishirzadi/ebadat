@@ -384,7 +384,7 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendSwatch, { backgroundColor: `${theme.bookmark}22`, borderColor: theme.bookmark }]} />
-          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>تعطیل ملی</RtlText>
+          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>مناسبت فرهنگی</RtlText>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendSwatch, { backgroundColor: theme.tint, borderColor: theme.bookmark, borderWidth: 2 }]} />
