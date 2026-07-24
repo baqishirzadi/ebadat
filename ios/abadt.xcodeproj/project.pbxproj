@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		A1C0N160X60RES001 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A1C0N160X60FIL001 /* AppIcon60x60@2x.png */; };
-		A1C0N176X76RES001 /* AppIcon76x76@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = A1C0N176X76FIL001 /* AppIcon76x76@2x~ipad.png */; };
 		3AF7E1B4280648218DDAE879 /* Amiri-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EAA20087D1EB4669933289B6 /* Amiri-Bold.ttf */; };
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		3FB206E69276448F8222B277 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1D5F85730D754E9A9C3DF240 /* InfoPlist.strings */; };
@@ -18,6 +16,8 @@
 		67110609A39B4AA5B5632CDB /* barakatullah_salim_18sec.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 36FD6C85C92A47DABA7ACD38 /* barakatullah_salim_18sec.mp3 */; };
 		88DEF67A0D7E400CB94A84F9 /* NotoNastaliqUrdu-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 961C4D789D714B179CF85826 /* NotoNastaliqUrdu-Regular.ttf */; };
 		A1B2C3D4E5F60718293A4B5C /* barakatullah_salim_18sec.caf in Resources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F60718293A4B5C6D /* barakatullah_salim_18sec.caf */; };
+		A1C0N160X60RES001 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A1C0N160X60FIL001 /* AppIcon60x60@2x.png */; };
+		A1C0N176X76RES001 /* AppIcon76x76@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = A1C0N176X76FIL001 /* AppIcon76x76@2x~ipad.png */; };
 		B24E2E79751F4483B6CDEB2C /* ScheherazadeNew-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E336123CAA1B4B59BF86DE6A /* ScheherazadeNew-Bold.ttf */; };
 		B37A6A0FC4628FFA7ACA03C4 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005447E1C111337BBF55F6D8 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
@@ -68,8 +68,6 @@
 		005447E1C111337BBF55F6D8 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-abadt/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* abadt.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = abadt.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = abadt/Images.xcassets; sourceTree = "<group>"; };
-		A1C0N160X60FIL001 /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon60x60@2x.png"; path = "abadt/AppIcon60x60@2x.png"; sourceTree = "<group>"; };
-		A1C0N176X76FIL001 /* AppIcon76x76@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon76x76@2x~ipad.png"; path = "abadt/AppIcon76x76@2x~ipad.png"; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = abadt/Info.plist; sourceTree = "<group>"; };
 		1D5F85730D754E9A9C3DF240 /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = ps.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		24618AC3ED0BFBE7DEFCD0CE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = abadt/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -77,6 +75,8 @@
 		36FD6C85C92A47DABA7ACD38 /* barakatullah_salim_18sec.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = barakatullah_salim_18sec.mp3; path = abadt/barakatullah_salim_18sec.mp3; sourceTree = "<group>"; };
 		9035DA2D9AF546ECB81744CF /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = fa.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		961C4D789D714B179CF85826 /* NotoNastaliqUrdu-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoNastaliqUrdu-Regular.ttf"; path = "../assets/fonts/NotoNastaliqUrdu-Regular.ttf"; sourceTree = "<group>"; };
+		A1C0N160X60FIL001 /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon60x60@2x.png"; path = "abadt/AppIcon60x60@2x.png"; sourceTree = "<group>"; };
+		A1C0N176X76FIL001 /* AppIcon76x76@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon76x76@2x~ipad.png"; path = "abadt/AppIcon76x76@2x~ipad.png"; sourceTree = "<group>"; };
 		A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Vazirmatn-Bold.ttf"; path = "../assets/fonts/Vazirmatn-Bold.ttf"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = abadt/SplashScreen.storyboard; sourceTree = "<group>"; };
 		B2C3D4E5F60718293A4B5C6D /* barakatullah_salim_18sec.caf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = barakatullah_salim_18sec.caf; path = abadt/barakatullah_salim_18sec.caf; sourceTree = "<group>"; };
@@ -562,7 +562,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = abadt/abadt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 3F4D8X5MG9;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -575,7 +575,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.15;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -601,7 +601,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = abadt/abadt.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 3F4D8X5MG9;
 				INFOPLIST_FILE = abadt/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -609,7 +609,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.15;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -750,7 +750,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = EbadatPrayerWidget/EbadatPrayerWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 3F4D8X5MG9;
 				INFOPLIST_FILE = EbadatPrayerWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -759,7 +759,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.15;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = com.afghandev.ebadat.EbadatPrayerWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -774,7 +774,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = EbadatPrayerWidget/EbadatPrayerWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 11;
 				DEVELOPMENT_TEAM = 3F4D8X5MG9;
 				INFOPLIST_FILE = EbadatPrayerWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -783,7 +783,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.15;
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.afghandev.ebadat.EbadatPrayerWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";

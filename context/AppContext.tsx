@@ -6,7 +6,6 @@
 import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts } from '@/constants/theme';
-import { Platform } from 'react-native';
 import {
   Bookmark,
   ReadingPosition,
@@ -28,8 +27,8 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   quranFont: 'scheherazade',  // Uthmani Taha (عثمان طه) - default Quran font
   dariFont: 'vazirmatn',    // Modern Dari font
   pashtoFont: 'amiri',      // Naskh style for Pashto (readable)
-  arabicFontSize: 'medium',
-  translationFontSize: 'medium',
+  arabicFontSize: 'small',
+  translationFontSize: 'small',
   viewMode: 'scroll',
   showTranslation: 'dari',
   autoPlayAudio: true,
@@ -286,14 +285,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         preferencesNormalized = true;
       }
 
-      if (Platform.OS === 'ios' && rawPreferences.quranFont === 'qpcHafs') {
-        preferences = {
-          ...preferences,
-          quranFont: 'scheherazade',
-        };
-        preferencesNormalized = true;
-      }
-
       const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
       const lastPosition = positionJson ? JSON.parse(positionJson) : DEFAULT_POSITION;
 
@@ -323,8 +314,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const setQuranFont = (font: QuranFontFamily) => {
-    const nextFont = Platform.OS === 'ios' && font === 'qpcHafs' ? 'scheherazade' : font;
-    dispatch({ type: 'SET_FONT', payload: nextFont });
+    dispatch({ type: 'SET_FONT', payload: font });
   };
 
   const setDariFont = (font: DariFontFamily) => {

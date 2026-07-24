@@ -31,11 +31,11 @@ import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone, runPermissionOnboardi
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 
 const STARTUP_EPOCH_MS = Date.now();
-const STARTUP_TIMING_ENABLED = true;
+const STARTUP_TIMING_ENABLED = __DEV__;
 function startupMark(label: string): void {
   if (!STARTUP_TIMING_ENABLED) return;
   const elapsed = Date.now() - STARTUP_EPOCH_MS;
-  console.error(`[Startup][${elapsed}ms] ${label}`);
+  console.log(`[Startup][${elapsed}ms] ${label}`);
 }
 
 // Force RTL for Dari/Pashto/Arabic UI (required on some Android/Huawei builds)
@@ -90,6 +90,8 @@ if (__DEV__) {
     'Legacy Architecture',
     'The app is running using the Legacy Architecture',
     'Sending `onAnimatedValueUpdate` with no listeners registered',
+    '[Startup]',
+    '[AdhanSchedule]',
   ]);
 }
 

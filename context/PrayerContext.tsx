@@ -1982,7 +1982,9 @@ async function configureAndroidNotificationChannels(
 
   const runPrayerScheduleNow = useCallback(async (reason: string, runId: number) => {
     const scheduleStartedAt = Date.now();
-    console.error(`[AdhanSchedule] start run=${runId} reason=${reason}`);
+    if (__DEV__) {
+      console.log(`[AdhanSchedule] start run=${runId} reason=${reason}`);
+    }
 
     // Avoid stacking cold-start schedule reasons immediately after a successful sync.
     if (
@@ -1993,7 +1995,9 @@ async function configureAndroidNotificationChannels(
         reason === 'coalesced' ||
         reason.startsWith('android-'))
     ) {
-      console.error(`[AdhanSchedule] skip run=${runId} reason=${reason} (recent success)`);
+      if (__DEV__) {
+        console.log(`[AdhanSchedule] skip run=${runId} reason=${reason} (recent success)`);
+      }
       markAdhanSettled();
       return;
     }
@@ -2512,9 +2516,11 @@ async function configureAndroidNotificationChannels(
     dispatch({ type: 'SET_ERROR', payload: null });
     lastSuccessfulScheduleAtRef.current = Date.now();
     markAdhanSettled();
-    console.error(
-      `[AdhanSchedule] done run=${runId} reason=${reason} ms=${Date.now() - scheduleStartedAt} native=${nativeExactScheduledCount} expectedAdhan=${expectedAdhanCount} reminders=${scheduledReminderExpoCount}`,
-    );
+    if (__DEV__) {
+      console.log(
+        `[AdhanSchedule] done run=${runId} reason=${reason} ms=${Date.now() - scheduleStartedAt} native=${nativeExactScheduledCount} scheduledAdhan=${scheduledAdhanCount} expectedAdhan=${expectedAdhanCount} reminders=${scheduledReminderExpoCount}`,
+      );
+    }
   }, [
     buildNextTriggerByPrayer,
     buildExpectedPrayerNotifications,
@@ -2637,7 +2643,9 @@ async function configureAndroidNotificationChannels(
           lastSuccessfulScheduleAtRef.current > 0 &&
           Date.now() - lastSuccessfulScheduleAtRef.current < 15_000
         ) {
-          console.error(`[AdhanSchedule] skip pending reason=${reason} (recent success)`);
+          if (__DEV__) {
+            console.log(`[AdhanSchedule] skip pending reason=${reason} (recent success)`);
+          }
           return;
         }
         await requestPrayerSchedule(reason);

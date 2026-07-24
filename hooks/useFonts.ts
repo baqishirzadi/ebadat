@@ -16,12 +16,7 @@ const IOS_QURAN_FONT_FAMILIES = {
  */
 export function getQuranFontFamily(fontKey: QuranFontFamily): string {
   if (Platform.OS === 'ios') {
-    if (fontKey === 'qpcHafs') {
-      return IOS_QURAN_FONT_FAMILIES.scheherazade;
-    }
-    if (fontKey === 'scheherazade') {
-      return IOS_QURAN_FONT_FAMILIES.scheherazade;
-    }
+    return IOS_QURAN_FONT_FAMILIES[fontKey] || IOS_QURAN_FONT_FAMILIES.scheherazade;
   }
   return QuranFonts[fontKey]?.name || 'ScheherazadeNew';
 }

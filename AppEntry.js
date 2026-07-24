@@ -11,8 +11,9 @@ import { LogBox, Platform } from 'react-native';
 
 const ENTRY_EPOCH_MS = Date.now();
 function entryMark(label) {
+  if (!__DEV__) return;
   const elapsed = Date.now() - ENTRY_EPOCH_MS;
-  console.error(`[Startup][entry][${elapsed}ms] ${label}`);
+  console.log(`[Startup][entry][${elapsed}ms] ${label}`);
 }
 
 entryMark('AppEntry begin');
@@ -23,6 +24,8 @@ if (__DEV__) {
     'expo-av has been deprecated',
     'obtaining a push token may not work on iOS simulators',
     'Sending `onAnimatedValueUpdate` with no listeners registered',
+    '[Startup]',
+    '[AdhanSchedule]',
   ]);
 }
 

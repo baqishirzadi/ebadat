@@ -25,7 +25,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -49,7 +48,6 @@ export default function SettingsScreen() {
   const calculationMethod = prayerState.settings.calculationMethod;
   const router = useRouter();
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
-  const isIOS = Platform.OS === 'ios';
 
   const themes: { id: ThemeMode; name: string; icon: string }[] = useMemo(
     () => [
@@ -103,7 +101,7 @@ export default function SettingsScreen() {
     [],
   );
 
-  const visibleQuranFonts = isIOS ? quranFonts.filter((f) => f.id !== 'qpcHafs') : quranFonts;
+  const visibleQuranFonts = quranFonts;
 
   const calculationMethods = useMemo(
     () =>
@@ -196,6 +194,8 @@ export default function SettingsScreen() {
 
           {/* Quran Font Settings */}
           <Pressable
+            testID="settings-quran-font"
+            accessibilityLabel="خط قرآن"
             onPress={() => toggleSection('quranFont')}
             style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
@@ -217,6 +217,8 @@ export default function SettingsScreen() {
               {visibleQuranFonts.map((f) => (
                 <Pressable
                   key={f.id}
+                  testID={`settings-quran-font-option-${f.id}`}
+                  accessibilityLabel={f.name}
                   onPress={() => setQuranFont(f.id)}
                   style={[
                     styles.optionItem,
@@ -240,13 +242,6 @@ export default function SettingsScreen() {
                   )}
                 </Pressable>
               ))}
-              {isIOS ? (
-                <View style={[styles.fontNotice, { borderTopColor: theme.divider }]}>
-                  <Text style={[styles.fontNoticeText, { color: theme.textSecondary }]}>
-                    برای نمایش زیباتر و پایدارتر در iOS، صفحه قرآن فعلاً با خط استاندارد عثمان طه نشان داده می‌شود.
-                  </Text>
-                </View>
-              ) : null}
             </View>
           )}
 
