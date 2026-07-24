@@ -102,7 +102,7 @@ const ArticlesContext = createContext<ArticlesContextType | undefined>(undefined
 
 export function ArticlesProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(articlesReducer, initialState);
-  const { isInteractiveReady } = useStartupPhase();
+  const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
 
   // Monitor network status
   useEffect(() => {
@@ -113,24 +113,28 @@ export function ArticlesProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
-  // Initialize
+  // Initialize after adhan settles so remote article sync doesn't stampede Hermes.
   useEffect(() => {
-    if (!isInteractiveReady) {
+    if (!isAdhanSettled) {
       return;
     }
 
     let cancelled = false;
-    const task = InteractionManager.runAfterInteractions(() => {
-      if (!cancelled) {
-        void initialize();
-      }
-    });
+    let interactionTask: { cancel: () => void } | null = null;
+    const timer = setTimeout(() => {
+      interactionTask = InteractionManager.runAfterInteractions(() => {
+        if (!cancelled) {
+          void initialize();
+        }
+      });
+    }, 24_000);
 
     return () => {
       cancelled = true;
-      task.cancel();
+      clearTimeout(timer);
+      interactionTask?.cancel();
     };
-  }, [isInteractiveReady]);
+  }, [isAdhanSettled]);
 
   async function initialize() {
     try {

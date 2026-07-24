@@ -68,7 +68,7 @@ function getDateByOffset(offset: number): Date {
 }
 
 export function AhadithProvider({ children }: { children: React.ReactNode }) {
-  const { isInteractiveReady } = useStartupPhase();
+  const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
   const [hadiths, setHadiths] = useState<Hadith[]>([]);
   const topics = useMemo(() => (hadiths.length ? getHadithTopics() : []), [hadiths]);
   const muttafaqHadiths = useMemo(() => (hadiths.length ? getMuttafaqHadiths() : []), [hadiths]);
@@ -204,14 +204,18 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
   );
 
   useEffect(() => {
-    if (!isInteractiveReady || isLoading) return;
+    // Local seed stays on hydrate; force remote sync waits for adhan so Hermes isn't stampeded.
+    if (!isAdhanSettled || isLoading) return;
 
-    void syncRemoteHadiths(true);
-  }, [isInteractiveReady, isLoading, syncRemoteHadiths]);
+    const timer = setTimeout(() => {
+      void syncRemoteHadiths(true);
+    }, 16_000);
+    return () => clearTimeout(timer);
+  }, [isAdhanSettled, isLoading, syncRemoteHadiths]);
 
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (nextState) => {
-      if (nextState === 'active' && !isLoading && isInteractiveReady) {
+      if (nextState === 'active' && !isLoading && isAdhanSettled) {
         void syncRemoteHadiths(false);
       }
     });
@@ -219,7 +223,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.remove();
     };
-  }, [isInteractiveReady, isLoading, syncRemoteHadiths]);
+  }, [isAdhanSettled, isLoading, syncRemoteHadiths]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -233,14 +237,17 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
   }, [bookmarks, isLoading]);
 
   useEffect(() => {
-    if (isLoading || !isInteractiveReady) return;
+    if (isLoading || !isAdhanSettled) return;
     void AsyncStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(notificationPrefs));
-    void scheduleAhadithNotifications(hadiths, notificationPrefs).catch((error) => {
-      if (__DEV__) {
-        console.warn('[Ahadith] Failed to schedule notifications', error);
-      }
-    });
-  }, [notificationPrefs, hadiths, isInteractiveReady, isLoading]);
+    const timer = setTimeout(() => {
+      void scheduleAhadithNotifications(hadiths, notificationPrefs).catch((error) => {
+        if (__DEV__) {
+          console.warn('[Ahadith] Failed to schedule notifications', error);
+        }
+      });
+    }, 19_000);
+    return () => clearTimeout(timer);
+  }, [notificationPrefs, hadiths, isAdhanSettled, isLoading]);
 
   const topicHadiths = useMemo(() => {
     if (!selectedTopic) return [];

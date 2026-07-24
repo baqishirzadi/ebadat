@@ -15,7 +15,7 @@ const SPECIAL_PRIORITY: ReadonlyArray<NonNullable<Hadith['special_days']>[number
   'ramadan',
 ];
 const CAMPAIGN_START = getKabulNoon(new Date('2026-05-23T12:00:00+04:30'));
-const CAMPAIGN_LENGTH_DAYS = 60;
+const CAMPAIGN_LENGTH_DAYS = 120;
 
 function sortDeterministic(items: Hadith[]): Hadith[] {
   return getHadithsSortedByDailyIndex(items);

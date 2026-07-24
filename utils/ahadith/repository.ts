@@ -1,6 +1,15 @@
-import { Hadith } from '@/types/hadith';
+import {
+  HADITH_AUTHENTICITY_GRADES,
+  HADITH_SOURCE_BOOKS,
+  Hadith,
+  HadithAuthenticityGrade,
+  HadithSourceBook,
+} from '@/types/hadith';
 
 let localHadithsCache: readonly Hadith[] | null = null;
+
+const SOURCE_BOOK_SET = new Set<string>(HADITH_SOURCE_BOOKS);
+const GRADE_SET = new Set<string>(HADITH_AUTHENTICITY_GRADES);
 
 function getLocalHadiths(): readonly Hadith[] {
   if (!localHadithsCache) {
@@ -35,8 +44,22 @@ function normalizeTopics(value: unknown): string[] {
   return Array.from(new Set(cleaned));
 }
 
-function isValidSourceBook(value: unknown): value is Hadith['source_book'] {
-  return value === 'Bukhari' || value === 'Muslim';
+function isValidSourceBook(value: unknown): value is HadithSourceBook {
+  return typeof value === 'string' && SOURCE_BOOK_SET.has(value);
+}
+
+function normalizeAuthenticityGrade(
+  value: unknown,
+  sourceBook: HadithSourceBook,
+  isMuttafaq: boolean,
+): HadithAuthenticityGrade {
+  if (typeof value === 'string' && GRADE_SET.has(value)) {
+    return value as HadithAuthenticityGrade;
+  }
+  if (isMuttafaq || sourceBook === 'Bukhari' || sourceBook === 'Muslim') {
+    return 'sahih';
+  }
+  return 'hasan';
 }
 
 function normalizeHadithEntry(input: Hadith): Hadith | null {
@@ -48,6 +71,7 @@ function normalizeHadithEntry(input: Hadith): Hadith | null {
   const pashtoTranslation = normalizeString(input.pashto_translation);
   const sourceNumber = normalizeString(input.source_number);
   const topics = normalizeTopics(input.topics);
+  const isMuttafaq = !!input.is_muttafaq;
 
   if (!arabicText || !dariTranslation || !pashtoTranslation || !sourceNumber) {
     return null;
@@ -58,6 +82,12 @@ function normalizeHadithEntry(input: Hadith): Hadith | null {
       ? input.daily_index
       : input.id;
 
+  const authenticityGrade = normalizeAuthenticityGrade(
+    input.authenticity_grade,
+    input.source_book,
+    isMuttafaq,
+  );
+
   const normalized: Hadith = {
     id: input.id,
     arabic_text: arabicText,
@@ -65,7 +95,8 @@ function normalizeHadithEntry(input: Hadith): Hadith | null {
     pashto_translation: pashtoTranslation,
     source_book: input.source_book,
     source_number: sourceNumber,
-    is_muttafaq: !!input.is_muttafaq,
+    is_muttafaq: isMuttafaq,
+    authenticity_grade: isMuttafaq ? 'sahih' : authenticityGrade,
     topics,
     daily_index: dailyIndex,
   };

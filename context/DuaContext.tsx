@@ -72,26 +72,30 @@ const DuaContext = createContext<DuaContextType | undefined>(undefined);
 
 export function DuaProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(duaReducer, initialState);
-  const { isInteractiveReady } = useStartupPhase();
+  const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
 
-  // Initialize user ID and load requests
+  // Initialize user ID and load requests after adhan settles.
   useEffect(() => {
-    if (!isInteractiveReady) {
+    if (!isAdhanSettled) {
       return;
     }
 
     let cancelled = false;
-    const task = InteractionManager.runAfterInteractions(() => {
-      if (!cancelled) {
-        void initialize();
-      }
-    });
+    let interactionTask: { cancel: () => void } | null = null;
+    const timer = setTimeout(() => {
+      interactionTask = InteractionManager.runAfterInteractions(() => {
+        if (!cancelled) {
+          void initialize();
+        }
+      });
+    }, 28_000);
 
     return () => {
       cancelled = true;
-      task.cancel();
+      clearTimeout(timer);
+      interactionTask?.cancel();
     };
-  }, [isInteractiveReady]);
+  }, [isAdhanSettled]);
 
   const refreshRequests = useCallback(async () => {
     if (!state.userId) {
@@ -120,7 +124,7 @@ export function DuaProvider({ children }: { children: ReactNode }) {
 
   // Start auto-sync
   useEffect(() => {
-    if (!isInteractiveReady) {
+    if (!isAdhanSettled) {
       return;
     }
 
@@ -132,11 +136,11 @@ export function DuaProvider({ children }: { children: ReactNode }) {
       cleanup();
       unsubscribe();
     };
-  }, [isInteractiveReady, refreshRequests]);
+  }, [isAdhanSettled, refreshRequests]);
 
   // Setup notification listener
   useEffect(() => {
-    if (!isInteractiveReady) {
+    if (!isAdhanSettled) {
       return;
     }
 

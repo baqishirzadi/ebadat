@@ -9,6 +9,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import { Platform } from 'react-native';
 
 // Types
 export interface SurahAyah {
@@ -315,6 +316,12 @@ export function preloadJuz30(): void {
  * Preload popular surahs for instant access (skips Surah 2 — very large on low-end devices).
  */
 export function preloadPopularSurahs(): void {
+  // On low-end Android, skip automatic surah JSON require() — opening a surah
+  // still loads on demand; mid-session Hermes cannot afford this pile.
+  if (Platform.OS === 'android') {
+    return;
+  }
+
   const popularSurahs = [1, 18, 36, 55, 56, 67, 78];
   let index = 0;
 

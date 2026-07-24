@@ -44,6 +44,7 @@ export function JantariScreen() {
     const bootTimer = setTimeout(() => {
       if (cancelled) return;
 
+      // Yield to the UI thread, then warm events (now cheap after shamsi caches).
       const warmStart = Date.now();
       warmCalendarEventsCache(new Date());
 
@@ -75,7 +76,7 @@ export function JantariScreen() {
             next.add(section);
             return next;
           });
-        }, index * SECTION_STAGGER_MS);
+        }, (index + 1) * SECTION_STAGGER_MS);
         timers.push(timer);
       });
     }, 0);

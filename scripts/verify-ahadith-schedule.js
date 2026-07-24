@@ -56,23 +56,23 @@ function assertSpecial(offset, key, label) {
   assert(selection.hadith.special_days?.includes(key), `${label}: expected ${key}, got hadith ${selection.hadith.id}`);
 }
 
-for (let offset = 0; offset < 60; offset += 1) {
+for (let offset = 0; offset < 120; offset += 1) {
   const date = addDays(start, offset);
   const selection = selectDailyHadith(hadiths, date);
   const truth = getCalendarTruth(date);
 
   assert(selection.hadith, `${truth.dateKey}: daily selection is empty`);
-  assert(!seen.has(selection.hadith.id), `${truth.dateKey}: duplicate hadith ${selection.hadith.id} in 60-day schedule`);
+  assert(!seen.has(selection.hadith.id), `${truth.dateKey}: duplicate hadith ${selection.hadith.id} in 120-day schedule`);
   seen.add(selection.hadith.id);
 }
 
-assert(seen.size === 60, `expected 60 unique daily hadiths, got ${seen.size}`);
-assertSpecial(3, 'arafah', 'Arafah 2026-05-26');
-assertSpecial(4, 'eid_al_adha', 'Eid al-Adha 2026-05-27');
-assertSpecial(5, 'tashreeq', 'Tashreeq day 1 2026-05-28');
-assertSpecial(6, 'tashreeq', 'Tashreeq day 2 2026-05-29');
-assertSpecial(7, 'tashreeq', 'Tashreeq day 3 2026-05-30');
-assertSpecial(24, 'hijri_new_year', 'Hijri new year');
-assertSpecial(33, 'ashura', 'Ashura');
+assert(seen.size === 120, `expected 120 unique daily hadiths, got ${seen.size}`);
+assertSpecial(4, 'arafah', 'Arafah 2026-05-27');
+assertSpecial(5, 'eid_al_adha', 'Eid al-Adha 2026-05-28');
+assertSpecial(6, 'tashreeq', 'Tashreeq day 1 2026-05-29');
+assertSpecial(7, 'tashreeq', 'Tashreeq day 2 2026-05-30');
+assertSpecial(8, 'tashreeq', 'Tashreeq day 3 2026-05-31');
+assertSpecial(25, 'hijri_new_year', 'Hijri new year');
+assertSpecial(34, 'ashura', 'Ashura');
 
 console.log('[verify:ahadith-schedule] OK');

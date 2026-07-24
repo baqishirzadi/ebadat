@@ -1,7 +1,17 @@
 import Constants from 'expo-constants';
-import { Hadith, HadithAdminPayload, HadithEntryDTO } from '@/types/hadith';
+import {
+  HADITH_AUTHENTICITY_GRADES,
+  HADITH_SOURCE_BOOKS,
+  Hadith,
+  HadithAdminPayload,
+  HadithAuthenticityGrade,
+  HadithEntryDTO,
+  HadithSourceBook,
+} from '@/types/hadith';
 
 const SESSION_TTL_MS = 30 * 60 * 1000;
+const SOURCE_BOOK_SET = new Set<string>(HADITH_SOURCE_BOOKS);
+const GRADE_SET = new Set<string>(HADITH_AUTHENTICITY_GRADES);
 
 const extra = (Constants.expoConfig?.extra || (Constants as any).manifest?.extra || {}) as {
   supabaseUrl?: string;
@@ -41,7 +51,7 @@ function normalizeString(value: unknown): string {
 function rowToHadith(row: Partial<HadithEntryDTO>): Hadith | null {
   const id = Number(row.id);
   if (!Number.isInteger(id) || id <= 0) return null;
-  if (row.source_book !== 'Bukhari' && row.source_book !== 'Muslim') return null;
+  if (typeof row.source_book !== 'string' || !SOURCE_BOOK_SET.has(row.source_book)) return null;
 
   const arabicText = normalizeString(row.arabic_text);
   const dariTranslation = normalizeString(row.dari_translation);
@@ -49,14 +59,24 @@ function rowToHadith(row: Partial<HadithEntryDTO>): Hadith | null {
   const sourceNumber = normalizeString(row.source_number);
   if (!arabicText || !dariTranslation || !pashtoTranslation || !sourceNumber) return null;
 
+  const isMuttafaq = !!row.is_muttafaq;
+  const gradeRaw = typeof row.authenticity_grade === 'string' ? row.authenticity_grade : '';
+  const authenticityGrade: HadithAuthenticityGrade =
+    GRADE_SET.has(gradeRaw)
+      ? (gradeRaw as HadithAuthenticityGrade)
+      : isMuttafaq || row.source_book === 'Bukhari' || row.source_book === 'Muslim'
+        ? 'sahih'
+        : 'hasan';
+
   const hadith: Hadith = {
     id,
     arabic_text: arabicText,
     dari_translation: dariTranslation,
     pashto_translation: pashtoTranslation,
-    source_book: row.source_book,
+    source_book: row.source_book as HadithSourceBook,
     source_number: sourceNumber,
-    is_muttafaq: !!row.is_muttafaq,
+    is_muttafaq: isMuttafaq,
+    authenticity_grade: isMuttafaq ? 'sahih' : authenticityGrade,
     topics: Array.isArray(row.topics) ? row.topics.map((item) => normalizeString(item)).filter(Boolean) : [],
     daily_index:
       Number.isInteger(row.daily_index) && Number(row.daily_index) > 0

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
-import { HadithAdminPayload, HadithSourceBook, HadithSpecialDay } from '@/types/hadith';
+import { HadithAdminPayload, HadithAuthenticityGrade, HadithSourceBook, HadithSpecialDay } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
 import CText from '@/components/CenteredText';
@@ -9,6 +9,22 @@ interface HadithComposerProps {
   isSubmitting: boolean;
   onPublish: (payload: HadithAdminPayload) => Promise<void>;
 }
+
+const SOURCE_BOOK_OPTIONS: { value: HadithSourceBook; label: string }[] = [
+  { value: 'Bukhari', label: 'بخاری' },
+  { value: 'Muslim', label: 'مسلم' },
+  { value: 'Ahmad', label: 'احمد' },
+  { value: 'AbuDawud', label: 'ابوداوود' },
+  { value: 'Tirmidhi', label: 'ترمذی' },
+  { value: 'Nasai', label: 'نسائی' },
+  { value: 'IbnMajah', label: 'ابن ماجه' },
+];
+
+const GRADE_OPTIONS: { value: HadithAuthenticityGrade; label: string }[] = [
+  { value: 'sahih', label: 'صحیح' },
+  { value: 'hasan', label: 'حسن' },
+  { value: 'daif', label: 'ضعیف' },
+];
 
 const SPECIAL_DAYS: { key: HadithSpecialDay; label: string }[] = [
   { key: 'ramadan', label: 'رمضان' },
@@ -44,6 +60,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
   const [sourceBook, setSourceBook] = useState<HadithSourceBook>('Bukhari');
   const [sourceNumber, setSourceNumber] = useState('');
   const [isMuttafaq, setIsMuttafaq] = useState(false);
+  const [authenticityGrade, setAuthenticityGrade] = useState<HadithAuthenticityGrade>('sahih');
   const [topicsInput, setTopicsInput] = useState('');
   const [dailyIndexInput, setDailyIndexInput] = useState('');
   const [hijriMonthInput, setHijriMonthInput] = useState('');
@@ -67,6 +84,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
     setSourceBook('Bukhari');
     setSourceNumber('');
     setIsMuttafaq(false);
+    setAuthenticityGrade('sahih');
     setTopicsInput('');
     setDailyIndexInput('');
     setHijriMonthInput('');
@@ -107,6 +125,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
       source_book: sourceBook,
       source_number: normalizedSourceNumber,
       is_muttafaq: isMuttafaq,
+      authenticity_grade: isMuttafaq ? 'sahih' : authenticityGrade,
       topics: normalizeTopics(topicsInput),
       ...(selectedSpecialDays.length > 0 ? { special_days: selectedSpecialDays } : {}),
       ...(weekdayFridayOnly ? { weekday_only: 'friday' as const } : {}),
@@ -191,15 +210,50 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
       <View style={styles.group}>
         <CText style={[styles.label, { color: theme.textSecondary }]}>کتاب منبع</CText>
         <View style={styles.rowButtons}>
-          {([
-            ['Bukhari', 'صحیح بخاری'],
-            ['Muslim', 'صحیح مسلم'],
-          ] as const).map(([value, label]) => {
+          {SOURCE_BOOK_OPTIONS.map(({ value, label }) => {
             const selected = sourceBook === value;
             return (
               <Pressable
                 key={value}
                 onPress={() => setSourceBook(value)}
+                style={[
+                  styles.optionButton,
+                  {
+                    borderColor: selected
+                      ? alphaColor(theme.primary, 0.46)
+                      : alphaColor(theme.textSecondary, 0.24),
+                    backgroundColor: selected
+                      ? alphaColor(theme.primary, 0.16)
+                      : theme.surface,
+                  },
+                ]}
+              >
+                <CText
+                  style={[
+                    styles.optionText,
+                    { color: selected ? theme.primary : theme.textSecondary },
+                  ]}
+                >
+                  {label}
+                </CText>
+              </Pressable>
+            );
+          })}
+        </View>
+      </View>
+
+      <View style={styles.group}>
+        <CText style={[styles.label, { color: theme.textSecondary }]}>درجه صحت</CText>
+        <View style={styles.rowButtons}>
+          {GRADE_OPTIONS.map(({ value, label }) => {
+            const selected = authenticityGrade === value;
+            return (
+              <Pressable
+                key={value}
+                onPress={() => {
+                  setAuthenticityGrade(value);
+                  if (value !== 'sahih') setIsMuttafaq(false);
+                }}
                 style={[
                   styles.optionButton,
                   {

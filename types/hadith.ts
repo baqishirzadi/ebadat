@@ -1,4 +1,29 @@
-export type HadithSourceBook = 'Bukhari' | 'Muslim';
+export type HadithSourceBook =
+  | 'Bukhari'
+  | 'Muslim'
+  | 'Ahmad'
+  | 'AbuDawud'
+  | 'Tirmidhi'
+  | 'Nasai'
+  | 'IbnMajah';
+
+export type HadithAuthenticityGrade = 'sahih' | 'hasan' | 'daif';
+
+export const HADITH_SOURCE_BOOKS: readonly HadithSourceBook[] = [
+  'Bukhari',
+  'Muslim',
+  'Ahmad',
+  'AbuDawud',
+  'Tirmidhi',
+  'Nasai',
+  'IbnMajah',
+] as const;
+
+export const HADITH_AUTHENTICITY_GRADES: readonly HadithAuthenticityGrade[] = [
+  'sahih',
+  'hasan',
+  'daif',
+] as const;
 
 export type HadithSpecialDay =
   | 'ramadan'
@@ -25,6 +50,7 @@ export interface Hadith {
   source_book: HadithSourceBook;
   source_number: string;
   is_muttafaq: boolean;
+  authenticity_grade: HadithAuthenticityGrade;
   topics: string[];
   special_days?: HadithSpecialDay[];
   hijri_range?: HadithHijriRange;
@@ -77,6 +103,7 @@ export interface HadithAdminPayload {
   source_book: HadithSourceBook;
   source_number: string;
   is_muttafaq: boolean;
+  authenticity_grade: HadithAuthenticityGrade;
   topics: string[];
   special_days?: HadithSpecialDay[];
   hijri_range?: HadithHijriRange;

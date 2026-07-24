@@ -11,6 +11,8 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
+import com.facebook.react.bridge.ReactMarker
+import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.ReactHost
 import com.facebook.react.common.ReleaseLevel
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
@@ -20,6 +22,19 @@ import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
 
 class MainApplication : Application(), ReactApplication {
+
+  private val startupReactMarkerListener = ReactMarker.MarkerListener { name, _, _ ->
+    when (name) {
+      ReactMarkerConstants.CREATE_REACT_CONTEXT_START,
+      ReactMarkerConstants.CREATE_REACT_CONTEXT_END,
+      ReactMarkerConstants.PRE_RUN_JS_BUNDLE_START,
+      ReactMarkerConstants.RUN_JS_BUNDLE_START,
+      ReactMarkerConstants.RUN_JS_BUNDLE_END,
+      ReactMarkerConstants.REACT_BRIDGELESS_LOADING_START,
+      ReactMarkerConstants.REACT_BRIDGELESS_LOADING_END -> StartupTrace.mark("RN $name")
+      else -> Unit
+    }
+  }
 
   override val reactNativeHost: ReactNativeHost = ReactNativeHostWrapper(
       this,
@@ -42,6 +57,7 @@ class MainApplication : Application(), ReactApplication {
     get() = ReactNativeHostWrapper.createReactHost(applicationContext, reactNativeHost)
 
   override fun onCreate() {
+    StartupTrace.mark("Application.onCreate start")
     super.onCreate()
     val sharedI18nUtilInstance = I18nUtil.getInstance()
     sharedI18nUtilInstance.allowRTL(this, true)
@@ -61,7 +77,10 @@ class MainApplication : Application(), ReactApplication {
     } catch (e: IllegalArgumentException) {
       ReleaseLevel.STABLE
     }
+    ReactMarker.addListener(startupReactMarkerListener)
+    StartupTrace.mark("React Native load requested")
     loadReactNative(this)
+    StartupTrace.mark("React Native load returned")
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
     AdhanNotificationChannels.ensureCreated(this)
     AdhanScheduleManager.enqueuePeriodicMaintenance(this)
@@ -80,6 +99,7 @@ class MainApplication : Application(), ReactApplication {
         Log.e("MainApplication", "Cold-start adhan watchdog failed", error)
       }
     }.start()
+    StartupTrace.mark("Application.onCreate complete")
   }
 
   override fun onConfigurationChanged(newConfig: Configuration) {

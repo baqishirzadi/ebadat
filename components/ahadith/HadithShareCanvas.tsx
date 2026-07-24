@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { deriveDailyCardGradient, alphaColor } from '@/utils/ahadith/theme';
-import { formatSourceLabel } from '@/utils/ahadith/labels';
+import { formatSourceLabel, getAuthenticityGradeLabelFa } from '@/utils/ahadith/labels';
 import CenteredText from '@/components/CenteredText';
 import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 
@@ -55,6 +55,8 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
           ]}
         >
           {formatSourceLabel(hadith.source_book, hadith.source_number)}
+          {' · '}
+          {hadith.is_muttafaq ? 'متفق‌علیه' : getAuthenticityGradeLabelFa(hadith.authenticity_grade)}
         </CenteredText>
       </LinearGradient>
     </View>

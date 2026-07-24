@@ -71,6 +71,9 @@ const LEGACY_CACHE_KEYS = ['@ebadat/prayer_times_cache_v2', '@ebadat/prayer_time
 const CACHE_DAYS = 30;
 const ALADHAN_BASE = 'https://api.aladhan.com/v1';
 
+let memoryCache: CachePayload | null = null;
+let memoryCacheLoadPromise: Promise<CachePayload> | null = null;
+
 type CachedTimings = {
   fajr: string;
   sunrise: string;
@@ -126,7 +129,7 @@ function toDisplay(times: PrayerTimes, date: Date, timeZone?: string): PrayerTim
     asr: toArabicNumeralsString(format12HourInTimeZone(times.asr, timeZone)),
     maghrib: toArabicNumeralsString(format12HourInTimeZone(times.maghrib, timeZone)),
     isha: toArabicNumeralsString(format12HourInTimeZone(times.isha, timeZone)),
-    date: date.toLocaleDateString('fa-AF'),
+    date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`,
   };
 }
 
@@ -146,18 +149,36 @@ function minutesFromTimeString(time: string): number {
 }
 
 async function loadCache(): Promise<CachePayload> {
-  try {
-    const raw = await AsyncStorage.getItem(CACHE_KEY);
-    if (!raw) return { version: 3, cities: {} };
-    const parsed = JSON.parse(raw) as CachePayload;
-    if (!parsed || parsed.version !== 3) return { version: 3, cities: {} };
-    return parsed;
-  } catch {
-    return { version: 3, cities: {} };
-  }
+  if (memoryCache) return memoryCache;
+  if (memoryCacheLoadPromise) return memoryCacheLoadPromise;
+
+  memoryCacheLoadPromise = (async () => {
+    try {
+      const raw = await AsyncStorage.getItem(CACHE_KEY);
+      if (!raw) {
+        memoryCache = { version: 3, cities: {} };
+        return memoryCache;
+      }
+      const parsed = JSON.parse(raw) as CachePayload;
+      if (!parsed || parsed.version !== 3) {
+        memoryCache = { version: 3, cities: {} };
+        return memoryCache;
+      }
+      memoryCache = parsed;
+      return memoryCache;
+    } catch {
+      memoryCache = { version: 3, cities: {} };
+      return memoryCache;
+    } finally {
+      memoryCacheLoadPromise = null;
+    }
+  })();
+
+  return memoryCacheLoadPromise;
 }
 
 async function saveCache(cache: CachePayload): Promise<void> {
+  memoryCache = cache;
   await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(cache));
   for (const legacy of LEGACY_CACHE_KEYS) {
     try {
@@ -421,16 +442,22 @@ async function ensureCache(
   city: City & { key?: string },
   dateKey: string,
   policy: PrayerCalculationPolicy,
+  options?: { horizonDays?: number; allowNetwork?: boolean },
 ): Promise<CachePayload> {
   const timezone = city.timezone;
   const cache = pruneCache(await loadCache(), timezone);
   const segment = policyCacheSegment(policy);
   let cityCache = cache.cities[cityKey];
+  let dirty = false;
   if (!cityCache || cityCache.policySegment !== segment) {
     cityCache = { updatedAt: 0, policySegment: segment, days: {} };
+    dirty = true;
   }
 
-  const endKey = addDaysToDateKey(dateKey, CACHE_DAYS - 1);
+  // Only fetch the requested day (+ small horizon). Prefetching CACHE_DAYS on every
+  // miss pegged Hermes for ~70s on low-end Android during adhan schedule.
+  const horizonDays = Math.max(0, Math.min(CACHE_DAYS - 1, options?.horizonDays ?? 2));
+  const endKey = addDaysToDateKey(dateKey, horizonDays);
   const neededMonths = new Set<string>();
   for (let cursor = dateKey; cursor <= endKey; cursor = addDaysToDateKey(cursor, 1)) {
     const existing = cityCache.days[cursor];
@@ -444,7 +471,10 @@ async function ensureCache(
     }
   }
 
-  const online = await isOnline();
+  // Adhan schedule path must not block on Diyanet/AlAdhan district search + month fetch
+  // (can hang 30–70s on low-end devices). Callers can warm the cache later.
+  const allowNetwork = options?.allowNetwork !== false;
+  const online = allowNetwork && neededMonths.size > 0 ? await isOnline() : false;
   for (const monthKey of neededMonths) {
     if (!online) break;
     try {
@@ -455,9 +485,11 @@ async function ensureCache(
       monthDays.forEach((day) => {
         if (validateCachedTimings(day.timings)) {
           cityCache.days[day.date] = { ...day, validated: true };
+          dirty = true;
         }
       });
       cityCache.updatedAt = Date.now();
+      dirty = true;
     } catch (error) {
       if (__DEV__) {
         console.warn('Prayer month fetch failed:', policy.sourceLabel, error);
@@ -466,7 +498,13 @@ async function ensureCache(
   }
 
   cache.cities[cityKey] = cityCache;
-  await saveCache(cache);
+  // Avoid rewriting AsyncStorage on every schedule day lookup — stringify+write
+  // of a multi-city month cache pegs Hermes on low-end Android.
+  if (dirty) {
+    await saveCache(cache);
+  } else {
+    memoryCache = cache;
+  }
   return cache;
 }
 
@@ -478,6 +516,10 @@ export async function getPrayerTimesForDate(params: {
   cityKey?: string;
   location?: LocationType;
   date?: Date;
+  /** Extra days to warm in the same month fetch. Default 2 (not 30). */
+  cacheHorizonDays?: number;
+  /** When false, read cache only and fall back to local calculation (no network). */
+  allowNetwork?: boolean;
 }): Promise<PrayerTimesBundle> {
   const anchorDate = params.date || new Date();
   const { cityKey, city, location } = getCityInfo(params.cityKey, params.location);
@@ -490,7 +532,10 @@ export async function getPrayerTimesForDate(params: {
   let validated = false;
 
   if (city && cityKey) {
-    const cache = await ensureCache(cityKey, city, dateKey, policy);
+    const cache = await ensureCache(cityKey, city, dateKey, policy, {
+      horizonDays: params.cacheHorizonDays,
+      allowNetwork: params.allowNetwork,
+    });
     const candidate = cache.cities[cityKey]?.days[dateKey];
     if (
       candidate &&
@@ -543,17 +588,36 @@ export async function getPrayerTimesForDate(params: {
 }
 
 /** Prefetch multi-day canonical times for widgets / native schedules. */
+let offlineRangeCache:
+  | { key: string; at: number; bundles: PrayerTimesBundle[] }
+  | null = null;
+const OFFLINE_RANGE_CACHE_TTL_MS = 60_000;
+
 export async function getPrayerTimesForDateRange(params: {
   cityKey?: string;
   location?: LocationType;
   startDate?: Date;
   days?: number;
+  /** When false, skip network month fetches (use cache + local calc). */
+  allowNetwork?: boolean;
 }): Promise<PrayerTimesBundle[]> {
   const days = Math.max(1, params.days ?? 7);
   const start = params.startDate || new Date();
   const { location } = getCityInfo(params.cityKey, params.location);
   const timezone = location.timezone;
   const startKey = getDateKeyInTimezone(start, timezone);
+  const allowNetwork = params.allowNetwork !== false;
+  const cacheKey = `${params.cityKey || ''}|${location.latitude},${location.longitude}|${startKey}|${days}|net=${allowNetwork ? 1 : 0}`;
+
+  if (
+    !allowNetwork &&
+    offlineRangeCache &&
+    offlineRangeCache.key === cacheKey &&
+    Date.now() - offlineRangeCache.at < OFFLINE_RANGE_CACHE_TTL_MS
+  ) {
+    return offlineRangeCache.bundles;
+  }
+
   const results: PrayerTimesBundle[] = [];
 
   for (let i = 0; i < days; i += 1) {
@@ -564,8 +628,15 @@ export async function getPrayerTimesForDateRange(params: {
         cityKey: params.cityKey,
         location: params.location,
         date: noon,
+        // First call warms the rest of the requested range; later days hit memory cache.
+        cacheHorizonDays: Math.max(0, days - 1 - i),
+        allowNetwork: params.allowNetwork,
       }),
     );
+  }
+
+  if (!allowNetwork) {
+    offlineRangeCache = { key: cacheKey, at: Date.now(), bundles: results };
   }
   return results;
 }

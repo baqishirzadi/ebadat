@@ -4,7 +4,16 @@ const fs = require('fs');
 const path = require('path');
 
 const DATASET_PATH = path.join(__dirname, '..', 'data', 'ahadith', 'hadiths.curated.v1.json');
-const ALLOWED_BOOKS = new Set(['Bukhari', 'Muslim']);
+const ALLOWED_BOOKS = new Set([
+  'Bukhari',
+  'Muslim',
+  'Ahmad',
+  'AbuDawud',
+  'Tirmidhi',
+  'Nasai',
+  'IbnMajah',
+]);
+const ALLOWED_GRADES = new Set(['sahih', 'hasan', 'daif']);
 const ALLOWED_SPECIAL_DAYS = new Set([
   'ramadan',
   'laylat_al_qadr',
@@ -16,7 +25,7 @@ const ALLOWED_SPECIAL_DAYS = new Set([
   'hijri_new_year',
   'ashura',
 ]);
-const MIN_PRODUCTION_COUNT = 60;
+const MIN_PRODUCTION_COUNT = 120;
 
 function fail(message) {
   console.error(`[verify:ahadith-data] ${message}`);
@@ -59,11 +68,22 @@ for (const item of hadiths) {
   assert(isNonEmptyString(item.dari_translation), `Hadith ${item.id}: dari_translation is required`);
   assert(isNonEmptyString(item.pashto_translation), `Hadith ${item.id}: pashto_translation is required`);
 
-  assert(ALLOWED_BOOKS.has(item.source_book), `Hadith ${item.id}: source_book must be Bukhari or Muslim`);
+  assert(
+    ALLOWED_BOOKS.has(item.source_book),
+    `Hadith ${item.id}: source_book must be one of ${Array.from(ALLOWED_BOOKS).join(', ')}`
+  );
   assert(isNonEmptyString(item.source_number), `Hadith ${item.id}: source_number is required`);
 
   assert(typeof item.is_muttafaq === 'boolean', `Hadith ${item.id}: is_muttafaq must be boolean`);
+  assert(
+    ALLOWED_GRADES.has(item.authenticity_grade),
+    `Hadith ${item.id}: authenticity_grade must be sahih, hasan, or daif`
+  );
   if (item.is_muttafaq) {
+    assert(
+      item.authenticity_grade === 'sahih',
+      `Hadith ${item.id}: muttafaq entries must use authenticity_grade sahih`
+    );
     muttafaqCount += 1;
   }
 

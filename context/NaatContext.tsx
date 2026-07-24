@@ -280,7 +280,7 @@ function quantizeMillis(value: number): number {
 }
 
 export function NaatProvider({ children }: { children: React.ReactNode }) {
-  const { isInteractiveReady } = useStartupPhase();
+  const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
   const [naats, setNaats] = useState<Naat[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -387,22 +387,26 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!isInteractiveReady) {
+    if (!isAdhanSettled) {
       return;
     }
 
     let cancelled = false;
-    const task = InteractionManager.runAfterInteractions(() => {
-      if (!cancelled) {
-        refresh({ skipVerify: true }).catch(() => setLoading(false));
-      }
-    });
+    let interactionTask: { cancel: () => void } | null = null;
+    const timer = setTimeout(() => {
+      interactionTask = InteractionManager.runAfterInteractions(() => {
+        if (!cancelled) {
+          refresh({ skipVerify: true }).catch(() => setLoading(false));
+        }
+      });
+    }, 20_000);
 
     return () => {
       cancelled = true;
-      task.cancel();
+      clearTimeout(timer);
+      interactionTask?.cancel();
     };
-  }, [isInteractiveReady, refresh]);
+  }, [isAdhanSettled, refresh]);
 
   useEffect(() => {
     naatsRef.current = naats;

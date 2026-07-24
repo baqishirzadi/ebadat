@@ -14,6 +14,7 @@ import { useApp } from '@/context/AppContext';
 import { alphaColor, deriveDailyCardGradient } from '@/utils/ahadith/theme';
 import {
   formatSourceLabel,
+  getAuthenticityGradeLabelFa,
   getMuttafaqBadgeLabel,
   getReasonLabelFa,
 } from '@/utils/ahadith/labels';
@@ -146,7 +147,13 @@ export function DailyHadithCard({
                 <View style={[styles.badge, { backgroundColor: alphaColor(theme.accent, 0.24), borderColor: alphaColor(theme.accent, 0.45) }]}> 
                   <CenteredText style={[styles.badgeText, { color: theme.accent }]}>{getMuttafaqBadgeLabel()}</CenteredText>
                 </View>
-              ) : null}
+              ) : (
+                <View style={[styles.badge, { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) }]}>
+                  <CenteredText style={[styles.badgeText, { color: theme.surface }]}>
+                    {getAuthenticityGradeLabelFa(hadith.authenticity_grade)}
+                  </CenteredText>
+                </View>
+              )}
             </View>
 
             <CenteredText

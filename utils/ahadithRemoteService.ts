@@ -1,11 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import { Hadith, HadithEntryDTO } from '@/types/hadith';
+import {
+  HADITH_AUTHENTICITY_GRADES,
+  HADITH_SOURCE_BOOKS,
+  Hadith,
+  HadithAuthenticityGrade,
+  HadithEntryDTO,
+  HadithSourceBook,
+} from '@/types/hadith';
 
 const STORAGE_KEYS = {
   CACHE: '@ebadat/ahadith_remote_cache_v1',
   LAST_SYNC_AT: '@ebadat/ahadith_remote_last_sync_at',
 };
+
+const SOURCE_BOOK_SET = new Set<string>(HADITH_SOURCE_BOOKS);
+const GRADE_SET = new Set<string>(HADITH_AUTHENTICITY_GRADES);
 
 const extra = (Constants.expoConfig?.extra || (Constants as any).manifest?.extra || {}) as {
   supabaseUrl?: string;
@@ -33,9 +43,10 @@ function normalizeRemoteHadith(input: Partial<HadithEntryDTO>): Hadith | null {
   const id = Number(input.id);
   if (!Number.isInteger(id) || id <= 0) return null;
 
-  const sourceBook = input.source_book === 'Bukhari' || input.source_book === 'Muslim'
-    ? input.source_book
-    : null;
+  const sourceBook =
+    typeof input.source_book === 'string' && SOURCE_BOOK_SET.has(input.source_book)
+      ? (input.source_book as HadithSourceBook)
+      : null;
   if (!sourceBook) return null;
 
   const arabicText = normalizeString(input.arabic_text);
@@ -49,6 +60,15 @@ function normalizeRemoteHadith(input: Partial<HadithEntryDTO>): Hadith | null {
       ? Number(input.daily_index)
       : id;
 
+  const isMuttafaq = !!input.is_muttafaq;
+  const gradeRaw = typeof input.authenticity_grade === 'string' ? input.authenticity_grade : '';
+  const authenticityGrade: HadithAuthenticityGrade =
+    GRADE_SET.has(gradeRaw)
+      ? (gradeRaw as HadithAuthenticityGrade)
+      : isMuttafaq || sourceBook === 'Bukhari' || sourceBook === 'Muslim'
+        ? 'sahih'
+        : 'hasan';
+
   const hadith: Hadith = {
     id,
     arabic_text: arabicText,
@@ -56,7 +76,8 @@ function normalizeRemoteHadith(input: Partial<HadithEntryDTO>): Hadith | null {
     pashto_translation: pashtoTranslation,
     source_book: sourceBook,
     source_number: sourceNumber,
-    is_muttafaq: !!input.is_muttafaq,
+    is_muttafaq: isMuttafaq,
+    authenticity_grade: isMuttafaq ? 'sahih' : authenticityGrade,
     topics: normalizeTopics(input.topics),
     daily_index: dailyIndex,
   };

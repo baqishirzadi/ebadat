@@ -64,7 +64,7 @@ const ScholarContext = createContext<ScholarContextType | undefined>(undefined);
 
 export function ScholarProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(scholarReducer, initialState);
-  const { isInteractiveReady } = useStartupPhase();
+  const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
 
   const checkAuth = useCallback(async () => {
     try {
@@ -90,24 +90,28 @@ export function ScholarProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Check authentication on mount
+  // Check authentication after adhan settles (not on critical path).
   useEffect(() => {
-    if (!isInteractiveReady) {
+    if (!isAdhanSettled) {
       return;
     }
 
     let cancelled = false;
-    const task = InteractionManager.runAfterInteractions(() => {
-      if (!cancelled) {
-        void checkAuth();
-      }
-    });
+    let interactionTask: { cancel: () => void } | null = null;
+    const timer = setTimeout(() => {
+      interactionTask = InteractionManager.runAfterInteractions(() => {
+        if (!cancelled) {
+          void checkAuth();
+        }
+      });
+    }, 22_000);
 
     return () => {
       cancelled = true;
-      task.cancel();
+      clearTimeout(timer);
+      interactionTask?.cancel();
     };
-  }, [checkAuth, isInteractiveReady]);
+  }, [checkAuth, isAdhanSettled]);
 
   const login = useCallback(async (email: string, password: string) => {
     try {

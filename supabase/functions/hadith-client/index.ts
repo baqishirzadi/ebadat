@@ -55,6 +55,12 @@ function normalizeHadithRow(row: Record<string, unknown>) {
     source_book: row.source_book,
     source_number: typeof row.source_number === "string" ? row.source_number : "",
     is_muttafaq: !!row.is_muttafaq,
+    authenticity_grade:
+      typeof row.authenticity_grade === "string" && row.authenticity_grade.length > 0
+        ? row.authenticity_grade
+        : !!row.is_muttafaq || row.source_book === "Bukhari" || row.source_book === "Muslim"
+          ? "sahih"
+          : "hasan",
     topics: Array.isArray(row.topics) ? row.topics : [],
     special_days: Array.isArray(row.special_days) ? row.special_days : undefined,
     hijri_range: hasHijriRange

@@ -91,9 +91,22 @@ function extractSearchQueries(city: City & { key?: string }): string[] {
   return [...new Set(queries.filter(Boolean))];
 }
 
+async function fetchWithTimeout(url: string, timeoutMs = 8000): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function searchDistrictId(query: string): Promise<string | null> {
   const url = `${DIYANET_BASE}/locations/search/districts?q=${encodeURIComponent(query)}`;
-  const response = await fetch(url, { headers: { Accept: 'application/json' } });
+  const response = await fetchWithTimeout(url);
   if (!response.ok) return null;
   const json = await response.json();
   const rows: Array<{ _id?: string; name?: string; name_en?: string }> = Array.isArray(json?.data)
@@ -156,7 +169,7 @@ export async function fetchDiyanetMonth(
 ): Promise<DiyanetDay[]> {
   const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
   const url = `${DIYANET_BASE}/prayer-times/${districtId}/monthly?startDate=${startDate}&limit=35`;
-  const response = await fetch(url, { headers: { Accept: 'application/json' } });
+  const response = await fetchWithTimeout(url, 12_000);
   if (!response.ok) {
     throw new Error(`Diyanet error: ${response.status}`);
   }

@@ -79,8 +79,12 @@ export async function scheduleCalendarNotifications(
   const NotificationsModule = await loadNotificationsIfAvailable();
   if (!NotificationsModule) return { scheduled: 0 };
   if (!enabled) {
-    // Cancel existing calendar notifications
+    // Cancel existing calendar notifications only if we previously scheduled any.
     try {
+      const hadScheduled = await AsyncStorage.getItem('@ebadat/calendar_qamari_scheduled_v1');
+      if (!hadScheduled) {
+        return { scheduled: 0 };
+      }
       const scheduled = await NotificationsModule.getAllScheduledNotificationsAsync();
       for (const n of scheduled) {
         const id = (n as any)?.identifier || '';
@@ -89,6 +93,7 @@ export async function scheduleCalendarNotifications(
           await NotificationsModule.cancelScheduledNotificationAsync(id);
         }
       }
+      await AsyncStorage.removeItem('@ebadat/calendar_qamari_scheduled_v1');
     } catch (e) {
       console.warn('Failed to cancel calendar notifications:', e);
     }
@@ -176,6 +181,9 @@ export async function scheduleCalendarNotifications(
 
     if (__DEV__ && scheduledCount > 0) {
       console.log(`Scheduled ${scheduledCount} calendar (Qamari) notifications`);
+    }
+    if (scheduledCount > 0) {
+      await AsyncStorage.setItem('@ebadat/calendar_qamari_scheduled_v1', '1');
     }
   } catch (error) {
     console.error('Failed to schedule calendar notifications:', error);

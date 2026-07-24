@@ -13,6 +13,7 @@ import expo.modules.ReactActivityDelegateWrapper
 
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
+    StartupTrace.mark("MainActivity.onCreate start")
     // Set the theme to AppTheme BEFORE onCreate to support
     // coloring the background, status bar, and navigation bar.
     // This is required for expo-splash-screen.
@@ -21,6 +22,19 @@ class MainActivity : ReactActivity() {
     SplashScreenManager.registerOnActivity(this)
     // @generated end expo-splashscreen
     super.onCreate(null)
+    StartupTrace.mark("MainActivity.onCreate complete")
+  }
+
+  override fun onResume() {
+    super.onResume()
+    StartupTrace.mark("MainActivity.onResume")
+  }
+
+  override fun onWindowFocusChanged(hasFocus: Boolean) {
+    super.onWindowFocusChanged(hasFocus)
+    if (hasFocus) {
+      StartupTrace.mark("MainActivity first window focus")
+    }
   }
 
   /**

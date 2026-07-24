@@ -1,5 +1,7 @@
 /**
  * Timezone-aware date/time helpers for prayer schedules.
+ * Intl.DateTimeFormat instances are cached per timezone — creating them on Hermes
+ * (especially low-end Android) is extremely expensive.
  */
 
 const FALLBACK_TZ_OFFSETS: Record<string, number> = {
@@ -7,6 +9,108 @@ const FALLBACK_TZ_OFFSETS: Record<string, number> = {
   'Europe/Istanbul': 180,
   'Asia/Tehran': 210,
 };
+
+type FormatterCache = {
+  dateKey?: Intl.DateTimeFormat;
+  offset?: Intl.DateTimeFormat;
+  hour12?: Intl.DateTimeFormat;
+  hour24?: Intl.DateTimeFormat;
+  weekday?: Intl.DateTimeFormat;
+};
+
+const FORMATTER_CACHE = new Map<string, FormatterCache>();
+
+function cacheFor(timeZone: string): FormatterCache {
+  let entry = FORMATTER_CACHE.get(timeZone);
+  if (!entry) {
+    entry = {};
+    FORMATTER_CACHE.set(timeZone, entry);
+  }
+  return entry;
+}
+
+function getDateKeyFormatter(timeZone: string): Intl.DateTimeFormat | null {
+  const entry = cacheFor(timeZone);
+  if (entry.dateKey) return entry.dateKey;
+  try {
+    entry.dateKey = new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    return entry.dateKey;
+  } catch {
+    return null;
+  }
+}
+
+function getOffsetFormatter(timeZone: string): Intl.DateTimeFormat | null {
+  const entry = cacheFor(timeZone);
+  if (entry.offset) return entry.offset;
+  try {
+    entry.offset = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+    return entry.offset;
+  } catch {
+    return null;
+  }
+}
+
+function getHour12Formatter(timeZone: string): Intl.DateTimeFormat | null {
+  const entry = cacheFor(timeZone);
+  if (entry.hour12) return entry.hour12;
+  try {
+    entry.hour12 = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+    return entry.hour12;
+  } catch {
+    return null;
+  }
+}
+
+function getHour24Formatter(timeZone: string): Intl.DateTimeFormat | null {
+  const entry = cacheFor(timeZone);
+  if (entry.hour24) return entry.hour24;
+  try {
+    entry.hour24 = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: false,
+    });
+    return entry.hour24;
+  } catch {
+    return null;
+  }
+}
+
+function getWeekdayFormatter(timeZone?: string): Intl.DateTimeFormat | null {
+  const key = timeZone || '__device__';
+  const entry = cacheFor(key);
+  if (entry.weekday) return entry.weekday;
+  try {
+    entry.weekday = new Intl.DateTimeFormat('en-US', {
+      timeZone: timeZone || undefined,
+      weekday: 'short',
+    });
+    return entry.weekday;
+  } catch {
+    return null;
+  }
+}
 
 export function getDateKeyInTimezone(date: Date, timeZone?: string): string {
   if (!timeZone) {
@@ -17,12 +121,9 @@ export function getDateKeyInTimezone(date: Date, timeZone?: string): string {
   }
 
   try {
-    const parts = new Intl.DateTimeFormat('en-CA', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    }).formatToParts(date);
+    const dtf = getDateKeyFormatter(timeZone);
+    if (!dtf) throw new Error('no-formatter');
+    const parts = dtf.formatToParts(date);
     const lookup = (type: string) => parts.find((p) => p.type === type)?.value || '00';
     return `${lookup('year')}-${lookup('month')}-${lookup('day')}`;
   } catch {
@@ -41,16 +142,8 @@ export function parseDateKey(dateKey: string): { year: number; month: number; da
 export function getTimezoneOffsetMinutes(timeZone: string | undefined, date: Date): number {
   if (!timeZone) return date.getTimezoneOffset() * -1;
   try {
-    const dtf = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
+    const dtf = getOffsetFormatter(timeZone);
+    if (!dtf) throw new Error('no-formatter');
     const parts = dtf.formatToParts(date);
     const lookup = (type: string) => parts.find((p) => p.type === type)?.value || '00';
     const asUTC = new Date(
@@ -104,12 +197,9 @@ export function format12HourInTimeZone(date: Date, timeZone?: string): string {
   }
 
   try {
-    return new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    }).format(date);
+    const dtf = getHour12Formatter(timeZone);
+    if (!dtf) throw new Error('no-formatter');
+    return dtf.format(date);
   } catch {
     return format12HourInTimeZone(date);
   }
@@ -123,12 +213,9 @@ export function getHoursMinutesInTimeZone(
     return { hours: date.getHours(), minutes: date.getMinutes() };
   }
   try {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: false,
-    }).formatToParts(date);
+    const dtf = getHour24Formatter(timeZone);
+    if (!dtf) throw new Error('no-formatter');
+    const parts = dtf.formatToParts(date);
     const hours = parseInt(parts.find((p) => p.type === 'hour')?.value || '0', 10);
     const minutes = parseInt(parts.find((p) => p.type === 'minute')?.value || '0', 10);
     return { hours: hours === 24 ? 0 : hours, minutes };
@@ -146,10 +233,9 @@ export function nextLocalMidnightMs(now: Date, timeZone?: string): number {
 export function weekdayInTimezone(date: Date, timeZone?: string): number {
   // 0 = Sunday ... 5 = Friday
   try {
-    const weekday = new Intl.DateTimeFormat('en-US', {
-      timeZone: timeZone || undefined,
-      weekday: 'short',
-    }).format(date);
+    const dtf = getWeekdayFormatter(timeZone);
+    if (!dtf) throw new Error('no-formatter');
+    const weekday = dtf.format(date);
     const map: Record<string, number> = {
       Sun: 0,
       Mon: 1,

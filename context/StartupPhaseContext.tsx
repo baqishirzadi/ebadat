@@ -9,10 +9,13 @@ export type StartupPhase =
 
 interface StartupPhaseContextValue {
   isInteractiveReady: boolean;
+  /** True after first adhan schedule attempt finishes (or safety timeout). */
+  isAdhanSettled: boolean;
   phase: StartupPhase;
   markFontsLoaded: () => void;
   markSplashCompleted: () => void;
   markInteractiveReady: () => void;
+  markAdhanSettled: () => void;
   markDeferredInit: () => void;
 }
 
@@ -20,6 +23,7 @@ const StartupPhaseContext = createContext<StartupPhaseContextValue | undefined>(
 
 export function StartupPhaseProvider({ children }: { children: React.ReactNode }) {
   const [isInteractiveReady, setIsInteractiveReady] = useState(false);
+  const [isAdhanSettled, setIsAdhanSettled] = useState(false);
   const [phase, setPhase] = useState<StartupPhase>('boot');
 
   const markFontsLoaded = useCallback(() => {
@@ -35,6 +39,10 @@ export function StartupPhaseProvider({ children }: { children: React.ReactNode }
     setPhase((current) => (current === 'interactive_ready' || current === 'deferred_init' ? current : 'interactive_ready'));
   }, []);
 
+  const markAdhanSettled = useCallback(() => {
+    setIsAdhanSettled((current) => (current ? current : true));
+  }, []);
+
   const markDeferredInit = useCallback(() => {
     setPhase('deferred_init');
   }, []);
@@ -42,13 +50,24 @@ export function StartupPhaseProvider({ children }: { children: React.ReactNode }
   const value = useMemo(
     () => ({
       isInteractiveReady,
+      isAdhanSettled,
       phase,
       markFontsLoaded,
       markSplashCompleted,
       markInteractiveReady,
+      markAdhanSettled,
       markDeferredInit,
     }),
-    [isInteractiveReady, phase, markFontsLoaded, markSplashCompleted, markInteractiveReady, markDeferredInit]
+    [
+      isInteractiveReady,
+      isAdhanSettled,
+      phase,
+      markFontsLoaded,
+      markSplashCompleted,
+      markInteractiveReady,
+      markAdhanSettled,
+      markDeferredInit,
+    ]
   );
 
   return <StartupPhaseContext.Provider value={value}>{children}</StartupPhaseContext.Provider>;

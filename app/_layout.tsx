@@ -26,10 +26,6 @@ import { StartupBootstrapProvider, useStartupBootstrap } from '@/context/Startup
 import { StartupPhaseProvider, useStartupPhase } from '@/context/StartupPhaseContext';
 import { StatsProvider } from '@/context/StatsContext';
 import { preloadPopularSurahs } from '@/hooks/useSurahData';
-import { getKabulNoon } from '@/utils/afghanistanCalendar';
-import { warmCalendarEventsCache } from '@/utils/calendarEvents';
-import { getCalendarMonthGridMeta } from '@/utils/calendarMonthGrid';
-import { getCalendarTruth } from '@/utils/calendarTruth';
 import '@/utils/cityDatabase';
 import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone, runPermissionOnboardingGrandfatherMigration } from '@/utils/prayerOnboarding';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
@@ -199,6 +195,10 @@ function RootLayoutNav() {
   const pendingNotificationResponseRef = useRef<import('expo-notifications').NotificationResponse | null>(null);
   const appStateRef = useRef(AppState.currentState);
 
+  useEffect(() => {
+    startupMark('Root navigation committed');
+  }, []);
+
   // Determine status bar style based on theme
   const statusBarStyle = state.preferences.theme === 'night' ? 'light' : 'dark';
 
@@ -359,11 +359,12 @@ function RootLayoutNav() {
     void runDeferredStartup();
 
     const preloadTask = InteractionManager.runAfterInteractions(() => {
+      // Wait until the user has had time to interact before sync-loading surah JSON.
       setTimeout(() => {
         if (!cancelled && bootstrapChecked && !needsOnboarding) {
           preloadPopularSurahs();
         }
-      }, 800);
+      }, Platform.OS === 'android' ? 22000 : 800);
     });
 
     return () => {
@@ -371,25 +372,6 @@ function RootLayoutNav() {
       preloadTask.cancel();
     };
   }, [bootstrapChecked, isInteractiveReady, markDeferredInit, needsOnboarding]);
-
-  useEffect(() => {
-    if (bootstrapChecked && needsOnboarding) return;
-    let cancelled = false;
-    const task = InteractionManager.runAfterInteractions(() => {
-      if (cancelled) return;
-      const today = getCalendarTruth(getKabulNoon(new Date()));
-      getCalendarMonthGridMeta('qamari', today.hijri.year, today.hijri.month);
-      getCalendarMonthGridMeta('shamsi', today.shamsi.year, today.shamsi.month);
-      const greg = today.gregorianDate;
-      getCalendarMonthGridMeta('gregorian', greg.getUTCFullYear(), greg.getUTCMonth() + 1);
-      warmCalendarEventsCache(today.gregorianDate);
-    });
-
-    return () => {
-      cancelled = true;
-      task.cancel();
-    };
-  }, [bootstrapChecked, needsOnboarding]);
 
   return (
     <>

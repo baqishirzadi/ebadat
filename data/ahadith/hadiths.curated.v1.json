@@ -7,8 +7,12 @@
     "source_book": "Bukhari",
     "source_number": "1",
     "is_muttafaq": true,
-    "topics": ["intention", "sincerity"],
-    "daily_index": 1
+    "topics": [
+      "intention",
+      "sincerity"
+    ],
+    "daily_index": 1,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 2,
@@ -18,8 +22,12 @@
     "source_book": "Muslim",
     "source_number": "55",
     "is_muttafaq": false,
-    "topics": ["advice", "faith"],
-    "daily_index": 2
+    "topics": [
+      "advice",
+      "faith"
+    ],
+    "daily_index": 2,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 3,
@@ -29,14 +37,20 @@
     "source_book": "Bukhari",
     "source_number": "38",
     "is_muttafaq": true,
-    "topics": ["ramadan", "fasting"],
-    "special_days": ["ramadan"],
+    "topics": [
+      "ramadan",
+      "fasting"
+    ],
+    "special_days": [
+      "ramadan"
+    ],
     "hijri_range": {
       "month": 9,
       "day_start": 1,
       "day_end": 30
     },
-    "daily_index": 3
+    "daily_index": 3,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 4,
@@ -46,9 +60,16 @@
     "source_book": "Bukhari",
     "source_number": "1901",
     "is_muttafaq": true,
-    "topics": ["ramadan", "laylat_al_qadr"],
-    "special_days": ["laylat_al_qadr", "ramadan"],
-    "daily_index": 4
+    "topics": [
+      "ramadan",
+      "laylat_al_qadr"
+    ],
+    "special_days": [
+      "laylat_al_qadr",
+      "ramadan"
+    ],
+    "daily_index": 4,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 5,
@@ -58,9 +79,13 @@
     "source_book": "Muslim",
     "source_number": "223",
     "is_muttafaq": false,
-    "topics": ["prayer", "worship"],
+    "topics": [
+      "prayer",
+      "worship"
+    ],
     "weekday_only": "friday",
-    "daily_index": 5
+    "daily_index": 5,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 6,
@@ -70,8 +95,12 @@
     "source_book": "Bukhari",
     "source_number": "6018",
     "is_muttafaq": true,
-    "topics": ["manners", "speech"],
-    "daily_index": 6
+    "topics": [
+      "manners",
+      "speech"
+    ],
+    "daily_index": 6,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 7,
@@ -81,9 +110,13 @@
     "source_book": "Bukhari",
     "source_number": "5027",
     "is_muttafaq": false,
-    "topics": ["quran", "knowledge"],
+    "topics": [
+      "quran",
+      "knowledge"
+    ],
     "weekday_only": "friday",
-    "daily_index": 7
+    "daily_index": 7,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 8,
@@ -93,8 +126,12 @@
     "source_book": "Bukhari",
     "source_number": "10",
     "is_muttafaq": true,
-    "topics": ["manners", "community"],
-    "daily_index": 8
+    "topics": [
+      "manners",
+      "community"
+    ],
+    "daily_index": 8,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 9,
@@ -104,8 +141,12 @@
     "source_book": "Bukhari",
     "source_number": "13",
     "is_muttafaq": true,
-    "topics": ["brotherhood", "faith"],
-    "daily_index": 9
+    "topics": [
+      "brotherhood",
+      "faith"
+    ],
+    "daily_index": 9,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 10,
@@ -115,14 +156,20 @@
     "source_book": "Muslim",
     "source_number": "1955",
     "is_muttafaq": false,
-    "topics": ["ihsan", "ethics"],
-    "special_days": ["first_10_dhul_hijjah"],
+    "topics": [
+      "ihsan",
+      "ethics"
+    ],
+    "special_days": [
+      "first_10_dhul_hijjah"
+    ],
     "hijri_range": {
       "month": 12,
       "day_start": 1,
       "day_end": 10
     },
-    "daily_index": 10
+    "daily_index": 10,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 11,
@@ -132,14 +179,21 @@
     "source_book": "Bukhari",
     "source_number": "5545",
     "is_muttafaq": true,
-    "topics": ["eid_al_adha", "qurbani", "prayer"],
-    "special_days": ["eid_al_adha"],
+    "topics": [
+      "eid_al_adha",
+      "qurbani",
+      "prayer"
+    ],
+    "special_days": [
+      "eid_al_adha"
+    ],
     "hijri_range": {
       "month": 12,
       "day_start": 10,
       "day_end": 10
     },
-    "daily_index": 11
+    "daily_index": 11,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 12,
@@ -149,14 +203,20 @@
     "source_book": "Bukhari",
     "source_number": "969",
     "is_muttafaq": false,
-    "topics": ["dhul_hijjah", "good_deeds"],
-    "special_days": ["first_10_dhul_hijjah"],
+    "topics": [
+      "dhul_hijjah",
+      "good_deeds"
+    ],
+    "special_days": [
+      "first_10_dhul_hijjah"
+    ],
     "hijri_range": {
       "month": 12,
       "day_start": 1,
       "day_end": 10
     },
-    "daily_index": 12
+    "daily_index": 12,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 13,
@@ -166,14 +226,21 @@
     "source_book": "Muslim",
     "source_number": "1163",
     "is_muttafaq": false,
-    "topics": ["fasting", "muharram", "hijri_new_year"],
-    "special_days": ["hijri_new_year"],
+    "topics": [
+      "fasting",
+      "muharram",
+      "hijri_new_year"
+    ],
+    "special_days": [
+      "hijri_new_year"
+    ],
     "hijri_range": {
       "month": 1,
       "day_start": 1,
       "day_end": 1
     },
-    "daily_index": 13
+    "daily_index": 13,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 14,
@@ -183,9 +250,15 @@
     "source_book": "Muslim",
     "source_number": "1162",
     "is_muttafaq": false,
-    "topics": ["ashura", "fasting"],
-    "special_days": ["ashura"],
-    "daily_index": 14
+    "topics": [
+      "ashura",
+      "fasting"
+    ],
+    "special_days": [
+      "ashura"
+    ],
+    "daily_index": 14,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 15,
@@ -195,9 +268,13 @@
     "source_book": "Bukhari",
     "source_number": "879",
     "is_muttafaq": false,
-    "topics": ["jumuah", "purity"],
+    "topics": [
+      "jumuah",
+      "purity"
+    ],
     "weekday_only": "friday",
-    "daily_index": 15
+    "daily_index": 15,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 16,
@@ -207,9 +284,13 @@
     "source_book": "Bukhari",
     "source_number": "934",
     "is_muttafaq": false,
-    "topics": ["jumuah", "manners"],
+    "topics": [
+      "jumuah",
+      "manners"
+    ],
     "weekday_only": "friday",
-    "daily_index": 16
+    "daily_index": 16,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 17,
@@ -219,8 +300,12 @@
     "source_book": "Bukhari",
     "source_number": "69",
     "is_muttafaq": true,
-    "topics": ["dawah", "manners"],
-    "daily_index": 17
+    "topics": [
+      "dawah",
+      "manners"
+    ],
+    "daily_index": 17,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 18,
@@ -230,8 +315,12 @@
     "source_book": "Muslim",
     "source_number": "2319",
     "is_muttafaq": false,
-    "topics": ["mercy", "character"],
-    "daily_index": 18
+    "topics": [
+      "mercy",
+      "character"
+    ],
+    "daily_index": 18,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 19,
@@ -241,9 +330,13 @@
     "source_book": "Muslim",
     "source_number": "223",
     "is_muttafaq": false,
-    "topics": ["purity", "faith"],
+    "topics": [
+      "purity",
+      "faith"
+    ],
     "weekday_only": "friday",
-    "daily_index": 19
+    "daily_index": 19,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 20,
@@ -253,8 +346,12 @@
     "source_book": "Bukhari",
     "source_number": "5997",
     "is_muttafaq": true,
-    "topics": ["mercy", "character"],
-    "daily_index": 20
+    "topics": [
+      "mercy",
+      "character"
+    ],
+    "daily_index": 20,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 21,
@@ -264,8 +361,12 @@
     "source_book": "Bukhari",
     "source_number": "5353",
     "is_muttafaq": true,
-    "topics": ["charity", "social_justice"],
-    "daily_index": 21
+    "topics": [
+      "charity",
+      "social_justice"
+    ],
+    "daily_index": 21,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 22,
@@ -275,8 +376,12 @@
     "source_book": "Bukhari",
     "source_number": "6464",
     "is_muttafaq": true,
-    "topics": ["consistency", "worship"],
-    "daily_index": 22
+    "topics": [
+      "consistency",
+      "worship"
+    ],
+    "daily_index": 22,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 23,
@@ -286,9 +391,13 @@
     "source_book": "Muslim",
     "source_number": "2699",
     "is_muttafaq": false,
-    "topics": ["knowledge", "education"],
+    "topics": [
+      "knowledge",
+      "education"
+    ],
     "weekday_only": "friday",
-    "daily_index": 23
+    "daily_index": 23,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 24,
@@ -298,8 +407,12 @@
     "source_book": "Muslim",
     "source_number": "2564",
     "is_muttafaq": false,
-    "topics": ["heart", "sincerity"],
-    "daily_index": 24
+    "topics": [
+      "heart",
+      "sincerity"
+    ],
+    "daily_index": 24,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 25,
@@ -309,8 +422,12 @@
     "source_book": "Muslim",
     "source_number": "2553",
     "is_muttafaq": false,
-    "topics": ["ethics", "character"],
-    "daily_index": 25
+    "topics": [
+      "ethics",
+      "character"
+    ],
+    "daily_index": 25,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 26,
@@ -320,8 +437,12 @@
     "source_book": "Muslim",
     "source_number": "91",
     "is_muttafaq": false,
-    "topics": ["beauty", "ethics"],
-    "daily_index": 26
+    "topics": [
+      "beauty",
+      "ethics"
+    ],
+    "daily_index": 26,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 27,
@@ -331,8 +452,12 @@
     "source_book": "Muslim",
     "source_number": "102",
     "is_muttafaq": false,
-    "topics": ["honesty", "business"],
-    "daily_index": 27
+    "topics": [
+      "honesty",
+      "business"
+    ],
+    "daily_index": 27,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 28,
@@ -342,8 +467,12 @@
     "source_book": "Bukhari",
     "source_number": "1429",
     "is_muttafaq": true,
-    "topics": ["charity", "generosity"],
-    "daily_index": 28
+    "topics": [
+      "charity",
+      "generosity"
+    ],
+    "daily_index": 28,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 29,
@@ -353,8 +482,12 @@
     "source_book": "Muslim",
     "source_number": "2699",
     "is_muttafaq": false,
-    "topics": ["helping_others", "community"],
-    "daily_index": 29
+    "topics": [
+      "helping_others",
+      "community"
+    ],
+    "daily_index": 29,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 30,
@@ -364,8 +497,12 @@
     "source_book": "Muslim",
     "source_number": "2699",
     "is_muttafaq": false,
-    "topics": ["privacy", "character"],
-    "daily_index": 30
+    "topics": [
+      "privacy",
+      "character"
+    ],
+    "daily_index": 30,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 31,
@@ -375,8 +512,12 @@
     "source_book": "Muslim",
     "source_number": "1631",
     "is_muttafaq": false,
-    "topics": ["charity", "legacy"],
-    "daily_index": 31
+    "topics": [
+      "charity",
+      "legacy"
+    ],
+    "daily_index": 31,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 32,
@@ -386,8 +527,12 @@
     "source_book": "Muslim",
     "source_number": "2664",
     "is_muttafaq": false,
-    "topics": ["strength", "mindset"],
-    "daily_index": 32
+    "topics": [
+      "strength",
+      "mindset"
+    ],
+    "daily_index": 32,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 33,
@@ -397,8 +542,12 @@
     "source_book": "Muslim",
     "source_number": "2664",
     "is_muttafaq": false,
-    "topics": ["mindset", "tawakkul"],
-    "daily_index": 33
+    "topics": [
+      "mindset",
+      "tawakkul"
+    ],
+    "daily_index": 33,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 34,
@@ -408,8 +557,12 @@
     "source_book": "Muslim",
     "source_number": "2626",
     "is_muttafaq": false,
-    "topics": ["manners", "community"],
-    "daily_index": 34
+    "topics": [
+      "manners",
+      "community"
+    ],
+    "daily_index": 34,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 35,
@@ -419,8 +572,12 @@
     "source_book": "Bukhari",
     "source_number": "7376",
     "is_muttafaq": true,
-    "topics": ["mercy", "character"],
-    "daily_index": 35
+    "topics": [
+      "mercy",
+      "character"
+    ],
+    "daily_index": 35,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 36,
@@ -430,8 +587,12 @@
     "source_book": "Bukhari",
     "source_number": "6169",
     "is_muttafaq": true,
-    "topics": ["love", "faith"],
-    "daily_index": 36
+    "topics": [
+      "love",
+      "faith"
+    ],
+    "daily_index": 36,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 37,
@@ -441,8 +602,12 @@
     "source_book": "Bukhari",
     "source_number": "6412",
     "is_muttafaq": false,
-    "topics": ["gratitude", "mindset"],
-    "daily_index": 37
+    "topics": [
+      "gratitude",
+      "mindset"
+    ],
+    "daily_index": 37,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 38,
@@ -452,8 +617,12 @@
     "source_book": "Bukhari",
     "source_number": "1417",
     "is_muttafaq": true,
-    "topics": ["taqwa", "charity"],
-    "daily_index": 38
+    "topics": [
+      "taqwa",
+      "charity"
+    ],
+    "daily_index": 38,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 39,
@@ -463,8 +632,12 @@
     "source_book": "Muslim",
     "source_number": "1009",
     "is_muttafaq": true,
-    "topics": ["charity", "speech"],
-    "daily_index": 39
+    "topics": [
+      "charity",
+      "speech"
+    ],
+    "daily_index": 39,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 40,
@@ -474,8 +647,12 @@
     "source_book": "Bukhari",
     "source_number": "6065",
     "is_muttafaq": true,
-    "topics": ["brotherhood", "character"],
-    "daily_index": 40
+    "topics": [
+      "brotherhood",
+      "character"
+    ],
+    "daily_index": 40,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 41,
@@ -485,8 +662,12 @@
     "source_book": "Bukhari",
     "source_number": "2442",
     "is_muttafaq": true,
-    "topics": ["helping_others", "brotherhood"],
-    "daily_index": 41
+    "topics": [
+      "helping_others",
+      "brotherhood"
+    ],
+    "daily_index": 41,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 42,
@@ -496,8 +677,12 @@
     "source_book": "Bukhari",
     "source_number": "6077",
     "is_muttafaq": true,
-    "topics": ["reconciliation", "manners"],
-    "daily_index": 42
+    "topics": [
+      "reconciliation",
+      "manners"
+    ],
+    "daily_index": 42,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 43,
@@ -507,9 +692,13 @@
     "source_book": "Bukhari",
     "source_number": "71",
     "is_muttafaq": true,
-    "topics": ["knowledge", "faith"],
+    "topics": [
+      "knowledge",
+      "faith"
+    ],
     "weekday_only": "friday",
-    "daily_index": 43
+    "daily_index": 43,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 44,
@@ -519,8 +708,12 @@
     "source_book": "Bukhari",
     "source_number": "9",
     "is_muttafaq": true,
-    "topics": ["modesty", "faith"],
-    "daily_index": 44
+    "topics": [
+      "modesty",
+      "faith"
+    ],
+    "daily_index": 44,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 45,
@@ -530,9 +723,13 @@
     "source_book": "Bukhari",
     "source_number": "450",
     "is_muttafaq": true,
-    "topics": ["mosque", "charity"],
+    "topics": [
+      "mosque",
+      "charity"
+    ],
     "weekday_only": "friday",
-    "daily_index": 45
+    "daily_index": 45,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 46,
@@ -542,8 +739,12 @@
     "source_book": "Bukhari",
     "source_number": "6035",
     "is_muttafaq": true,
-    "topics": ["character", "akhlaq"],
-    "daily_index": 46
+    "topics": [
+      "character",
+      "akhlaq"
+    ],
+    "daily_index": 46,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 47,
@@ -553,14 +754,20 @@
     "source_book": "Bukhari",
     "source_number": "1954",
     "is_muttafaq": false,
-    "topics": ["ramadan", "fasting"],
-    "special_days": ["ramadan"],
+    "topics": [
+      "ramadan",
+      "fasting"
+    ],
+    "special_days": [
+      "ramadan"
+    ],
     "hijri_range": {
       "month": 9,
       "day_start": 1,
       "day_end": 30
     },
-    "daily_index": 47
+    "daily_index": 47,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 48,
@@ -570,9 +777,15 @@
     "source_book": "Bukhari",
     "source_number": "1902",
     "is_muttafaq": true,
-    "topics": ["ramadan", "generosity"],
-    "special_days": ["ramadan"],
-    "daily_index": 48
+    "topics": [
+      "ramadan",
+      "generosity"
+    ],
+    "special_days": [
+      "ramadan"
+    ],
+    "daily_index": 48,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 49,
@@ -582,9 +795,15 @@
     "source_book": "Bukhari",
     "source_number": "1923",
     "is_muttafaq": true,
-    "topics": ["ramadan", "barakah"],
-    "special_days": ["ramadan"],
-    "daily_index": 49
+    "topics": [
+      "ramadan",
+      "barakah"
+    ],
+    "special_days": [
+      "ramadan"
+    ],
+    "daily_index": 49,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 50,
@@ -594,14 +813,20 @@
     "source_book": "Muslim",
     "source_number": "1162",
     "is_muttafaq": false,
-    "topics": ["arafah", "fasting"],
-    "special_days": ["arafah"],
+    "topics": [
+      "arafah",
+      "fasting"
+    ],
+    "special_days": [
+      "arafah"
+    ],
     "hijri_range": {
       "month": 12,
       "day_start": 9,
       "day_end": 9
     },
-    "daily_index": 50
+    "daily_index": 50,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 51,
@@ -611,14 +836,20 @@
     "source_book": "Muslim",
     "source_number": "1348",
     "is_muttafaq": false,
-    "topics": ["arafah", "mercy"],
-    "special_days": ["arafah"],
+    "topics": [
+      "arafah",
+      "mercy"
+    ],
+    "special_days": [
+      "arafah"
+    ],
     "hijri_range": {
       "month": 12,
       "day_start": 9,
       "day_end": 9
     },
-    "daily_index": 51
+    "daily_index": 51,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 52,
@@ -628,14 +859,20 @@
     "source_book": "Muslim",
     "source_number": "1141",
     "is_muttafaq": false,
-    "topics": ["tashreeq", "dhikr"],
-    "special_days": ["tashreeq"],
+    "topics": [
+      "tashreeq",
+      "dhikr"
+    ],
+    "special_days": [
+      "tashreeq"
+    ],
     "hijri_range": {
       "month": 12,
       "day_start": 11,
       "day_end": 13
     },
-    "daily_index": 52
+    "daily_index": 52,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 53,
@@ -645,14 +882,20 @@
     "source_book": "Muslim",
     "source_number": "2137",
     "is_muttafaq": false,
-    "topics": ["dhikr", "worship"],
-    "special_days": ["tashreeq"],
+    "topics": [
+      "dhikr",
+      "worship"
+    ],
+    "special_days": [
+      "tashreeq"
+    ],
     "hijri_range": {
       "month": 12,
       "day_start": 11,
       "day_end": 13
     },
-    "daily_index": 53
+    "daily_index": 53,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 54,
@@ -662,9 +905,13 @@
     "source_book": "Muslim",
     "source_number": "671",
     "is_muttafaq": false,
-    "topics": ["mosque", "worship"],
+    "topics": [
+      "mosque",
+      "worship"
+    ],
     "weekday_only": "friday",
-    "daily_index": 54
+    "daily_index": 54,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 55,
@@ -674,14 +921,20 @@
     "source_book": "Muslim",
     "source_number": "1893",
     "is_muttafaq": false,
-    "topics": ["guidance", "good_deeds"],
-    "special_days": ["first_10_dhul_hijjah"],
+    "topics": [
+      "guidance",
+      "good_deeds"
+    ],
+    "special_days": [
+      "first_10_dhul_hijjah"
+    ],
     "hijri_range": {
       "month": 12,
       "day_start": 1,
       "day_end": 10
     },
-    "daily_index": 55
+    "daily_index": 55,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 56,
@@ -691,8 +944,12 @@
     "source_book": "Bukhari",
     "source_number": "6927",
     "is_muttafaq": true,
-    "topics": ["gentleness", "character"],
-    "daily_index": 56
+    "topics": [
+      "gentleness",
+      "character"
+    ],
+    "daily_index": 56,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 57,
@@ -702,8 +959,12 @@
     "source_book": "Bukhari",
     "source_number": "5984",
     "is_muttafaq": true,
-    "topics": ["family", "relationships"],
-    "daily_index": 57
+    "topics": [
+      "family",
+      "relationships"
+    ],
+    "daily_index": 57,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 58,
@@ -713,8 +974,12 @@
     "source_book": "Bukhari",
     "source_number": "5986",
     "is_muttafaq": true,
-    "topics": ["family", "barakah"],
-    "daily_index": 58
+    "topics": [
+      "family",
+      "barakah"
+    ],
+    "daily_index": 58,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 59,
@@ -724,8 +989,12 @@
     "source_book": "Bukhari",
     "source_number": "7405",
     "is_muttafaq": false,
-    "topics": ["dua", "tawakkul"],
-    "daily_index": 59
+    "topics": [
+      "dua",
+      "tawakkul"
+    ],
+    "daily_index": 59,
+    "authenticity_grade": "sahih"
   },
   {
     "id": 60,
@@ -735,13 +1004,1062 @@
     "source_book": "Bukhari",
     "source_number": "6406",
     "is_muttafaq": true,
-    "topics": ["dhikr", "worship"],
-    "special_days": ["tashreeq"],
+    "topics": [
+      "dhikr",
+      "worship"
+    ],
+    "special_days": [
+      "tashreeq"
+    ],
     "hijri_range": {
       "month": 12,
       "day_start": 11,
       "day_end": 13
     },
-    "daily_index": 60
+    "daily_index": 60,
+    "authenticity_grade": "sahih"
+  },
+  {
+    "id": 61,
+    "arabic_text": "أَيُّ الْعَمَلِ أَحَبُّ إِلَى اللَّهِ؟ قَالَ: الصَّلَاةُ لِوَقْتِهَا، قَالَ: ثُمَّ أَيٌّ؟ قَالَ: بِرُّ الْوَالِدَيْنِ",
+    "dari_translation": "کدام عمل نزد خدا محبوب‌تر است؟ فرمود: نماز به وقتش، گفت: بعد از آن؟ فرمود: نیکی به والدین.",
+    "pashto_translation": "کوم عمل الله ته ډېر خوښ دی؟ وفرمايل: لمونځ په خپل وخت، وويل: بيا؟ وفرمايل: د مور او پلار سره نېکي.",
+    "source_book": "Bukhari",
+    "source_number": "527",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "parents",
+      "worship",
+      "good_deeds"
+    ],
+    "daily_index": 61
+  },
+  {
+    "id": 62,
+    "arabic_text": "الْجَنَّةُ تَحْتَ أَقْدَامِ الأُمَّهَاتِ",
+    "dari_translation": "بهشت زیر پای مادران است.",
+    "pashto_translation": "جنت د مینو لاندې ده.",
+    "source_book": "Nasai",
+    "source_number": "3104",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "parents",
+      "family",
+      "mercy"
+    ],
+    "daily_index": 62
+  },
+  {
+    "id": 63,
+    "arabic_text": "وَالَّذِي نَفْسِي بِيَدِهِ لاَ يُؤْمِنُ عَبْدٌ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ مِنَ الْخَيْرِ",
+    "dari_translation": "سوگند به آنکه جانم در دست اوست، بنده ایمان ندارد تا برای برادرش از خیر همان را بخواهد که برای خود می‌خواهد.",
+    "pashto_translation": "قسم د هغه چې زما روح يې په خپل لاس کې ده، بنده ايمان نه لري تر څو چې د خپل ورور لپاره له خیره هغه څه وغواړي چې ځان ته يې غواړي.",
+    "source_book": "Bukhari",
+    "source_number": "13",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "neighbors",
+      "brotherhood",
+      "faith"
+    ],
+    "daily_index": 63
+  },
+  {
+    "id": 64,
+    "arabic_text": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ جَارَهُ",
+    "dari_translation": "هر که به خدا و روز آخرت ایمان دارد، همسایه‌اش را گرامی بدارد.",
+    "pashto_translation": "څوک چې پر الله او آخرت ايمان لري، خپل ګاونډی دې وګرځوي.",
+    "source_book": "Bukhari",
+    "source_number": "6014",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "neighbors",
+      "manners",
+      "community"
+    ],
+    "daily_index": 64
+  },
+  {
+    "id": 65,
+    "arabic_text": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ ضَيْفَهُ",
+    "dari_translation": "هر که به خدا و روز آخرت ایمان دارد، مهمانش را گرامی بدارد.",
+    "pashto_translation": "څوک چې پر الله او آخرت ايمان لري، خپل مېلمه دې وګرځوي.",
+    "source_book": "Bukhari",
+    "source_number": "6138",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "hospitality",
+      "guests",
+      "manners"
+    ],
+    "daily_index": 65
+  },
+  {
+    "id": 66,
+    "arabic_text": "أَنَا وَكَافِلُ الْيَتِيمِ فِي الْجَنَّةِ هَكَذَا",
+    "dari_translation": "من و سرپرست یتیم در بهشت چنین کنار هم هستیم (انگشتان را نشان داد).",
+    "pashto_translation": "زه او د يتيم سرپرست په جنت کې همداسې يو (اوږه په اوږه).",
+    "source_book": "Bukhari",
+    "source_number": "6005",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "orphans",
+      "charity",
+      "mercy"
+    ],
+    "daily_index": 66
+  },
+  {
+    "id": 67,
+    "arabic_text": "مَطْلُ الْغَنِيِّ ظُلْمٌ",
+    "dari_translation": "تأخیر پرداخت بدهی از سوی توانگر، ظلم است.",
+    "pashto_translation": "د شتمن سړي پور ورکول ځنډول ظلم دی.",
+    "source_book": "Bukhari",
+    "source_number": "2300",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "debt",
+      "business",
+      "social_justice"
+    ],
+    "daily_index": 67
+  },
+  {
+    "id": 68,
+    "arabic_text": "التَّاجِرُ الصَّدُوقُ الأَمِينُ مَعَ النَّبِيِّينَ وَالصِّدِّيقِينَ وَالشُّهَدَاءِ",
+    "dari_translation": "تاجر راستگو و امین با پیامبران و صدیقان و شهیدان است.",
+    "pashto_translation": "رښتينی او امانتدار سوداګر له نبيانو، صدیقانو او شهیدانو سره دی.",
+    "source_book": "Tirmidhi",
+    "source_number": "1209",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "business",
+      "honesty",
+      "character"
+    ],
+    "daily_index": 68
+  },
+  {
+    "id": 69,
+    "arabic_text": "إِنَّ الظُّلْمَ ظُلُمَاتٌ يَوْمَ الْقِيَامَةِ",
+    "dari_translation": "بی‌عدالتی در روز قیامت تاریکی‌هاست.",
+    "pashto_translation": "ظلم د قیامت په ورځ تیارۍ دي.",
+    "source_book": "Bukhari",
+    "source_number": "2315",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "social_justice",
+      "ethics",
+      "end_times"
+    ],
+    "daily_index": 69
+  },
+  {
+    "id": 70,
+    "arabic_text": "الدُّنْيَا سِجْنُ الْمُؤْمِنِ وَجَنَّةُ الْكَافِرِ",
+    "dari_translation": "دنیا برای مؤمن زندان و برای کافر بهشت است.",
+    "pashto_translation": "نړۍ د مومن لپاره زندان او د کافر لپاره جنت ده.",
+    "source_book": "Muslim",
+    "source_number": "2956",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "travel",
+      "faith",
+      "mindset"
+    ],
+    "daily_index": 70
+  },
+  {
+    "id": 71,
+    "arabic_text": "مَنْ بَنَى مَسْجِدًا لِلَّهِ بَنَى اللَّهُ لَهُ بَيْتًا فِي الْجَنَّةِ",
+    "dari_translation": "هر که برای خدا مسجدی بسازد، خدا برایش خانه‌ای در بهشت می‌سازد.",
+    "pashto_translation": "څوک چې د الله لپاره جومات جوړ کړي، الله به يې لپاره په جنت کې کور جوړ کړي.",
+    "source_book": "Bukhari",
+    "source_number": "450",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "mosque",
+      "charity",
+      "good_deeds"
+    ],
+    "daily_index": 71
+  },
+  {
+    "id": 72,
+    "arabic_text": "لاَ تَدْخُلُوا الْجَنَّةَ حَتَّى تُؤْمِنُوا وَلاَ تُؤْمِنُوا حَتَّى تَحَابُّوا",
+    "dari_translation": "وارد بهشت نمی‌شوید مگر اینکه ایمان آورید، و ایمان نمی‌آورید مگر اینکه یکدیگر را دوست بدارید.",
+    "pashto_translation": "جنت ته ننوځئ نه تر څو چې ايمان راوړئ، او ايمان نه راوړئ نه تر څو چې يو بل مینه وکړئ.",
+    "source_book": "Muslim",
+    "source_number": "54",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "brotherhood",
+      "community",
+      "faith"
+    ],
+    "daily_index": 72
+  },
+  {
+    "id": 73,
+    "arabic_text": "اتَّقُوا اللَّهَ حَيْثُمَا كُنْتُمْ، وَأَتْبِعُوا السَّيِّئَةَ الْحَسَنَةَ تَمْحُهَا، وَخَالِقُوا النَّاسَ بِخُلُقٍ حَسَنٍ",
+    "dari_translation": "هر جا که هستید از خدا بترسید، بدی را با نیکی بپوشانید، و با مردم با اخلاق نیک رفتار کنید.",
+    "pashto_translation": "هر چېرته چې ياست له الله ووېرېږئ، بدي د نېکۍ سره پټه کړئ، او له خلکو سره ښه اخلاق وکړئ.",
+    "source_book": "Tirmidhi",
+    "source_number": "1987",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "akhlaq",
+      "manners",
+      "character"
+    ],
+    "daily_index": 73
+  },
+  {
+    "id": 74,
+    "arabic_text": "مَنْ لَمْ يَرْحَمْ صَغِيرَنَا وَيُوَقِّرْ كَبِيرَنَا فَلَيْسَ مِنَّا",
+    "dari_translation": "هر که به کوچک ما رحم نکند و بزرگ ما را گرامی ندارد، از ما نیست.",
+    "pashto_translation": "څوک چې زموږ کوچنیانو ته رحم ونه کړي او لویانو ته درناوی ونه کړي، زموږ څخه نه دی.",
+    "source_book": "Tirmidhi",
+    "source_number": "1919",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "family",
+      "manners",
+      "community"
+    ],
+    "daily_index": 74
+  },
+  {
+    "id": 75,
+    "arabic_text": "الْمُسْلِمُ أَخُو الْمُسْلِمِ لاَ يَظْلِمُهُ وَلاَ يُسْلِمُهُ",
+    "dari_translation": "مسلمان برادر مسلمان است؛ به او ظلم نمی‌کند و او را به دشمن نمی‌سپارد.",
+    "pashto_translation": "مسلمان د مسلمان ورور دی؛ هغه ته ظلم نه کوي او نه يې دښمن ته پرېږدي.",
+    "source_book": "Bukhari",
+    "source_number": "2442",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "brotherhood",
+      "social_justice",
+      "community"
+    ],
+    "daily_index": 75
+  },
+  {
+    "id": 76,
+    "arabic_text": "مَنْ نَفَّسَ عَنْ مُؤْمِنٍ كُرْبَةً مِنْ كُرَبِ الدُّنْيَا نَفَّسَ اللَّهُ عَنْهُ كُرْبَةً مِنْ كُرَبِ يَوْمِ الْقِيَامَةِ",
+    "dari_translation": "هر که غم مؤمنی را از غم‌های دنیا برطرف کند، خدا غم او را در روز قیامت برطرف می‌کند.",
+    "pashto_translation": "څوک چې د مومن د نړۍ غم لرې کړي، الله به د هغه د قیامت غم لرې کړي.",
+    "source_book": "Muslim",
+    "source_number": "2699",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "helping_others",
+      "mercy",
+      "community"
+    ],
+    "daily_index": 76
+  },
+  {
+    "id": 77,
+    "arabic_text": "اتَّقُوا النَّارَ وَلَوْ بِشِقِّ تَمْرَةٍ",
+    "dari_translation": "از آتش دوزخ بپرهیزید، اگرچه با نصف خرما (صدقه).",
+    "pashto_translation": "له اوره ووېرېږئ، که نیمه خرما (صدقه) هم وي.",
+    "source_book": "Bukhari",
+    "source_number": "1413",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "charity",
+      "taqwa",
+      "generosity"
+    ],
+    "daily_index": 77
+  },
+  {
+    "id": 78,
+    "arabic_text": "طَعَامُ الْوَاحِدِ يَكْفِي الاِثْنَيْنِ وَطَعَامُ الاِثْنَيْنِ يَكْفِي الأَرْبَعَةَ",
+    "dari_translation": "غذای یک نفر برای دو نفر کافی است و غذای دو نفر برای چهار نفر.",
+    "pashto_translation": "د يو سړي خوراک دوو ته بسېږي او د دوو سړو خوراک څلورو ته.",
+    "source_book": "Muslim",
+    "source_number": "2059",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "hospitality",
+      "guests",
+      "generosity"
+    ],
+    "daily_index": 78
+  },
+  {
+    "id": 79,
+    "arabic_text": "إِنَّمَا الْأَعْمَالُ بِالْخَوَاتِيمِ",
+    "dari_translation": "اعمال به پایان‌ها بستگی دارد.",
+    "pashto_translation": "اعمال د پایونو پر بنسټ دي.",
+    "source_book": "Bukhari",
+    "source_number": "6609",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "consistency",
+      "faith",
+      "mindset"
+    ],
+    "daily_index": 79
+  },
+  {
+    "id": 80,
+    "arabic_text": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ طَرِيقًا إِلَى الْجَنَّةِ",
+    "dari_translation": "هر که راهی برای طلب علم بپیماید، خدا راهی به بهشت برایش آسان می‌کند.",
+    "pashto_translation": "څوک چې د علم لټون لار ونيسي، الله به يې لپاره د جنت لار اسانه کړي.",
+    "source_book": "Muslim",
+    "source_number": "2699",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "education",
+      "knowledge",
+      "guidance"
+    ],
+    "daily_index": 80
+  },
+  {
+    "id": 81,
+    "arabic_text": "مَنْ كَذَبَ عَلَيَّ مُتَعَمِّدًا فَلْيَتَبَوَّأْ مَقْعَدَهُ مِنَ النَّارِ",
+    "dari_translation": "هر که عمداً بر من دروغ ببندد، جایش را در آتش آماده کند.",
+    "pashto_translation": "څوک چې په ما باندې په قصد دروغ وويني، خپل ځای دې په اور کې تیار کړي.",
+    "source_book": "Bukhari",
+    "source_number": "107",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "speech",
+      "honesty",
+      "prophet"
+    ],
+    "daily_index": 81
+  },
+  {
+    "id": 82,
+    "arabic_text": "لاَ يَرْحَمُ اللَّهُ مَنْ لاَ يَرْحَمُ النَّاسَ",
+    "dari_translation": "خدا به کسی رحم نمی‌کند که به مردم رحم نکند.",
+    "pashto_translation": "الله هغه ته رحم نه کوي چې خلکو ته رحم نه کوي.",
+    "source_book": "Bukhari",
+    "source_number": "5997",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "mercy",
+      "community",
+      "character"
+    ],
+    "daily_index": 82
+  },
+  {
+    "id": 83,
+    "arabic_text": "الْبِرُّ حُسْنُ الْخُلُقِ",
+    "dari_translation": "نیکی، خوش‌اخلاقی است.",
+    "pashto_translation": "نېکي ښه اخلاق دي.",
+    "source_book": "Muslim",
+    "source_number": "2553",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "akhlaq",
+      "character",
+      "good_deeds"
+    ],
+    "daily_index": 83
+  },
+  {
+    "id": 84,
+    "arabic_text": "إِنَّ اللَّهَ طَيِّبٌ لاَ يَقْبَلُ إِلاَّ طَيِّبًا",
+    "dari_translation": "خداوند پاک است و جز پاکی نمی‌پذیرد.",
+    "pashto_translation": "الله پاک دی او يوازې پاکي مني.",
+    "source_book": "Muslim",
+    "source_number": "1015",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "purity",
+      "honesty",
+      "charity"
+    ],
+    "daily_index": 84
+  },
+  {
+    "id": 85,
+    "arabic_text": "مَنْ كَانَتْ لَهُ أَرْضٌ فَلْيَزْرَعْهَا أَوْ لِيَمْنَحْهَا أَخَاهُ",
+    "dari_translation": "هر که زمینی دارد، آن را بکارد یا به برادرش ببخشد (تا بکاراند).",
+    "pashto_translation": "څوک چې ځمکه لري، دې کره کړي يا خپل ورور ته يې ورکړي.",
+    "source_book": "Bukhari",
+    "source_number": "2164",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "business",
+      "brotherhood",
+      "service"
+    ],
+    "daily_index": 85
+  },
+  {
+    "id": 86,
+    "arabic_text": "الْمُؤْمِنُ لِلْمُؤْمِنِ كَالْبُنْيَانِ يَشُدُّ بَعْضُهُ بَعْضًا",
+    "dari_translation": "مؤمن برای مؤمن مانند بنایی است که یکدیگر را محکم می‌کنند.",
+    "pashto_translation": "مومن د مومن لپاره داسې دی لکه ودانۍ چې يو بل يې پياوړي کوي.",
+    "source_book": "Bukhari",
+    "source_number": "481",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "brotherhood",
+      "community",
+      "strength"
+    ],
+    "daily_index": 86
+  },
+  {
+    "id": 87,
+    "arabic_text": "مَنْ غَشَّ فَلَيْسَ مِنَّا",
+    "dari_translation": "هر که تقلب کند، از ما نیست.",
+    "pashto_translation": "څوک چې درغلي وکړي، زموږ څخه نه دی.",
+    "source_book": "Muslim",
+    "source_number": "101",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "business",
+      "honesty",
+      "ethics"
+    ],
+    "daily_index": 87
+  },
+  {
+    "id": 88,
+    "arabic_text": "خَيْرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ",
+    "dari_translation": "بهترین مردم، سودمندترین‌شان برای مردم است.",
+    "pashto_translation": "غوره خلک هغه دي چې خلکو ته تر ټولو ډېر ګټه رسوي.",
+    "source_book": "Ahmad",
+    "source_number": "14433",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "service",
+      "helping_others",
+      "community"
+    ],
+    "daily_index": 88
+  },
+  {
+    "id": 89,
+    "arabic_text": "بُعِثْتُ أَنَا وَالسَّاعَةُ كَهَاتَيْنِ",
+    "dari_translation": "من و قیامت چنین نزدیک فرستاده شدیم (دو انگشت را نشان داد).",
+    "pashto_translation": "زه او قیامت همداسې نږدې روانه شوي يو (دوه ګوتې يې وښودلې).",
+    "source_book": "Bukhari",
+    "source_number": "6502",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "end_times",
+      "signs_of_hour",
+      "prophet"
+    ],
+    "daily_index": 89
+  },
+  {
+    "id": 90,
+    "arabic_text": "إِنَّ بَيْنَ يَدَيِ السَّاعَةِ سِنِينَ خُدَّاعًا",
+    "dari_translation": "پیش از قیامت سال‌های فریبنده‌ای خواهد بود.",
+    "pashto_translation": "د قیامت مخکې د فریب ورځې به وي.",
+    "source_book": "Muslim",
+    "source_number": "157",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "end_times",
+      "fitan",
+      "signs_of_hour"
+    ],
+    "daily_index": 90
+  },
+  {
+    "id": 91,
+    "arabic_text": "لاَ تَقُومُ السَّاعَةُ حَتَّى يُقْبَضَ الْعِلْمُ",
+    "dari_translation": "قیامت برنمی‌خیزد مگر آنکه علم برداشته شود.",
+    "pashto_translation": "قیامت نه راځي تر څو چې علم واخيستل شي.",
+    "source_book": "Bukhari",
+    "source_number": "80",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "end_times",
+      "knowledge",
+      "signs_of_hour"
+    ],
+    "daily_index": 91
+  },
+  {
+    "id": 92,
+    "arabic_text": "لاَ تَقُومُ السَّاعَةُ حَتَّى تَخْرُجَ فِتْنَةٌ تَدْعُو الْعَاقِلَ مِنْهَا",
+    "dari_translation": "قیامت برنمی‌خیزد مگر آنکه فتنه‌ای بیرون آید که عاقل را به خود می‌خواند.",
+    "pashto_translation": "قیامت نه راځي تر څو چې فتنه راوځي چې عاقل يې خپلو ته راجلبوي.",
+    "source_book": "Muslim",
+    "source_number": "2880",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "end_times",
+      "fitan",
+      "signs_of_hour"
+    ],
+    "daily_index": 92
+  },
+  {
+    "id": 93,
+    "arabic_text": "يَأْتِي عَلَى النَّاسِ زَمَانٌ لاَ يَبْقَى مِنَ الإِسْلاَمِ إِلاَّ اسْمُهُ",
+    "dari_translation": "زمانی بر مردم می‌آید که از اسلام جز نامش باقی نمی‌ماند.",
+    "pashto_translation": "په خلکو باندې داسې وخت راځي چې له اسلامه يوازې نوم به پاتې وي.",
+    "source_book": "IbnMajah",
+    "source_number": "4042",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "end_times",
+      "fitan",
+      "faith"
+    ],
+    "daily_index": 93
+  },
+  {
+    "id": 94,
+    "arabic_text": "إِذَا تَطَاوَلَتِ الأَعْنَاقُ وَقَلَّتِ الأَمَانَةُ فَانْتَظِرِ السَّاعَةَ",
+    "dari_translation": "وقتی گردن‌ها دراز شود و امانت کم گردد، منتظر قیامت باش.",
+    "pashto_translation": "کله چې غاړې اوږدې شي او امانت کم شي، د قیامت انتظار وباسه.",
+    "source_book": "Bukhari",
+    "source_number": "1037",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "end_times",
+      "signs_of_hour",
+      "honesty"
+    ],
+    "daily_index": 94
+  },
+  {
+    "id": 95,
+    "arabic_text": "يُوشِكُ أَنْ يَكُونَ خَيْرَ مَالِ الْمُسْلِمِ غَنَمًا يَتْبَعُ بِهَا شَعَفَ الْجِبَالِ وَمَوَاقِعَ الْقَطْرِ",
+    "dari_translation": "نزدیک است بهترین مال مسلمان، گوسفندانی باشد که با آن‌ها کوه‌های دور و باران‌خیز را دنبال کند.",
+    "pashto_translation": "نږدې ده چې د مسلمان غوره مال ولاړې وي چې له هغو سره لرې غرونه او باران‌خورې ځایونه تعقیبوي.",
+    "source_book": "Bukhari",
+    "source_number": "3470",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "end_times",
+      "signs_of_hour",
+      "travel"
+    ],
+    "daily_index": 95
+  },
+  {
+    "id": 96,
+    "arabic_text": "يَأْتِي عَلَى النَّاسِ زَمَانٌ الْمُؤْمِنُ فِيهِ عَلَى دِينِهِ كَالْمُتَحَمِّلِ لَجَمْرَةِ الْفَحْمِ",
+    "dari_translation": "زمانی می‌آید که مؤمن بر دینش مانند کسی است که زغال سوزان را بر دوش می‌کشد.",
+    "pashto_translation": "داسې وخت راځي چې مومن به په خپل دین کې لکه د سوځېدونکې ډوډۍ اخیستونکی وي.",
+    "source_book": "Tirmidhi",
+    "source_number": "2267",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "end_times",
+      "fitan",
+      "strength"
+    ],
+    "daily_index": 96
+  },
+  {
+    "id": 97,
+    "arabic_text": "لاَ تَزَالُ طَائِفَةٌ مِنْ أُمَّتِي ظَاهِرِينَ عَلَى الْحَقِّ لاَ يَضُرُّهُمْ مَنْ خَذَلَهُمْ",
+    "dari_translation": "همیشه گروهی از امت من بر حق ظاهرند و کسی که آنان را رها کند، زیان نمی‌رساند.",
+    "pashto_translation": "تل به زموږ امت کې یوه ډله به په حق ښکاره وي او هغه چې يې پرېږدي زیان نه رسوي.",
+    "source_book": "Muslim",
+    "source_number": "1920",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "end_times",
+      "faith",
+      "strength"
+    ],
+    "daily_index": 97
+  },
+  {
+    "id": 98,
+    "arabic_text": "إِنَّ اللَّهَ يَبْعَثُ لِهَذِهِ الأُمَّةِ عَلَى رَأْسِ كُلِّ مِائَةِ سَنَةٍ مَنْ يُجَدِّدُ لَهَا دِينَهَا",
+    "dari_translation": "خداوند برای این امت در آغاز هر صد سال کسی می‌فرستد که دینش را تجدید کند.",
+    "pashto_translation": "الله به دې امت لپاره د هر سل کال په سر کې يو سړی لېږي چې د هغې دین تجدید کړي.",
+    "source_book": "AbuDawud",
+    "source_number": "4291",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "end_times",
+      "guidance",
+      "faith"
+    ],
+    "daily_index": 98
+  },
+  {
+    "id": 99,
+    "arabic_text": "إِذَا وَضَعُوا الأَثْمَانَ وَاتَّخَذُوا الرَّبَا وَقَطَعُوا الرَّحِمَ فَأَذِنُوا بِعَذَابِ اللَّهِ",
+    "dari_translation": "وقتی وزن را کم کنند، ربا بگیرند و پیوند خویشاوندی را ببرند، منتظر عذاب خدا باشید.",
+    "pashto_translation": "کله چې توله کم کړي، سود واخلي او خپلوي پرې کړي، د الله عذاب ته تیار اوسئ.",
+    "source_book": "Bukhari",
+    "source_number": "6786",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "end_times",
+      "business",
+      "family"
+    ],
+    "daily_index": 99
+  },
+  {
+    "id": 100,
+    "arabic_text": "إِنْ بَقِيَ مِنَ الدُّنْيَا إِلاَّ يَوْمٌ لَطَمَ اللَّهُ وَجْهَ فُلَانٍ وَأَعْمَى عَيْنَهُ، قَالَ: يَا رَسُولَ اللَّهِ مَنْ هُوَ؟ قَالَ: رَجُلٌ يَخْرُجُ مِنْ وَادٍ بِخُرَاسَانَ يَقُولُ: هَلُمُّوا إِلَى الْخَيْرِ",
+    "dari_translation": "اگر از دنیا جز یک روز نماند، خدا صورت فلان را می‌زند و چشمش را کور می‌کند. گفت: او کیست؟ فرمود: مردی از دره‌ای در خراسان بیرون می‌آید و می‌گوید: به سوی خیر بیایید (روایت ضعیف؛ در برخی نسخ «رايات سود» آمده).",
+    "pashto_translation": "که له نړۍ يوازې يوه ورځ پاتې وي، الله به د فلان مخ ووهي او سترګه به يې ورکړي. وويل: دا څوک دی؟ وفرمايل: له خراسان له يوې درې څخه به يو سړی راوځي چې وايي: خیر ته راشئ (ضعیف روایت).",
+    "source_book": "IbnMajah",
+    "source_number": "4088",
+    "is_muttafaq": false,
+    "authenticity_grade": "daif",
+    "topics": [
+      "khorasan",
+      "end_times",
+      "fitan"
+    ],
+    "daily_index": 100
+  },
+  {
+    "id": 101,
+    "arabic_text": "تَخْرُجُ رَايَاتٌ سُودٌ مِنْ قِبَلِ الْمَشْرِقِ فَيَأْتُونَ مَهْدِيَّ الْأَرْضِ",
+    "dari_translation": "پرچم‌های سیاه از سوی مشرق بیرون می‌آیند و به سوی مهد زمین می‌آیند (روایت ضعیف؛ در علم حدیث مورد بحث است).",
+    "pashto_translation": "تورې رايات له ختیځ څخه راوځي او د ځمکې مهد ته روانېږي (ضعیف روایت؛ په حدیث علم کې بحث دی).",
+    "source_book": "Ahmad",
+    "source_number": "8939",
+    "is_muttafaq": false,
+    "authenticity_grade": "daif",
+    "topics": [
+      "khorasan",
+      "end_times",
+      "signs_of_hour"
+    ],
+    "daily_index": 101
+  },
+  {
+    "id": 102,
+    "arabic_text": "لَوْ أَنَّ الإِيمَانَ لَدَى الثُّرَيَّا لَنَالَهُ رِجَالٌ أَوْ رَجُلٌ مِنْ أَهْلِ فَارِسَ",
+    "dari_translation": "اگر ایمان در ثریا (ستاره پروین) باشد، مردانی از اهل فارس به آن می‌رسند.",
+    "pashto_translation": "که ايمان په ثريا کې وي، به يې د فارس سړي ورسوي.",
+    "source_book": "Bukhari",
+    "source_number": "7198",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "salman",
+      "faith",
+      "knowledge"
+    ],
+    "daily_index": 102
+  },
+  {
+    "id": 103,
+    "arabic_text": "إِنَّ مِنْ عِبَادِ اللَّهِ لَمَنْ لَيْسَ بِنَبِيٍّ وَلاَ شَهِيدٍ يَغْبِطُهُمُ الأَنْبِيَاءُ وَالشُّهَدَاءُ يَوْمَ الْقِيَامَةِ بِمَكَانِهِمْ مِنَ اللَّهِ، قَالُوا: يَا رَسُولَ اللَّهِ تُخْبِرُنَا مَنْ هُمْ؟ قَالَ: هُمْ قَوْمٌ تَحَابُّوا بِرُوحِ اللَّهِ غَيْرَ أَبْوَانٍ وَلاَ أَرْحَامٍ",
+    "dari_translation": "از بندگان خدا کسانی هستند که نه پیامبرند و نه شهید، اما پیامبران و شهیدان به جایگاهشان نزد خدا غبطه می‌خورند. گفتند: کیستند؟ فرمود: قومی که با روح الله دوستی کردند، بی‌آبا و رحم.",
+    "pashto_translation": "د الله بندګان کې داسې خلک دي چې نه نبي دي او نه شهید، خو نبيان او شهیدان به د هغوی د الله په مقام غبطه کوي. وويل: څوک دي؟ وفرمايل: هغه خلک چې د الله روح سره مینه کوي، پرته له خپلوانۍ.",
+    "source_book": "Muslim",
+    "source_number": "2630",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "salman",
+      "brotherhood",
+      "faith"
+    ],
+    "daily_index": 103
+  },
+  {
+    "id": 104,
+    "arabic_text": "فَطَّرَكُمُ اللَّهُ وَأَفْطَرْنَا",
+    "dari_translation": "خداوند شما را روزه باز کرد و ما را نیز روزه باز کرد (دعای عید فطر).",
+    "pashto_translation": "الله مو روژه پرانیزي او موږ هم روژه پرانیزو (د اختر دعا).",
+    "source_book": "AbuDawud",
+    "source_number": "2354",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "eid_al_fitr",
+      "ramadan",
+      "dua"
+    ],
+    "special_days": [
+      "eid_al_fitr"
+    ],
+    "hijri_range": {
+      "month": 10,
+      "day_start": 1,
+      "day_end": 1
+    },
+    "daily_index": 104
+  },
+  {
+    "id": 105,
+    "arabic_text": "زَكَاةُ الْفِطْرِ صَاعٌ مِنْ تَمْرٍ أَوْ صَاعٌ مِنْ شَعِيرٍ عَنْ كُلِّ حُرٍّ أَوْ عَبْدٍ ذَكَرٍ أَوْ أُنْثَى مِنَ الْمُسْلِمِينَ",
+    "dari_translation": "زکات فطر برای هر مسلمان آزاد یا برده، مرد یا زن، یک صاع خرما یا یک صاع جو است.",
+    "pashto_translation": "د فطر زکات د هر مسلمان لپاره، ازاد یا غلام، نارینه يا ښځه، يو صاع خرما يا يو صاع اوربشې ده.",
+    "source_book": "Bukhari",
+    "source_number": "1503",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "eid_al_fitr",
+      "charity",
+      "ramadan"
+    ],
+    "special_days": [
+      "eid_al_fitr"
+    ],
+    "hijri_range": {
+      "month": 10,
+      "day_start": 1,
+      "day_end": 1
+    },
+    "daily_index": 105
+  },
+  {
+    "id": 106,
+    "arabic_text": "خَمْسٌ مِنَ الْخِلَالِ لاَ غَيْرَ: الصَّوْمُ يَوْمَ عِيدِ الْفِطْرِ",
+    "dari_translation": "پنج چیز از خصلت‌هاست و بس: روزه گرفتن در روز عید فطر (از جمله کارهایی که نباید کرد).",
+    "pashto_translation": "پنځه خصلتونه دي او نور نه: د فطر اختر په ورځ روژه نیول (له هغو کارونو څخه چې نه باید وشي).",
+    "source_book": "Muslim",
+    "source_number": "827",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "eid_al_fitr",
+      "fasting",
+      "worship"
+    ],
+    "special_days": [
+      "eid_al_fitr"
+    ],
+    "hijri_range": {
+      "month": 10,
+      "day_start": 1,
+      "day_end": 1
+    },
+    "daily_index": 106
+  },
+  {
+    "id": 107,
+    "arabic_text": "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً",
+    "dari_translation": "سحری بخورید، زیرا در سحری برکت است.",
+    "pashto_translation": "سحري وخورئ، ځکه په سحري کې برکت دی.",
+    "source_book": "Bukhari",
+    "source_number": "1923",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "ramadan",
+      "fasting",
+      "barakah"
+    ],
+    "special_days": [
+      "ramadan"
+    ],
+    "hijri_range": {
+      "month": 9,
+      "day_start": 1,
+      "day_end": 30
+    },
+    "daily_index": 107
+  },
+  {
+    "id": 108,
+    "arabic_text": "إِذَا دَخَلَ الْعَشْرُ شَدَّ الْمِرْآصَ وَأَحْيَا لَيْلَهُ وَأَيْقَظَ أَهْلَهُ",
+    "dari_translation": "وقتی دهه آخر رمضان درآید، کمربند عبادت را محکم ببندید، شبش را زنده دارید و خانواده‌تان را بیدار کنید.",
+    "pashto_translation": "کله چې د رمضان وروستۍ لسمه راشي، عبادت ټينګ کړئ، شپه ژوندۍ وساتئ او کورنۍ بيداره کړئ.",
+    "source_book": "Bukhari",
+    "source_number": "2024",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "ramadan",
+      "laylat_al_qadr",
+      "worship"
+    ],
+    "special_days": [
+      "ramadan",
+      "laylat_al_qadr"
+    ],
+    "hijri_range": {
+      "month": 9,
+      "day_start": 21,
+      "day_end": 30
+    },
+    "daily_index": 108
+  },
+  {
+    "id": 109,
+    "arabic_text": "تَحَرَّوْا لَيْلَةَ الْقَدْرِ فِي الْوِتْرِ مِنَ الْعَشْرِ الأَوَاخِرِ",
+    "dari_translation": "شب قدر را در شب‌های فرد دهه آخر رمضان بجویید.",
+    "pashto_translation": "د قدر شپه د رمضان په وروستۍ لسمه کې په طاق شپو کې ولټوئ.",
+    "source_book": "Bukhari",
+    "source_number": "2020",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "laylat_al_qadr",
+      "ramadan",
+      "worship"
+    ],
+    "special_days": [
+      "laylat_al_qadr",
+      "ramadan"
+    ],
+    "hijri_range": {
+      "month": 9,
+      "day_start": 21,
+      "day_end": 30
+    },
+    "daily_index": 109
+  },
+  {
+    "id": 110,
+    "arabic_text": "خَيْرُ يَوْمٍ طَلَعَتْ عَلَيْهِ الشَّمْسُ يَوْمُ الْجُمُعَةِ",
+    "dari_translation": "بهترین روزی که خورشید بر آن طلوع کرده، روز جمعه است.",
+    "pashto_translation": "غوره ورځ چې لمر پرې راختلې، د جمعې ورځ ده.",
+    "source_book": "Muslim",
+    "source_number": "854",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "jumuah",
+      "worship"
+    ],
+    "weekday_only": "friday",
+    "daily_index": 110
+  },
+  {
+    "id": 111,
+    "arabic_text": "مَنْ تَطَهَّرَ فِي بَيْتِهِ ثُمَّ أَتَى مَسْجِدَ الْجُمُعَةِ فَهُوَ كَمَنْ أَهْدَى إِلَى اللَّهِ بَدَنَةً",
+    "dari_translation": "هر که در خانه خود طهارت گیرد و به مسجد جمعه بیاید، مانند کسی است که شتر قربانی به خدا هدیه کرده.",
+    "pashto_translation": "څوک چې په کور کې طهارت وکړي بیا د جمعې جومات ته راشي، لکه هغه څوک دی چې الله ته اوښه قرباني کړې وي.",
+    "source_book": "Muslim",
+    "source_number": "850",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "jumuah",
+      "mosque",
+      "purity"
+    ],
+    "weekday_only": "friday",
+    "daily_index": 111
+  },
+  {
+    "id": 112,
+    "arabic_text": "صِيَامُ يَوْمِ عَرَفَةَ أَحْتَسِبُ عَلَى اللَّهِ أَنْ يُكَفِّرَ السَّنَةَ الَّتِي قَبْلَهُ وَالسَّنَةَ الَّتِي بَعْدَهُ",
+    "dari_translation": "امید دارم روزه عرفه گناه سال قبل و بعد را بپوشاند.",
+    "pashto_translation": "هيله لرم چې د عرفې روژه د تېر او راتلونکي کال ګناهونه وبښي.",
+    "source_book": "Muslim",
+    "source_number": "1162",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "arafah",
+      "fasting",
+      "hajj"
+    ],
+    "special_days": [
+      "arafah"
+    ],
+    "hijri_range": {
+      "month": 12,
+      "day_start": 9,
+      "day_end": 9
+    },
+    "daily_index": 112
+  },
+  {
+    "id": 113,
+    "arabic_text": "أَيَّامُ التَّشْرِيقِ أَيَّامُ أَكْلٍ وَشُرْبٍ وَذِكْرِ اللَّهِ",
+    "dari_translation": "ایام تشریق، روزهای خوردن و آشامیدن و یاد خداست.",
+    "pashto_translation": "د تشریق ورځې د خوراک، څښاک او د الله یادولو ورځې دي.",
+    "source_book": "Bukhari",
+    "source_number": "1998",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "tashreeq",
+      "dhikr",
+      "eid_al_adha"
+    ],
+    "special_days": [
+      "tashreeq"
+    ],
+    "hijri_range": {
+      "month": 12,
+      "day_start": 11,
+      "day_end": 13
+    },
+    "daily_index": 113
+  },
+  {
+    "id": 114,
+    "arabic_text": "صُومُوا يَوْمَ عَاشُورَاءَ وَخَالِفُوا فِيهِ الْيَهُودَ",
+    "dari_translation": "روز عاشورا را روزه بگیرید و در آن با یهود مخالفت کنید.",
+    "pashto_translation": "د عاشورا ورځ روژه ونیسئ او پکې له یهودیانو سره توپیر وکړئ.",
+    "source_book": "Muslim",
+    "source_number": "1134",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "ashura",
+      "fasting",
+      "muharram"
+    ],
+    "special_days": [
+      "ashura"
+    ],
+    "hijri_range": {
+      "month": 1,
+      "day_start": 10,
+      "day_end": 10
+    },
+    "daily_index": 114
+  },
+  {
+    "id": 115,
+    "arabic_text": "أَفْضَلُ الصِّيَامِ بَعْدَ شَهْرِ رَمَضَانَ شَهْرُ اللَّهِ الْمُحَرَّمُ",
+    "dari_translation": "بهترین روزه بعد از ماه رمضان، ماه محرم الله است.",
+    "pashto_translation": "له رمضان وروسته غوره روژه د الله میاشت محرم ده.",
+    "source_book": "Muslim",
+    "source_number": "1163",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "hijri_new_year",
+      "muharram",
+      "fasting"
+    ],
+    "special_days": [
+      "hijri_new_year"
+    ],
+    "hijri_range": {
+      "month": 1,
+      "day_start": 1,
+      "day_end": 1
+    },
+    "daily_index": 115
+  },
+  {
+    "id": 116,
+    "arabic_text": "مَنْ صَلَّى الْعِشَاءَ فِي جَمَاعَةٍ فَكَأَنَّمَا قَامَ نِصْفَ اللَّيْلِ",
+    "dari_translation": "هر که عشا را به جماعت بخواند، گویی نصف شب قیام کرده است.",
+    "pashto_translation": "څوک چې عشا په جماعت ولوي، لکه څنګه چې نیمه شپه قیام کړی وي.",
+    "source_book": "Muslim",
+    "source_number": "656",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "prayer",
+      "jamaah",
+      "worship"
+    ],
+    "daily_index": 116
+  },
+  {
+    "id": 117,
+    "arabic_text": "مَنْ صَامَ يَوْمًا فِي سَبِيلِ اللَّهِ بَعَّدَ اللَّهُ وَجْهَهُ عَنِ النَّارِ سَبْعِينَ خَرِيفًا",
+    "dari_translation": "هر که یک روز در راه خدا روزه بگیرد، خدا صورتش را هفتاد پاییز از آتش دور می‌کند.",
+    "pashto_translation": "څوک چې يوه ورځ د الله په لار کې روژه ونيسي، الله به د هغه مخ له اوره اويا لسيزې پاتې کړي.",
+    "source_book": "Bukhari",
+    "source_number": "2840",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "fasting",
+      "good_deeds",
+      "taqwa"
+    ],
+    "daily_index": 117
+  },
+  {
+    "id": 118,
+    "arabic_text": "الصَّلَاةُ عِمَادُ الدِّينِ",
+    "dari_translation": "نماز ستون دین است.",
+    "pashto_translation": "لمونځ د دین ستون دی.",
+    "source_book": "Nasai",
+    "source_number": "493",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "prayer",
+      "faith",
+      "worship"
+    ],
+    "daily_index": 118
+  },
+  {
+    "id": 119,
+    "arabic_text": "مَنْ لَمْ يَرْحَمْ وَلَدَهُ لَمْ يَرْحَمْهُ اللَّهُ",
+    "dari_translation": "هر که به فرزندش رحم نکند، خدا به او رحم نمی‌کند.",
+    "pashto_translation": "څوک چې خپل ماشوم ته رحم ونه کړي، الله به هغه ته رحم ونه کړي.",
+    "source_book": "AbuDawud",
+    "source_number": "4944",
+    "is_muttafaq": false,
+    "authenticity_grade": "hasan",
+    "topics": [
+      "family",
+      "parents",
+      "mercy"
+    ],
+    "daily_index": 119
+  },
+  {
+    "id": 120,
+    "arabic_text": "الْحَيَاءُ مِنَ الإِيمَانِ",
+    "dari_translation": "حیا از ایمان است.",
+    "pashto_translation": "حیا له ايمانه ده.",
+    "source_book": "Bukhari",
+    "source_number": "9",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "modesty",
+      "faith",
+      "akhlaq"
+    ],
+    "daily_index": 120
   }
 ]

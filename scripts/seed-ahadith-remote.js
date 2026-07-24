@@ -27,6 +27,7 @@ function toRow(item) {
     source_book: item.source_book,
     source_number: item.source_number,
     is_muttafaq: !!item.is_muttafaq,
+    authenticity_grade: item.authenticity_grade || 'sahih',
     topics: Array.isArray(item.topics) ? item.topics : [],
     special_days: Array.isArray(item.special_days) && item.special_days.length ? item.special_days : null,
     hijri_month: item.hijri_range?.month ?? null,
@@ -50,8 +51,8 @@ try {
   fail(`Cannot read dataset at ${DATASET_PATH}`, error);
 }
 
-if (!Array.isArray(hadiths) || hadiths.length !== 60) {
-  fail(`Expected exactly 60 hadiths, found ${Array.isArray(hadiths) ? hadiths.length : 'invalid JSON'}.`);
+if (!Array.isArray(hadiths) || hadiths.length !== 120) {
+  fail(`Expected exactly 120 hadiths, found ${Array.isArray(hadiths) ? hadiths.length : 'invalid JSON'}.`);
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {

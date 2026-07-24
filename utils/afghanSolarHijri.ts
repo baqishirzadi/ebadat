@@ -1,4 +1,4 @@
-import { KABUL_TIME_ZONE, getKabulNoon } from '@/utils/afghanistanCalendar';
+import { KABUL_TIME_ZONE, getKabulNoon, getKabulDateParts } from '@/utils/afghanistanCalendar';
 
 /**
  * Afghan Solar Hijri (Shamsi) Calendar Utilities
@@ -16,19 +16,82 @@ export interface AfghanSolarHijriDate {
 
 // Afghan Solar Hijri month names (traditional astronomical names)
 export const AFGHAN_SOLAR_MONTHS = [
-  { dari: 'حمل', pashto: 'وری', english: 'Hamal' },      // March 21 - April 20
-  { dari: 'ثور', pashto: 'غویی', english: 'Sawr' },      // April 21 - May 21
+  { dari: 'حمل', pashto: 'وری', english: 'Hamal' }, // March 21 - April 20
+  { dari: 'ثور', pashto: 'غویی', english: 'Sawr' }, // April 21 - May 21
   { dari: 'جوزا', pashto: 'غبرګولی', english: 'Jawza' }, // May 22 - June 21
   { dari: 'سرطان', pashto: 'چنګاښ', english: 'Saratan' }, // June 22 - July 22
-  { dari: 'اسد', pashto: 'زمری', english: 'Asad' },       // July 23 - August 22
-  { dari: 'سنبله', pashto: 'وږی', english: 'Sonbola' },    // August 23 - September 22
-  { dari: 'میزان', pashto: 'تله', english: 'Mizan' },     // September 23 - October 22
-  { dari: 'عقرب', pashto: 'لړم', english: 'Aqrab' },      // October 23 - November 21
-  { dari: 'قوس', pashto: 'ليندۍ', english: 'Qaws' },      // November 22 - December 21
-  { dari: 'جدی', pashto: 'مرغومی', english: 'Jadi' },     // December 22 - January 20
-  { dari: 'دلو', pashto: 'سلواغه', english: 'Dalw' },     // January 21 - February 19
-  { dari: 'حوت', pashto: 'كب', english: 'Hut' },          // February 20 - March 20
+  { dari: 'اسد', pashto: 'زمری', english: 'Asad' }, // July 23 - August 22
+  { dari: 'سنبله', pashto: 'وږی', english: 'Sonbola' }, // August 23 - September 22
+  { dari: 'میزان', pashto: 'تله', english: 'Mizan' }, // September 23 - October 22
+  { dari: 'عقرب', pashto: 'لړم', english: 'Aqrab' }, // October 23 - November 21
+  { dari: 'قوس', pashto: 'ليندۍ', english: 'Qaws' }, // November 22 - December 21
+  { dari: 'جدی', pashto: 'مرغومی', english: 'Jadi' }, // December 22 - January 20
+  { dari: 'دلو', pashto: 'سلواغه', english: 'Dalw' }, // January 21 - February 19
+  { dari: 'حوت', pashto: 'كب', english: 'Hut' }, // February 20 - March 20
 ];
+
+/** Solar Hijri leap years in the 33-year cycle. */
+const SHAMSI_LEAP_CYCLE = new Set([1, 5, 9, 13, 17, 22, 26, 30]);
+
+/** Persian calendar epoch (approx JD of 1 Farvardin 1). */
+const PERSIAN_EPOCH_JD = 1948320.5;
+
+const SHAMSI_FROM_GREGORIAN_CACHE = new Map<string, AfghanSolarHijriDate>();
+const SHAMSI_TO_GREGORIAN_CACHE = new Map<string, number | null>();
+
+let persianFormatter: Intl.DateTimeFormat | null = null;
+
+function getPersianFormatter(): Intl.DateTimeFormat | null {
+  if (persianFormatter) return persianFormatter;
+  try {
+    persianFormatter = new Intl.DateTimeFormat('en-u-ca-persian', {
+      timeZone: KABUL_TIME_ZONE,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    });
+    return persianFormatter;
+  } catch {
+    return null;
+  }
+}
+
+function isShamsiLeapYear(year: number): boolean {
+  return SHAMSI_LEAP_CYCLE.has((year - 1) % 33);
+}
+
+function getShamsiMonthLengths(year: number): number[] {
+  return [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, isShamsiLeapYear(year) ? 30 : 29];
+}
+
+function julianDayFromGregorian(year: number, month: number, day: number): number {
+  const a = Math.floor((14 - month) / 12);
+  const y = year + 4800 - a;
+  const m = month + 12 * a - 3;
+  return (
+    day +
+    Math.floor((153 * m + 2) / 5) +
+    365 * y +
+    Math.floor(y / 4) -
+    Math.floor(y / 100) +
+    Math.floor(y / 400) -
+    32045
+  );
+}
+
+function gregorianFromJulianDay(jd: number): { year: number; month: number; day: number } {
+  const z = Math.floor(jd + 0.5);
+  const a = Math.floor((z - 1867216.25) / 36524.25);
+  const aa = z + 1 + a - Math.floor(a / 4);
+  const b = aa + 1524;
+  const c = Math.floor((b - 122.1) / 365.25);
+  const d = Math.floor(365.25 * c);
+  const e = Math.floor((b - d) / 30.6001);
+  const day = b - d - Math.floor(30.6001 * e);
+  const month = e < 14 ? e - 1 : e - 13;
+  const year = month > 2 ? c - 4716 : c - 4715;
+  return { year, month, day };
+}
 
 /**
  * Convert Gregorian date to Afghan Solar Hijri (Shamsi)
@@ -39,50 +102,21 @@ function gregorianToAfghanSolarHijriFallback(date: Date): AfghanSolarHijriDate {
   const gregorianMonth = date.getMonth() + 1; // 1-12
   const gregorianDay = date.getDate();
 
-  // Calculate Julian Day Number
-  const a = Math.floor((14 - gregorianMonth) / 12);
-  const y = gregorianYear + 4800 - a;
-  const m = gregorianMonth + 12 * a - 3;
-  
-  const jd = gregorianDay + Math.floor((153 * m + 2) / 5) + 365 * y + 
-             Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+  const jd = julianDayFromGregorian(gregorianYear, gregorianMonth, gregorianDay);
+  let daysSinceEpoch = jd - PERSIAN_EPOCH_JD;
 
-  // Solar Hijri epoch: March 21, 622 CE (Julian Day 1948320.5)
-  const persianEpoch = 1948320.5;
-  
-  // Days since epoch
-  let daysSinceEpoch = jd - persianEpoch;
-  
-  // Calculate Solar Hijri year (using 33-year cycle approximation)
-  // More accurate: use actual leap year calculation
   let solarHijriYear = Math.floor((daysSinceEpoch - 0.5) / 365.2424) + 1;
-  
-  // Calculate day of year
   let dayOfYear = daysSinceEpoch - (solarHijriYear - 1) * 365.2424;
-  
-  // Adjust for leap years in Solar Hijri
-  // Solar Hijri leap years follow a 33-year cycle
-  // Years that are 1, 5, 9, 13, 17, 22, 26, 30 mod 33 are leap years
-  const cyclePosition = (solarHijriYear - 1) % 33;
-  const isLeapYear = [1, 5, 9, 13, 17, 22, 26, 30].includes(cyclePosition);
-  
-  // Calculate month and day
-  // Solar Hijri months: 31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29/30
-  const monthLengths = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, isLeapYear ? 30 : 29];
-  
+
+  const monthLengths = getShamsiMonthLengths(solarHijriYear);
+  const yearLength = isShamsiLeapYear(solarHijriYear) ? 366 : 365;
+
   let month = 1;
   let day = Math.floor(dayOfYear);
-  
-  // Adjust day if it's beyond year end
-  const yearLength = isLeapYear ? 366 : 365;
-  if (day > yearLength) {
-    day = yearLength;
-  }
-  if (day < 1) {
-    day = 1;
-  }
-  
-  // Find the correct month
+
+  if (day > yearLength) day = yearLength;
+  if (day < 1) day = 1;
+
   for (let i = 0; i < 12; i++) {
     if (day <= monthLengths[i]) {
       month = i + 1;
@@ -90,19 +124,18 @@ function gregorianToAfghanSolarHijriFallback(date: Date): AfghanSolarHijriDate {
     }
     day -= monthLengths[i];
   }
-  
-  // Ensure valid month/day
+
   if (month < 1) month = 1;
   if (month > 12) month = 12;
   if (day < 1) day = 1;
   if (day > monthLengths[month - 1]) day = monthLengths[month - 1];
-  
+
   const monthInfo = AFGHAN_SOLAR_MONTHS[month - 1];
-  
+
   return {
     year: solarHijriYear,
-    month: month,
-    day: day,
+    month,
+    day,
     monthNameDari: monthInfo.dari,
     monthNamePashto: monthInfo.pashto,
   };
@@ -110,50 +143,52 @@ function gregorianToAfghanSolarHijriFallback(date: Date): AfghanSolarHijriDate {
 
 export function gregorianToAfghanSolarHijri(date: Date): AfghanSolarHijriDate {
   const kabulDate = getKabulNoon(date);
+  const cacheKey = getKabulDateParts(kabulDate).dateKey;
+  const cached = SHAMSI_FROM_GREGORIAN_CACHE.get(cacheKey);
+  if (cached) return cached;
 
-  try {
-    const parts = new Intl.DateTimeFormat('en-u-ca-persian', {
-      timeZone: KABUL_TIME_ZONE,
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    }).formatToParts(kabulDate);
-    const lookup = (type: string) => parts.find((part) => part.type === type)?.value;
-    const year = Number.parseInt(lookup('year') || '', 10);
-    const month = Number.parseInt(lookup('month') || '', 10);
-    const day = Number.parseInt(lookup('day') || '', 10);
+  const formatter = getPersianFormatter();
+  if (formatter) {
+    try {
+      const parts = formatter.formatToParts(kabulDate);
+      const lookup = (type: string) => parts.find((part) => part.type === type)?.value;
+      const year = Number.parseInt(lookup('year') || '', 10);
+      const month = Number.parseInt(lookup('month') || '', 10);
+      const day = Number.parseInt(lookup('day') || '', 10);
 
-    if (
-      Number.isFinite(year) &&
-      Number.isFinite(month) &&
-      Number.isFinite(day) &&
-      month >= 1 &&
-      month <= 12
-    ) {
-      const monthInfo = AFGHAN_SOLAR_MONTHS[month - 1];
-      return {
-        year,
-        month,
-        day,
-        monthNameDari: monthInfo.dari,
-        monthNamePashto: monthInfo.pashto,
-      };
+      if (
+        Number.isFinite(year) &&
+        Number.isFinite(month) &&
+        Number.isFinite(day) &&
+        month >= 1 &&
+        month <= 12
+      ) {
+        const monthInfo = AFGHAN_SOLAR_MONTHS[month - 1];
+        const resolved: AfghanSolarHijriDate = {
+          year,
+          month,
+          day,
+          monthNameDari: monthInfo.dari,
+          monthNamePashto: monthInfo.pashto,
+        };
+        SHAMSI_FROM_GREGORIAN_CACHE.set(cacheKey, resolved);
+        return resolved;
+      }
+    } catch {
+      // Fall through to the bundled arithmetic fallback for older Intl runtimes.
     }
-  } catch {
-    // Fall through to the bundled arithmetic fallback for older Intl runtimes.
   }
 
-  return gregorianToAfghanSolarHijriFallback(kabulDate);
+  const fallback = gregorianToAfghanSolarHijriFallback(kabulDate);
+  SHAMSI_FROM_GREGORIAN_CACHE.set(cacheKey, fallback);
+  return fallback;
 }
 
 /**
  * Get number of days in a Solar Hijri month (1-12)
  */
 export function getShamsiMonthLength(year: number, month: number): number {
-  const cyclePosition = (year - 1) % 33;
-  const isLeapYear = [1, 5, 9, 13, 17, 22, 26, 30].includes(cyclePosition);
-  const lengths = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, isLeapYear ? 30 : 29];
-  return lengths[month - 1] ?? 30;
+  return getShamsiMonthLengths(year)[month - 1] ?? 30;
 }
 
 /**
@@ -161,7 +196,7 @@ export function getShamsiMonthLength(year: number, month: number): number {
  */
 export function formatAfghanSolarHijriDate(
   date: AfghanSolarHijriDate,
-  language: 'dari' | 'pashto' = 'dari'
+  language: 'dari' | 'pashto' = 'dari',
 ): string {
   const monthName = language === 'pashto' ? date.monthNamePashto : date.monthNameDari;
   return `${date.day} ${monthName} ${date.year}`;
@@ -172,26 +207,62 @@ export function formatAfghanSolarHijriDate(
  */
 function toPersianNumerals(num: number): string {
   const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-  return num.toString().split('').map(d => persianDigits[parseInt(d)]).join('');
+  return num
+    .toString()
+    .split('')
+    .map((d) => persianDigits[parseInt(d, 10)])
+    .join('');
+}
+
+/**
+ * Estimate Julian day for a Shamsi Y/M/D, then refine with a tiny local search.
+ * Avoids the previous ±400-day scan that rebuilt Intl formatters on every step.
+ */
+function estimateJulianDayForShamsi(shamsiYear: number, shamsiMonth: number, shamsiDay: number): number {
+  const lengths = getShamsiMonthLengths(shamsiYear);
+  let dayOfYear = shamsiDay;
+  for (let i = 0; i < shamsiMonth - 1; i++) {
+    dayOfYear += lengths[i];
+  }
+  return PERSIAN_EPOCH_JD + (shamsiYear - 1) * 365.24219858 + (dayOfYear - 1);
 }
 
 /**
  * Convert Afghan Solar Hijri (Shamsi) date to Gregorian.
- * Uses linear search similar to hijriToGregorian.
  */
-export function shamsiToGregorian(shamsiYear: number, shamsiMonth: number, shamsiDay: number): Date | null {
-  const base = getKabulNoon(new Date());
+export function shamsiToGregorian(
+  shamsiYear: number,
+  shamsiMonth: number,
+  shamsiDay: number,
+): Date | null {
+  const cacheKey = `${shamsiYear}-${shamsiMonth}-${shamsiDay}`;
+  if (SHAMSI_TO_GREGORIAN_CACHE.has(cacheKey)) {
+    const cached = SHAMSI_TO_GREGORIAN_CACHE.get(cacheKey);
+    return typeof cached === 'number' ? new Date(cached) : null;
+  }
 
-  for (let offset = -400; offset <= 400; offset++) {
-    const d = new Date(base);
-    d.setUTCDate(d.getUTCDate() + offset);
+  const estimate = gregorianFromJulianDay(
+    estimateJulianDayForShamsi(shamsiYear, shamsiMonth, shamsiDay),
+  );
+  const base = getKabulNoon(new Date(Date.UTC(estimate.year, estimate.month - 1, estimate.day, 12)));
 
-    const s = gregorianToAfghanSolarHijri(d);
-    if (s.year === shamsiYear && s.month === shamsiMonth && s.day === shamsiDay) {
-      return d;
+  // Refine within a small window; cached G→S makes each step cheap.
+  for (let offset = -3; offset <= 3; offset++) {
+    const candidate = new Date(base);
+    candidate.setUTCDate(candidate.getUTCDate() + offset);
+    const resolved = gregorianToAfghanSolarHijri(candidate);
+    if (
+      resolved.year === shamsiYear &&
+      resolved.month === shamsiMonth &&
+      resolved.day === shamsiDay
+    ) {
+      const noon = getKabulNoon(candidate);
+      SHAMSI_TO_GREGORIAN_CACHE.set(cacheKey, noon.getTime());
+      return noon;
     }
   }
 
+  SHAMSI_TO_GREGORIAN_CACHE.set(cacheKey, null);
   return null;
 }
 
@@ -200,7 +271,7 @@ export function shamsiToGregorian(shamsiYear: number, shamsiMonth: number, shams
  */
 export function formatAfghanSolarHijriDateWithPersianNumerals(
   date: AfghanSolarHijriDate,
-  language: 'dari' | 'pashto' = 'dari'
+  language: 'dari' | 'pashto' = 'dari',
 ): string {
   const monthName = language === 'pashto' ? date.monthNamePashto : date.monthNameDari;
   return `${toPersianNumerals(date.day)} ${monthName} ${toPersianNumerals(date.year)}`;

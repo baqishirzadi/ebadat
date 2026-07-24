@@ -75,7 +75,7 @@ export default function TabLayout() {
         },
         headerShown: false,
         tabBarButton: HapticTab,
-        freezeOnBlur: Platform.OS !== 'android',
+        freezeOnBlur: true,
         lazy: true,
       }}
     >

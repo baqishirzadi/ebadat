@@ -9,7 +9,7 @@ import { useApp } from '@/context/AppContext';
 import { useAhadith } from '@/context/AhadithContext';
 import { Hadith } from '@/types/hadith';
 import { alphaColor } from '@/utils/ahadith/theme';
-import { formatSourceLabel } from '@/utils/ahadith/labels';
+import { formatSourceLabel, getAuthenticityGradeLabelFa } from '@/utils/ahadith/labels';
 import { NAAT_GRADIENT } from '@/constants/theme';
 import { getPublishedHadithById } from '@/utils/ahadithRemoteService';
 import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
@@ -170,6 +170,8 @@ export default function HadithDetailScreen() {
 
             <CText style={[styles.source, { color: theme.primary }]}>
               {formatSourceLabel(hadith.source_book, hadith.source_number)}
+              {' · '}
+              {hadith.is_muttafaq ? 'متفق‌علیه' : getAuthenticityGradeLabelFa(hadith.authenticity_grade)}
             </CText>
           </View>
         </ScrollView>

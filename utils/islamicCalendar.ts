@@ -249,6 +249,7 @@ const HIJRI_TO_GREGORIAN_CACHE = new Map<string, number | null>();
 const HIJRI_MONTH_LENGTH_CACHE = new Map<string, number>();
 const HIJRI_MONTH_START_CACHE = new Map<string, number | null>();
 const AVERAGE_HIJRI_MONTH_DAYS = 29.530588;
+let islamicUmalquraFormatter: Intl.DateTimeFormat | null = null;
 
 interface HijriCorrectionRange {
   startGregorian: string;
@@ -442,7 +443,7 @@ function resolveHijriMonthStart(hijriYear: number, hijriMonth: number): Date | n
 
   const fallbackCenter = getKabulNoon(new Date());
   const fallback = pickBestHijriMatch(
-    collectHijriMatches(fallbackCenter, 420, hijriYear, hijriMonth, 1),
+    collectHijriMatches(fallbackCenter, 60, hijriYear, hijriMonth, 1),
     hijriYear,
     hijriMonth,
     1
@@ -490,12 +491,15 @@ function gregorianToHijriFallback(date: Date): HijriDate {
 
 function gregorianToBaseHijri(date: Date): HijriDate {
   try {
-    const parts = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
-      timeZone: KABUL_TIME_ZONE,
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    }).formatToParts(date);
+    if (!islamicUmalquraFormatter) {
+      islamicUmalquraFormatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+        timeZone: KABUL_TIME_ZONE,
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+      });
+    }
+    const parts = islamicUmalquraFormatter.formatToParts(date);
     const lookup = (type: string) => parts.find((part) => part.type === type)?.value;
     const year = Number.parseInt(lookup('year') || '', 10);
     const month = Number.parseInt(lookup('month') || '', 10);

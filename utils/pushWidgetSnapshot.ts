@@ -65,6 +65,8 @@ export async function pushWidgetSnapshot(
         location: options.location,
         startDate: new Date(),
         days: horizonDays,
+        // Widget prefetch must not compete with adhan sync on Diyanet I/O.
+        allowNetwork: false,
       });
       sourceLabel = bundles[0]?.sourceLabel;
       multiDay = bundles.map((bundle) => ({

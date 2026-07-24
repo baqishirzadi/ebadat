@@ -218,6 +218,8 @@ async function buildCanonicalNativeScheduleJson(
     location,
     startDate: new Date(),
     days,
+    // Never block alarm sync on Diyanet district/month network I/O.
+    allowNetwork: false,
   });
   return JSON.stringify({
     policyVersion: bundles[0]?.policyVersion ?? 0,
@@ -231,6 +233,18 @@ async function buildCanonicalNativeScheduleJson(
       isha: bundle.times.isha.getTime(),
     })),
   });
+}
+
+function prayerTimesEqual(a: PrayerTimes | null | undefined, b: PrayerTimes | null | undefined): boolean {
+  if (!a || !b) return a === b;
+  return (
+    a.fajr.getTime() === b.fajr.getTime() &&
+    a.sunrise.getTime() === b.sunrise.getTime() &&
+    a.dhuhr.getTime() === b.dhuhr.getTime() &&
+    a.asr.getTime() === b.asr.getTime() &&
+    a.maghrib.getTime() === b.maghrib.getTime() &&
+    a.isha.getTime() === b.isha.getTime()
+  );
 }
 
 type ExpectedNotificationType = 'adhan' | 'reminder';
@@ -399,6 +413,9 @@ function prayerReducer(state: PrayerState, action: PrayerAction): PrayerState {
     case 'SET_LOCATION':
       return { ...state, location: action.payload.location, locationName: action.payload.name };
     case 'SET_PRAYER_TIMES':
+      if (prayerTimesEqual(state.prayerTimes, action.payload)) {
+        return state;
+      }
       return { ...state, prayerTimes: action.payload };
     case 'SET_QIBLA':
       return { ...state, qiblaDirection: action.payload };
@@ -493,7 +510,7 @@ const PrayerContext = createContext<PrayerContextType | undefined>(undefined);
 
 // Provider
 export function PrayerProvider({ children }: { children: ReactNode }) {
-  const { isInteractiveReady } = useStartupPhase();
+  const { isInteractiveReady, isAdhanSettled, markAdhanSettled } = useStartupPhase();
   const [state, dispatch] = useReducer(prayerReducer, initialState);
   const scheduleRunIdRef = useRef(0);
   const scheduleInFlightRef = useRef(false);
@@ -508,6 +525,7 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   const prayerPrefsHydratedRef = useRef(false);
   const lastScheduleRef = useRef<{ dateKey: string; locationKey: string } | null>(null);
   const lastPrayerScheduleAtRef = useRef(0);
+  const lastSuccessfulScheduleAtRef = useRef(0);
   const scheduleDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastKnownExactStatusRef = useRef<ExactAlarmStatus>(
     Platform.OS === 'android' ? 'unknown' : 'not_applicable'
@@ -540,6 +558,17 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
       return 'unknown';
     }
   }, [getExactAlarmModule]);
+
+  // Safety: never block deferred idle work forever if schedule is stuck/skipped.
+  // Must not fire while a schedule is in-flight (would stampede mid-sync on A17).
+  useEffect(() => {
+    if (!isInteractiveReady || isAdhanSettled) return;
+    const timer = setTimeout(() => {
+      if (scheduleInFlightRef.current) return;
+      markAdhanSettled();
+    }, 45_000);
+    return () => clearTimeout(timer);
+  }, [isInteractiveReady, isAdhanSettled, markAdhanSettled]);
 
   // Initialize prayer state after the app becomes interactive so cold-start taps
   // are not competing with prayer-time hydration and calculation work.
@@ -730,12 +759,15 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
   }, [isInteractiveReady, state.prayerTimes]);
 
   useEffect(() => {
-    if (!isInteractiveReady) {
+    if (!isInteractiveReady || !isAdhanSettled) {
       return;
     }
 
-    void preloadAdhanAudio();
-  }, [isInteractiveReady]);
+    const timer = setTimeout(() => {
+      void preloadAdhanAudio();
+    }, 12_000);
+    return () => clearTimeout(timer);
+  }, [isInteractiveReady, isAdhanSettled]);
 
   // Listen for notification received events (foreground) and play Adhan audio
   useEffect(() => {
@@ -898,24 +930,31 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     };
   }, [isInteractiveReady, prayerTimesScheduleKey, adhanPreferencesScheduleKey]);
 
-  // Schedule calendar (Qamari) notifications when app has loaded
+  // Schedule calendar (Qamari) notifications well after adhan sync.
   useEffect(() => {
-    if (!isInteractiveReady || state.isLoading) {
+    if (!isInteractiveReady || !isAdhanSettled || state.isLoading) {
       return;
     }
 
-    const task = InteractionManager.runAfterInteractions(() => {
-      loadCalendarNotificationPreferences().then((prefs) => {
-        scheduleCalendarNotifications(prefs.enabled).catch((err) => {
-          if (__DEV__) console.warn('Calendar notification schedule:', err);
+    let cancelled = false;
+    let interactionTask: { cancel: () => void } | null = null;
+    const timer = setTimeout(() => {
+      interactionTask = InteractionManager.runAfterInteractions(() => {
+        if (cancelled) return;
+        loadCalendarNotificationPreferences().then((prefs) => {
+          scheduleCalendarNotifications(prefs.enabled).catch((err) => {
+            if (__DEV__) console.warn('Calendar notification schedule:', err);
+          });
         });
       });
-    });
+    }, 18_000);
 
     return () => {
-      task.cancel();
+      cancelled = true;
+      clearTimeout(timer);
+      interactionTask?.cancel();
     };
-  }, [isInteractiveReady, state.isLoading]);
+  }, [isInteractiveReady, isAdhanSettled, state.isLoading]);
 
 async function configureAndroidNotificationChannels(
     NotificationsModule: typeof import('expo-notifications'),
@@ -1073,11 +1112,18 @@ async function configureAndroidNotificationChannels(
   async function loadPrayerTimesFor(
     location: LocationType,
     selectedCity: string | null,
-    settings: PrayerSettings
+    settings: PrayerSettings,
+    options?: { allowNetwork?: boolean },
   ) {
     try {
       const cityKey = await resolveCityKey(selectedCity);
-      const result = await getPrayerTimesForDate({ cityKey, location, date: new Date() });
+      const result = await getPrayerTimesForDate({
+        cityKey,
+        location,
+        date: new Date(),
+        // First paint / hydrate must not block on Diyanet; warm later if needed.
+        allowNetwork: options?.allowNetwork ?? false,
+      });
       dispatch({
         type: 'SET_PRAYER_TIMES',
         payload: result.times,
@@ -1209,7 +1255,9 @@ async function configureAndroidNotificationChannels(
   }
 
   const updatePrayerTimes = useCallback(async () => {
-    await loadPrayerTimesFor(state.location, state.settings.selectedCity, state.settings);
+    await loadPrayerTimesFor(state.location, state.settings.selectedCity, state.settings, {
+      allowNetwork: true,
+    });
   }, [state.location, state.settings]);
 
   const getDateKey = useCallback((date: Date, timeZone?: string) => {
@@ -1312,25 +1360,38 @@ async function configureAndroidNotificationChannels(
 
   useEffect(() => {
     if (!isInteractiveReady || !state.prayerTimes) return;
-    // Single-day snapshot first (cheap); multi-day horizon after interactions.
+    // Single-day snapshot first (cheap).
     void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
       cityKey: toCityKey(state.settings.selectedCity),
       location: state.location,
       timezone: state.location.timezone,
       horizonDays: 1,
     });
-    const handle = InteractionManager.runAfterInteractions(() => {
-      void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
-        force: true,
-        cityKey: toCityKey(state.settings.selectedCity),
-        location: state.location,
-        timezone: state.location.timezone,
-        horizonDays: 8,
+    // Multi-day only after adhan schedule settles — avoids racing 7-day native JSON.
+    if (!isAdhanSettled) return;
+    let cancelled = false;
+    let interactionTask: { cancel: () => void } | null = null;
+    const timer = setTimeout(() => {
+      if (cancelled) return;
+      interactionTask = InteractionManager.runAfterInteractions(() => {
+        if (cancelled) return;
+        void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
+          force: true,
+          cityKey: toCityKey(state.settings.selectedCity),
+          location: state.location,
+          timezone: state.location.timezone,
+          horizonDays: 7,
+        });
       });
-    });
-    return () => handle.cancel();
+    }, 15_000);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      interactionTask?.cancel();
+    };
   }, [
     isInteractiveReady,
+    isAdhanSettled,
     state.prayerTimes,
     state.locationName,
     state.location,
@@ -1345,17 +1406,35 @@ async function configureAndroidNotificationChannels(
         cityKey: toCityKey(state.settings.selectedCity),
         location: state.location,
         timezone: state.location.timezone,
-        horizonDays: 8,
+        // Resume: 1-day if adhan still settling; else 7-day offline bundle.
+        horizonDays: isAdhanSettled ? 7 : 1,
       });
     });
     return () => subscription.remove();
   }, [
     isInteractiveReady,
+    isAdhanSettled,
     state.prayerTimes,
     state.locationName,
     state.location,
     state.settings.selectedCity,
   ]);
+
+  // Idle network warm long after adhan settles (does not block schedule).
+  useEffect(() => {
+    if (!isAdhanSettled || !state.location) return;
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      if (cancelled) return;
+      void loadPrayerTimesFor(state.location, state.settings.selectedCity, state.settings, {
+        allowNetwork: true,
+      });
+    }, 25_000);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [isAdhanSettled, state.location, state.settings.selectedCity, state.settings]);
 
   // Reschedule Adhan notifications on app resume, day change, and iOS health checks
   useEffect(() => {
@@ -1388,14 +1467,18 @@ async function configureAndroidNotificationChannels(
       lastKnownExactStatusRef.current = latestExact;
       dispatch({ type: 'SET_EXACT_ALARM_STATUS', payload: latestExact });
       const exactRecovered =
-        (previousExact === 'missing' || previousExact === 'unknown') &&
-        latestExact === 'granted';
+        previousExact === 'missing' && latestExact === 'granted';
       if (exactRecovered) {
         try {
           await requestPrayerScheduleRef.current('exact-granted');
         } catch (error) {
           console.warn('Failed to reschedule after exact-alarm grant:', error);
         }
+        return;
+      }
+
+      // Cold-start: let startup-migration own the first schedule.
+      if (!startupScheduleBootstrappedRef.current) {
         return;
       }
 
@@ -1736,6 +1819,7 @@ async function configureAndroidNotificationChannels(
           cityKey,
           location: state.location,
           date: targetDate,
+          allowNetwork: false,
         });
         // Agent already applies country policy offsets.
         dayTimes = result.times;
@@ -1857,6 +1941,11 @@ async function configureAndroidNotificationChannels(
           }
         }
       }
+
+      // Yield between days so Hermes can paint while building the schedule.
+      await new Promise<void>((resolve) => {
+        requestAnimationFrame(() => resolve());
+      });
     }
 
     return expected;
@@ -1892,6 +1981,23 @@ async function configureAndroidNotificationChannels(
   );
 
   const runPrayerScheduleNow = useCallback(async (reason: string, runId: number) => {
+    const scheduleStartedAt = Date.now();
+    console.error(`[AdhanSchedule] start run=${runId} reason=${reason}`);
+
+    // Avoid stacking cold-start schedule reasons immediately after a successful sync.
+    if (
+      lastSuccessfulScheduleAtRef.current > 0 &&
+      Date.now() - lastSuccessfulScheduleAtRef.current < 15_000 &&
+      (reason === 'startup-migration' ||
+        reason === 'exact-granted' ||
+        reason === 'coalesced' ||
+        reason.startsWith('android-'))
+    ) {
+      console.error(`[AdhanSchedule] skip run=${runId} reason=${reason} (recent success)`);
+      markAdhanSettled();
+      return;
+    }
+
     const useNativeExactAdhan = Platform.OS === 'android' && canUseNativeAdhanScheduler();
     const schedulerBackend: PrayerScheduleAudit['schedulerBackend'] = useNativeExactAdhan
       ? 'native_exact_android'
@@ -1968,6 +2074,8 @@ async function configureAndroidNotificationChannels(
         dateKey: getDateKey(new Date()),
         locationKey: getLocationKey(),
       };
+      lastSuccessfulScheduleAtRef.current = Date.now();
+      markAdhanSettled();
     };
 
     const NotificationsModule = await loadNotificationsIfAvailable();
@@ -2090,6 +2198,21 @@ async function configureAndroidNotificationChannels(
     }
 
     if (effectiveNotificationStatus !== 'granted') {
+      // Avoid prompting mid-session on every schedule pass — that can AppState-flicker
+      // and re-enter scheduling forever on low-end Android.
+      if (effectiveNotificationStatus === 'denied') {
+        const exactDebugState = await getExactAlarmDebugState(
+          exactStatus,
+          effectiveNotificationStatus,
+          useNativeExactAdhan
+        );
+        await applyBlockingResult(
+          ['notification_denied'],
+          PRAYER_BLOCKER_MESSAGES.notification_denied,
+          { exactDebugState, scheduleMode, warnings: scheduleWarnings }
+        );
+        return;
+      }
       const { status } = await NotificationsModule.requestPermissionsAsync();
       const newStatus =
         status === 'granted' ? 'granted' : status === 'denied' ? 'denied' : 'undetermined';
@@ -2308,14 +2431,22 @@ async function configureAndroidNotificationChannels(
       }
     }
 
-    const afterAll = await NotificationsModule.getAllScheduledNotificationsAsync();
-    const afterPrayerExpo = afterAll.filter(isPrayerRelatedNotification);
+    // Native Android: skip a second Expo notification listing (10s+ on low-end).
+    // Adhan authenticity comes from the native engine; reminder count uses the
+    // just-synced expected set after creates/cancels above.
+    let afterPrayerExpo: any[] = [];
+    if (!useNativeExactAdhan) {
+      const afterAll = await NotificationsModule.getAllScheduledNotificationsAsync();
+      afterPrayerExpo = afterAll.filter(isPrayerRelatedNotification);
+    }
     const scheduledAdhanCount = useNativeExactAdhan
       ? nativeExactScheduledCount
       : afterPrayerExpo.filter((notification) => isAdhanScheduledNotification(notification)).length;
-    const scheduledReminderExpoCount = afterPrayerExpo.filter(
-      (notification) => !isAdhanScheduledNotification(notification)
-    ).length;
+    const scheduledReminderExpoCount = useNativeExactAdhan
+      ? expectedReminder.length
+      : afterPrayerExpo.filter(
+          (notification) => !isAdhanScheduledNotification(notification)
+        ).length;
     const scheduledAdhanNativeCount = useNativeExactAdhan ? nativeExactScheduledCount : 0;
     const scheduledCount = useNativeExactAdhan
       ? scheduledReminderExpoCount + scheduledAdhanCount
@@ -2379,6 +2510,11 @@ async function configureAndroidNotificationChannels(
     }
 
     dispatch({ type: 'SET_ERROR', payload: null });
+    lastSuccessfulScheduleAtRef.current = Date.now();
+    markAdhanSettled();
+    console.error(
+      `[AdhanSchedule] done run=${runId} reason=${reason} ms=${Date.now() - scheduleStartedAt} native=${nativeExactScheduledCount} expectedAdhan=${expectedAdhanCount} reminders=${scheduledReminderExpoCount}`,
+    );
   }, [
     buildNextTriggerByPrayer,
     buildExpectedPrayerNotifications,
@@ -2390,6 +2526,7 @@ async function configureAndroidNotificationChannels(
     getLocationKey,
     isAdhanScheduledNotification,
     isPrayerRelatedNotification,
+    markAdhanSettled,
     state.adhanPreferences.masterEnabled,
     state.prayerTimes,
     state.settings.selectedCity,
@@ -2405,6 +2542,7 @@ async function configureAndroidNotificationChannels(
     scheduleInFlightRef.current = true;
     dispatch({ type: 'SET_IS_SCHEDULING', payload: true });
     let nextReason = reason;
+    let iterations = 0;
 
     try {
       do {
@@ -2413,6 +2551,12 @@ async function configureAndroidNotificationChannels(
         const runId = ++scheduleRunIdRef.current;
         await runPrayerScheduleNow(nextReason, runId);
         nextReason = schedulePendingReasonRef.current || 'coalesced';
+        iterations += 1;
+        const maxIterations = 3;
+        if (iterations >= maxIterations && schedulePendingRef.current) {
+          schedulePendingRef.current = false;
+          break;
+        }
       } while (schedulePendingRef.current);
     } catch (error) {
       console.error('❌ Adhan notification scheduling error:', error);
@@ -2482,7 +2626,23 @@ async function configureAndroidNotificationChannels(
   useEffect(() => {
     registerPrayerScheduleCallback((reason) => requestPrayerSchedule(reason));
     void registerAdhanBackgroundRefresh();
-    void runPendingBackgroundPrayerSchedule(requestPrayerSchedule);
+    // Drain pending background reasons only after cold-start migration can own the
+    // first real schedule — avoids a no-op exact-granted run before prefs hydrate.
+    void (async () => {
+      for (let i = 0; i < 80 && !startupScheduleBootstrappedRef.current; i += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 250));
+      }
+      await runPendingBackgroundPrayerSchedule(async (reason) => {
+        if (
+          lastSuccessfulScheduleAtRef.current > 0 &&
+          Date.now() - lastSuccessfulScheduleAtRef.current < 15_000
+        ) {
+          console.error(`[AdhanSchedule] skip pending reason=${reason} (recent success)`);
+          return;
+        }
+        await requestPrayerSchedule(reason);
+      });
+    })();
 
     return () => {
       unregisterPrayerScheduleCallback();
@@ -2671,24 +2831,41 @@ async function configureAndroidNotificationChannels(
     }
   }, [checkNotificationPermission]);
 
+  const prayerContextValue = useMemo(
+    () => ({
+      state,
+      refreshPrayerTimes,
+      setCity,
+      setCustomLocation,
+      updateSettings,
+      updateAdhanPreferences,
+      requestLocationPermission,
+      detectLocation,
+      scheduleAdhanNotifications,
+      requestPrayerSchedule,
+      refreshAdhanSettingsSchedule,
+      scheduleAdhanSystemTest,
+      openNotificationSettings,
+    }),
+    [
+      state,
+      refreshPrayerTimes,
+      setCity,
+      setCustomLocation,
+      updateSettings,
+      updateAdhanPreferences,
+      requestLocationPermission,
+      detectLocation,
+      scheduleAdhanNotifications,
+      requestPrayerSchedule,
+      refreshAdhanSettingsSchedule,
+      scheduleAdhanSystemTest,
+      openNotificationSettings,
+    ],
+  );
+
   return (
-    <PrayerContext.Provider
-      value={{
-        state,
-        refreshPrayerTimes,
-        setCity,
-        setCustomLocation,
-        updateSettings,
-        updateAdhanPreferences,
-        requestLocationPermission,
-        detectLocation,
-        scheduleAdhanNotifications,
-        requestPrayerSchedule,
-        refreshAdhanSettingsSchedule,
-        scheduleAdhanSystemTest,
-        openNotificationSettings,
-      }}
-    >
+    <PrayerContext.Provider value={prayerContextValue}>
       {children}
     </PrayerContext.Provider>
   );

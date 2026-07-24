@@ -9,6 +9,7 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { normalizeCityKey } from '@/utils/cities';
+import { toArabicNumerals } from '@/utils/numbers';
 import { getDisplayQiblaBearing } from '@/utils/prayerTimes';
 
 export function QiblaCard() {
@@ -30,7 +31,7 @@ export function QiblaCard() {
         <RtlView style={styles.textBlock}>
           <RtlText align="center" style={[styles.title, { color: theme.text }]}>قبله‌نما</RtlText>
           <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
-            جهت قبله: {bearing.toLocaleString('fa-AF')}°
+            جهت قبله: {toArabicNumerals(bearing)}°
           </RtlText>
         </RtlView>
         <MaterialIcons name="chevron-left" size={24} color={theme.textSecondary} />

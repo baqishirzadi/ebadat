@@ -7,7 +7,16 @@ const crypto = require('crypto');
 const INPUT_PATH = path.join(__dirname, '..', 'data', 'ahadith', 'import', 'hadiths_verified.json');
 const OUTPUT_PATH = path.join(__dirname, '..', 'data', 'ahadith', 'hadiths.curated.v1.json');
 
-const ALLOWED_BOOKS = new Set(['Bukhari', 'Muslim']);
+const ALLOWED_BOOKS = new Set([
+  'Bukhari',
+  'Muslim',
+  'Ahmad',
+  'AbuDawud',
+  'Tirmidhi',
+  'Nasai',
+  'IbnMajah',
+]);
+const ALLOWED_GRADES = new Set(['sahih', 'hasan', 'daif']);
 const ALLOWED_SPECIAL_DAYS = new Set([
   'ramadan',
   'laylat_al_qadr',
@@ -120,7 +129,7 @@ for (const raw of input) {
 
   const sourceBook = normalizeString(raw.source_book);
   if (!ALLOWED_BOOKS.has(sourceBook)) {
-    fail(`Hadith ${sourceId}: source_book must be Bukhari or Muslim`);
+    fail(`Hadith ${sourceId}: invalid source_book ${sourceBook}`);
   }
 
   const arabicText = normalizeString(raw.arabic_text);
@@ -134,6 +143,19 @@ for (const raw of input) {
   const sourceNumber = normalizeString(raw.source_number);
   if (!sourceNumber) {
     fail(`Hadith ${sourceId}: source_number is required`);
+  }
+
+  const isMuttafaq = Boolean(raw.is_muttafaq);
+  let authenticityGrade = normalizeString(raw.authenticity_grade).toLowerCase();
+  if (!authenticityGrade) {
+    authenticityGrade =
+      isMuttafaq || sourceBook === 'Bukhari' || sourceBook === 'Muslim' ? 'sahih' : 'hasan';
+  }
+  if (!ALLOWED_GRADES.has(authenticityGrade)) {
+    fail(`Hadith ${sourceId}: authenticity_grade must be sahih, hasan, or daif`);
+  }
+  if (isMuttafaq && authenticityGrade !== 'sahih') {
+    fail(`Hadith ${sourceId}: muttafaq entries must be authenticity_grade sahih`);
   }
 
   const topics = normalizeTopics(raw.topics);
@@ -153,7 +175,8 @@ for (const raw of input) {
     pashto_translation: pashto,
     source_book: sourceBook,
     source_number: sourceNumber,
-    is_muttafaq: Boolean(raw.is_muttafaq),
+    is_muttafaq: isMuttafaq,
+    authenticity_grade: authenticityGrade,
     topics,
     special_days: normalizeSpecialDays(raw.special_days, sourceId),
     hijri_range: normalizeHijriRange(raw.hijri_range, sourceId),

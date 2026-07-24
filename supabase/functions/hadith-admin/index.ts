@@ -84,6 +84,12 @@ function normalizeHadithRow(row: Record<string, unknown>) {
     source_book: row.source_book,
     source_number: typeof row.source_number === "string" ? row.source_number : "",
     is_muttafaq: !!row.is_muttafaq,
+    authenticity_grade:
+      typeof row.authenticity_grade === "string" && row.authenticity_grade.length > 0
+        ? row.authenticity_grade
+        : !!row.is_muttafaq || row.source_book === "Bukhari" || row.source_book === "Muslim"
+          ? "sahih"
+          : "hasan",
     topics: Array.isArray(row.topics) ? row.topics : [],
     special_days: Array.isArray(row.special_days) ? row.special_days : undefined,
     hijri_range: hasHijriRange
@@ -249,8 +255,29 @@ function validateAndBuildInsertPayload(body: Record<string, unknown>) {
     throw new Error("Missing required fields");
   }
 
-  if (sourceBook !== "Bukhari" && sourceBook !== "Muslim") {
+  if (
+    sourceBook !== "Bukhari" &&
+    sourceBook !== "Muslim" &&
+    sourceBook !== "Ahmad" &&
+    sourceBook !== "AbuDawud" &&
+    sourceBook !== "Tirmidhi" &&
+    sourceBook !== "Nasai" &&
+    sourceBook !== "IbnMajah"
+  ) {
     throw new Error("Invalid source book");
+  }
+
+  const isMuttafaq = !!body.is_muttafaq;
+  let authenticityGrade = normalizeString(body.authenticity_grade).toLowerCase();
+  if (!authenticityGrade) {
+    authenticityGrade =
+      isMuttafaq || sourceBook === "Bukhari" || sourceBook === "Muslim" ? "sahih" : "hasan";
+  }
+  if (authenticityGrade !== "sahih" && authenticityGrade !== "hasan" && authenticityGrade !== "daif") {
+    throw new Error("Invalid authenticity_grade");
+  }
+  if (isMuttafaq && authenticityGrade !== "sahih") {
+    throw new Error("Muttafaq entries must be sahih");
   }
 
   const specialDays = normalizeStringArray(body.special_days);
@@ -296,7 +323,8 @@ function validateAndBuildInsertPayload(body: Record<string, unknown>) {
       pashto_translation: pashtoTranslation,
       source_book: sourceBook,
       source_number: sourceNumber,
-      is_muttafaq: !!body.is_muttafaq,
+      is_muttafaq: isMuttafaq,
+      authenticity_grade: authenticityGrade,
       topics: normalizeStringArray(body.topics),
       special_days: specialDays.length > 0 ? specialDays : null,
       hijri_month: hijriProvided === 3 ? hijriMonth : null,
