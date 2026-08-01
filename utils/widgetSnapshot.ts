@@ -8,7 +8,7 @@ import { PRAYER_POLICY_VERSION } from '@/utils/prayerCalculationPolicy';
 
 export const WIDGET_SNAPSHOT_KEY = 'ebadat_widget_snapshot_v1';
 
-export type WidgetPrayerKey = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
+export type WidgetPrayerKey = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 
 export interface WidgetPrayerEntry {
   key: WidgetPrayerKey;
@@ -44,7 +44,16 @@ export interface WidgetSnapshot {
   nextRefreshAtMs: number;
 }
 
-const PRAYER_ORDER: WidgetPrayerKey[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+const PRAYER_ORDER: WidgetPrayerKey[] = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
+const WIDGET_PRAYER_LABELS: Record<WidgetPrayerKey, string> = {
+  fajr: PRAYER_LABELS_DARI.fajr,
+  sunrise: 'طلوع',
+  dhuhr: PRAYER_LABELS_DARI.dhuhr,
+  asr: PRAYER_LABELS_DARI.asr,
+  maghrib: PRAYER_LABELS_DARI.maghrib,
+  isha: PRAYER_LABELS_DARI.isha,
+};
 
 function formatGregorianDisplay(gregorianDate: Date): string {
   const greg = formatGregorianParts(gregorianDate);
@@ -66,7 +75,7 @@ function buildDaySnapshot(
     gregorianDisplay: formatGregorianDisplay(truth.gregorianDate),
     prayers: PRAYER_ORDER.map((key) => ({
       key,
-      labelDari: PRAYER_LABELS_DARI[key],
+      labelDari: WIDGET_PRAYER_LABELS[key],
       time12h: formatPrayerTime12h(prayerTimes[key], timezone),
       atMs: prayerTimes[key].getTime(),
     })),

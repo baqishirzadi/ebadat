@@ -95,7 +95,7 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
               key={prayer.key}
               style={{
                 flex: 1,
-                marginHorizontal: 2,
+                marginHorizontal: 1,
                 backgroundColor: active ? ACTIVE_BG : INACTIVE_BG,
                 borderRadius: 8,
                 paddingVertical: 4,
@@ -105,7 +105,7 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
               <TextWidget
                 text={prayer.labelDari}
                 style={{
-                  fontSize: 10,
+                  fontSize: 9,
                   fontFamily: 'Vazirmatn-Bold',
                   color: active ? TINT : TEXT_PRIMARY,
                 }}
@@ -113,7 +113,7 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
               <TextWidget
                 text={prayer.time12h}
                 style={{
-                  fontSize: 11,
+                  fontSize: 10,
                   fontFamily: 'Vazirmatn-Bold',
                   color: active ? TINT : TEXT_SECONDARY,
                   marginTop: 2,

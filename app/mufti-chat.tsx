@@ -14,6 +14,7 @@ import {
   Platform,
   Pressable,
   StyleSheet,
+  Text,
   TextInput,
   View,
 } from 'react-native';
@@ -22,9 +23,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
-import { BorderRadius, RTL_CONTAINER, Spacing, ThemeColors } from '@/constants/theme';
+import { HANAFI_MUFTI_STARTER_QUESTIONS_DARI } from '@/constants/hanafiMuftiStarterQuestions';
+import { BorderRadius, RTL_CONTAINER, Spacing, ThemeColors, Typography } from '@/constants/theme';
 import {
-  persianBodyText,
   persianCaptionText,
   persianInputTextStyle,
   persianTextInputAlignProps,
@@ -35,12 +36,21 @@ import { detectLanguage } from '@/utils/duaAdvisor';
 import { formatChatPlainText } from '@/utils/formatChatPlainText';
 import type { StoredHanafiMuftiMessage } from '@/utils/hanafiMuftiStorage';
 
+/** Android can flip Persian paragraphs LTR; RLM forces RTL direction. */
+const RLM = '\u200F';
+
 type ChatRow =
   | { type: 'message'; message: StoredHanafiMuftiMessage; key: string }
   | { type: 'streaming'; content: string; key: string };
 
 function getClearLabel(sampleText: string): string {
   return detectLanguage(sampleText) === 'pashto' ? 'د خبرو پاکول' : 'پاک کردن گفتگو';
+}
+
+function formatAssistantBubbleText(text: string): string {
+  const plain = formatChatPlainText(text);
+  if (!plain) return plain;
+  return Platform.OS === 'android' ? `${RLM}${plain}` : plain;
 }
 
 interface ChatBubbleProps {
@@ -50,22 +60,71 @@ interface ChatBubbleProps {
 }
 
 function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
-  const displayText = isUser ? text : formatChatPlainText(text);
+  const displayText = isUser ? text : formatAssistantBubbleText(text);
 
   return (
     <RtlView style={[styles.messageRow, isUser ? styles.userRow : styles.assistantRow]}>
-      <RtlView
+      {/*
+        Isolate bubble text from app-wide forceRTL mirroring. Nested direction:'rtl'
+        + textAlign:'right' was resolving to the visual LEFT on Android OEMs, so
+        Persian lines stuck to the left edge of the bubble.
+      */}
+      <View
         style={[
           styles.bubble,
+          styles.bubbleLtrIsolate,
           isUser
             ? [styles.userBubble, { backgroundColor: theme.tint }]
             : [styles.assistantBubble, { backgroundColor: theme.card, borderColor: theme.cardBorder }],
         ]}
       >
-        <RtlText align="right" style={[styles.bubbleText, { color: isUser ? '#fff' : theme.text }]}>
+        <Text
+          style={[
+            styles.bubbleText,
+            { color: isUser ? '#fff' : theme.text },
+            Platform.OS === 'android' ? { includeFontPadding: false } : null,
+          ]}
+        >
           {displayText}
-        </RtlText>
+        </Text>
+      </View>
+    </RtlView>
+  );
+}
+
+interface StarterChipsProps {
+  theme: ThemeColors;
+  disabled: boolean;
+  onSelect: (question: string) => void;
+}
+
+function StarterChips({ theme, disabled, onSelect }: StarterChipsProps) {
+  return (
+    <RtlView style={styles.emptyWrap}>
+      <RtlView style={styles.chipsWrap}>
+        {HANAFI_MUFTI_STARTER_QUESTIONS_DARI.map((question) => (
+          <Pressable
+            key={question}
+            disabled={disabled}
+            onPress={() => onSelect(question)}
+            style={[
+              styles.chip,
+              {
+                backgroundColor: theme.card,
+                borderColor: theme.cardBorder,
+                opacity: disabled ? 0.5 : 1,
+              },
+            ]}
+          >
+            <RtlText align="center" style={[styles.chipText, { color: theme.text }]}>
+              {question}
+            </RtlText>
+          </Pressable>
+        ))}
       </RtlView>
+      <RtlText align="center" style={[styles.emptyDisclaimer, { color: theme.textSecondary }]}>
+        سوال فقهی حنفی خود را بپرسید. احکام نهایی نیازمند مشورت با عالم مجرب است.
+      </RtlText>
     </RtlView>
   );
 }
@@ -111,27 +170,56 @@ export default function MuftiChatScreen() {
     [input, messages],
   );
 
-  const scrollToBottom = useCallback(() => {
-    requestAnimationFrame(() => {
-      listRef.current?.scrollToEnd({ animated: true });
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const scrollRafRef = useRef<number | null>(null);
+
+  const scrollToBottom = useCallback((animated = Platform.OS !== 'android') => {
+    if (scrollRafRef.current != null) {
+      cancelAnimationFrame(scrollRafRef.current);
+    }
+    scrollRafRef.current = requestAnimationFrame(() => {
+      scrollRafRef.current = null;
+      listRef.current?.scrollToEnd({ animated });
     });
   }, []);
 
   useEffect(() => {
+    return () => {
+      if (scrollRafRef.current != null) {
+        cancelAnimationFrame(scrollRafRef.current);
+      }
+    };
+  }, []);
+
+  // Scroll on new messages / stream chunks. Debounce on Android to avoid composer jump
+  // when FlatList layout + adjustResize fight each other on low-end OEMs (MIUI/Poco).
+  useEffect(() => {
     if (rows.length === 0) return;
-    const timer = setTimeout(scrollToBottom, 80);
+    const delay = Platform.OS === 'android' ? (isStreaming ? 120 : 80) : 80;
+    const timer = setTimeout(() => scrollToBottom(), delay);
     return () => clearTimeout(timer);
-  }, [rows.length, streamingContent, scrollToBottom]);
+  }, [rows.length, streamingContent, isStreaming, scrollToBottom]);
 
   useEffect(() => {
-    const eventName = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const subscription = Keyboard.addListener(eventName, () => {
-      setTimeout(scrollToBottom, 50);
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const onShow = Keyboard.addListener(showEvent, () => {
+      setKeyboardVisible(true);
+      setTimeout(() => scrollToBottom(false), Platform.OS === 'android' ? 100 : 50);
     });
-    return () => subscription.remove();
+    const onHide = Keyboard.addListener(hideEvent, () => {
+      setKeyboardVisible(false);
+    });
+    return () => {
+      onShow.remove();
+      onHide.remove();
+    };
   }, [scrollToBottom]);
 
   const headerOffset = insets.top + 56;
+  const composerBottomPad = keyboardVisible
+    ? Spacing.sm
+    : Math.max(insets.bottom, Spacing.sm);
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
@@ -139,6 +227,14 @@ export default function MuftiChatScreen() {
     setInput('');
     await sendMessage(text);
   }, [input, isStreaming, sendMessage]);
+
+  const handleStarterSelect = useCallback(
+    (question: string) => {
+      if (isStreaming || !isConfigured) return;
+      void sendMessage(question);
+    },
+    [isConfigured, isStreaming, sendMessage],
+  );
 
   const handleClear = useCallback(() => {
     if (messages.length === 0) return;
@@ -160,11 +256,24 @@ export default function MuftiChatScreen() {
       if (item.type === 'streaming') {
         return (
           <RtlView style={[styles.messageRow, styles.assistantRow]}>
-            <RtlView style={[styles.bubble, styles.assistantBubble, { backgroundColor: `${theme.tint}18`, borderColor: theme.cardBorder }]}>
-              <RtlText align="right" style={[styles.bubbleText, { color: theme.text }]}>
-                {formatChatPlainText(item.content)}
-              </RtlText>
-            </RtlView>
+            <View
+              style={[
+                styles.bubble,
+                styles.bubbleLtrIsolate,
+                styles.assistantBubble,
+                { backgroundColor: `${theme.tint}18`, borderColor: theme.cardBorder },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.bubbleText,
+                  { color: theme.text },
+                  Platform.OS === 'android' ? { includeFontPadding: false } : null,
+                ]}
+              >
+                {formatAssistantBubbleText(item.content)}
+              </Text>
+            </View>
           </RtlView>
         );
       }
@@ -178,6 +287,99 @@ export default function MuftiChatScreen() {
       );
     },
     [theme],
+  );
+
+  const chatBody = (
+    <>
+      {isLoading ? (
+        <View style={styles.centered}>
+          <ActivityIndicator color={theme.tint} />
+        </View>
+      ) : (
+        <RtlView style={styles.flex}>
+          <FlatList
+            ref={listRef}
+            data={rows}
+            keyExtractor={(item) => item.key}
+            renderItem={renderItem}
+            keyboardShouldPersistTaps="handled"
+            // Avoid onContentSizeChange scroll on Android — pairs with streaming
+            // updates and adjustResize to make the composer jump on low-end OEMs.
+            onContentSizeChange={Platform.OS === 'ios' ? () => scrollToBottom() : undefined}
+            contentContainerStyle={[
+              styles.listContent,
+              rows.length === 0 && styles.listEmpty,
+            ]}
+            ListEmptyComponent={
+              <StarterChips
+                theme={theme}
+                disabled={isStreaming || !isConfigured}
+                onSelect={handleStarterSelect}
+              />
+            }
+            ListFooterComponent={
+              isStreaming && !streamingContent ? (
+                <RtlText align="right" style={[styles.typing, { color: theme.textSecondary }]}>
+                  در حال نوشتن...
+                </RtlText>
+              ) : null
+            }
+          />
+        </RtlView>
+      )}
+
+      {error ? (
+        <Pressable onPress={dismissError} style={[styles.errorBar, { backgroundColor: `${theme.warning}22` }]}>
+          <RtlText align="right" style={[styles.errorText, { color: theme.warning }]}>{error}</RtlText>
+        </Pressable>
+      ) : null}
+
+      <RtlView
+        style={[
+          styles.composer,
+          {
+            backgroundColor: theme.card,
+            borderTopColor: theme.divider,
+            paddingBottom: composerBottomPad,
+          },
+        ]}
+      >
+        <Pressable
+          onPress={() => void handleSend()}
+          disabled={!input.trim() || isStreaming || !isConfigured}
+          style={[
+            styles.sendButton,
+            { backgroundColor: theme.tint },
+            (!input.trim() || isStreaming || !isConfigured) && styles.sendButtonDisabled,
+          ]}
+        >
+          {isStreaming ? (
+            <ActivityIndicator color="#fff" size="small" />
+          ) : (
+            <MaterialIcons name="send" size={22} color="#fff" />
+          )}
+        </Pressable>
+        <TextInput
+          style={[
+            styles.input,
+            {
+              color: theme.text,
+              borderColor: theme.cardBorder,
+              backgroundColor: theme.background,
+            },
+          ]}
+          value={input}
+          onChangeText={setInput}
+          onFocus={() => scrollToBottom(false)}
+          placeholder="سوال فقهی خود را بنویسید..."
+          placeholderTextColor={theme.textSecondary}
+          multiline
+          maxLength={4000}
+          editable={!isStreaming && isConfigured}
+          {...persianTextInputAlignProps}
+        />
+      </RtlView>
+    </>
   );
 
   return (
@@ -196,98 +398,22 @@ export default function MuftiChatScreen() {
           }
         />
 
-        <KeyboardAvoidingView
-          style={styles.flex}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? headerOffset : 0}
-        >
-          {isLoading ? (
-            <View style={styles.centered}>
-              <ActivityIndicator color={theme.tint} />
-            </View>
-          ) : (
-            <RtlView style={styles.flex}>
-              <FlatList
-                ref={listRef}
-                data={rows}
-                keyExtractor={(item) => item.key}
-                renderItem={renderItem}
-                keyboardShouldPersistTaps="handled"
-                onContentSizeChange={scrollToBottom}
-                contentContainerStyle={[
-                  styles.listContent,
-                  rows.length === 0 && styles.listEmpty,
-                ]}
-                ListEmptyComponent={
-                  <RtlView style={styles.emptyWrap}>
-                    <RtlText align="right" style={[styles.emptyText, { color: theme.textSecondary }]}>
-                      سوال فقهی حنفی خود را بپرسید. احکام نهایی نیازمند مشورت با عالم مجرب است.
-                    </RtlText>
-                  </RtlView>
-                }
-                ListFooterComponent={
-                  isStreaming && !streamingContent ? (
-                    <RtlText align="right" style={[styles.typing, { color: theme.textSecondary }]}>
-                      در حال نوشتن...
-                    </RtlText>
-                  ) : null
-                }
-              />
-            </RtlView>
-          )}
-
-          {error ? (
-            <Pressable onPress={dismissError} style={[styles.errorBar, { backgroundColor: `${theme.warning}22` }]}>
-              <RtlText align="right" style={[styles.errorText, { color: theme.warning }]}>{error}</RtlText>
-            </Pressable>
-          ) : null}
-
-          <RtlView
-            style={[
-              styles.composer,
-              {
-                backgroundColor: theme.card,
-                borderTopColor: theme.divider,
-                paddingBottom: Math.max(insets.bottom, Spacing.sm),
-              },
-            ]}
+        {/*
+          Android already uses windowSoftInputMode=adjustResize. Wrapping with
+          KeyboardAvoidingView behavior=height double-shifts the layout and makes
+          the composer jump on low-end / MIUI devices (Poco, Redmi). iOS still needs KAV.
+        */}
+        {Platform.OS === 'ios' ? (
+          <KeyboardAvoidingView
+            style={styles.flex}
+            behavior="padding"
+            keyboardVerticalOffset={headerOffset}
           >
-            <Pressable
-              onPress={() => void handleSend()}
-              disabled={!input.trim() || isStreaming || !isConfigured}
-              style={[
-                styles.sendButton,
-                { backgroundColor: theme.tint },
-                (!input.trim() || isStreaming || !isConfigured) && styles.sendButtonDisabled,
-              ]}
-            >
-              {isStreaming ? (
-                <ActivityIndicator color="#fff" size="small" />
-              ) : (
-                <MaterialIcons name="send" size={22} color="#fff" />
-              )}
-            </Pressable>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  color: theme.text,
-                  borderColor: theme.cardBorder,
-                  backgroundColor: theme.background,
-                },
-              ]}
-              value={input}
-              onChangeText={setInput}
-              onFocus={scrollToBottom}
-              placeholder="سوال فقهی خود را بنویسید..."
-              placeholderTextColor={theme.textSecondary}
-              multiline
-              maxLength={4000}
-              editable={!isStreaming && isConfigured}
-              {...persianTextInputAlignProps}
-            />
-          </RtlView>
-        </KeyboardAvoidingView>
+            {chatBody}
+          </KeyboardAvoidingView>
+        ) : (
+          <View style={styles.flex}>{chatBody}</View>
+        )}
       </RtlView>
     </>
   );
@@ -317,6 +443,31 @@ const styles = StyleSheet.create({
   emptyWrap: {
     alignSelf: 'stretch',
     width: '100%',
+    alignItems: 'center',
+    gap: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+  },
+  chipsWrap: {
+    width: '100%',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  chip: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.lg,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    maxWidth: '92%',
+  },
+  chipText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.body,
+    lineHeight: 24,
+  },
+  emptyDisclaimer: {
+    ...persianCaptionText,
+    lineHeight: 20,
+    paddingHorizontal: Spacing.md,
   },
   messageRow: {
     width: '100%',
@@ -329,26 +480,30 @@ const styles = StyleSheet.create({
   assistantRow: {
     justifyContent: 'flex-end',
   },
-  emptyText: {
-    ...persianBodyText,
-    lineHeight: 24,
-    paddingHorizontal: Spacing.lg,
-  },
   bubble: {
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
     maxWidth: '85%',
+    minWidth: 48,
     borderWidth: 1,
     borderColor: 'transparent',
     flexShrink: 1,
+    alignSelf: 'flex-start',
+  },
+  /** Break out of forceRTL so textAlign:'right' is the physical right edge. */
+  bubbleLtrIsolate: {
+    direction: 'ltr',
   },
   userBubble: {},
   assistantBubble: {},
   bubbleText: {
-    ...persianBodyText,
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.body,
     lineHeight: 24,
-    flexShrink: 1,
+    width: '100%',
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
   typing: {
     ...persianCaptionText,

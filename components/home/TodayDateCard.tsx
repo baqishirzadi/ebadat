@@ -6,18 +6,25 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { usePrayer } from '@/context/PrayerContext';
 import { useTodayCalendar } from '@/hooks/useTodayCalendar';
 import {
   formatGregorianParts,
   formatShamsiSlash,
   WEEKDAYS_DARI,
 } from '@/utils/calendarDisplay';
+import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { toArabicNumerals } from '@/utils/numbers';
 
 function TodayDateCardInner() {
   const { theme } = useApp();
+  const { state } = usePrayer();
   const truth = useTodayCalendar();
   const greg = formatGregorianParts(truth.gregorianDate);
+  const sunrise = state.prayerTimes?.sunrise;
+  const sunriseDisplay = sunrise
+    ? formatPrayerTime12h(sunrise, state.location?.timezone)
+    : '--:--';
 
   return (
     <Pressable
@@ -39,6 +46,13 @@ function TodayDateCardInner() {
           <RtlText align="center" style={[styles.secondaryLabel, { color: theme.textSecondary }]}>قمری</RtlText>
           <RtlText align="center" style={[styles.qamariValue, { color: theme.tint }]}>
             {toArabicNumerals(truth.hijri.day)} {truth.hijri.monthNameDari} {toArabicNumerals(truth.hijri.year)}
+          </RtlText>
+        </View>
+        <View style={[styles.secondaryDivider, { backgroundColor: theme.divider }]} />
+        <View style={styles.secondaryItem}>
+          <RtlText align="center" style={[styles.secondaryLabel, { color: theme.textSecondary }]}>طلوع آفتاب</RtlText>
+          <RtlText align="center" style={[styles.sunriseValue, { color: theme.tint }]}>
+            {sunriseDisplay}
           </RtlText>
         </View>
         <View style={[styles.secondaryDivider, { backgroundColor: theme.divider }]} />
@@ -91,13 +105,17 @@ const styles = StyleSheet.create({
   secondaryDivider: {
     width: StyleSheet.hairlineWidth,
     alignSelf: 'stretch',
-    marginHorizontal: Spacing.md,
+    marginHorizontal: Spacing.sm,
   },
   secondaryLabel: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
   },
   qamariValue: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.body,
+  },
+  sunriseValue: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
   },

@@ -41,7 +41,7 @@ enum WidgetShared {
     }
 
     let nowMs = date.timeIntervalSince1970 * 1000
-    let order = ["fajr", "dhuhr", "asr", "maghrib", "isha"]
+    let order = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"]
     var current: String? = nil
     for key in order {
       if let entry = day.prayers.first(where: { $0.key == key }), entry.atMs <= nowMs {
