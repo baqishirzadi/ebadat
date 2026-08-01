@@ -8,7 +8,7 @@ import { PRAYER_POLICY_VERSION } from '@/utils/prayerCalculationPolicy';
 
 export const WIDGET_SNAPSHOT_KEY = 'ebadat_widget_snapshot_v1';
 
-export type WidgetPrayerKey = 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
+export type WidgetPrayerKey = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 
 export interface WidgetPrayerEntry {
   key: WidgetPrayerKey;
@@ -23,6 +23,7 @@ export interface WidgetDaySnapshot {
   shamsiDisplay: string;
   hijriDisplay: string;
   gregorianDisplay: string;
+  sunriseDisplay: string;
   prayers: WidgetPrayerEntry[];
 }
 
@@ -39,25 +40,21 @@ export interface WidgetSnapshot {
   shamsiDisplay: string;
   hijriDisplay: string;
   gregorianDisplay: string;
+  sunriseDisplay: string;
   currentPrayer: WidgetPrayerKey | null;
   prayers: WidgetPrayerEntry[];
   nextRefreshAtMs: number;
 }
 
-const PRAYER_ORDER: WidgetPrayerKey[] = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
-
-const WIDGET_PRAYER_LABELS: Record<WidgetPrayerKey, string> = {
-  fajr: PRAYER_LABELS_DARI.fajr,
-  sunrise: 'طلوع',
-  dhuhr: PRAYER_LABELS_DARI.dhuhr,
-  asr: PRAYER_LABELS_DARI.asr,
-  maghrib: PRAYER_LABELS_DARI.maghrib,
-  isha: PRAYER_LABELS_DARI.isha,
-};
+const PRAYER_ORDER: WidgetPrayerKey[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 function formatGregorianDisplay(gregorianDate: Date): string {
   const greg = formatGregorianParts(gregorianDate);
   return `${greg.day} ${greg.monthEn} ${gregorianDate.getUTCFullYear()}`;
+}
+
+function formatSunriseDisplay(prayerTimes: PrayerTimes, timezone: string): string {
+  return `طلوع آفتاب ${formatPrayerTime12h(prayerTimes.sunrise, timezone)}`;
 }
 
 function buildDaySnapshot(
@@ -73,9 +70,10 @@ function buildDaySnapshot(
     shamsiDisplay: formatShamsiSlash(truth.shamsi),
     hijriDisplay: `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNameDari} ${toArabicNumerals(truth.hijri.year)}`,
     gregorianDisplay: formatGregorianDisplay(truth.gregorianDate),
+    sunriseDisplay: formatSunriseDisplay(prayerTimes, timezone),
     prayers: PRAYER_ORDER.map((key) => ({
       key,
-      labelDari: WIDGET_PRAYER_LABELS[key],
+      labelDari: PRAYER_LABELS_DARI[key],
       time12h: formatPrayerTime12h(prayerTimes[key], timezone),
       atMs: prayerTimes[key].getTime(),
     })),
@@ -160,6 +158,7 @@ export function buildWidgetSnapshot(
     shamsiDisplay: active.shamsiDisplay,
     hijriDisplay: active.hijriDisplay,
     gregorianDisplay: active.gregorianDisplay,
+    sunriseDisplay: active.sunriseDisplay,
     currentPrayer,
     prayers: active.prayers,
     nextRefreshAtMs: computeNextRefreshAtMs(days, timezone, now),
@@ -177,6 +176,7 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
           shamsiDisplay: snapshot.shamsiDisplay,
           hijriDisplay: snapshot.hijriDisplay,
           gregorianDisplay: snapshot.gregorianDisplay,
+          sunriseDisplay: snapshot.sunriseDisplay || '',
           prayers: snapshot.prayers,
         },
       ];
@@ -195,6 +195,7 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
       active?.hijriDisplay ||
       `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNameDari} ${toArabicNumerals(truth.hijri.year)}`,
     gregorianDisplay: active?.gregorianDisplay || formatGregorianDisplay(truth.gregorianDate),
+    sunriseDisplay: active?.sunriseDisplay || snapshot.sunriseDisplay || '',
     currentPrayer: getCurrentPrayerFromEntries(active.prayers, now),
     prayers: active.prayers,
     nextRefreshAtMs: computeNextRefreshAtMs(days, timezone, now),
@@ -216,6 +217,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       shamsiDisplay?: string;
       hijriDisplay?: string;
       gregorianDisplay?: string;
+      sunriseDisplay?: string;
       currentPrayer?: WidgetPrayerKey | null;
       prayers?: WidgetPrayerEntry[];
       nextRefreshAtMs?: number;
@@ -234,7 +236,10 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         shamsiDisplay: parsed.shamsiDisplay || '',
         hijriDisplay: parsed.hijriDisplay || '',
         gregorianDisplay: parsed.gregorianDisplay || '',
-        prayers: parsed.prayers || [],
+        sunriseDisplay: parsed.sunriseDisplay || '',
+        prayers: (parsed.prayers || []).filter((p): p is WidgetPrayerEntry =>
+          PRAYER_ORDER.includes(p.key as WidgetPrayerKey),
+        ),
       };
       return refreshWidgetSnapshot({
         version: 2,
@@ -247,15 +252,32 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         shamsiDisplay: day.shamsiDisplay,
         hijriDisplay: day.hijriDisplay,
         gregorianDisplay: day.gregorianDisplay,
+        sunriseDisplay: day.sunriseDisplay,
         currentPrayer: parsed.currentPrayer ?? null,
         prayers: day.prayers,
         nextRefreshAtMs: parsed.nextRefreshAtMs || Date.now() + 30 * 60 * 1000,
       });
     }
 
-    if (!parsed.prayers?.every((entry) => typeof entry?.atMs === 'number' && typeof entry?.key === 'string')) {
+    const prayers = (parsed.prayers || []).filter((entry): entry is WidgetPrayerEntry =>
+      typeof entry?.atMs === 'number' &&
+      typeof entry?.key === 'string' &&
+      PRAYER_ORDER.includes(entry.key as WidgetPrayerKey),
+    );
+    if (prayers.length === 0 && (!parsed.days || parsed.days.length === 0)) {
       return null;
     }
+
+    const days = (parsed.days || []).map((day) => ({
+      ...day,
+      sunriseDisplay: day.sunriseDisplay || parsed.sunriseDisplay || '',
+      prayers: (day.prayers || []).filter((entry): entry is WidgetPrayerEntry =>
+        typeof entry?.atMs === 'number' &&
+        typeof entry?.key === 'string' &&
+        PRAYER_ORDER.includes(entry.key as WidgetPrayerKey),
+      ),
+    }));
+
     return {
       version: 2,
       updatedAt: parsed.updatedAt || new Date().toISOString(),
@@ -263,13 +285,17 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       timezone: parsed.timezone || 'Asia/Kabul',
       policyVersion: parsed.policyVersion || PRAYER_POLICY_VERSION,
       sourceLabel: parsed.sourceLabel,
-      days: parsed.days || [],
+      days,
       weekdayDari: parsed.weekdayDari || '',
       shamsiDisplay: parsed.shamsiDisplay || '',
       hijriDisplay: parsed.hijriDisplay || '',
       gregorianDisplay: parsed.gregorianDisplay || '',
-      currentPrayer: parsed.currentPrayer ?? null,
-      prayers: parsed.prayers || [],
+      sunriseDisplay: parsed.sunriseDisplay || days[0]?.sunriseDisplay || '',
+      currentPrayer:
+        parsed.currentPrayer && PRAYER_ORDER.includes(parsed.currentPrayer)
+          ? parsed.currentPrayer
+          : null,
+      prayers: prayers.length > 0 ? prayers : days[0]?.prayers || [],
       nextRefreshAtMs: parsed.nextRefreshAtMs || Date.now() + 30 * 60 * 1000,
     };
   } catch {

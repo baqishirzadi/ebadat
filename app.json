@@ -140,7 +140,7 @@
             {
               "name": "PrayerTimesWidget",
               "label": "اوقات نماز",
-              "description": "تاریخ امروز و اوقات نماز",
+              "description": "تاریخ امروز، طلوع آفتاب و اوقات نماز",
               "minWidth": "320dp",
               "minHeight": "110dp",
               "targetCellWidth": 4,

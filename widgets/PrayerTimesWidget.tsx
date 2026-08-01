@@ -79,6 +79,12 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
           text={snapshot.gregorianDisplay || ''}
           style={{ fontSize: 14, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 2 }}
         />
+        {snapshot.sunriseDisplay ? (
+          <TextWidget
+            text={snapshot.sunriseDisplay}
+            style={{ fontSize: 13, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 4 }}
+          />
+        ) : null}
       </FlexWidget>
 
       <FlexWidget
@@ -95,7 +101,7 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
               key={prayer.key}
               style={{
                 flex: 1,
-                marginHorizontal: 1,
+                marginHorizontal: 2,
                 backgroundColor: active ? ACTIVE_BG : INACTIVE_BG,
                 borderRadius: 8,
                 paddingVertical: 4,
@@ -105,7 +111,7 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
               <TextWidget
                 text={prayer.labelDari}
                 style={{
-                  fontSize: 9,
+                  fontSize: 10,
                   fontFamily: 'Vazirmatn-Bold',
                   color: active ? TINT : TEXT_PRIMARY,
                 }}
@@ -113,7 +119,7 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
               <TextWidget
                 text={prayer.time12h}
                 style={{
-                  fontSize: 10,
+                  fontSize: 11,
                   fontFamily: 'Vazirmatn-Bold',
                   color: active ? TINT : TEXT_SECONDARY,
                   marginTop: 2,

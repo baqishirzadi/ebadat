@@ -59,10 +59,10 @@ struct PrayerTimesWidgetProvider: TimelineProvider {
       shamsiDisplay: "۱۴۰۴/۰۱/۱۸",
       hijriDisplay: "۱۵ رمضان ۱۴۴۷",
       gregorianDisplay: "19 Jul 2026",
+      sunriseDisplay: "طلوع آفتاب ۶:۰۰",
       currentPrayer: "dhuhr",
       prayers: [
         WidgetPrayerEntry(key: "fajr", labelDari: "صبح", time12h: "۴:۳۰", atMs: 0),
-        WidgetPrayerEntry(key: "sunrise", labelDari: "طلوع", time12h: "۶:۰۰", atMs: 0),
         WidgetPrayerEntry(key: "dhuhr", labelDari: "ظهر", time12h: "۱۲:۳۰", atMs: 0),
         WidgetPrayerEntry(key: "asr", labelDari: "عصر", time12h: "۳:۴۵", atMs: 0),
         WidgetPrayerEntry(key: "maghrib", labelDari: "شام", time12h: "۶:۱۰", atMs: 0),

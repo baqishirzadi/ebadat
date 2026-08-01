@@ -36,12 +36,13 @@ enum WidgetShared {
         shamsiDisplay: stored.shamsiDisplay,
         hijriDisplay: stored.hijriDisplay,
         gregorianDisplay: stored.gregorianDisplay,
+        sunriseDisplay: stored.sunriseDisplay,
         prayers: stored.prayers
       )
     }
 
     let nowMs = date.timeIntervalSince1970 * 1000
-    let order = ["fajr", "sunrise", "dhuhr", "asr", "maghrib", "isha"]
+    let order = ["fajr", "dhuhr", "asr", "maghrib", "isha"]
     var current: String? = nil
     for key in order {
       if let entry = day.prayers.first(where: { $0.key == key }), entry.atMs <= nowMs {
@@ -67,6 +68,7 @@ enum WidgetShared {
       shamsiDisplay: day.shamsiDisplay,
       hijriDisplay: day.hijriDisplay,
       gregorianDisplay: day.gregorianDisplay,
+      sunriseDisplay: day.sunriseDisplay.isEmpty ? stored.sunriseDisplay : day.sunriseDisplay,
       currentPrayer: current,
       prayers: day.prayers,
       nextRefreshAtMs: nextRefresh
@@ -111,7 +113,41 @@ struct WidgetDaySnapshot: Codable {
   let shamsiDisplay: String
   let hijriDisplay: String
   let gregorianDisplay: String
+  let sunriseDisplay: String
   let prayers: [WidgetPrayerEntry]
+
+  enum CodingKeys: String, CodingKey {
+    case dateKey, weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay, sunriseDisplay, prayers
+  }
+
+  init(
+    dateKey: String,
+    weekdayDari: String,
+    shamsiDisplay: String,
+    hijriDisplay: String,
+    gregorianDisplay: String,
+    sunriseDisplay: String = "",
+    prayers: [WidgetPrayerEntry]
+  ) {
+    self.dateKey = dateKey
+    self.weekdayDari = weekdayDari
+    self.shamsiDisplay = shamsiDisplay
+    self.hijriDisplay = hijriDisplay
+    self.gregorianDisplay = gregorianDisplay
+    self.sunriseDisplay = sunriseDisplay
+    self.prayers = prayers
+  }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    dateKey = try container.decode(String.self, forKey: .dateKey)
+    weekdayDari = try container.decode(String.self, forKey: .weekdayDari)
+    shamsiDisplay = try container.decode(String.self, forKey: .shamsiDisplay)
+    hijriDisplay = try container.decode(String.self, forKey: .hijriDisplay)
+    gregorianDisplay = try container.decode(String.self, forKey: .gregorianDisplay)
+    sunriseDisplay = try container.decodeIfPresent(String.self, forKey: .sunriseDisplay) ?? ""
+    prayers = try container.decode([WidgetPrayerEntry].self, forKey: .prayers)
+  }
 }
 
 struct WidgetSnapshot: Codable {
@@ -126,13 +162,14 @@ struct WidgetSnapshot: Codable {
   let shamsiDisplay: String
   let hijriDisplay: String
   let gregorianDisplay: String
+  let sunriseDisplay: String
   let currentPrayer: String?
   let prayers: [WidgetPrayerEntry]
   let nextRefreshAtMs: Double
 
   enum CodingKeys: String, CodingKey {
     case version, updatedAt, cityName, timezone, policyVersion, sourceLabel, days
-    case weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay
+    case weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay, sunriseDisplay
     case currentPrayer, prayers, nextRefreshAtMs
   }
 
@@ -148,6 +185,7 @@ struct WidgetSnapshot: Codable {
     shamsiDisplay: String,
     hijriDisplay: String,
     gregorianDisplay: String,
+    sunriseDisplay: String = "",
     currentPrayer: String?,
     prayers: [WidgetPrayerEntry],
     nextRefreshAtMs: Double
@@ -163,6 +201,7 @@ struct WidgetSnapshot: Codable {
     self.shamsiDisplay = shamsiDisplay
     self.hijriDisplay = hijriDisplay
     self.gregorianDisplay = gregorianDisplay
+    self.sunriseDisplay = sunriseDisplay
     self.currentPrayer = currentPrayer
     self.prayers = prayers
     self.nextRefreshAtMs = nextRefreshAtMs
@@ -181,6 +220,9 @@ struct WidgetSnapshot: Codable {
     shamsiDisplay = try container.decode(String.self, forKey: .shamsiDisplay)
     hijriDisplay = try container.decode(String.self, forKey: .hijriDisplay)
     gregorianDisplay = try container.decode(String.self, forKey: .gregorianDisplay)
+    sunriseDisplay = try container.decodeIfPresent(String.self, forKey: .sunriseDisplay)
+      ?? days?.first?.sunriseDisplay
+      ?? ""
     currentPrayer = try container.decodeIfPresent(String.self, forKey: .currentPrayer)
     prayers = try container.decode([WidgetPrayerEntry].self, forKey: .prayers)
     nextRefreshAtMs = try container.decode(Double.self, forKey: .nextRefreshAtMs)

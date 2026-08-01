@@ -8,6 +8,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ActivityIndicator,
   Alert,
+  Dimensions,
   FlatList,
   Keyboard,
   KeyboardAvoidingView,
@@ -27,7 +28,6 @@ import { HANAFI_MUFTI_STARTER_QUESTIONS_DARI } from '@/constants/hanafiMuftiStar
 import { BorderRadius, RTL_CONTAINER, Spacing, ThemeColors, Typography } from '@/constants/theme';
 import {
   persianCaptionText,
-  persianInputTextStyle,
   persianTextInputAlignProps,
 } from '@/constants/persianTextLayout';
 import { useApp } from '@/context/AppContext';
@@ -170,7 +170,7 @@ export default function MuftiChatScreen() {
     [input, messages],
   );
 
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const scrollRafRef = useRef<number | null>(null);
 
   const scrollToBottom = useCallback((animated = Platform.OS !== 'android') => {
@@ -203,12 +203,22 @@ export default function MuftiChatScreen() {
   useEffect(() => {
     const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-    const onShow = Keyboard.addListener(showEvent, () => {
-      setKeyboardVisible(true);
+    const onShow = Keyboard.addListener(showEvent, (event) => {
+      // Edge-to-edge Android often ignores adjustResize; lift composer by keyboard height.
+      if (Platform.OS === 'android') {
+        const windowH = Dimensions.get('window').height;
+        const screenY = event.endCoordinates?.screenY;
+        const fromTop = typeof screenY === 'number' ? Math.max(0, Math.round(windowH - screenY)) : 0;
+        const reported = Math.round(event.endCoordinates?.height ?? 0);
+        // Use the larger estimate so the input is never clipped under the IME.
+        setKeyboardHeight(Math.max(fromTop, reported));
+      } else {
+        setKeyboardHeight(0);
+      }
       setTimeout(() => scrollToBottom(false), Platform.OS === 'android' ? 100 : 50);
     });
     const onHide = Keyboard.addListener(hideEvent, () => {
-      setKeyboardVisible(false);
+      setKeyboardHeight(0);
     });
     return () => {
       onShow.remove();
@@ -217,9 +227,8 @@ export default function MuftiChatScreen() {
   }, [scrollToBottom]);
 
   const headerOffset = insets.top + 56;
-  const composerBottomPad = keyboardVisible
-    ? Spacing.sm
-    : Math.max(insets.bottom, Spacing.sm);
+  const composerBottomPad =
+    keyboardHeight > 0 ? Spacing.sm : Math.max(insets.bottom, Spacing.sm);
 
   const handleSend = useCallback(async () => {
     const text = input.trim();
@@ -365,7 +374,8 @@ export default function MuftiChatScreen() {
             {
               color: theme.text,
               borderColor: theme.cardBorder,
-              backgroundColor: theme.background,
+              backgroundColor: theme.card,
+              opacity: 1,
             },
           ]}
           value={input}
@@ -376,7 +386,11 @@ export default function MuftiChatScreen() {
           multiline
           maxLength={4000}
           editable={!isStreaming && isConfigured}
+          underlineColorAndroid="transparent"
+          selectionColor={theme.tint}
+          cursorColor={theme.tint}
           {...persianTextInputAlignProps}
+          {...(Platform.OS === 'android' ? { textAlignVertical: 'center' as const } : null)}
         />
       </RtlView>
     </>
@@ -412,7 +426,9 @@ export default function MuftiChatScreen() {
             {chatBody}
           </KeyboardAvoidingView>
         ) : (
-          <View style={styles.flex}>{chatBody}</View>
+          <View style={[styles.flex, keyboardHeight > 0 && { paddingBottom: keyboardHeight }]}>
+            {chatBody}
+          </View>
         )}
       </RtlView>
     </>
@@ -533,7 +549,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 10,
-    ...persianInputTextStyle,
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.body,
+    // Avoid writingDirection:'rtl' on Android TextInput — it can hide typed glyphs under forceRTL.
+    textAlign: 'right',
   },
   sendButton: {
     width: 44,
