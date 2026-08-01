@@ -103,8 +103,9 @@ export default function DuaRequestsScreen() {
       {/* Description */}
       <View style={[styles.description, { backgroundColor: theme.backgroundSecondary }]}>
         <CenteredText style={[styles.descriptionText, { color: theme.textSecondary }]}>
-          اینجا درخواست دعای خیر می‌فرستید. سیدعبدالباقی شیرزادی با دعا و ذکر شاه نقشبند
-          پاسخ می‌دهد — نه مثل چت‌بات فوری؛ معمولاً بین حدود ۱۰ تا ۶۰ دقیقه.
+          این بخش جهت دریافت دعای خیر، راهنمایی شرعی و نصیحت دینی ایجاد شده است.
+          درخواست‌ها مستقیماً توسط سیدعبدالباقی شیرزادی بررسی می‌گردد و در موارد خاص،
+          با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
         </CenteredText>
       </View>
 

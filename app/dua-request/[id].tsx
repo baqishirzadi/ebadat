@@ -203,7 +203,7 @@ export default function DuaRequestDetailScreen() {
             <View style={styles.cardHeader}>
               <MaterialIcons name="check-circle" size={20} color={statusInfo.color} />
               <CenteredText style={[styles.cardTitle, { color: theme.text }]}>
-              پاسخ سیدعبدالباقی
+              پاسخ
             </CenteredText>
             </View>
             <CenteredText style={[styles.responseText, { color: theme.text }]}>
@@ -239,8 +239,7 @@ export default function DuaRequestDetailScreen() {
           <View style={[styles.infoCard, { backgroundColor: theme.backgroundSecondary }]}>
             <MaterialIcons name="schedule" size={24} color={theme.tint} />
             <CenteredText style={[styles.infoText, { color: theme.textSecondary }]}>
-              درخواست ثبت شد. سیدعبدالباقی به‌زودی با دعا و ذکر پاسخ می‌دهد؛ معمولاً بین حدود ۱۰ تا ۶۰ دقیقه.
-              با اعلان هم خبرتان می‌کنیم.
+              درخواست شما در حال بررسی است. پاسخ شما از طریق اعلان اطلاع‌رسانی خواهد شد.
             </CenteredText>
           </View>
         )}

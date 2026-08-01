@@ -124,7 +124,7 @@ async function sendDuaExpoPush(
       body: JSON.stringify({
         to: deviceToken,
         title: "پاسخ به درخواست شما",
-        body: "پاسخ سیدعبدالباقی آماده است. برای مشاهده اینجا را بزنید.",
+        body: "پاسخ به درخواست شما آماده است. برای مشاهده پاسخ، اینجا را بزنید.",
         sound: "default",
         data: {
           type: "dua_response",

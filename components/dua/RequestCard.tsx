@@ -91,11 +91,6 @@ export function RequestCard({
         <CenteredText style={[styles.date, { color: theme.textSecondary }]}>
           {formatDate(request.createdAt)}
         </CenteredText>
-        {request.status === 'pending' && (
-          <CenteredText style={[styles.pendingHint, { color: theme.textSecondary }]}>
-            در انتظار پاسخ سیدعبدالباقی
-          </CenteredText>
-        )}
         {request.status === 'answered' && (
           <View style={styles.answeredIndicator}>
             <MaterialIcons name="check-circle" size={16} color="#10B981" />
@@ -168,10 +163,6 @@ const styles = StyleSheet.create({
   answeredText: {
     fontSize: Typography.ui.caption,
     color: '#10B981',
-    fontFamily: 'Vazirmatn',
-  },
-  pendingHint: {
-    fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
   },
   unreadDot: {
