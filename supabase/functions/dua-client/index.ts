@@ -45,9 +45,19 @@ serve(async (req) => {
         return jsonResponse({ error: "Invalid request payload" }, 400);
       }
 
+      // Human-like delay: publish answer after a uniform random 10–60 minutes
+      const delayMinutes = 10 + Math.floor(Math.random() * 51);
+      const scheduledAnswerAt = new Date(Date.now() + delayMinutes * 60 * 1000).toISOString();
+
+      const insertPayload = {
+        ...request,
+        status: request.status || "pending",
+        scheduled_answer_at: scheduledAnswerAt,
+      };
+
       const { data, error } = await supabase
         .from("dua_requests")
-        .insert(request)
+        .insert(insertPayload)
         .select()
         .single();
 
@@ -56,7 +66,7 @@ serve(async (req) => {
         return jsonResponse({ error: error.message || "Insert failed" }, 500);
       }
 
-      return jsonResponse({ request: data });
+      return jsonResponse({ request: data, scheduled_answer_at: scheduledAnswerAt });
     }
 
     if (action === "list") {

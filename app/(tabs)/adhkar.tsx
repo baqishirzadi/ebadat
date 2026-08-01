@@ -8,6 +8,7 @@ import { View, StyleSheet, ScrollView, Pressable, Text } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
+import { useDua } from '@/context/DuaContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import adhkarData from '@/data/adhkar.json';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
@@ -24,6 +25,7 @@ interface AdhkarCategory {
 
 export default function AdhkarScreen() {
   const { theme } = useApp();
+  const { unreadCount } = useDua();
   const router = useRouter();
   const categories = adhkarData.categories as AdhkarCategory[];
 
@@ -135,11 +137,16 @@ export default function AdhkarScreen() {
         <View style={styles.duaCardContent}>
           <View style={styles.duaIconContainer}>
             <Text style={styles.duaEmoji}>🤲</Text>
+            {unreadCount > 0 ? (
+              <View style={styles.duaUnreadBadge}>
+                <Text style={styles.duaUnreadText}>{unreadCount > 9 ? '۹+' : String(unreadCount)}</Text>
+              </View>
+            ) : null}
           </View>
           <View style={styles.duaCardInfo}>
             <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
             <Text style={styles.duaCardSubtitle}>
-              درخواست دعای خیر و راهنمایی شرعی؛ با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
+              درخواست دعای خیر؛ سیدعبدالباقی با دعا و ذکر پاسخ می‌دهد.
             </Text>
           </View>
         </View>
@@ -328,6 +335,24 @@ paddingRight: Spacing.sm,
     backgroundColor: 'rgba(255,255,255,0.22)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  duaUnreadBadge: {
+    position: 'absolute',
+    top: -4,
+    left: -4,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E11D48',
+  },
+  duaUnreadText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+    lineHeight: 14,
   },
   duaEmoji: {
     fontSize: 22,

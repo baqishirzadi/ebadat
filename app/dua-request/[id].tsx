@@ -23,7 +23,7 @@ import {
 
 export default function DuaRequestDetailScreen() {
   const { theme } = useApp();
-  const { getRequestById, refreshRequests } = useDua();
+  const { getRequestById, refreshRequests, markRequestSeen } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -46,12 +46,15 @@ export default function DuaRequestDetailScreen() {
     try {
       const data = await getRequestById(id);
       setRequest(data);
+      if (data?.status === 'answered') {
+        await markRequestSeen(data.id);
+      }
     } catch (error) {
       console.error('Failed to load request:', error);
     } finally {
       setLoading(false);
     }
-  }, [id, getRequestById]);
+  }, [id, getRequestById, markRequestSeen]);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -200,12 +203,21 @@ export default function DuaRequestDetailScreen() {
             <View style={styles.cardHeader}>
               <MaterialIcons name="check-circle" size={20} color={statusInfo.color} />
               <CenteredText style={[styles.cardTitle, { color: theme.text }]}>
-                پاسخ
-              </CenteredText>
+              پاسخ سیدعبدالباقی
+            </CenteredText>
             </View>
             <CenteredText style={[styles.responseText, { color: theme.text }]}>
               {request.response}
             </CenteredText>
+            {/0787506666|لنگر/.test(request.response) ? (
+              <View style={[styles.distressBox, { backgroundColor: theme.backgroundSecondary }]}>
+                <MaterialIcons name="phone-in-talk" size={18} color={theme.tint} />
+                <CenteredText style={[styles.distressText, { color: theme.textSecondary }]}>
+                  برای مشورت حضوری یا کمک در افکار منفی: لنگر خلیفه صاحب شیرزاد — کابل، تایمنی سابقه،
+                  سرک ۱۲، خانه ۲۱ — تماس ۰۷۸۷۵۰۶۶۶۶
+                </CenteredText>
+              </View>
+            ) : null}
             {request.reviewerName && (
               <View style={styles.reviewerInfo}>
                 <MaterialIcons name="person" size={16} color={theme.textSecondary} />
@@ -227,7 +239,8 @@ export default function DuaRequestDetailScreen() {
           <View style={[styles.infoCard, { backgroundColor: theme.backgroundSecondary }]}>
             <MaterialIcons name="schedule" size={24} color={theme.tint} />
             <CenteredText style={[styles.infoText, { color: theme.textSecondary }]}>
-              درخواست شما در حال بررسی است. پاسخ شما از طریق اعلان اطلاع‌رسانی خواهد شد.
+              درخواست ثبت شد. سیدعبدالباقی به‌زودی با دعا و ذکر پاسخ می‌دهد؛ معمولاً بین حدود ۱۰ تا ۶۰ دقیقه.
+              با اعلان هم خبرتان می‌کنیم.
             </CenteredText>
           </View>
         )}
@@ -360,6 +373,21 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     lineHeight: 24,
     marginBottom: Spacing.md,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+  },
+  distressBox: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.sm,
+  },
+  distressText: {
+    flex: 1,
+    fontSize: Typography.ui.caption,
+    lineHeight: 20,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
   },

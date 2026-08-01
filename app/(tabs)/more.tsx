@@ -19,6 +19,7 @@ import {
 } from '@/components/more';
 import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { useDua } from '@/context/DuaContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { useStats } from '@/context/StatsContext';
 import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
@@ -73,6 +74,7 @@ export default function MoreScreen() {
   const { theme, themeMode } = useApp();
   const { dashboardSnapshot } = useStats();
   const { state: prayer } = usePrayer();
+  const { unreadCount } = useDua();
   const router = useRouter();
   const [showDeferredSections, setShowDeferredSections] = useState(false);
   const [upcomingCards, setUpcomingCards] = useState<UpcomingDayCard[]>([]);
@@ -413,6 +415,7 @@ export default function MoreScreen() {
                 icon={action.icon}
                 label={action.label}
                 subtitle={action.subtitle}
+                badgeCount={action.route === '/dua-request' ? unreadCount : 0}
                 testID={action.route === '/adhan-settings' ? 'ios-open-adhan-settings-secondary' : undefined}
                 onPress={() => router.push(action.route as any)}
               />

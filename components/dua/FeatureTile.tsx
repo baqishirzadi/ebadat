@@ -8,11 +8,13 @@ import { View, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
+import { useDua } from '@/context/DuaContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
 
 export function DuaFeatureTile() {
   const { theme } = useApp();
+  const { unreadCount } = useDua();
   const router = useRouter();
 
   return (
@@ -30,6 +32,13 @@ export function DuaFeatureTile() {
       {/* Icon */}
       <View style={[styles.iconContainer, { backgroundColor: `${theme.tint}20` }]}>
         <MaterialIcons name="favorite" size={32} color={theme.tint} />
+        {unreadCount > 0 ? (
+          <View style={styles.badge}>
+            <CenteredText style={styles.badgeText}>
+              {unreadCount > 9 ? '۹+' : String(unreadCount)}
+            </CenteredText>
+          </View>
+        ) : null}
       </View>
 
       {/* Content */}
@@ -38,7 +47,7 @@ export function DuaFeatureTile() {
           دعای خیر و مشورت شرعی
         </CenteredText>
         <CenteredText style={[styles.description, { color: theme.textSecondary }]} numberOfLines={2}>
-          درخواست دعای خیر و راهنمایی شرعی؛ با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
+          درخواست دعای خیر؛ سیدعبدالباقی با دعا و ذکر پاسخ می‌دهد.
         </CenteredText>
       </View>
 
@@ -67,6 +76,24 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  badge: {
+    position: 'absolute',
+    top: -2,
+    left: -2,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E11D48',
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontFamily: 'Vazirmatn-Bold',
+    lineHeight: 14,
   },
   content: {
     flex: 1,

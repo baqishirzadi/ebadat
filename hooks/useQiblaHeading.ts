@@ -10,6 +10,12 @@ const MAX_JUMP = 65;
 const ALIGNMENT_THRESHOLD = 4;
 const ANIM_MS = 180;
 
+/**
+ * Android expo-location heading reads ~10° high vs iOS (Kaaba appears left of truth).
+ * Subtracting degrees from heading rotates the dial so the marker moves right to match iPhone.
+ */
+const ANDROID_HEADING_CORRECTION_DEG = Platform.OS === 'android' ? -10 : 0;
+
 export type QiblaHeadingMode = 'location' | 'magnetometer' | 'none';
 export type QiblaAccuracyLevel = 'high' | 'medium' | 'low';
 
@@ -41,15 +47,18 @@ function accuracyFromSample(source: QiblaHeadingMode, accuracy?: number): QiblaA
 
 /** Platform-correct magnetometer → compass heading (degrees, 0=north). */
 function magnetometerToHeading(x: number, y: number): number {
+  let heading: number;
   if (Platform.OS === 'ios') {
-    return normalize((Math.atan2(x, y) * 180) / Math.PI);
+    heading = normalize((Math.atan2(x, y) * 180) / Math.PI);
+  } else {
+    heading = normalize((Math.atan2(-x, y) * 180) / Math.PI);
   }
-  return normalize((Math.atan2(-x, y) * 180) / Math.PI);
+  return normalize(heading + ANDROID_HEADING_CORRECTION_DEG);
 }
 
 function pickLocationHeading(sample: Location.LocationHeadingObject): number {
   const raw = sample.trueHeading >= 0 ? sample.trueHeading : sample.magHeading;
-  return normalize(raw);
+  return normalize(raw + ANDROID_HEADING_CORRECTION_DEG);
 }
 
 export function useQiblaHeading(qiblaBearing: number, enabled: boolean) {

@@ -15,6 +15,7 @@ import { CitySelectorModal, AdhanHealthBanner } from '@/components/prayer';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { useDua } from '@/context/DuaContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
@@ -103,6 +104,7 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
 
 export default function NamazScreen() {
   const { theme } = useApp();
+  const { unreadCount } = useDua();
   const router = useRouter();
   const { setCity, setCustomLocation } = usePrayer();
   const { 
@@ -417,11 +419,16 @@ export default function NamazScreen() {
           <View style={styles.duaCardContent}>
             <View style={styles.duaIconContainer}>
               <Text style={styles.duaEmoji}>🤲</Text>
+              {unreadCount > 0 ? (
+                <View style={styles.duaUnreadBadge}>
+                  <Text style={styles.duaUnreadText}>{unreadCount > 9 ? '۹+' : String(unreadCount)}</Text>
+                </View>
+              ) : null}
             </View>
             <View style={styles.duaCardInfo}>
               <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
               <Text style={styles.duaCardSubtitle}>
-                درخواست دعای خیر و راهنمایی شرعی؛ با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
+                درخواست دعای خیر؛ سیدعبدالباقی با دعا و ذکر پاسخ می‌دهد.
               </Text>
             </View>
           </View>
@@ -867,6 +874,24 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  duaUnreadBadge: {
+    position: 'absolute',
+    top: -4,
+    left: -4,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    paddingHorizontal: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#E11D48',
+  },
+  duaUnreadText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+    lineHeight: 14,
   },
   duaEmoji: {
     fontSize: 22,

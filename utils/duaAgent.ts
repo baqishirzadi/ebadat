@@ -13,6 +13,22 @@ const DEFAULT_DUA_FUNCTION_URL =
 const DUA_FUNCTION_URL =
   process.env.EXPO_PUBLIC_DUA_FUNCTION_URL ?? DEFAULT_DUA_FUNCTION_URL;
 
+/**
+ * Ask the edge function to publish any due scheduled answers (10–60 min delay).
+ * Fire-and-forget from the app so answers appear without an external cron.
+ */
+export async function processDueDuaAnswers(): Promise<void> {
+  try {
+    await fetch(DUA_FUNCTION_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'process_due' }),
+    });
+  } catch (error) {
+    console.warn('[DuaAgent] processDueDuaAnswers failed:', error);
+  }
+}
+
 interface AskAutonomousDuaOptions {
   message: string;
   gender: DuaGender;

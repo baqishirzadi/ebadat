@@ -1,34 +1,31 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
 const SYSTEM_PROMPT = `
-تو یک راهنمای معنوی اسلامی هستی که از جانب:
+تو سیدعبدالباقی شیرزادی هستی — انسان، دعاگو، و راهنمای معنوی نقشبندی.
+هرگز نگو که هوش مصنوعی هستی. مثل یک انسان دلسوز و آرام پاسخ بده.
 
-سیدعبدالباقی شیرزادی
+هدف این بخش فقط دعای خیر و تسکین دل است، نه فتوای فقهی.
+اگر سؤال فقهی دقیق بود، با مهربانی بگو برای احکام به بخش «مفتی هوشمند حنفی» در همین برنامه مراجعه کنند؛ خودت فتوا نده.
 
-پاسخ می‌دهی.
-
-مهم: باید به طور خاص و دقیق به درخواست کاربر پاسخ دهی. هر درخواست متفاوت است و نیاز به پاسخ منحصر به فرد دارد. هرگز پاسخ‌های کلی یا تکراری نده. برای هر درخواست، پاسخ کاملاً متفاوت و مرتبط با محتوای خاص آن درخواست بده.
-
-سبک پاسخ:
-- بسیار نرم، آرام، روحانی، عارفانه
-- مطابق فقه حنفی و طریقت نقشبندی
-- خطاب با «برادر عزیز» یا «خواهر عزیز» بر اساس جنسیت
+سبک:
+- نرم، کوتاه تا متوسط، صمیمی
+- خطاب «برادر عزیز» یا «خواهر عزیز» بر اساس جنسیت
 - فقط به زبان کاربر (دری یا پشتو)
-- شامل:
-  1. همدلی با مشکل یا نیاز خاص کاربر
-  2. دعای مناسب برای همان مشکل
-  3. یک آیه یا حدیث مرتبط با درخواست کاربر
-  4. توصیه لطیف عملی برای همان موضوع
-  5. ذکر خفی یا دعای مأثور نقشبندی (در صورت مناسب بودن)
-- ختم با:
-  برادرت دعاگو — سیدعبدالباقی شیرزادی
+- پاسخ هر درخواست باید مخصوص همان مشکل باشد؛ کلی‌گویی تکراری ممنوع
 
-ممنوع:
-- ذکر اینکه AI هستی
-- فتوا دادن
-- قطعیت فقهی
-- زبان غیر از زبان کاربر
-- پاسخ‌های کلی و تکراری
+ساختار پاسخ (حتماً):
+1) همدلی کوتاه با درد یا نیاز طرف
+2) دعای خیر کوتاه مخصوص همان موضوع
+3) ذکر شاه نقشبند به‌عنوان علاج اصلی — با روش ساده (چند بار، چه وقت، با حضور قلب)
+   برای هر مشکلی (قرض، اضطراب، غم، وسوسه، دل‌شکستگی، …) ذکر شاه نقشبند را بده تا دل آرام شود و گشایش بیاید
+4) یک توصیه عملی لطیف (بدون حکم فقهی سنگین)
+5) ختم با: برادرت دعاگو — سیدعبدالباقی شیرزادی
+
+اگر پیام نشان می‌دهد طرف بسیار ناراحت، ناامید، در بحران فکری، یا به‌شدت درمانده است، در انتهای پاسخ این راهنما را هم اضافه کن:
+
+«اگر خواستید حضوری مشورت کنید، رهایی از افکار منفی، یا کمک — لنگر خلیفه صاحب شیرزاد در کابل، واقع در تایمنی سابقه، سرک ۱۲ تیر شده از مسجد امام علی رض، خانه شماره ۲۱. تماس: 0787506666»
+
+اگر حال طرف نسبتاً آرام است، شماره و آدرس را بی‌دلیل ننویس.
 `;
 
 /**
@@ -76,6 +73,175 @@ function generateSpiritualApology(gender: string, language: string): string {
 نام شما در فهرست دعاهای ما ثبت است، و در صورت امکان، با فعال شدن مجدد سرویس، پاسخ برای شما ارسال خواهد شد.
 
 رحمت خدا بر شما — سیدعبدالباقی شیرزادی`;
+}
+
+function jsonResponse(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+async function sendDuaExpoPush(
+  supabaseUrl: string,
+  serviceRoleKey: string,
+  userId: string,
+  duaRequestId: string,
+): Promise<void> {
+  try {
+    const metaRes = await fetch(
+      `${supabaseUrl}/rest/v1/user_metadata?user_id=eq.${encodeURIComponent(userId)}&select=device_token,notification_enabled&limit=1`,
+      {
+        headers: {
+          apikey: serviceRoleKey,
+          Authorization: `Bearer ${serviceRoleKey}`,
+        },
+      },
+    );
+    const metaData = await metaRes.json().catch(() => []);
+    const metaRow = Array.isArray(metaData) ? metaData[0] : null;
+    const deviceToken: string | undefined = metaRow?.device_token;
+    const notificationEnabled = metaRow?.notification_enabled !== false;
+
+    if (!metaRes.ok || !deviceToken || !notificationEnabled) {
+      console.log(JSON.stringify({
+        level: "INFO",
+        component: "DuaAutonomous",
+        event: "push_skipped",
+        userId,
+        duaRequestId,
+        reason: !deviceToken ? "no_token" : "disabled_or_meta_error",
+      }));
+      return;
+    }
+
+    const pushRes = await fetch("https://exp.host/--/api/v2/push/send", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        to: deviceToken,
+        title: "پاسخ به درخواست شما",
+        body: "پاسخ سیدعبدالباقی آماده است. برای مشاهده اینجا را بزنید.",
+        sound: "default",
+        data: {
+          type: "dua_response",
+          requestId: duaRequestId,
+          userId,
+        },
+      }),
+    });
+
+    if (!pushRes.ok) {
+      const pushErr = await pushRes.text().catch(() => "");
+      console.error(JSON.stringify({
+        level: "ERROR",
+        component: "DuaAutonomous",
+        event: "expo_push_failed",
+        status: pushRes.status,
+        error: pushErr.substring(0, 500),
+      }));
+    } else {
+      console.log(JSON.stringify({
+        level: "INFO",
+        component: "DuaAutonomous",
+        event: "expo_push_sent",
+        userId,
+        duaRequestId,
+      }));
+    }
+  } catch (err) {
+    console.error(JSON.stringify({
+      level: "ERROR",
+      component: "DuaAutonomous",
+      event: "expo_push_exception",
+      error: err instanceof Error ? err.message : String(err),
+    }));
+  }
+}
+
+async function generateOpenAIReply(
+  openAIKey: string,
+  message: string,
+  gender: string,
+  language: string,
+): Promise<string> {
+  const userPrompt = `
+جنسیت: ${gender}
+زبان: ${language}
+درخواست کاربر:
+${message}
+
+به این درخواست خاص پاسخ بده: همدلی، دعای کوتاه، ذکر شاه نقشبند با روش ساده، و یک توصیه عملی.
+اگر حال طرف بسیار ناراحت یا درمانده است، راهنمای لنگر کابل و شماره 0787506666 را هم بیاور.
+`;
+
+  const openAIRes = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${openAIKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "gpt-5.2",
+      temperature: 0.85,
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: userPrompt },
+      ],
+      max_tokens: 600,
+    }),
+  });
+
+  if (!openAIRes.ok) {
+    const errText = await openAIRes.text().catch(() => "");
+    throw new Error(`OpenAI ${openAIRes.status}: ${errText.substring(0, 300)}`);
+  }
+
+  const openAIData = await openAIRes.json();
+  const reply = openAIData?.choices?.[0]?.message?.content?.trim();
+  if (!reply) {
+    throw new Error("Empty OpenAI reply");
+  }
+  return reply;
+}
+
+async function publishAnswer(
+  supabaseUrl: string,
+  serviceRoleKey: string,
+  duaRequestId: string,
+  userId: string,
+  reply: string,
+): Promise<void> {
+  const updateRes = await fetch(
+    `${supabaseUrl}/rest/v1/dua_requests?id=eq.${encodeURIComponent(duaRequestId)}`,
+    {
+      method: "PATCH",
+      headers: {
+        apikey: serviceRoleKey,
+        Authorization: `Bearer ${serviceRoleKey}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({
+        status: "answered",
+        response: reply,
+        reviewer_name: "سیدعبدالباقی شیرزادی",
+        answered_at: new Date().toISOString(),
+        ai_response: reply,
+        is_manual: false,
+      }),
+    },
+  );
+
+  if (!updateRes.ok) {
+    const errorText = await updateRes.text().catch(() => "");
+    throw new Error(`DB update failed: ${errorText.substring(0, 300)}`);
+  }
+
+  await sendDuaExpoPush(supabaseUrl, serviceRoleKey, userId, duaRequestId);
 }
 
 serve(async (req) => {
@@ -156,6 +322,69 @@ serve(async (req) => {
           headers: { "Content-Type": "application/json" }
         }
       );
+    }
+
+    // Process due scheduled answers (cron / app foreground ping)
+    if (requestBody?.action === "process_due") {
+      if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
+        return jsonResponse({ error: "Missing Supabase credentials" }, 500);
+      }
+
+      const nowIso = new Date().toISOString();
+      const dueRes = await fetch(
+        `${SUPABASE_URL}/rest/v1/dua_requests?status=eq.pending&scheduled_answer_at=lte.${encodeURIComponent(nowIso)}&order=scheduled_answer_at.asc&limit=5&select=id,user_id,message,gender`,
+        {
+          headers: {
+            apikey: SERVICE_ROLE_KEY,
+            Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+          },
+        },
+      );
+
+      if (!dueRes.ok) {
+        const errText = await dueRes.text().catch(() => "");
+        return jsonResponse({ error: "Failed to fetch due requests", details: errText }, 500);
+      }
+
+      const dueRows = (await dueRes.json().catch(() => [])) as Array<{
+        id: string;
+        user_id: string;
+        message: string;
+        gender?: string;
+      }>;
+
+      const processed: string[] = [];
+      const failed: string[] = [];
+
+      for (const row of dueRows) {
+        try {
+          const gender = row.gender === "female" ? "female" : "male";
+          const reply = await generateOpenAIReply(
+            OPENAI_API_KEY,
+            row.message,
+            gender,
+            "fa",
+          );
+          await publishAnswer(SUPABASE_URL, SERVICE_ROLE_KEY, row.id, row.user_id, reply);
+          processed.push(row.id);
+        } catch (err) {
+          failed.push(row.id);
+          console.error(JSON.stringify({
+            level: "ERROR",
+            component: "DuaAutonomous",
+            event: "process_due_item_failed",
+            duaRequestId: row.id,
+            error: err instanceof Error ? err.message : String(err),
+          }));
+        }
+      }
+
+      return jsonResponse({
+        ok: true,
+        processed,
+        failed,
+        checkedAt: nowIso,
+      });
     }
 
     const { message, gender, language, request_id } = requestBody;
@@ -252,14 +481,14 @@ serve(async (req) => {
       );
     }
 
-    // Construct user prompt with strong emphasis on uniqueness and variation
     const userPrompt = `
 جنسیت: ${gender}
 زبان: ${language}
 درخواست کاربر:
 ${message}
 
-لطفاً به طور خاص و دقیق به این درخواست پاسخ بده. پاسخ باید کاملاً مرتبط با مشکل یا نیاز ذکر شده باشد و برای این درخواست خاص باشد. هرگز پاسخ تکراری یا کلی نده. از آیات، احادیث، و دعاهای مختلف استفاده کن تا پاسخ منحصر به فرد باشد.
+به این درخواست خاص پاسخ بده: همدلی، دعای کوتاه، ذکر شاه نقشبند با روش ساده، و یک توصیه عملی.
+اگر حال طرف بسیار ناراحت یا درمانده است، راهنمای لنگر کابل و شماره 0787506666 را هم بیاور.
 `;
 
     // Prepare OpenAI API request with gpt-5.2
@@ -582,56 +811,69 @@ ${message}
       } else {
         try {
           const dbUpdateStart = Date.now();
-          const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/dua_requests?id=eq.${userRequestId}`, {
-            method: "PATCH",
-            headers: {
-              "apikey": SERVICE_ROLE_KEY,
-              "Authorization": `Bearer ${SERVICE_ROLE_KEY}`,
-              "Content-Type": "application/json",
-              "Prefer": "return=minimal",
-            },
-            body: JSON.stringify({
-              status: "answered",
-              response: reply,
-              reviewer_name: "سیدعبدالباقی شیرزادی",
-              answered_at: new Date().toISOString(),
-              ai_response: reply,
-              is_manual: false,
-            }),
-          });
-
-          const dbUpdateTime = Date.now() - dbUpdateStart;
-
-          if (!updateRes.ok) {
-            const errorText = await updateRes.text().catch(() => "");
-            console.error(JSON.stringify({
-              level: "ERROR",
-              component: "DuaAutonomous",
-              event: "database_update_failed",
-              requestId,
-              userRequestId,
-              timestamp: new Date().toISOString(),
-              data: {
-                status: updateRes.status,
-                statusText: updateRes.statusText,
-                error: errorText.substring(0, 500),
-                updateTimeMs: dbUpdateTime,
-              }
-            }));
-            // Don't fail the request if DB update fails - the reply is still valid
-          } else {
-            console.log(JSON.stringify({
-              level: "INFO",
-              component: "DuaAutonomous",
-              event: "database_updated",
-              requestId,
-              userRequestId,
-              timestamp: new Date().toISOString(),
-              data: {
-                updateTimeMs: dbUpdateTime,
-              }
-            }));
+          // Resolve user_id for push
+          let ownerUserId: string | null = null;
+          try {
+            const ownerRes = await fetch(
+              `${SUPABASE_URL}/rest/v1/dua_requests?id=eq.${encodeURIComponent(userRequestId)}&select=user_id&limit=1`,
+              {
+                headers: {
+                  apikey: SERVICE_ROLE_KEY,
+                  Authorization: `Bearer ${SERVICE_ROLE_KEY}`,
+                },
+              },
+            );
+            const ownerData = await ownerRes.json().catch(() => []);
+            ownerUserId = Array.isArray(ownerData) ? ownerData[0]?.user_id ?? null : null;
+          } catch {
+            ownerUserId = null;
           }
+
+          if (ownerUserId) {
+            await publishAnswer(SUPABASE_URL, SERVICE_ROLE_KEY, userRequestId, ownerUserId, reply);
+          } else {
+            const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/dua_requests?id=eq.${userRequestId}`, {
+              method: "PATCH",
+              headers: {
+                "apikey": SERVICE_ROLE_KEY,
+                "Authorization": `Bearer ${SERVICE_ROLE_KEY}`,
+                "Content-Type": "application/json",
+                "Prefer": "return=minimal",
+              },
+              body: JSON.stringify({
+                status: "answered",
+                response: reply,
+                reviewer_name: "سیدعبدالباقی شیرزادی",
+                answered_at: new Date().toISOString(),
+                ai_response: reply,
+                is_manual: false,
+              }),
+            });
+            if (!updateRes.ok) {
+              const errorText = await updateRes.text().catch(() => "");
+              console.error(JSON.stringify({
+                level: "ERROR",
+                component: "DuaAutonomous",
+                event: "database_update_failed",
+                requestId,
+                userRequestId,
+                error: errorText.substring(0, 500),
+              }));
+            }
+          }
+
+          console.log(JSON.stringify({
+            level: "INFO",
+            component: "DuaAutonomous",
+            event: "database_updated",
+            requestId,
+            userRequestId,
+            timestamp: new Date().toISOString(),
+            data: {
+              updateTimeMs: Date.now() - dbUpdateStart,
+              pushed: !!ownerUserId,
+            }
+          }));
         } catch (dbError) {
           console.error(JSON.stringify({
             level: "ERROR",

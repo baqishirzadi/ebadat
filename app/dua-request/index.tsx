@@ -17,7 +17,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function DuaRequestsScreen() {
   const { theme } = useApp();
-  const { state, refreshRequests, syncPending } = useDua();
+  const { state, refreshRequests, syncPending, isRequestUnread } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
@@ -42,7 +42,9 @@ export default function DuaRequestsScreen() {
     setRefreshing(false);
   };
 
-  const renderRequest = ({ item }: { item: any }) => <RequestCard request={item} />;
+  const renderRequest = ({ item }: { item: any }) => (
+    <RequestCard request={item} unread={isRequestUnread(item.id)} />
+  );
 
   const renderEmpty = () => (
       <View style={styles.emptyContainer}>
@@ -101,9 +103,8 @@ export default function DuaRequestsScreen() {
       {/* Description */}
       <View style={[styles.description, { backgroundColor: theme.backgroundSecondary }]}>
         <CenteredText style={[styles.descriptionText, { color: theme.textSecondary }]}>
-          این بخش جهت دریافت دعای خیر، راهنمایی شرعی و نصیحت دینی ایجاد شده است.
-          درخواست‌ها مستقیماً توسط سیدعبدالباقی شیرزادی بررسی می‌گردد و در موارد خاص،
-          با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
+          اینجا درخواست دعای خیر می‌فرستید. سیدعبدالباقی شیرزادی با دعا و ذکر شاه نقشبند
+          پاسخ می‌دهد — نه مثل چت‌بات فوری؛ معمولاً بین حدود ۱۰ تا ۶۰ دقیقه.
         </CenteredText>
       </View>
 

@@ -3,7 +3,7 @@
  */
 
 import { MaterialIcons } from '@expo/vector-icons';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -99,6 +99,8 @@ interface StarterChipsProps {
 }
 
 function StarterChips({ theme, disabled, onSelect }: StarterChipsProps) {
+  const router = useRouter();
+
   return (
     <RtlView style={styles.emptyWrap}>
       <RtlView style={styles.chipsWrap}>
@@ -125,6 +127,14 @@ function StarterChips({ theme, disabled, onSelect }: StarterChipsProps) {
       <RtlText align="center" style={[styles.emptyDisclaimer, { color: theme.textSecondary }]}>
         سوال فقهی حنفی خود را بپرسید. احکام نهایی نیازمند مشورت با عالم مجرب است.
       </RtlText>
+      <Pressable
+        onPress={() => router.push('/dua-request' as never)}
+        style={styles.duaHintPress}
+      >
+        <RtlText align="center" style={[styles.duaHint, { color: theme.tint }]}>
+          برای دعای شخصی به بخش دعای خیر بروید
+        </RtlText>
+      </Pressable>
     </RtlView>
   );
 }
@@ -484,6 +494,16 @@ const styles = StyleSheet.create({
     ...persianCaptionText,
     lineHeight: 20,
     paddingHorizontal: Spacing.md,
+  },
+  duaHintPress: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+  },
+  duaHint: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.caption,
+    lineHeight: 20,
+    textDecorationLine: 'underline',
   },
   messageRow: {
     width: '100%',

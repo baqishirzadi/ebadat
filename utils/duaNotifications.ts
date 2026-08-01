@@ -261,12 +261,21 @@ export async function setupNotificationListener(
     return () => {};
   }
 
+  const openDuaRequest = async (requestId: string) => {
+    onNotificationReceived(String(requestId));
+    try {
+      const { router } = await import('expo-router');
+      router.push(`/dua-request/${requestId}` as never);
+    } catch (navError) {
+      console.warn('Failed to deep-link dua notification:', navError);
+    }
+  };
+
   // Listen for notification received (foreground)
   const receivedSubscription = Notifications.addNotificationReceivedListener((notification) => {
     const { type, requestId } = notification.request.content.data || {};
     if (type === 'dua_response' && requestId) {
       console.log('Dua response notification received:', requestId);
-      // requestId comes from notification data (string in our payload), but TS sees it as unknown
       onNotificationReceived(String(requestId));
     }
   });
@@ -276,9 +285,20 @@ export async function setupNotificationListener(
     const { type, requestId } = response.notification.request.content.data || {};
     if (type === 'dua_response' && requestId) {
       console.log('Dua response notification tapped:', requestId);
-      onNotificationReceived(String(requestId));
+      void openDuaRequest(String(requestId));
     }
   });
+
+  // Cold start: app opened from a dua notification
+  try {
+    const last = await Notifications.getLastNotificationResponseAsync();
+    const data = last?.notification?.request?.content?.data;
+    if (data?.type === 'dua_response' && data?.requestId) {
+      void openDuaRequest(String(data.requestId));
+    }
+  } catch {
+    // ignore
+  }
 
   return () => {
     receivedSubscription.remove();

@@ -18,6 +18,7 @@ interface RequestCardProps {
   onPress?: () => void;
   disableNavigation?: boolean;
   showArrow?: boolean;
+  unread?: boolean;
 }
 
 export function RequestCard({
@@ -25,6 +26,7 @@ export function RequestCard({
   onPress,
   disableNavigation,
   showArrow = true,
+  unread = false,
 }: RequestCardProps) {
   const { theme } = useApp();
   const router = useRouter();
@@ -55,7 +57,8 @@ export function RequestCard({
         styles.container,
         {
           backgroundColor: theme.card,
-          borderColor: theme.cardBorder,
+          borderColor: unread ? theme.tint : theme.cardBorder,
+          borderWidth: unread ? 2 : 1,
         },
         pressed && handlePress && styles.pressed,
       ]}
@@ -71,6 +74,9 @@ export function RequestCard({
           <CenteredText style={[styles.category, { color: theme.textSecondary }]}>
             {categoryName}
           </CenteredText>
+          {unread ? (
+            <View style={styles.unreadDot} />
+          ) : null}
         </View>
         <StatusBadge status={request.status} />
       </View>
@@ -85,10 +91,17 @@ export function RequestCard({
         <CenteredText style={[styles.date, { color: theme.textSecondary }]}>
           {formatDate(request.createdAt)}
         </CenteredText>
+        {request.status === 'pending' && (
+          <CenteredText style={[styles.pendingHint, { color: theme.textSecondary }]}>
+            در انتظار پاسخ سیدعبدالباقی
+          </CenteredText>
+        )}
         {request.status === 'answered' && (
           <View style={styles.answeredIndicator}>
             <MaterialIcons name="check-circle" size={16} color="#10B981" />
-            <CenteredText style={styles.answeredText}>پاسخ داده شده</CenteredText>
+            <CenteredText style={styles.answeredText}>
+              {unread ? 'پاسخ جدید' : 'پاسخ داده شده'}
+            </CenteredText>
           </View>
         )}
       </View>
@@ -156,6 +169,16 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     color: '#10B981',
     fontFamily: 'Vazirmatn',
+  },
+  pendingHint: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+  },
+  unreadDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#E11D48',
   },
   arrow: {
     position: 'absolute',

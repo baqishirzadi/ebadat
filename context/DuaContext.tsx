@@ -8,8 +8,23 @@ import { useStartupPhase } from '@/context/StartupPhaseContext';
 import * as duaService from '@/utils/duaService';
 import * as duaStorage from '@/utils/duaStorage';
 import * as duaSync from '@/utils/duaSync';
-import React, { createContext, ReactNode, useCallback, useContext, useEffect, useReducer } from 'react';
-import { InteractionManager } from 'react-native';
+import { processDueDuaAnswers } from '@/utils/duaAgent';
+import {
+  getSeenDuaRequestIds,
+  getUnreadDuaCount,
+  markDuaRequestSeen,
+} from '@/utils/duaUnread';
+import React, {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+} from 'react';
+import { AppState, InteractionManager } from 'react-native';
 
 interface DuaState {
   requests: DuaRequest[];
@@ -57,6 +72,9 @@ const initialState: DuaState = {
 
 interface DuaContextType {
   state: DuaState;
+  unreadCount: number;
+  isRequestUnread: (id: string) => boolean;
+  markRequestSeen: (id: string) => Promise<void>;
   submitRequest: (
     category: DuaCategory,
     message: string,
@@ -72,7 +90,13 @@ const DuaContext = createContext<DuaContextType | undefined>(undefined);
 
 export function DuaProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(duaReducer, initialState);
+  const [seenIds, setSeenIds] = useState<Set<string>>(new Set());
   const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
+
+  const reloadSeen = useCallback(async () => {
+    const ids = await getSeenDuaRequestIds();
+    setSeenIds(ids);
+  }, []);
 
   // Initialize user ID and load requests after adhan settles.
   useEffect(() => {
@@ -105,9 +129,12 @@ export function DuaProvider({ children }: { children: ReactNode }) {
 
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
+      // Publish any answers whose scheduled delay has elapsed
+      void processDueDuaAnswers();
       const userId = state.userId || (await duaStorage.getOrCreateUserId());
       const requests = await duaService.getUserRequests(userId);
       dispatch({ type: 'SET_REQUESTS', payload: requests });
+      await reloadSeen();
       dispatch({ type: 'SET_ERROR', payload: null });
     } catch (error) {
       console.error('Failed to refresh requests:', error);
@@ -120,7 +147,7 @@ export function DuaProvider({ children }: { children: ReactNode }) {
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
-  }, [state.userId]);
+  }, [state.userId, reloadSeen]);
 
   // Start auto-sync
   useEffect(() => {
@@ -137,6 +164,16 @@ export function DuaProvider({ children }: { children: ReactNode }) {
       unsubscribe();
     };
   }, [isAdhanSettled, refreshRequests]);
+
+  // Ping scheduler when app returns to foreground
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next === 'active') {
+        void processDueDuaAnswers().then(() => refreshRequests());
+      }
+    });
+    return () => sub.remove();
+  }, [refreshRequests]);
 
   // Setup notification listener
   useEffect(() => {
@@ -155,9 +192,8 @@ export function DuaProvider({ children }: { children: ReactNode }) {
           registerDeviceToken(state.userId).catch(console.error);
         }
 
-        // Setup listener
+        // Setup listener — refresh + deep-link handled inside notifications util
         cleanup = await setupNotificationListener((requestId: string) => {
-          // Refresh requests when notification is received
           refreshRequests();
         });
       } catch (error) {
@@ -178,6 +214,7 @@ export function DuaProvider({ children }: { children: ReactNode }) {
     try {
       const userId = await duaStorage.getOrCreateUserId();
       dispatch({ type: 'SET_USER_ID', payload: userId });
+      await reloadSeen();
       await refreshRequests();
     } catch (error) {
       console.error('Failed to initialize Dua context:', error);
@@ -202,6 +239,14 @@ export function DuaProvider({ children }: { children: ReactNode }) {
       try {
         dispatch({ type: 'SET_ERROR', payload: null });
         const userId = state.userId || (await duaStorage.getOrCreateUserId());
+
+        // Ensure push token is registered before/around submit
+        try {
+          const { registerDeviceToken } = await import('@/utils/duaNotifications');
+          await registerDeviceToken(userId);
+        } catch (tokenError) {
+          console.warn('Device token registration before submit failed:', tokenError);
+        }
 
         const request = await duaService.submitRequest({
           userId,
@@ -248,10 +293,36 @@ export function DuaProvider({ children }: { children: ReactNode }) {
     await refreshRequests();
   }, [refreshRequests]);
 
+  const markRequestSeen = useCallback(async (id: string) => {
+    await markDuaRequestSeen(id);
+    setSeenIds((prev) => {
+      if (prev.has(id)) return prev;
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+  }, []);
+
+  const isRequestUnread = useCallback(
+    (id: string) => {
+      const req = state.requests.find((r) => r.id === id);
+      return !!req && req.status === 'answered' && !seenIds.has(id);
+    },
+    [state.requests, seenIds]
+  );
+
+  const unreadCount = useMemo(
+    () => getUnreadDuaCount(state.requests, seenIds),
+    [state.requests, seenIds]
+  );
+
   return (
     <DuaContext.Provider
       value={{
         state,
+        unreadCount,
+        isRequestUnread,
+        markRequestSeen,
         submitRequest,
         refreshRequests,
         getRequestById,
