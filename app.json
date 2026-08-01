@@ -61,7 +61,7 @@
     },
     "android": {
       "package": "com.afghandev.ebadat",
-      "versionCode": 25,
+      "versionCode": 26,
       "adaptiveIcon": {
         "backgroundColor": "#1a4d3e",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
