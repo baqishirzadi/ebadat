@@ -1,0 +1,18 @@
+{
+  "measured_at": "2026-08-02T17:46:34+00:00",
+  "device": {
+    "serial": "R3CWC0ACVRT",
+    "model": "SM-S928N"
+  },
+  "package": "com.afghandev.ebadat",
+  "versionName": "1.0.15",
+  "versionCode": 26,
+  "app_source": "debug-local",
+  "checks": {
+    "home_tabs": "pass",
+    "qibla_opens": "pass",
+    "dua_list_who_answers_copy": "pass",
+    "mufti_header_dua_link": "pass"
+  },
+  "notes": "Dua copy includes سیدعبدالباقی شیرزادی who-answers text. Mufti shows «برای دعای شخصی به بخش دعای خیر بروید»."
+}

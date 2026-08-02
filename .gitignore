@@ -42,6 +42,12 @@ yarn-debug.*
 yarn-error.*
 *.log
 
+# Local release/share binaries and ad-hoc smoke screenshots
+*.aab
+*.apk
+smoke-*.png
+docs/perf/smoke-*.png
+
 # Supabase local temp metadata
 supabase/.temp/*
 !supabase/.temp/.gitkeep

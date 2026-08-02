@@ -1,0 +1,53 @@
+{
+  "interpretation": "store_approx_debug",
+  "note": "Store median is ~13% slower than debug; not a large regression. Store build is older (1.0.14/23) vs debug (1.0.15/26 with perf commit 40a5750). Home tab is the main store-side outlier.",
+  "debug": {
+    "version": "1.0.15/26",
+    "source": "debug-local",
+    "median_ms": 1448.0,
+    "p95_ms": 3053.1,
+    "by_tab": {
+      "قرآن": {
+        "median_ms": 1565.8,
+        "mean_ms": 1749.8,
+        "n": 10
+      },
+      "خانه": {
+        "median_ms": 1444.0,
+        "mean_ms": 1682.0,
+        "n": 17
+      },
+      "بیشتر": {
+        "median_ms": 1405.3,
+        "mean_ms": 1639.5,
+        "n": 10
+      }
+    }
+  },
+  "store": {
+    "version": "1.0.14/23",
+    "source": "play-store",
+    "installer": "com.android.vending",
+    "median_ms": 1634.0,
+    "p95_ms": 3746.9,
+    "by_tab": {
+      "قرآن": {
+        "median_ms": 1554.2,
+        "mean_ms": 1504.2,
+        "n": 10
+      },
+      "خانه": {
+        "median_ms": 2803.6,
+        "mean_ms": 2883.1,
+        "n": 20
+      },
+      "بیشتر": {
+        "median_ms": 1472.0,
+        "mean_ms": 1476.1,
+        "n": 10
+      }
+    }
+  },
+  "delta_median_ms": 186.0,
+  "delta_median_pct": 12.8
+}

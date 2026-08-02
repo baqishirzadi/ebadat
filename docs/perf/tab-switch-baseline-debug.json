@@ -1,0 +1,328 @@
+{
+  "measured_at": "2026-08-02T17:36:39.298276+00:00",
+  "device": {
+    "serial": "R3CWC0ACVRT",
+    "model": "SM-S928N",
+    "product": "e3qksx"
+  },
+  "package": "com.afghandev.ebadat",
+  "versionName": "1.0.15",
+  "versionCode": 26,
+  "app_source": "debug-local",
+  "debuggable": true,
+  "perf_commit_note": "40a5750 silent Dua refresh / throttled process_due",
+  "method": "screencap content-hash: tap then poll until content changes and stabilizes (excludes status/tab chrome)",
+  "rounds": 10,
+  "sequence_per_round": [
+    "قرآن",
+    "خانه",
+    "بیشتر",
+    "خانه"
+  ],
+  "sample_count": 40,
+  "ok_count": 37,
+  "median_ms": 1448.0,
+  "p95_ms": 3053.1,
+  "mean_ms": 1688.8,
+  "min_ms": 1117.9,
+  "max_ms": 3524.3,
+  "by_tab": {
+    "قرآن": {
+      "median_ms": 1565.8,
+      "mean_ms": 1749.8,
+      "n": 10
+    },
+    "خانه": {
+      "median_ms": 1444.0,
+      "mean_ms": 1682.0,
+      "n": 17
+    },
+    "بیشتر": {
+      "median_ms": 1405.3,
+      "mean_ms": 1639.5,
+      "n": 10
+    }
+  },
+  "samples": [
+    {
+      "round": 1,
+      "to_tab": "قرآن",
+      "ms": 1117.9,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 1,
+      "to_tab": "خانه",
+      "ms": 1142.4,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 1,
+      "to_tab": "بیشتر",
+      "ms": 1743.8,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 1,
+      "to_tab": "خانه",
+      "ms": 3099.1,
+      "ok": false,
+      "content_changed": true
+    },
+    {
+      "round": 2,
+      "to_tab": "قرآن",
+      "ms": 2638.6,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 2,
+      "to_tab": "خانه",
+      "ms": 3401.8,
+      "ok": false,
+      "content_changed": true
+    },
+    {
+      "round": 2,
+      "to_tab": "بیشتر",
+      "ms": 1914.4,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 2,
+      "to_tab": "خانه",
+      "ms": 3006.2,
+      "ok": false,
+      "content_changed": true
+    },
+    {
+      "round": 3,
+      "to_tab": "قرآن",
+      "ms": 2914.1,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 3,
+      "to_tab": "خانه",
+      "ms": 3524.3,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 3,
+      "to_tab": "بیشتر",
+      "ms": 2997.1,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 3,
+      "to_tab": "خانه",
+      "ms": 1447.2,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 4,
+      "to_tab": "قرآن",
+      "ms": 1574.0,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 4,
+      "to_tab": "خانه",
+      "ms": 1439.6,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 4,
+      "to_tab": "بیشتر",
+      "ms": 1443.2,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 4,
+      "to_tab": "خانه",
+      "ms": 1416.0,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 5,
+      "to_tab": "قرآن",
+      "ms": 1572.6,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 5,
+      "to_tab": "خانه",
+      "ms": 1444.0,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 5,
+      "to_tab": "بیشتر",
+      "ms": 1387.5,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 5,
+      "to_tab": "خانه",
+      "ms": 1438.9,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 6,
+      "to_tab": "قرآن",
+      "ms": 1567.4,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 6,
+      "to_tab": "خانه",
+      "ms": 3277.0,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 6,
+      "to_tab": "بیشتر",
+      "ms": 1409.6,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 6,
+      "to_tab": "خانه",
+      "ms": 2037.5,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 7,
+      "to_tab": "قرآن",
+      "ms": 1448.0,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 7,
+      "to_tab": "خانه",
+      "ms": 1270.5,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 7,
+      "to_tab": "بیشتر",
+      "ms": 1381.7,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 7,
+      "to_tab": "خانه",
+      "ms": 1414.7,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 8,
+      "to_tab": "قرآن",
+      "ms": 1545.2,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 8,
+      "to_tab": "خانه",
+      "ms": 1448.7,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 8,
+      "to_tab": "بیشتر",
+      "ms": 1334.8,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 8,
+      "to_tab": "خانه",
+      "ms": 1441.1,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 9,
+      "to_tab": "قرآن",
+      "ms": 1556.5,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 9,
+      "to_tab": "خانه",
+      "ms": 1468.3,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 9,
+      "to_tab": "بیشتر",
+      "ms": 1381.4,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 9,
+      "to_tab": "خانه",
+      "ms": 1441.7,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 10,
+      "to_tab": "قرآن",
+      "ms": 1564.1,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 10,
+      "to_tab": "خانه",
+      "ms": 1458.8,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 10,
+      "to_tab": "بیشتر",
+      "ms": 1401.1,
+      "ok": true,
+      "content_changed": true
+    },
+    {
+      "round": 10,
+      "to_tab": "خانه",
+      "ms": 1482.7,
+      "ok": true,
+      "content_changed": true
+    }
+  ]
+}
