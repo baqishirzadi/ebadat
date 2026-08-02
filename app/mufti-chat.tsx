@@ -422,14 +422,6 @@ export default function MuftiChatScreen() {
             ) : null
           }
         />
-        <Pressable
-          onPress={() => router.push('/dua-request' as never)}
-          style={[styles.duaHeaderHint, { backgroundColor: theme.backgroundSecondary }]}
-        >
-          <RtlText align="center" style={[styles.duaHeaderHintText, { color: theme.tint }]}>
-            برای دعای شخصی به بخش دعای خیر بروید
-          </RtlText>
-        </Pressable>
 
         {/*
           Android already uses windowSoftInputMode=adjustResize. Wrapping with
@@ -509,18 +501,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
   },
   duaHint: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.caption,
-    lineHeight: 20,
-    textDecorationLine: 'underline',
-  },
-  duaHeaderHint: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(0,0,0,0.08)',
-  },
-  duaHeaderHintText: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
     lineHeight: 20,

@@ -188,10 +188,6 @@ struct PrayerTimesWidgetView_Previews: PreviewProvider {
     Group {
       PrayerTimesWidgetView(entry: PrayerTimesWidgetEntry(date: Date(), snapshot: WidgetShared.loadSnapshot()))
         .previewContext(WidgetPreviewContext(family: .systemMedium))
-      PrayerTimesWidgetView(entry: PrayerTimesWidgetEntry(date: Date(), snapshot: WidgetShared.loadSnapshot()))
-        .previewContext(WidgetPreviewContext(family: .accessoryRectangular))
-      PrayerTimesWidgetView(entry: PrayerTimesWidgetEntry(date: Date(), snapshot: WidgetShared.loadSnapshot()))
-        .previewContext(WidgetPreviewContext(family: .accessoryCircular))
     }
   }
 }

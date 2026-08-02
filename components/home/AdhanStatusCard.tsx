@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet } from 'react-native';
 
 import {
   AdhanHealthStatusChip,
@@ -67,7 +67,9 @@ export function AdhanStatusCard() {
 
   return (
     <Pressable
-      onPress={() => router.push('/adhan-health' as never)}
+      onPress={() =>
+        router.push((Platform.OS === 'ios' ? '/adhan-settings' : '/adhan-health') as never)
+      }
       accessibilityRole="button"
       accessibilityLabel="وضعیت اذان"
       style={[styles.card, { backgroundColor: theme.card, borderColor: accent }]}

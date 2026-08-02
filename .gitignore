@@ -60,3 +60,5 @@ supabase/.temp/*
 
 expo-env.d.ts
 # @end expo-cli
+
+.tmp-verify/

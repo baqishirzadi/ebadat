@@ -4,7 +4,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Text, Dimensions, Linking, Pressable } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Linking, Pressable, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
 import Animated, {
@@ -20,6 +20,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Spacing } from '@/constants/theme';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const BRAND_MARK = require('@/assets/images/splash-icon.png');
+const BRAND_MARK_SIZE = Math.min(128, Math.round(SCREEN_WIDTH * 0.28));
 
 const PHRASES = [
   {
@@ -154,6 +156,12 @@ export function SpiritualSplash({
       {screenPhase === 'greeting' ? (
         <>
           <View style={styles.appNameSection}>
+            <Image
+              source={BRAND_MARK}
+              style={styles.brandMark}
+              resizeMode="contain"
+              accessibilityIgnoresInvertColors
+            />
             <Text style={styles.appName}>عبادت</Text>
             <Text style={styles.appSubtitle}>قرآن کریم و اوقات نماز</Text>
           </View>
@@ -190,6 +198,12 @@ export function SpiritualSplash({
         </>
       ) : (
         <View style={styles.loadingSection}>
+          <Image
+            source={BRAND_MARK}
+            style={styles.brandMark}
+            resizeMode="contain"
+            accessibilityIgnoresInvertColors
+          />
           <Text style={styles.appName}>عبادت</Text>
           <Animated.View style={[styles.loadingRing, ringStyle]} />
           <CenteredText style={styles.loadingText}>در حال بارگذاری...</CenteredText>
@@ -309,6 +323,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     marginBottom: 12,
     flexShrink: 0,
+  },
+  brandMark: {
+    width: BRAND_MARK_SIZE,
+    height: BRAND_MARK_SIZE,
+    marginBottom: 10,
+    borderRadius: 24,
   },
   appName: {
     fontSize: 36,

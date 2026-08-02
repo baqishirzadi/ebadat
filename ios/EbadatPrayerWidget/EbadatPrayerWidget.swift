@@ -17,7 +17,15 @@ struct EbadatPrayerWidget: Widget {
     }
     .configurationDisplayName("اوقات نماز")
     .description("تاریخ امروز و اوقات نماز")
-    .supportedFamilies([.systemMedium, .accessoryRectangular, .accessoryCircular])
+    .supportedFamilies(Self.supportedFamilies)
     .contentMarginsDisabled()
+  }
+
+  private static var supportedFamilies: [WidgetFamily] {
+    var families: [WidgetFamily] = [.systemMedium]
+    if #available(iOSApplicationExtension 16.0, *) {
+      families.append(contentsOf: [.accessoryRectangular, .accessoryCircular])
+    }
+    return families
   }
 }
