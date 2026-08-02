@@ -16,17 +16,38 @@ const DUA_FUNCTION_URL =
 /**
  * Ask the edge function to publish any due scheduled answers (10–60 min delay).
  * Fire-and-forget from the app so answers appear without an external cron.
+ * Throttled so tab switches / sync loops do not spam the network.
  */
-export async function processDueDuaAnswers(): Promise<void> {
-  try {
-    await fetch(DUA_FUNCTION_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'process_due' }),
-    });
-  } catch (error) {
-    console.warn('[DuaAgent] processDueDuaAnswers failed:', error);
+const PROCESS_DUE_MIN_INTERVAL_MS = 3 * 60 * 1000;
+let lastProcessDueAt = 0;
+let processDueInFlight: Promise<void> | null = null;
+
+export async function processDueDuaAnswers(options?: { force?: boolean }): Promise<void> {
+  const force = options?.force === true;
+  const now = Date.now();
+  if (!force && now - lastProcessDueAt < PROCESS_DUE_MIN_INTERVAL_MS) {
+    return;
   }
+  if (processDueInFlight) {
+    return processDueInFlight;
+  }
+
+  lastProcessDueAt = now;
+  processDueInFlight = (async () => {
+    try {
+      await fetch(DUA_FUNCTION_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'process_due' }),
+      });
+    } catch (error) {
+      console.warn('[DuaAgent] processDueDuaAnswers failed:', error);
+    } finally {
+      processDueInFlight = null;
+    }
+  })();
+
+  return processDueInFlight;
 }
 
 interface AskAutonomousDuaOptions {

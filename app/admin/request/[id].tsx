@@ -23,7 +23,8 @@ import { DuaRequest, DUA_CATEGORIES, GENDER_INFO, UserGender } from '@/types/dua
 import { fetchAdminRequestById, updateAdminResponse } from '@/utils/duaAdmin';
 import CenteredText from '@/components/CenteredText';
 import { StatusBadge } from '@/components/dua/StatusBadge';
-import { buildDuaResponse, detectLanguage, ensureSignature } from '@/utils/duaAdvisor';
+import { detectLanguage, ensureSignature } from '@/utils/duaAdvisor';
+import { fetchHanafiDuaSuggestion } from '@/utils/hanafiDuaSuggestion';
 
 export default function AdminRequestResponseScreen() {
   const { theme } = useApp();
@@ -43,6 +44,7 @@ export default function AdminRequestResponseScreen() {
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
 
   useEffect(() => {
     loadRequest();
@@ -65,6 +67,28 @@ export default function AdminRequestResponseScreen() {
       Alert.alert('خطا', 'در بارگذاری درخواست خطایی رخ داد');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSuggestResponse = async () => {
+    if (!request) return;
+    setSuggesting(true);
+    try {
+      const draft = await fetchHanafiDuaSuggestion(
+        request.message,
+        (request.gender || 'male') as UserGender,
+      );
+      setResponse(draft);
+    } catch (error) {
+      console.error('Failed to fetch Hanafi dua suggestion:', error);
+      Alert.alert(
+        'خطا',
+        error instanceof Error && error.message
+          ? error.message
+          : 'دریافت پاسخ پیشنهادی ممکن نشد. دوباره تلاش کنید.',
+      );
+    } finally {
+      setSuggesting(false);
     }
   };
 
@@ -222,23 +246,22 @@ export default function AdminRequestResponseScreen() {
           </CenteredText>
           <View style={styles.actionRow}>
             <Pressable
-              onPress={() => {
-                const draft = buildDuaResponse({
-                  message: request.message,
-                  category: request.category,
-                  gender: request.gender || 'male',
-                });
-                setResponse(draft);
-              }}
+              onPress={handleSuggestResponse}
+              disabled={suggesting || !request}
               style={({ pressed }) => [
                 styles.actionButton,
                 { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder },
                 pressed && styles.buttonPressed,
+                (suggesting || !request) && { opacity: 0.6 },
               ]}
             >
-              <MaterialIcons name="auto-awesome" size={18} color={theme.tint} />
+              {suggesting ? (
+                <ActivityIndicator size="small" color={theme.tint} />
+              ) : (
+                <MaterialIcons name="auto-awesome" size={18} color={theme.tint} />
+              )}
               <CenteredText style={[styles.actionText, { color: theme.text }]}>
-                پاسخ پیشنهادی
+                {suggesting ? 'در حال پیشنهاد…' : 'پاسخ پیشنهادی'}
               </CenteredText>
             </Pressable>
             <Pressable
