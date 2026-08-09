@@ -75,3 +75,9 @@ await BackgroundTask.triggerTaskWorkerForTestingAsync();
 ```
 
 **Expected:** schedule sync runs or pending flag stored for next foreground open.
+
+## 11. Denied notification settings routing
+
+1. Deny notifications during onboarding, open Home, and tap the Adhan status card.
+2. **Expected on a physical iOS 15.4+ device:** Apple Settings opens this app's Notifications page with **Allow Notifications** visible.
+3. **Simulator note:** iOS 26.3 Simulator may open the Settings root even when the app uses Apple's public app-specific notification URL. Do not replace the public API with private `app-prefs` URLs; use the in-app recovery instructions if the OS reports that the URL could not be opened.

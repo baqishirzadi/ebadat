@@ -223,24 +223,26 @@ export async function openExactAlarmSettings(): Promise<boolean> {
   return false;
 }
 
-export async function openNotificationSettings(): Promise<void> {
+export async function openNotificationSettings(): Promise<boolean> {
   if (Platform.OS === 'ios') {
     const widgetModule = (NativeModules as {
       WidgetDataModule?: { openAppNotificationSettings?: () => Promise<boolean> };
     }).WidgetDataModule;
 
     try {
-      await widgetModule?.openAppNotificationSettings?.();
+      return Boolean(await widgetModule?.openAppNotificationSettings?.());
     } catch {
       // Never throw — settings deep-link failures must not crash the app.
+      return false;
     }
-    return;
   }
 
   try {
     await Linking.openSettings();
+    return true;
   } catch {
     // Never throw — settings deep-link failures must not crash the app.
+    return false;
   }
 }
 

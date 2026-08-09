@@ -50,6 +50,7 @@
     "verify:qibla-math": "node scripts/verify-qibla-math.js",
     "verify:qibla-heading-lifecycle": "node scripts/verify-qibla-heading-lifecycle.js",
     "verify:ios-app-icon": "node scripts/verify-ios-app-icon.js",
+    "verify:ios-notification-settings": "node scripts/verify-ios-notification-settings.js",
     "verify:ios-adhan": "cat docs/ios-adhan-verification.md",
     "build:ios:production": "eas build --platform ios --profile production --non-interactive",
     "submit:ios": "eas submit --platform ios --profile production --latest --non-interactive"

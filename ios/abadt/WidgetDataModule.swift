@@ -63,6 +63,11 @@ class WidgetDataModule: NSObject {
         return
       }
 
+      guard UIApplication.shared.canOpenURL(url) else {
+        resolve(false)
+        return
+      }
+
       UIApplication.shared.open(url, options: [:]) { success in
         resolve(success)
       }

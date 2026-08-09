@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet } from 'react-native';
+import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet } from 'react-native';
 
 import {
   AdhanHealthStatusChip,
@@ -66,9 +66,16 @@ export function AdhanStatusCard() {
     }, [refresh]),
   );
 
-  const handlePress = useCallback(() => {
+  const handlePress = useCallback(async () => {
     if (Platform.OS === 'ios' && !notificationsEnabled) {
-      void openNotificationSettings();
+      const opened = await openNotificationSettings();
+      if (!opened) {
+        Alert.alert(
+          'دسترسی اعلان‌ها',
+          'برای فعال‌کردن اعلان‌های اذان، به Settings → Apps → Ebadat → Notifications بروید و Allow Notifications را روشن کنید.',
+          [{ text: 'باشه' }],
+        );
+      }
       return;
     }
     router.push((Platform.OS === 'ios' ? '/adhan-settings' : '/adhan-health') as never);
