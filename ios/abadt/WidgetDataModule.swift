@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import WidgetKit
 
 @objc(WidgetDataModule)
@@ -41,5 +42,30 @@ class WidgetDataModule: NSObject {
       WidgetCenter.shared.reloadTimelines(ofKind: WidgetDataModule.widgetKind)
     }
     resolve(true)
+  }
+
+  /// Opens this app's Notifications settings page (Allow Notifications toggle).
+  @objc
+  func openAppNotificationSettings(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+    DispatchQueue.main.async {
+      let settingsURLString: String
+      if #available(iOS 16.0, *) {
+        settingsURLString = UIApplication.openNotificationSettingsURLString
+      } else if #available(iOS 15.4, *) {
+        settingsURLString = UIApplicationOpenNotificationSettingsURLString
+      } else {
+        resolve(false)
+        return
+      }
+
+      guard let url = URL(string: settingsURLString) else {
+        resolve(false)
+        return
+      }
+
+      UIApplication.shared.open(url, options: [:]) { success in
+        resolve(success)
+      }
+    }
   }
 }

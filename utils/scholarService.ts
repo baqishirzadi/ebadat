@@ -9,6 +9,14 @@ import { Scholar } from '@/types/articles';
 
 const ENABLE_SCHOLARS_REMOTE = false;
 
+type LocalScholarSeed = {
+  id: string;
+  email: string;
+  fullName: string;
+  bio: string;
+  verified: boolean;
+};
+
 export function isScholarsRemoteEnabled(): boolean {
   return ENABLE_SCHOLARS_REMOTE && isSupabaseConfigured();
 }
@@ -53,7 +61,7 @@ export async function getScholarById(scholarId: string): Promise<Scholar | null>
 
   // Fallback to local JSON file
   const scholars = loadScholarsFromLocal();
-  return scholars.find(s => s.id === scholarId) || null;
+  return scholars.find((scholar) => scholar.id === scholarId) || null;
 }
 
 /**
@@ -62,8 +70,9 @@ export async function getScholarById(scholarId: string): Promise<Scholar | null>
 function loadScholarsFromLocal(): Scholar[] {
   try {
     const now = new Date();
-    const scholars: Scholar[] = require('@/data/articles-seed.json').scholars
-      .filter(s => s.verified)
+    const seed = require('@/data/articles-seed.json') as { scholars: LocalScholarSeed[] };
+    const scholars: Scholar[] = seed.scholars
+      .filter((scholar) => scholar.verified)
       .map((scholarData) => ({
         id: scholarData.id,
         email: scholarData.email,
@@ -74,7 +83,7 @@ function loadScholarsFromLocal(): Scholar[] {
         role: 'scholar' as const,
         createdAt: now,
       }))
-      .sort((a, b) => a.fullName.localeCompare(b.fullName));
+      .sort((first, second) => first.fullName.localeCompare(second.fullName));
 
     console.log(`[Scholars] Loaded ${scholars.length} scholars from local JSON file`);
     return scholars;

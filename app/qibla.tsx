@@ -46,7 +46,6 @@ export default function QiblaScreen() {
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
   const [isResolvingLocation, setIsResolvingLocation] = useState(false);
   const [isPreparing, setIsPreparing] = useState(false);
-  const [headingPermissionDenied, setHeadingPermissionDenied] = useState(false);
   const [compassActive, setCompassActive] = useState(false);
   const [locationResolveStatus, setLocationResolveStatus] = useState<LocationResolveStatus>(() =>
     state.settings.selectedCity ? 'resolved' : 'idle',
@@ -70,6 +69,7 @@ export default function QiblaScreen() {
     showCalibration,
     sensorStatus,
     isDegraded,
+    isLocationPermissionDenied,
   } = useQiblaHeading(qiblaDirection, compassActive);
 
   const hasLiveCompass = sensorStatus !== 'unavailable' && sensorStatus !== 'loading';
@@ -323,7 +323,7 @@ export default function QiblaScreen() {
         </RtlView>
       )}
 
-      {headingPermissionDenied && (
+      {isLocationPermissionDenied && (
         <Pressable
           testID="qibla-heading-permission-banner"
           onPress={() => Linking.openSettings().catch(() => {})}
@@ -359,7 +359,7 @@ export default function QiblaScreen() {
         {distanceLabel} کیلومتر تا کعبه
       </CenteredText>
 
-      <View style={styles.compassContainer}>
+      <View testID="qibla-compass-status" style={styles.compassContainer}>
         <QiblaDial
           size={COMPASS_SIZE}
           heading={heading}
@@ -367,7 +367,7 @@ export default function QiblaScreen() {
           qiblaBearing={qiblaDirection}
         />
         {isSensorWarming && (
-          <View style={[styles.compassOverlay, { backgroundColor: `${theme.background}CC` }]}>
+          <View testID="qibla-compass-loading" style={[styles.compassOverlay, { backgroundColor: `${theme.background}CC` }]}>
             <ActivityIndicator size="large" color={theme.tint} />
             <CenteredText style={[styles.compassOverlayText, { color: theme.textSecondary }]}>
               در حال آماده‌سازی قطب‌نما...

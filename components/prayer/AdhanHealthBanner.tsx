@@ -46,7 +46,7 @@ export function AdhanHealthBanner({ onSelectCity: _onSelectCity }: AdhanHealthBa
 
   return (
     <View style={styles.stack}>
-      <Card style={[styles.card, { backgroundColor: theme.warningSurface, borderColor: theme.warning }]}>
+      <Card style={{ ...styles.card, backgroundColor: theme.warningSurface, borderColor: theme.warning }}>
         <View style={styles.row}>
           <MaterialIcons name="alarm" size={22} color={theme.warning} />
           <View style={styles.textBlock}>

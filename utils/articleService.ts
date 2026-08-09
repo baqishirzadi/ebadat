@@ -10,6 +10,15 @@ import { Article, ArticleCategory, ArticleLanguage } from '@/types/articles';
 
 const ENABLE_ARTICLES_REMOTE = true;
 
+type LocalArticleSeed = {
+  authorId: string;
+  authorName: string;
+  body: string;
+  category: string;
+  language: string;
+  title: string;
+};
+
 export function isArticlesRemoteEnabled(): boolean {
   return ENABLE_ARTICLES_REMOTE && isSupabaseConfigured();
 }
@@ -207,7 +216,8 @@ export async function getArticleById(articleId: string): Promise<Article | null>
 function loadArticlesFromLocal(): Article[] {
   try {
     const now = new Date();
-    const articles: Article[] = require('@/data/articles-seed.json').articles.map((articleData) => {
+    const seed = require('@/data/articles-seed.json') as { articles: LocalArticleSeed[] };
+    const articles: Article[] = seed.articles.map((articleData) => {
       // Generate a simple ID from title and author
       const id = `${articleData.authorId}_${articleData.title.substring(0, 20)}_${articleData.language}`.replace(/\s+/g, '_');
       

@@ -1,0 +1,39 @@
+appId: com.afghandev.ebadat
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      text: "به عبادت خوش آمدید"
+    timeout: 30000
+- openLink: "ebadat://onboarding/notifications"
+- extendedWaitUntil:
+    visible:
+      text: "اجازه دادن"
+    timeout: 15000
+- tapOn:
+    text: "اجازه دادن"
+- tapOn:
+    text: "Allow"
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: "naat-screen-list"
+    timeout: 40000
+- tapOn:
+    text: "خانه"
+- scrollUntilVisible:
+    element:
+      id: "adhan-status-card"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "adhan-status-card"
+- extendedWaitUntil:
+    visible:
+      id: "ios-adhan-settings-ready"
+    timeout: 10000
+- assertNotVisible: "Console Error"

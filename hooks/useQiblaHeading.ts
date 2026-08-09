@@ -4,11 +4,14 @@ import * as Haptics from 'expo-haptics';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppState, Platform } from 'react-native';
 import { Easing, useSharedValue, withTiming } from 'react-native-reanimated';
+import { hasUsableLocationHeading, shouldUseMagnetometerFallback } from '@/utils/qiblaHeadingLifecycle';
 
 const DEAD_BAND = 1.5;
 const MAX_JUMP = 65;
 const ALIGNMENT_THRESHOLD = 4;
 const ANIM_MS = 180;
+const HEADING_WATCHDOG_MS = 3500;
+const MAGNETOMETER_WATCHDOG_MS = 2500;
 
 /**
  * Android expo-location heading reads ~10° high vs iOS (Kaaba appears left of truth).
@@ -27,6 +30,7 @@ export interface QiblaHeadingState {
   isAligned: boolean;
   showCalibration: boolean;
   sensorStatus: 'loading' | 'ready' | 'calibrating' | 'unavailable';
+  isLocationPermissionDenied: boolean;
 }
 
 function normalize(angle: number): number {
@@ -76,6 +80,7 @@ export function useQiblaHeading(qiblaBearing: number, enabled: boolean) {
     isAligned: false,
     showCalibration: false,
     sensorStatus: 'loading',
+    isLocationPermissionDenied: false,
   });
 
   const applyHeading = useCallback(
@@ -156,6 +161,7 @@ export function useQiblaHeading(qiblaBearing: number, enabled: boolean) {
           isAligned: aligned,
           showCalibration,
           sensorStatus,
+          isLocationPermissionDenied: prev.isLocationPermissionDenied,
         };
       });
     },
@@ -168,57 +174,143 @@ export function useQiblaHeading(qiblaBearing: number, enabled: boolean) {
     let locationSub: { remove: () => void } | null = null;
     let magnetSub: { remove: () => void } | null = null;
     let cancelled = false;
+    let starting = false;
+    let didReceiveHeadingWatchSample = false;
+    let magnetometerStarted = false;
+    let headingWatchdog: ReturnType<typeof setTimeout> | null = null;
+    let magnetometerWatchdog: ReturnType<typeof setTimeout> | null = null;
+
+    const clearHeadingWatchdog = () => {
+      if (headingWatchdog) clearTimeout(headingWatchdog);
+      headingWatchdog = null;
+    };
+
+    const clearMagnetometerWatchdog = () => {
+      if (magnetometerWatchdog) clearTimeout(magnetometerWatchdog);
+      magnetometerWatchdog = null;
+    };
+
+    const resetSession = () => {
+      continuousHeading.current = 0;
+      alignedRef.current = false;
+      lowAccuracySince.current = null;
+      hasSampleRef.current = false;
+      headingRotation.value = 0;
+      setState((previous) => ({
+        ...previous,
+        heading: 0,
+        mode: 'none',
+        accuracyLevel: 'low',
+        isDegraded: false,
+        isAligned: false,
+        showCalibration: false,
+        sensorStatus: 'loading',
+        isLocationPermissionDenied: false,
+      }));
+    };
+
+    const markUnavailable = () => {
+      if (cancelled || locationSub || magnetSub) return;
+      setState((previous) => ({
+        ...previous,
+        mode: 'none',
+        sensorStatus: 'unavailable',
+      }));
+    };
 
     const startMagnetometer = async () => {
+      if (magnetometerStarted || cancelled) return Boolean(magnetSub);
+      magnetometerStarted = true;
       const available = await Magnetometer.isAvailableAsync();
-      if (!available || cancelled) return false;
+      if (!available || cancelled) {
+        markUnavailable();
+        return false;
+      }
       Magnetometer.setUpdateInterval(100);
       magnetSub = Magnetometer.addListener((data) => {
         if (cancelled) return;
+        clearMagnetometerWatchdog();
         applyHeading(magnetometerToHeading(data.x, data.y), 'magnetometer');
       });
+      magnetometerWatchdog = setTimeout(() => {
+        if (cancelled || magnetSub === null) return;
+        magnetSub.remove();
+        magnetSub = null;
+        markUnavailable();
+      }, MAGNETOMETER_WATCHDOG_MS);
       return true;
     };
 
     const start = async () => {
+      if (starting || cancelled || locationSub || magnetSub) return;
+      starting = true;
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
+        if (cancelled) return;
         if (status !== 'granted') {
+          setState((previous) => ({ ...previous, isLocationPermissionDenied: true }));
           const ok = await startMagnetometer();
           if (!ok) setState((s) => ({ ...s, sensorStatus: 'unavailable', mode: 'none' }));
           return;
         }
 
+        setState((previous) => ({ ...previous, isLocationPermissionDenied: false }));
+
         try {
           const initial = await Location.getHeadingAsync();
-          if (!cancelled) {
+          if (!cancelled && hasUsableLocationHeading(initial)) {
             applyHeading(pickLocationHeading(initial), 'location', initial.accuracy);
           }
         } catch {
           // continue to watch
         }
 
-        locationSub = await Location.watchHeadingAsync((sample) => {
-          if (cancelled) return;
+        headingWatchdog = setTimeout(() => {
+          if (
+            cancelled ||
+            !shouldUseMagnetometerFallback({ didReceiveHeadingWatchSample, fallbackAlreadyStarted: magnetometerStarted })
+          ) {
+            return;
+          }
+          locationSub?.remove();
+          locationSub = null;
+          void startMagnetometer();
+        }, HEADING_WATCHDOG_MS);
+
+        const subscription = await Location.watchHeadingAsync((sample) => {
+          if (cancelled || !hasUsableLocationHeading(sample)) return;
+          didReceiveHeadingWatchSample = true;
+          clearHeadingWatchdog();
           applyHeading(pickLocationHeading(sample), 'location', sample.accuracy);
         });
+
+        if (cancelled || magnetometerStarted) {
+          subscription.remove();
+          return;
+        }
+        locationSub = subscription;
       } catch {
         const ok = await startMagnetometer();
         if (!ok) setState((s) => ({ ...s, sensorStatus: 'unavailable', mode: 'none' }));
+      } finally {
+        starting = false;
       }
     };
 
+    resetSession();
     void start();
 
     const appSub = AppState.addEventListener('change', (next) => {
       if (next === 'active' && !locationSub && !magnetSub) {
-        hasSampleRef.current = false;
+        resetSession();
         void start();
       }
     });
 
     return () => {
       cancelled = true;
+      clearHeadingWatchdog();
+      clearMagnetometerWatchdog();
       locationSub?.remove();
       magnetSub?.remove();
       appSub.remove();

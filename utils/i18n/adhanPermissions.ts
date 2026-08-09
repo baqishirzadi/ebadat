@@ -17,7 +17,7 @@ function resolvePath(obj: NestedRecord, path: string): string | string[] | undef
     }
     current = current[part];
   }
-  return current;
+  return typeof current === 'string' || Array.isArray(current) ? current : undefined;
 }
 
 export function tAdhanPermission(

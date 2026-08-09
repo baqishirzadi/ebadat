@@ -71,6 +71,7 @@ import {
   stableNativeAdhanConfigVersion,
   syncNativeAdhanConfig,
 } from '@/utils/nativeAdhanScheduler';
+import { openNotificationSettings as openSystemNotificationSettings } from '@/utils/adhanHealth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { Alert, AppState, InteractionManager, Linking, NativeModules, Platform } from 'react-native';
@@ -2693,30 +2694,31 @@ async function configureAndroidNotificationChannels(
 
     try {
       if (Platform.OS === 'ios') {
-        await Linking.openSettings();
-      } else {
-        const exactModule = getExactAlarmModule();
-        if (
-          (state.exactAlarmStatus === 'missing' || state.exactAlarmStatus === 'unknown') &&
-          exactModule?.openExactAlarmSettings
-        ) {
-          const opened = await exactModule.openExactAlarmSettings();
-          if (opened) {
-            return;
-          }
+        await openSystemNotificationSettings();
+        return;
+      }
+
+      const exactModule = getExactAlarmModule();
+      if (
+        (state.exactAlarmStatus === 'missing' || state.exactAlarmStatus === 'unknown') &&
+        exactModule?.openExactAlarmSettings
+      ) {
+        const opened = await exactModule.openExactAlarmSettings();
+        if (opened) {
+          return;
         }
-        // Try to open notification settings directly (Android 13+)
-        try {
-          const maybeOpenSettings = (NotificationsModule as any).openSettingsAsync;
-          if (typeof maybeOpenSettings === 'function') {
-            await maybeOpenSettings();
-          } else {
-            await Linking.openSettings();
-          }
-        } catch {
-          // Fallback to general settings
+      }
+      // Try to open notification settings directly (Android 13+)
+      try {
+        const maybeOpenSettings = (NotificationsModule as any).openSettingsAsync;
+        if (typeof maybeOpenSettings === 'function') {
+          await maybeOpenSettings();
+        } else {
           await Linking.openSettings();
         }
+      } catch {
+        // Fallback to general settings
+        await Linking.openSettings();
       }
     } catch (error) {
       console.error('Failed to open settings:', error);

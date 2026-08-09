@@ -1,0 +1,37 @@
+appId: com.afghandev.ebadat
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "به عبادت خوش آمدید"
+    timeout: 30000
+- openLink: "ebadat://onboarding/notifications"
+- extendedWaitUntil:
+    visible:
+      text: "اجازه دادن"
+    timeout: 15000
+- tapOn:
+    text: "اجازه دادن"
+- tapOn:
+    text: "Don’t Allow"
+    optional: true
+- tapOn:
+    text: "Don't Allow"
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+- tapOn:
+    text: "ادامه بدون اعلان"
+- scrollUntilVisible:
+    element:
+      id: "adhan-status-card"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "adhan-status-card"
+- extendedWaitUntil:
+    visible:
+      text: "Allow Notifications"
+    timeout: 10000
+- takeScreenshot: ios-adhan-notifications-denied

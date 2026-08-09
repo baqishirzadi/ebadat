@@ -12,4 +12,7 @@ RCT_EXTERN_METHOD(getSnapshot:(RCTPromiseResolveBlock)resolve
 RCT_EXTERN_METHOD(reloadWidget:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 
+RCT_EXTERN_METHOD(openAppNotificationSettings:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+
 @end

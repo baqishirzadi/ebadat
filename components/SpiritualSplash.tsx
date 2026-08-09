@@ -147,7 +147,7 @@ export function SpiritualSplash({
       ]}
     >
       <LinearGradient
-        colors={['#0a1f18', '#1a4d3e', '#0d2a20']}
+        colors={['#19452c', '#19452c', '#19452c']}
         style={StyleSheet.absoluteFill}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}

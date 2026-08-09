@@ -613,11 +613,11 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     zIndex: 9999,
     elevation: 99,
-    backgroundColor: '#0a1f18',
+    backgroundColor: '#19452c',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#0a1f18',
+    backgroundColor: '#19452c',
   },
   loadingFallback: {
     position: 'absolute',

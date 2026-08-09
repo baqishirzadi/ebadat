@@ -79,7 +79,15 @@ async function writeTokenHash(value: string): Promise<void> {
 }
 
 async function registerTokenIfChanged(projectId: string): Promise<void> {
-  const token = await Notifications.getExpoPushTokenAsync({ projectId });
+  let token;
+  try {
+    token = await Notifications.getExpoPushTokenAsync({ projectId });
+  } catch (error) {
+    if (__DEV__) {
+      console.warn('[PushRegistry] getExpoPushTokenAsync failed:', error);
+    }
+    return;
+  }
   const tokenHash = hashToken(token.data);
   const previousHash = await readTokenHash();
 

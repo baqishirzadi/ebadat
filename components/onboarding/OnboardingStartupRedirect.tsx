@@ -19,15 +19,19 @@ export function OnboardingStartupRedirect() {
 
     const path = segments.join('/');
     const inOnboarding = path.startsWith('onboarding');
-    if (!inOnboarding) {
+    if (inOnboarding) {
+      // Let the active onboarding flow complete even though bootstrap state is a startup snapshot.
       redirectedRef.current = true;
-      if (hasCity) {
-        getOnboardingResumeRoute()
-          .then((route) => router.replace(route as never))
-          .catch(() => router.replace('/onboarding/notifications' as never));
-      } else {
-        router.replace('/onboarding' as never);
-      }
+      return;
+    }
+
+    redirectedRef.current = true;
+    if (hasCity) {
+      getOnboardingResumeRoute()
+        .then((route) => router.replace(route as never))
+        .catch(() => router.replace('/onboarding/notifications' as never));
+    } else {
+      router.replace('/onboarding' as never);
     }
   }, [checked, needsOnboarding, hasCity, router, segments]);
 

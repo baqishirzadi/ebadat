@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { NativeModules, Platform } from 'react-native';
+import { Linking, NativeModules, Platform } from 'react-native';
 
 import {
   forceNativeAdhanReschedule,
@@ -224,8 +224,24 @@ export async function openExactAlarmSettings(): Promise<boolean> {
 }
 
 export async function openNotificationSettings(): Promise<void> {
-  const { Linking } = await import('react-native');
-  await Linking.openSettings();
+  if (Platform.OS === 'ios') {
+    const widgetModule = (NativeModules as {
+      WidgetDataModule?: { openAppNotificationSettings?: () => Promise<boolean> };
+    }).WidgetDataModule;
+
+    try {
+      await widgetModule?.openAppNotificationSettings?.();
+    } catch {
+      // Never throw — settings deep-link failures must not crash the app.
+    }
+    return;
+  }
+
+  try {
+    await Linking.openSettings();
+  } catch {
+    // Never throw — settings deep-link failures must not crash the app.
+  }
 }
 
 export async function openBatteryOptimizationSettings(): Promise<boolean> {

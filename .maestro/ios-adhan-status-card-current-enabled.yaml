@@ -1,0 +1,14 @@
+appId: com.afghandev.ebadat
+---
+- launchApp
+- scrollUntilVisible:
+    element:
+      id: "adhan-status-card"
+    direction: DOWN
+    timeout: 20000
+- tapOn:
+    id: "adhan-status-card"
+- extendedWaitUntil:
+    visible:
+      id: "ios-adhan-settings-ready"
+    timeout: 10000

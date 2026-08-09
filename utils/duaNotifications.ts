@@ -152,10 +152,10 @@ export async function registerDeviceToken(userId: string): Promise<void> {
   }
 
   try {
-    // Request notification permissions
-    const { status } = await Notifications.requestPermissionsAsync();
-    if (status !== 'granted') {
-      console.log('Notification permission not granted');
+    // Never prompt from background registration; only proceed when already granted.
+    const current = await Notifications.getPermissionsAsync();
+    if (current.status !== 'granted') {
+      console.log('Notification permission not granted; skipping device token registration');
       return;
     }
 
@@ -186,32 +186,17 @@ export async function registerDeviceToken(userId: string): Promise<void> {
       return;
     }
 
-    // Get Expo push token
-    // Note: This will fail in Expo Go SDK 53+ - we catch and handle gracefully
+    // getExpoPushTokenAsync can crash/throw when permission or push setup is incomplete.
+    // Never rethrow — deny/skip must leave the app running.
     let token;
     try {
       token = await Notifications.getExpoPushTokenAsync({
         projectId,
       });
     } catch (pushTokenError: any) {
-      const errorMsg = pushTokenError?.message || '';
-      const isFirebaseError = errorMsg.includes('Firebase');
-      const isExpoGoError = errorMsg.includes('remote notifications') || errorMsg.includes('Expo Go');
-      
-      // If this is an Expo Go error (remote push not supported), fail silently
-      if (isExpoGoError || errorMsg.includes('VALIDATION_ERROR')) {
-        console.log('Skipping notification registration: Remote push not supported in Expo Go');
-        return;
-      }
-      
-      // If Firebase error, also fail silently (we're using Supabase now)
-      if (isFirebaseError) {
-        console.log('Skipping notification registration: Firebase not configured (using Supabase)');
-        return;
-      }
-      
-      // Re-throw other errors
-      throw pushTokenError;
+      const errorMsg = pushTokenError?.message || String(pushTokenError);
+      console.log('Skipping notification registration: push token unavailable', errorMsg);
+      return;
     }
 
     // Save locally

@@ -63,7 +63,7 @@
       "package": "com.afghandev.ebadat",
       "versionCode": 27,
       "adaptiveIcon": {
-        "backgroundColor": "#1a4d3e",
+        "backgroundColor": "#19452c",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -116,14 +116,14 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 240,
           "resizeMode": "contain",
-          "backgroundColor": "#0a1f18",
+          "backgroundColor": "#19452c",
           "android": {
-            "backgroundColor": "#0a1f18",
+            "backgroundColor": "#19452c",
             "image": "./assets/images/splash-icon.png",
             "resizeMode": "contain"
           },
           "dark": {
-            "backgroundColor": "#0a1f18"
+            "backgroundColor": "#19452c"
           }
         }
       ],
