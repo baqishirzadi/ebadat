@@ -48,12 +48,19 @@ struct PrayerTimesWidgetProvider: TimelineProvider {
 
   private func sampleSnapshot() -> WidgetSnapshot {
     WidgetSnapshot(
-      version: 2,
+      version: 3,
       updatedAt: ISO8601DateFormatter().string(from: Date()),
       cityName: "کابل",
       timezone: "Asia/Kabul",
       policyVersion: 3,
       sourceLabel: "Karachi+AF",
+      latitude: 34.5553,
+      longitude: 69.2075,
+      altitude: 1791,
+      calculationMethod: "Karachi",
+      asrMethod: "Hanafi",
+      maghribOffsetMinutes: 3,
+      fixedDhuhrLocalTime: "12:30",
       days: nil,
       weekdayDari: "چهارشنبه",
       shamsiDisplay: "۱۴۰۴/۰۱/۱۸",

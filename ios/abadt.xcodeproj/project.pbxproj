@@ -32,6 +32,7 @@
 		W1D2G3E4XT002 /* PrayerTimesWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */; };
 		W1D2G3E4XT003 /* PrayerTimesWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */; };
 		W1D2G3E4XT004 /* WidgetShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR004 /* WidgetShared.swift */; };
+		W1D2G3E4XT009 /* WidgetPrayerCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR008 /* WidgetPrayerCalculator.swift */; };
 		W1D2G3E4XT005 /* Vazirmatn-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7AAF416978A422FB6AE300F /* Vazirmatn-Regular.ttf */; };
 		W1D2G3E4XT006 /* Vazirmatn-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */; };
 		W1D2G3E4XT007 /* EbadatPrayerWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -96,6 +97,7 @@
 		W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesWidgetProvider.swift; sourceTree = "<group>"; };
 		W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesWidgetView.swift; sourceTree = "<group>"; };
 		W1D2G3E4XFR004 /* WidgetShared.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetShared.swift; sourceTree = "<group>"; };
+		W1D2G3E4XFR008 /* WidgetPrayerCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetPrayerCalculator.swift; sourceTree = "<group>"; };
 		W1D2G3E4XFR005 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		W1D2G3E4XFR006 /* EbadatPrayerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EbadatPrayerWidget.entitlements; sourceTree = "<group>"; };
 		W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -263,6 +265,7 @@
 				W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */,
 				W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */,
 				W1D2G3E4XFR004 /* WidgetShared.swift */,
+				W1D2G3E4XFR008 /* WidgetPrayerCalculator.swift */,
 				W1D2G3E4XFR005 /* Info.plist */,
 				W1D2G3E4XFR006 /* EbadatPrayerWidget.entitlements */,
 				W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */,
@@ -539,6 +542,7 @@
 				W1D2G3E4XT002 /* PrayerTimesWidgetProvider.swift in Sources */,
 				W1D2G3E4XT003 /* PrayerTimesWidgetView.swift in Sources */,
 				W1D2G3E4XT004 /* WidgetShared.swift in Sources */,
+				W1D2G3E4XT009 /* WidgetPrayerCalculator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -64,6 +64,7 @@ function HomeDashboardScreen() {
   return (
     <>
       <KeyboardAvoidingView
+        testID="ios-home-dashboard-ready"
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? tabBarHeight : 0}

@@ -138,6 +138,7 @@ export function SpiritualSplash({
 
   return (
     <Animated.View
+      testID="spiritual-splash-overlay"
       pointerEvents={isExiting ? 'none' : 'auto'}
       onLayout={handleLayout}
       style={[

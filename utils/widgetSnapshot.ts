@@ -28,11 +28,19 @@ export interface WidgetDaySnapshot {
 }
 
 export interface WidgetSnapshot {
-  version: 2;
+  /** Snapshot schema. Version 3 adds the inputs required for offline widget calculation. */
+  version: 3;
   updatedAt: string;
   cityName: string;
   timezone: string;
   policyVersion: number;
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  calculationMethod: string;
+  asrMethod: 'Standard' | 'Hanafi';
+  maghribOffsetMinutes: number;
+  fixedDhuhrLocalTime: string | null;
   sourceLabel?: string;
   days: WidgetDaySnapshot[];
   /** Derived display fields for the active day (kept for renderers). */
@@ -130,6 +138,11 @@ export function buildWidgetSnapshot(
   options?: {
     timezone?: string;
     sourceLabel?: string;
+    location?: { latitude: number; longitude: number; altitude?: number };
+    calculationMethod?: string;
+    asrMethod?: 'Standard' | 'Hanafi';
+    maghribOffsetMinutes?: number;
+    fixedDhuhrLocalTime?: string | null;
     multiDay?: Array<{ dateKey: string; times: PrayerTimes; noonAnchor: Date }>;
   },
 ): WidgetSnapshot {
@@ -147,11 +160,18 @@ export function buildWidgetSnapshot(
   const currentPrayer = getCurrentPrayerFromEntries(active.prayers, now);
 
   return {
-    version: 2,
+    version: 3,
     updatedAt: now.toISOString(),
     cityName,
     timezone,
     policyVersion: PRAYER_POLICY_VERSION,
+    latitude: options?.location?.latitude ?? 34.5553,
+    longitude: options?.location?.longitude ?? 69.2075,
+    altitude: options?.location?.altitude ?? 1791,
+    calculationMethod: options?.calculationMethod || 'Karachi',
+    asrMethod: options?.asrMethod || 'Hanafi',
+    maghribOffsetMinutes: options?.maghribOffsetMinutes ?? 0,
+    fixedDhuhrLocalTime: options?.fixedDhuhrLocalTime ?? null,
     sourceLabel: options?.sourceLabel,
     days,
     weekdayDari: active.weekdayDari,
@@ -186,7 +206,7 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
 
   return {
     ...snapshot,
-    version: 2,
+    version: 3,
     updatedAt: now.toISOString(),
     days,
     weekdayDari: active?.weekdayDari || WEEKDAYS_DARI[truth.weekday],
@@ -211,6 +231,13 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       cityName?: string;
       timezone?: string;
       policyVersion?: number;
+      latitude?: number;
+      longitude?: number;
+      altitude?: number;
+      calculationMethod?: string;
+      asrMethod?: 'Standard' | 'Hanafi';
+      maghribOffsetMinutes?: number;
+      fixedDhuhrLocalTime?: string | null;
       sourceLabel?: string;
       days?: WidgetDaySnapshot[];
       weekdayDari?: string;
@@ -222,7 +249,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       prayers?: WidgetPrayerEntry[];
       nextRefreshAtMs?: number;
     };
-    if (!parsed || (parsed.version !== 1 && parsed.version !== 2)) return null;
+    if (!parsed || (parsed.version !== 1 && parsed.version !== 2 && parsed.version !== 3)) return null;
     if ((!Array.isArray(parsed.prayers) || parsed.prayers.length === 0) &&
       (!Array.isArray(parsed.days) || parsed.days.length === 0)) {
       return null;
@@ -242,11 +269,18 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         ),
       };
       return refreshWidgetSnapshot({
-        version: 2,
+        version: 3,
         updatedAt: parsed.updatedAt || new Date().toISOString(),
         cityName: parsed.cityName || '',
         timezone,
         policyVersion: PRAYER_POLICY_VERSION,
+        latitude: 34.5553,
+        longitude: 69.2075,
+        altitude: 1791,
+        calculationMethod: 'Karachi',
+        asrMethod: 'Hanafi',
+        maghribOffsetMinutes: 0,
+        fixedDhuhrLocalTime: null,
         days: [day],
         weekdayDari: day.weekdayDari,
         shamsiDisplay: day.shamsiDisplay,
@@ -279,11 +313,18 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
     }));
 
     return {
-      version: 2,
+      version: 3,
       updatedAt: parsed.updatedAt || new Date().toISOString(),
       cityName: parsed.cityName || '',
       timezone: parsed.timezone || 'Asia/Kabul',
       policyVersion: parsed.policyVersion || PRAYER_POLICY_VERSION,
+      latitude: Number.isFinite(parsed.latitude) ? parsed.latitude! : 34.5553,
+      longitude: Number.isFinite(parsed.longitude) ? parsed.longitude! : 69.2075,
+      altitude: Number.isFinite(parsed.altitude) ? parsed.altitude! : 1791,
+      calculationMethod: parsed.calculationMethod || 'Karachi',
+      asrMethod: parsed.asrMethod === 'Standard' ? 'Standard' : 'Hanafi',
+      maghribOffsetMinutes: Number.isFinite(parsed.maghribOffsetMinutes) ? parsed.maghribOffsetMinutes! : 0,
+      fixedDhuhrLocalTime: parsed.fixedDhuhrLocalTime ?? null,
       sourceLabel: parsed.sourceLabel,
       days,
       weekdayDari: parsed.weekdayDari || '',

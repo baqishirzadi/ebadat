@@ -21,6 +21,41 @@ enum WidgetShared {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = timezone
 
+    // Version 3 snapshots contain all inputs needed to calculate a fresh day.
+    // This is the normal path and does not depend on the app process running.
+    if stored.hasCalculationInputs {
+      let calculated = WidgetPrayerCalculator.daySnapshot(snapshot: stored, date: date)
+      let nowMs = date.timeIntervalSince1970 * 1000
+      let current = calculated.prayers.last(where: { $0.atMs <= nowMs })?.key
+      let next = calculated.prayers.first(where: { $0.atMs > nowMs })?.atMs
+        ?? calendar.date(byAdding: .day, value: 1, to: date).map { $0.timeIntervalSince1970 * 1000 }
+        ?? stored.nextRefreshAtMs
+      return WidgetSnapshot(
+        version: max(stored.version, 3),
+        updatedAt: stored.updatedAt,
+        cityName: stored.cityName,
+        timezone: stored.timezone,
+        policyVersion: stored.policyVersion,
+        sourceLabel: stored.sourceLabel,
+        latitude: stored.latitude,
+        longitude: stored.longitude,
+        altitude: stored.altitude,
+        calculationMethod: stored.calculationMethod,
+        asrMethod: stored.asrMethod,
+        maghribOffsetMinutes: stored.maghribOffsetMinutes,
+        fixedDhuhrLocalTime: stored.fixedDhuhrLocalTime,
+        days: nil,
+        weekdayDari: calculated.weekdayDari,
+        shamsiDisplay: calculated.shamsiDisplay,
+        hijriDisplay: calculated.hijriDisplay,
+        gregorianDisplay: calculated.gregorianDisplay,
+        sunriseDisplay: calculated.sunriseDisplay,
+        currentPrayer: current,
+        prayers: calculated.prayers,
+        nextRefreshAtMs: next
+      )
+    }
+
     let day: WidgetDaySnapshot
     if let days = stored.days, !days.isEmpty {
       let formatter = DateFormatter()
@@ -57,12 +92,19 @@ enum WidgetShared {
     }
 
     return WidgetSnapshot(
-      version: max(stored.version, 2),
+      version: max(stored.version, 3),
       updatedAt: stored.updatedAt,
       cityName: stored.cityName,
       timezone: stored.timezone,
       policyVersion: stored.policyVersion,
       sourceLabel: stored.sourceLabel,
+      latitude: stored.latitude,
+      longitude: stored.longitude,
+      altitude: stored.altitude,
+      calculationMethod: stored.calculationMethod,
+      asrMethod: stored.asrMethod,
+      maghribOffsetMinutes: stored.maghribOffsetMinutes,
+      fixedDhuhrLocalTime: stored.fixedDhuhrLocalTime,
       days: stored.days,
       weekdayDari: day.weekdayDari,
       shamsiDisplay: day.shamsiDisplay,
@@ -80,6 +122,25 @@ enum WidgetShared {
     dates.insert(now)
     let nowMs = now.timeIntervalSince1970 * 1000
     let days = stored.days ?? []
+    if stored.hasCalculationInputs {
+      let timezone = TimeZone(identifier: stored.timezone.isEmpty ? "Asia/Kabul" : stored.timezone) ?? .current
+      var calendar = Calendar(identifier: .gregorian)
+      calendar.timeZone = timezone
+      let start = calendar.date(bySettingHour: 12, minute: 0, second: 0, of: now) ?? now
+      // A bounded horizon keeps WidgetKit payloads small while guaranteeing
+      // that every prayer boundary and local midnight has a fresh entry.
+      for offset in 0...14 {
+        guard let day = calendar.date(byAdding: .day, value: offset, to: start) else { continue }
+        let calculated = WidgetPrayerCalculator.daySnapshot(snapshot: stored, date: day)
+        for prayer in calculated.prayers where prayer.atMs >= nowMs - 60_000 {
+          dates.insert(Date(timeIntervalSince1970: prayer.atMs / 1000))
+        }
+        if let midnight = calendar.date(bySettingHour: 0, minute: 0, second: 0, of: day), midnight > now {
+          dates.insert(midnight)
+        }
+      }
+      return dates.sorted()
+    }
     for day in days {
       for prayer in day.prayers where prayer.atMs >= nowMs - 60_000 {
         dates.insert(Date(timeIntervalSince1970: prayer.atMs / 1000))
@@ -157,6 +218,13 @@ struct WidgetSnapshot: Codable {
   let timezone: String
   let policyVersion: Int?
   let sourceLabel: String?
+  let latitude: Double
+  let longitude: Double
+  let altitude: Double
+  let calculationMethod: String
+  let asrMethod: String
+  let maghribOffsetMinutes: Int
+  let fixedDhuhrLocalTime: String?
   let days: [WidgetDaySnapshot]?
   let weekdayDari: String
   let shamsiDisplay: String
@@ -168,7 +236,8 @@ struct WidgetSnapshot: Codable {
   let nextRefreshAtMs: Double
 
   enum CodingKeys: String, CodingKey {
-    case version, updatedAt, cityName, timezone, policyVersion, sourceLabel, days
+    case version, updatedAt, cityName, timezone, policyVersion, sourceLabel, latitude, longitude, altitude
+    case calculationMethod, asrMethod, maghribOffsetMinutes, fixedDhuhrLocalTime, days
     case weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay, sunriseDisplay
     case currentPrayer, prayers, nextRefreshAtMs
   }
@@ -180,6 +249,13 @@ struct WidgetSnapshot: Codable {
     timezone: String = "Asia/Kabul",
     policyVersion: Int? = nil,
     sourceLabel: String? = nil,
+    latitude: Double = 34.5553,
+    longitude: Double = 69.2075,
+    altitude: Double = 1791,
+    calculationMethod: String = "Karachi",
+    asrMethod: String = "Hanafi",
+    maghribOffsetMinutes: Int = 0,
+    fixedDhuhrLocalTime: String? = nil,
     days: [WidgetDaySnapshot]? = nil,
     weekdayDari: String,
     shamsiDisplay: String,
@@ -196,6 +272,13 @@ struct WidgetSnapshot: Codable {
     self.timezone = timezone
     self.policyVersion = policyVersion
     self.sourceLabel = sourceLabel
+    self.latitude = latitude
+    self.longitude = longitude
+    self.altitude = altitude
+    self.calculationMethod = calculationMethod
+    self.asrMethod = asrMethod
+    self.maghribOffsetMinutes = maghribOffsetMinutes
+    self.fixedDhuhrLocalTime = fixedDhuhrLocalTime
     self.days = days
     self.weekdayDari = weekdayDari
     self.shamsiDisplay = shamsiDisplay
@@ -215,6 +298,13 @@ struct WidgetSnapshot: Codable {
     timezone = try container.decodeIfPresent(String.self, forKey: .timezone) ?? "Asia/Kabul"
     policyVersion = try container.decodeIfPresent(Int.self, forKey: .policyVersion)
     sourceLabel = try container.decodeIfPresent(String.self, forKey: .sourceLabel)
+    latitude = try container.decodeIfPresent(Double.self, forKey: .latitude) ?? 34.5553
+    longitude = try container.decodeIfPresent(Double.self, forKey: .longitude) ?? 69.2075
+    altitude = try container.decodeIfPresent(Double.self, forKey: .altitude) ?? 1791
+    calculationMethod = try container.decodeIfPresent(String.self, forKey: .calculationMethod) ?? "Karachi"
+    asrMethod = try container.decodeIfPresent(String.self, forKey: .asrMethod) ?? "Hanafi"
+    maghribOffsetMinutes = try container.decodeIfPresent(Int.self, forKey: .maghribOffsetMinutes) ?? 0
+    fixedDhuhrLocalTime = try container.decodeIfPresent(String.self, forKey: .fixedDhuhrLocalTime)
     days = try container.decodeIfPresent([WidgetDaySnapshot].self, forKey: .days)
     weekdayDari = try container.decode(String.self, forKey: .weekdayDari)
     shamsiDisplay = try container.decode(String.self, forKey: .shamsiDisplay)
@@ -226,5 +316,9 @@ struct WidgetSnapshot: Codable {
     currentPrayer = try container.decodeIfPresent(String.self, forKey: .currentPrayer)
     prayers = try container.decode([WidgetPrayerEntry].self, forKey: .prayers)
     nextRefreshAtMs = try container.decode(Double.self, forKey: .nextRefreshAtMs)
+  }
+
+  var hasCalculationInputs: Bool {
+    latitude.isFinite && longitude.isFinite && abs(latitude) <= 90 && abs(longitude) <= 180
   }
 }

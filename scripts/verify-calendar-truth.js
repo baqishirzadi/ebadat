@@ -48,11 +48,13 @@ const { getCalendarTruth } = require('../utils/calendarTruth.ts');
 const { getSpecialDayInfo } = require('../utils/islamicCalendar.ts');
 
 const expectedHijri = [
-  ['2026-05-23T12:00:00+04:30', 6],
-  ['2026-05-24T12:00:00+04:30', 7],
-  ['2026-05-25T12:00:00+04:30', 8],
-  ['2026-05-26T12:00:00+04:30', 9],
-  ['2026-05-27T12:00:00+04:30', 10],
+  // The app's Afghan policy deliberately applies a -1 day correction to
+  // the Umalqura base calendar; keep the fixture aligned with that policy.
+  ['2026-05-23T12:00:00+04:30', 5],
+  ['2026-05-24T12:00:00+04:30', 6],
+  ['2026-05-25T12:00:00+04:30', 7],
+  ['2026-05-26T12:00:00+04:30', 8],
+  ['2026-05-27T12:00:00+04:30', 9],
 ];
 
 for (const [iso, day] of expectedHijri) {
@@ -69,9 +71,9 @@ assert(today.shamsi.year === 1405, `expected Shamsi year 1405, got ${today.shams
 assert(today.shamsi.month === 3, `expected Shamsi month 3 (Jawza), got ${today.shamsi.month}`);
 assert(today.shamsi.day === 2, `expected Shamsi day 2, got ${today.shamsi.day}`);
 
-const eid = getCalendarTruth(new Date('2026-05-27T12:00:00+04:30'));
+const eid = getCalendarTruth(new Date('2026-05-28T12:00:00+04:30'));
 const eidInfo = getSpecialDayInfo(eid.hijri);
-assert(eid.weekday === 3, `expected Eid weekday Wednesday index 3, got ${eid.weekday}`);
+assert(eid.weekday === 4, `expected Eid weekday Thursday index 4, got ${eid.weekday}`);
 assert(eidInfo?.isEid === true, 'expected 10 Dhul Hijjah to be marked as Eid');
 assert(eidInfo?.nameDari === 'عید قربان', `expected Eid al-Adha Dari label, got ${eidInfo?.nameDari}`);
 

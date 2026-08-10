@@ -119,6 +119,7 @@ export function OnboardingShell({
 
       <RtlView style={[styles.footer, { paddingBottom: footerPaddingBottom }]}>
         <Pressable
+          testID={`onboarding-primary-button-${step}`}
           onPress={onPrimary}
           disabled={primaryDisabled}
           style={[

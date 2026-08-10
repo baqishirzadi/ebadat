@@ -5,6 +5,7 @@ import { getPrayerTimesForDateRange } from '@/utils/prayerTimesAgent';
 import { buildDateFromLocalTimeInTimezone, getDateKeyInTimezone } from '@/utils/prayerTimezone';
 import { buildWidgetSnapshot } from '@/utils/widgetSnapshot';
 import { writeWidgetSnapshot } from '@/utils/widgetDataBridge';
+import { resolvePrayerCalculationPolicy } from '@/utils/prayerCalculationPolicy';
 
 let lastPushedAt = 0;
 const MIN_PUSH_INTERVAL_MS = 15_000;
@@ -36,7 +37,7 @@ export async function pushWidgetSnapshot(
   options?: {
     force?: boolean;
     cityKey?: string;
-    location?: { latitude: number; longitude: number; timezone?: string };
+    location?: { latitude: number; longitude: number; altitude?: number; timezone?: string };
     timezone?: string;
     /** Days to prefetch into the widget snapshot. Default 1 (cold-start safe). */
     horizonDays?: number;
@@ -54,6 +55,7 @@ export async function pushWidgetSnapshot(
     options?.timezone ||
     options?.location?.timezone ||
     'Asia/Kabul';
+  const policy = resolvePrayerCalculationPolicy(options?.cityKey, options?.location);
 
   const horizonDays = Math.max(1, options?.horizonDays ?? 1);
   let multiDay: Array<{ dateKey: string; times: PrayerTimes; noonAnchor: Date }> | undefined;
@@ -82,6 +84,11 @@ export async function pushWidgetSnapshot(
   const snapshot = buildWidgetSnapshot(prayerTimes, cityName, new Date(), {
     timezone,
     sourceLabel,
+    location: options?.location,
+    calculationMethod: policy.adhanJsMethod,
+    asrMethod: policy.madhab === 'Hanafi' ? 'Hanafi' : 'Standard',
+    maghribOffsetMinutes: policy.maghribOffsetMinutes,
+    fixedDhuhrLocalTime: policy.fixedDhuhrLocalTime,
     multiDay,
   });
   await writeWidgetSnapshot(snapshot);

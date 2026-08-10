@@ -2,11 +2,10 @@ appId: com.afghandev.ebadat
 ---
 - launchApp:
     clearState: true
-- extendedWaitUntil:
-    visible:
-      text: "به عبادت خوش آمدید"
-    timeout: 30000
 - openLink: "ebadat://onboarding/notifications"
+- tapOn:
+    text: "Open"
+    optional: true
 - extendedWaitUntil:
     visible:
       text: "اجازه دادن"
@@ -21,7 +20,7 @@ appId: com.afghandev.ebadat
     optional: true
 - extendedWaitUntil:
     visible:
-      id: "naat-screen-list"
+      text: "مفتی هوشمند حنفی"
     timeout: 40000
 - tapOn:
     text: "خانه"
