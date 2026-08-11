@@ -89,76 +89,79 @@ const lightTheme: ThemeColors = {
   shadow: 'rgba(26, 77, 62, 0.12)',
 };
 
-// Night mode - Naat green accent on dark (AMOLED friendly)
+// Night mode - neutral black/charcoal surfaces with a restrained green accent.
+// Keeping the layers distinct prevents the dark theme from becoming a flat block
+// while preserving the app's Naat-green identity.
 const nightTheme: ThemeColors = {
-  primary: NAAT_GREEN_LIGHT,
-  surface: '#0d0d0d',
-  textPrimary: '#c9c9c9',
+  primary: '#2a9d84',
+  surface: '#121816',
+  textPrimary: '#eef4f1',
   accent: '#d4af37',
-  text: '#c9c9c9',
-  textSecondary: '#888888',
-  background: '#000000',
-  backgroundSecondary: '#0a0a0a',
-  tint: NAAT_GREEN_LIGHT,
-  icon: '#888888',
-  tabIconDefault: '#666666',
-  tabIconSelected: NAAT_GREEN_LIGHT,
+  text: '#eef4f1',
+  textSecondary: '#a0b2ab',
+  background: '#050807',
+  backgroundSecondary: '#0d1411',
+  tint: '#2a9d84',
+  icon: '#8a9c95',
+  tabIconDefault: '#6e8079',
+  tabIconSelected: '#2a9d84',
   
-  arabicText: '#d4d4d4',
-  translationText: '#a8a8a8',
-  ayahNumber: NAAT_GREEN_LIGHT,
-  surahHeader: NAAT_GREEN_DARK,
-  surahHeaderText: '#c9c9c9',
-  bismillah: NAAT_GREEN_LIGHT,
+  arabicText: '#e7efeb',
+  translationText: '#b6c6bf',
+  ayahNumber: '#2a9d84',
+  surahHeader: '#12483a',
+  surahHeaderText: '#f1f7f4',
+  bismillah: '#62c2a5',
   
-  card: '#0d0d0d',
-  cardBorder: '#1a1a1a',
-  divider: '#1f1f1f',
+  card: '#111a17',
+  cardBorder: '#24372f',
+  divider: '#1d2a25',
   bookmark: '#d4af37',
-  playing: NAAT_GREEN_LIGHT,
+  playing: '#2a9d84',
   
-  tabBar: '#000000',
-  tabBarBorder: '#1a1a1a',
+  tabBar: '#080c0a',
+  tabBarBorder: '#1a2b23',
 
   warning: '#f59e0b',
   warningSurface: '#1a1408',
-  shadow: 'rgba(0, 0, 0, 0.4)',
+  shadow: 'rgba(0, 0, 0, 0.55)',
 };
 
-// Turquoise - Naat green primary (unified with Naat header)
+// Turquoise - neutral page canvas with turquoise reserved for app surfaces and accents.
+// The previous palette tinted the entire page through background/backgroundSecondary.
 const turquoiseTheme: ThemeColors = {
-  primary: '#008b8b',
-  surface: '#f0fafa',
-  textPrimary: '#1a3a3a',
+  primary: '#0b7f7a',
+  surface: '#ffffff',
+  textPrimary: '#123b3a',
   accent: '#d4af37',
-  text: '#1a3a3a',
-  textSecondary: '#4a6a6a',
-  background: '#e8f5f5',
-  backgroundSecondary: '#d0ebeb',
-  tint: '#008b8b',
-  icon: '#5a8a8a',
-  tabIconDefault: '#5a8a8a',
-  tabIconSelected: '#008b8b',
+  text: '#123b3a',
+  textSecondary: '#54706e',
+  background: '#f7faf9',
+  backgroundSecondary: '#eef4f2',
+  tint: '#0b7f7a',
+  icon: '#68817e',
+  tabIconDefault: '#68817e',
+  tabIconSelected: '#0b7f7a',
   
-  arabicText: '#0a2a2a',
-  translationText: '#2a4a4a',
-  ayahNumber: '#008b8b',
-  surahHeader: '#008b8b',
+  arabicText: '#102e2d',
+  translationText: '#31514f',
+  ayahNumber: '#0b7f7a',
+  surahHeader: '#0b7f7a',
   surahHeaderText: '#ffffff',
-  bismillah: '#006666',
+  bismillah: '#07635f',
   
-  card: '#f0fafa',
-  cardBorder: '#b8d8d8',
-  divider: '#c8e8e8',
+  card: '#ffffff',
+  cardBorder: '#d8e3e0',
+  divider: '#e3ebe8',
   bookmark: '#d4af37',
-  playing: '#008b8b',
+  playing: '#0b7f7a',
   
-  tabBar: '#e0f0f0',
-  tabBarBorder: '#b8d8d8',
+  tabBar: '#ffffff',
+  tabBarBorder: '#d8e3e0',
 
   warning: '#b45309',
   warningSurface: '#fff7ed',
-  shadow: 'rgba(0, 139, 139, 0.12)',
+  shadow: 'rgba(11, 127, 122, 0.14)',
 };
 
 // Olive - Naat green primary (unified with Naat header)
@@ -207,8 +210,8 @@ export const Themes: Record<ThemeMode, ThemeColors> = {
 /** Naat header gradient colors - use for headers across the app */
 export const NAAT_GRADIENT: Record<ThemeMode, [string, string, string]> = {
   light: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
-  night: ['#0a0a0a', '#141414', '#1a1a1a'],
-  turquoise: ['#006666', '#008b8b', '#1aa3a3'],
+  night: ['#050807', '#0b1712', '#10382c'],
+  turquoise: ['#075e5b', '#0b7f7a', '#19a69f'],
   olive: ['#556b2f', '#6b8e23', '#88a946'],
 };
 
