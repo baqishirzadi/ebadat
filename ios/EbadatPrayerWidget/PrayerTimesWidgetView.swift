@@ -36,24 +36,34 @@ struct PrayerTimesWidgetView: View {
   @ViewBuilder
   private var homeMedium: some View {
     if let snapshot {
-      VStack(alignment: .center, spacing: 6) {
+      VStack(alignment: .center, spacing: 3) {
         VStack(spacing: 2) {
           Text(snapshot.weekdayDari)
-            .font(.custom("Vazirmatn-Bold", size: 14))
+            .font(.custom("Vazirmatn-Bold", size: 12))
             .foregroundColor(.white.opacity(0.9))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
           Text(snapshot.shamsiDisplay)
-            .font(.custom("Vazirmatn-Bold", size: 20))
+            .font(.custom("Vazirmatn-Bold", size: 17))
             .foregroundColor(accent)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
           Text("قمری: \(snapshot.hijriDisplay)")
-            .font(.custom("Vazirmatn", size: 12))
+            .font(.custom("Vazirmatn", size: 10))
             .foregroundColor(.white.opacity(0.85))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
           Text(snapshot.gregorianDisplay)
-            .font(.custom("Vazirmatn", size: 12))
+            .font(.custom("Vazirmatn", size: 10))
             .foregroundColor(.white.opacity(0.75))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
           if !snapshot.sunriseDisplay.isEmpty {
             Text(snapshot.sunriseDisplay)
-              .font(.custom("Vazirmatn-Bold", size: 12))
+              .font(.custom("Vazirmatn-Bold", size: 10))
               .foregroundColor(accent)
+              .lineLimit(1)
+              .minimumScaleFactor(0.7)
           }
         }
         .frame(maxWidth: .infinity)
@@ -68,7 +78,9 @@ struct PrayerTimesWidgetView: View {
           }
         }
       }
-      .padding(12)
+      .padding(.horizontal, 8)
+      .padding(.vertical, 6)
+      .frame(maxHeight: .infinity, alignment: .center)
       .environment(\.layoutDirection, .rightToLeft)
     } else {
       emptyState

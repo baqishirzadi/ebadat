@@ -11,7 +11,6 @@ import {
   Dimensions,
   FlatList,
   Keyboard,
-  KeyboardAvoidingView,
   Platform,
   Pressable,
   StyleSheet,
@@ -142,7 +141,6 @@ function StarterChips({ theme, disabled, onSelect }: StarterChipsProps) {
 export default function MuftiChatScreen() {
   const { theme } = useApp();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
   const listRef = useRef<FlatList<ChatRow>>(null);
   const [input, setInput] = useState('');
 
@@ -224,7 +222,7 @@ export default function MuftiChatScreen() {
         // Use the larger estimate so the input is never clipped under the IME.
         setKeyboardHeight(Math.max(fromTop, reported));
       } else {
-        setKeyboardHeight(0);
+        setKeyboardHeight(Math.round(event.endCoordinates?.height ?? 0));
       }
       setTimeout(() => scrollToBottom(false), Platform.OS === 'android' ? 100 : 50);
     });
@@ -237,7 +235,6 @@ export default function MuftiChatScreen() {
     };
   }, [scrollToBottom]);
 
-  const headerOffset = insets.top + 56;
   const composerBottomPad =
     keyboardHeight > 0 ? Spacing.sm : Math.max(insets.bottom, Spacing.sm);
 
@@ -423,24 +420,9 @@ export default function MuftiChatScreen() {
           }
         />
 
-        {/*
-          Android already uses windowSoftInputMode=adjustResize. Wrapping with
-          KeyboardAvoidingView behavior=height double-shifts the layout and makes
-          the composer jump on low-end / MIUI devices (Poco, Redmi). iOS still needs KAV.
-        */}
-        {Platform.OS === 'ios' ? (
-          <KeyboardAvoidingView
-            style={styles.flex}
-            behavior="padding"
-            keyboardVerticalOffset={headerOffset}
-          >
-            {chatBody}
-          </KeyboardAvoidingView>
-        ) : (
-          <View style={[styles.flex, keyboardHeight > 0 && { paddingBottom: keyboardHeight }]}>
-            {chatBody}
-          </View>
-        )}
+        <View style={[styles.flex, keyboardHeight > 0 && { paddingBottom: keyboardHeight }]}>
+          {chatBody}
+        </View>
       </RtlView>
     </>
   );

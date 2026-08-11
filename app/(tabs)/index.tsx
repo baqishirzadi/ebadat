@@ -4,14 +4,13 @@
 
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Dimensions,
   Keyboard,
-  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   View,
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CitySelectorModal } from '@/components/prayer/CitySelectorModal';
 import {
@@ -32,22 +31,23 @@ import { CityKey, getCity } from '@/utils/cities';
 
 function HomeDashboardScreen() {
   const { state, setCustomLocation } = usePrayer();
-  const insets = useSafeAreaInsets();
   const scrollRef = useRef<ScrollView>(null);
   const greenSectionYRef = useRef(0);
+  const greenSectionHeightRef = useRef(0);
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
-
-  const tabBarHeight =
-    Platform.OS === 'ios' ? 49 + insets.bottom : 64 + insets.bottom;
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const scrollMuftiIntoView = useCallback(() => {
     requestAnimationFrame(() => {
+      const visibleHeight = Dimensions.get('window').height - keyboardHeight;
+      const sectionBottom = greenSectionYRef.current + greenSectionHeightRef.current;
+      const target = sectionBottom - visibleHeight + Spacing.md;
       scrollRef.current?.scrollTo({
-        y: Math.max(0, greenSectionYRef.current - Spacing.md),
+        y: Math.max(0, target),
         animated: true,
       });
     });
-  }, []);
+  }, [keyboardHeight]);
 
   const handleMuftiInputFocus = useCallback(() => {
     scrollMuftiIntoView();
@@ -56,23 +56,37 @@ function HomeDashboardScreen() {
   useEffect(() => {
     if (Platform.OS !== 'ios') return;
 
-    const eventName = 'keyboardWillShow';
-    const subscription = Keyboard.addListener(eventName, scrollMuftiIntoView);
-    return () => subscription.remove();
+    const showSubscription = Keyboard.addListener('keyboardWillShow', (event) => {
+      setKeyboardHeight(Math.round(event.endCoordinates?.height ?? 0));
+    });
+    const hideSubscription = Keyboard.addListener('keyboardWillHide', () => {
+      setKeyboardHeight(0);
+    });
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
   }, [scrollMuftiIntoView]);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios' && keyboardHeight > 0) {
+      scrollMuftiIntoView();
+    }
+  }, [keyboardHeight, scrollMuftiIntoView]);
 
   return (
     <>
-      <KeyboardAvoidingView
+      <View
         testID="ios-home-dashboard-ready"
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? tabBarHeight : 0}
       >
         <ScrollView
           ref={scrollRef}
           style={styles.scroll}
-          contentContainerStyle={styles.content}
+          contentContainerStyle={[
+            styles.content,
+            keyboardHeight > 0 && { paddingBottom: keyboardHeight + Spacing.md },
+          ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           removeClippedSubviews={Platform.OS === 'android'}
@@ -83,6 +97,7 @@ function HomeDashboardScreen() {
             <View
               onLayout={(event) => {
                 greenSectionYRef.current = event.nativeEvent.layout.y;
+                greenSectionHeightRef.current = event.nativeEvent.layout.height;
               }}
             >
               <HomeGreenSection
@@ -99,7 +114,7 @@ function HomeDashboardScreen() {
             <QuickActions />
           </RtlView>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </View>
 
       <CitySelectorModal
         visible={cityPickerVisible}
