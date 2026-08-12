@@ -305,6 +305,9 @@ export default function QuranReaderScreen() {
           {surahName}
         </Text>
         <View style={styles.topBarNav}>
+          <Pressable testID="quran-reader-settings" onPress={() => router.push('/settings?section=quran' as never)} hitSlop={8}>
+            <MaterialIcons name="tune" size={22} color="#fff" />
+          </Pressable>
           {surahNumber > 1 ? (
             <Pressable onPress={goToPrevSurah} hitSlop={8}>
               <MaterialIcons name="chevron-right" size={28} color="#fff" />
@@ -330,6 +333,7 @@ export default function QuranReaderScreen() {
         jumpToken={normalizedJumpToken}
         resumeSource={normalizedResumeSource === 'notification' ? 'notification' : undefined}
         onPlayAyah={handlePlayAyah}
+        onSettingsPress={() => router.push('/settings?section=quran' as never)}
         activePlayingAyah={activeAyahNumber}
         contentPaddingTop={contentPaddingTop}
         contentPaddingBottom={contentPaddingBottom}

@@ -104,7 +104,7 @@ export default function DuaRequestsScreen() {
       <View style={[styles.description, { backgroundColor: theme.backgroundSecondary }]}>
         <CenteredText style={[styles.descriptionText, { color: theme.textSecondary }]}>
           این بخش جهت دریافت دعای خیر، راهنمایی شرعی و نصیحت دینی ایجاد شده است.
-          درخواست‌ها مستقیماً توسط سیدعبدالباقی شیرزادی بررسی می‌گردد و در موارد خاص،
+          درخواست‌ها توسط پاسخ‌دهندهٔ منتخب شما بررسی می‌گردد و در موارد خاص،
           با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
         </CenteredText>
       </View>

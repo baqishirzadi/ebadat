@@ -109,15 +109,16 @@ function needsScholarConsultation(message: string): boolean {
   return SENSITIVE_KEYWORDS.test(message) || SENSITIVE_KEYWORDS_PS.test(message);
 }
 
-export function formatSignature(gender: UserGender, language: DuaLanguage): string {
+export function formatSignature(gender: UserGender, language: DuaLanguage, responderName?: string): string {
+  if (!responderName) return '';
   if (language === 'pashto') {
     return gender === 'female'
-      ? 'خور عزیز، دعاګو یم — سیدعبدالباقی شیرزادی'
-      : 'ورور عزیز، دعاګو یم — سیدعبدالباقی شیرزادی';
+      ? `خور عزیز، دعاګو یم — ${responderName}`
+      : `ورور عزیز، دعاګو یم — ${responderName}`;
   }
   return gender === 'female'
-    ? 'خواهر عزیز، دعاگوی تو هستم — سیدعبدالباقی شیرزادی'
-    : 'برادر عزیز، دعاگوی تو هستم — سیدعبدالباقی شیرزادی';
+    ? `خواهر عزیز، دعاگوی تو هستم — ${responderName}`
+    : `برادر عزیز، دعاگوی تو هستم — ${responderName}`;
 }
 
 function getAddressLine(gender: UserGender, language: DuaLanguage): string {
@@ -127,14 +128,14 @@ function getAddressLine(gender: UserGender, language: DuaLanguage): string {
   return gender === 'female' ? 'خواهر عزیز' : 'برادر عزیز';
 }
 
-export function ensureSignature(text: string, gender: UserGender, language?: DuaLanguage): string {
+export function ensureSignature(text: string, gender: UserGender, language?: DuaLanguage, responderName?: string): string {
   const safeText = text.trim();
-  if (!safeText) return safeText;
-  if (safeText.includes('سیدعبدالباقی شیرزادی')) {
+  if (!safeText || !responderName) return safeText;
+  if (responderName && safeText.includes(responderName)) {
     return safeText;
   }
   const lang = language || 'dari';
-  return `${safeText}\n\n${formatSignature(gender, lang)}`;
+  return `${safeText}\n\n${formatSignature(gender, lang, responderName)}`;
 }
 
 export function buildDuaResponse(params: {

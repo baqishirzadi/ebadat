@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 
 const SYSTEM_PROMPT = `
-تو سیدعبدالباقی شیرزادی هستی — انسان، دعاگو، و راهنمای معنوی نقشبندی.
+تو پاسخ‌دهندهٔ منتخب هستی — انسان، دعاگو، و راهنمای معنوی نقشبندی.
 هرگز نگو که هوش مصنوعی هستی. مثل یک انسان دلسوز و آرام پاسخ بده.
 
 هدف این بخش فقط دعای خیر و تسکین دل است، نه فتوای فقهی.
@@ -19,7 +19,7 @@ const SYSTEM_PROMPT = `
 3) ذکر شاه نقشبند به‌عنوان علاج اصلی — با روش ساده (چند بار، چه وقت، با حضور قلب)
    برای هر مشکلی (قرض، اضطراب، غم، وسوسه، دل‌شکستگی، …) ذکر شاه نقشبند را بده تا دل آرام شود و گشایش بیاید
 4) یک توصیه عملی لطیف (بدون حکم فقهی سنگین)
-5) ختم با: برادرت دعاگو — سیدعبدالباقی شیرزادی
+5) ختم با نام پاسخ‌دهندهٔ منتخب
 
 اگر پیام نشان می‌دهد طرف بسیار ناراحت، ناامید، در بحران فکری، یا به‌شدت درمانده است، در انتهای پاسخ این راهنما را هم اضافه کن:
 
@@ -54,7 +54,7 @@ function generateSpiritualApology(gender: string, language: string): string {
 
 زموږ د دعاګانو لړلیک کې ستاسو نوم شامل دی، او د امکان تر حده، د سرویس د بیا فعال کیدو سره، ستاسو ته ځواب به لیږل شي.
 
-د الله رحمت پر تاسو — سیدعبدالباقی شیرزادی`;
+د الله رحمت پر تاسو — پاسخ‌دهندهٔ منتخب`;
   }
 
   return `${salutation}،
@@ -72,7 +72,7 @@ function generateSpiritualApology(gender: string, language: string): string {
 
 نام شما در فهرست دعاهای ما ثبت است، و در صورت امکان، با فعال شدن مجدد سرویس، پاسخ برای شما ارسال خواهد شد.
 
-رحمت خدا بر شما — سیدعبدالباقی شیرزادی`;
+رحمت خدا بر شما — پاسخ‌دهندهٔ منتخب`;
 }
 
 function jsonResponse(body: unknown, status = 200) {
@@ -87,6 +87,8 @@ async function sendDuaExpoPush(
   serviceRoleKey: string,
   userId: string,
   duaRequestId: string,
+  responderId?: string | null,
+  responderName?: string | null,
 ): Promise<void> {
   try {
     const metaRes = await fetch(
@@ -130,6 +132,8 @@ async function sendDuaExpoPush(
           type: "dua_response",
           requestId: duaRequestId,
           userId,
+          responderId: responderId || null,
+          responderName: responderName || null,
         },
       }),
     });
@@ -167,6 +171,7 @@ async function generateOpenAIReply(
   message: string,
   gender: string,
   language: string,
+  responderName?: string | null,
 ): Promise<string> {
   const userPrompt = `
 جنسیت: ${gender}
@@ -176,6 +181,8 @@ ${message}
 
 به این درخواست خاص پاسخ بده: همدلی، دعای کوتاه، ذکر شاه نقشبند با روش ساده، و یک توصیه عملی.
 اگر حال طرف بسیار ناراحت یا درمانده است، راهنمای لنگر کابل و شماره 0787506666 را هم بیاور.
+پاسخ‌دهنده انتخاب‌شده: ${responderName || "پاسخ‌دهنده انتخاب نشده"}
+در پایان فقط با نام پاسخ‌دهنده انتخاب‌شده امضا کن.
 `;
 
   const openAIRes = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -214,6 +221,8 @@ async function publishAnswer(
   duaRequestId: string,
   userId: string,
   reply: string,
+  responderId?: string | null,
+  responderName?: string | null,
 ): Promise<void> {
   const updateRes = await fetch(
     `${supabaseUrl}/rest/v1/dua_requests?id=eq.${encodeURIComponent(duaRequestId)}`,
@@ -228,7 +237,8 @@ async function publishAnswer(
       body: JSON.stringify({
         status: "answered",
         response: reply,
-        reviewer_name: "سیدعبدالباقی شیرزادی",
+        reviewer_id: responderId || null,
+        reviewer_name: responderName || null,
         answered_at: new Date().toISOString(),
         ai_response: reply,
         is_manual: false,
@@ -241,7 +251,7 @@ async function publishAnswer(
     throw new Error(`DB update failed: ${errorText.substring(0, 300)}`);
   }
 
-  await sendDuaExpoPush(supabaseUrl, serviceRoleKey, userId, duaRequestId);
+  await sendDuaExpoPush(supabaseUrl, serviceRoleKey, userId, duaRequestId, responderId, responderName);
 }
 
 serve(async (req) => {
@@ -332,7 +342,7 @@ serve(async (req) => {
 
       const nowIso = new Date().toISOString();
       const dueRes = await fetch(
-        `${SUPABASE_URL}/rest/v1/dua_requests?status=eq.pending&scheduled_answer_at=lte.${encodeURIComponent(nowIso)}&order=scheduled_answer_at.asc&limit=5&select=id,user_id,message,gender`,
+        `${SUPABASE_URL}/rest/v1/dua_requests?status=eq.pending&scheduled_answer_at=lte.${encodeURIComponent(nowIso)}&order=scheduled_answer_at.asc&limit=5&select=id,user_id,message,gender,responder_id,responder_name`,
         {
           headers: {
             apikey: SERVICE_ROLE_KEY,
@@ -351,12 +361,24 @@ serve(async (req) => {
         user_id: string;
         message: string;
         gender?: string;
+        responder_id?: string | null;
+        responder_name?: string | null;
       }>;
 
       const processed: string[] = [];
       const failed: string[] = [];
 
       for (const row of dueRows) {
+        if (!row.responder_id || !row.responder_name) {
+          failed.push(row.id);
+          console.warn(JSON.stringify({
+            level: "WARN",
+            component: "DuaAutonomous",
+            event: "process_due_missing_responder",
+            duaRequestId: row.id,
+          }));
+          continue;
+        }
         try {
           const gender = row.gender === "female" ? "female" : "male";
           const reply = await generateOpenAIReply(
@@ -364,8 +386,9 @@ serve(async (req) => {
             row.message,
             gender,
             "fa",
+            row.responder_name,
           );
-          await publishAnswer(SUPABASE_URL, SERVICE_ROLE_KEY, row.id, row.user_id, reply);
+          await publishAnswer(SUPABASE_URL, SERVICE_ROLE_KEY, row.id, row.user_id, reply, row.responder_id, row.responder_name);
           processed.push(row.id);
         } catch (err) {
           failed.push(row.id);
@@ -387,7 +410,7 @@ serve(async (req) => {
       });
     }
 
-    const { message, gender, language, request_id } = requestBody;
+    const { message, gender, language, request_id, responder_id, responder_name } = requestBody;
     userRequestId = request_id || null;
 
     // Structured logging: Incoming request
@@ -403,6 +426,7 @@ serve(async (req) => {
         messagePreview: message ? message.substring(0, 100) + (message.length > 100 ? "..." : "") : "[empty]",
         gender: gender || "[missing]",
         language: language || "[missing]",
+        responderName: responder_name || "[missing]",
       }
     }));
 
@@ -481,6 +505,16 @@ serve(async (req) => {
       );
     }
 
+    if (!responder_id || !["syed_abdul_baqi_shirzadi", "qari_syed_safiullah_shirzadi"].includes(responder_id) || !responder_name) {
+      return new Response(
+        JSON.stringify({
+          error: "Validation failed",
+          details: "A valid responder selection is required",
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } },
+      );
+    }
+
     const userPrompt = `
 جنسیت: ${gender}
 زبان: ${language}
@@ -489,6 +523,8 @@ ${message}
 
 به این درخواست خاص پاسخ بده: همدلی، دعای کوتاه، ذکر شاه نقشبند با روش ساده، و یک توصیه عملی.
 اگر حال طرف بسیار ناراحت یا درمانده است، راهنمای لنگر کابل و شماره 0787506666 را هم بیاور.
+پاسخ‌دهنده انتخاب‌شده: ${responder_name || "پاسخ‌دهنده انتخاب نشده"}
+در پایان فقط با نام پاسخ‌دهنده انتخاب‌شده امضا کن.
 `;
 
     // Prepare OpenAI API request with gpt-5.2
@@ -813,9 +849,10 @@ ${message}
           const dbUpdateStart = Date.now();
           // Resolve user_id for push
           let ownerUserId: string | null = null;
+          let requestRow: { user_id?: string; responder_id?: string | null; responder_name?: string | null } | null = null;
           try {
             const ownerRes = await fetch(
-              `${SUPABASE_URL}/rest/v1/dua_requests?id=eq.${encodeURIComponent(userRequestId)}&select=user_id&limit=1`,
+              `${SUPABASE_URL}/rest/v1/dua_requests?id=eq.${encodeURIComponent(userRequestId)}&select=user_id,responder_id,responder_name&limit=1`,
               {
                 headers: {
                   apikey: SERVICE_ROLE_KEY,
@@ -825,12 +862,21 @@ ${message}
             );
             const ownerData = await ownerRes.json().catch(() => []);
             ownerUserId = Array.isArray(ownerData) ? ownerData[0]?.user_id ?? null : null;
+            requestRow = Array.isArray(ownerData) ? ownerData[0] ?? null : null;
           } catch {
             ownerUserId = null;
           }
 
           if (ownerUserId) {
-            await publishAnswer(SUPABASE_URL, SERVICE_ROLE_KEY, userRequestId, ownerUserId, reply);
+            await publishAnswer(
+              SUPABASE_URL,
+              SERVICE_ROLE_KEY,
+              userRequestId,
+              ownerUserId,
+              reply,
+              requestRow?.responder_id,
+              requestRow?.responder_name,
+            );
           } else {
             const updateRes = await fetch(`${SUPABASE_URL}/rest/v1/dua_requests?id=eq.${userRequestId}`, {
               method: "PATCH",
@@ -843,7 +889,8 @@ ${message}
               body: JSON.stringify({
                 status: "answered",
                 response: reply,
-                reviewer_name: "سیدعبدالباقی شیرزادی",
+                reviewer_id: requestRow?.responder_id || null,
+                reviewer_name: requestRow?.responder_name || null,
                 answered_at: new Date().toISOString(),
                 ai_response: reply,
                 is_manual: false,

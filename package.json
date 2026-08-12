@@ -52,6 +52,10 @@
     "verify:ios-widget": "node scripts/verify-ios-widget.js",
     "verify:ios-app-icon": "node scripts/verify-ios-app-icon.js",
     "verify:ios-notification-settings": "node scripts/verify-ios-notification-settings.js",
+    "verify:dark-theme": "node scripts/verify-dark-theme.js",
+    "verify:adhan-response": "node scripts/verify-adhan-response.js",
+    "verify:responder-markdown": "node scripts/verify-responder-markdown.js",
+    "verify:mufti-dua-quran": "node scripts/verify-mufti-dua-quran.js",
     "verify:ios-adhan": "cat docs/ios-adhan-verification.md",
     "build:ios:production": "eas build --platform ios --profile production --non-interactive",
     "submit:ios": "eas submit --platform ios --profile production --latest --non-interactive"

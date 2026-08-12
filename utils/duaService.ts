@@ -6,6 +6,7 @@
 import NetInfo from '@react-native-community/netinfo';
 import Constants from 'expo-constants';
 import { DuaRequest, UserMetadata } from '@/types/dua';
+import { getResponder, type ResponderId } from '@/constants/responders';
 import * as duaStorage from './duaStorage';
 
 /**
@@ -72,6 +73,8 @@ function rowToRequest(row: any): DuaRequest {
     message: row.message,
     gender: row.gender || 'unspecified',
     isAnonymous: row.is_anonymous || false,
+    responderId: getResponder(row.responder_id)?.id,
+    responderName: row.responder_name || getResponder(row.responder_id)?.nameDari,
     status: row.status || 'pending',
     createdAt: row.created_at ? new Date(row.created_at) : new Date(),
     answeredAt: row.answered_at ? new Date(row.answered_at) : undefined,
@@ -91,6 +94,8 @@ function requestToRow(request: DuaRequest): any {
     message: request.message,
     gender: request.gender || 'unspecified',
     is_anonymous: request.isAnonymous,
+    responder_id: request.responderId || null,
+    responder_name: request.responderName || (request.responderId ? getResponder(request.responderId)?.nameDari : null),
     status: request.status,
     created_at: request.createdAt instanceof Date ? request.createdAt.toISOString() : new Date().toISOString(),
     answered_at: request.answeredAt ? request.answeredAt.toISOString() : null,
@@ -103,12 +108,16 @@ function requestToRow(request: DuaRequest): any {
 /**
  * Submit a new request
  */
-export async function submitRequest(request: Omit<DuaRequest, 'id' | 'createdAt' | 'status'>): Promise<DuaRequest> {
+export async function submitRequest(request: Omit<DuaRequest, 'id' | 'createdAt' | 'status'> & { responderId: ResponderId }): Promise<DuaRequest> {
+  const normalizedRequest = {
+    ...request,
+    responderName: request.responderName || getResponder(request.responderId)?.nameDari,
+  };
   if (!isAvailable() || !(await hasNetwork())) {
     // Save offline and return
     const userId = await duaStorage.getOrCreateUserId();
     const offlineRequest: DuaRequest = {
-      ...request,
+      ...normalizedRequest,
       id: `offline_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       status: 'pending',
       createdAt: new Date(),
@@ -121,7 +130,7 @@ export async function submitRequest(request: Omit<DuaRequest, 'id' | 'createdAt'
   try {
     const userId = await duaStorage.getOrCreateUserId();
     const requestData: DuaRequest = {
-      ...request,
+      ...normalizedRequest,
       id: `temp_${Date.now()}`,
       userId,
       status: 'pending',

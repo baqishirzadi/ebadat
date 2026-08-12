@@ -210,7 +210,7 @@ function getDocumentDirectory(): string | null {
   return typeof documentDirectory === 'string' ? documentDirectory : null;
 }
 
-function getAyahCachePath(surah: number, ayah: number, reciter: ReciterKey): string | null {
+export function getAyahCachePath(surah: number, ayah: number, reciter: ReciterKey): string | null {
   const documentDirectory = getDocumentDirectory();
   if (!documentDirectory) return null;
 

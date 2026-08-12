@@ -4,10 +4,12 @@
  */
 
 import CenteredText from '@/components/CenteredText';
+import { MarkdownText } from '@/components/MarkdownText';
 import { StatusBadge } from '@/components/dua/StatusBadge';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
+import { getResponder } from '@/constants/responders';
 import { DUA_CATEGORIES, DuaRequest, GENDER_INFO, STATUS_INFO } from '@/types/dua';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
@@ -166,6 +168,16 @@ export default function DuaRequestDetailScreen() {
             </CenteredText>
           </View>
         </View>
+        {request.responderId && (
+          <View style={styles.metaRow}>
+            <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
+              <MaterialIcons name="person-outline" size={14} color={theme.textSecondary} />
+              <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
+                پاسخ‌دهنده: {request.responderName || getResponder(request.responderId)?.nameDari}
+              </CenteredText>
+            </View>
+          </View>
+        )}
         <View style={styles.metaRow}>
           <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
             <MaterialIcons name="person" size={14} color={theme.textSecondary} />
@@ -189,9 +201,9 @@ export default function DuaRequestDetailScreen() {
               متن درخواست
             </CenteredText>
           </View>
-          <CenteredText style={[styles.messageText, { color: theme.text }]}>
+          <MarkdownText style={[styles.messageText, { color: theme.text }]} boldStyle={{ color: theme.text }}>
             {request.message}
-          </CenteredText>
+          </MarkdownText>
           <CenteredText style={[styles.dateText, { color: theme.textSecondary }]}>
             {formatDate(request.createdAt)}
           </CenteredText>
@@ -206,9 +218,9 @@ export default function DuaRequestDetailScreen() {
               پاسخ
             </CenteredText>
             </View>
-            <CenteredText style={[styles.responseText, { color: theme.text }]}>
+            <MarkdownText style={[styles.responseText, { color: theme.text }]} boldStyle={{ color: theme.text }}>
               {request.response}
-            </CenteredText>
+            </MarkdownText>
             {/0787506666|لنگر/.test(request.response) ? (
               <View style={[styles.distressBox, { backgroundColor: theme.backgroundSecondary }]}>
                 <MaterialIcons name="phone-in-talk" size={18} color={theme.tint} />

@@ -39,7 +39,7 @@ export async function pushWidgetSnapshot(
     cityKey?: string;
     location?: { latitude: number; longitude: number; altitude?: number; timezone?: string };
     timezone?: string;
-    /** Days to prefetch into the widget snapshot. Default 1 (cold-start safe). */
+    /** Days to prefetch into the widget snapshot. Default 30 for app-independent rollover. */
     horizonDays?: number;
   },
 ): Promise<void> {
@@ -57,7 +57,7 @@ export async function pushWidgetSnapshot(
     'Asia/Kabul';
   const policy = resolvePrayerCalculationPolicy(options?.cityKey, options?.location);
 
-  const horizonDays = Math.max(1, options?.horizonDays ?? 1);
+  const horizonDays = Math.max(1, options?.horizonDays ?? 30);
   let multiDay: Array<{ dateKey: string; times: PrayerTimes; noonAnchor: Date }> | undefined;
   let sourceLabel: string | undefined;
   if ((options?.cityKey || options?.location) && horizonDays > 1) {

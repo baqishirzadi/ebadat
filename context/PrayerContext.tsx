@@ -847,43 +847,6 @@ export function PrayerProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Listen for notification response (when user taps notification - works even if app was killed)
-  useEffect(() => {
-    let subscription: any = null;
-
-    const setupListener = async () => {
-      const NotificationsModule = await loadNotificationsIfAvailable();
-      if (!NotificationsModule) return;
-
-      subscription = NotificationsModule.addNotificationResponseReceivedListener(async (response: any) => {
-        const { prayer, playSound, voice, type } = response.notification.request.content.data || {};
-
-        console.log('Notification response received (background/killed):', { prayer, playSound, voice, type });
-
-        // Play Adhan when user taps notification (even if app was killed)
-        if ((type === 'adhan' || type === 'adhan_test') && playSound) {
-          try {
-            const prayerName = (prayer || 'fajr') as PrayerName;
-            const selectedVoice = (voice as any) || 'barakatullah';
-            await playAdhan(selectedVoice, prayerName);
-          } catch (error) {
-            if (__DEV__) {
-              console.log('[PrayerNotifications] Tapped Adhan playback skipped:', error);
-            }
-          }
-        }
-      });
-    };
-
-    setupListener();
-
-    return () => {
-      if (subscription) {
-        subscription.remove();
-      }
-    };
-  }, []);
-
   const prayerTimesScheduleKey = useMemo(() => {
     if (!state.prayerTimes) return null;
     const times = state.prayerTimes;
@@ -1366,7 +1329,7 @@ async function configureAndroidNotificationChannels(
       cityKey: toCityKey(state.settings.selectedCity),
       location: state.location,
       timezone: state.location.timezone,
-      horizonDays: 1,
+      horizonDays: 30,
     });
     // Multi-day only after adhan schedule settles — avoids racing 7-day native JSON.
     if (!isAdhanSettled) return;
@@ -1381,7 +1344,7 @@ async function configureAndroidNotificationChannels(
           cityKey: toCityKey(state.settings.selectedCity),
           location: state.location,
           timezone: state.location.timezone,
-          horizonDays: 7,
+          horizonDays: 30,
         });
       });
     }, 15_000);
@@ -1407,8 +1370,8 @@ async function configureAndroidNotificationChannels(
         cityKey: toCityKey(state.settings.selectedCity),
         location: state.location,
         timezone: state.location.timezone,
-        // Resume: 1-day if adhan still settling; else 7-day offline bundle.
-        horizonDays: isAdhanSettled ? 7 : 1,
+        // Keep a long local horizon so WidgetKit remains correct while the app is closed.
+        horizonDays: 30,
       });
     });
     return () => subscription.remove();

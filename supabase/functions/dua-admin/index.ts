@@ -84,8 +84,9 @@ serve(async (req) => {
     if (action === "update") {
       const id = body.id;
       const responseText = body.response;
-      const reviewerName = body.reviewer_name || "سیدعبدالباقی شیرزادی";
-      if (!id || !responseText) {
+      const reviewerName = body.reviewer_name;
+      const reviewerId = body.reviewer_id || null;
+      if (!id || !responseText || !reviewerName) {
         return jsonResponse({ error: "Missing id or response" }, 400);
       }
 
@@ -98,6 +99,7 @@ serve(async (req) => {
             status: "answered",
             response: responseText,
             reviewer_name: reviewerName,
+            reviewer_id: reviewerId,
             answered_at: new Date().toISOString(),
           }),
         }

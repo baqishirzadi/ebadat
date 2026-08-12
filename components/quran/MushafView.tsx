@@ -26,6 +26,7 @@ interface MushafViewProps {
   resumeSource?: 'notification';
   onAyahChange?: (surah: number, ayah: number) => void;
   onPlayAyah?: (surah: number, ayah: number) => void;
+  onSettingsPress?: () => void;
   activePlayingAyah?: number | null;
   onPageChange?: (page: number) => void;
   contentPaddingTop?: number;
@@ -77,6 +78,7 @@ export const MushafView = React.memo(function MushafView({
   resumeSource,
   onAyahChange,
   onPlayAyah,
+  onSettingsPress,
   activePlayingAyah = null,
   onPageChange,
   contentPaddingTop = 0,
@@ -922,9 +924,10 @@ export const MushafView = React.memo(function MushafView({
         ayahCount={surah.ayahCount}
         revelationType={surah.revelationType}
         onPlayPress={() => onPlayAyah?.(surahNumber, 1)}
+        onSettingsPress={onSettingsPress}
       />
     );
-  }, [surah, surahNumber, onPlayAyah]);
+  }, [surah, surahNumber, onPlayAyah, onSettingsPress]);
 
   // Render Mushaf page mode
   const renderMushafPage = useCallback(() => {

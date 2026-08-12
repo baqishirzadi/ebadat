@@ -3,6 +3,8 @@
  * Calls the Supabase Edge Function `dua-autonomous` and returns the reply text.
  */
 
+import type { ResponderId } from '@/constants/responders';
+
 export type DuaLanguage = 'fa' | 'ps';
 export type DuaGender = 'male' | 'female';
 
@@ -55,12 +57,14 @@ interface AskAutonomousDuaOptions {
   gender: DuaGender;
   language: DuaLanguage;
   requestId?: string;
+  responderId: ResponderId;
+  responderName: string;
 }
 
 export async function askAutonomousDua(
   options: AskAutonomousDuaOptions
 ): Promise<string> {
-  const { message, gender, language, requestId } = options;
+  const { message, gender, language, requestId, responderId, responderName } = options;
 
   // Basic validation
   if (!message.trim()) {
@@ -78,6 +82,8 @@ export async function askAutonomousDua(
         gender,
         language,
         request_id: requestId ?? null,
+        responder_id: responderId,
+        responder_name: responderName,
       }),
     });
 
@@ -154,4 +160,3 @@ export async function askAutonomousDua(
     throw new Error(msg);
   }
 }
-

@@ -22,7 +22,7 @@ import { usePrayer } from '@/context/PrayerContext';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { CalculationMethods } from '@/utils/prayerTimes';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   Pressable,
@@ -47,7 +47,9 @@ export default function SettingsScreen() {
   const { updateSettings, state: prayerState } = usePrayer();
   const calculationMethod = prayerState.settings.calculationMethod;
   const router = useRouter();
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const { section } = useLocalSearchParams<{ section?: string | string[] }>();
+  const initialSection = Array.isArray(section) ? section[0] : section;
+  const [expandedSection, setExpandedSection] = useState<string | null>(initialSection === 'quran' ? 'quranFont' : null);
 
   const themes: { id: ThemeMode; name: string; icon: string }[] = useMemo(
     () => [

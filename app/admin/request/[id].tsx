@@ -22,9 +22,11 @@ import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { DuaRequest, DUA_CATEGORIES, GENDER_INFO, UserGender } from '@/types/dua';
 import { fetchAdminRequestById, updateAdminResponse } from '@/utils/duaAdmin';
 import CenteredText from '@/components/CenteredText';
+import { MarkdownText } from '@/components/MarkdownText';
 import { StatusBadge } from '@/components/dua/StatusBadge';
 import { detectLanguage, ensureSignature } from '@/utils/duaAdvisor';
 import { fetchHanafiDuaSuggestion } from '@/utils/hanafiDuaSuggestion';
+import { RESPONDERS, getResponder, type ResponderId } from '@/constants/responders';
 
 export default function AdminRequestResponseScreen() {
   const { theme } = useApp();
@@ -45,6 +47,7 @@ export default function AdminRequestResponseScreen() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [suggesting, setSuggesting] = useState(false);
+  const [reviewerId, setReviewerId] = useState<ResponderId | null>(null);
 
   useEffect(() => {
     loadRequest();
@@ -59,6 +62,7 @@ export default function AdminRequestResponseScreen() {
         throw new Error('Request not found');
       }
       setRequest(data);
+      setReviewerId(data.responderId ?? null);
       if (data.response) {
         setResponse(data.response);
       }
@@ -72,11 +76,20 @@ export default function AdminRequestResponseScreen() {
 
   const handleSuggestResponse = async () => {
     if (!request) return;
+    if (!reviewerId) {
+      Alert.alert('خطا', 'لطفاً پاسخ‌دهنده را انتخاب کنید');
+      return;
+    }
+    const responder = getResponder(reviewerId);
+    if (!responder) return;
     setSuggesting(true);
     try {
       const draft = await fetchHanafiDuaSuggestion(
         request.message,
         (request.gender || 'male') as UserGender,
+        reviewerId,
+        responder.nameDari,
+        undefined,
       );
       setResponse(draft);
     } catch (error) {
@@ -93,7 +106,7 @@ export default function AdminRequestResponseScreen() {
   };
 
   const handleSubmitResponse = async () => {
-    if (!response.trim()) {
+    if (!response.trim() || !reviewerId) {
       Alert.alert('خطا', 'لطفاً پاسخ را وارد کنید');
       return;
     }
@@ -104,11 +117,14 @@ export default function AdminRequestResponseScreen() {
     try {
       const language = detectLanguage(request.message);
       const gender = (request.gender || 'male') as UserGender;
-      const finalResponse = ensureSignature(response.trim(), gender, language);
+      const reviewer = getResponder(reviewerId);
+      if (!reviewer) return;
+      const finalResponse = ensureSignature(response.trim(), gender, language, reviewer.nameDari);
       await updateAdminResponse({
         id: request.id,
         response: finalResponse,
-        reviewerName: 'سیدعبدالباقی شیرزادی',
+        reviewerId: reviewer.id,
+        reviewerName: reviewer.nameDari,
       });
 
       // Notification will be sent automatically by Edge Function when record is updated
@@ -231,9 +247,9 @@ export default function AdminRequestResponseScreen() {
               متن درخواست متقاضی
             </CenteredText>
           </View>
-          <CenteredText style={[styles.messageText, { color: theme.text }]}>
+          <MarkdownText style={[styles.messageText, { color: theme.text }]} boldStyle={{ color: theme.text }}>
             {request.message}
-          </CenteredText>
+          </MarkdownText>
           <CenteredText style={[styles.dateText, { color: theme.textSecondary }]}>
             {formatDate(request.createdAt)}
           </CenteredText>
@@ -266,8 +282,14 @@ export default function AdminRequestResponseScreen() {
             </Pressable>
             <Pressable
               onPress={() => {
+                if (!reviewerId) {
+                  Alert.alert('خطا', 'لطفاً پاسخ‌دهنده را انتخاب کنید');
+                  return;
+                }
                 const lang = detectLanguage(request.message);
-                const updated = ensureSignature(response || '', request.gender || 'male', lang);
+                const responder = getResponder(reviewerId);
+                if (!responder) return;
+                const updated = ensureSignature(response || '', request.gender || 'male', lang, responder.nameDari);
                 setResponse(updated);
               }}
               style={({ pressed }) => [
@@ -295,16 +317,42 @@ export default function AdminRequestResponseScreen() {
               textAlign="center"
             />
           </View>
+          <CenteredText style={[styles.sectionTitle, { color: theme.text, marginTop: Spacing.md }]}>
+            پاسخ‌دهنده
+          </CenteredText>
+          <View style={styles.responderRow}>
+            {RESPONDERS.map((responder) => {
+              const selected = reviewerId === responder.id;
+              return (
+                <Pressable
+                  key={responder.id}
+                  onPress={() => setReviewerId(responder.id)}
+                  style={({ pressed }) => [
+                    styles.responderChip,
+                    {
+                      backgroundColor: selected ? `${theme.tint}18` : theme.backgroundSecondary,
+                      borderColor: selected ? theme.tint : theme.cardBorder,
+                    },
+                    pressed && styles.buttonPressed,
+                  ]}
+                >
+                  <CenteredText style={[styles.actionText, { color: selected ? theme.tint : theme.text }]}>
+                    {responder.nameDari}
+                  </CenteredText>
+                </Pressable>
+              );
+            })}
+          </View>
         </View>
 
         {/* Submit Button */}
         <Pressable
           onPress={handleSubmitResponse}
-          disabled={submitting || !response.trim()}
+          disabled={submitting || !response.trim() || !reviewerId}
           style={({ pressed }) => [
             styles.submitButton,
             {
-              backgroundColor: submitting || !response.trim() ? theme.cardBorder : theme.tint,
+              backgroundColor: submitting || !response.trim() || !reviewerId ? theme.cardBorder : theme.tint,
             },
             pressed && styles.buttonPressed,
           ]}
@@ -466,6 +514,16 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     fontWeight: '600',
     fontFamily: 'Vazirmatn',
+  },
+  responderRow: {
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  responderChip: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.lg,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
   },
   inputContainer: {
     borderRadius: BorderRadius.lg,

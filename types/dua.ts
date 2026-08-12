@@ -7,6 +7,7 @@ export type DuaCategory = 'dua' | 'advice' | 'personal' | 'other';
 export type RequestStatus = 'pending' | 'answered' | 'closed';
 
 export type UserGender = 'male' | 'female' | 'unspecified';
+import type { ResponderId } from '@/constants/responders';
 
 export interface DuaRequest {
   id: string;
@@ -15,6 +16,9 @@ export interface DuaRequest {
   message: string;
   gender?: UserGender;
   isAnonymous: boolean;
+  /** Required for new submissions; optional only for legacy cached rows. */
+  responderId?: ResponderId;
+  responderName?: string;
   status: RequestStatus;
   createdAt: Date;
   answeredAt?: Date;

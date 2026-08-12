@@ -4,6 +4,7 @@
  */
 
 import { DuaCategory, DuaRequest, UserGender } from '@/types/dua';
+import type { ResponderId } from '@/constants/responders';
 import { useStartupPhase } from '@/context/StartupPhaseContext';
 import * as duaService from '@/utils/duaService';
 import * as duaStorage from '@/utils/duaStorage';
@@ -80,7 +81,8 @@ interface DuaContextType {
     category: DuaCategory,
     message: string,
     isAnonymous: boolean,
-    gender: UserGender
+    gender: UserGender,
+    responderId: ResponderId,
   ) => Promise<DuaRequest>;
   refreshRequests: (options?: { silent?: boolean }) => Promise<void>;
   getRequestById: (id: string) => Promise<DuaRequest | null>;
@@ -236,7 +238,8 @@ export function DuaProvider({ children }: { children: ReactNode }) {
       category: DuaCategory,
       message: string,
       isAnonymous: boolean,
-      gender: UserGender
+      gender: UserGender,
+      responderId: ResponderId,
     ): Promise<DuaRequest> => {
       if (!stateRef.current.userId) {
         const userId = await duaStorage.getOrCreateUserId();
@@ -260,6 +263,7 @@ export function DuaProvider({ children }: { children: ReactNode }) {
           message,
           gender,
           isAnonymous,
+          responderId,
         });
 
         dispatch({ type: 'ADD_REQUEST', payload: request });

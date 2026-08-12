@@ -4,6 +4,7 @@
  */
 
 import { DuaRequest } from '@/types/dua';
+import { getResponder } from '@/constants/responders';
 import Constants from 'expo-constants';
 
 const extra = (Constants.expoConfig?.extra || (Constants as any).manifest?.extra || {}) as {
@@ -29,6 +30,8 @@ function rowToRequest(row: any): DuaRequest {
     message: row.message,
     gender: row.gender || 'unspecified',
     isAnonymous: row.is_anonymous || false,
+    responderId: getResponder(row.responder_id)?.id,
+    responderName: row.responder_name || getResponder(row.responder_id)?.nameDari,
     status: row.status || 'pending',
     createdAt: row.created_at ? new Date(row.created_at) : new Date(),
     answeredAt: row.answered_at ? new Date(row.answered_at) : undefined,
@@ -80,10 +83,12 @@ export async function updateAdminResponse(params: {
   id: string;
   response: string;
   reviewerName: string;
+  reviewerId?: string;
 }): Promise<void> {
   await callAdmin('update', {
     id: params.id,
     response: params.response,
     reviewer_name: params.reviewerName,
+    reviewer_id: params.reviewerId,
   });
 }

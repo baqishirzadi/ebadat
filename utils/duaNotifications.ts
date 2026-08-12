@@ -105,6 +105,8 @@ export async function sendNotificationToUser(userId: string, requestId: string):
           type: 'dua_response',
           requestId,
           userId,
+          responderId: requestData.responder_id || requestData.reviewer_id || null,
+          responderName: requestData.responder_name || requestData.reviewer_name || null,
         },
         sound: true,
       },

@@ -5,7 +5,6 @@
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
 
 import { askHanafiMufti, isHanafiMuftiConfigured } from '@/utils/hanafiMufti';
-import { formatChatPlainText } from '@/utils/formatChatPlainText';
 import {
   clearHanafiMuftiMessages,
   loadHanafiMuftiMessages,
@@ -118,14 +117,14 @@ export function useHanafiMufti() {
       signal: controller.signal,
       onDelta: (chunk) => {
         assistantText += chunk;
-        setStore({ streamingContent: formatChatPlainText(assistantText) });
+        setStore({ streamingContent: assistantText });
       },
       onDone: () => {
         if (controller.signal.aborted) return;
 
         const assistantMessage: StoredHanafiMuftiMessage = {
           role: 'assistant',
-          content: formatChatPlainText(assistantText.trim()) || 'پاسخی دریافت نشد.',
+          content: assistantText.trim() || 'پاسخی دریافت نشد.',
           createdAt: Date.now(),
         };
 

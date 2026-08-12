@@ -267,6 +267,14 @@ function RootLayoutNav() {
         pathname: '/(tabs)/ahadith',
         params: { section: 'daily' },
       } as any);
+      return;
+    }
+
+    // Adhan audio is owned by the scheduled notification (background/terminated)
+    // or the foreground receive listener. A response tap must only navigate and
+    // must never start a second playback.
+    if (type === 'adhan' || type === 'adhan_test') {
+      router.replace('/(tabs)');
     }
   }, [router, showSpiritualSplash, waitForAppActive]);
 

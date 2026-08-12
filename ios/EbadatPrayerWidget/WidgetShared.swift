@@ -24,9 +24,13 @@ enum WidgetShared {
     // Version 3 snapshots contain all inputs needed to calculate a fresh day.
     // This is the normal path and does not depend on the app process running.
     if stored.hasCalculationInputs {
-      let calculated = WidgetPrayerCalculator.daySnapshot(snapshot: stored, date: date)
+      let calculated = authoritativeDaySnapshot(snapshot: stored, date: date)
       let nowMs = date.timeIntervalSince1970 * 1000
+      // Between local midnight and Fajr, Isha from the previous local day is
+      // still the active prayer. The old implementation searched only today's
+      // entries and left the widget with no highlight until Fajr.
       let current = calculated.prayers.last(where: { $0.atMs <= nowMs })?.key
+        ?? previousDaySnapshot(snapshot: stored, date: date).prayers.last(where: { $0.key == "isha" && $0.atMs <= nowMs })?.key
       let next = calculated.prayers.first(where: { $0.atMs > nowMs })?.atMs
         ?? calendar.date(byAdding: .day, value: 1, to: date).map { $0.timeIntervalSince1970 * 1000 }
         ?? stored.nextRefreshAtMs
@@ -84,7 +88,10 @@ enum WidgetShared {
         current = key
       }
     }
-
+    if current == nil, let previous = stored.days?.first(where: { $0.dateKey < day.dateKey }),
+       let previousIsha = previous.prayers.first(where: { $0.key == "isha" && $0.atMs <= nowMs }) {
+      current = previousIsha.key
+    }
     var nextRefresh = stored.nextRefreshAtMs
     let future = day.prayers.map { $0.atMs }.filter { $0 > nowMs }.sorted()
     if let first = future.first {
@@ -117,6 +124,23 @@ enum WidgetShared {
     )
   }
 
+  private static func authoritativeDaySnapshot(snapshot: WidgetSnapshot, date: Date) -> WidgetDaySnapshot {
+    let timezone = TimeZone(identifier: snapshot.timezone.isEmpty ? "Asia/Kabul" : snapshot.timezone) ?? .current
+    let key = WidgetPrayerCalculator.dateKey(for: date, timezone: timezone)
+    if let storedDay = snapshot.days?.first(where: { $0.dateKey == key }) {
+      return storedDay
+    }
+    return WidgetPrayerCalculator.daySnapshot(snapshot: snapshot, date: date)
+  }
+
+  private static func previousDaySnapshot(snapshot: WidgetSnapshot, date: Date) -> WidgetDaySnapshot {
+    let timezone = TimeZone(identifier: snapshot.timezone.isEmpty ? "Asia/Kabul" : snapshot.timezone) ?? .current
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = timezone
+    let previous = calendar.date(byAdding: .day, value: -1, to: date) ?? date
+    return authoritativeDaySnapshot(snapshot: snapshot, date: previous)
+  }
+
   static func timelineDates(from stored: WidgetSnapshot, now: Date) -> [Date] {
     var dates = Set<Date>()
     dates.insert(now)
@@ -131,7 +155,7 @@ enum WidgetShared {
       // that every prayer boundary and local midnight has a fresh entry.
       for offset in 0...14 {
         guard let day = calendar.date(byAdding: .day, value: offset, to: start) else { continue }
-        let calculated = WidgetPrayerCalculator.daySnapshot(snapshot: stored, date: day)
+        let calculated = authoritativeDaySnapshot(snapshot: stored, date: day)
         for prayer in calculated.prayers where prayer.atMs >= nowMs - 60_000 {
           dates.insert(Date(timeIntervalSince1970: prayer.atMs / 1000))
         }

@@ -92,14 +92,16 @@ function selectWidgetDay(days, now, timezone) {
   return days.find((d) => d.dateKey === todayKey) || days[0];
 }
 
-function currentPrayer(prayers, nowMs) {
+function currentPrayer(prayers, nowMs, previousPrayers = []) {
   const order = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
   let current = null;
   for (const key of order) {
     const entry = prayers.find((p) => p.key === key);
     if (entry && entry.atMs <= nowMs) current = key;
   }
-  return current;
+  if (current) return current;
+  const previousIsha = previousPrayers.find((p) => p.key === 'isha');
+  return previousIsha && previousIsha.atMs <= nowMs ? 'isha' : null;
 }
 
 // --- Tests ---
@@ -183,7 +185,7 @@ const days = [
 const afterMidnight = buildLocal(dayB, '00:30', tz);
 const selected = selectWidgetDay(days, afterMidnight, tz);
 assert.strictEqual(selected.dateKey, dayB);
-assert.strictEqual(currentPrayer(selected.prayers, afterMidnight.getTime()), null);
+assert.strictEqual(currentPrayer(selected.prayers, afterMidnight.getTime(), days[0].prayers), 'isha');
 
 const afterDhuhr = buildLocal(dayB, '13:00', tz);
 assert.strictEqual(currentPrayer(selected.prayers, afterDhuhr.getTime()), 'dhuhr');

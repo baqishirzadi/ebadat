@@ -15,6 +15,7 @@ import { TranslationToggle } from './TranslationToggle';
 import { toArabicNumerals } from '@/utils/numbers';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { QuranText } from './QuranText';
+import { QuranDownloadCard } from './QuranDownloadCard';
 
 interface SurahHeaderProps {
   number: number;
@@ -24,6 +25,7 @@ interface SurahHeaderProps {
   showBismillah?: boolean;
   onPlayPress?: () => void;
   onInfoPress?: () => void;
+  onSettingsPress?: () => void;
 }
 
 export const SurahHeader = memo(function SurahHeader({
@@ -33,6 +35,7 @@ export const SurahHeader = memo(function SurahHeader({
   revelationType,
   showBismillah = true,
   onPlayPress,
+  onSettingsPress,
 }: SurahHeaderProps) {
   const { theme, state } = useApp();
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
@@ -115,6 +118,12 @@ export const SurahHeader = memo(function SurahHeader({
       )}
       
       <TranslationToggle />
+      <QuranDownloadCard
+        surahNumber={number}
+        ayahCount={ayahCount}
+        theme={theme}
+        onSettingsPress={onSettingsPress}
+      />
     </RtlView>
   );
 });

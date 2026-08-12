@@ -4,13 +4,14 @@
  */
 
 import { UserGender } from '@/types/dua';
+import type { ResponderId } from '@/constants/responders';
 import { askHanafiMufti, isHanafiMuftiConfigured } from '@/utils/hanafiMufti';
 
 export function isHanafiDuaSuggestionConfigured(): boolean {
   return isHanafiMuftiConfigured();
 }
 
-function buildSuggestionPrompt(message: string, gender: UserGender): string {
+function buildSuggestionPrompt(message: string, gender: UserGender, responderName: string): string {
   const address =
     gender === 'female' ? 'خواهر عزیز' : gender === 'male' ? 'برادر عزیز' : 'عزیز من';
 
@@ -25,7 +26,7 @@ ${message.trim().slice(0, 2000)}
 - همدلی کوتاه + دعای خیر کوتاه مخصوص همین مشکل.
 - حتماً با نام صریح «ذکر شاه نقشبند» یک بخش کوتاه برای آرامش دل بیاور و روش ساده بگو (چند بار، چه وقت، با حضور قلب). ذکرهای دیگر به‌تنهایی کافی نیست.
 - یک توصیه عملی لطیف؛ فتوا و حکم فقهی نده.
-- ختم با: برادرت دعاگو — سیدعبدالباقی شیرزادی
+- ختم با نام پاسخ‌دهنده انتخاب‌شده: ${responderName}
 - فقط متن پاسخ نهایی را بنویس؛ بدون مقدمهٔ توضیحی برای ادمین.`;
 }
 
@@ -35,6 +36,8 @@ ${message.trim().slice(0, 2000)}
 export async function fetchHanafiDuaSuggestion(
   message: string,
   gender: UserGender = 'male',
+  responderId: ResponderId,
+  responderName: string,
   signal?: AbortSignal,
 ): Promise<string> {
   if (!message.trim()) {
@@ -48,9 +51,10 @@ export async function fetchHanafiDuaSuggestion(
   let streamError: string | null = null;
 
   await askHanafiMufti(
-    [{ role: 'user', content: buildSuggestionPrompt(message, gender) }],
+    [{ role: 'user', content: buildSuggestionPrompt(message, gender, responderName) }],
     {
       signal,
+      responderId,
       onDelta: (chunk) => {
         full += chunk;
       },

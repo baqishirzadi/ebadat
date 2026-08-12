@@ -40,6 +40,9 @@ appId: com.afghandev.ebadat
 - tapOn:
     text: "OK"
     optional: true
+- tapOn:
+    text: "ادامه بدون اعلان"
+    optional: true
 - extendedWaitUntil:
     visible:
       text: "مفتی هوشمند حنفی"

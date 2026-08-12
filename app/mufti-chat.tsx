@@ -14,13 +14,13 @@ import {
   Platform,
   Pressable,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { MarkdownText } from '@/components/MarkdownText';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { HANAFI_MUFTI_STARTER_QUESTIONS_DARI } from '@/constants/hanafiMuftiStarterQuestions';
@@ -32,7 +32,6 @@ import {
 import { useApp } from '@/context/AppContext';
 import { useHanafiMufti } from '@/hooks/useHanafiMufti';
 import { detectLanguage } from '@/utils/duaAdvisor';
-import { formatChatPlainText } from '@/utils/formatChatPlainText';
 import type { StoredHanafiMuftiMessage } from '@/utils/hanafiMuftiStorage';
 
 /** Android can flip Persian paragraphs LTR; RLM forces RTL direction. */
@@ -47,7 +46,7 @@ function getClearLabel(sampleText: string): string {
 }
 
 function formatAssistantBubbleText(text: string): string {
-  const plain = formatChatPlainText(text);
+  const plain = text;
   if (!plain) return plain;
   return Platform.OS === 'android' ? `${RLM}${plain}` : plain;
 }
@@ -77,15 +76,14 @@ function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
             : [styles.assistantBubble, { backgroundColor: theme.card, borderColor: theme.cardBorder }],
         ]}
       >
-        <Text
+      <MarkdownText
           style={[
             styles.bubbleText,
             { color: isUser ? '#fff' : theme.text },
             Platform.OS === 'android' ? { includeFontPadding: false } : null,
           ]}
-        >
-          {displayText}
-        </Text>
+        boldStyle={{ color: isUser ? '#fff' : theme.text }}
+      >{displayText}</MarkdownText>
       </View>
     </RtlView>
   );
@@ -281,15 +279,14 @@ export default function MuftiChatScreen() {
                 { backgroundColor: `${theme.tint}18`, borderColor: theme.cardBorder },
               ]}
             >
-              <Text
+              <MarkdownText
                 style={[
                   styles.bubbleText,
                   { color: theme.text },
                   Platform.OS === 'android' ? { includeFontPadding: false } : null,
                 ]}
-              >
-                {formatAssistantBubbleText(item.content)}
-              </Text>
+                boldStyle={{ color: theme.text }}
+              >{formatAssistantBubbleText(item.content)}</MarkdownText>
             </View>
           </RtlView>
         );

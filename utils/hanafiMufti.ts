@@ -17,6 +17,8 @@ export interface AskHanafiMuftiOptions {
   onDone: () => void;
   onError: (message: string) => void;
   signal?: AbortSignal;
+  /** Set only for Dua/admin persona requests; normal Mufti chat omits it. */
+  responderId?: string;
 }
 
 const DEFAULT_MUFTI_URL =
@@ -190,7 +192,10 @@ export async function askHanafiMufti(
     return;
   }
 
-  const payload = { messages: sanitizeMessages(messages) };
+  const payload = {
+    messages: sanitizeMessages(messages),
+    ...(options.responderId ? { responder_id: options.responderId } : {}),
+  };
   if (payload.messages.length === 0) {
     onError('پیامی برای ارسال وجود ندارد.');
     return;

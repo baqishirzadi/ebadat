@@ -27,6 +27,7 @@ import { DuaCategory, UserGender } from '@/types/dua';
 import CenteredText from '@/components/CenteredText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import NetInfo from '@react-native-community/netinfo';
+import { RESPONDERS, type ResponderId } from '@/constants/responders';
 
 export default function NewDuaRequestScreen() {
   const { theme } = useApp();
@@ -47,6 +48,8 @@ export default function NewDuaRequestScreen() {
   const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [gender, setGender] = useState<UserGender | null>(null);
+  const [responderId, setResponderId] = useState<ResponderId | null>(null);
+  const [messageHeight, setMessageHeight] = useState(120);
 
   const handleSubmit = async () => {
     // Validation
@@ -75,9 +78,14 @@ export default function NewDuaRequestScreen() {
       return;
     }
 
+    if (!responderId) {
+      Alert.alert('خطا', 'لطفاً دعاکننده/پاسخ‌دهنده را انتخاب کنید');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      const request = await submitRequest(category, message.trim(), isAnonymous, gender);
+      const request = await submitRequest(category, message.trim(), isAnonymous, gender, responderId);
 
       const netInfo = await NetInfo.fetch();
       const isOffline = !netInfo.isConnected || netInfo.isInternetReachable === false;
@@ -129,6 +137,8 @@ export default function NewDuaRequestScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
       >
         {/* Message Input */}
         <View style={styles.section}>
@@ -138,23 +148,57 @@ export default function NewDuaRequestScreen() {
           <View style={[styles.inputWrapper, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <View style={[styles.inputPattern, { borderColor: `${theme.tint}15` }]} />
             <TextInput
-              style={[styles.textInput, { color: theme.text }]}
+              testID="dua-message-input"
+              style={[styles.textInput, { color: theme.text, height: messageHeight }]}
               placeholder="پیام خود را به زبان دری یا پشتو بنویسید..."
               placeholderTextColor={theme.textSecondary}
               value={message}
               onChangeText={setMessage}
               multiline
-              numberOfLines={8}
               textAlignVertical="top"
               textAlign="right"
               maxLength={maxLength}
+              onContentSizeChange={(event) => {
+                const nextHeight = Math.min(220, Math.max(120, Math.ceil(event.nativeEvent.contentSize.height)));
+                if (nextHeight !== messageHeight) setMessageHeight(nextHeight);
+              }}
             />
-            <View style={styles.characterCount}>
+            <View style={styles.composerFooter}>
+              <MaterialIcons name="edit" size={16} color={theme.textSecondary} />
               <CenteredText style={[styles.characterCountText, { color: theme.textSecondary }]}>
                 {characterCount} / {maxLength}
               </CenteredText>
             </View>
           </View>
+        </View>
+
+        <View style={styles.section}>
+          <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>دعاکننده/پاسخ‌دهنده</CenteredText>
+          <View style={styles.responderRow}>
+            {RESPONDERS.map((responder) => {
+              const selected = responderId === responder.id;
+              return (
+                <Pressable
+                  key={responder.id}
+                  testID={`dua-responder-${responder.id}`}
+                  onPress={() => setResponderId(responder.id)}
+                  style={({ pressed }) => [
+                    styles.responderChip,
+                    {
+                      backgroundColor: selected ? `${theme.tint}18` : theme.card,
+                      borderColor: selected ? theme.tint : theme.cardBorder,
+                    },
+                    pressed && styles.buttonPressed,
+                  ]}
+                >
+                  <CenteredText style={[styles.responderText, { color: selected ? theme.tint : theme.text }]}>
+                    {responder.nameDari}
+                  </CenteredText>
+                </Pressable>
+              );
+            })}
+          </View>
+          <CenteredText style={[styles.genderHint, { color: theme.textSecondary }]}>انتخاب پاسخ‌دهنده الزامی است.</CenteredText>
         </View>
 
         {/* Category + Gender Row */}
@@ -229,13 +273,14 @@ export default function NewDuaRequestScreen() {
 
         {/* Submit Button */}
         <Pressable
+          testID="dua-submit-request"
           onPress={handleSubmit}
-          disabled={isSubmitting || !category || !message.trim() || !gender}
+          disabled={isSubmitting || !category || !message.trim() || !gender || !responderId}
           style={({ pressed }) => [
             styles.submitButton,
             {
               backgroundColor:
-                isSubmitting || !category || !message.trim() || !gender ? theme.cardBorder : theme.tint,
+                isSubmitting || !category || !message.trim() || !gender || !responderId ? theme.cardBorder : theme.tint,
             },
             pressed && styles.buttonPressed,
           ]}
@@ -312,6 +357,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: Spacing.sm,
   },
+  responderRow: {
+    gap: Spacing.sm,
+  },
+  responderChip: {
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+  },
+  responderText: {
+    fontSize: Typography.ui.body,
+    fontWeight: '600',
+    fontFamily: 'Vazirmatn',
+  },
   genderEmoji: {
     fontSize: 18,
   },
@@ -358,9 +417,14 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     writingDirection: 'rtl',
   },
-  characterCount: {
-    alignItems: 'flex-end',
-    marginTop: Spacing.xs,
+  composerFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.xs,
+    paddingTop: Spacing.xs,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(128,128,128,0.18)',
   },
   characterCountText: {
     fontSize: Typography.ui.caption,

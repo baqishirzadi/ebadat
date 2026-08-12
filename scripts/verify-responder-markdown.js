@@ -1,0 +1,41 @@
+const fs = require('fs');
+const path = require('path');
+
+const root = path.resolve(__dirname, '..');
+const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
+
+const registry = read('constants/responders.ts');
+const ids = [...registry.matchAll(/id:\s*'([^']+)'/g)].map((m) => m[1]);
+if (ids.join('|') !== 'qari_syed_safiullah_shirzadi|syed_abdul_baqi_shirzadi') {
+  throw new Error(`Unexpected responder registry: ${ids.join(', ')}`);
+}
+if ((registry.match(/id:\s*'/g) || []).length !== 2) {
+  throw new Error('Responder registry must contain exactly two responders');
+}
+
+const renderer = read('components/MarkdownText.tsx');
+if (!/\\\*\\\*\(\[\\s\\S\]\+\?\)\\\*\\\*/.test(renderer) || !/fontWeight:\s*'700'/.test(renderer)) {
+  throw new Error('MarkdownText must parse balanced ** segments and render them bold');
+}
+for (const file of ['hooks/useHanafiMufti.ts', 'utils/hanafiMuftiStorage.ts', 'app/mufti-chat.tsx', 'app/dua-request/[id].tsx']) {
+  if (/formatChatPlainText/.test(read(file))) {
+    throw new Error(`${file} still strips markdown before rendering`);
+  }
+}
+if (!/responder_id/.test(read('utils/hanafiMufti.ts')) || !/responder_id/.test(read('supabase/migrations/20260812_add_dua_responder_selection.sql'))) {
+  throw new Error('Responder ID is missing from the Dua contract');
+}
+if (!/options\.responderId\s*\?/.test(read('utils/hanafiMufti.ts'))) {
+  throw new Error('Mufti client must only include responder_id for explicit Dua persona requests');
+}
+const autonomous = read('supabase/functions/dua-autonomous/index.ts');
+if (!/A valid responder selection is required/.test(autonomous) || /reviewer_name:\s*responderName \|\| ['"]سیدعبدالباقی/.test(autonomous)) {
+  throw new Error('Dua autonomous function must require the selected responder and avoid a default signature');
+}
+
+const samples = ['**مثال**', '** مثال **', 'قبل **اول** و **دوم**', '**خط اول\nخط دوم**', 'نامتعادل **متن'];
+const matchCount = (sample) => [...sample.matchAll(/\*\*([\s\S]+?)\*\*/g)].length;
+if (matchCount(samples[0]) !== 1 || matchCount(samples[1]) !== 1 || matchCount(samples[2]) !== 2 || matchCount(samples[3]) !== 1 || matchCount(samples[4]) !== 0) {
+  throw new Error('Markdown bold fixtures failed');
+}
+console.log('Responder registry, contract, and markdown checks passed.');
