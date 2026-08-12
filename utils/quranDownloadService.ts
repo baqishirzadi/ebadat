@@ -37,7 +37,30 @@ export type QuranDownloadProgress = QuranDownloadManifestEntry & {
 };
 
 export const QURAN_DOWNLOAD_MANIFEST_KEY = '@ebadat/quran_download_manifest_v1';
+export const QURAN_DOWNLOAD_RECITER_KEY = '@ebadat/quran_download_reciter_v1';
 const MIN_VALID_AUDIO_BYTES = 1024;
+
+function isReciterKey(value: string | null): value is ReciterKey {
+  return Boolean(value && value in RECITERS);
+}
+
+export async function getSavedDownloadReciter(): Promise<ReciterKey | null> {
+  try {
+    const saved = await AsyncStorage.getItem(QURAN_DOWNLOAD_RECITER_KEY);
+    return isReciterKey(saved) ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function getPreferredDownloadReciter(fallback: ReciterKey = 'yasser_ad_dussary'): Promise<ReciterKey> {
+  return (await getSavedDownloadReciter()) ?? fallback;
+}
+
+export async function setPreferredDownloadReciter(reciter: ReciterKey): Promise<void> {
+  if (!RECITERS[reciter]) throw new Error('unknown_reciter');
+  await AsyncStorage.setItem(QURAN_DOWNLOAD_RECITER_KEY, reciter);
+}
 
 export function getSurahDownloadScope(surah: number, ayahCount?: number): QuranDownloadScope {
   const total = ayahCount ?? getSurahSync(surah)?.numberOfAyahs ?? 0;

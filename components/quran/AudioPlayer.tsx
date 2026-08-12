@@ -9,6 +9,8 @@ import { useApp } from '@/context/AppContext';
 import audioManager, {
   ReciterKey,
   RECITERS,
+  QURAN_PLAYBACK_RATES,
+  type QuranPlaybackRate,
   QuranPlaybackScopeType,
   type QuranPlaybackSnapshot,
   getQuranPlaybackErrorMessage,
@@ -56,13 +58,16 @@ export function AudioPlayer({
   const insets = useSafeAreaInsets();
   const [currentReciter, setCurrentReciter] = useState<ReciterKey>('yasser_ad_dussary');
   const [showReciterModal, setShowReciterModal] = useState(false);
+  const [showSpeedModal, setShowSpeedModal] = useState(false);
   const [playback, setPlayback] = useState<QuranPlaybackSnapshot>(() => audioManager.getPlaybackSnapshot());
+  const [playbackRate, setPlaybackRate] = useState<QuranPlaybackRate>(() => audioManager.getPlaybackRate());
 
   useEffect(() => {
     setCurrentReciter(audioManager.getReciter());
     const unsubscribe = audioManager.subscribe((snapshot) => {
       setPlayback(snapshot);
       setCurrentReciter(snapshot.reciter);
+      setPlaybackRate(snapshot.playbackRate);
     });
     return unsubscribe;
   }, []);
@@ -106,6 +111,12 @@ export function AudioPlayer({
     }
   }, [isPlaying, onPause, onPlayContinuous, onResume, surahNumber, ayahNumber]);
 
+  const handleRateChange = useCallback(async (rate: QuranPlaybackRate) => {
+    setShowSpeedModal(false);
+    setPlaybackRate(rate);
+    await audioManager.setPlaybackRate(rate);
+  }, []);
+
   const handleClose = useCallback(() => {
     onStop();
     onClose?.();
@@ -114,7 +125,7 @@ export function AudioPlayer({
   if (!isVisible) return null;
 
   const isPreparing = playback.status === 'preparing' || playback.status === 'buffering';
-  const statusText = playback.statusMessage || playback.errorMessage;
+  const statusText = playback.statusMessage || playback.errorMessage || ' ';
 
   return (
     <View
@@ -156,6 +167,20 @@ export function AudioPlayer({
 
           <View style={styles.controlsSection}>
             <Pressable
+              testID="quran-playback-speed"
+              onPress={() => setShowSpeedModal(true)}
+              style={({ pressed }) => [
+                styles.speedButton,
+                { borderColor: theme.divider, backgroundColor: theme.backgroundSecondary },
+                pressed && styles.controlButtonPressed,
+              ]}
+            >
+              <CenteredText style={[styles.speedButtonText, { color: theme.text }]}>
+                {playbackRate === 1 ? '1x' : `${playbackRate}x`}
+              </CenteredText>
+            </Pressable>
+
+            <Pressable
               onPress={handlePlayPause}
               disabled={playback.status === 'preparing'}
               style={({ pressed }) => [
@@ -186,17 +211,15 @@ export function AudioPlayer({
             </Pressable>
           </View>
         </View>
-        {statusText ? (
-          <CenteredText
-            style={[
-              styles.statusText,
-              { color: playback.status === 'error' ? '#DC2626' : theme.textSecondary },
-            ]}
-            numberOfLines={2}
-          >
-            {statusText}
-          </CenteredText>
-        ) : null}
+        <CenteredText
+          style={[
+            styles.statusText,
+            { color: playback.status === 'error' ? '#DC2626' : theme.textSecondary },
+          ]}
+          numberOfLines={1}
+        >
+          {statusText}
+        </CenteredText>
       </View>
 
       <Modal
@@ -233,6 +256,39 @@ export function AudioPlayer({
           </View>
         </Pressable>
       </Modal>
+
+      <Modal
+        visible={showSpeedModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSpeedModal(false)}
+      >
+        <Pressable style={styles.modalOverlay} onPress={() => setShowSpeedModal(false)}>
+          <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+            <CenteredText style={[styles.modalTitle, { color: theme.text }]}>سرعت پخش</CenteredText>
+            <View style={styles.speedOptions}>
+              {QURAN_PLAYBACK_RATES.map((rate) => (
+                <Pressable
+                  key={rate}
+                  testID={`quran-playback-speed-${rate}`}
+                  onPress={() => void handleRateChange(rate)}
+                  style={[
+                    styles.speedOption,
+                    {
+                      borderColor: rate === playbackRate ? theme.tint : theme.divider,
+                      backgroundColor: rate === playbackRate ? `${theme.tint}22` : theme.backgroundSecondary,
+                    },
+                  ]}
+                >
+                  <CenteredText style={[styles.speedOptionText, { color: rate === playbackRate ? theme.tint : theme.text }]}>
+                    {rate === 1 ? '1x' : `${rate}x`}
+                  </CenteredText>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -250,7 +306,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.xs,
     paddingBottom: Spacing.xs,
-    gap: 6,
+    minHeight: 122,
+    gap: 5,
   },
   reciterButton: {
     flexDirection: 'row',
@@ -272,6 +329,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Vazirmatn',
     fontWeight: '600',
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   ayahInfo: {
     flex: 1,
@@ -289,14 +348,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flexShrink: 0,
-    gap: 6,
+    gap: 5,
   },
   statusText: {
     fontFamily: 'Vazirmatn',
     fontSize: 11,
-    lineHeight: 18,
+    lineHeight: 16,
+    minHeight: 16,
     textAlign: 'center',
     writingDirection: 'rtl',
+  },
+  speedButton: {
+    minWidth: 42,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: StyleSheet.hairlineWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  speedButtonText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: 11,
+    fontWeight: '800',
+    textAlign: 'center',
   },
   playButton: {
     width: 46,
@@ -344,15 +419,42 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   modalOption: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: Spacing.md,
     borderBottomWidth: 1,
+    gap: Spacing.sm,
   },
   reciterOptionName: {
+    flex: 1,
     fontSize: Typography.ui.body,
     fontWeight: '600',
     fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  speedOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.md,
+  },
+  speedOption: {
+    minWidth: 58,
+    height: 40,
+    borderWidth: 1,
+    borderRadius: BorderRadius.full,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.sm,
+  },
+  speedOptionText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    fontWeight: '800',
+    textAlign: 'center',
   },
 });

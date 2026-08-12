@@ -21,6 +21,7 @@ import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
 
 const SURAH_TOP_BAR_HEIGHT = 56;
+const QURAN_AUDIO_PLAYER_RESERVED_HEIGHT = 170;
 
 export default function QuranReaderScreen() {
   const {
@@ -262,7 +263,7 @@ export default function QuranReaderScreen() {
     : `سوره ${toArabicNumerals(surahNumber)}`;
 
   const contentPaddingTop = insets.top + SURAH_TOP_BAR_HEIGHT + Spacing.sm;
-  const contentPaddingBottom = showAudioPlayer ? insets.bottom + 140 : Spacing.xxl;
+  const contentPaddingBottom = showAudioPlayer ? insets.bottom + QURAN_AUDIO_PLAYER_RESERVED_HEIGHT : Spacing.xxl;
 
   if (!surah || shouldGoBack) {
     return (

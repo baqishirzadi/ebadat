@@ -4,7 +4,7 @@
  * Includes translation toggle for Dari/Pashto
  */
 
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -16,6 +16,13 @@ import { toArabicNumerals } from '@/utils/numbers';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { QuranText } from './QuranText';
 import { QuranDownloadCard } from './QuranDownloadCard';
+import {
+  getDownloadManifest,
+  getDownloadManifestKey,
+  getPreferredDownloadReciter,
+  getSurahDownloadScope,
+} from '@/utils/quranDownloadService';
+import type { ReciterKey } from '@/utils/quranAudio';
 
 interface SurahHeaderProps {
   number: number;
@@ -39,6 +46,25 @@ export const SurahHeader = memo(function SurahHeader({
 }: SurahHeaderProps) {
   const { theme, state } = useApp();
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
+  const [surahDownloaded, setSurahDownloaded] = useState(false);
+  const [showDownloadSheet, setShowDownloadSheet] = useState(false);
+  const [downloadReciter, setDownloadReciter] = useState<ReciterKey>('yasser_ad_dussary');
+  const surahDownloadKey = getDownloadManifestKey(downloadReciter, { type: 'surah', id: number });
+
+  useEffect(() => {
+    let mounted = true;
+    void Promise.all([getPreferredDownloadReciter(), getDownloadManifest()]).then(([preferred, entries]) => {
+      if (!mounted) return;
+      setDownloadReciter(preferred);
+      const entry = entries.find((item) => item.key === surahDownloadKey);
+      setSurahDownloaded(Boolean(entry && entry.completed === entry.total && entry.total > 0));
+    });
+    return () => { mounted = false; };
+  }, [surahDownloadKey]);
+
+  const handleHeaderDownload = () => {
+    setShowDownloadSheet(true);
+  };
 
   return (
     <RtlView style={styles.wrapper}>
@@ -94,15 +120,30 @@ export const SurahHeader = memo(function SurahHeader({
             </CenteredText>
           </View>
           <View style={[styles.metaItem, { backgroundColor: `${theme.surahHeaderText}20` }]}>
-            <MaterialIcons 
-              name={revelationType === 'Meccan' ? 'brightness-5' : 'brightness-2'} 
-              size={14} 
-              color={theme.surahHeaderText} 
+            <MaterialIcons
+              name={revelationType === 'Meccan' ? 'brightness-5' : 'brightness-2'}
+              size={14}
+              color={theme.surahHeaderText}
             />
             <CenteredText style={[styles.metaText, { color: theme.surahHeaderText }]}>
               {revelationType === 'Meccan' ? 'مکی' : 'مدنی'}
             </CenteredText>
           </View>
+          <Pressable
+            testID="quran-download-surah-header"
+            accessibilityLabel={surahDownloaded ? 'سوره دانلود شده' : 'دانلود کل سوره'}
+            onPress={handleHeaderDownload}
+            style={[styles.metaDownload, { backgroundColor: surahDownloaded ? `${theme.surahHeaderText}35` : theme.surahHeaderText }]}
+          >
+            <MaterialIcons
+              name={surahDownloaded ? 'check-circle' : 'download'}
+              size={14}
+              color={surahDownloaded ? theme.surahHeaderText : theme.surahHeader}
+            />
+            <CenteredText style={[styles.metaText, { color: surahDownloaded ? theme.surahHeaderText : theme.surahHeader }]}>
+              {surahDownloaded ? 'دانلود شد' : 'کل سوره'}
+            </CenteredText>
+          </Pressable>
         </View>
       </View>
 
@@ -116,13 +157,19 @@ export const SurahHeader = memo(function SurahHeader({
           </QuranText>
         </View>
       )}
-      
+
       <TranslationToggle />
       <QuranDownloadCard
-        surahNumber={number}
-        ayahCount={ayahCount}
+        visible={showDownloadSheet}
+        scope={getSurahDownloadScope(number, ayahCount)}
         theme={theme}
-        onSettingsPress={onSettingsPress}
+        title="دانلود کل سوره"
+        primaryLabel="کل سوره"
+        onClose={() => setShowDownloadSheet(false)}
+        onCompleted={(nextReciter) => {
+          setDownloadReciter(nextReciter);
+          setSurahDownloaded(true);
+        }}
       />
     </RtlView>
   );
@@ -235,6 +282,14 @@ const styles = StyleSheet.create({
   metaText: {
     fontSize: Typography.ui.caption,
     fontWeight: '500',
+  },
+  metaDownload: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.full,
   },
   playButton: {
     width: 40,

@@ -4,169 +4,306 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography, type ThemeColors } from '@/constants/theme';
-import { JUZ_RANGES } from '@/data/juzRanges';
 import audioManager, { RECITERS, type ReciterKey } from '@/utils/quranAudio';
 import {
   downloadQuranScope,
-  deleteQuranScope,
   getDownloadManifest,
   getDownloadManifestKey,
-  getJuzDownloadScope,
-  getSurahDownloadScope,
+  getPreferredDownloadReciter,
+  getSavedDownloadReciter,
+  setPreferredDownloadReciter,
   type QuranDownloadProgress,
+  type QuranDownloadScope,
 } from '@/utils/quranDownloadService';
 
 type Props = {
-  surahNumber: number;
-  ayahCount: number;
+  visible: boolean;
+  scope: QuranDownloadScope;
   theme: ThemeColors;
-  onSettingsPress?: () => void;
+  title: string;
+  primaryLabel: string;
+  onClose: () => void;
+  onCompleted?: (reciter: ReciterKey) => void;
 };
 
-export function QuranDownloadCard({ surahNumber, ayahCount, theme, onSettingsPress }: Props) {
+export function QuranDownloadCard({
+  visible,
+  scope,
+  theme,
+  title,
+  primaryLabel,
+  onClose,
+  onCompleted,
+}: Props) {
   const [reciter, setReciter] = useState<ReciterKey>(() => audioManager.getReciter());
-  const [showReciters, setShowReciters] = useState(false);
-  const [showJuz, setShowJuz] = useState(false);
-  const [activeScope, setActiveScope] = useState<'surah' | 'juz' | null>(null);
+  const [hasSavedReciter, setHasSavedReciter] = useState(false);
+  const [showReciters, setShowReciters] = useState(true);
   const [progress, setProgress] = useState<QuranDownloadProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
-  const [completedScope, setCompletedScope] = useState<string | null>(null);
+  const [completedKeys, setCompletedKeys] = useState<string[]>([]);
+
+  const downloadKey = useMemo(() => getDownloadManifestKey(reciter, scope), [reciter, scope]);
+  const isComplete = completedKeys.includes(downloadKey);
+  const isDownloading = Boolean(controller);
+  const canDownload = !isDownloading && !isComplete;
 
   useEffect(() => {
+    if (!visible) return;
     let mounted = true;
-    void getDownloadManifest().then((entries) => {
-      const surahKey = getDownloadManifestKey(reciter, { type: 'surah', id: surahNumber });
-      const entry = entries.find((item) => item.key === surahKey && item.completed === item.total);
-      if (mounted && entry) {
-        setProgress(entry);
-        setCompletedScope(entry.key);
-      }
+    void Promise.all([
+      getPreferredDownloadReciter(audioManager.getReciter()),
+      getSavedDownloadReciter(),
+      getDownloadManifest(),
+    ]).then(([preferred, saved, entries]) => {
+      if (!mounted) return;
+      setReciter(preferred);
+      setHasSavedReciter(Boolean(saved));
+      setShowReciters(!saved);
+      setCompletedKeys(
+        entries
+          .filter((entry) => entry.completed === entry.total && entry.total > 0)
+          .map((entry) => entry.key)
+      );
+      const existing = entries.find((entry) => entry.key === getDownloadManifestKey(preferred, scope));
+      setProgress(existing ?? null);
+      setError(null);
     });
-    return () => { mounted = false; };
-  }, [reciter, surahNumber]);
+    return () => {
+      mounted = false;
+    };
+  }, [scope, visible]);
 
-  const relevantJuz = useMemo(
-    () => JUZ_RANGES.filter((range) => surahNumber >= range.startSurah && surahNumber <= range.endSurah),
-    [surahNumber],
-  );
-
-  const startDownload = async (scope: Parameters<typeof downloadQuranScope>[0]) => {
+  const startDownload = async (nextReciter = reciter) => {
     if (controller) return;
     const nextController = new AbortController();
     setController(nextController);
-    setActiveScope(scope.type);
     setError(null);
+    setProgress(null);
     try {
-      const result = await downloadQuranScope(scope, reciter, setProgress, nextController.signal);
-      setCompletedScope(result.key);
+      await setPreferredDownloadReciter(nextReciter);
+      setHasSavedReciter(true);
+      setShowReciters(false);
+      setReciter(nextReciter);
+      const result = await downloadQuranScope(scope, nextReciter, setProgress, nextController.signal);
+      setCompletedKeys((current) => current.includes(result.key) ? current : [...current, result.key]);
+      onCompleted?.(nextReciter);
     } catch (downloadError) {
       if (!(downloadError instanceof Error && downloadError.message === 'download_cancelled')) {
         setError('دانلود کامل نشد. اینترنت و فضای ذخیره‌سازی را بررسی کنید.');
       }
     } finally {
       setController(null);
-      setActiveScope(null);
     }
   };
 
   const selectedName = RECITERS[reciter].name;
-  const surahDownloadKey = getDownloadManifestKey(reciter, { type: 'surah', id: surahNumber });
-  const isCurrent = progress?.reciter === reciter && (progress.scopeType === activeScope || progress.key === completedScope);
-  const progressLabel = completedScope && isCurrent && progress?.completed === progress?.total
+  const progressLabel = isComplete
     ? 'دانلود شد'
-    : isCurrent && progress
-    ? `${progress.completed} / ${progress.total}`
-    : 'آماده دانلود';
+    : progress
+      ? `${progress.completed} / ${progress.total}`
+      : hasSavedReciter
+        ? 'آماده دانلود'
+        : 'قاری را انتخاب کنید';
 
   return (
-    <View style={[styles.card, { backgroundColor: `${theme.surahHeaderText}12`, borderColor: `${theme.surahHeaderText}30` }]}>
-      <View style={styles.titleRow}>
-        <View style={styles.titleText}>
-          <CenteredText style={[styles.title, { color: theme.surahHeaderText }]}>دانلود تلاوت</CenteredText>
-          <CenteredText style={[styles.subtitle, { color: `${theme.surahHeaderText}cc` }]}>{selectedName}</CenteredText>
-        </View>
-        {onSettingsPress ? (
-          <Pressable testID="quran-reader-settings-shortcut" onPress={onSettingsPress} style={styles.iconButton}>
-            <MaterialIcons name="tune" size={20} color={theme.surahHeaderText} />
-          </Pressable>
-        ) : null}
-      </View>
-
-      <View style={styles.actionRow}>
-        <Pressable testID="quran-reciter-picker" onPress={() => setShowReciters(true)} style={[styles.selector, { borderColor: `${theme.surahHeaderText}45` }]}>
-          <MaterialIcons name="record-voice-over" size={17} color={theme.surahHeaderText} />
-          <CenteredText style={[styles.selectorText, { color: theme.surahHeaderText }]}>قاری</CenteredText>
-        </Pressable>
-        <Pressable testID="quran-download-surah" disabled={Boolean(controller)} onPress={() => void startDownload(getSurahDownloadScope(surahNumber, ayahCount))} style={[styles.downloadButton, { backgroundColor: theme.surahHeaderText }]}>
-          {activeScope === 'surah' ? <ActivityIndicator size="small" color={theme.surahHeader} /> : <MaterialIcons name="download" size={17} color={theme.surahHeader} />}
-          <CenteredText style={[styles.downloadText, { color: theme.surahHeader }]}>کل سوره</CenteredText>
-        </Pressable>
-        <Pressable testID="quran-download-juz" disabled={Boolean(controller)} onPress={() => setShowJuz(true)} style={[styles.downloadButton, { backgroundColor: `${theme.surahHeaderText}28` }]}>
-          <MaterialIcons name="library-music" size={17} color={theme.surahHeaderText} />
-          <CenteredText style={[styles.downloadText, { color: theme.surahHeaderText }]}>جزء</CenteredText>
-        </Pressable>
-      </View>
-
-      <View style={styles.statusRow}>
-        <CenteredText style={[styles.status, { color: `${theme.surahHeaderText}cc` }]}>{progressLabel}</CenteredText>
-        {controller ? <Pressable testID="quran-download-cancel" onPress={() => controller.abort()}><CenteredText style={[styles.cancel, { color: theme.surahHeaderText }]}>لغو</CenteredText></Pressable> : null}
-        {!controller && completedScope === surahDownloadKey ? <Pressable testID="quran-download-delete" onPress={() => { void deleteQuranScope(getSurahDownloadScope(surahNumber, ayahCount), reciter).then(() => { setCompletedScope(null); setProgress(null); }); }}><CenteredText style={[styles.cancel, { color: theme.surahHeaderText }]}>حذف</CenteredText></Pressable> : null}
-      </View>
-      {error ? <CenteredText style={[styles.error, { color: theme.surahHeaderText }]}>{error}</CenteredText> : null}
-
-      <Modal visible={showReciters} transparent animationType="fade" onRequestClose={() => setShowReciters(false)}>
-        <Pressable style={styles.modalBackdrop} onPress={() => setShowReciters(false)}>
-          <View style={[styles.modalCard, { backgroundColor: theme.card }]}>
-            <CenteredText style={[styles.modalTitle, { color: theme.text }]}>انتخاب قاری</CenteredText>
-            {Object.values(RECITERS).map((item) => (
-              <Pressable key={item.key} testID={`quran-reciter-${item.key}`} onPress={() => { setReciter(item.key); void audioManager.setReciter(item.key); setShowReciters(false); }} style={[styles.modalOption, { borderBottomColor: theme.divider }]}>
-                <CenteredText style={[styles.modalOptionText, { color: item.key === reciter ? theme.tint : theme.text }]}>{item.name}</CenteredText>
-                {item.key === reciter ? <MaterialIcons name="check" size={20} color={theme.tint} /> : null}
-              </Pressable>
-            ))}
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <Pressable style={styles.modalBackdrop} onPress={onClose}>
+        <Pressable style={[styles.sheet, { backgroundColor: theme.card }]} onPress={(event) => event.stopPropagation()}>
+          <View style={styles.headerRow}>
+            <Pressable onPress={onClose} hitSlop={8} style={styles.closeButton}>
+              <MaterialIcons name="close" size={22} color={theme.icon} />
+            </Pressable>
+            <View style={styles.titleBlock}>
+              <CenteredText style={[styles.title, { color: theme.text }]}>{title}</CenteredText>
+              <CenteredText style={[styles.subtitle, { color: theme.textSecondary }]} numberOfLines={1}>
+                {selectedName}
+              </CenteredText>
+            </View>
+            <View style={styles.closeButton} />
           </View>
-        </Pressable>
-      </Modal>
 
-      <Modal visible={showJuz} transparent animationType="fade" onRequestClose={() => setShowJuz(false)}>
-        <Pressable style={styles.modalBackdrop} onPress={() => setShowJuz(false)}>
-          <View style={[styles.modalCard, { backgroundColor: theme.card, maxHeight: '75%' }]}>
-            <CenteredText style={[styles.modalTitle, { color: theme.text }]}>انتخاب جزء</CenteredText>
-            <ScrollView>
-              {JUZ_RANGES.map((item) => (
-                <Pressable key={item.juzNumber} testID={`quran-juz-${item.juzNumber}`} onPress={() => { setShowJuz(false); void startDownload(getJuzDownloadScope(item.juzNumber)); }} style={[styles.modalOption, { borderBottomColor: theme.divider, opacity: relevantJuz.some((juz) => juz.juzNumber === item.juzNumber) ? 1 : 0.65 }]}>
-                  <CenteredText style={[styles.modalOptionText, { color: theme.text }]}>جزء {item.juzNumber}</CenteredText>
-                  <MaterialIcons name="download" size={18} color={theme.tint} />
+          {showReciters ? (
+            <ScrollView style={styles.reciterList} contentContainerStyle={styles.reciterListContent}>
+              {Object.values(RECITERS).map((item) => (
+                <Pressable
+                  key={item.key}
+                  testID={`quran-download-reciter-${item.key}`}
+                  onPress={() => void startDownload(item.key)}
+                  disabled={isDownloading}
+                  style={[
+                    styles.reciterOption,
+                    { borderColor: theme.divider, backgroundColor: item.key === reciter ? theme.backgroundSecondary : theme.card },
+                  ]}
+                >
+                  <CenteredText style={[styles.reciterOptionName, { color: item.key === reciter ? theme.tint : theme.text }]}>
+                    {item.name}
+                  </CenteredText>
+                  <CenteredText style={[styles.reciterQuality, { color: theme.textSecondary }]}>
+                    {item.quality}
+                  </CenteredText>
                 </Pressable>
               ))}
             </ScrollView>
-          </View>
+          ) : (
+            <>
+              <Pressable
+                testID={`quran-download-${scope.type}`}
+                disabled={!canDownload}
+                onPress={() => void startDownload()}
+                style={[
+                  styles.primaryButton,
+                  {
+                    backgroundColor: isComplete ? `${theme.tint}24` : theme.tint,
+                    opacity: isDownloading ? 0.82 : 1,
+                  },
+                ]}
+              >
+                {isDownloading ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <MaterialIcons name={isComplete ? 'check-circle' : 'download'} size={19} color={isComplete ? theme.tint : '#fff'} />
+                )}
+                <CenteredText style={[styles.primaryButtonText, { color: isComplete ? theme.tint : '#fff' }]}>
+                  {isComplete ? 'دانلود شد' : primaryLabel}
+                </CenteredText>
+              </Pressable>
+
+              <View style={styles.statusRow}>
+                <CenteredText style={[styles.statusText, { color: theme.textSecondary }]}>
+                  {progressLabel}
+                </CenteredText>
+                {isDownloading ? (
+                  <Pressable testID="quran-download-cancel" onPress={() => controller?.abort()} hitSlop={8}>
+                    <CenteredText style={[styles.linkText, { color: theme.tint }]}>لغو</CenteredText>
+                  </Pressable>
+                ) : (
+                  <Pressable testID="quran-download-change-reciter" onPress={() => setShowReciters(true)} hitSlop={8}>
+                    <CenteredText style={[styles.linkText, { color: theme.tint }]}>تغییر قاری</CenteredText>
+                  </Pressable>
+                )}
+              </View>
+              {error ? <CenteredText style={[styles.error, { color: '#DC2626' }]}>{error}</CenteredText> : null}
+            </>
+          )}
         </Pressable>
-      </Modal>
-    </View>
+      </Pressable>
+    </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  card: { marginTop: Spacing.md, padding: Spacing.sm, borderRadius: BorderRadius.lg, borderWidth: 1 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  titleText: { flex: 1, alignItems: 'flex-end' },
-  title: { fontFamily: 'Vazirmatn', fontSize: Typography.ui.body, fontWeight: '700' },
-  subtitle: { fontFamily: 'Vazirmatn', fontSize: Typography.ui.caption, marginTop: 2 },
-  iconButton: { width: 34, height: 34, alignItems: 'center', justifyContent: 'center' },
-  actionRow: { flexDirection: 'row', gap: Spacing.xs, marginTop: Spacing.sm },
-  selector: { flex: 1, minHeight: 38, borderWidth: 1, borderRadius: BorderRadius.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 },
-  selectorText: { fontFamily: 'Vazirmatn', fontSize: Typography.ui.caption },
-  downloadButton: { flex: 1.35, minHeight: 38, borderRadius: BorderRadius.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4 },
-  downloadText: { fontFamily: 'Vazirmatn', fontSize: Typography.ui.caption, fontWeight: '700' },
-  statusRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: Spacing.xs },
-  status: { flex: 1, textAlign: 'right', fontFamily: 'Vazirmatn', fontSize: 11 },
-  cancel: { fontFamily: 'Vazirmatn', fontSize: 11, textDecorationLine: 'underline' },
-  error: { fontFamily: 'Vazirmatn', fontSize: 11, marginTop: 4 },
-  modalBackdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'center', padding: Spacing.lg },
-  modalCard: { borderRadius: BorderRadius.lg, padding: Spacing.md },
-  modalTitle: { fontFamily: 'Vazirmatn', fontSize: Typography.ui.subtitle, fontWeight: '700', marginBottom: Spacing.sm },
-  modalOption: { minHeight: 46, borderBottomWidth: StyleSheet.hairlineWidth, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  modalOptionText: { flex: 1, textAlign: 'right', fontFamily: 'Vazirmatn', fontSize: Typography.ui.body },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    justifyContent: 'center',
+    padding: Spacing.lg,
+  },
+  sheet: {
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    maxHeight: '78%',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.sm,
+  },
+  closeButton: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleBlock: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  title: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.subtitle,
+    fontWeight: '700',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  subtitle: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    marginTop: 2,
+  },
+  reciterList: {
+    maxHeight: 360,
+  },
+  reciterListContent: {
+    gap: Spacing.xs,
+  },
+  reciterOption: {
+    minHeight: 54,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+  },
+  reciterOptionName: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.body,
+    fontWeight: '700',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  reciterQuality: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    marginTop: 2,
+  },
+  primaryButton: {
+    minHeight: 46,
+    borderRadius: BorderRadius.md,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    marginTop: Spacing.xs,
+  },
+  primaryButtonText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.body,
+    fontWeight: '700',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  statusRow: {
+    minHeight: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.md,
+    marginTop: Spacing.xs,
+  },
+  statusText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  linkText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    fontWeight: '700',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  error: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    marginTop: Spacing.xs,
+  },
 });

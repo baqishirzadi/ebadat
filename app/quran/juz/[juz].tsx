@@ -1,5 +1,5 @@
 import AppCenteredText from '@/components/CenteredText';
-import { AudioPlayer, AyahRow, SurahDecoratedCard } from '@/components/quran';
+import { AudioPlayer, AyahRow, QuranDownloadCard, SurahDecoratedCard } from '@/components/quran';
 import { TranslationToggle } from '@/components/quran/TranslationToggle';
 import { Spacing, Typography } from '@/constants/theme';
 import { useApp, useReadingPosition } from '@/context/AppContext';
@@ -8,7 +8,13 @@ import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import { getUthmaniFont } from '@/hooks/useFonts';
 import { useQuranData } from '@/hooks/useQuranData';
 import { Ayah } from '@/types/quran';
-import { audioManager, getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
+import { audioManager, getQuranPlaybackErrorMessage, type ReciterKey } from '@/utils/quranAudio';
+import {
+  getDownloadManifest,
+  getDownloadManifestKey,
+  getJuzDownloadScope,
+  getPreferredDownloadReciter,
+} from '@/utils/quranDownloadService';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -17,7 +23,6 @@ import {
   Alert,
   Pressable,
   StyleSheet,
-  Text,
   View,
   ViewToken,
 } from 'react-native';
@@ -60,6 +65,7 @@ type JuzListItem =
 
 const AYAH_FOLLOW_VIEW_POSITION = 0;
 const JUZ_TOP_BAR_HEIGHT = 56;
+const QURAN_AUDIO_PLAYER_RESERVED_HEIGHT = 180;
 const AYAH_FOLLOW_EXTRA_TOP_OFFSET = 8;
 const FOLLOW_HARD_SNAP_DELAY = 120;
 
@@ -82,7 +88,7 @@ export default function JuzReaderScreen() {
   const navigation = useNavigation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { theme, state } = useApp();
+  const { theme } = useApp();
   const { updatePosition } = useReadingPosition();
   const { getAyahsByJuz, getTranslation } = useQuranData();
 
@@ -106,6 +112,9 @@ export default function JuzReaderScreen() {
   const [currentlyPlaying, setCurrentlyPlaying] = useState<{ surah: number; ayah: number } | null>(null);
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showDownloadSheet, setShowDownloadSheet] = useState(false);
+  const [downloadReciter, setDownloadReciter] = useState<ReciterKey>('yasser_ad_dussary');
+  const [juzDownloaded, setJuzDownloaded] = useState(false);
   const flatListRef = useRef<FlatList<JuzListItem>>(null);
   const pendingScrollTargetRef = useRef<{ surah: number; ayah: number } | null>(null);
   const activeFollowRequestIdRef = useRef(0);
@@ -116,6 +125,36 @@ export default function JuzReaderScreen() {
   const notificationResumeSettledRef = useRef(true);
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 50, minimumViewTime: 500 });
   const ayahFollowViewOffset = insets.top + JUZ_TOP_BAR_HEIGHT + AYAH_FOLLOW_EXTRA_TOP_OFFSET;
+  const juzDownloadScope = useMemo(() => getJuzDownloadScope(juzNumber), [juzNumber]);
+  const juzDownloadKey = useMemo(
+    () => getDownloadManifestKey(downloadReciter, { type: 'juz', id: juzNumber }),
+    [downloadReciter, juzNumber]
+  );
+
+  useEffect(() => {
+    let mounted = true;
+    void Promise.all([getPreferredDownloadReciter(), getDownloadManifest()]).then(([preferred, entries]) => {
+      if (!mounted) return;
+      setDownloadReciter(preferred);
+      const entry = entries.find((item) => item.key === getDownloadManifestKey(preferred, { type: 'juz', id: juzNumber }));
+      setJuzDownloaded(Boolean(entry && entry.completed === entry.total && entry.total > 0));
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [juzNumber]);
+
+  useEffect(() => {
+    let mounted = true;
+    void getDownloadManifest().then((entries) => {
+      if (!mounted) return;
+      const entry = entries.find((item) => item.key === juzDownloadKey);
+      setJuzDownloaded(Boolean(entry && entry.completed === entry.total && entry.total > 0));
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [juzDownloadKey]);
 
   const sections = useMemo<JuzSection[]>(() => {
     const bySurah = new Map<number, JuzSection>();
@@ -632,7 +671,17 @@ export default function JuzReaderScreen() {
         <AppCenteredText style={styles.topBarTitle} numberOfLines={1} ellipsizeMode="tail">
           جزء {toArabicNumerals(juzNumber)} • سوره {currentSurahArabic}
         </AppCenteredText>
-        <View style={styles.topBarSpacer} />
+        <Pressable
+          testID="quran-download-juz-header"
+          onPress={() => setShowDownloadSheet(true)}
+          hitSlop={8}
+          style={[
+            styles.topBarDownloadButton,
+            { backgroundColor: juzDownloaded ? 'rgba(255,255,255,0.24)' : 'rgba(255,255,255,0.14)' },
+          ]}
+        >
+          <MaterialIcons name={juzDownloaded ? 'check-circle' : 'download'} size={20} color="#fff" />
+        </Pressable>
       </View>
 
       <FlatList
@@ -674,6 +723,19 @@ export default function JuzReaderScreen() {
           onClose={handleAudioClose}
         />
       )}
+
+      <QuranDownloadCard
+        visible={showDownloadSheet}
+        scope={juzDownloadScope}
+        theme={theme}
+        title={`دانلود جزء ${toArabicNumerals(juzNumber)}`}
+        primaryLabel="کل جزء"
+        onClose={() => setShowDownloadSheet(false)}
+        onCompleted={(nextReciter) => {
+          setDownloadReciter(nextReciter);
+          setJuzDownloaded(true);
+        }}
+      />
     </View>
   );
 }
@@ -720,15 +782,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
   },
-  topBarSpacer: {
+  topBarDownloadButton: {
     width: 36,
     height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   listContent: {
     paddingBottom: Spacing.xxl,
   },
   listContentWithPlayer: {
-    paddingBottom: 180,
+    paddingBottom: QURAN_AUDIO_PLAYER_RESERVED_HEIGHT,
   },
   sectionHeaderCard: {
     marginHorizontal: Spacing.md,

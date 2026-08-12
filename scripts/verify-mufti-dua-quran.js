@@ -27,6 +27,20 @@ const audio = read('utils/quranAudio.ts');
 const reciterKeys = [...audio.matchAll(/^  ([a-z0-9_]+): \{/gm)].map((match) => match[1]);
 if (reciterKeys.length !== 6 || !audio.includes('everyayah.com/data/')) throw new Error('Quran reciter URL registry is incomplete');
 if (!download.includes('startAyah') || !download.includes('endAyah') || !download.includes('getAyahCachePath')) throw new Error('Quran scope boundaries/cache reuse are missing');
-if (!read('components/quran/SurahHeader.tsx').includes('QuranDownloadCard')) throw new Error('Surah header has no download controls');
+const surahHeader = read('components/quran/SurahHeader.tsx');
+if (!surahHeader.includes('QuranDownloadCard') || !surahHeader.includes('quran-download-surah-header')) throw new Error('Surah header has no compact download control');
+if (!surahHeader.includes("surahDownloaded ? 'check-circle' : 'download'")) throw new Error('Surah header download completion state is missing');
+const downloadCard = read('components/quran/QuranDownloadCard.tsx');
+for (const marker of ['getSavedDownloadReciter', 'setPreferredDownloadReciter', 'quran-download-reciter-${item.key}', 'quran-download-change-reciter', "textAlign: 'center'", "writingDirection: 'rtl'", 'check-circle']) {
+  if (!downloadCard.includes(marker)) throw new Error(`Compact Quran download sheet is missing ${marker}`);
+}
+if (surahHeader.includes('<QuranDownloadCard') && !surahHeader.includes('visible={showDownloadSheet}')) throw new Error('Surah download sheet must not render as a large inline card');
+const juzReader = read('app/quran/juz/[juz].tsx');
+if (!juzReader.includes('quran-download-juz-header') || !juzReader.includes('getJuzDownloadScope')) throw new Error('Juz reader compact download control is missing');
+const player = read('components/quran/AudioPlayer.tsx');
+for (const marker of ['quran-playback-speed', 'QURAN_PLAYBACK_RATES', 'minHeight: 122', 'numberOfLines={1}', "textAlign: 'center'"]) {
+  if (!player.includes(marker)) throw new Error(`Quran audio player is missing ${marker}`);
+}
+if (!audio.includes('TrackPlayer.setRate') || !audio.includes('QURAN_PLAYBACK_RATES') || !audio.includes('PLAYBACK_RATE_KEY')) throw new Error('Quran playback speed persistence is missing');
 if (!read('app/quran/[surah].tsx').includes("section=quran")) throw new Error('Quran settings shortcut is missing');
 console.log('Mufti independence, Dua selection/composer, and Quran download checks passed.');

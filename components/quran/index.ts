@@ -10,6 +10,7 @@ export { QuranText } from './QuranText';
 export { QuranScreen } from './QuranScreen';
 export { MushafView } from './MushafView';
 export { AudioPlayer } from './AudioPlayer';
+export { QuranDownloadCard } from './QuranDownloadCard';
 export { SurahList } from './SurahList';
 export { JuzList } from './JuzList';
 export { SearchButton } from './SearchButton';

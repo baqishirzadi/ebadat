@@ -15,6 +15,7 @@ export type ReciterKey =
 
 export type QuranPlaybackScopeType = 'surah' | 'juz';
 export type QuranPlaybackStatus = 'idle' | 'preparing' | 'buffering' | 'playing' | 'paused' | 'error';
+export type QuranPlaybackRate = 1 | 1.25 | 1.5 | 2;
 
 export type QuranPlaybackScopeOptions = {
   type?: QuranPlaybackScopeType;
@@ -37,6 +38,7 @@ export type QuranPlaybackSnapshot = {
   scopeEndAyah: number;
   totalAyahs: number;
   juzNumber: number | null;
+  playbackRate: QuranPlaybackRate;
 };
 
 export type PersistedQuranResumeContext = {
@@ -165,8 +167,15 @@ const MAX_BACKGROUND_CACHE_ATTEMPTS = 2;
 const CACHE_RETRY_BASE_DELAY_MS = 350;
 const INITIAL_CONTINUOUS_QUEUE_WINDOW = 8;
 const RECITER_KEY = 'quran_selected_reciter';
+const PLAYBACK_RATE_KEY = 'quran_playback_rate';
 const LAST_POSITION_KEY = 'quran_last_position';
 const RESUME_CONTEXT_KEY = 'quran_resume_context_v1';
+
+export const QURAN_PLAYBACK_RATES: QuranPlaybackRate[] = [1, 1.25, 1.5, 2];
+
+function isQuranPlaybackRate(value: unknown): value is QuranPlaybackRate {
+  return typeof value === 'number' && QURAN_PLAYBACK_RATES.includes(value as QuranPlaybackRate);
+}
 
 async function persistQuranResumeContext(context: PersistedQuranResumeContext): Promise<void> {
   try {
@@ -247,6 +256,7 @@ function createDefaultSnapshot(reciter: ReciterKey): QuranPlaybackSnapshot {
     scopeEndAyah: 0,
     totalAyahs: 0,
     juzNumber: null,
+    playbackRate: 1,
   };
 }
 
@@ -263,6 +273,7 @@ function isQuranTrack(track: unknown): track is QuranTrack {
 class QuranAudioManager {
   private currentReciter: ReciterKey = 'yasser_ad_dussary';
   private snapshot: QuranPlaybackSnapshot = createDefaultSnapshot('yasser_ad_dussary');
+  private playbackRate: QuranPlaybackRate = 1;
   private initialized = false;
   private listenersRegistered = false;
   private backgroundCacheInFlight = new Set<string>();
@@ -279,10 +290,16 @@ class QuranAudioManager {
         this.currentReciter = saved;
         this.snapshot = { ...this.snapshot, reciter: saved };
       }
+      const savedRate = Number(await AsyncStorage.getItem(PLAYBACK_RATE_KEY));
+      if (isQuranPlaybackRate(savedRate)) {
+        this.playbackRate = savedRate;
+        this.snapshot = { ...this.snapshot, playbackRate: savedRate };
+      }
 
       await ensureSharedTrackPlayerReady('quran-init');
       this.registerTrackPlayerListeners();
       this.initialized = true;
+      await this.applyPlaybackRate();
       await this.syncFromTrackPlayer();
     } catch (e) {
       console.error('QuranAudio init error:', e);
@@ -304,7 +321,7 @@ class QuranAudioManager {
       }
     }
     this.currentReciter = reciter;
-    this.snapshot = { ...createDefaultSnapshot(reciter), reciter };
+    this.snapshot = { ...createDefaultSnapshot(reciter), reciter, playbackRate: this.playbackRate };
     await AsyncStorage.setItem(RECITER_KEY, reciter);
     this.emitSnapshot();
   }
@@ -315,6 +332,19 @@ class QuranAudioManager {
 
   getPlaybackSnapshot(): QuranPlaybackSnapshot {
     return { ...this.snapshot };
+  }
+
+  getPlaybackRate(): QuranPlaybackRate {
+    return this.playbackRate;
+  }
+
+  async setPlaybackRate(rate: QuranPlaybackRate): Promise<void> {
+    if (!isQuranPlaybackRate(rate)) return;
+    this.playbackRate = rate;
+    this.snapshot = { ...this.snapshot, playbackRate: rate };
+    await AsyncStorage.setItem(PLAYBACK_RATE_KEY, String(rate));
+    await this.applyPlaybackRate();
+    this.emitSnapshot();
   }
 
   subscribe(listener: (snapshot: QuranPlaybackSnapshot) => void): () => void {
@@ -342,6 +372,15 @@ class QuranAudioManager {
         // ignore subscriber failure
       }
     });
+  }
+
+  private async applyPlaybackRate(): Promise<void> {
+    if (!isSharedTrackPlayerReady()) return;
+    try {
+      await TrackPlayer.setRate(this.playbackRate);
+    } catch {
+      // Some platforms reject rate changes until a queue exists; the next play applies it again.
+    }
   }
 
   private getStatusForTrackPlayerState(state: TrackPlayerState): QuranPlaybackStatus {
@@ -446,6 +485,7 @@ class QuranAudioManager {
           scopeEndAyah: activeTrack.scopeEndAyah,
           totalAyahs: activeTrack.totalAyahs,
           juzNumber: activeTrack.juzNumber ?? null,
+          playbackRate: this.playbackRate,
         };
 
         await AsyncStorage.setItem(
@@ -477,7 +517,7 @@ class QuranAudioManager {
   private clearQuranPlayback(notifyEnd: boolean): void {
     const wasActive = this.snapshot.isActive;
     this.lastKnownTrackId = null;
-    this.snapshot = createDefaultSnapshot(this.currentReciter);
+    this.snapshot = { ...createDefaultSnapshot(this.currentReciter), playbackRate: this.playbackRate };
     this.emitSnapshot();
     if (notifyEnd && wasActive) {
       this.onPlaybackEndCb?.();
@@ -847,6 +887,7 @@ class QuranAudioManager {
       await TrackPlayer.reset();
       await TrackPlayer.add(queue.tracks);
       await TrackPlayer.skip(queue.selectedIndex);
+      await this.applyPlaybackRate();
       await TrackPlayer.play();
 
       if (requestId !== this.playRequestId) return;
@@ -866,6 +907,7 @@ class QuranAudioManager {
         scopeEndAyah: queue.scopeEndAyah,
         totalAyahs: totalAyahsInSurah,
         juzNumber: resolvedScope.juzNumber,
+        playbackRate: this.playbackRate,
       };
       this.emitSnapshot();
       this.onAyahChangeCb?.(surah, ayah);

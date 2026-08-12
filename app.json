@@ -2,7 +2,7 @@
   "expo": {
     "name": "عبادت",
     "slug": "NamazAfghanistan",
-    "version": "1.0.17",
+    "version": "1.0.18",
     "icon": "./assets/images/icon.png",
     "scheme": "ebadat",
     "userInterfaceStyle": "automatic",
@@ -52,12 +52,12 @@
         "NSLocationAlwaysUsageDescription": "برای یادآوری نماز به موقعیت شما نیاز داریم",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "برای یادآوری نماز به موقعیت شما نیاز داریم",
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleShortVersionString": "1.0.17"
+        "CFBundleShortVersionString": "1.0.18"
       },
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "13"
+      "buildNumber": "14"
     },
     "android": {
       "package": "com.afghandev.ebadat",
