@@ -14,3 +14,12 @@ ios-more.png
 ios-articles.png
 .maestro/tests
 .git
+
+# Local release artifacts and inspection output are not source inputs for the
+# remote iOS build. Keeping them out prevents EAS upload timeouts.
+build
+.tmp-verify
+.expo
+*.apk
+*.aab
+.cursor-*.png
