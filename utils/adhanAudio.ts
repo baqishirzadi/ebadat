@@ -9,7 +9,7 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { AdhanVoice, PrayerName } from './adhanManager';
 
-const UNIFIED_ADHAN_FILE = require('../assets/audio/adhan/barakatullah_salim_18sec.mp3');
+const FULL_ADHAN_FILE = require('../assets/audio/adhan/fajr_adhan_full.mp3');
 
 // Singleton audio manager instance
 let adhanSound: Audio.Sound | null = null;
@@ -47,7 +47,7 @@ async function resolveAdhanAudioSource(): Promise<{ uri: string } | number> {
   }
 
   adhanSourcePromise = (async () => {
-    const asset = Asset.fromModule(UNIFIED_ADHAN_FILE);
+    const asset = Asset.fromModule(FULL_ADHAN_FILE);
 
     if (asset.localUri && (await fileExists(asset.localUri))) {
       const source = { uri: asset.localUri };
@@ -71,7 +71,7 @@ async function resolveAdhanAudioSource(): Promise<{ uri: string } | number> {
 
     // In a release build this module id resolves to the bundled asset. In a dev
     // client it still depends on Metro, so callers handle failures softly.
-    const fallbackSource = UNIFIED_ADHAN_FILE as number;
+    const fallbackSource = FULL_ADHAN_FILE as number;
     cachedAdhanSource = fallbackSource;
     return fallbackSource;
   })().finally(() => {

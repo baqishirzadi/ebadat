@@ -12,6 +12,8 @@ This document is the release gate for bundled adhan audio.
 | File | Source URL | Uploader / Owner | License Type | Commercial Use Allowed | Attribution Required | Proof Link / File | SHA-256 | Verified On | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `assets/audio/adhan/barakatullah_salim_18sec.mp3` | `https://freesound.org/people/3bagbrew/sounds/511003/` | `3bagbrew` | `CC0 / Public Domain` | `Yes` | `No` | `https://creativecommons.org/publicdomain/zero/1.0/` | `3b5e3723754532da896defd611bfc786ff9fc01419128b4cb0efc974e32db927` | `2026-02-22` | `PASS` |
+| `assets/audio/adhan/barakatullah_salim_18sec.caf` | `Converted from canonical CC0 file` | `Project conversion` | `CC0 / Public Domain` | `Yes` | `No` | `Canonical MP3 row above` | `6e8420b0a0b30f77ce7fc2b615f26803c56c79fa4d6b61ffd9fe35810ca2b590` | `2026-08-12` | `PASS` |
+| `assets/audio/adhan/fajr_adhan_full.mp3` | `Local file: /Users/ahmad/Desktop/fajr_adhan.mp3` | `User-provided local asset` | `Owner-confirmed commercial redistribution permission` | `Yes` | `No` | `Owner confirmation received 2026-08-12; retain original permission evidence in the private compliance folder` | `cf0ed33249933d0638b87fb776b1358cfc9960f46044ffc4d398827a19bc68d8` | `2026-08-12` | `PASS` |
 | `assets/sounds/barakatullah_salim_18sec.mp3` | `Synced copy of canonical file` | `Project mirror` | `CC0 / Public Domain` | `Yes` | `No` | `Canonical file above` | `3b5e3723754532da896defd611bfc786ff9fc01419128b4cb0efc974e32db927` | `2026-02-22` | `PASS` |
 | `android/app/src/main/res/raw/barakatullah_salim_18sec.mp3` | `Synced copy of canonical file` | `Project mirror` | `CC0 / Public Domain` | `Yes` | `No` | `Canonical file above` | `3b5e3723754532da896defd611bfc786ff9fc01419128b4cb0efc974e32db927` | `2026-02-22` | `PASS` |
 
@@ -27,7 +29,8 @@ Keep evidence in a private compliance folder and link it in the table above.
 
 ## Canonical Policy
 
-- Canonical adhan asset path: `assets/audio/adhan/barakatullah_salim_18sec.mp3`
+- Canonical notification Adhan asset path: `assets/audio/adhan/barakatullah_salim_18sec.mp3`
+- Foreground full Adhan path: `assets/audio/adhan/fajr_adhan_full.mp3`
 - Any duplicate copy must match canonical hash exactly.
 - If canonical file changes, update this audit table and checksum before release.
 
