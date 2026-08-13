@@ -45,6 +45,7 @@ yarn-error.*
 # Local release/share binaries and ad-hoc smoke screenshots
 *.aab
 *.apk
+*.ipa
 smoke-*.png
 docs/perf/smoke-*.png
 

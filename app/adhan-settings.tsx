@@ -133,7 +133,7 @@ export default function AdhanSettingsScreen() {
     
     setIsTestingVoice(voice);
     try {
-      await testAdhanVoice(voice, prayer, 10000);
+      await testAdhanVoice(voice, prayer);
     } catch {
       Alert.alert('خطا', 'امکان پخش صدا وجود ندارد');
     } finally {

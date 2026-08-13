@@ -17,6 +17,9 @@ const renderer = read('components/MarkdownText.tsx');
 if (!/\\\*\\\*\(\[\\s\\S\]\+\?\)\\\*\\\*/.test(renderer) || !/fontWeight:\s*'700'/.test(renderer)) {
   throw new Error('MarkdownText must parse balanced ** segments and render them bold');
 }
+if (!/###/.test(renderer) || !/heading/.test(renderer)) {
+  throw new Error('MarkdownText must hide ### markers and render heading lines bold');
+}
 for (const file of ['hooks/useHanafiMufti.ts', 'utils/hanafiMuftiStorage.ts', 'app/mufti-chat.tsx', 'app/dua-request/[id].tsx']) {
   if (/formatChatPlainText/.test(read(file))) {
     throw new Error(`${file} still strips markdown before rendering`);
@@ -37,5 +40,9 @@ const samples = ['**مثال**', '** مثال **', 'قبل **اول** و **دو�
 const matchCount = (sample) => [...sample.matchAll(/\*\*([\s\S]+?)\*\*/g)].length;
 if (matchCount(samples[0]) !== 1 || matchCount(samples[1]) !== 1 || matchCount(samples[2]) !== 2 || matchCount(samples[3]) !== 1 || matchCount(samples[4]) !== 0) {
   throw new Error('Markdown bold fixtures failed');
+}
+const headingSamples = ['### عنوان', '###  عنوان', '###عنوان بدون فاصله', '### عنوان **پررنگ**\nمتن', 'متن\n### عنوان دوم'];
+if (!headingSamples.every((sample) => sample.split('\n').some((line) => /^\s*###\s*\S/.test(line)))) {
+  throw new Error('Markdown heading fixtures failed');
 }
 console.log('Responder registry, contract, and markdown checks passed.');

@@ -9,7 +9,11 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import { AdhanVoice, PrayerName } from './adhanManager';
 
-const FULL_ADHAN_FILE = require('../assets/audio/adhan/fajr_adhan_full.mp3');
+// Keep foreground playback identical to the iOS notification clip. The
+// notification sound is intentionally 18 seconds; iOS will reject longer
+// custom notification sounds and the foreground path must not end earlier.
+const ADHAN_FILE = require('../assets/audio/adhan/barakatullah_salim_18sec.mp3');
+const ADHAN_PLAYBACK_WATCHDOG_MS = 25_000;
 
 // Singleton audio manager instance
 let adhanSound: Audio.Sound | null = null;
@@ -47,7 +51,7 @@ async function resolveAdhanAudioSource(): Promise<{ uri: string } | number> {
   }
 
   adhanSourcePromise = (async () => {
-    const asset = Asset.fromModule(FULL_ADHAN_FILE);
+    const asset = Asset.fromModule(ADHAN_FILE);
 
     if (asset.localUri && (await fileExists(asset.localUri))) {
       const source = { uri: asset.localUri };
@@ -71,7 +75,7 @@ async function resolveAdhanAudioSource(): Promise<{ uri: string } | number> {
 
     // In a release build this module id resolves to the bundled asset. In a dev
     // client it still depends on Metro, so callers handle failures softly.
-    const fallbackSource = FULL_ADHAN_FILE as number;
+    const fallbackSource = ADHAN_FILE as number;
     cachedAdhanSource = fallbackSource;
     return fallbackSource;
   })().finally(() => {
@@ -194,26 +198,30 @@ export function isAdhanPlaying(): boolean {
 
 /**
  * Test Adhan playback (for settings screen)
- * Plays a short preview of the unified adhan sound
+ * Plays the complete bundled 18-second Adhan clip.
  * @param voice - Which voice to test
  * @param prayer - Optional prayer type for log context
- * @param durationMs - How long to play (default 10 seconds)
  */
 export async function testAdhanVoice(
   voice: AdhanVoice,
   prayer?: PrayerName,
-  durationMs: number = 10000
 ): Promise<void> {
-  return new Promise(async (resolve) => {
-    await playAdhan(voice, prayer, () => {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(watchdog);
       resolve();
-    });
-    
-    // Auto-stop after duration
-    setTimeout(async () => {
+    };
+    const watchdog = setTimeout(async () => {
       await stopAdhan();
-      resolve();
-    }, durationMs);
+      finish();
+    }, ADHAN_PLAYBACK_WATCHDOG_MS);
+
+    void playAdhan(voice, prayer, finish).then((played) => {
+      if (!played) finish();
+    });
   });
 }
 

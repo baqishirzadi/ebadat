@@ -11,26 +11,44 @@ export function MarkdownText({
   boldStyle?: StyleProp<TextStyle>;
 }) {
   const parts: React.ReactNode[] = [];
-  const pattern = /\*\*([\s\S]+?)\*\*/g;
-  let cursor = 0;
-  let match: RegExpExecArray | null;
   let key = 0;
+  const lines = children.split('\n');
 
-  while ((match = pattern.exec(children)) !== null) {
-    if (match.index > cursor) {
-      parts.push(<React.Fragment key={`plain-${key++}`}>{children.slice(cursor, match.index)}</React.Fragment>);
+  const renderInline = (text: string): React.ReactNode[] => {
+    const inlineParts: React.ReactNode[] = [];
+    const pattern = /\*\*([\s\S]+?)\*\*/g;
+    let cursor = 0;
+    let match: RegExpExecArray | null;
+    while ((match = pattern.exec(text)) !== null) {
+      if (match.index > cursor) {
+        inlineParts.push(<React.Fragment key={`plain-${key++}`}>{text.slice(cursor, match.index)}</React.Fragment>);
+      }
+      inlineParts.push(
+        <Text key={`bold-${key++}`} style={[{ fontWeight: '700' }, boldStyle]}>
+          {match[1]}
+        </Text>,
+      );
+      cursor = match.index + match[0].length;
     }
+    if (cursor < text.length) {
+      inlineParts.push(<React.Fragment key={`plain-${key++}`}>{text.slice(cursor)}</React.Fragment>);
+    }
+    return inlineParts.length > 0 ? inlineParts : [text];
+  };
+
+  lines.forEach((line, index) => {
+    const heading = line.match(/^\s*###\s*(\S(?:.*\S)?)\s*$/);
+    const content = heading ? heading[1] : line;
+    const lineParts = renderInline(content);
     parts.push(
-      <Text key={`bold-${key++}`} style={[{ fontWeight: '700' }, boldStyle]}>
-        {match[1]}
+      <Text key={`line-${key++}`} style={heading ? [{ fontWeight: '700' }, boldStyle] : undefined}>
+        {lineParts}
       </Text>,
     );
-    cursor = match.index + match[0].length;
-  }
-
-  if (cursor < children.length) {
-    parts.push(<React.Fragment key={`plain-${key++}`}>{children.slice(cursor)}</React.Fragment>);
-  }
+    if (index < lines.length - 1) {
+      parts.push(<React.Fragment key={`newline-${key++}`}>{'\n'}</React.Fragment>);
+    }
+  });
 
   return <Text style={style}>{parts.length > 0 ? parts : children}</Text>;
 }

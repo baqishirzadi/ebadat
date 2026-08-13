@@ -1,16 +1,16 @@
 # Adhan Audio Notes
 
-This project uses separate Adhan assets for app-managed playback and iOS notification delivery.
+This project uses the same 18-second Adhan clip for app-managed playback and iOS notification delivery.
 
 ## Active File
 
-- Foreground/app playback: `assets/audio/adhan/fajr_adhan_full.mp3`
+- Foreground/app playback: `assets/audio/adhan/barakatullah_salim_18sec.mp3`
 - iOS notification sound: `assets/audio/adhan/barakatullah_salim_18sec.caf`
 - Android notification sound: `assets/audio/adhan/barakatullah_salim_18sec.mp3`
 
 ## Runtime Behavior
 
-- Foreground iOS/Android receive path uses `expo-av` and plays the full MP3 while the app process is alive.
+- Foreground iOS/Android receive path uses `expo-av` and plays the complete 18-second MP3 while the app process is alive.
 - iOS background/terminated delivery is owned by the system notification sound facility and must use a CAF under 30 seconds.
 - Android notification channels: `adhan-fajr-v4`, `adhan-regular-v4`
 - Android channel sound file: `barakatullah_salim_18sec.mp3`
