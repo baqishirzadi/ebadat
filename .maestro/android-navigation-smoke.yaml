@@ -14,6 +14,11 @@ appId: com.afghandev.ebadat
       id: "ios-more-ready"
     timeout: 30000
 - takeScreenshot: android-nav-more-tab
+- scrollUntilVisible:
+    element:
+      text: "احادیث"
+    direction: DOWN
+    timeout: 15000
 - tapOn:
     text: "احادیث"
 - extendedWaitUntil:
@@ -27,6 +32,11 @@ appId: com.afghandev.ebadat
 - extendedWaitUntil:
     visible:
       id: "ios-more-ready"
+    timeout: 15000
+- scrollUntilVisible:
+    element:
+      text: "اذکار"
+    direction: DOWN
     timeout: 15000
 - tapOn:
     text: "اذکار"

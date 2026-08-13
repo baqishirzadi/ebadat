@@ -193,6 +193,7 @@ export default function AdhanHealthScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <ScreenHeader title={tAdhanPermission('adhanPermissions.health.title')} />
       <ScrollView
+        testID="android-adhan-health"
         style={[styles.container, styles.rtlRoot, { backgroundColor: theme.background }]}
         contentContainerStyle={styles.content}
       >

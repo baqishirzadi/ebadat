@@ -22,7 +22,6 @@ const ANDROID_PERMISSION_STEPS: PermissionOnboardingStep[] = [
   'notifications',
   'exact-alarms',
   'battery',
-  'autostart',
 ];
 
 export async function isFirstOpenAdhanSetupDone(): Promise<boolean> {
@@ -82,8 +81,10 @@ export async function shouldShowAutostartOnboardingStep(): Promise<boolean> {
 }
 
 export async function getAndroidPermissionStepCount(): Promise<number> {
-  const showAutostart = await shouldShowAutostartOnboardingStep();
-  return showAutostart ? 4 : 3;
+  if (Platform.OS !== 'android') return 0;
+  // Android 12 introduced the exact-alarm access gate. Battery access is
+  // still useful on older releases, but there is no exact-alarm screen there.
+  return Number(Platform.Version) >= 31 ? 3 : 2;
 }
 
 export async function getOnboardingResumeRoute(): Promise<string> {
@@ -93,6 +94,12 @@ export async function getOnboardingResumeRoute(): Promise<string> {
   }
   if (progress === 'complete') {
     return '/(tabs)';
+  }
+  // Older builds could leave a first-install user at the OEM autostart page.
+  // That page is no longer part of onboarding; resume at the supported
+  // battery step so the user is never stranded on a removed route.
+  if (progress === 'autostart') {
+    return '/onboarding/battery';
   }
   return `/onboarding/${progress}`;
 }
@@ -111,8 +118,7 @@ export async function getNextPermissionStep(
     return 'battery';
   }
   if (current === 'battery') {
-    const showAutostart = await shouldShowAutostartOnboardingStep();
-    return showAutostart ? 'autostart' : 'complete';
+    return 'complete';
   }
   if (current === 'autostart') {
     return 'complete';

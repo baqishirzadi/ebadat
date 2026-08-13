@@ -10,6 +10,7 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 
 interface OnboardingShellProps {
+  testID?: string;
   step: number;
   totalSteps: number;
   title: string;
@@ -29,6 +30,7 @@ interface OnboardingShellProps {
 }
 
 export function OnboardingShell({
+  testID,
   step,
   totalSteps,
   title,
@@ -53,7 +55,10 @@ export function OnboardingShell({
   const footerPaddingBottom = Math.max(insets.bottom, Spacing.lg);
 
   return (
-    <RtlView style={[styles.container, { backgroundColor: theme.background, paddingTop: insets.top + Spacing.md }]}>
+    <RtlView
+      testID={testID}
+      style={[styles.container, { backgroundColor: theme.background, paddingTop: insets.top + Spacing.md }]}
+    >
       <RtlView style={[styles.topRow, compactHeader && styles.topRowCompact]}>
         {showBack ? (
           <Pressable

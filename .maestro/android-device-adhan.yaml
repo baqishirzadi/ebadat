@@ -30,10 +30,10 @@ appId: com.afghandev.ebadat
     text: "ادامه با کابل"
 - extendedWaitUntil:
     visible:
-      text: "فعال‌سازی اذان"
+      text: "اجازهٔ اطلاعیه‌ها"
     timeout: 15000
 - tapOn:
-    text: "فعال‌سازی اعلان‌ها"
+    text: "اجازه دادن"
 - tapOn:
     text: "Allow"
     optional: true
@@ -51,6 +51,18 @@ appId: com.afghandev.ebadat
     optional: true
 - tapOn:
     text: "OK"
+    optional: true
+- tapOn:
+    text: "فعلاً نه"
+    optional: true
+- tapOn:
+    text: "ادامه"
+    optional: true
+- tapOn:
+    text: "بعداً"
+    optional: true
+- tapOn:
+    text: "ادامه"
     optional: true
 - extendedWaitUntil:
     visible:

@@ -57,6 +57,7 @@ export default function OnboardingExactAlarmsScreen() {
 
   return (
     <OnboardingShell
+      testID="android-onboarding-exact-alarms"
       step={5}
       totalSteps={totalSteps}
       title={tAdhanPermission('adhanPermissions.exactAlarm.title')}

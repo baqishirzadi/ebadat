@@ -98,6 +98,7 @@ export default function OnboardingNotificationsScreen() {
 
   return (
     <OnboardingShell
+      testID="android-onboarding-notifications"
       step={4}
       totalSteps={totalSteps}
       title={tAdhanPermission('adhanPermissions.notifications.title')}

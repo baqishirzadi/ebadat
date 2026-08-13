@@ -71,6 +71,7 @@ export default function OnboardingBatteryScreen() {
 
   return (
     <OnboardingShell
+      testID="android-onboarding-battery"
       step={permissionStepIndex}
       totalSteps={totalSteps}
       title={tAdhanPermission('adhanPermissions.battery.title')}
