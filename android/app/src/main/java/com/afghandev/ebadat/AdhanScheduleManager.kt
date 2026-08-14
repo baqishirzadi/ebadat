@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -96,9 +97,27 @@ object AdhanScheduleManager {
   }
 
   fun enqueuePeriodicMaintenance(context: Context) {
-    val request = PeriodicWorkRequestBuilder<AdhanMaintenanceWorker>(12, TimeUnit.HOURS)
-      .build()
-    WorkManager.getInstance(context.applicationContext).enqueueUniquePeriodicWork(
+    val appContext = context.applicationContext
+    val request = PeriodicWorkRequestBuilder<AdhanMaintenanceWorker>(12, TimeUnit.HOURS).build()
+    val workManager = try {
+      WorkManager.getInstance(appContext)
+    } catch (error: IllegalStateException) {
+      // Some OEM/Expo manifest combinations omit WorkManager's Startup
+      // initializer. Initialize it lazily so the app can still boot and use
+      // the exact-alarm path even when periodic maintenance is unavailable.
+      try {
+        WorkManager.initialize(
+          appContext,
+          Configuration.Builder().setMinimumLoggingLevel(Log.INFO).build(),
+        )
+        WorkManager.getInstance(appContext)
+      } catch (initializationError: IllegalStateException) {
+        Log.w(TAG, "WorkManager unavailable; skipping periodic maintenance", initializationError)
+        return
+      }
+    }
+
+    workManager.enqueueUniquePeriodicWork(
       PERIODIC_WORK_NAME,
       ExistingPeriodicWorkPolicy.KEEP,
       request,

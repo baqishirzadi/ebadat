@@ -23,8 +23,12 @@ async function refreshAndroidWidget(snapshot: ReturnType<typeof buildWidgetSnaps
 
     await requestWidgetUpdate({
       widgetName: 'PrayerTimesWidget',
-      renderWidget: () =>
-        React.createElement(PrayerTimesWidget, { snapshot: freshSnapshot }),
+      renderWidget: (widgetInfo) =>
+        React.createElement(PrayerTimesWidget, {
+          snapshot: freshSnapshot,
+          width: widgetInfo.width,
+          height: widgetInfo.height,
+        }),
     });
   } catch (error) {
     console.warn('[pushWidgetSnapshot] Android widget refresh failed:', error);

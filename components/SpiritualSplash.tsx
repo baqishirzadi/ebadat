@@ -315,7 +315,12 @@ const styles = StyleSheet.create({
     color: `${GOLD_LIGHT}90`,
     textAlign: 'center',
     marginTop: 10,
-    lineHeight: 36,
+    // Nastaliq glyphs (especially Pashto dots) extend beyond the nominal
+    // ascent/descent. Keep native font padding and reserve that space so the
+    // dots never get clipped on Android or during the splash transition.
+    includeFontPadding: true,
+    lineHeight: 48,
+    paddingVertical: 4,
     fontFamily: 'NotoNastaliqUrdu',
     writingDirection: 'rtl',
   },

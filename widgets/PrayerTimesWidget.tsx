@@ -12,9 +12,21 @@ const ACCENT = '#8bd9b8';
 
 interface PrayerTimesWidgetProps {
   snapshot: WidgetSnapshot | null;
+  /** Android supplies the actual widget bounds (dp) for every update/resize. */
+  width?: number;
+  height?: number;
 }
 
-export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
+export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: PrayerTimesWidgetProps) {
+  // Xiaomi/MIUI and some launchers honor a shorter minimum height than the
+  // Pixel launcher. Keep a deliberately compact composition for those bounds
+  // instead of allowing the lower prayer row to be clipped.
+  const compact = height < 145 || width < 300;
+  const rootPaddingVertical = compact ? 5 : 7;
+  const rootPaddingHorizontal = compact ? 6 : 8;
+  const prayerLabelSize = compact ? 9 : 10;
+  const prayerTimeSize = compact ? 13 : 14;
+
   if (!snapshot) {
     return (
       <FlexWidget
@@ -24,17 +36,17 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
           backgroundColor: TINT,
           justifyContent: 'center',
           alignItems: 'center',
-          padding: 16,
+          padding: compact ? 10 : 16,
         }}
         clickAction="OPEN_APP"
       >
         <TextWidget
           text="عبادت"
-          style={{ fontSize: 18, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY }}
+          style={{ fontSize: compact ? 16 : 18, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY }}
         />
         <TextWidget
           text="اپ را باز کنید"
-          style={{ fontSize: 12, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 6 }}
+          style={{ fontSize: compact ? 11 : 12, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 4 }}
         />
       </FlexWidget>
     );
@@ -50,8 +62,8 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
         width: 'match_parent',
         backgroundColor: TINT,
         flexDirection: 'column',
-        paddingVertical: 10,
-        paddingHorizontal: 8,
+        paddingVertical: rootPaddingVertical,
+        paddingHorizontal: rootPaddingHorizontal,
         justifyContent: 'space-between',
       }}
       clickAction="OPEN_APP"
@@ -63,28 +75,60 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
           width: 'match_parent',
         }}
       >
-        <TextWidget
-          text={snapshot.weekdayDari}
-          style={{ fontSize: 16, fontFamily: 'Vazirmatn-Bold', color: TEXT_SECONDARY }}
-        />
-        <TextWidget
-          text={snapshot.hijriDisplay}
-          style={{ fontSize: 24, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 2 }}
-        />
-        <TextWidget
-          text={snapshot.shamsiDisplay}
-          style={{ fontSize: 18, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY, marginTop: 2 }}
-        />
-        <TextWidget
-          text={snapshot.gregorianDisplay || ''}
-          style={{ fontSize: 14, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 2 }}
-        />
-        {snapshot.sunriseDisplay ? (
-          <TextWidget
-            text={snapshot.sunriseDisplay}
-            style={{ fontSize: 13, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 4 }}
-          />
-        ) : null}
+        {compact ? (
+          <>
+            <TextWidget
+              text={`${snapshot.weekdayDari} • ${snapshot.shamsiDisplay}`}
+              maxLines={1}
+              allowFontScaling={false}
+              style={{ fontSize: 13, fontFamily: 'Vazirmatn-Bold', color: TEXT_SECONDARY, adjustsFontSizeToFit: true }}
+            />
+            <TextWidget
+              text={`${snapshot.hijriDisplay} • ${snapshot.gregorianDisplay || ''}`}
+              maxLines={1}
+              allowFontScaling={false}
+              style={{ fontSize: 13, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY, marginTop: 1, adjustsFontSizeToFit: true }}
+            />
+            {snapshot.sunriseDisplay ? (
+              <TextWidget
+                text={snapshot.sunriseDisplay}
+                maxLines={1}
+                allowFontScaling={false}
+                style={{ fontSize: 11, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 1, adjustsFontSizeToFit: true }}
+              />
+            ) : null}
+          </>
+        ) : (
+          <>
+            <TextWidget
+              text={snapshot.weekdayDari}
+              allowFontScaling={false}
+              style={{ fontSize: 14, fontFamily: 'Vazirmatn-Bold', color: TEXT_SECONDARY }}
+            />
+            <TextWidget
+              text={snapshot.hijriDisplay}
+              allowFontScaling={false}
+              style={{ fontSize: 20, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 1 }}
+            />
+            <TextWidget
+              text={snapshot.shamsiDisplay}
+              allowFontScaling={false}
+              style={{ fontSize: 16, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY, marginTop: 1 }}
+            />
+            <TextWidget
+              text={snapshot.gregorianDisplay || ''}
+              allowFontScaling={false}
+              style={{ fontSize: 12, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 1 }}
+            />
+            {snapshot.sunriseDisplay ? (
+              <TextWidget
+                text={snapshot.sunriseDisplay}
+                allowFontScaling={false}
+                style={{ fontSize: 11, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 2 }}
+              />
+            ) : null}
+          </>
+        )}
       </FlexWidget>
 
       <FlexWidget
@@ -101,28 +145,34 @@ export function PrayerTimesWidget({ snapshot }: PrayerTimesWidgetProps) {
               key={prayer.key}
               style={{
                 flex: 1,
-                marginHorizontal: 2,
+                marginHorizontal: compact ? 1 : 2,
                 backgroundColor: active ? ACTIVE_BG : INACTIVE_BG,
                 borderRadius: 8,
-                paddingVertical: 4,
+                paddingVertical: compact ? 2 : 3,
                 alignItems: 'center',
               }}
             >
               <TextWidget
                 text={prayer.labelDari}
+                maxLines={1}
+                allowFontScaling={false}
                 style={{
-                  fontSize: 10,
+                  fontSize: prayerLabelSize,
                   fontFamily: 'Vazirmatn-Bold',
                   color: active ? TINT : TEXT_PRIMARY,
+                  adjustsFontSizeToFit: true,
                 }}
               />
               <TextWidget
                 text={prayer.time12h}
+                maxLines={1}
+                allowFontScaling={false}
                 style={{
-                  fontSize: 11,
+                  fontSize: prayerTimeSize,
                   fontFamily: 'Vazirmatn-Bold',
                   color: active ? TINT : TEXT_SECONDARY,
-                  marginTop: 2,
+                  marginTop: 1,
+                  adjustsFontSizeToFit: true,
                 }}
               />
             </FlexWidget>

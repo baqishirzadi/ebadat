@@ -87,9 +87,14 @@ const styles = StyleSheet.create({
   optionLabel: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
+    // Preserve the upper/lower marks in Pashto glyphs (پښتو) on Android.
+    includeFontPadding: true,
+    lineHeight: 34,
   },
   optionHint: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
+    includeFontPadding: true,
+    lineHeight: 28,
   },
 });

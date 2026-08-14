@@ -15,9 +15,21 @@ registerWidgetTaskHandler(async ({ widgetInfo, widgetAction, renderWidget }) => 
   try {
     const stored = await readWidgetSnapshot();
     const snapshot = stored ? refreshWidgetSnapshot(stored) : null;
-    renderWidget(<PrayerTimesWidget snapshot={snapshot} />);
+    renderWidget(
+      <PrayerTimesWidget
+        snapshot={snapshot}
+        width={widgetInfo.width}
+        height={widgetInfo.height}
+      />,
+    );
   } catch (error) {
     console.warn('[widgetTaskHandler] Failed to render widget:', error);
-    renderWidget(<PrayerTimesWidget snapshot={null} />);
+    renderWidget(
+      <PrayerTimesWidget
+        snapshot={null}
+        width={widgetInfo.width}
+        height={widgetInfo.height}
+      />,
+    );
   }
 });
