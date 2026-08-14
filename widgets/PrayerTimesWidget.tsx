@@ -112,14 +112,13 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             {snapshot.hadithText ? (
               <TextWidget
                 text={`حدیث روز • ${snapshot.hadithText}`}
-                maxLines={1}
+                maxLines={2}
                 allowFontScaling={false}
                 style={{
-                  fontSize: 11,
+                  fontSize: 13,
                   fontFamily: 'Vazirmatn-Bold',
                   color: ACCENT,
-                  marginTop: 2,
-                  adjustsFontSizeToFit: true,
+                  marginTop: 3,
                 }}
               />
             ) : null}
@@ -164,11 +163,10 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                 maxLines={2}
                 allowFontScaling={false}
                 style={{
-                  fontSize: 11,
+                  fontSize: 13,
                   fontFamily: 'Vazirmatn',
                   color: TEXT_SECONDARY,
-                  marginTop: 2,
-                  adjustsFontSizeToFit: true,
+                  marginTop: 3,
                 }}
               />
             ) : null}
