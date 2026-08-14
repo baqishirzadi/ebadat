@@ -1,4 +1,4 @@
-import { AppState, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import type { PrayerTimes } from '@/utils/prayerTimes';
 import { getPrayerTimesForDateRange } from '@/utils/prayerTimesAgent';
@@ -97,7 +97,11 @@ export async function pushWidgetSnapshot(
   });
   await writeWidgetSnapshot(snapshot);
 
-  if (Platform.OS === 'android' && AppState.currentState === 'active') {
+  // The multi-day calculation can finish after the app is backgrounded. The
+  // widget still needs the freshly persisted snapshot at that point; keeping
+  // this refresh behind an `AppState === active` guard left Samsung/Xiaomi
+  // launchers showing the initial “open the app” placeholder indefinitely.
+  if (Platform.OS === 'android') {
     await refreshAndroidWidget(snapshot);
   }
 }

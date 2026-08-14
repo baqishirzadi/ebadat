@@ -44,7 +44,8 @@ require.extensions['.ts'] = (module, filename) => {
 
 const { calculatePrayerTimes } = require('../utils/prayerTimes.ts');
 const { buildDateFromLocalTimeInTimezone, getHoursMinutesInTimeZone } = require('../utils/prayerTimezone.ts');
-const { buildWidgetSnapshot, listWidgetTimelineBoundaries, parseWidgetSnapshot } = require('../utils/widgetSnapshot.ts');
+const { buildWidgetSnapshot, listWidgetTimelineBoundaries, parseWidgetSnapshot, refreshWidgetSnapshot } = require('../utils/widgetSnapshot.ts');
+const { getWidgetHadithForDateKey } = require('../utils/widgetHadith.ts');
 const { formatPrayerTime12h } = require('../utils/formatPrayerTime.ts');
 
 const fixtures = [
@@ -80,6 +81,11 @@ for (const fixture of fixtures) {
   assert(snapshot.version === 3, `${fixture.name}: expected schema version 3`);
   assert(snapshot.latitude === fixture.latitude && snapshot.longitude === fixture.longitude, `${fixture.name}: location was not persisted`);
   assert(snapshot.calculationMethod === 'Karachi' && snapshot.asrMethod === 'Hanafi', `${fixture.name}: policy was not persisted`);
+  assert(snapshot.hadithText && snapshot.hadithSource, `${fixture.name}: daily Hadith was not persisted`);
+  assert(
+    getWidgetHadithForDateKey(fixture.date).text === snapshot.hadithText,
+    `${fixture.name}: daily Hadith selection is not date-stable`,
+  );
 
   const entries = entryMap(snapshot);
   for (const key of ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']) {
@@ -110,6 +116,19 @@ const legacy = parseWidgetSnapshot(JSON.stringify({
   nextRefreshAtMs: 1783336200000,
 }));
 assert(legacy?.version === 3 && legacy.latitude === 34.5553 && legacy.asrMethod === 'Hanafi', 'legacy snapshot migration failed');
+assert(legacy?.hadithText, 'legacy snapshot did not receive a deterministic Hadith fallback');
+
+const nextHadith = getWidgetHadithForDateKey('2026-07-07');
+assert(nextHadith.text && nextHadith.id !== getWidgetHadithForDateKey('2026-07-06').id, 'daily Hadith does not rotate with the local date');
+const expiredHorizon = refreshWidgetSnapshot(
+  parseWidgetSnapshot(JSON.stringify({ ...legacy, days: [legacy.days[0]] })) || legacy,
+  new Date('2026-08-15T08:00:00.000Z'),
+);
+assert(expiredHorizon.hadithText === getWidgetHadithForDateKey('2026-08-15').text, 'daily Hadith stopped rotating after the stored horizon');
+
+const androidWidgetSource = fs.readFileSync(path.join(root, 'widgets', 'PrayerTimesWidget.tsx'), 'utf8');
+assert(androidWidgetSource.includes('حدیث روز'), 'Android widget does not render the daily Hadith strip');
+assert(!androidWidgetSource.includes("justifyContent: 'space-between'"), 'Android widget still distributes a large sunrise/prayer gap');
 
 const sharedPath = path.join(root, 'ios', 'EbadatPrayerWidget', 'WidgetShared.swift');
 const calculatorPath = path.join(root, 'ios', 'EbadatPrayerWidget', 'WidgetPrayerCalculator.swift');

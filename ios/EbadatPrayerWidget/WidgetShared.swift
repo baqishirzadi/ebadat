@@ -54,6 +54,8 @@ enum WidgetShared {
         hijriDisplay: calculated.hijriDisplay,
         gregorianDisplay: calculated.gregorianDisplay,
         sunriseDisplay: calculated.sunriseDisplay,
+        hadithText: stored.hadithText,
+        hadithSource: stored.hadithSource,
         currentPrayer: current,
         prayers: calculated.prayers,
         nextRefreshAtMs: next
@@ -76,6 +78,8 @@ enum WidgetShared {
         hijriDisplay: stored.hijriDisplay,
         gregorianDisplay: stored.gregorianDisplay,
         sunriseDisplay: stored.sunriseDisplay,
+        hadithText: stored.hadithText,
+        hadithSource: stored.hadithSource,
         prayers: stored.prayers
       )
     }
@@ -118,6 +122,8 @@ enum WidgetShared {
       hijriDisplay: day.hijriDisplay,
       gregorianDisplay: day.gregorianDisplay,
       sunriseDisplay: day.sunriseDisplay.isEmpty ? stored.sunriseDisplay : day.sunriseDisplay,
+      hadithText: day.hadithText.isEmpty ? stored.hadithText : day.hadithText,
+      hadithSource: day.hadithSource.isEmpty ? stored.hadithSource : day.hadithSource,
       currentPrayer: current,
       prayers: day.prayers,
       nextRefreshAtMs: nextRefresh
@@ -199,10 +205,12 @@ struct WidgetDaySnapshot: Codable {
   let hijriDisplay: String
   let gregorianDisplay: String
   let sunriseDisplay: String
+  let hadithText: String
+  let hadithSource: String
   let prayers: [WidgetPrayerEntry]
 
   enum CodingKeys: String, CodingKey {
-    case dateKey, weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay, sunriseDisplay, prayers
+    case dateKey, weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay, sunriseDisplay, hadithText, hadithSource, prayers
   }
 
   init(
@@ -212,6 +220,8 @@ struct WidgetDaySnapshot: Codable {
     hijriDisplay: String,
     gregorianDisplay: String,
     sunriseDisplay: String = "",
+    hadithText: String = "",
+    hadithSource: String = "",
     prayers: [WidgetPrayerEntry]
   ) {
     self.dateKey = dateKey
@@ -220,6 +230,8 @@ struct WidgetDaySnapshot: Codable {
     self.hijriDisplay = hijriDisplay
     self.gregorianDisplay = gregorianDisplay
     self.sunriseDisplay = sunriseDisplay
+    self.hadithText = hadithText
+    self.hadithSource = hadithSource
     self.prayers = prayers
   }
 
@@ -231,6 +243,8 @@ struct WidgetDaySnapshot: Codable {
     hijriDisplay = try container.decode(String.self, forKey: .hijriDisplay)
     gregorianDisplay = try container.decode(String.self, forKey: .gregorianDisplay)
     sunriseDisplay = try container.decodeIfPresent(String.self, forKey: .sunriseDisplay) ?? ""
+    hadithText = try container.decodeIfPresent(String.self, forKey: .hadithText) ?? ""
+    hadithSource = try container.decodeIfPresent(String.self, forKey: .hadithSource) ?? ""
     prayers = try container.decode([WidgetPrayerEntry].self, forKey: .prayers)
   }
 }
@@ -255,6 +269,8 @@ struct WidgetSnapshot: Codable {
   let hijriDisplay: String
   let gregorianDisplay: String
   let sunriseDisplay: String
+  let hadithText: String
+  let hadithSource: String
   let currentPrayer: String?
   let prayers: [WidgetPrayerEntry]
   let nextRefreshAtMs: Double
@@ -262,7 +278,7 @@ struct WidgetSnapshot: Codable {
   enum CodingKeys: String, CodingKey {
     case version, updatedAt, cityName, timezone, policyVersion, sourceLabel, latitude, longitude, altitude
     case calculationMethod, asrMethod, maghribOffsetMinutes, fixedDhuhrLocalTime, days
-    case weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay, sunriseDisplay
+    case weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay, sunriseDisplay, hadithText, hadithSource
     case currentPrayer, prayers, nextRefreshAtMs
   }
 
@@ -286,6 +302,8 @@ struct WidgetSnapshot: Codable {
     hijriDisplay: String,
     gregorianDisplay: String,
     sunriseDisplay: String = "",
+    hadithText: String = "",
+    hadithSource: String = "",
     currentPrayer: String?,
     prayers: [WidgetPrayerEntry],
     nextRefreshAtMs: Double
@@ -309,6 +327,8 @@ struct WidgetSnapshot: Codable {
     self.hijriDisplay = hijriDisplay
     self.gregorianDisplay = gregorianDisplay
     self.sunriseDisplay = sunriseDisplay
+    self.hadithText = hadithText
+    self.hadithSource = hadithSource
     self.currentPrayer = currentPrayer
     self.prayers = prayers
     self.nextRefreshAtMs = nextRefreshAtMs
@@ -336,6 +356,12 @@ struct WidgetSnapshot: Codable {
     gregorianDisplay = try container.decode(String.self, forKey: .gregorianDisplay)
     sunriseDisplay = try container.decodeIfPresent(String.self, forKey: .sunriseDisplay)
       ?? days?.first?.sunriseDisplay
+      ?? ""
+    hadithText = try container.decodeIfPresent(String.self, forKey: .hadithText)
+      ?? days?.first?.hadithText
+      ?? ""
+    hadithSource = try container.decodeIfPresent(String.self, forKey: .hadithSource)
+      ?? days?.first?.hadithSource
       ?? ""
     currentPrayer = try container.decodeIfPresent(String.self, forKey: .currentPrayer)
     prayers = try container.decode([WidgetPrayerEntry].self, forKey: .prayers)

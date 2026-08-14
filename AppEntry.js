@@ -29,6 +29,19 @@ if (__DEV__) {
   ]);
 }
 
+// Android's WidgetProvider/WorkManager can deliver an update while the app process is still
+// starting. Register the headless handler before mounting the router so an
+// early widget update can read the persisted snapshot instead of rendering the
+// empty “open the app” placeholder.
+if (Platform.OS === 'android') {
+  try {
+    require('./widgets/widgetTaskHandler');
+    entryMark('Android widget task handler loaded');
+  } catch (error) {
+    console.warn('[Startup] widgetTaskHandler load failed:', error);
+  }
+}
+
 const { App } = require('expo-router/build/qualified-entry');
 const { renderRootComponent } = require('expo-router/build/renderRootComponent');
 entryMark('expo-router entry loaded');
@@ -37,7 +50,7 @@ renderRootComponent(App);
 entryMark('renderRootComponent called');
 
 function deferAndroidStartupSideEffects() {
-  entryMark('Deferring TrackPlayer + widget registration');
+  entryMark('Deferring TrackPlayer registration');
   try {
     const TrackPlayer = require('react-native-track-player').default;
     const { NaatPlaybackService } = require('./services/naatPlaybackService');
@@ -47,14 +60,6 @@ function deferAndroidStartupSideEffects() {
     console.warn('[Startup] TrackPlayer register failed:', error);
   }
 
-  if (Platform.OS === 'android') {
-    try {
-      require('./widgets/widgetTaskHandler');
-      entryMark('Android widget task handler loaded');
-    } catch (error) {
-      console.warn('[Startup] widgetTaskHandler load failed:', error);
-    }
-  }
 }
 
 if (Platform.OS === 'android') {

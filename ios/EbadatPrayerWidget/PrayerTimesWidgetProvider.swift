@@ -67,6 +67,8 @@ struct PrayerTimesWidgetProvider: TimelineProvider {
       hijriDisplay: "۱۵ رمضان ۱۴۴۷",
       gregorianDisplay: "19 Jul 2026",
       sunriseDisplay: "طلوع آفتاب ۶:۰۰",
+      hadithText: "اعمال فقط به نیت‌ها بستگی دارد.",
+      hadithSource: "Bukhari 1",
       currentPrayer: "dhuhr",
       prayers: [
         WidgetPrayerEntry(key: "fajr", labelDari: "صبح", time12h: "۴:۳۰", atMs: 0),

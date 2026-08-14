@@ -5,6 +5,7 @@ import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { toArabicNumerals } from '@/utils/numbers';
 import { PRAYER_LABELS_DARI, type PrayerTimes } from '@/utils/prayerTimes';
 import { PRAYER_POLICY_VERSION } from '@/utils/prayerCalculationPolicy';
+import { getWidgetHadithForDateKey, type WidgetHadith } from '@/utils/widgetHadith';
 
 export const WIDGET_SNAPSHOT_KEY = 'ebadat_widget_snapshot_v1';
 
@@ -24,6 +25,8 @@ export interface WidgetDaySnapshot {
   hijriDisplay: string;
   gregorianDisplay: string;
   sunriseDisplay: string;
+  hadithText: string;
+  hadithSource: string;
   prayers: WidgetPrayerEntry[];
 }
 
@@ -49,6 +52,8 @@ export interface WidgetSnapshot {
   hijriDisplay: string;
   gregorianDisplay: string;
   sunriseDisplay: string;
+  hadithText: string;
+  hadithSource: string;
   currentPrayer: WidgetPrayerKey | null;
   prayers: WidgetPrayerEntry[];
   nextRefreshAtMs: number;
@@ -70,8 +75,10 @@ function buildDaySnapshot(
   dateKey: string,
   timezone: string,
   noonAnchor: Date,
+  hadith?: WidgetHadith,
 ): WidgetDaySnapshot {
   const truth = getCalendarTruth(noonAnchor);
+  const dailyHadith = hadith || getWidgetHadithForDateKey(dateKey);
   return {
     dateKey,
     weekdayDari: WEEKDAYS_DARI[truth.weekday],
@@ -79,6 +86,8 @@ function buildDaySnapshot(
     hijriDisplay: `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNameDari} ${toArabicNumerals(truth.hijri.year)}`,
     gregorianDisplay: formatGregorianDisplay(truth.gregorianDate),
     sunriseDisplay: formatSunriseDisplay(prayerTimes, timezone),
+    hadithText: dailyHadith.text,
+    hadithSource: dailyHadith.source,
     prayers: PRAYER_ORDER.map((key) => ({
       key,
       labelDari: PRAYER_LABELS_DARI[key],
@@ -179,6 +188,8 @@ export function buildWidgetSnapshot(
     hijriDisplay: active.hijriDisplay,
     gregorianDisplay: active.gregorianDisplay,
     sunriseDisplay: active.sunriseDisplay,
+    hadithText: active.hadithText,
+    hadithSource: active.hadithSource,
     currentPrayer,
     prayers: active.prayers,
     nextRefreshAtMs: computeNextRefreshAtMs(days, timezone, now),
@@ -187,6 +198,7 @@ export function buildWidgetSnapshot(
 
 export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new Date()): WidgetSnapshot {
   const timezone = snapshot.timezone || 'Asia/Kabul';
+  const todayKey = getDateKeyInTimezone(now, timezone);
   const days = Array.isArray(snapshot.days) && snapshot.days.length > 0
     ? snapshot.days
     : [
@@ -197,11 +209,20 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
           hijriDisplay: snapshot.hijriDisplay,
           gregorianDisplay: snapshot.gregorianDisplay,
           sunriseDisplay: snapshot.sunriseDisplay || '',
+          hadithText: snapshot.hadithText || getWidgetHadithForDateKey(getDateKeyInTimezone(now, timezone)).text,
+          hadithSource: snapshot.hadithSource || getWidgetHadithForDateKey(getDateKeyInTimezone(now, timezone)).source,
           prayers: snapshot.prayers,
         },
       ];
 
-  const active = selectDay(days, now, timezone) || days[0];
+  const activeDay = days.find((day) => day.dateKey === todayKey);
+  const active = activeDay || days[0];
+  // The prayer horizon is intentionally bounded. Even after it expires, the
+  // small daily Hadith strip must continue rotating from bundled data without
+  // waiting for the app to regenerate a snapshot.
+  const dailyHadith = activeDay
+    ? { text: activeDay.hadithText, source: activeDay.hadithSource }
+    : getWidgetHadithForDateKey(todayKey);
   const truth = getCalendarTruth(now);
 
   return {
@@ -216,6 +237,8 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
       `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNameDari} ${toArabicNumerals(truth.hijri.year)}`,
     gregorianDisplay: active?.gregorianDisplay || formatGregorianDisplay(truth.gregorianDate),
     sunriseDisplay: active?.sunriseDisplay || snapshot.sunriseDisplay || '',
+    hadithText: dailyHadith.text || snapshot.hadithText || '',
+    hadithSource: dailyHadith.source || snapshot.hadithSource || '',
     currentPrayer: getCurrentPrayerFromEntries(active.prayers, now),
     prayers: active.prayers,
     nextRefreshAtMs: computeNextRefreshAtMs(days, timezone, now),
@@ -245,6 +268,8 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       hijriDisplay?: string;
       gregorianDisplay?: string;
       sunriseDisplay?: string;
+      hadithText?: string;
+      hadithSource?: string;
       currentPrayer?: WidgetPrayerKey | null;
       prayers?: WidgetPrayerEntry[];
       nextRefreshAtMs?: number;
@@ -264,6 +289,8 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         hijriDisplay: parsed.hijriDisplay || '',
         gregorianDisplay: parsed.gregorianDisplay || '',
         sunriseDisplay: parsed.sunriseDisplay || '',
+        hadithText: parsed.hadithText || getWidgetHadithForDateKey(getDateKeyInTimezone(new Date(parsed.updatedAt || Date.now()), timezone)).text,
+        hadithSource: '',
         prayers: (parsed.prayers || []).filter((p): p is WidgetPrayerEntry =>
           PRAYER_ORDER.includes(p.key as WidgetPrayerKey),
         ),
@@ -287,6 +314,8 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         hijriDisplay: day.hijriDisplay,
         gregorianDisplay: day.gregorianDisplay,
         sunriseDisplay: day.sunriseDisplay,
+        hadithText: day.hadithText,
+        hadithSource: day.hadithSource,
         currentPrayer: parsed.currentPrayer ?? null,
         prayers: day.prayers,
         nextRefreshAtMs: parsed.nextRefreshAtMs || Date.now() + 30 * 60 * 1000,
@@ -305,6 +334,8 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
     const days = (parsed.days || []).map((day) => ({
       ...day,
       sunriseDisplay: day.sunriseDisplay || parsed.sunriseDisplay || '',
+      hadithText: day.hadithText || getWidgetHadithForDateKey(day.dateKey).text,
+      hadithSource: day.hadithSource || getWidgetHadithForDateKey(day.dateKey).source,
       prayers: (day.prayers || []).filter((entry): entry is WidgetPrayerEntry =>
         typeof entry?.atMs === 'number' &&
         typeof entry?.key === 'string' &&
@@ -332,6 +363,8 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       hijriDisplay: parsed.hijriDisplay || '',
       gregorianDisplay: parsed.gregorianDisplay || '',
       sunriseDisplay: parsed.sunriseDisplay || days[0]?.sunriseDisplay || '',
+      hadithText: parsed.hadithText || days[0]?.hadithText || '',
+      hadithSource: parsed.hadithSource || days[0]?.hadithSource || '',
       currentPrayer:
         parsed.currentPrayer && PRAYER_ORDER.includes(parsed.currentPrayer)
           ? parsed.currentPrayer

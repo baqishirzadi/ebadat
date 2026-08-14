@@ -64,7 +64,10 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         flexDirection: 'column',
         paddingVertical: rootPaddingVertical,
         paddingHorizontal: rootPaddingHorizontal,
-        justifyContent: 'space-between',
+        // Keep the top block and prayer chips together. Distributed spacing made
+        // launchers with a taller medium bound distribute a large empty gap
+        // between sunrise and the prayer row.
+        justifyContent: 'flex-start',
       }}
       clickAction="OPEN_APP"
     >
@@ -76,7 +79,12 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         }}
       >
         {compact ? (
-          <>
+          <FlexWidget
+            style={{
+              width: 'match_parent',
+              alignItems: 'center',
+            }}
+          >
             <TextWidget
               text={`${snapshot.weekdayDari} • ${snapshot.shamsiDisplay}`}
               maxLines={1}
@@ -97,9 +105,28 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                 style={{ fontSize: 11, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 1, adjustsFontSizeToFit: true }}
               />
             ) : null}
-          </>
+            {snapshot.hadithText ? (
+              <TextWidget
+                text={`حدیث روز • ${snapshot.hadithText}`}
+                maxLines={1}
+                allowFontScaling={false}
+                style={{
+                  fontSize: 9,
+                  fontFamily: 'Vazirmatn',
+                  color: TEXT_SECONDARY,
+                  marginTop: 2,
+                  adjustsFontSizeToFit: true,
+                }}
+              />
+            ) : null}
+          </FlexWidget>
         ) : (
-          <>
+          <FlexWidget
+            style={{
+              width: 'match_parent',
+              alignItems: 'center',
+            }}
+          >
             <TextWidget
               text={snapshot.weekdayDari}
               allowFontScaling={false}
@@ -127,7 +154,21 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                 style={{ fontSize: 11, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 2 }}
               />
             ) : null}
-          </>
+            {snapshot.hadithText ? (
+              <TextWidget
+                text={`حدیث روز • ${snapshot.hadithText}`}
+                maxLines={2}
+                allowFontScaling={false}
+                style={{
+                  fontSize: 9,
+                  fontFamily: 'Vazirmatn',
+                  color: TEXT_SECONDARY,
+                  marginTop: 2,
+                  adjustsFontSizeToFit: true,
+                }}
+              />
+            ) : null}
+          </FlexWidget>
         )}
       </FlexWidget>
 
@@ -135,7 +176,8 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         style={{
           flexDirection: 'row',
           width: 'match_parent',
-          justifyContent: 'space-between',
+          justifyContent: 'flex-start',
+          marginTop: compact ? 4 : 5,
         }}
       >
         {prayersRtl.map((prayer) => {

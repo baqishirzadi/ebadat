@@ -65,6 +65,13 @@ struct PrayerTimesWidgetView: View {
               .lineLimit(1)
               .minimumScaleFactor(0.7)
           }
+          if !snapshot.hadithText.isEmpty {
+            Text("حدیث روز • \(snapshot.hadithText)")
+              .font(.custom("Vazirmatn", size: 8))
+              .foregroundColor(.white.opacity(0.78))
+              .lineLimit(1)
+              .minimumScaleFactor(0.65)
+          }
         }
         .frame(maxWidth: .infinity)
 
