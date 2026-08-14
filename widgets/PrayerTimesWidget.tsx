@@ -60,22 +60,26 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        backgroundColor: TINT,
+        // Keep the launcher cell transparent below the content card. This
+        // removes the large dark tail on launchers that give the widget two
+        // rows of height without changing the widget's requested size.
+        backgroundColor: '#00000000',
         flexDirection: 'column',
-        paddingVertical: rootPaddingVertical,
-        paddingHorizontal: rootPaddingHorizontal,
-        // Keep the top block and prayer chips together. Distributed spacing made
-        // launchers with a taller medium bound distribute a large empty gap
-        // between sunrise and the prayer row.
         justifyContent: 'flex-start',
+        alignItems: 'center',
       }}
       clickAction="OPEN_APP"
     >
       <FlexWidget
         style={{
+          height: 'wrap_content',
+          width: 'match_parent',
+          backgroundColor: TINT,
+          borderRadius: 20,
           flexDirection: 'column',
           alignItems: 'center',
-          width: 'match_parent',
+          paddingVertical: rootPaddingVertical,
+          paddingHorizontal: rootPaddingHorizontal,
         }}
       >
         {compact ? (
@@ -111,9 +115,9 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                 maxLines={1}
                 allowFontScaling={false}
                 style={{
-                  fontSize: 9,
-                  fontFamily: 'Vazirmatn',
-                  color: TEXT_SECONDARY,
+                  fontSize: 11,
+                  fontFamily: 'Vazirmatn-Bold',
+                  color: ACCENT,
                   marginTop: 2,
                   adjustsFontSizeToFit: true,
                 }}
@@ -160,7 +164,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                 maxLines={2}
                 allowFontScaling={false}
                 style={{
-                  fontSize: 9,
+                  fontSize: 11,
                   fontFamily: 'Vazirmatn',
                   color: TEXT_SECONDARY,
                   marginTop: 2,
@@ -170,16 +174,14 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             ) : null}
           </FlexWidget>
         )}
-      </FlexWidget>
-
-      <FlexWidget
-        style={{
-          flexDirection: 'row',
-          width: 'match_parent',
-          justifyContent: 'flex-start',
-          marginTop: compact ? 4 : 5,
-        }}
-      >
+        <FlexWidget
+          style={{
+            flexDirection: 'row',
+            width: 'match_parent',
+            justifyContent: 'flex-start',
+            marginTop: compact ? 4 : 5,
+          }}
+        >
         {prayersRtl.map((prayer) => {
           const active = snapshot.currentPrayer === prayer.key;
           return (
@@ -220,6 +222,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             </FlexWidget>
           );
         })}
+        </FlexWidget>
       </FlexWidget>
     </FlexWidget>
   );
