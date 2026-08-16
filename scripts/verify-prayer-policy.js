@@ -6,6 +6,7 @@
  */
 
 const assert = require('assert');
+const fs = require('fs');
 const path = require('path');
 
 function resolveCountryCode(cityKey) {
@@ -186,6 +187,23 @@ const afterMidnight = buildLocal(dayB, '00:30', tz);
 const selected = selectWidgetDay(days, afterMidnight, tz);
 assert.strictEqual(selected.dateKey, dayB);
 assert.strictEqual(currentPrayer(selected.prayers, afterMidnight.getTime(), days[0].prayers), 'isha');
+
+const afterIsha = buildLocal(dayA, '21:00', tz);
+assert.strictEqual(currentPrayer(days[0].prayers, afterIsha.getTime()), 'isha');
+assert.strictEqual(currentPrayer(days[1].prayers, buildLocal(dayB, '04:05', tz).getTime(), days[0].prayers), 'fajr');
+for (const [time, expected] of [
+  ['12:30', 'dhuhr'],
+  ['16:05', 'asr'],
+  ['19:02', 'maghrib'],
+  ['20:32', 'isha'],
+]) {
+  assert.strictEqual(currentPrayer(days[1].prayers, buildLocal(dayB, time, tz).getTime()), expected);
+}
+assert.strictEqual(currentPrayer(days[1].prayers, afterMidnight.getTime()), null);
+
+const widgetSnapshotSource = fs.readFileSync(path.join(__dirname, '..', 'utils/widgetSnapshot.ts'), 'utf8');
+assert.ok(widgetSnapshotSource.includes('previousPrayers'), 'widget snapshot must carry previous-day prayers');
+assert.ok(widgetSnapshotSource.includes('findPreviousDay'), 'widget snapshot must resolve the previous local day');
 
 const afterDhuhr = buildLocal(dayB, '13:00', tz);
 assert.strictEqual(currentPrayer(selected.prayers, afterDhuhr.getTime()), 'dhuhr');

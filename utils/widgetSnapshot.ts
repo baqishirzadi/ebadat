@@ -110,6 +110,7 @@ function selectDay(
 function getCurrentPrayerFromEntries(
   prayers: WidgetPrayerEntry[],
   now: Date = new Date(),
+  previousPrayers: WidgetPrayerEntry[] = [],
 ): WidgetPrayerKey | null {
   const nowMs = now.getTime();
   let current: WidgetPrayerKey | null = null;
@@ -119,7 +120,21 @@ function getCurrentPrayerFromEntries(
       current = key;
     }
   }
-  return current;
+  if (current) return current;
+
+  // Before today's Fajr, the prayer period that is still active is the
+  // previous local day's Isha. This keeps Android in sync with the native
+  // widget and avoids a blank highlight after midnight.
+  const previousIsha = previousPrayers.find(
+    (prayer) => prayer.key === 'isha' && prayer.atMs <= nowMs,
+  );
+  return previousIsha ? 'isha' : null;
+}
+
+function findPreviousDay(days: WidgetDaySnapshot[], active: WidgetDaySnapshot): WidgetDaySnapshot | null {
+  return days
+    .filter((day) => day.dateKey < active.dateKey)
+    .sort((a, b) => b.dateKey.localeCompare(a.dateKey))[0] || null;
 }
 
 function computeNextRefreshAtMs(
@@ -166,7 +181,8 @@ export function buildWidgetSnapshot(
       : [buildDaySnapshot(prayerTimes, todayKey, timezone, now)];
 
   const active = selectDay(days, now, timezone) || days[0];
-  const currentPrayer = getCurrentPrayerFromEntries(active.prayers, now);
+  const previous = findPreviousDay(days, active);
+  const currentPrayer = getCurrentPrayerFromEntries(active.prayers, now, previous?.prayers);
 
   return {
     version: 3,
@@ -217,12 +233,18 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
 
   const activeDay = days.find((day) => day.dateKey === todayKey);
   const active = activeDay || days[0];
+  const previous = findPreviousDay(days, active);
   // The prayer horizon is intentionally bounded. Even after it expires, the
   // small daily Hadith strip must continue rotating from bundled data without
   // waiting for the app to regenerate a snapshot.
-  const dailyHadith = activeDay
-    ? { text: activeDay.hadithText, source: activeDay.hadithSource }
-    : getWidgetHadithForDateKey(todayKey);
+  // The stored day may have been generated several days ago. Always derive
+  // the Hadith from today's local key during a widget render so Android's
+  // periodic/date rollover update cannot keep displaying a stale entry.
+  const dateHadith = getWidgetHadithForDateKey(todayKey);
+  const dailyHadith = {
+    text: dateHadith.text || activeDay?.hadithText || snapshot.hadithText,
+    source: dateHadith.source || activeDay?.hadithSource || snapshot.hadithSource,
+  };
   const truth = getCalendarTruth(now);
 
   return {
@@ -239,7 +261,7 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
     sunriseDisplay: active?.sunriseDisplay || snapshot.sunriseDisplay || '',
     hadithText: dailyHadith.text || snapshot.hadithText || '',
     hadithSource: dailyHadith.source || snapshot.hadithSource || '',
-    currentPrayer: getCurrentPrayerFromEntries(active.prayers, now),
+    currentPrayer: getCurrentPrayerFromEntries(active.prayers, now, previous?.prayers),
     prayers: active.prayers,
     nextRefreshAtMs: computeNextRefreshAtMs(days, timezone, now),
   };

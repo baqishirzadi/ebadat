@@ -17,8 +17,17 @@ const renderer = read('components/MarkdownText.tsx');
 if (!/\\\*\\\*\(\[\\s\\S\]\+\?\)\\\*\\\*/.test(renderer) || !/fontWeight:\s*'700'/.test(renderer)) {
   throw new Error('MarkdownText must parse balanced ** segments and render them bold');
 }
-if (!/###/.test(renderer) || !/heading/.test(renderer)) {
+if (!/(?:###|\{3\})/.test(renderer) || !/heading/.test(renderer)) {
   throw new Error('MarkdownText must hide ### markers and render heading lines bold');
+}
+if (!/fontStyle:\s*'italic'/.test(renderer) || !/•/.test(renderer) || !/normalizeMarkdownForClipboard/.test(renderer)) {
+  throw new Error('MarkdownText must render italic/bullet syntax and expose plain-text clipboard normalization');
+}
+if (!/expo-clipboard/.test(read('app/mufti-chat.tsx')) || !/mufti-copy-response/.test(read('app/mufti-chat.tsx'))) {
+  throw new Error('Mufti response copy action is missing');
+}
+if (!/expo-clipboard/.test(read('app/dua-request/[id].tsx')) || !/dua-copy-response/.test(read('app/dua-request/[id].tsx'))) {
+  throw new Error('Dua response copy action is missing');
 }
 for (const file of ['hooks/useHanafiMufti.ts', 'utils/hanafiMuftiStorage.ts', 'app/mufti-chat.tsx', 'app/dua-request/[id].tsx']) {
   if (/formatChatPlainText/.test(read(file))) {

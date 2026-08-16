@@ -1,48 +1,89 @@
 import React from 'react';
 import { StyleProp, Text, TextStyle } from 'react-native';
 
+type MarkdownTextProps = {
+  children: string;
+  style?: StyleProp<TextStyle>;
+  boldStyle?: StyleProp<TextStyle>;
+  headingStyle?: StyleProp<TextStyle>;
+  italicStyle?: StyleProp<TextStyle>;
+  bulletStyle?: StyleProp<TextStyle>;
+};
+
+/** Remove presentation-only Markdown syntax for clipboard/plain-text output. */
+export function normalizeMarkdownForClipboard(value: string): string {
+  return value
+    .split('\n')
+    .map((line) => line
+      .replace(/^\s*#{3}\s*/, '')
+      .replace(/^\s*[*-]\s+/, '• ')
+      .replace(/\*\*([\s\S]+?)\*\*/g, '$1')
+      .replace(/\*([^*\n]+?)\*/g, '$1')
+      .replace(/[*#]/g, '')
+      .trimEnd())
+    .join('\n');
+}
+
+function sanitizePlainText(value: string): string {
+  return value.replace(/[*#]/g, '');
+}
+
 export function MarkdownText({
   children,
   style,
   boldStyle,
-}: {
-  children: string;
-  style?: StyleProp<TextStyle>;
-  boldStyle?: StyleProp<TextStyle>;
-}) {
+  headingStyle,
+  italicStyle,
+  bulletStyle,
+}: MarkdownTextProps) {
   const parts: React.ReactNode[] = [];
   let key = 0;
-  const lines = children.split('\n');
 
-  const renderInline = (text: string): React.ReactNode[] => {
-    const inlineParts: React.ReactNode[] = [];
-    const pattern = /\*\*([\s\S]+?)\*\*/g;
+  const renderInline = (value: string): React.ReactNode[] => {
+    const inline: React.ReactNode[] = [];
+    const pattern = /\*\*([\s\S]+?)\*\*|\*([^*\n]+?)\*/g;
     let cursor = 0;
     let match: RegExpExecArray | null;
-    while ((match = pattern.exec(text)) !== null) {
+    while ((match = pattern.exec(value)) !== null) {
       if (match.index > cursor) {
-        inlineParts.push(<React.Fragment key={`plain-${key++}`}>{text.slice(cursor, match.index)}</React.Fragment>);
+        inline.push(<React.Fragment key={`plain-${key++}`}>{sanitizePlainText(value.slice(cursor, match.index))}</React.Fragment>);
       }
-      inlineParts.push(
-        <Text key={`bold-${key++}`} style={[{ fontWeight: '700' }, boldStyle]}>
-          {match[1]}
-        </Text>,
-      );
+      if (match[1] !== undefined) {
+        inline.push(
+          <Text key={`bold-${key++}`} style={[{ fontWeight: '700' }, boldStyle]}>
+            {match[1]}
+          </Text>,
+        );
+      } else {
+        inline.push(
+          <Text key={`italic-${key++}`} style={[{ fontStyle: 'italic' }, italicStyle]}>
+            {match[2]}
+          </Text>,
+        );
+      }
       cursor = match.index + match[0].length;
     }
-    if (cursor < text.length) {
-      inlineParts.push(<React.Fragment key={`plain-${key++}`}>{text.slice(cursor)}</React.Fragment>);
+    if (cursor < value.length) {
+      inline.push(<React.Fragment key={`plain-${key++}`}>{sanitizePlainText(value.slice(cursor))}</React.Fragment>);
     }
-    return inlineParts.length > 0 ? inlineParts : [text];
+    return inline.length > 0 ? inline : [sanitizePlainText(value)];
   };
 
-  lines.forEach((line, index) => {
-    const heading = line.match(/^\s*###\s*(\S(?:.*\S)?)\s*$/);
-    const content = heading ? heading[1] : line;
-    const lineParts = renderInline(content);
+  children.split('\n').forEach((rawLine, index, lines) => {
+    const heading = rawLine.match(/^\s*#{3}\s*(\S(?:.*\S)?)\s*$/);
+    const bulletMatch = rawLine.match(/^\s*[*-]\s+(.+)$/);
+    const bullet = !heading && bulletMatch ? bulletMatch : null;
+    const content = heading?.[1] ?? bullet?.[1] ?? rawLine;
+    const lineChildren = renderInline(content);
+    const lineStyle = heading
+      ? [{ fontWeight: '700' as const }, boldStyle, headingStyle]
+      : bullet
+        ? bulletStyle
+        : undefined;
     parts.push(
-      <Text key={`line-${key++}`} style={heading ? [{ fontWeight: '700' }, boldStyle] : undefined}>
-        {lineParts}
+      <Text key={`line-${key++}`} style={lineStyle}>
+        {bullet ? '• ' : null}
+        {lineChildren}
       </Text>,
     );
     if (index < lines.length - 1) {
@@ -50,5 +91,5 @@ export function MarkdownText({
     }
   });
 
-  return <Text style={style}>{parts.length > 0 ? parts : children}</Text>;
+  return <Text style={style}>{parts.length > 0 ? parts : sanitizePlainText(children)}</Text>;
 }

@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 import type { PrayerTimes } from '@/utils/prayerTimes';
 import { getPrayerTimesForDateRange } from '@/utils/prayerTimesAgent';
-import { buildDateFromLocalTimeInTimezone, getDateKeyInTimezone } from '@/utils/prayerTimezone';
+import { addDaysToDateKey, buildDateFromLocalTimeInTimezone, getDateKeyInTimezone } from '@/utils/prayerTimezone';
 import { buildWidgetSnapshot } from '@/utils/widgetSnapshot';
 import { writeWidgetSnapshot } from '@/utils/widgetDataBridge';
 import { resolvePrayerCalculationPolicy } from '@/utils/prayerCalculationPolicy';
@@ -66,11 +66,19 @@ export async function pushWidgetSnapshot(
   let sourceLabel: string | undefined;
   if ((options?.cityKey || options?.location) && horizonDays > 1) {
     try {
+      const todayKey = getDateKeyInTimezone(new Date(), timezone);
+      const previousDate = buildDateFromLocalTimeInTimezone(
+        addDaysToDateKey(todayKey, -1),
+        '12:00',
+        timezone,
+      );
       const bundles = await getPrayerTimesForDateRange({
         cityKey: options.cityKey,
         location: options.location,
-        startDate: new Date(),
-        days: horizonDays,
+        // Retain yesterday so the Android widget can carry Isha across
+        // midnight without waiting for the app to open again.
+        startDate: previousDate,
+        days: horizonDays + 1,
         // Widget prefetch must not compete with adhan sync on Diyanet I/O.
         allowNetwork: false,
       });

@@ -88,6 +88,7 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
           )}
         </Pressable>
         <TextInput
+          testID="home-mufti-input"
           style={styles.input}
           value={input}
           onChangeText={setInput}

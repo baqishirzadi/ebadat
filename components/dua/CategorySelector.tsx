@@ -26,6 +26,7 @@ export function CategorySelector({ selectedCategory, onSelect }: CategorySelecto
         return (
           <Pressable
             key={category.id}
+            testID={`dua-category-${category.id}`}
             onPress={() => onSelect(category.id)}
             style={({ pressed }) => [
               styles.categoryCard,
@@ -45,9 +46,6 @@ export function CategorySelector({ selectedCategory, onSelect }: CategorySelecto
             </View>
             <CenteredText style={[styles.name, { color: isSelected ? theme.tint : theme.text }]}>
               {category.nameDari}
-            </CenteredText>
-            <CenteredText style={[styles.description, { color: theme.textSecondary }]} numberOfLines={1}>
-              {category.description}
             </CenteredText>
             {isSelected && (
               <View style={[styles.checkmark, { backgroundColor: theme.tint }]}>
@@ -69,7 +67,8 @@ const styles = StyleSheet.create({
   },
   categoryCard: {
     width: '48%',
-    padding: Spacing.md,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
     borderRadius: BorderRadius.lg,
     borderWidth: 2,
     alignItems: 'center',
@@ -79,9 +78,9 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   iconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.sm,
@@ -89,13 +88,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
-    marginBottom: Spacing.xs,
     fontFamily: 'Vazirmatn',
-  },
-  description: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
   },
   checkmark: {
     position: 'absolute',

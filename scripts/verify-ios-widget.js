@@ -126,6 +126,30 @@ const expiredHorizon = refreshWidgetSnapshot(
 );
 assert(expiredHorizon.hadithText === getWidgetHadithForDateKey('2026-08-15').text, 'daily Hadith stopped rotating after the stored horizon');
 
+const rolloverTimes = { fajr: '04:05', dhuhr: '12:30', asr: '16:05', maghrib: '19:02', isha: '20:32' };
+const makeRolloverDay = (dateKey) => ({
+  ...legacy.days[0],
+  dateKey,
+  prayers: Object.entries(rolloverTimes).map(([key, time]) => ({
+    key,
+    labelDari: key,
+    time12h: time,
+    atMs: buildDateFromLocalTimeInTimezone(dateKey, time, 'Asia/Kabul').getTime(),
+  })),
+});
+const rolloverSnapshot = refreshWidgetSnapshot({
+  ...legacy,
+  version: 3,
+  timezone: 'Asia/Kabul',
+  days: [makeRolloverDay('2026-07-18'), makeRolloverDay('2026-07-19')],
+}, buildDateFromLocalTimeInTimezone('2026-07-19', '00:30', 'Asia/Kabul'));
+assert(rolloverSnapshot.currentPrayer === 'isha', 'Android widget lost previous-day Isha after midnight');
+const fajrSnapshot = refreshWidgetSnapshot(
+  rolloverSnapshot,
+  buildDateFromLocalTimeInTimezone('2026-07-19', '04:05', 'Asia/Kabul'),
+);
+assert(fajrSnapshot.currentPrayer === 'fajr', 'Android widget did not switch highlight at Fajr');
+
 const androidWidgetSource = fs.readFileSync(path.join(root, 'widgets', 'PrayerTimesWidget.tsx'), 'utf8');
 assert(androidWidgetSource.includes('حدیث روز'), 'Android widget does not render the daily Hadith strip');
 assert(!androidWidgetSource.includes("justifyContent: 'space-between'"), 'Android widget still distributes a large sunrise/prayer gap');

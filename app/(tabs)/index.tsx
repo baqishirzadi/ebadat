@@ -39,7 +39,14 @@ function HomeDashboardScreen() {
 
   const scrollMuftiIntoView = useCallback(() => {
     requestAnimationFrame(() => {
-      const visibleHeight = Dimensions.get('window').height - keyboardHeight;
+      const windowHeight = Dimensions.get('window').height;
+      const screenHeight = Dimensions.get('screen').height;
+      // Android may resize the window or keep it full-height while the IME
+      // overlays the screen. Avoid subtracting the keyboard twice.
+      const windowAlreadyResized = screenHeight - windowHeight > 120;
+      const visibleHeight = windowAlreadyResized
+        ? windowHeight
+        : Math.max(1, windowHeight - keyboardHeight);
       const sectionBottom = greenSectionYRef.current + greenSectionHeightRef.current;
       const target = sectionBottom - visibleHeight + Spacing.md;
       scrollRef.current?.scrollTo({
@@ -54,12 +61,19 @@ function HomeDashboardScreen() {
   }, [scrollMuftiIntoView]);
 
   useEffect(() => {
-    if (Platform.OS !== 'ios') return;
-
-    const showSubscription = Keyboard.addListener('keyboardWillShow', (event) => {
-      setKeyboardHeight(Math.round(event.endCoordinates?.height ?? 0));
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSubscription = Keyboard.addListener(showEvent, (event) => {
+      const reported = Math.round(event.endCoordinates?.height ?? 0);
+      const screenHeight = Dimensions.get('screen').height;
+      const screenY = event.endCoordinates?.screenY;
+      const fromTop = typeof screenY === 'number'
+        ? Math.max(0, Math.round(screenHeight - screenY))
+        : 0;
+      setKeyboardHeight(Math.max(reported, fromTop));
+      setTimeout(() => scrollMuftiIntoView(), Platform.OS === 'android' ? 120 : 60);
     });
-    const hideSubscription = Keyboard.addListener('keyboardWillHide', () => {
+    const hideSubscription = Keyboard.addListener(hideEvent, () => {
       setKeyboardHeight(0);
     });
     return () => {
@@ -69,10 +83,16 @@ function HomeDashboardScreen() {
   }, [scrollMuftiIntoView]);
 
   useEffect(() => {
-    if (Platform.OS === 'ios' && keyboardHeight > 0) {
+    if (keyboardHeight > 0) {
       scrollMuftiIntoView();
     }
   }, [keyboardHeight, scrollMuftiIntoView]);
+
+  const keyboardWindowResized = keyboardHeight > 0 &&
+    Dimensions.get('screen').height - Dimensions.get('window').height > 120;
+  const keyboardContentPadding = keyboardHeight > 0 && !keyboardWindowResized
+    ? keyboardHeight + Spacing.md
+    : 0;
 
   return (
     <>
@@ -85,7 +105,7 @@ function HomeDashboardScreen() {
           style={styles.scroll}
           contentContainerStyle={[
             styles.content,
-            keyboardHeight > 0 && { paddingBottom: keyboardHeight + Spacing.md },
+            keyboardContentPadding > 0 && { paddingBottom: keyboardContentPadding },
           ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"

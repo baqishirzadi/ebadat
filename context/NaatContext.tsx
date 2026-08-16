@@ -939,6 +939,11 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         throw new Error('no-audio');
       }
 
+      // TrackPlayer owns one global rate. Quran changes it intentionally, but
+      // Naat must always play at natural speed and must not inherit Quran's
+      // persisted 1.25x/1.5x/2x setting.
+      await TrackPlayer.setRate(1);
+
       const initialPosition = Math.max(0, (selectedNaat.lastPositionMillis ?? 0) / 1000);
       const queueIds = queueTracks.map((track) => String(track.id));
 

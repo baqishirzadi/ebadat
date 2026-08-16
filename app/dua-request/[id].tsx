@@ -4,7 +4,7 @@
  */
 
 import CenteredText from '@/components/CenteredText';
-import { MarkdownText } from '@/components/MarkdownText';
+import { MarkdownText, normalizeMarkdownForClipboard } from '@/components/MarkdownText';
 import { StatusBadge } from '@/components/dua/StatusBadge';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
@@ -12,10 +12,12 @@ import { useDua } from '@/context/DuaContext';
 import { getResponder } from '@/constants/responders';
 import { DUA_CATEGORIES, DuaRequest, GENDER_INFO, STATUS_INFO } from '@/types/dua';
 import { MaterialIcons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -64,6 +66,15 @@ export default function DuaRequestDetailScreen() {
     await loadRequest();
     setRefreshing(false);
   }, [refreshRequests, loadRequest]);
+
+  const handleCopyResponse = useCallback(async (response: string) => {
+    try {
+      await Clipboard.setStringAsync(normalizeMarkdownForClipboard(response));
+      Alert.alert('کپی شد', 'متن پاسخ در کلیپ‌بورد ذخیره شد.');
+    } catch {
+      Alert.alert('خطا', 'کپی پاسخ انجام نشد.');
+    }
+  }, []);
 
   useEffect(() => {
     loadRequest();
@@ -217,6 +228,15 @@ export default function DuaRequestDetailScreen() {
               <CenteredText style={[styles.cardTitle, { color: theme.text }]}>
               پاسخ
             </CenteredText>
+              <Pressable
+                testID="dua-copy-response"
+                onPress={() => void handleCopyResponse(request.response!)}
+                hitSlop={8}
+                style={styles.copyResponseButton}
+              >
+                <MaterialIcons name="content-copy" size={17} color={theme.textSecondary} />
+                <CenteredText style={[styles.copyResponseLabel, { color: theme.textSecondary }]}>کپی</CenteredText>
+              </Pressable>
             </View>
             <MarkdownText style={[styles.responseText, { color: theme.text }]} boldStyle={{ color: theme.text }}>
               {request.response}
@@ -364,10 +384,22 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
     marginBottom: Spacing.md,
     justifyContent: 'center',
+    position: 'relative',
   },
   cardTitle: {
     fontSize: Typography.ui.subtitle,
     fontWeight: '600',
+    fontFamily: 'Vazirmatn',
+  },
+  copyResponseButton: {
+    position: 'absolute',
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  copyResponseLabel: {
+    fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
   },
   messageText: {

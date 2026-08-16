@@ -11,7 +11,6 @@ import {
   Text,
   TextInput,
   Pressable,
-  Switch,
   ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
@@ -45,7 +44,6 @@ export default function NewDuaRequestScreen() {
 
   const [category, setCategory] = useState<DuaCategory | null>(null);
   const [message, setMessage] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [gender, setGender] = useState<UserGender | null>(null);
   const [responderId, setResponderId] = useState<ResponderId | null>(null);
@@ -85,7 +83,7 @@ export default function NewDuaRequestScreen() {
 
     setIsSubmitting(true);
     try {
-      const request = await submitRequest(category, message.trim(), isAnonymous, gender, responderId);
+      const request = await submitRequest(category, message.trim(), false, gender, responderId);
 
       const netInfo = await NetInfo.fetch();
       const isOffline = !netInfo.isConnected || netInfo.isInternetReachable === false;
@@ -250,27 +248,6 @@ export default function NewDuaRequestScreen() {
           </CenteredText>
         </View>
 
-        {/* Anonymity Toggle */}
-        <View style={[styles.anonymityCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <View style={styles.anonymityContent}>
-            <MaterialIcons name="visibility-off" size={20} color={theme.textSecondary} />
-            <View style={styles.anonymityText}>
-              <CenteredText style={[styles.anonymityTitle, { color: theme.text }]}>
-                ارسال ناشناس
-              </CenteredText>
-              <CenteredText style={[styles.anonymityDesc, { color: theme.textSecondary }]}>
-                در صورت فعال بودن، نام شما در پاسخ نمایش داده نمی‌شود
-              </CenteredText>
-            </View>
-          </View>
-          <Switch
-            value={isAnonymous}
-            onValueChange={setIsAnonymous}
-            trackColor={{ false: theme.cardBorder, true: theme.tint }}
-            thumbColor={isAnonymous ? '#fff' : '#f4f3f4'}
-          />
-        </View>
-
         {/* Submit Button */}
         <Pressable
           testID="dua-submit-request"
@@ -427,35 +404,6 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(128,128,128,0.18)',
   },
   characterCountText: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-  },
-  anonymityCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.sm,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    marginBottom: Spacing.md,
-  },
-  anonymityContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    flex: 1,
-  },
-  anonymityText: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  anonymityTitle: {
-    fontSize: Typography.ui.body,
-    fontWeight: '600',
-    marginBottom: Spacing.xs,
-    fontFamily: 'Vazirmatn',
-  },
-  anonymityDesc: {
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
   },

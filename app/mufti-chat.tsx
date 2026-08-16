@@ -3,6 +3,7 @@
  */
 
 import { MaterialIcons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -20,7 +21,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { MarkdownText } from '@/components/MarkdownText';
+import { MarkdownText, normalizeMarkdownForClipboard } from '@/components/MarkdownText';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { HANAFI_MUFTI_STARTER_QUESTIONS_DARI } from '@/constants/hanafiMuftiStarterQuestions';
@@ -59,6 +60,14 @@ interface ChatBubbleProps {
 
 function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
   const displayText = isUser ? text : formatAssistantBubbleText(text);
+  const handleCopy = useCallback(async () => {
+    try {
+      await Clipboard.setStringAsync(normalizeMarkdownForClipboard(text));
+      Alert.alert('کپی شد', 'متن پاسخ در کلیپ‌بورد ذخیره شد.');
+    } catch {
+      Alert.alert('خطا', 'کپی پاسخ انجام نشد.');
+    }
+  }, [text]);
 
   return (
     <RtlView style={[styles.messageRow, isUser ? styles.userRow : styles.assistantRow]}>
@@ -77,13 +86,20 @@ function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
         ]}
       >
       <MarkdownText
-          style={[
-            styles.bubbleText,
-            { color: isUser ? '#fff' : theme.text },
-            Platform.OS === 'android' ? { includeFontPadding: false } : null,
-          ]}
+        style={[
+          styles.bubbleText,
+          { color: isUser ? '#fff' : theme.text },
+          Platform.OS === 'android' ? { includeFontPadding: false } : null,
+        ]}
         boldStyle={{ color: isUser ? '#fff' : theme.text }}
+        headingStyle={{ color: isUser ? '#fff' : theme.text }}
       >{displayText}</MarkdownText>
+      {!isUser && (
+        <Pressable testID="mufti-copy-response" onPress={() => void handleCopy()} style={styles.copyButton} hitSlop={8}>
+          <MaterialIcons name="content-copy" size={16} color={theme.textSecondary} />
+          <RtlText align="center" style={[styles.copyLabel, { color: theme.textSecondary }]}>کپی</RtlText>
+        </Pressable>
+      )}
       </View>
     </RtlView>
   );
@@ -286,6 +302,7 @@ export default function MuftiChatScreen() {
                   Platform.OS === 'android' ? { includeFontPadding: false } : null,
                 ]}
                 boldStyle={{ color: theme.text }}
+                headingStyle={{ color: theme.text }}
               >{formatAssistantBubbleText(item.content)}</MarkdownText>
             </View>
           </RtlView>
@@ -520,6 +537,17 @@ const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'right',
     writingDirection: 'rtl',
+  },
+  copyButton: {
+    alignSelf: 'flex-end',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: Spacing.xs,
+  },
+  copyLabel: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
   },
   typing: {
     ...persianCaptionText,

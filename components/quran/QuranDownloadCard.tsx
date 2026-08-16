@@ -86,6 +86,10 @@ export function QuranDownloadCard({
       setShowReciters(false);
       setReciter(nextReciter);
       const result = await downloadQuranScope(scope, nextReciter, setProgress, nextController.signal);
+      // Keep playback aligned with the files just downloaded. Otherwise the
+      // player may select a different reciter and require a network URL when
+      // the user immediately plays while offline.
+      await audioManager.setReciter(nextReciter);
       setCompletedKeys((current) => current.includes(result.key) ? current : [...current, result.key]);
       onCompleted?.(nextReciter);
     } catch (downloadError) {

@@ -304,16 +304,19 @@ const styles = StyleSheet.create({
   bismillahContainer: {
     marginHorizontal: Spacing.lg,
     marginTop: Spacing.md,
-    paddingVertical: Spacing.md, // Reduced from xl
-    paddingBottom: Spacing.lg, // Reduced from xxl - prevents cut-off without being too large
+    // Quran fonts have ascenders/diacritics that extend beyond their nominal
+    // line box on some Android devices. Keep a symmetric safety box so the
+    // final glyph is never clipped while the header remains compact.
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.xl,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
   },
   bismillah: {
     fontSize: Typography.arabic.large,
     textAlign: 'center',
-    lineHeight: 58,
+    lineHeight: 68,
     includeFontPadding: false,
-    paddingBottom: 2,
+    paddingVertical: 2,
   },
 });
