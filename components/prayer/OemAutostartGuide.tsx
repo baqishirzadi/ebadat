@@ -14,7 +14,7 @@ interface OemAutostartGuideProps {
 export function OemAutostartGuide({ manufacturer }: OemAutostartGuideProps) {
   const { theme } = useApp();
   const oemKey = resolveOemGuideKey(manufacturer);
-  const steps = tAdhanPermissionSteps(oemKey);
+  const steps = tAdhanPermissionSteps(oemKey, 'fa');
 
   return (
     <RtlView style={[styles.card, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>

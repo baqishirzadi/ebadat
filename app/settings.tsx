@@ -21,6 +21,7 @@ import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { CalculationMethods } from '@/utils/prayerTimes';
+import { tUi } from '@/utils/i18n/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
@@ -37,6 +38,7 @@ export default function SettingsScreen() {
     theme,
     state,
     setTheme,
+    setAppLanguage,
     setQuranFont,
     setDariFont,
     setPashtoFont,
@@ -45,6 +47,7 @@ export default function SettingsScreen() {
     setTranslationFontSize,
   } = useApp();
   const { updateSettings, state: prayerState } = usePrayer();
+  const uiLanguage = state.preferences.appLanguage;
   const calculationMethod = prayerState.settings.calculationMethod;
   const router = useRouter();
   const { section } = useLocalSearchParams<{ section?: string | string[] }>();
@@ -136,7 +139,7 @@ export default function SettingsScreen() {
       <Stack.Screen options={{ headerShown: false }} />
 
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <ScreenHeader icon="settings" title="تنظیمات" />
+        <ScreenHeader icon="settings" title={tUi('تنظیمات', uiLanguage)} />
 
         <ScrollView
           keyboardShouldPersistTaps="handled"
@@ -150,9 +153,9 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="palette" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>ظاهر برنامه</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('ظاهر برنامه', uiLanguage)}</Text>
               <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
-                {themes.find((t) => t.id === state.preferences.theme)?.name}
+                {tUi(themes.find((t) => t.id === state.preferences.theme)?.name ?? '', uiLanguage)}
               </Text>
             </View>
             <MaterialIcons
@@ -184,9 +187,60 @@ export default function SettingsScreen() {
                       { color: state.preferences.theme === t.id ? theme.tint : theme.text },
                     ]}
                   >
-                    {t.name}
+                    {tUi(t.name, uiLanguage)}
                   </Text>
                   {state.preferences.theme === t.id && (
+                    <MaterialIcons name="check" size={20} color={theme.tint} />
+                  )}
+                </Pressable>
+              ))}
+            </View>
+          )}
+
+          {/* App Language Settings */}
+          <Pressable
+            onPress={() => toggleSection('appLanguage')}
+            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+          >
+            <MaterialIcons name="language" size={24} color={theme.tint} />
+            <View style={styles.sectionInfo}>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('زبان برنامه', uiLanguage)}</Text>
+              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+                {state.preferences.appLanguage === 'pashto' ? 'پښتو' : tUi('فارسی (دری)', uiLanguage)}
+              </Text>
+            </View>
+            <MaterialIcons
+              name={expandedSection === 'appLanguage' ? 'expand-less' : 'expand-more'}
+              size={24}
+              color={theme.icon}
+            />
+          </Pressable>
+          {expandedSection === 'appLanguage' && (
+            <View style={[styles.optionsList, { backgroundColor: theme.card }]}>
+              {[
+                { id: 'dari' as const, name: 'فارسی (دری)' },
+                { id: 'pashto' as const, name: 'پښتو' },
+              ].map((language) => (
+                <Pressable
+                  key={language.id}
+                  onPress={() => setAppLanguage(language.id)}
+                  style={[
+                    styles.optionItem,
+                    { borderBottomColor: theme.divider },
+                    state.preferences.appLanguage === language.id && {
+                      backgroundColor: theme.backgroundSecondary,
+                    },
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.optionText,
+                      { color: state.preferences.appLanguage === language.id ? theme.tint : theme.text },
+                    ]}
+                  >
+                    {tUi(language.name, uiLanguage)}
+                  </Text>
+                  {state.preferences.appLanguage === language.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
                   )}
                 </Pressable>
@@ -203,7 +257,7 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="font-download" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>خط قرآن</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط قرآن', uiLanguage)}</Text>
               <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {QuranFonts[state.preferences.quranFont]?.displayNameDari ?? 'عثمان طه'}
               </Text>
@@ -254,7 +308,7 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="translate" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>خط دری</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط دری', uiLanguage)}</Text>
               <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {DariFonts[state.preferences.dariFont]?.displayNameDari || 'وزیرمتن'}
               </Text>
@@ -303,7 +357,7 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="text-format" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>خط پښتو</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط پښتو', uiLanguage)}</Text>
               <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {PashtoFonts[state.preferences.pashtoFont]?.displayNamePashto || 'امیری نسخ'}
               </Text>
@@ -355,9 +409,9 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="format-size" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>اندازه متن عربی قرآن</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('اندازه متن عربی قرآن', uiLanguage)}</Text>
               <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
-                {fontSizes.find((s) => s.id === state.preferences.arabicFontSize)?.name}
+                {tUi(fontSizes.find((s) => s.id === state.preferences.arabicFontSize)?.name ?? '', uiLanguage)}
               </Text>
             </View>
             <MaterialIcons
@@ -386,7 +440,7 @@ export default function SettingsScreen() {
                       { color: state.preferences.arabicFontSize === s.id ? theme.tint : theme.text },
                     ]}
                   >
-                    {s.name} ({Typography.arabic[s.id]}px)
+                    {tUi(s.name, uiLanguage)} ({Typography.arabic[s.id]}px)
                   </Text>
                   {state.preferences.arabicFontSize === s.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
@@ -403,9 +457,9 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="text-fields" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>اندازه متن ترجمه</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('اندازه متن ترجمه', uiLanguage)}</Text>
               <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
-                {fontSizes.find((s) => s.id === state.preferences.translationFontSize)?.name}
+                {tUi(fontSizes.find((s) => s.id === state.preferences.translationFontSize)?.name ?? '', uiLanguage)}
               </Text>
             </View>
             <MaterialIcons
@@ -437,7 +491,7 @@ export default function SettingsScreen() {
                       },
                     ]}
                   >
-                    {s.name} ({Typography.translation[s.id]}px)
+                    {tUi(s.name, uiLanguage)} ({Typography.translation[s.id]}px)
                   </Text>
                   {state.preferences.translationFontSize === s.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
@@ -454,15 +508,15 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="subtitles" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>ترجمه</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('ترجمه', uiLanguage)}</Text>
               <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {state.preferences.showTranslation === 'dari'
-                  ? 'فارسی (دری) - انور بدخشانی'
+                  ? tUi('فارسی (دری) - انور بدخشانی', uiLanguage)
                   : state.preferences.showTranslation === 'pashto'
                     ? 'پښتو'
                     : state.preferences.showTranslation === 'both'
-                      ? 'هردو'
-                      : 'بدون ترجمه'}
+                      ? tUi('هردو', uiLanguage)
+                      : tUi('بدون ترجمه', uiLanguage)}
               </Text>
             </View>
             <MaterialIcons
@@ -513,7 +567,7 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="schedule" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>روش محاسبه نماز</Text>
+              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('روش محاسبه نماز', uiLanguage)}</Text>
               <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {calculationMethods.find((m) => m.id === calculationMethod)?.name}
               </Text>
@@ -560,7 +614,7 @@ export default function SettingsScreen() {
             <View style={styles.adhanSettingsContent}>
               <MaterialIcons name="notifications-active" size={28} color={theme.tint} />
               <View style={styles.adhanSettingsText}>
-                <Text style={[styles.adhanSettingsTitle, { color: theme.text }]}>تنظیمات اذان</Text>
+                <Text style={[styles.adhanSettingsTitle, { color: theme.text }]}>{tUi('تنظیمات اذان', uiLanguage)}</Text>
                 <Text style={[styles.adhanSettingsSubtitle, { color: theme.textSecondary }]}>
                   صدای اذان و یادآوری برای هر نماز
                 </Text>
@@ -578,12 +632,14 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="info" size={20} color={theme.tint} />
             <Text style={[styles.noticeText, { color: theme.textSecondary }]}>
-              وقت عصر بر اساس مذهب حنفی محاسبه می‌شود (سایه دو برابر)
+              {uiLanguage === 'pashto'
+                ? 'د مازیګر وخت د حنفي مذهب له مخې محاسبه کېږي (دوه برابره سیوری)'
+                : 'وقت عصر بر اساس مذهب حنفی محاسبه می‌شود (سایه دو برابر)'}
             </Text>
           </View>
 
           {/* App Version */}
-          <Text style={[styles.versionText, { color: theme.textSecondary }]}>نسخه ۱.۰.۰</Text>
+          <Text style={[styles.versionText, { color: theme.textSecondary }]}>{tUi('نسخه ۱.۰.۰', uiLanguage)}</Text>
 
           <View style={styles.spacer} />
         </ScrollView>

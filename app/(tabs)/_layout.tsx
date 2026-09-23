@@ -5,6 +5,7 @@
 
 import { HapticTab } from '@/components/haptic-tab';
 import { useApp } from '@/context/AppContext';
+import { tUi } from '@/utils/i18n/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs, useSegments } from 'expo-router';
 import React, { useMemo } from 'react';
@@ -12,7 +13,8 @@ import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const language = state.preferences.appLanguage;
   const insets = useSafeAreaInsets();
   const segments = useSegments();
 
@@ -82,7 +84,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'خانه',
+          title: tUi('خانه', language),
           tabBarIcon: ({ color, focused }) => (
             <MaterialIcons name="home" size={focused ? 28 : 24} color={color} />
           ),
@@ -91,7 +93,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="quran-tab"
         options={{
-          title: 'قرآن',
+          title: tUi('قرآن', language),
           tabBarIcon: ({ color, focused }) => (
             <MaterialIcons name="menu-book" size={focused ? 28 : 24} color={color} />
           ),
@@ -100,7 +102,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="jantari"
         options={{
-          title: 'جنتری',
+          title: tUi('جنتری', language),
           tabBarIcon: ({ color, focused }) => (
             <MaterialIcons name="calendar-month" size={focused ? 28 : 24} color={color} />
           ),
@@ -109,7 +111,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="naat"
         options={{
-          title: 'نعت',
+          title: tUi('نعت', language),
           tabBarIcon: ({ color, focused }) => (
             <MaterialIcons name="play-circle-filled" size={focused ? 28 : 24} color={color} />
           ),
@@ -118,7 +120,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="more"
         options={{
-          title: 'بیشتر',
+          title: tUi('بیشتر', language),
           tabBarIcon: ({ color, focused }) => (
             <MaterialIcons name="dashboard" size={focused ? 28 : 24} color={color} />
           ),

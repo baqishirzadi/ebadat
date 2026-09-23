@@ -17,6 +17,62 @@ export interface City {
   aliases?: string[];
 }
 
+/** Canonical province-capital entries shown in Afghan location pickers. */
+export const AFGHANISTAN_PROVINCE_CAPITAL_KEYS = [
+  'afghanistan_badakhshan',
+  'afghanistan_badghis',
+  'afghanistan_baghlan',
+  'afghanistan_balkh',
+  'afghanistan_bamiyan',
+  'afghanistan_daykundi',
+  'afghanistan_farah',
+  'afghanistan_faryab',
+  'afghanistan_ghazni',
+  'afghanistan_ghor',
+  'afghanistan_helmand',
+  'afghanistan_herat',
+  'afghanistan_jawzjan',
+  'afghanistan_kabul',
+  'afghanistan_kandahar',
+  'afghanistan_kapisa',
+  'afghanistan_khost',
+  'afghanistan_kunar',
+  'afghanistan_kunduz',
+  'afghanistan_laghman',
+  'afghanistan_logar',
+  'afghanistan_nangarhar',
+  'afghanistan_nimruz',
+  'afghanistan_nuristan',
+  'afghanistan_paktiya',
+  'afghanistan_paktika',
+  'afghanistan_panjshir',
+  'afghanistan_parwan',
+  'afghanistan_samangan',
+  'afghanistan_sarepol',
+  'afghanistan_takhar',
+  'afghanistan_uruzgan',
+  'afghanistan_wardak',
+  'afghanistan_zabul',
+] as const;
+
+/** High-frequency Afghan cities shown before the full province list. */
+export const AFGHANISTAN_FEATURED_CITY_KEYS = [
+  'afghanistan_kabul',
+  'afghanistan_herat',
+  'afghanistan_mazar',
+  'afghanistan_kandahar',
+  'afghanistan_jalalabad',
+] as const;
+
+/** Province rows represented by the featured city cards, preventing duplicates. */
+export const AFGHANISTAN_FEATURED_PROVINCE_KEYS = [
+  'afghanistan_kabul',
+  'afghanistan_herat',
+  'afghanistan_balkh',
+  'afghanistan_kandahar',
+  'afghanistan_nangarhar',
+] as const;
+
 export interface CityCategory {
   id: string;
   name: string; // Category name in Dari
@@ -35,10 +91,14 @@ export const CITIES: Record<string, CityCategory> = {
       kandahar: { lat: 31.6295, lon: 65.7372, name: 'قندهار', nameEn: 'Kandahar', timezone: 'Asia/Kabul', altitude: 1005, isImportant: true },
       mazar: { lat: 36.7081, lon: 67.1101, name: 'مزار شریف', nameEn: 'Mazar-i-Sharif', timezone: 'Asia/Kabul', altitude: 380, isImportant: true },
       jalalabad: { lat: 34.4415, lon: 70.4361, name: 'جلال‌آباد', nameEn: 'Jalalabad', timezone: 'Asia/Kabul', altitude: 575, isImportant: true },
+      // Keep Jalalabad as a featured city and expose the province-capital
+      // identity separately so saved city keys remain backwards compatible.
+      nangarhar: { lat: 34.4415, lon: 70.4361, name: 'جلال‌آباد', nameEn: 'Jalalabad', timezone: 'Asia/Kabul', altitude: 575, admin1: 'ننگرهار', aliases: ['Nangarhar'] },
       kunduz: { lat: 36.7281, lon: 68.8577, name: 'قندوز', nameEn: 'Kunduz', timezone: 'Asia/Kabul', altitude: 395 },
       ghazni: { lat: 33.5469, lon: 68.4269, name: 'غزنی', nameEn: 'Ghazni', timezone: 'Asia/Kabul', altitude: 2219 },
       bamiyan: { lat: 34.8213, lon: 67.8213, name: 'بامیان', nameEn: 'Bamiyan', timezone: 'Asia/Kabul', altitude: 2550 },
       farah: { lat: 32.3735, lon: 62.1130, name: 'فراه', nameEn: 'Farah', timezone: 'Asia/Kabul', altitude: 660 },
+      faryab: { lat: 35.9214, lon: 64.7836, name: 'میمنه', nameEn: 'Maimana', timezone: 'Asia/Kabul', altitude: 877, admin1: 'فاریاب', aliases: ['Faryab', 'Maimana'] },
       badakhshan: { lat: 36.7347, lon: 70.8119, name: 'بدخشان', nameEn: 'Badakhshan', timezone: 'Asia/Kabul', altitude: 1250 },
       balkh: { lat: 36.7551, lon: 66.8975, name: 'بلخ', nameEn: 'Balkh', timezone: 'Asia/Kabul', altitude: 330 },
       baghlan: { lat: 36.1307, lon: 68.7083, name: 'بغلان', nameEn: 'Baghlan', timezone: 'Asia/Kabul', altitude: 528 },
@@ -58,6 +118,7 @@ export const CITIES: Record<string, CityCategory> = {
       nimruz: { lat: 31.0333, lon: 62.1000, name: 'نیمروز', nameEn: 'Nimruz', timezone: 'Asia/Kabul', altitude: 480 },
       helmand: { lat: 31.5833, lon: 64.3667, name: 'هلمند', nameEn: 'Helmand', timezone: 'Asia/Kabul', altitude: 700 },
       badghis: { lat: 34.8000, lon: 63.8833, name: 'بادغیس', nameEn: 'Badghis', timezone: 'Asia/Kabul', altitude: 500 },
+      jawzjan: { lat: 36.6676, lon: 65.7529, name: 'شبرغان', nameEn: 'Sheberghan', timezone: 'Asia/Kabul', altitude: 250, admin1: 'جوزجان', aliases: ['Jawzjan', 'Jowzjan', 'Sheberghan'] },
       ghor: { lat: 34.3500, lon: 65.1500, name: 'غور', nameEn: 'Ghor', timezone: 'Asia/Kabul', altitude: 2200 },
       kapisa: { lat: 34.8667, lon: 69.6167, name: 'کاپیسا', nameEn: 'Kapisa', timezone: 'Asia/Kabul', altitude: 1500 },
       parwan: { lat: 35.1167, lon: 69.2333, name: 'پروان', nameEn: 'Parwan', timezone: 'Asia/Kabul', altitude: 1400 },
@@ -70,6 +131,8 @@ export const CITIES: Record<string, CityCategory> = {
 
 /** Maps deprecated bundled city keys to JSON equivalents */
 export const LEGACY_CITY_KEY_ALIASES: Record<string, string> = {
+  afghanistan_jowzjan: 'afghanistan_jawzjan',
+  afghanistan_faryab_maimana: 'afghanistan_faryab',
   europe_hamburg: 'germany_province_hamburg',
   europe_berlin: 'germany_province_state_of_berlin',
   iran_tehran: 'iran_province_tehran',

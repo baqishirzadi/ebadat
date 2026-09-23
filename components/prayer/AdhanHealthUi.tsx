@@ -40,9 +40,9 @@ export function healthSummaryLine(status: HealthVisualStatus): string {
 export function healthChipLabel(status: HealthVisualStatus): string {
   switch (status) {
     case 'healthy':
-      return tAdhanPermission('adhanPermissions.health.statusPass');
+      return tAdhanPermission('adhanPermissions.health.statusPass', 'fa');
     default:
-      return tAdhanPermission('adhanPermissions.health.statusWarn');
+      return tAdhanPermission('adhanPermissions.health.statusWarn', 'fa');
   }
 }
 
@@ -177,7 +177,7 @@ export function AdhanNotificationHealthPanel({
   return (
     <View style={[styles.panel, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
       <RtlText align="center" style={[styles.panelTitle, { color: theme.text }]}>
-        {tAdhanPermission('adhanPermissions.health.title')}
+        {tAdhanPermission('adhanPermissions.health.title', 'fa')}
       </RtlText>
 
       {loading ? (

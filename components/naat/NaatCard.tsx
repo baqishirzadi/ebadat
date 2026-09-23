@@ -1,10 +1,12 @@
 import React from 'react';
-import { Pressable, StyleSheet, View, Text } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Naat } from '@/types/naat';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { NaatProgressBar } from '@/components/naat/NaatProgressBar';
+import { RtlText } from '@/components/ui/RtlText';
+import { tUi } from '@/utils/i18n/ui';
 
 type Props = {
   naat: Naat;
@@ -43,12 +45,17 @@ export function NaatCard({
   durationMillis = 0,
   onSeek,
 }: Props) {
-  const { theme } = useApp();
-  const downloadLabel = naat.isDownloaded
-    ? 'آفلاین'
-    : naat.downloadProgress !== undefined
-      ? `در حال دانلود ${Math.round(naat.downloadProgress * 100)}٪`
-      : 'دانلود نشده';
+  const { theme, state } = useApp();
+  const language = state.preferences.appLanguage;
+  const isPashto = language === 'pashto';
+  const isDownloading = naat.downloadProgress !== undefined && !naat.isDownloaded;
+  const downloadStatus = naat.isDownloaded
+    ? tUi('آفلاین', language)
+    : isDownloading
+      ? `${tUi('در حال دانلود', language)} ${Math.round((naat.downloadProgress ?? 0) * 100)}٪`
+      : tUi('دانلود نشده', language);
+  const playLabel = isActive && isPlaying ? tUi('توقف', language) : tUi('پخش', language);
+  const downloadLabel = naat.isDownloaded ? tUi('آفلاین', language) : tUi('دانلود', language);
 
   return (
     <View
@@ -61,11 +68,11 @@ export function NaatCard({
         <View style={[styles.accentLine, { backgroundColor: `${theme.bookmark}80` }]} />
       </View>
       <View style={styles.headerRow}>
-        <Text style={[styles.title, { color: theme.text }]}>{naat.title_fa}</Text>
+        <RtlText align="center" style={[styles.title, { color: theme.text }]}>{isPashto ? naat.title_ps : naat.title_fa}</RtlText>
       </View>
 
-      <Text style={[styles.subtitle, { color: theme.textSecondary }]}>{naat.title_ps}</Text>
-      <Text style={[styles.reciter, { color: theme.textSecondary }]}>{naat.reciter_name}</Text>
+      <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>{isPashto ? naat.title_fa : naat.title_ps}</RtlText>
+      <RtlText align="center" style={[styles.reciter, { color: theme.textSecondary }]}>{naat.reciter_name}</RtlText>
 
       {isActive && durationMillis > 0 && (
         <View style={styles.seekSection}>
@@ -80,50 +87,75 @@ export function NaatCard({
         </View>
       )}
 
-      <View style={styles.footerRow}>
-        <View style={styles.metaColumn}>
+      <View style={styles.metaColumn}>
           <View style={styles.durationRow}>
             <MaterialIcons name="schedule" size={14} color={theme.textSecondary} />
-            <Text style={[styles.duration, { color: theme.textSecondary }]}>
+            <RtlText align="center" wrap={false} style={[styles.duration, { color: theme.textSecondary }]}>
               {formatDuration(naat.duration_seconds)}
-            </Text>
+            </RtlText>
           </View>
-          <Text style={[styles.sizeText, { color: theme.textSecondary }]}>{formatSize(naat.file_size_mb)}</Text>
-          <Text style={[styles.downloadText, { color: naat.isDownloaded ? theme.tint : theme.textSecondary }]}>
-            {downloadLabel}
-          </Text>
-        </View>
+          <RtlText align="center" style={[styles.sizeText, { color: theme.textSecondary }]}>{formatSize(naat.file_size_mb)}</RtlText>
+          <RtlText
+            testID="naat-card-download-status"
+            align="center"
+            style={[styles.downloadText, { color: naat.isDownloaded ? theme.tint : theme.textSecondary }]}
+          >
+            {downloadStatus}
+          </RtlText>
+      </View>
 
-        <View style={styles.actions}>
-          <Pressable
-            testID="naat-card-download-button"
-            accessibilityLabel="دانلود نعت"
-            onPress={onDownload}
-            style={({ pressed }) => [
-              styles.iconButton,
-              { backgroundColor: naat.isDownloaded ? `${theme.tint}20` : theme.backgroundSecondary },
-              pressed && styles.iconPressed,
-            ]}
-          >
-            <MaterialIcons
-              name={naat.isDownloaded ? 'offline-pin' : naat.downloadProgress !== undefined ? 'downloading' : 'download'}
-              size={20}
-              color={naat.isDownloaded ? theme.tint : theme.textSecondary}
-            />
-          </Pressable>
-          <Pressable
-            testID="naat-card-play-button"
-            accessibilityLabel={isActive && isPlaying ? 'توقف نعت' : 'پخش نعت'}
-            onPress={onPlay}
-            style={({ pressed }) => [
-              styles.playButton,
-              { backgroundColor: theme.tint },
-              pressed && styles.iconPressed,
-            ]}
-          >
-            <MaterialIcons name={isActive && isPlaying ? 'pause' : 'play-arrow'} size={22} color="#fff" />
-          </Pressable>
-        </View>
+      <View style={styles.actions}>
+        <Pressable
+          testID="naat-card-play-button"
+          accessibilityLabel={isActive && isPlaying ? tUi('توقف نعت', language) : tUi('پخش نعت', language)}
+          accessibilityHint={isActive && isPlaying ? tUi('توقف', language) : tUi('پخش', language)}
+          hitSlop={8}
+          onPress={onPlay}
+          style={({ pressed }) => [
+            styles.actionButton,
+            { backgroundColor: theme.tint },
+            pressed && styles.iconPressed,
+          ]}
+        >
+          <View style={styles.actionButtonContent}>
+            <MaterialIcons name={isActive && isPlaying ? 'pause' : 'play-arrow'} size={24} color="#fff" />
+            <RtlText align="center" wrap={false} style={styles.primaryActionText}>{playLabel}</RtlText>
+          </View>
+        </Pressable>
+        <Pressable
+          testID="naat-card-download-button"
+          accessibilityLabel={tUi('دانلود نعت', language)}
+          accessibilityHint={downloadStatus}
+          accessibilityState={{ disabled: isDownloading }}
+          disabled={isDownloading}
+          hitSlop={8}
+          onPress={onDownload}
+          style={({ pressed }) => [
+            styles.actionButton,
+            styles.downloadActionButton,
+            {
+              backgroundColor: naat.isDownloaded ? `${theme.tint}18` : theme.backgroundSecondary,
+              borderColor: naat.isDownloaded ? `${theme.tint}55` : theme.cardBorder,
+              opacity: isDownloading ? 0.72 : 1,
+            },
+            pressed && styles.iconPressed,
+          ]}
+        >
+          <View style={styles.actionButtonContent}>
+            {isDownloading ? (
+              <ActivityIndicator size="small" color={theme.tint} />
+            ) : (
+              <MaterialIcons
+                name={naat.isDownloaded ? 'offline-pin' : 'download'}
+                size={22}
+                color={naat.isDownloaded ? theme.tint : theme.text}
+              />
+            )}
+            <RtlText align="center" wrap={false} style={[styles.secondaryActionText, { color: naat.isDownloaded ? theme.tint : theme.text }]}>
+              {isDownloading ? `${Math.round((naat.downloadProgress ?? 0) * 100)}٪` : downloadLabel}
+            </RtlText>
+          </View>
+        </Pressable>
       </View>
     </View>
   );
@@ -148,10 +180,7 @@ const styles = StyleSheet.create({
     width: 48,
   },
   headerRow: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
-    gap: Spacing.sm,
-    justifyContent: 'space-between',
   },
   title: {
     fontSize: Typography.ui.subtitle,
@@ -175,18 +204,14 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     marginBottom: Spacing.sm,
   },
-  footerRow: {
-    marginTop: Spacing.md,
-    flexDirection: 'row-reverse',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
   metaColumn: {
-    alignItems: 'flex-end',
+    marginTop: Spacing.md,
+    alignItems: 'center',
   },
   durationRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
   },
   duration: {
@@ -204,23 +229,41 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   actions: {
-    flexDirection: 'row-reverse',
+    marginTop: Spacing.md,
+    flexDirection: 'row',
     gap: Spacing.sm,
     alignItems: 'center',
-  },
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
     justifyContent: 'center',
   },
-  playButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  actionButton: {
+    flex: 1,
+    minHeight: 52,
+    maxWidth: 180,
+    borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: Spacing.md,
+  },
+  actionButtonContent: {
+    direction: 'ltr',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+  },
+  downloadActionButton: {
+    borderWidth: 1,
+  },
+  primaryActionText: {
+    color: '#fff',
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '700',
+  },
+  secondaryActionText: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '700',
   },
   iconPressed: {
     opacity: 0.85,

@@ -45,6 +45,8 @@ PODS:
     - ExpoModulesCore
   - ExpoBackgroundTask (1.0.10):
     - ExpoModulesCore
+  - ExpoClipboard (8.0.8):
+    - ExpoModulesCore
   - ExpoDevice (8.0.10):
     - ExpoModulesCore
   - ExpoFileSystem (19.0.21):
@@ -2654,6 +2656,7 @@ DEPENDENCIES:
   - Expo (from `../node_modules/expo`)
   - ExpoAsset (from `../node_modules/expo-asset/ios`)
   - ExpoBackgroundTask (from `../node_modules/expo-background-task/ios`)
+  - ExpoClipboard (from `../node_modules/expo-clipboard/ios`)
   - ExpoDevice (from `../node_modules/expo-device/ios`)
   - ExpoFileSystem (from `../node_modules/expo-file-system/ios`)
   - ExpoFont (from `../node_modules/expo-font/ios`)
@@ -2781,6 +2784,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-asset/ios"
   ExpoBackgroundTask:
     :path: "../node_modules/expo-background-task/ios"
+  ExpoClipboard:
+    :path: "../node_modules/expo-clipboard/ios"
   ExpoDevice:
     :path: "../node_modules/expo-device/ios"
   ExpoFileSystem:
@@ -2993,6 +2998,7 @@ SPEC CHECKSUMS:
   Expo: 78ceda23ec2990e8ec94980be4fce1aea9ffcdd5
   ExpoAsset: f867e55ceb428aab99e1e8c082b5aee7c159ea18
   ExpoBackgroundTask: 835449414ab9f0e551de1f6d382fadbfad191dc7
+  ExpoClipboard: b36b287d8356887844bb08ed5c84b5979bb4dd1e
   ExpoDevice: 6327c3c200816795708885adf540d26ecab83d1a
   ExpoFileSystem: 858a44267a3e6e9057e0888ad7c7cfbf55d52063
   ExpoFont: f543ce20a228dd702813668b1a07b46f51878d47
@@ -3096,6 +3102,6 @@ SPEC CHECKSUMS:
   UMAppLoader: 145337733539f9af9b3dd97eeaa7f3bd97cacb23
   Yoga: 728df40394d49f3f471688747cf558158b3a3bd1
 
-PODFILE CHECKSUM: c2b1fc7b9dd8183e95de6aad7a7257170d209c79
+PODFILE CHECKSUM: d7945107041203d202d0a9202d7bfb7a87cb3e5f
 
 COCOAPODS: 1.16.2

@@ -17,7 +17,7 @@ export function JantariHeader() {
   const { dailySelection } = useAhadith();
   const { state, themeMode } = useApp();
 
-  const isPashto = state.preferences.showTranslation === 'pashto';
+  const isPashto = state.preferences.appLanguage === 'pashto';
 
   const hadithLabel = isPashto ? 'ورځنی حدیث' : 'حدیث روز';
 

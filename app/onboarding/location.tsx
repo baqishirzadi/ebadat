@@ -18,10 +18,11 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
-import { CityKey, getCity } from '@/utils/cities';
+import { AFGHANISTAN_FEATURED_PROVINCE_KEYS, CityKey, getCity } from '@/utils/cities';
 import {
   getAllCategories,
   getCityDisplaySubtitle,
+  getFeaturedCitiesForRegion,
   getMajorCitiesForRegion,
   getProvincesForRegion,
   getWorldCity,
@@ -72,7 +73,15 @@ export default function OnboardingLocationScreen() {
 
   const browseSections = useMemo(() => {
     if (selectedCategory === 'afghanistan') {
-      return [{ title: 'ولایت‌ها', items: getProvincesForRegion('afghanistan') }];
+      const featured = getFeaturedCitiesForRegion('afghanistan');
+      const featuredProvinceKeys = new Set<string>(AFGHANISTAN_FEATURED_PROVINCE_KEYS);
+      const provinces = getProvincesForRegion('afghanistan').filter(
+        ({ key }) => !featuredProvinceKeys.has(key),
+      );
+      return [
+        { title: 'شهرهای پرکاربرد', items: featured },
+        { title: 'ولایت‌ها', items: provinces },
+      ];
     }
     const provinces = getProvincesForRegion(selectedCategory);
     const majors = getMajorCitiesForRegion(selectedCategory);

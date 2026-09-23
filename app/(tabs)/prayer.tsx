@@ -19,9 +19,10 @@ import { useDua } from '@/context/DuaContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
-import { getKabulDateParts } from '@/utils/afghanistanCalendar';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import { getCity, getImportantCities } from '@/utils/cities';
+import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
+import { formatGregorianDateCompact } from '@/utils/calendarDisplay';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GOLD = '#D4AF37';
@@ -50,34 +51,22 @@ const PRAYER_EMOJIS: Record<string, string> = {
   'عشاء': '🌙',  // عشا - شب
 };
 
-// Gregorian month names in Dari (جنوری، فبروری، مارچ ...)
-const GREGORIAN_MONTHS_DARI = [
-  'جنوری', 'فبروری', 'مارچ', 'اپریل', 'می', 'جون',
-  'جولای', 'اگست', 'سپتمبر', 'اکتوبر', 'نومبر', 'دسمبر',
-];
-
 // Convert to Persian/Dari numerals
 function toPersianNumerals(num: number): string {
   const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
   return num.toString().split('').map(d => persianDigits[parseInt(d)]).join('');
 }
 
-// Format Gregorian date with Dari month name (e.g. ۱۲ فبروری ۲۰۲۶)
-function formatGregorianWithDariMonth(date: Date): string {
-  const { day, month, year } = getKabulDateParts(date);
-  return `${toPersianNumerals(day)} ${GREGORIAN_MONTHS_DARI[month - 1]} ${toPersianNumerals(year)}`;
-}
-
 // Format triple date: Hijri Qamari → Hijri Shamsi → Miladi
-function formatTripleDate(date: Date): string {
+function formatTripleDate(date: Date, language: 'dari' | 'pashto'): string {
   const truth = getCalendarTruth(date);
   const hijriQamari = truth.hijri;
-  const hijriQamariFormatted = `${toPersianNumerals(hijriQamari.day)} ${hijriQamari.monthNameDari} ${toPersianNumerals(hijriQamari.year)}`;
+  const hijriQamariFormatted = `${toPersianNumerals(hijriQamari.day)} ${language === 'pashto' ? hijriQamari.monthNamePashto : hijriQamari.monthNameDari} ${toPersianNumerals(hijriQamari.year)}`;
   
   const hijriShamsi = truth.shamsi;
-  const hijriShamsiFormatted = formatAfghanSolarHijriDateWithPersianNumerals(hijriShamsi, 'dari');
+  const hijriShamsiFormatted = formatAfghanSolarHijriDateWithPersianNumerals(hijriShamsi, language);
   
-  const miladiFormatted = formatGregorianWithDariMonth(truth.gregorianDate);
+  const miladiFormatted = formatGregorianDateCompact(truth.gregorianDate, toPersianNumerals);
   
   return `${hijriQamariFormatted} → ${hijriShamsiFormatted} → ${miladiFormatted}`;
 }
@@ -103,7 +92,8 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
 };
 
 export default function NamazScreen() {
-  const { theme } = useApp();
+  const { theme, state: appState } = useApp();
+  const appLanguage = appState.preferences.appLanguage;
   const { unreadCount } = useDua();
   const router = useRouter();
   const { setCity, setCustomLocation } = usePrayer();
@@ -376,7 +366,7 @@ export default function NamazScreen() {
                 <View style={[styles.lineRight, { backgroundColor: `${GOLD}60` }]} />
               </View>
               <CenteredText style={[styles.date, { color: theme.tint }]}>
-                {formatTripleDate(new Date())}
+                {formatTripleDate(new Date(), appLanguage)}
               </CenteredText>
               <View style={styles.decorativeLine}>
                 <View style={[styles.lineLeft, { backgroundColor: `${GOLD}60` }]} />
@@ -394,7 +384,17 @@ export default function NamazScreen() {
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
             <PrayerTimeRow name="عصر" emoji={PRAYER_EMOJIS['عصر']} dariName={PRAYER_NAMES_DARI['عصر']} time={prayerTimes.asr} theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="مغرب" emoji={PRAYER_EMOJIS['مغرب']} dariName={PRAYER_NAMES_DARI['مغرب']} time={prayerTimes.maghrib} theme={theme} />
+            <PrayerTimeRow
+              name="مغرب"
+              emoji={PRAYER_EMOJIS['مغرب']}
+              dariName={displayPrayerLabel(
+                'maghrib',
+                PRAYER_NAMES_DARI['مغرب'],
+                selectedCity,
+              )}
+              time={prayerTimes.maghrib}
+              theme={theme}
+            />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
             <PrayerTimeRow name="عشاء" emoji={PRAYER_EMOJIS['عشاء']} dariName={PRAYER_NAMES_DARI['عشاء']} time={prayerTimes.isha} theme={theme} />
           </View>

@@ -9,7 +9,7 @@ import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { useTodayCalendar } from '@/hooks/useTodayCalendar';
 import {
-  formatGregorianParts,
+  formatGregorianDateCompact,
   formatShamsiSlash,
   WEEKDAYS_DARI,
 } from '@/utils/calendarDisplay';
@@ -20,7 +20,6 @@ function TodayDateCardInner() {
   const { theme } = useApp();
   const { state } = usePrayer();
   const truth = useTodayCalendar();
-  const greg = formatGregorianParts(truth.gregorianDate);
   const sunrise = state.prayerTimes?.sunrise;
   const sunriseDisplay = sunrise
     ? formatPrayerTime12h(sunrise, state.location?.timezone)
@@ -59,7 +58,7 @@ function TodayDateCardInner() {
         <View style={styles.secondaryItem}>
           <RtlText align="center" style={[styles.secondaryLabel, { color: theme.textSecondary }]}>میلادی</RtlText>
           <RtlText align="center" style={[styles.gregValue, { color: theme.text }]}>
-            {greg.day} {greg.monthEn} {truth.gregorianDate.getUTCFullYear()}
+            {formatGregorianDateCompact(truth.gregorianDate)}
           </RtlText>
         </View>
       </RtlView>

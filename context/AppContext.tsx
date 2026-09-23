@@ -11,6 +11,7 @@ import {
   ReadingPosition,
   UserPreferences,
   ViewMode,
+  AppLanguage,
   TranslationLanguage,
 } from '@/types/quran';
 
@@ -23,6 +24,7 @@ const STORAGE_KEYS = {
 
 // Default preferences
 const DEFAULT_PREFERENCES: UserPreferences = {
+  appLanguage: 'dari',
   theme: 'light',
   quranFont: 'scheherazade',  // Uthmani Taha (عثمان طه) - default Quran font
   dariFont: 'vazirmatn',    // Modern Dari font
@@ -56,6 +58,7 @@ interface AppState {
 type AppAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'INITIALIZE'; payload: { preferences: UserPreferences; bookmarks: Bookmark[]; lastPosition: ReadingPosition } }
+  | { type: 'SET_APP_LANGUAGE'; payload: AppLanguage }
   | { type: 'SET_THEME'; payload: ThemeMode }
   | { type: 'SET_FONT'; payload: QuranFontFamily }
   | { type: 'SET_DARI_FONT'; payload: DariFontFamily }
@@ -84,6 +87,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
         lastPosition: action.payload.lastPosition,
         isLoading: false,
         isInitialized: true,
+      };
+
+    case 'SET_APP_LANGUAGE':
+      return {
+        ...state,
+        preferences: { ...state.preferences, appLanguage: action.payload },
       };
     
     case 'SET_THEME':
@@ -182,6 +191,10 @@ function isValidQuranFontFamily(value: unknown): value is QuranFontFamily {
   return typeof value === 'string' && value in QuranFonts;
 }
 
+function isValidAppLanguage(value: unknown): value is AppLanguage {
+  return value === 'dari' || value === 'pashto';
+}
+
 // Context type
 interface AppContextType {
   state: AppState;
@@ -190,6 +203,7 @@ interface AppContextType {
   
   // Theme actions
   setTheme: (theme: ThemeMode) => void;
+  setAppLanguage: (language: AppLanguage) => void;
   
   // Font actions
   setQuranFont: (font: QuranFontFamily) => void;
@@ -218,6 +232,9 @@ interface AppContextType {
 
 // Create context
 const AppContext = createContext<AppContextType | undefined>(undefined);
+// Kept separate from the full app context so shared text can safely render in
+// splash/error states before AppProvider has mounted.
+const AppLanguageContext = createContext<AppLanguage>('dari');
 
 // Provider component
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -285,6 +302,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         preferencesNormalized = true;
       }
 
+      if (!isValidAppLanguage(preferences.appLanguage)) {
+        preferences = {
+          ...preferences,
+          appLanguage: 'dari',
+        };
+        preferencesNormalized = true;
+      }
+
       const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
       const lastPosition = positionJson ? JSON.parse(positionJson) : DEFAULT_POSITION;
 
@@ -311,6 +336,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // Action handlers
   const setTheme = (newTheme: ThemeMode) => {
     dispatch({ type: 'SET_THEME', payload: newTheme });
+  };
+
+  const setAppLanguage = (language: AppLanguage) => {
+    dispatch({ type: 'SET_APP_LANGUAGE', payload: language });
   };
 
   const setQuranFont = (font: QuranFontFamily) => {
@@ -394,6 +423,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     theme,
     themeMode: state.preferences.theme,
     setTheme,
+    setAppLanguage,
     setQuranFont,
     setDariFont,
     setPashtoFont,
@@ -410,7 +440,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
     updatePosition,
   };
 
-  return <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>;
+  return (
+    <AppLanguageContext.Provider value={state.preferences.appLanguage}>
+      <AppContext.Provider value={contextValue}>{children}</AppContext.Provider>
+    </AppLanguageContext.Provider>
+  );
 }
 
 // Hook to use app context
@@ -420,6 +454,10 @@ export function useApp() {
     throw new Error('useApp must be used within an AppProvider');
   }
   return context;
+}
+
+export function useAppLanguage(): AppLanguage {
+  return useContext(AppLanguageContext);
 }
 
 // Convenience hooks

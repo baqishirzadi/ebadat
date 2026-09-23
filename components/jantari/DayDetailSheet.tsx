@@ -5,8 +5,7 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { getKabulDateParts } from '@/utils/afghanistanCalendar';
-import { formatShamsiSlash, GREG_MONTHS_EN } from '@/utils/calendarDisplay';
+import { formatGregorianDateCompact, formatShamsiSlash } from '@/utils/calendarDisplay';
 import { gregorianToAfghanSolarHijri } from '@/utils/afghanSolarHijri';
 import { gregorianToHijri } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
@@ -18,13 +17,13 @@ interface DayDetailSheetProps {
 }
 
 export function DayDetailSheet({ visible, date, onClose }: DayDetailSheetProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const isPashto = state.preferences.appLanguage === 'pashto';
 
   if (!date) return null;
 
   const shamsi = gregorianToAfghanSolarHijri(date);
   const hijri = gregorianToHijri(date);
-  const gregParts = getKabulDateParts(date);
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -43,13 +42,13 @@ export function DayDetailSheet({ visible, date, onClose }: DayDetailSheetProps) 
             <RtlView style={styles.dateRow}>
               <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>قمری</RtlText>
               <RtlText align="center" style={[styles.dateValue, { color: theme.text }]}>
-                {toArabicNumerals(hijri.day)} {hijri.monthNameDari} {toArabicNumerals(hijri.year)}
+                {toArabicNumerals(hijri.day)} {isPashto ? hijri.monthNamePashto : hijri.monthNameDari} {toArabicNumerals(hijri.year)}
               </RtlText>
             </RtlView>
             <RtlView style={styles.dateRow}>
               <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>میلادی</RtlText>
               <RtlText align="center" style={[styles.dateValue, { color: theme.text }]}>
-                {gregParts.day} {GREG_MONTHS_EN[gregParts.month - 1]} {gregParts.year}
+                {formatGregorianDateCompact(date)}
               </RtlText>
             </RtlView>
           </RtlView>

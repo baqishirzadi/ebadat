@@ -2,6 +2,26 @@
 
 Manual device tests for the iOS azan notification architecture. Run on a physical iPhone (iOS 16+) with a Release build when validating sound and Focus behavior.
 
+## Global Maghrib policy and rolling months
+
+For every location, the existing country-specific calculation settings are
+preserved and Maghrib is exactly 5 minutes after raw API or calculated time.
+Remote, cached, and offline schedules share the same adjustment, and iOS
+schedules the already-adjusted value without adding another offset. Widget
+fallback calculations also apply the global delay; old snapshots are migrated
+without double-adjusting locations that already had it.
+
+iOS maintains a rolling 8-day Adhan window, reduced to 4 days when early
+reminders are enabled to stay below the 64-notification system limit. The
+schedule is topped up on app activation, location changes, timezone changes,
+permission changes, and background refresh. This rolling model is the supported
+plan for future months; a full year of pending iOS notifications is neither
+possible nor reliable.
+
+iOS does not provide Android's exact-alarm API. Validation therefore checks the
+scheduled local-notification timestamp and actual delivery under the user's
+permissions and Focus settings.
+
 ## Prerequisites
 
 - City selected and notification permission granted

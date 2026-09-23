@@ -4,7 +4,14 @@
  */
 
 import type { City } from './cities';
-import { ALL_CITIES, calculateDistance, registerWorldCityResolver, type CityKey } from './cities';
+import {
+  AFGHANISTAN_FEATURED_CITY_KEYS,
+  AFGHANISTAN_PROVINCE_CAPITAL_KEYS,
+  ALL_CITIES,
+  calculateDistance,
+  registerWorldCityResolver,
+  type CityKey,
+} from './cities';
 
 import cityIndex from '@/data/cities/index.json';
 
@@ -260,7 +267,14 @@ export function getCitiesForRegion(regionId: string): Array<{ key: string; city:
 
 export function getFeaturedCitiesForRegion(regionId: string): Array<{ key: string; city: City & { category: string } }> {
   if (regionId === 'afghanistan') {
-    return getCitiesForRegion('afghanistan');
+    return AFGHANISTAN_FEATURED_CITY_KEYS.reduce<Array<{ key: string; city: City & { category: string } }>>(
+      (entries, key) => {
+        const city = getWorldCity(key);
+        if (city) entries.push({ key, city });
+        return entries;
+      },
+      [],
+    );
   }
   return regionEntries(regionId)
     .filter(({ city }) => city.tier === 'province' || city.tier === 'major' || city.isImportant)
@@ -277,7 +291,14 @@ export function getCityDisplaySubtitle(cityKey: string): string {
 
 export function getProvincesForRegion(regionId: string): Array<{ key: string; city: City & { category: string } }> {
   if (regionId === 'afghanistan') {
-    return getCitiesForRegion('afghanistan');
+    return AFGHANISTAN_PROVINCE_CAPITAL_KEYS.reduce<Array<{ key: string; city: City & { category: string } }>>(
+      (entries, key) => {
+        const city = getWorldCity(key);
+        if (city) entries.push({ key, city });
+        return entries;
+      },
+      [],
+    );
   }
   return regionEntries(regionId)
     .filter(({ city }) => city.tier === 'province')

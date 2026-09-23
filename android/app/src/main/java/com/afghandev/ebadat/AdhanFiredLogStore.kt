@@ -95,6 +95,19 @@ class AdhanFiredLogStore(context: Context) {
     return if (value > 0L) value else null
   }
 
+  /**
+   * A real Adhan or the user-initiated system test proves that Android woke the
+   * receiver and delivered the notification path.  Maintenance is useful for
+   * topping up the rolling window, but it is not the only delivery evidence.
+   */
+  @Synchronized
+  fun getLastVerifiedDeliveryAtMs(): Long? {
+    return getAll()
+      .asSequence()
+      .filter { event -> event.type == "adhan" || event.type == "system_test" }
+      .maxOfOrNull { event -> event.actualFireAtMs }
+  }
+
   @Synchronized
   private fun saveAll(events: List<AdhanFiredEvent>) {
     if (events.isEmpty()) {

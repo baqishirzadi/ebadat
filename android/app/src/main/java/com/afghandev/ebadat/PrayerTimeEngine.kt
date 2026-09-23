@@ -14,7 +14,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 object PrayerTimeEngine {
-  private const val MAGHRIB_OFFSET_MINUTES = 3
+  private const val MAGHRIB_OFFSET_MINUTES = 5
   private const val AFGHAN_DHUHR_HOUR = 12
   private const val AFGHAN_DHUHR_MINUTE = 30
 
@@ -62,12 +62,12 @@ object PrayerTimeEngine {
       PrayerKey.ISHA to prayerTimes.isha.toEpochMilliseconds(),
     )
 
+    // Apply the global Maghrib delay here only for native-calculated raw
+    // times. Canonical schedule JSON is already adjusted and is consumed as-is.
+    raw[PrayerKey.MAGHRIB] = raw.getValue(PrayerKey.MAGHRIB) + MAGHRIB_OFFSET_MINUTES * 60_000L
+
     val isAfghanistan = isAfghanistanCity(cityKey, countryCode)
     if (isAfghanistan) {
-      val maghribMs = raw[PrayerKey.MAGHRIB]
-      if (maghribMs != null) {
-        raw[PrayerKey.MAGHRIB] = maghribMs + MAGHRIB_OFFSET_MINUTES * 60_000L
-      }
       val zoneId = ZoneId.of(timezoneId)
       raw[PrayerKey.DHUHR] = ZonedDateTime.of(
         date.year,
@@ -140,6 +140,9 @@ object PrayerTimeEngine {
     config: AdhanConfig,
     nowMs: Long,
   ): List<ScheduledPrayer>? {
+    // Pre-v6 canonical schedules may not contain the global Maghrib delay.
+    // Recompute locally until JavaScript supplies a versioned fresh schedule.
+    if (config.policyVersion < 6L) return null
     val raw = config.scheduleJson?.trim().orEmpty()
     if (raw.isEmpty()) return null
 
@@ -185,9 +188,11 @@ object PrayerTimeEngine {
         }
       }
 
-      // Empty array means intentionally empty (disabled prayers); null only when unusable.
-      if (results.isEmpty() && days.length() == 0) return null
-      results.sortedBy { it.triggerAtMs }
+      // An expired canonical window must never suppress the native rolling
+      // fallback after an app update, reboot, or long period offline. A
+      // disabled-prayer configuration naturally also produces an empty native
+      // fallback, so returning null is safe in both cases.
+      results.sortedBy { it.triggerAtMs }.takeIf { it.isNotEmpty() }
     } catch (_: Exception) {
       null
     }

@@ -69,6 +69,8 @@ export interface AhadithCalendarContext {
     month: number;
     day: number;
   };
+  /** True only when Afghanistan's published Hijri calendar confirms this date. */
+  hijriVerified?: boolean;
   specialDayKeys: HadithSpecialDay[];
   isFriday: boolean;
 }

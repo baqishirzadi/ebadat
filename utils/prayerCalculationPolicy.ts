@@ -6,8 +6,9 @@
 
 import { getCity, isAfghanCityKey, normalizeCityKey } from '@/utils/cities';
 import type { Location as LocationType } from '@/utils/prayerTimes';
+import { MAGHRIB_OFFSET_MINUTES } from '@/utils/adhanSchedulePolicy';
 
-export const PRAYER_POLICY_VERSION = 3;
+export const PRAYER_POLICY_VERSION = 6;
 
 export type AdhanJsMethodName =
   | 'MuslimWorldLeague'
@@ -38,7 +39,7 @@ export interface PrayerCalculationPolicy {
   aladhanSchool: number;
   adhanJsMethod: AdhanJsMethodName;
   madhab: LocalMadhab;
-  /** Maghrib minutes to add after source times (Afghanistan only). */
+  /** Universal Maghrib minutes to add after the source prayer time. */
   maghribOffsetMinutes: number;
   /** Absolute Dhuhr at 12:30 in city timezone (every day including Friday). */
   fixedDhuhrLocalTime: string | null;
@@ -53,7 +54,7 @@ const DEFAULT_POLICY: PrayerCalculationPolicy = {
   aladhanSchool: 0,
   adhanJsMethod: 'MuslimWorldLeague',
   madhab: 'Shafi',
-  maghribOffsetMinutes: 0,
+  maghribOffsetMinutes: MAGHRIB_OFFSET_MINUTES,
   fixedDhuhrLocalTime: null,
   policyVersion: PRAYER_POLICY_VERSION,
 };
@@ -68,7 +69,7 @@ const COUNTRY_POLICIES: Record<string, Omit<PrayerCalculationPolicy, 'policyVers
     aladhanSchool: 1,
     adhanJsMethod: 'Karachi',
     madhab: 'Hanafi',
-    maghribOffsetMinutes: 3,
+    maghribOffsetMinutes: MAGHRIB_OFFSET_MINUTES,
     fixedDhuhrLocalTime: '12:30',
   },
   TR: {
@@ -283,6 +284,10 @@ export function resolveCountryCode(
     if (prefix && prefixMap[prefix]) return prefixMap[prefix];
   }
 
+  const locationCountry = normalizeCountryCode(location?.countryCode);
+  if (locationCountry) return locationCountry;
+  if (location?.timezone === 'Asia/Kabul') return 'AF';
+
   // GPS near Kabul → treat as Afghanistan when no city key.
   if (!normalized && location) {
     const dLat = location.latitude - 34.5553;
@@ -305,10 +310,35 @@ export function resolvePrayerCalculationPolicy(
   };
   return {
     ...base,
+    // Maghrib is intentionally delayed worldwide, even when country lookup
+    // falls through to the generic policy. Regional calculation settings are
+    // still selected above and remain unchanged.
+    maghribOffsetMinutes: MAGHRIB_OFFSET_MINUTES,
     policyVersion: PRAYER_POLICY_VERSION,
   };
 }
 
 export function policyCacheSegment(policy: PrayerCalculationPolicy): string {
   return `p${policy.policyVersion}_${policy.countryCode}_${policy.sourceLabel}`;
+}
+
+/** Raw remote timings remain reusable when only the post-source Maghrib
+ * adjustment policy changes. Country or source changes still invalidate them. */
+export function canReuseRawPrayerCache(previousSegment: string, nextSegment: string): boolean {
+  const withoutVersion = (segment: string) => segment.replace(/^p\d+_/, '');
+  return withoutVersion(previousSegment) === withoutVersion(nextSegment);
+}
+
+/** Keep prayer labels free of calculation metadata; the scheduled time itself
+ * already reflects the country policy. */
+export function displayPrayerLabel(
+  prayer: 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha',
+  label: string,
+  cityKey?: string | null,
+  location?: LocationType,
+): string {
+  void prayer;
+  void cityKey;
+  void location;
+  return label;
 }

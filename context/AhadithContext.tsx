@@ -10,13 +10,15 @@ import {
   setRemoteHadiths,
 } from '@/utils/ahadith/repository';
 import { searchHadiths } from '@/utils/ahadith/search';
-import { selectDailyHadith } from '@/utils/ahadith/selector';
+import { resolveCanonicalDailyHadith } from '@/utils/ahadith/daily';
+import { useApp } from '@/context/AppContext';
 import {
   requestAhadithNotificationPermission,
   scheduleAhadithNotifications,
 } from '@/utils/ahadith/notifications';
 import { getCachedRemoteHadiths, syncPublishedHadiths } from '@/utils/ahadithRemoteService';
 import { useStartupPhase } from '@/context/StartupPhaseContext';
+import { addDaysToKabulDate, getKabulNoon } from '@/utils/afghanistanCalendar';
 
 const STORAGE_KEYS = {
   bookmarks: '@ebadat/ahadith_bookmarks',
@@ -61,13 +63,11 @@ interface AhadithContextValue {
 const AhadithContext = createContext<AhadithContextValue | undefined>(undefined);
 
 function getDateByOffset(offset: number): Date {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  date.setDate(date.getDate() + offset);
-  return date;
+  return addDaysToKabulDate(getKabulNoon(), offset);
 }
 
 export function AhadithProvider({ children }: { children: React.ReactNode }) {
+  const { state: appState } = useApp();
   const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
   const [hadiths, setHadiths] = useState<Hadith[]>([]);
   const topics = useMemo(() => (hadiths.length ? getHadithTopics() : []), [hadiths]);
@@ -228,7 +228,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isLoading) return;
     const date = getDateByOffset(dayOffset);
-    setDailySelection(selectDailyHadith(hadiths, date));
+    setDailySelection(resolveCanonicalDailyHadith(date));
   }, [dayOffset, hadiths, isLoading]);
 
   useEffect(() => {
@@ -240,14 +240,18 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
     if (isLoading || !isAdhanSettled) return;
     void AsyncStorage.setItem(STORAGE_KEYS.notifications, JSON.stringify(notificationPrefs));
     const timer = setTimeout(() => {
-      void scheduleAhadithNotifications(hadiths, notificationPrefs).catch((error) => {
+      void scheduleAhadithNotifications(
+        hadiths,
+        notificationPrefs,
+        appState.preferences.appLanguage === 'pashto' ? 'pashto' : 'dari',
+      ).catch((error) => {
         if (__DEV__) {
           console.warn('[Ahadith] Failed to schedule notifications', error);
         }
       });
     }, 19_000);
     return () => clearTimeout(timer);
-  }, [notificationPrefs, hadiths, isAdhanSettled, isLoading]);
+  }, [notificationPrefs, hadiths, isAdhanSettled, isLoading, appState.preferences.appLanguage]);
 
   const topicHadiths = useMemo(() => {
     if (!selectedTopic) return [];
@@ -272,7 +276,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
     try {
       await syncRemoteHadiths(true);
       const date = getDateByOffset(dayOffset);
-      setDailySelection(selectDailyHadith(hadiths, date));
+      setDailySelection(resolveCanonicalDailyHadith(date));
     } finally {
       setIsRefreshing(false);
     }

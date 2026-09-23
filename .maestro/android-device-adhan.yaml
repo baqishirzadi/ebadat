@@ -25,6 +25,13 @@ appId: com.afghandev.ebadat
       text: "انتخاب کشور و شهر"
     timeout: 15000
 - tapOn:
+    text: "جستجوی همه شهرها"
+- scrollUntilVisible:
+    element:
+      text: "کابل"
+    direction: DOWN
+    timeout: 15000
+- tapOn:
     text: "کابل"
 - tapOn:
     text: "ادامه با کابل"
@@ -66,6 +73,12 @@ appId: com.afghandev.ebadat
     optional: true
 - extendedWaitUntil:
     visible:
+      text: "مفتی هوشمند حنفی"
+    timeout: 40000
+- tapOn:
+    text: "نعت"
+- extendedWaitUntil:
+    visible:
       id: "naat-screen-list"
     timeout: 40000
 - assertNotVisible: "Console Error"
@@ -73,7 +86,7 @@ appId: com.afghandev.ebadat
 - takeScreenshot: android-device-naat-home
 
 - tapOn:
-    point: "8%,94%"
+    text: "بیشتر"
 - extendedWaitUntil:
     visible:
       id: "ios-more-ready"
@@ -87,6 +100,11 @@ appId: com.afghandev.ebadat
       id: "ios-adhan-settings-ready"
     timeout: 15000
 - takeScreenshot: android-device-adhan-settings
+- scrollUntilVisible:
+    element:
+      id: "adhan-system-test-button"
+    direction: DOWN
+    timeout: 15000
 - tapOn:
     id: "adhan-system-test-button"
 - tapOn:
@@ -100,7 +118,7 @@ appId: com.afghandev.ebadat
     optional: true
 - extendedWaitUntil:
     visible:
-      id: "adhan-system-test-status"
+      text: "تست زمان‌بندی شد؛ منتظر اعلان باشید."
     timeout: 45000
 - waitForAnimationToEnd:
     timeout: 30000

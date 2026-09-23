@@ -22,10 +22,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { getCity, CityKey } from '@/utils/cities';
+import { AFGHANISTAN_FEATURED_PROVINCE_KEYS, getCity, CityKey } from '@/utils/cities';
 import {
   getAllCategories,
   getCityDisplaySubtitle,
+  getFeaturedCitiesForRegion,
   getMajorCitiesForRegion,
   getProvincesForRegion,
   loadAllCityRegions,
@@ -147,11 +148,15 @@ export function CitySelectorModal({
     if (searchQuery.trim()) return [];
 
     if (selectedCategory === 'afghanistan') {
-      const provinces = getProvincesForRegion('afghanistan');
-      if (provinces.length > 0) {
-        return [{ title: 'ولایت‌ها', data: provinces }];
-      }
-      return [];
+      const featured = getFeaturedCitiesForRegion('afghanistan');
+      const featuredProvinceKeys = new Set<string>(AFGHANISTAN_FEATURED_PROVINCE_KEYS);
+      const provinces = getProvincesForRegion('afghanistan').filter(
+        ({ key }) => !featuredProvinceKeys.has(key),
+      );
+      return [
+        ...(featured.length > 0 ? [{ title: 'شهرهای پرکاربرد', data: featured }] : []),
+        ...(provinces.length > 0 ? [{ title: 'ولایت‌ها', data: provinces }] : []),
+      ];
     }
 
     const provinces = getProvincesForRegion(selectedCategory);

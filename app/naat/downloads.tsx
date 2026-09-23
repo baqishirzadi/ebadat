@@ -3,7 +3,7 @@
  */
 
 import React, { useMemo } from 'react';
-import { View, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
+import { View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
@@ -11,9 +11,12 @@ import { useNaat } from '@/context/NaatContext';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { NaatCard } from '@/components/naat/NaatCard';
 import { NaatMiniPlayer } from '@/components/naat/NaatMiniPlayer';
+import { RtlText } from '@/components/ui/RtlText';
+import { tUi } from '@/utils/i18n/ui';
 
 export default function NaatDownloadsScreen() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const isPashto = state.preferences.appLanguage === 'pashto';
   const router = useRouter();
   const { naats, player, play, playFromQueue, togglePlayPause, download, seek } = useNaat();
 
@@ -42,18 +45,18 @@ export default function NaatDownloadsScreen() {
         >
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
-        <Text style={styles.headerTitle}>دانلودها</Text>
+        <RtlText align="center" style={styles.headerTitle}>{tUi('دانلودها', state.preferences.appLanguage)}</RtlText>
       </View>
 
       <ScrollView contentContainerStyle={[styles.content, player.current && styles.contentWithMiniPlayer]}>
         <View style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <Text style={[styles.summaryTitle, { color: theme.text }]}>حجم ذخیره‌شده</Text>
-          <Text style={[styles.summaryValue, { color: theme.tint }]}>{totalSize} MB</Text>
+          <RtlText align="center" style={[styles.summaryTitle, { color: theme.text }]}>{isPashto ? 'ساتل شوې اندازه' : 'حجم ذخیره‌شده'}</RtlText>
+          <RtlText align="center" style={[styles.summaryValue, { color: theme.tint }]}>{totalSize} MB</RtlText>
         </View>
 
         {inProgress.length > 0 && (
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>در حال دانلود</Text>
+            <RtlText align="center" style={[styles.sectionTitle, { color: theme.textSecondary }]}>{tUi('در حال دانلود', state.preferences.appLanguage)}</RtlText>
             {inProgress.map((naat) => {
               const isActive = player.current?.id === naat.id;
               const durationMillis = isActive
@@ -84,9 +87,9 @@ export default function NaatDownloadsScreen() {
         )}
 
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>دانلود شده</Text>
+          <RtlText align="center" style={[styles.sectionTitle, { color: theme.textSecondary }]}>{isPashto ? 'ښکته شوي نعتونه' : 'دانلود شده'}</RtlText>
           {downloaded.length === 0 ? (
-            <Text style={[styles.emptyText, { color: theme.textSecondary }]}>هنوز چیزی دانلود نشده است</Text>
+            <RtlText align="center" style={[styles.emptyText, { color: theme.textSecondary }]}>{isPashto ? 'لا څه نه دي ښکته شوي' : 'هنوز چیزی دانلود نشده است'}</RtlText>
           ) : (
             downloaded.map((naat) => {
               const isActive = player.current?.id === naat.id;
@@ -139,7 +142,7 @@ const styles = StyleSheet.create({
     paddingTop: 56,
     paddingBottom: Spacing.md,
     paddingHorizontal: Spacing.lg,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomLeftRadius: 28,
@@ -157,6 +160,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.subtitle,
+    flex: 1,
+    textAlign: 'center',
+    marginRight: 40,
   },
   content: {
     padding: Spacing.lg,
@@ -188,9 +194,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
     marginBottom: Spacing.sm,
+    textAlign: 'center',
   },
   emptyText: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
+    textAlign: 'center',
   },
 });

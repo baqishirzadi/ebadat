@@ -4,7 +4,7 @@
  */
 
 import React, { useMemo, useState, useRef, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, Text, ActivityIndicator, TextInput, FlatList, Modal, Alert } from 'react-native';
+import { View, StyleSheet, Pressable, ActivityIndicator, TextInput, FlatList, Modal, Alert, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -16,14 +16,22 @@ import { Naat } from '@/types/naat';
 import { NaatCard } from '@/components/naat/NaatCard';
 import { NaatProgressBar } from '@/components/naat/NaatProgressBar';
 import { NaatQueueSheet } from '@/components/naat/NaatQueueSheet';
+import { RtlText } from '@/components/ui/RtlText';
+import { tUi } from '@/utils/i18n/ui';
 
 const ADMIN_ENABLED = true;
 const NAAT_ADMIN_PIN = '0852';
 const HEADER_TITLE = 'نعت و مناجات — یادگار لنگر شیرزاد';
 const HEADER_DESCRIPTION =
-  'این بخش الهام‌گرفته از محافل نعت، ذکر و خدمت در لنگر شیرزاد است؛\n' +
-  'جایی که به برکت خلیفه صاحب سید عبدالباقی جان (رح)، سال‌ها دل‌ها با نام رسول‌الله ﷺ زنده شده‌اند.\n' +
-  'این صداها ادامه همان راه‌اند — برای آرامش دل‌ها و یاد خدا.';
+  'این بخش الهام‌گرفته از محافل نعت، ذکر و خدمت در لنگر شیرزاد است؛\n'
+  + 'جایی که به برکت خلیفه صاحب سید عبدالباقی جان (رح)، سال‌ها دل‌ها با نام رسول‌الله ﷺ زنده شده‌اند.\n'
+  + 'این صداها ادامه همان راه‌اند — برای آرامش دل‌ها و یاد خدا.';
+const HEADER_TITLE_PASHTO = 'نعت او مناجات — د لنګر شیرزاد یادګار';
+const HEADER_DESCRIPTION_PASHTO =
+  'دا برخه د نعت، ذکر او خدمت له مجلسونو الهام اخیستې ده؛\n'
+  + 'هغه ځای چې د خلیفه صاحب سید عبدالباقي جان (رح) په برکت کلونه زړونه د رسول الله ﷺ په نوم ژوندي شوي دي.\n'
+  + 'دا غږونه د هماغې لارې دوام دی — د زړونو د آرام او د الله د یاد لپاره.';
+const TAB_BAR_CLEARANCE = 82;
 
 function normalizeText(input: string) {
   return input
@@ -45,6 +53,7 @@ function filterQueueItems(ids: string[], naats: Naat[]) {
 export default function NaatScreen() {
   const { theme, state } = useApp();
   const themeMode = state.preferences.theme;
+  const isPashto = state.preferences.appLanguage === 'pashto';
   const headerGradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -65,6 +74,7 @@ export default function NaatScreen() {
   const [showNaatAdminPinModal, setShowNaatAdminPinModal] = useState(false);
   const [naatAdminPin, setNaatAdminPin] = useState('');
   const [queueVisible, setQueueVisible] = useState(false);
+  const [playerDockHeight, setPlayerDockHeight] = useState(0);
 
   const reciters = useMemo(() => {
     const names = Array.from(new Set(naats.map((item) => item.reciter_name).filter(Boolean)));
@@ -88,8 +98,18 @@ export default function NaatScreen() {
 
   const queueLabel =
     player.current && session.totalCount > 0 && session.currentIndex >= 0
-      ? `${session.currentIndex + 1} از ${session.totalCount}`
-      : 'صف پخش';
+      ? isPashto
+        ? `${session.currentIndex + 1} له ${session.totalCount}`
+        : `${session.currentIndex + 1} از ${session.totalCount}`
+      : tUi('صف پخش', state.preferences.appLanguage);
+  const listBottomPadding = player.current
+    ? playerDockHeight + insets.bottom + TAB_BAR_CLEARANCE + Spacing.lg
+    : Spacing.xxl;
+
+  const handlePlayerDockLayout = useCallback((height: number) => {
+    const roundedHeight = Math.ceil(height);
+    setPlayerDockHeight((previous) => (previous === roundedHeight ? previous : roundedHeight));
+  }, []);
 
   const handleQueueSelect = (id: string) => {
     setQueueVisible(false);
@@ -115,12 +135,18 @@ export default function NaatScreen() {
 
   const renderNaatItem = useCallback(({ item }: { item: Naat }) => {
     const isActive = player.current?.id === item.id;
+    const durationMillis = isActive
+      ? player.durationMillis || (item.duration_seconds ? item.duration_seconds * 1000 : 0)
+      : 0;
     return (
       <View style={styles.section}>
         <NaatCard
           naat={item}
           isActive={isActive}
           isPlaying={isActive ? player.isPlaying : false}
+          positionMillis={isActive ? player.positionMillis : 0}
+          durationMillis={durationMillis}
+          onSeek={isActive && durationMillis > 0 ? seek : undefined}
           onPlay={() => {
             if (isActive) {
               togglePlayPause().catch(() => {});
@@ -132,15 +158,15 @@ export default function NaatScreen() {
         />
       </View>
     );
-  }, [player.current?.id, player.isPlaying, togglePlayPause, playFromQueue, filtered, download]);
+  }, [player.current?.id, player.isPlaying, player.positionMillis, player.durationMillis, togglePlayPause, playFromQueue, filtered, download, seek]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.statusFill, { height: insets.top, backgroundColor: headerGradient[0] }]} />
       {loading ? (
-        <View testID="naat-loading" style={styles.loading}>
+      <View testID="naat-loading" style={styles.loading}>
           <ActivityIndicator size="large" color={theme.tint} />
-          <Text style={[styles.loadingText, { color: theme.textSecondary }]}>در حال بارگذاری...</Text>
+          <RtlText align="center" style={[styles.loadingText, { color: theme.textSecondary }]}>در حال بارگذاری...</RtlText>
         </View>
       ) : (
         <FlatList
@@ -148,38 +174,45 @@ export default function NaatScreen() {
           data={filtered}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[styles.listContent, player.current && styles.listContentWithPlayer]}
+          contentContainerStyle={[styles.listContent, { paddingBottom: listBottomPadding }]}
           ListHeaderComponent={(
-            <View>
+            <View testID="naat-header">
               <LinearGradient
                 colors={headerGradient}
                 style={[styles.header, { paddingTop: Spacing.xl + insets.top }]}
               >
-                <Pressable
-                  onLongPress={() => ADMIN_ENABLED && setShowNaatAdminPinModal(true)}
-                  delayLongPress={600}
-                  style={styles.headerContent}
-                >
+                <View style={styles.headerContent}>
                   <View style={styles.headerTopRow}>
                     <Pressable
                       testID="naat-downloads-button"
                       onPress={() => router.push('/naat/downloads')}
-                      style={styles.downloadsButton}
+                      style={[styles.downloadsButton, { borderColor: `${theme.surahHeaderText}55` }]}
                     >
                       <MaterialIcons name="library-music" size={20} color={theme.surahHeaderText} />
-                      <Text style={[styles.downloadsText, { color: theme.surahHeaderText }]}>دانلودها</Text>
+                      <RtlText align="center" wrap={false} style={[styles.downloadsText, { color: theme.surahHeaderText }]}>{tUi('دانلودها', state.preferences.appLanguage)}</RtlText>
                     </Pressable>
                   </View>
-                  <Text style={[styles.headerTitle, { color: theme.surahHeaderText }]}>{HEADER_TITLE}</Text>
-                  <Text style={[styles.headerDescription, { color: theme.surahHeaderText }]}>{HEADER_DESCRIPTION}</Text>
-                  <View style={styles.motifRow}>
-                    <View style={[styles.motifDot, { backgroundColor: theme.bookmark }]} />
-                    <View style={[styles.motifLine, { backgroundColor: theme.bookmark }]} />
-                    <MaterialIcons name="auto-awesome" size={18} color={theme.bookmark} />
-                    <View style={[styles.motifLine, { backgroundColor: theme.bookmark }]} />
-                    <View style={[styles.motifDot, { backgroundColor: theme.bookmark }]} />
-                  </View>
-                </Pressable>
+                  <Pressable
+                    testID="naat-header-content"
+                    onLongPress={() => ADMIN_ENABLED && setShowNaatAdminPinModal(true)}
+                    delayLongPress={600}
+                    style={styles.headerBody}
+                  >
+                    <RtlText testID="naat-header-title" align="center" style={[styles.headerTitle, { color: theme.surahHeaderText }]}>
+                      {isPashto ? HEADER_TITLE_PASHTO : HEADER_TITLE}
+                    </RtlText>
+                    <RtlText testID="naat-header-description" align="center" style={[styles.headerDescription, { color: theme.surahHeaderText }]}>
+                      {isPashto ? HEADER_DESCRIPTION_PASHTO : HEADER_DESCRIPTION}
+                    </RtlText>
+                    <View style={styles.motifRow}>
+                      <View style={[styles.motifDot, { backgroundColor: theme.bookmark }]} />
+                      <View style={[styles.motifLine, { backgroundColor: theme.bookmark }]} />
+                      <MaterialIcons name="auto-awesome" size={18} color={theme.bookmark} />
+                      <View style={[styles.motifLine, { backgroundColor: theme.bookmark }]} />
+                      <View style={[styles.motifDot, { backgroundColor: theme.bookmark }]} />
+                    </View>
+                  </Pressable>
+                </View>
               </LinearGradient>
 
               <View style={styles.headerSection}>
@@ -187,9 +220,9 @@ export default function NaatScreen() {
                   <View style={[styles.syncBanner, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
                     <View style={styles.syncBannerTextWrap}>
                       <MaterialIcons name="sync-problem" size={18} color="#D4AF37" />
-                      <Text style={[styles.syncBannerText, { color: theme.textSecondary }]} numberOfLines={2}>
+                      <RtlText align="center" style={[styles.syncBannerText, { color: theme.textSecondary }]}>
                         {syncError}
-                      </Text>
+                      </RtlText>
                     </View>
                     <Pressable
                       onPress={() => {
@@ -197,7 +230,7 @@ export default function NaatScreen() {
                       }}
                       style={[styles.syncBannerButton, { backgroundColor: theme.tint }]}
                     >
-                      <Text style={styles.syncBannerButtonText}>تلاش دوباره</Text>
+                      <RtlText align="center" wrap={false} style={styles.syncBannerButtonText}>{tUi('تلاش دوباره', state.preferences.appLanguage)}</RtlText>
                     </Pressable>
                   </View>
                 )}
@@ -207,15 +240,16 @@ export default function NaatScreen() {
                   <TextInput
                     testID="naat-search-input"
                     style={[styles.searchInput, { color: theme.text }]}
-                    placeholder="جستجوی نعت..."
+                    placeholder={isPashto ? 'د نعت لټون...' : 'جستجوی نعت...'}
                     placeholderTextColor={theme.textSecondary}
                     value={query}
                     onChangeText={setQuery}
-                    textAlign="right"
+                    textAlign="center"
                   />
                 </View>
 
                 <ScrollView
+                  testID="naat-reciter-filters"
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={styles.reciterRow}
@@ -232,9 +266,9 @@ export default function NaatScreen() {
                         },
                       ]}
                     >
-                      <Text style={[styles.reciterText, { color: selectedReciter === reciter ? '#fff' : theme.text }]}>
-                        {reciter}
-                      </Text>
+                      <RtlText align="center" wrap={false} style={[styles.reciterText, { color: selectedReciter === reciter ? '#fff' : theme.text }]}>
+                        {reciter === 'همه' ? tUi('همه', state.preferences.appLanguage) : reciter}
+                      </RtlText>
                     </Pressable>
                   ))}
                 </ScrollView>
@@ -244,10 +278,10 @@ export default function NaatScreen() {
           ListEmptyComponent={(
             <View style={styles.section}>
               <View style={[styles.emptyCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-                <Text style={[styles.emptyTitle, { color: theme.text }]}>هیچ نعتی ثبت نشده است</Text>
-                <Text style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
-                  برای افزودن، هدر را طولانی لمس کنید
-                </Text>
+                <RtlText align="center" style={[styles.emptyTitle, { color: theme.text }]}>{tUi('هیچ نعتی ثبت نشده است', state.preferences.appLanguage)}</RtlText>
+                <RtlText align="center" style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
+                  {tUi('برای افزودن، هدر را طولانی لمس کنید', state.preferences.appLanguage)}
+                </RtlText>
               </View>
             </View>
           )}
@@ -258,8 +292,10 @@ export default function NaatScreen() {
       <NaatPlayerDock
         player={player}
         session={session}
+        isPashto={isPashto}
         queueLabel={queueLabel}
         bottomInset={insets.bottom}
+        onHeightChange={handlePlayerDockLayout}
         theme={theme}
         setQueueVisible={setQueueVisible}
         seek={seek}
@@ -286,7 +322,7 @@ export default function NaatScreen() {
       >
         <View style={styles.pinModalOverlay}>
           <View style={[styles.pinModalContent, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <Text style={[styles.pinModalTitle, { color: theme.text }]}>ورود به مدیریت نعت</Text>
+            <RtlText style={[styles.pinModalTitle, { color: theme.text }]}>ورود به مدیریت نعت</RtlText>
             <TextInput
               style={[styles.pinModalInput, { color: theme.text, borderColor: theme.cardBorder }]}
               placeholder="PIN را وارد کنید"
@@ -303,13 +339,13 @@ export default function NaatScreen() {
                 onPress={handleNaatAdminPinSubmit}
                 style={[styles.pinModalButton, styles.pinModalButtonPrimary, { backgroundColor: theme.tint }]}
               >
-                <Text style={styles.pinModalButtonText}>تأیید</Text>
+                <RtlText style={styles.pinModalButtonText}>تأیید</RtlText>
               </Pressable>
               <Pressable
                 onPress={closeNaatAdminPinModal}
                 style={[styles.pinModalButton, styles.pinModalButtonSecondary, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
               >
-                <Text style={[styles.pinModalButtonTextSecondary, { color: theme.text }]}>انصراف</Text>
+                <RtlText style={[styles.pinModalButtonTextSecondary, { color: theme.text }]}>انصراف</RtlText>
               </Pressable>
             </View>
           </View>
@@ -322,8 +358,10 @@ export default function NaatScreen() {
 const NaatPlayerDock = React.memo(function NaatPlayerDock({
   player,
   session,
+  isPashto,
   queueLabel,
   bottomInset,
+  onHeightChange,
   theme,
   setQueueVisible,
   seek,
@@ -334,8 +372,10 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
 }: {
   player: ReturnType<typeof useNaatPlayer>['player'];
   session: ReturnType<typeof useNaatPlayer>['session'];
+  isPashto: boolean;
   queueLabel: string;
   bottomInset: number;
+  onHeightChange: (height: number) => void;
   theme: ReturnType<typeof useApp>['theme'];
   setQueueVisible: React.Dispatch<React.SetStateAction<boolean>>;
   seek: ReturnType<typeof useNaatPlayer>['seek'];
@@ -357,6 +397,7 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
           shadowColor: theme.text,
         },
       ]}
+      onLayout={(event) => onHeightChange(event.nativeEvent.layout.height)}
     >
       <NaatProgressBar
         positionMillis={player.positionMillis}
@@ -365,8 +406,9 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
         fillColor={theme.tint}
         trackColor={theme.backgroundSecondary}
         textColor={theme.textSecondary}
+        showTimeLabels={false}
       />
-      <View style={styles.playerMainRow}>
+      <View style={styles.playerHeaderRow}>
         <Pressable
           testID="naat-player-queue-button"
           accessibilityLabel="صف پخش نعت"
@@ -376,14 +418,25 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
           <MaterialIcons name="queue-music" size={22} color={theme.tint} />
         </Pressable>
         <View style={styles.playerInfo}>
-          <Text style={[styles.playerTitle, { color: theme.text }]} numberOfLines={1}>
-            {player.current.title_fa}
-          </Text>
-          <Text style={[styles.playerSubtitle, { color: theme.textSecondary }]} numberOfLines={1}>
+          <RtlText align="center" style={[styles.playerTitle, { color: theme.text }]} numberOfLines={1}>
+            {isPashto ? player.current.title_ps : player.current.title_fa}
+          </RtlText>
+          <RtlText align="center" style={[styles.playerSubtitle, { color: theme.textSecondary }]} numberOfLines={1}>
             {player.current.reciter_name} • {queueLabel}
-          </Text>
+          </RtlText>
         </View>
-        <View style={styles.playerControls}>
+        <Pressable
+          testID="naat-player-stop-button"
+          accessibilityLabel="بستن پلیر نعت"
+          onPress={() => {
+            stop().catch(() => {});
+          }}
+          style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
+        >
+          <MaterialIcons name="close" size={21} color={theme.textSecondary} />
+        </Pressable>
+      </View>
+      <View style={styles.playerControls}>
           <Pressable
             testID="naat-player-next-button"
             accessibilityLabel="نعت بعدی"
@@ -416,17 +469,6 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
           >
             <MaterialIcons name="skip-previous" size={22} color={theme.textSecondary} />
           </Pressable>
-          <Pressable
-            testID="naat-player-stop-button"
-            accessibilityLabel="بستن پلیر نعت"
-            onPress={() => {
-              stop().catch(() => {});
-            }}
-            style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
-          >
-            <MaterialIcons name="stop" size={22} color={theme.textSecondary} />
-          </Pressable>
-        </View>
       </View>
     </View>
   );
@@ -454,14 +496,24 @@ const styles = StyleSheet.create({
   headerContent: {
     width: '100%',
   },
+  headerBody: {
+    width: '100%',
+  },
   headerTopRow: {
-    flexDirection: 'row-reverse',
-    justifyContent: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
   },
   downloadsButton: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
+    minHeight: 40,
+    paddingHorizontal: Spacing.md,
+    borderWidth: 1,
+    borderRadius: BorderRadius.full,
   },
   downloadsText: {
     fontSize: Typography.ui.caption,
@@ -501,9 +553,6 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: Spacing.xxl,
   },
-  listContentWithPlayer: {
-    paddingBottom: 250,
-  },
   section: {
     paddingHorizontal: Spacing.lg,
   },
@@ -517,20 +566,22 @@ const styles = StyleSheet.create({
     padding: Spacing.sm,
     marginBottom: Spacing.md,
     gap: Spacing.sm,
+    alignItems: 'center',
   },
   syncBannerTextWrap: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: Spacing.xs,
   },
   syncBannerText: {
-    flex: 1,
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
+    textAlign: 'center',
+    flexShrink: 1,
   },
   syncBannerButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: BorderRadius.sm,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 6,
@@ -541,13 +592,15 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
   },
   searchBox: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
     gap: Spacing.sm,
     borderWidth: 1,
     borderRadius: BorderRadius.full,
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+    height: 42,
+    minHeight: 42,
     marginBottom: Spacing.md,
   },
   searchInput: {
@@ -556,8 +609,10 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   reciterRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.md,
   },
   reciterChip: {
@@ -656,39 +711,40 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.sm,
+    paddingTop: Spacing.xs,
     paddingBottom: Spacing.sm,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.16,
     shadowRadius: 18,
     elevation: 10,
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
-  playerMainRow: {
-    flexDirection: 'row-reverse',
+  playerHeaderRow: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
   },
   playerInfo: {
     flex: 1,
     minWidth: 0,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   playerTitle: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     fontWeight: '800',
-    textAlign: 'right',
+    textAlign: 'center',
   },
   playerSubtitle: {
     marginTop: 2,
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
-    textAlign: 'right',
+    textAlign: 'center',
   },
   playerControls: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: 6,
   },
   playerIconButton: {

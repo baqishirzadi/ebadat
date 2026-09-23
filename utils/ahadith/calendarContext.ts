@@ -1,46 +1,14 @@
 import { AhadithCalendarContext, HadithSpecialDay } from '@/types/hadith';
 import { getKabulEpochDay } from '@/utils/afghanistanCalendar';
 import { getCalendarTruth } from '@/utils/calendarTruth';
+import { getVerifiedAfghanistanHijriDate } from '@/utils/ahadith/officialAfghanistanCalendar';
 
 export function getAhadithCalendarContext(date: Date = new Date()): AhadithCalendarContext {
   const normalizedDate = new Date(date);
   const truth = getCalendarTruth(normalizedDate);
+  const official = getVerifiedAfghanistanHijriDate(truth.dateKey);
   const hijri = truth.hijri;
-  const specialDayKeys: HadithSpecialDay[] = [];
-
-  if (hijri.month === 9) {
-    specialDayKeys.push('ramadan');
-    if (hijri.day === 27) {
-      specialDayKeys.push('laylat_al_qadr');
-    }
-  }
-
-  if (hijri.month === 10 && hijri.day === 1) {
-    specialDayKeys.push('eid_al_fitr');
-  }
-
-  if (hijri.month === 12) {
-    if (hijri.day >= 1 && hijri.day <= 10) {
-      specialDayKeys.push('first_10_dhul_hijjah');
-    }
-    if (hijri.day === 9) {
-      specialDayKeys.push('arafah');
-    }
-    if (hijri.day === 10) {
-      specialDayKeys.push('eid_al_adha');
-    }
-    if (hijri.day >= 11 && hijri.day <= 13) {
-      specialDayKeys.push('tashreeq');
-    }
-  }
-
-  if (hijri.month === 1 && hijri.day === 1) {
-    specialDayKeys.push('hijri_new_year');
-  }
-
-  if (hijri.month === 1 && hijri.day === 10) {
-    specialDayKeys.push('ashura');
-  }
+  const specialDayKeys: HadithSpecialDay[] = official?.specialDayKeys ?? [];
 
   const weekday = truth.weekday;
 
@@ -53,6 +21,7 @@ export function getAhadithCalendarContext(date: Date = new Date()): AhadithCalen
       month: hijri.month,
       day: hijri.day,
     },
+    hijriVerified: official !== null,
     specialDayKeys,
     isFriday: weekday === 5,
   };

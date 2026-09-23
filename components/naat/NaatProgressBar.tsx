@@ -10,6 +10,8 @@ type Props = {
   trackColor: string;
   textColor: string;
   large?: boolean;
+  /** The compact floating player keeps only the scrubber to avoid covering cards. */
+  showTimeLabels?: boolean;
 };
 
 const SEEK_THROTTLE_MS = 70;
@@ -29,6 +31,7 @@ export function NaatProgressBar({
   trackColor,
   textColor,
   large = false,
+  showTimeLabels = true,
 }: Props) {
   const [seekingRatio, setSeekingRatio] = useState<number | null>(null);
   const [trackWidth, setTrackWidth] = useState(0);
@@ -137,14 +140,16 @@ export function NaatProgressBar({
           )}
         </View>
       </View>
-      <View style={styles.timeRow}>
-        <Text style={[styles.timeText, large && styles.timeTextLarge, { color: textColor }]}>
-          {formatNaatTime(seekingRatio !== null ? seekingRatio * durationMillis : positionMillis)}
-        </Text>
-        <Text style={[styles.timeText, large && styles.timeTextLarge, { color: textColor }]}>
-          {formatNaatTime(durationMillis)}
-        </Text>
-      </View>
+      {showTimeLabels && (
+        <View style={styles.timeRow}>
+          <Text style={[styles.timeText, large && styles.timeTextLarge, { color: textColor }]}>
+            {formatNaatTime(seekingRatio !== null ? seekingRatio * durationMillis : positionMillis)}
+          </Text>
+          <Text style={[styles.timeText, large && styles.timeTextLarge, { color: textColor }]}>
+            {formatNaatTime(durationMillis)}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }

@@ -25,7 +25,7 @@ const ALLOWED_SPECIAL_DAYS = new Set([
   'hijri_new_year',
   'ashura',
 ]);
-const MIN_PRODUCTION_COUNT = 120;
+const EXPECTED_PRODUCTION_COUNT = 130;
 
 function fail(message) {
   console.error(`[verify:ahadith-data] ${message}`);
@@ -50,8 +50,8 @@ try {
 assert(Array.isArray(hadiths), 'Dataset root must be an array');
 assert(hadiths.length > 0, 'Dataset must not be empty');
 assert(
-  hadiths.length >= MIN_PRODUCTION_COUNT,
-  `Dataset must contain at least ${MIN_PRODUCTION_COUNT} hadith entries for production`
+  hadiths.length === EXPECTED_PRODUCTION_COUNT,
+  `Dataset must contain exactly ${EXPECTED_PRODUCTION_COUNT} hadith entries for production`
 );
 
 const ids = new Set();

@@ -6,6 +6,7 @@ import { addDaysToDateKey, buildDateFromLocalTimeInTimezone, getDateKeyInTimezon
 import { buildWidgetSnapshot } from '@/utils/widgetSnapshot';
 import { writeWidgetSnapshot } from '@/utils/widgetDataBridge';
 import { resolvePrayerCalculationPolicy } from '@/utils/prayerCalculationPolicy';
+import type { DailyHadithLanguage } from '@/utils/ahadith/daily';
 
 let lastPushedAt = 0;
 const MIN_PUSH_INTERVAL_MS = 15_000;
@@ -43,6 +44,7 @@ export async function pushWidgetSnapshot(
     cityKey?: string;
     location?: { latitude: number; longitude: number; altitude?: number; timezone?: string };
     timezone?: string;
+    appLanguage?: DailyHadithLanguage;
     /** Days to prefetch into the widget snapshot. Default 30 for app-independent rollover. */
     horizonDays?: number;
   },
@@ -101,6 +103,7 @@ export async function pushWidgetSnapshot(
     asrMethod: policy.madhab === 'Hanafi' ? 'Hanafi' : 'Standard',
     maghribOffsetMinutes: policy.maghribOffsetMinutes,
     fixedDhuhrLocalTime: policy.fixedDhuhrLocalTime,
+    appLanguage: options?.appLanguage,
     multiDay,
   });
   await writeWidgetSnapshot(snapshot);

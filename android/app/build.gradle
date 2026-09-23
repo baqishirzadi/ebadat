@@ -156,6 +156,13 @@ android {
     testOptions {
         unitTests.all {
             it.jvmArgs('-XX:+EnableDynamicAgentLoading')
+            // adhan2 0.0.6 is published as Java 21 bytecode. Keep the app
+            // target at Java 17, but run JVM tests with a Java 21 launcher so
+            // native prayer-engine tests execute instead of failing before
+            // reaching their assertions.
+            it.javaLauncher = project.javaToolchains.launcherFor {
+                languageVersion = JavaLanguageVersion.of(21)
+            }
         }
     }
     signingConfigs {

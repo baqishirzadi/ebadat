@@ -80,8 +80,8 @@ function overallLabel(status: AdhanHealthReport['overallStatus']): string {
 
 function checkChipLabel(status: AdhanHealthCheckItem['status']): string {
   return status === 'pass'
-    ? tAdhanPermission('adhanPermissions.health.statusPass')
-    : tAdhanPermission('adhanPermissions.health.statusWarn');
+    ? tAdhanPermission('adhanPermissions.health.statusPass', 'fa')
+    : tAdhanPermission('adhanPermissions.health.statusWarn', 'fa');
 }
 
 export default function AdhanHealthScreen() {
@@ -164,21 +164,23 @@ export default function AdhanHealthScreen() {
           await refresh();
           return;
         case 'scheduled':
-        case 'delivery':
           await handleRepair();
+          return;
+        case 'delivery':
+          await handleLiveTest();
           return;
         default:
           return;
       }
     },
-    [handleRepair, refresh],
+    [handleLiveTest, handleRepair, refresh],
   );
 
   if (Platform.OS !== 'android') {
     return (
       <>
         <Stack.Screen options={{ headerShown: false }} />
-        <ScreenHeader title={tAdhanPermission('adhanPermissions.health.title')} />
+        <ScreenHeader title={tAdhanPermission('adhanPermissions.health.title', 'fa')} />
         <View style={[styles.centered, styles.rtlRoot, { backgroundColor: theme.background }]}>
           <RtlText align="center" style={[styles.unsupported, { color: theme.textSecondary }]}>
             بررسی سلامت اذان فقط در اندروید در دسترس است.
@@ -191,7 +193,7 @@ export default function AdhanHealthScreen() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
-      <ScreenHeader title={tAdhanPermission('adhanPermissions.health.title')} />
+      <ScreenHeader title={tAdhanPermission('adhanPermissions.health.title', 'fa')} />
       <ScrollView
         testID="android-adhan-health"
         style={[styles.container, styles.rtlRoot, { backgroundColor: theme.background }]}

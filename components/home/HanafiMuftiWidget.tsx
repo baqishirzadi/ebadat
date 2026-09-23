@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   Pressable,
@@ -13,16 +13,11 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import {
-  persianCenterCaptionText,
   persianCenterSubtitleText,
   persianInputTextStyle,
   persianTextInputAlignProps,
 } from '@/constants/persianTextLayout';
 import { useHanafiMufti } from '@/hooks/useHanafiMufti';
-import { detectLanguage } from '@/utils/duaAdvisor';
-
-const SUBTITLE_DARI = 'سوال دینی تان را بپرسید';
-const SUBTITLE_PASHTO = 'خپله دیني پوښتنه وکړئ';
 
 interface HanafiMuftiWidgetProps {
   onInputFocus?: () => void;
@@ -31,11 +26,6 @@ interface HanafiMuftiWidgetProps {
 function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
   const { isStreaming, error, isConfigured, sendMessage, dismissError } = useHanafiMufti();
   const [input, setInput] = useState('');
-
-  const subtitle = useMemo(
-    () => (detectLanguage(input) === 'pashto' ? SUBTITLE_PASHTO : SUBTITLE_DARI),
-    [input],
-  );
 
   const handleSend = useCallback(() => {
     const text = input.trim();
@@ -51,16 +41,12 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
 
   return (
     <RtlView style={styles.container}>
-      <RtlView style={styles.headerBlock}>
+      <Pressable onPress={openFullChat} hitSlop={8} style={styles.titlePress}>
         <View style={styles.titleRow}>
           <RtlText align="center" wrap={false} style={styles.title}>مفتی هوشمند حنفی</RtlText>
           <MaterialIcons name="menu-book" size={18} color="rgba(255,255,255,0.9)" />
         </View>
-        <RtlText align="center" style={styles.subtitle}>{subtitle}</RtlText>
-        <Pressable onPress={openFullChat} hitSlop={8} style={styles.expandLinkWrap}>
-          <RtlText align="center" style={styles.expandLink}>مشاهده گفتگو</RtlText>
-        </Pressable>
-      </RtlView>
+      </Pressable>
 
       {error ? (
         <Pressable onPress={dismissError} style={styles.errorBox}>
@@ -110,15 +96,14 @@ export const HanafiMuftiWidget = memo(HanafiMuftiWidgetInner);
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.sm,
-    paddingBottom: Spacing.md,
-    gap: Spacing.sm,
+    paddingTop: Spacing.xs,
+    paddingBottom: Spacing.sm,
+    gap: Spacing.xs,
     alignItems: 'center',
     alignSelf: 'stretch',
     width: '100%',
   },
-  headerBlock: {
-    gap: 4,
+  titlePress: {
     alignSelf: 'stretch',
     alignItems: 'center',
   },
@@ -134,20 +119,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     color: '#fff',
   },
-  subtitle: {
-    ...persianCenterCaptionText,
-    color: 'rgba(255,255,255,0.75)',
-    lineHeight: 20,
-  },
-  expandLinkWrap: {
-    alignSelf: 'stretch',
-    alignItems: 'center',
-  },
-  expandLink: {
-    ...persianCenterCaptionText,
-    color: 'rgba(255,255,255,0.8)',
-    textDecorationLine: 'underline',
-  },
   errorBox: {
     backgroundColor: 'rgba(0,0,0,0.25)',
     borderRadius: BorderRadius.sm,
@@ -155,12 +126,16 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
   },
   errorText: {
-    ...persianCenterCaptionText,
+    fontFamily: 'Vazirmatn',
+    fontSize: 12,
     color: '#ffd6d6',
+    textAlign: 'center',
   },
   configWarning: {
-    ...persianCenterCaptionText,
+    fontFamily: 'Vazirmatn',
+    fontSize: 12,
     color: 'rgba(255,255,255,0.6)',
+    textAlign: 'center',
   },
   inputRow: {
     flexDirection: 'row',
@@ -171,7 +146,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     minHeight: 40,
-    maxHeight: 96,
+    maxHeight: 80,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.25)',

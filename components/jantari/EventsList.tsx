@@ -17,7 +17,8 @@ import { debugLog } from '@/utils/debugLog';
 type EventRow = CalendarEvent & { color: string; dateLabel: string };
 
 export function EventsList() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const language = state.preferences.appLanguage;
   const truth = useTodayCalendar();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,7 +41,7 @@ export function EventsList() {
       const rows = getUpcomingEvents(truth.gregorianDate, 5).map((event) => ({
         ...event,
         color: getEventCategoryColor(event.category, theme),
-        dateLabel: formatEventDateLabel(event),
+        dateLabel: formatEventDateLabel(event, language),
       }));
 
       // #region agent log
@@ -67,7 +68,7 @@ export function EventsList() {
       cancelled = true;
       task.cancel();
     };
-  }, [theme.bookmark, theme.tint, truth.gregorianDate]);
+  }, [language, theme, truth.gregorianDate]);
 
   if (loading) {
     return (
@@ -90,13 +91,13 @@ export function EventsList() {
           <View style={[styles.dot, { backgroundColor: event.color }]} />
           <RtlView style={styles.content}>
             <RtlText align="center" style={[styles.eventTitle, { color: theme.text }]}>
-              {event.titleDari}
+              {language === 'pashto' ? event.titlePashto : event.titleDari}
             </RtlText>
             <RtlText align="center" style={[styles.dateLabel, { color: theme.tint }]}>
               {event.dateLabel}
             </RtlText>
             <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]} numberOfLines={2}>
-              {event.descriptionDari}
+              {language === 'pashto' ? event.descriptionPashto : event.descriptionDari}
             </RtlText>
           </RtlView>
         </RtlView>

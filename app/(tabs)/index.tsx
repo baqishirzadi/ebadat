@@ -5,6 +5,7 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
+  InteractionManager,
   Keyboard,
   Platform,
   ScrollView,
@@ -32,32 +33,47 @@ import { CityKey, getCity } from '@/utils/cities';
 function HomeDashboardScreen() {
   const { state, setCustomLocation } = usePrayer();
   const scrollRef = useRef<ScrollView>(null);
-  const greenSectionYRef = useRef(0);
-  const greenSectionHeightRef = useRef(0);
+  const greenSectionRef = useRef<View>(null);
+  const scrollOffsetRef = useRef(0);
+  const keyboardTopRef = useRef<number | null>(null);
+  const focusTimersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const [cityPickerVisible, setCityPickerVisible] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const scrollMuftiIntoView = useCallback(() => {
     requestAnimationFrame(() => {
-      const windowHeight = Dimensions.get('window').height;
-      const screenHeight = Dimensions.get('screen').height;
-      // Android may resize the window or keep it full-height while the IME
-      // overlays the screen. Avoid subtracting the keyboard twice.
-      const windowAlreadyResized = screenHeight - windowHeight > 120;
-      const visibleHeight = windowAlreadyResized
-        ? windowHeight
-        : Math.max(1, windowHeight - keyboardHeight);
-      const sectionBottom = greenSectionYRef.current + greenSectionHeightRef.current;
-      const target = sectionBottom - visibleHeight + Spacing.md;
-      scrollRef.current?.scrollTo({
-        y: Math.max(0, target),
-        animated: true,
+      greenSectionRef.current?.measureInWindow((_x, y, _width, height) => {
+        const screenHeight = Dimensions.get('screen').height;
+        const windowHeight = Dimensions.get('window').height;
+        const windowAlreadyResized = screenHeight - windowHeight > 120;
+        const keyboardTop = keyboardTopRef.current ?? (
+          keyboardHeight > 0 ? screenHeight - keyboardHeight : windowHeight
+        );
+        // measureInWindow is in screen coordinates, so calculate only the
+        // portion covered by the IME. This avoids mixing content coordinates
+        // with a resized Android window and applying the keyboard offset twice.
+        const visibleBottom = windowAlreadyResized
+          ? windowHeight
+          : Math.max(1, keyboardTop);
+        const overlap = y + height - visibleBottom + Spacing.md;
+        if (overlap > 0) {
+          scrollRef.current?.scrollTo({
+            y: Math.max(0, scrollOffsetRef.current + overlap),
+            animated: true,
+          });
+        }
       });
     });
   }, [keyboardHeight]);
 
   const handleMuftiInputFocus = useCallback(() => {
     scrollMuftiIntoView();
+    focusTimersRef.current.forEach(clearTimeout);
+    focusTimersRef.current = [120, 280, 520].map((delay) =>
+      setTimeout(() => {
+        InteractionManager.runAfterInteractions(scrollMuftiIntoView);
+      }, delay),
+    );
   }, [scrollMuftiIntoView]);
 
   useEffect(() => {
@@ -71,14 +87,20 @@ function HomeDashboardScreen() {
         ? Math.max(0, Math.round(screenHeight - screenY))
         : 0;
       setKeyboardHeight(Math.max(reported, fromTop));
+      keyboardTopRef.current = typeof screenY === 'number'
+        ? screenY
+        : screenHeight - Math.max(reported, fromTop);
       setTimeout(() => scrollMuftiIntoView(), Platform.OS === 'android' ? 120 : 60);
     });
     const hideSubscription = Keyboard.addListener(hideEvent, () => {
       setKeyboardHeight(0);
+      keyboardTopRef.current = null;
     });
     return () => {
       showSubscription.remove();
       hideSubscription.remove();
+      focusTimersRef.current.forEach(clearTimeout);
+      focusTimersRef.current = [];
     };
   }, [scrollMuftiIntoView]);
 
@@ -109,16 +131,17 @@ function HomeDashboardScreen() {
           ]}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
+          scrollEventThrottle={16}
+          onScroll={(event) => {
+            scrollOffsetRef.current = event.nativeEvent.contentOffset.y;
+          }}
           removeClippedSubviews={Platform.OS === 'android'}
         >
           <RtlView>
             <HomeHeader onCityPress={() => setCityPickerVisible(true)} />
             <TodayDateCard />
             <View
-              onLayout={(event) => {
-                greenSectionYRef.current = event.nativeEvent.layout.y;
-                greenSectionHeightRef.current = event.nativeEvent.layout.height;
-              }}
+              ref={greenSectionRef}
             >
               <HomeGreenSection
                 prayerTimes={state.prayerTimes}

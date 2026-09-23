@@ -74,18 +74,18 @@ export default function OnboardingBatteryScreen() {
       testID="android-onboarding-battery"
       step={permissionStepIndex}
       totalSteps={totalSteps}
-      title={tAdhanPermission('adhanPermissions.battery.title')}
-      subtitle={tAdhanPermission('adhanPermissions.battery.body')}
+      title={tAdhanPermission('adhanPermissions.battery.title', 'fa')}
+      subtitle={tAdhanPermission('adhanPermissions.battery.body', 'fa')}
       primaryLabel={
         exempt
-          ? tAdhanPermission('adhanPermissions.continue')
+          ? tAdhanPermission('adhanPermissions.continue', 'fa')
           : busy
             ? '...'
-            : tAdhanPermission('adhanPermissions.battery.button')
+            : tAdhanPermission('adhanPermissions.battery.button', 'fa')
       }
       onPrimary={exempt ? goNext : handleOpenSettings}
       primaryDisabled={busy}
-      secondaryLabel={tAdhanPermission('adhanPermissions.battery.skip')}
+      secondaryLabel={tAdhanPermission('adhanPermissions.battery.skip', 'fa')}
       onSecondary={goNext}
       showBack
       contentAlign="center"

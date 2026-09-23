@@ -2,6 +2,8 @@ import React from 'react';
 import { Platform, Text, type TextProps, type TextStyle } from 'react-native';
 
 import { persianTextLayout } from '@/constants/persianTextLayout';
+import { useAppLanguage } from '@/context/AppContext';
+import { localizeUiText } from '@/utils/i18n/ui';
 
 const baseRtl: TextStyle = {
   ...persianTextLayout,
@@ -21,11 +23,14 @@ interface RtlTextProps extends TextProps {
   wrap?: boolean;
 }
 
-export function RtlText({ style, align = 'right', wrap = true, ...props }: RtlTextProps) {
+export function RtlText({ style, align = 'right', wrap = true, children, ...props }: RtlTextProps) {
+  const language = useAppLanguage();
   return (
     <Text
       {...props}
       style={[wrap ? baseRtl : baseRtlInline, style, { textAlign: align }]}
-    />
+    >
+      {localizeUiText(children, language) as React.ReactNode}
+    </Text>
   );
 }

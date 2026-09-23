@@ -1,9 +1,12 @@
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
 import { AhadithNotificationPreferences, Hadith } from '@/types/hadith';
-import { selectDailyHadith } from '@/utils/ahadith/selector';
+import { resolveCanonicalDailyHadith } from '@/utils/ahadith/daily';
+import type { DailyHadithLanguage } from '@/utils/ahadith/daily';
 import { getContextTitleFa } from '@/utils/ahadith/labels';
 import { IOS_AHADITH_DAYS_AHEAD } from '@/utils/notificationBudget';
+import { KABUL_TIME_ZONE, getKabulDateKey } from '@/utils/afghanistanCalendar';
+import { addDaysToDateKey, buildDateFromLocalTimeInTimezone } from '@/utils/prayerTimezone';
 
 const CHANNEL_ID = 'ahadith-daily-v1';
 const IDENTIFIER_PREFIX = 'ahadith-daily-';
@@ -32,13 +35,6 @@ async function loadNotificationsIfAvailable(): Promise<typeof import('expo-notif
   } catch {
     return null;
   }
-}
-
-function dateKey(date: Date): string {
-  const y = date.getFullYear();
-  const m = `${date.getMonth() + 1}`.padStart(2, '0');
-  const d = `${date.getDate()}`.padStart(2, '0');
-  return `${y}-${m}-${d}`;
 }
 
 function truncatePreview(text: string, maxLength = 84): string {
@@ -70,9 +66,10 @@ async function clearPreviousScheduled(NotificationsModule: typeof import('expo-n
 }
 
 export async function scheduleAhadithNotifications(
-  hadiths: Hadith[],
+  _hadiths: Hadith[],
   prefs: AhadithNotificationPreferences,
-  daysAhead = Platform.OS === 'ios' ? IOS_AHADITH_DAYS_AHEAD : 30
+  language: DailyHadithLanguage = 'dari',
+  daysAhead = Platform.OS === 'ios' ? IOS_AHADITH_DAYS_AHEAD : 30,
 ): Promise<{ scheduled: number; enabled: boolean }> {
   const NotificationsModule = await loadNotificationsIfAvailable();
   if (!NotificationsModule) return { scheduled: 0, enabled: false };
@@ -86,24 +83,25 @@ export async function scheduleAhadithNotifications(
   await ensureChannel(NotificationsModule);
 
   const now = new Date();
+  const todayKey = getKabulDateKey(now);
   let scheduledCount = 0;
 
   for (let offset = 0; offset < daysAhead; offset += 1) {
-    const date = new Date(now);
-    date.setHours(0, 0, 0, 0);
-    date.setDate(date.getDate() + offset);
-
-    const selection = selectDailyHadith(hadiths, date);
-    const triggerDate = new Date(date);
-    triggerDate.setHours(prefs.hour, prefs.minute, 0, 0);
+    const dateKey = addDaysToDateKey(todayKey, offset);
+    const selection = resolveCanonicalDailyHadith(dateKey, language);
+    const triggerDate = buildDateFromLocalTimeInTimezone(
+      dateKey,
+      `${String(prefs.hour).padStart(2, '0')}:${String(prefs.minute).padStart(2, '0')}`,
+      KABUL_TIME_ZONE,
+    );
 
     if (triggerDate.getTime() <= now.getTime()) {
       continue;
     }
 
-    const identifier = `${IDENTIFIER_PREFIX}${dateKey(date)}`;
+    const identifier = `${IDENTIFIER_PREFIX}${dateKey}`;
     const title = getContextTitleFa(selection.context);
-    const body = truncatePreview(selection.hadith.dari_translation);
+    const body = truncatePreview(selection.text);
 
     await NotificationsModule.scheduleNotificationAsync({
       identifier,
@@ -112,7 +110,7 @@ export async function scheduleAhadithNotifications(
         body,
         data: {
           type: 'ahadith_daily',
-          dateKey: dateKey(date),
+          dateKey,
           hadithId: selection.hadith.id,
           sourceBook: selection.hadith.source_book,
         },

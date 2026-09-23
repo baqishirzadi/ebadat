@@ -13,7 +13,7 @@ const ACTIONS = [
   { icon: 'auto-awesome' as const, label: 'اذکار', route: '/(tabs)/adhkar', badgeKey: null },
   { icon: 'format-quote' as const, label: 'احادیث', route: '/(tabs)/ahadith', badgeKey: null },
   { icon: 'favorite' as const, label: 'دعای خیر', route: '/dua-request', badgeKey: 'dua' as const },
-  { icon: 'explore' as const, label: 'قبله‌نما', route: '/qibla', badgeKey: null },
+  { icon: 'nights-stay' as const, label: 'تعبیر خواب اسلامی', route: '/dream-chat', badgeKey: null },
 ];
 
 export function QuickActions() {
@@ -40,7 +40,7 @@ export function QuickActions() {
               </View>
             ) : null}
           </View>
-          <RtlText align="center" style={[styles.label, { color: theme.text }]}>{action.label}</RtlText>
+          <RtlText align="center" style={[styles.label, { color: theme.text }]} numberOfLines={2}>{action.label}</RtlText>
         </Pressable>
       ))}
     </RtlView>

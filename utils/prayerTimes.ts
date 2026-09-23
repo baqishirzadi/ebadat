@@ -59,6 +59,7 @@ export interface Location {
   longitude: number;
   altitude?: number;
   timezone?: string;
+  countryCode?: string;
 }
 
 // Default location: Kabul, Afghanistan
@@ -67,20 +68,21 @@ export const DEFAULT_LOCATION: Location = {
   longitude: 69.2075,
   altitude: 1791,
   timezone: 'Asia/Kabul',
+  countryCode: 'AF',
 };
 
 // Afghan cities for manual selection
 export const AFGHAN_CITIES: Record<string, Location> = {
-  kabul: { latitude: 34.5553, longitude: 69.2075, altitude: 1791, timezone: 'Asia/Kabul' },
-  herat: { latitude: 34.3529, longitude: 62.2163, altitude: 920, timezone: 'Asia/Kabul' },
-  mazar: { latitude: 36.7069, longitude: 67.1147, altitude: 380, timezone: 'Asia/Kabul' },
-  kandahar: { latitude: 31.6257, longitude: 65.7101, altitude: 1005, timezone: 'Asia/Kabul' },
-  jalalabad: { latitude: 34.4253, longitude: 70.4511, altitude: 575, timezone: 'Asia/Kabul' },
-  kunduz: { latitude: 36.7281, longitude: 68.8577, altitude: 395, timezone: 'Asia/Kabul' },
-  ghazni: { latitude: 33.5469, longitude: 68.4269, altitude: 2219, timezone: 'Asia/Kabul' },
-  bamiyan: { latitude: 34.8213, longitude: 67.8213, altitude: 2550, timezone: 'Asia/Kabul' },
-  farah: { latitude: 32.3735, longitude: 62.1130, altitude: 660, timezone: 'Asia/Kabul' },
-  badakhshan: { latitude: 36.7347, longitude: 70.8119, altitude: 1250, timezone: 'Asia/Kabul' },
+  kabul: { latitude: 34.5553, longitude: 69.2075, altitude: 1791, timezone: 'Asia/Kabul', countryCode: 'AF' },
+  herat: { latitude: 34.3529, longitude: 62.2163, altitude: 920, timezone: 'Asia/Kabul', countryCode: 'AF' },
+  mazar: { latitude: 36.7069, longitude: 67.1147, altitude: 380, timezone: 'Asia/Kabul', countryCode: 'AF' },
+  kandahar: { latitude: 31.6257, longitude: 65.7101, altitude: 1005, timezone: 'Asia/Kabul', countryCode: 'AF' },
+  jalalabad: { latitude: 34.4253, longitude: 70.4511, altitude: 575, timezone: 'Asia/Kabul', countryCode: 'AF' },
+  kunduz: { latitude: 36.7281, longitude: 68.8577, altitude: 395, timezone: 'Asia/Kabul', countryCode: 'AF' },
+  ghazni: { latitude: 33.5469, longitude: 68.4269, altitude: 2219, timezone: 'Asia/Kabul', countryCode: 'AF' },
+  bamiyan: { latitude: 34.8213, longitude: 67.8213, altitude: 2550, timezone: 'Asia/Kabul', countryCode: 'AF' },
+  farah: { latitude: 32.3735, longitude: 62.1130, altitude: 660, timezone: 'Asia/Kabul', countryCode: 'AF' },
+  badakhshan: { latitude: 36.7347, longitude: 70.8119, altitude: 1250, timezone: 'Asia/Kabul', countryCode: 'AF' },
 };
 
 // Utility functions for astronomical calculations
@@ -429,6 +431,7 @@ export function getNextPrayer(
   now: Date = new Date(),
   options?: { tomorrowFajr?: Date },
 ): {
+  key: 'fajr' | 'sunrise' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
   name: string;
   time: Date;
   nameArabic: string;
@@ -448,6 +451,7 @@ export function getNextPrayer(
     const time = prayerTimes[prayer.key as keyof PrayerTimes] as Date;
     if (time > now) {
       return {
+        key: prayer.key,
         name: prayer.key,
         time,
         nameArabic: prayer.nameArabic,
@@ -461,6 +465,7 @@ export function getNextPrayer(
     options?.tomorrowFajr ??
     new Date(prayerTimes.fajr.getTime() + 24 * 60 * 60 * 1000);
   return {
+    key: 'fajr',
     name: 'fajr',
     time: tomorrowFajr,
     nameArabic: 'الفجر',

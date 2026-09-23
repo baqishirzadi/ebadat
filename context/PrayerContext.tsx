@@ -21,6 +21,10 @@ import {
   getIosAzanRollingDays,
 } from '@/utils/notificationBudget';
 import {
+  ANDROID_ADHAN_ROLLING_DAYS,
+  buildAdhanScheduleFingerprint,
+} from '@/utils/adhanSchedulePolicy';
+import {
   registerPrayerScheduleCallback,
   runPendingBackgroundPrayerSchedule,
   unregisterPrayerScheduleCallback,
@@ -76,6 +80,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { Alert, AppState, InteractionManager, Linking, NativeModules, Platform } from 'react-native';
 import { useStartupPhase } from '@/context/StartupPhaseContext';
+import { useApp } from '@/context/AppContext';
 
 // Conditional imports - only load on native platforms
 // Skip notifications entirely in Expo Go to avoid SDK 53 error
@@ -144,7 +149,6 @@ const STORAGE_KEYS = {
 const PRAYER_SCHEDULE_MIN_INTERVAL_MS = 2000;
 const STARTUP_MIGRATION_DELAY_MS = 1500;
 
-const PRAYER_ROLLING_DAYS_ANDROID = 3;
 const ANDROID_ADHAN_SOUND_FILENAME = getAdhanSoundFilename('android');
 const CHANNEL_IDS = {
   ADHAN_FAJR: 'adhan-fajr-v7',
@@ -169,6 +173,13 @@ function buildNativeAdhanConfig(
   const maghribContent = getNotificationContent('maghrib', true);
   const ishaContent = getNotificationContent('isha', true);
   const policy = resolvePrayerCalculationPolicy(cityKey, location);
+  const scheduleFingerprint = buildAdhanScheduleFingerprint({
+    policyVersion: policy.policyVersion,
+    cityKey,
+    countryCode: policy.countryCode,
+    timezoneId: location.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+    scheduleJson: scheduleJson || '',
+  });
 
   const base = {
     latitude: location.latitude,
@@ -179,6 +190,8 @@ function buildNativeAdhanConfig(
     calculationMethod: policy.adhanJsMethod,
     madhab: policy.madhab,
     policyVersion: policy.policyVersion,
+    scheduleFingerprint,
+    maghribOffsetMinutes: policy.maghribOffsetMinutes,
     scheduleJson: scheduleJson || '',
     masterEnabled: adhanPreferences.masterEnabled,
     fajrEnabled: adhanPreferences.fajr.enabled,
@@ -512,6 +525,7 @@ const PrayerContext = createContext<PrayerContextType | undefined>(undefined);
 // Provider
 export function PrayerProvider({ children }: { children: ReactNode }) {
   const { isInteractiveReady, isAdhanSettled, markAdhanSettled } = useStartupPhase();
+  const { state: appState } = useApp();
   const [state, dispatch] = useReducer(prayerReducer, initialState);
   const scheduleRunIdRef = useRef(0);
   const scheduleInFlightRef = useRef(false);
@@ -1329,6 +1343,7 @@ async function configureAndroidNotificationChannels(
       cityKey: toCityKey(state.settings.selectedCity),
       location: state.location,
       timezone: state.location.timezone,
+      appLanguage: appState.preferences.appLanguage === 'pashto' ? 'pashto' : 'dari',
       horizonDays: 30,
     });
     // Multi-day only after adhan schedule settles — avoids racing 7-day native JSON.
@@ -1344,6 +1359,7 @@ async function configureAndroidNotificationChannels(
           cityKey: toCityKey(state.settings.selectedCity),
           location: state.location,
           timezone: state.location.timezone,
+          appLanguage: appState.preferences.appLanguage === 'pashto' ? 'pashto' : 'dari',
           horizonDays: 30,
         });
       });
@@ -1360,6 +1376,7 @@ async function configureAndroidNotificationChannels(
     state.locationName,
     state.location,
     state.settings.selectedCity,
+    appState.preferences.appLanguage,
   ]);
 
   useEffect(() => {
@@ -1370,6 +1387,7 @@ async function configureAndroidNotificationChannels(
         cityKey: toCityKey(state.settings.selectedCity),
         location: state.location,
         timezone: state.location.timezone,
+        appLanguage: appState.preferences.appLanguage === 'pashto' ? 'pashto' : 'dari',
         // Keep a long local horizon so WidgetKit remains correct while the app is closed.
         horizonDays: 30,
       });
@@ -1381,6 +1399,7 @@ async function configureAndroidNotificationChannels(
     state.prayerTimes,
     state.locationName,
     state.location,
+    appState.preferences.appLanguage,
     state.settings.selectedCity,
   ]);
 
@@ -1564,10 +1583,15 @@ async function configureAndroidNotificationChannels(
 
   const setCustomLocation = useCallback(async (location: LocationType, name: string, cityKey?: string) => {
     const resolvedCityKey = toCityKey(cityKey || null) || null;
-    dispatch({ type: 'SET_LOCATION', payload: { location, name } });
+    const cityCountry = resolvedCityKey ? getCity(resolvedCityKey)?.country : undefined;
+    const persistedLocation: LocationType = {
+      ...location,
+      countryCode: location.countryCode || cityCountry,
+    };
+    dispatch({ type: 'SET_LOCATION', payload: { location: persistedLocation, name } });
     dispatch({ type: 'SET_SETTINGS', payload: { selectedCity: resolvedCityKey } });
 
-    await AsyncStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify({ location, name }));
+    await AsyncStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify({ location: persistedLocation, name }));
     if (resolvedCityKey) {
       await AsyncStorage.setItem(STORAGE_KEYS.SELECTED_CITY, resolvedCityKey);
     } else {
@@ -1686,10 +1710,11 @@ async function configureAndroidNotificationChannels(
       }
 
       const location: LocationType = {
-        latitude: city.lat,
-        longitude: city.lon,
+        latitude: result.coordinates?.lat ?? city.lat,
+        longitude: result.coordinates?.lon ?? city.lon,
         altitude: city.altitude || 0,
         timezone: city.timezone,
+        countryCode: result.countryCode || city.country,
       };
 
       await setCustomLocation(location, city.name, city.key);
@@ -1763,7 +1788,7 @@ async function configureAndroidNotificationChannels(
       state.location.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
     const rollingDays =
       Platform.OS === 'android'
-        ? PRAYER_ROLLING_DAYS_ANDROID
+        ? ANDROID_ADHAN_ROLLING_DAYS
         : getIosAzanRollingDays(adhanPreferences.earlyReminder);
     const adhanSoundFilename = getAdhanSoundFilename(Platform.OS);
 

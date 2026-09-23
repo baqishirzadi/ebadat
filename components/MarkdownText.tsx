@@ -8,6 +8,8 @@ type MarkdownTextProps = {
   headingStyle?: StyleProp<TextStyle>;
   italicStyle?: StyleProp<TextStyle>;
   bulletStyle?: StyleProp<TextStyle>;
+  onLongPress?: () => void;
+  testID?: string;
 };
 
 /** Remove presentation-only Markdown syntax for clipboard/plain-text output. */
@@ -35,6 +37,8 @@ export function MarkdownText({
   headingStyle,
   italicStyle,
   bulletStyle,
+  onLongPress,
+  testID,
 }: MarkdownTextProps) {
   const parts: React.ReactNode[] = [];
   let key = 0;
@@ -91,5 +95,13 @@ export function MarkdownText({
     }
   });
 
-  return <Text style={style}>{parts.length > 0 ? parts : sanitizePlainText(children)}</Text>;
+  return (
+    <Text
+      testID={testID}
+      style={style}
+      onLongPress={onLongPress}
+    >
+      {parts.length > 0 ? parts : sanitizePlainText(children)}
+    </Text>
+  );
 }

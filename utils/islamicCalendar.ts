@@ -6,9 +6,17 @@ import {
   getKabulWeekdayIndex,
   getKabulDateKey,
 } from '@/utils/afghanistanCalendar';
+import {
+  getVerifiedAfghanistanGregorianDate,
+  getVerifiedAfghanistanHijriDate,
+} from '@/utils/ahadith/officialAfghanistanCalendar';
 
-/** Built-in Afghan Hijri correction: one day earlier than Umm al-Qura default. */
-const AFGHAN_HIJRI_DEFAULT_SHIFT = -1;
+/**
+ * Afghan fallback correction: two civil days before Umm al-Qura. The additional
+ * day aligns the Kabul fallback with the requested 10 Rabi al-Thani 1448 on
+ * 2026-09-23; explicitly verified Afghan dates take precedence below.
+ */
+const AFGHAN_HIJRI_DEFAULT_SHIFT = -2;
 
 /**
  * Islamic (Hijri) Calendar Utilities
@@ -257,7 +265,22 @@ interface HijriCorrectionRange {
   shiftDays: number;
 }
 
-const AFGHAN_HIJRI_CORRECTIONS: HijriCorrectionRange[] = [];
+// These fallback bridges keep the calculated dates consecutive at the edges
+// of the explicitly verified Afghan windows. They do not make those days
+// "officially verified" for occasion-specific Hadith selection.
+const AFGHAN_HIJRI_CORRECTIONS: HijriCorrectionRange[] = [
+  { startGregorian: '2026-01-20', endGregorian: '2026-02-17', shiftDays: 2 },
+  { startGregorian: '2026-04-18', endGregorian: '2026-05-17', shiftDays: 2 },
+  { startGregorian: '2026-06-27', endGregorian: '2026-09-12', shiftDays: 1 },
+];
+
+// The user-confirmed 2026-09-23 Rabi al-Thani 10 anchor, combined with the
+// verified 1448 Muharram 1 date, requires Rabi al-Awwal 30 on this date to
+// keep the intervening local Hijri sequence continuous. This is a correction,
+// not an official-date assertion.
+const AFGHAN_HIJRI_DATE_CORRECTIONS = [
+  { dateKey: '2026-09-13', hijriYear: 1448, hijriMonth: 3, hijriDay: 30 },
+] as const;
 
 function compareDateKeys(a: string, b: string): number {
   if (a === b) return 0;
@@ -534,9 +557,20 @@ export function gregorianToHijri(date: Date): HijriDate {
     return cloneHijriDate(cached);
   }
 
-  const shiftDays = getHijriCorrectionShift(kabulDate);
-  const sourceDate = shiftDays === 0 ? kabulDate : addDaysToKabulDate(kabulDate, shiftDays);
-  const resolved = gregorianToBaseHijri(sourceDate);
+  const verified = getVerifiedAfghanistanHijriDate(cacheKey);
+  let resolved: HijriDate;
+  if (verified) {
+    resolved = buildHijriDate(verified.hijri.year, verified.hijri.month, verified.hijri.day);
+  } else {
+    const dateCorrection = AFGHAN_HIJRI_DATE_CORRECTIONS.find((entry) => entry.dateKey === cacheKey);
+    if (dateCorrection) {
+      resolved = buildHijriDate(dateCorrection.hijriYear, dateCorrection.hijriMonth, dateCorrection.hijriDay);
+    } else {
+      const shiftDays = getHijriCorrectionShift(kabulDate);
+      const sourceDate = shiftDays === 0 ? kabulDate : addDaysToKabulDate(kabulDate, shiftDays);
+      resolved = gregorianToBaseHijri(sourceDate);
+    }
+  }
   GREGORIAN_TO_HIJRI_CACHE.set(cacheKey, resolved);
   return cloneHijriDate(resolved);
 }
@@ -702,6 +736,20 @@ function scoreHijriCandidate(candidate: Date, hijriYear: number, hijriMonth: num
  */
 export function hijriToGregorian(hijriYear: number, hijriMonth: number, hijriDay: number): Date | null {
   const cacheKey = `${hijriYear}-${hijriMonth}-${hijriDay}`;
+  const verifiedDate = getVerifiedAfghanistanGregorianDate(hijriYear, hijriMonth, hijriDay);
+  if (verifiedDate) {
+    HIJRI_TO_GREGORIAN_CACHE.set(cacheKey, verifiedDate.getTime());
+    return verifiedDate;
+  }
+  const correctedDate = AFGHAN_HIJRI_DATE_CORRECTIONS.find((entry) =>
+    entry.hijriYear === hijriYear && entry.hijriMonth === hijriMonth && entry.hijriDay === hijriDay,
+  );
+  if (correctedDate) {
+    const date = getKabulNoon(new Date(`${correctedDate.dateKey}T12:00:00+04:30`));
+    HIJRI_TO_GREGORIAN_CACHE.set(cacheKey, date.getTime());
+    return date;
+  }
+
   if (HIJRI_TO_GREGORIAN_CACHE.has(cacheKey)) {
     const cached = HIJRI_TO_GREGORIAN_CACHE.get(cacheKey);
     if (cached === null) {

@@ -6,7 +6,7 @@ appId: com.afghandev.ebadat
 - waitForAnimationToEnd:
     timeout: 8000
 - tapOn:
-    point: "10%,94%"
+    text: "بیشتر"
 - waitForAnimationToEnd:
     timeout: 5000
 - extendedWaitUntil:
@@ -29,6 +29,8 @@ appId: com.afghandev.ebadat
 - back
 - waitForAnimationToEnd:
     timeout: 3000
+- tapOn:
+    text: "بیشتر"
 - extendedWaitUntil:
     visible:
       id: "ios-more-ready"
@@ -48,40 +50,42 @@ appId: com.afghandev.ebadat
 - back
 - waitForAnimationToEnd:
     timeout: 3000
+- tapOn:
+    text: "بیشتر"
 - extendedWaitUntil:
     visible:
       id: "ios-more-ready"
     timeout: 15000
 - tapOn:
-    point: "90%,94%"
+    text: "خانه"
 - extendedWaitUntil:
     visible:
-      text: "امروز"
+      text: "این تاریخ امروز است"
     timeout: 15000
 - takeScreenshot: android-nav-home
 - tapOn:
-    point: "70%,94%"
+    text: "قرآن"
 - extendedWaitUntil:
     visible:
       text: "قرآن"
     timeout: 15000
 - takeScreenshot: android-nav-quran
 - tapOn:
-    point: "50%,94%"
+    text: "جنتری"
 - extendedWaitUntil:
     visible:
       text: "جنتری"
     timeout: 15000
 - takeScreenshot: android-nav-jantari
 - tapOn:
-    point: "30%,94%"
+    text: "نعت"
 - extendedWaitUntil:
     visible:
       id: "naat-screen-list"
     timeout: 20000
 - takeScreenshot: android-nav-naat
 - tapOn:
-    point: "10%,94%"
+    text: "بیشتر"
 - waitForAnimationToEnd:
     timeout: 3000
 - extendedWaitUntil:

@@ -7,9 +7,10 @@ import {
   getDateKeyInTimezone,
 } from '@/utils/prayerTimezone';
 import type { Location as LocationType, PrayerTimes } from '@/utils/prayerTimes';
+import { MAGHRIB_OFFSET_MINUTES as GLOBAL_MAGHRIB_OFFSET_MINUTES } from '@/utils/adhanSchedulePolicy';
 
 /** @deprecated Use policy.maghribOffsetMinutes; kept for callers/tests. */
-export const MAGHRIB_OFFSET_MINUTES = 3;
+export const MAGHRIB_OFFSET_MINUTES = GLOBAL_MAGHRIB_OFFSET_MINUTES;
 
 /** @deprecated Afghanistan now uses fixed 12:30 Dhuhr. */
 export const KABUL_DHUHR_OFFSET_MINUTES = 0;

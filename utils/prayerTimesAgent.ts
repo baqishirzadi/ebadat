@@ -21,6 +21,7 @@ import {
 import {
   PRAYER_POLICY_VERSION,
   PrayerCalculationPolicy,
+  canReuseRawPrayerCache,
   policyCacheSegment,
   resolvePrayerCalculationPolicy,
 } from '@/utils/prayerCalculationPolicy';
@@ -220,6 +221,7 @@ function getCityInfo(
           longitude: city.lon,
           altitude: city.altitude,
           timezone: city.timezone,
+          countryCode: city.country,
         },
       };
     }
@@ -238,6 +240,7 @@ function getCityInfo(
       longitude: fallback.longitude,
       altitude: fallback.altitude,
       timezone: fallback.timezone,
+      countryCode: 'AF',
     },
   };
 }
@@ -449,8 +452,17 @@ async function ensureCache(
   const segment = policyCacheSegment(policy);
   let cityCache = cache.cities[cityKey];
   let dirty = false;
-  if (!cityCache || cityCache.policySegment !== segment) {
+  if (!cityCache) {
     cityCache = { updatedAt: 0, policySegment: segment, days: {} };
+    dirty = true;
+  } else if (cityCache.policySegment !== segment) {
+    // The cache stores raw API timings. A policy-version-only change (such as
+    // the global Maghrib delay) must not throw away valid source data while
+    // offline; finalization applies the current policy after reading it.
+    const reusableRawTimings = canReuseRawPrayerCache(cityCache.policySegment, segment);
+    cityCache = reusableRawTimings
+      ? { ...cityCache, policySegment: segment }
+      : { updatedAt: 0, policySegment: segment, days: {} };
     dirty = true;
   }
 
@@ -607,7 +619,8 @@ export async function getPrayerTimesForDateRange(params: {
   const timezone = location.timezone;
   const startKey = getDateKeyInTimezone(start, timezone);
   const allowNetwork = params.allowNetwork !== false;
-  const cacheKey = `${params.cityKey || ''}|${location.latitude},${location.longitude}|${startKey}|${days}|net=${allowNetwork ? 1 : 0}`;
+  const policy = resolvePrayerCalculationPolicy(params.cityKey, location);
+  const cacheKey = `p${policy.policyVersion}_m${policy.maghribOffsetMinutes}|${params.cityKey || ''}|${location.latitude},${location.longitude}|${startKey}|${days}|net=${allowNetwork ? 1 : 0}`;
 
   if (
     !allowNetwork &&

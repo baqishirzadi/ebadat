@@ -21,6 +21,7 @@ export interface LocationResult {
   cityName?: string;
   citySubtitle?: string;
   coordinates?: { lat: number; lon: number };
+  countryCode?: string;
   warning?: boolean;
   error?: string;
 }
@@ -79,6 +80,7 @@ async function resolveCityFromCoords(
         cityName: city?.name ?? provinceMatch.city.name,
         citySubtitle: provinceMatch.city.countryName,
         coordinates: { lat, lon },
+        countryCode,
       };
     }
   }
@@ -102,6 +104,7 @@ async function resolveCityFromCoords(
     cityName: city?.name ?? 'نامشخص',
     citySubtitle: city?.admin1 ?? city?.country,
     coordinates: { lat, lon },
+    countryCode,
     warning: nearest.warning,
     error: nearest.warning
       ? `شهر/استان نزدیک در فاصله ${Math.round(nearest.distanceKm)} کیلومتر یافت شد؛ در صورت نیاز دستی تغییر دهید`

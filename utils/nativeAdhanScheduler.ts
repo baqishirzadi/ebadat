@@ -11,6 +11,8 @@ export interface NativeAdhanConfigInput {
   calculationMethod?: string;
   madhab?: string;
   policyVersion?: number;
+  scheduleFingerprint?: string;
+  maghribOffsetMinutes?: number;
   /** JSON string: { days: [{ dateKey, fajr, dhuhr, asr, maghrib, isha }] } */
   scheduleJson?: string;
   masterEnabled: boolean;
@@ -56,6 +58,8 @@ export interface NativeAdhanHealth {
   manufacturer: string;
   issues: string[];
   lastMaintenanceFiredAtMs: number | null;
+  scheduleFingerprint?: string | null;
+  maghribOffsetMinutes?: number;
 }
 
 export interface NativeAdhanFiredEvent {
@@ -158,6 +162,10 @@ function normalizeHealth(raw: NativeAdhanHealth): NativeAdhanHealth {
       raw.lastMaintenanceFiredAtMs == null || Number.isNaN(Number(raw.lastMaintenanceFiredAtMs))
         ? null
         : Number(raw.lastMaintenanceFiredAtMs),
+    scheduleFingerprint: raw.scheduleFingerprint == null ? null : String(raw.scheduleFingerprint),
+    maghribOffsetMinutes: Number.isFinite(Number(raw.maghribOffsetMinutes))
+      ? Number(raw.maghribOffsetMinutes)
+      : undefined,
   };
 }
 

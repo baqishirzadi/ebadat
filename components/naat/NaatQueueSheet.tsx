@@ -1,9 +1,10 @@
 import React from 'react';
-import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Modal, Pressable, StyleSheet, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Naat } from '@/types/naat';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { RtlText } from '@/components/ui/RtlText';
 
 type Props = {
   visible: boolean;
@@ -14,7 +15,8 @@ type Props = {
 };
 
 export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }: Props) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const isPashto = state.preferences.appLanguage === 'pashto';
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -26,10 +28,10 @@ export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }:
             <MaterialIcons name="close" size={22} color={theme.text} />
           </Pressable>
           <View style={styles.headerTextWrap}>
-            <Text style={[styles.title, { color: theme.text }]}>فهرست پخش</Text>
-            <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
-              {items.length} نعت در این نشست
-            </Text>
+            <RtlText align="center" style={[styles.title, { color: theme.text }]}>{isPashto ? 'د غږولو لړ' : 'فهرست پخش'}</RtlText>
+            <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
+              {isPashto ? `${items.length} نعت په دې لړ کې` : `${items.length} نعت در این نشست`}
+            </RtlText>
           </View>
         </View>
 
@@ -53,17 +55,17 @@ export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }:
                 ]}
               >
                 <View style={[styles.indexBubble, { backgroundColor: isActive ? theme.tint : theme.card }]}>
-                  <Text style={[styles.indexText, { color: isActive ? '#fff' : theme.textSecondary }]}>
+                  <RtlText align="center" wrap={false} style={[styles.indexText, { color: isActive ? '#fff' : theme.textSecondary }]}>
                     {index + 1}
-                  </Text>
+                  </RtlText>
                 </View>
                 <View style={styles.rowText}>
-                  <Text style={[styles.itemTitle, { color: theme.text }]} numberOfLines={1}>
-                    {item.title_fa}
-                  </Text>
-                  <Text style={[styles.itemSubtitle, { color: theme.textSecondary }]} numberOfLines={1}>
+                  <RtlText align="center" style={[styles.itemTitle, { color: theme.text }]} numberOfLines={2}>
+                    {isPashto ? item.title_ps : item.title_fa}
+                  </RtlText>
+                  <RtlText align="center" style={[styles.itemSubtitle, { color: theme.textSecondary }]} numberOfLines={1}>
                     {item.reciter_name}
-                  </Text>
+                  </RtlText>
                 </View>
                 {isActive && (
                   <View testID={`naat-queue-row-active-${index + 1}`}>
@@ -102,13 +104,15 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   header: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.md,
   },
   headerTextWrap: {
-    alignItems: 'flex-end',
+    flex: 1,
+    alignItems: 'center',
+    marginHorizontal: Spacing.sm,
   },
   closeButton: {
     width: 40,
@@ -121,18 +125,20 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.subtitle,
     fontWeight: '800',
+    textAlign: 'center',
   },
   subtitle: {
     marginTop: 2,
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
+    textAlign: 'center',
   },
   listContent: {
     gap: Spacing.sm,
     paddingBottom: Spacing.md,
   },
   row: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
     borderRadius: BorderRadius.md,
@@ -153,16 +159,18 @@ const styles = StyleSheet.create({
   },
   rowText: {
     flex: 1,
-    alignItems: 'flex-end',
+    alignItems: 'center',
   },
   itemTitle: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     fontWeight: '700',
+    textAlign: 'center',
   },
   itemSubtitle: {
     marginTop: 2,
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
+    textAlign: 'center',
   },
 });

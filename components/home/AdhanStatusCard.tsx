@@ -5,7 +5,6 @@ import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet } from 'react
 
 import {
   AdhanHealthStatusChip,
-  healthStatusFromReport,
   healthSummaryLine,
   type HealthVisualStatus,
 } from '@/components/prayer/AdhanHealthUi';
@@ -13,7 +12,11 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { buildAdhanHealthReport, openNotificationSettings } from '@/utils/adhanHealth';
+import {
+  buildAdhanHealthReport,
+  homeCardStatusFromReport,
+  openNotificationSettings,
+} from '@/utils/adhanHealth';
 
 const PASS_COLOR = '#1b7f4d';
 const FAIL_COLOR = '#c0392b';
@@ -50,7 +53,7 @@ export function AdhanStatusCard() {
     setLoading(true);
     try {
       const report = await buildAdhanHealthReport();
-      setStatus(healthStatusFromReport(report));
+      setStatus(homeCardStatusFromReport(report));
       setNotificationsEnabled(report.health.notificationsEnabled);
     } catch {
       setStatus('warning');

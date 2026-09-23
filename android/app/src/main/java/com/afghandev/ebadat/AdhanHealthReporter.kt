@@ -39,6 +39,8 @@ data class AdhanHealth(
   val manufacturer: String,
   val issues: List<String>,
   val lastMaintenanceFiredAtMs: Long?,
+  val scheduleFingerprint: String?,
+  val maghribOffsetMinutes: Long,
 ) {
   fun toWritableMap(): WritableMap {
     val map = Arguments.createMap()
@@ -59,6 +61,12 @@ data class AdhanHealth(
     } else {
       map.putNull("lastMaintenanceFiredAtMs")
     }
+    if (scheduleFingerprint != null) {
+      map.putString("scheduleFingerprint", scheduleFingerprint)
+    } else {
+      map.putNull("scheduleFingerprint")
+    }
+    map.putInt("maghribOffsetMinutes", maghribOffsetMinutes.toInt())
     val issuesArray = Arguments.createArray()
     issues.forEach { issuesArray.pushString(it) }
     map.putArray("issues", issuesArray)
@@ -81,7 +89,9 @@ object AdhanHealthReporter {
     val canScheduleExact = AdhanAlarmScheduler.canScheduleExactAlarms(appContext)
     val batteryOptimized = AdhanPowerHelper.isIgnoringBatteryOptimizations(appContext)
     val manufacturer = Build.MANUFACTURER.orEmpty()
-    val lastMaintenanceFiredAtMs = AdhanFiredLogStore.get(appContext).getLastMaintenanceFiredAtMs()
+    val firedLog = AdhanFiredLogStore.get(appContext)
+    val lastMaintenanceFiredAtMs = firedLog.getLastMaintenanceFiredAtMs()
+    val lastVerifiedDeliveryAtMs = firedLog.getLastVerifiedDeliveryAtMs()
 
     val issues = mutableListOf<String>()
     if (!notificationsEnabled) {
@@ -106,8 +116,8 @@ object AdhanHealthReporter {
       config != null &&
       config.masterEnabled &&
       notificationsEnabled &&
-      lastMaintenanceFiredAtMs != null &&
-      nowMs - lastMaintenanceFiredAtMs > MAINTENANCE_STALE_MS
+      (lastMaintenanceFiredAtMs == null || nowMs - lastMaintenanceFiredAtMs > MAINTENANCE_STALE_MS) &&
+      (lastVerifiedDeliveryAtMs == null || nowMs - lastVerifiedDeliveryAtMs > MAINTENANCE_STALE_MS)
     ) {
       issues.add("alarms_not_firing")
     }
@@ -131,6 +141,8 @@ object AdhanHealthReporter {
       manufacturer = manufacturer,
       issues = issues,
       lastMaintenanceFiredAtMs = lastMaintenanceFiredAtMs,
+      scheduleFingerprint = config?.scheduleFingerprint,
+      maghribOffsetMinutes = config?.maghribOffsetMinutes ?: 0L,
     )
   }
 }

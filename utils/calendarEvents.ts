@@ -17,7 +17,9 @@ export type CalendarEventCategory = 'islamic' | 'afghan' | 'international';
 export interface CalendarEvent {
   id: string;
   titleDari: string;
+  titlePashto: string;
   descriptionDari: string;
+  descriptionPashto: string;
   gregorianDate: Date;
   category: CalendarEventCategory;
   isFasting?: boolean;
@@ -55,7 +57,9 @@ function collectAllEventsForYears(hijriYear: number, shamsiYear: number): Calend
     events.push({
       id: `islamic-${hijriYear}-${day.month}-${day.day}`,
       titleDari: day.nameDari,
+      titlePashto: day.namePashto,
       descriptionDari: day.descriptionDari,
+      descriptionPashto: day.descriptionPashto,
       gregorianDate,
       category: 'islamic',
       isFasting: day.isFasting,
@@ -71,7 +75,9 @@ function collectAllEventsForYears(hijriYear: number, shamsiYear: number): Calend
     events.push({
       id: `afghan-${shamsiYear}-${holiday.shamsiMonth}-${holiday.shamsiDay}`,
       titleDari: holiday.nameDari,
+      titlePashto: holiday.namePashto,
       descriptionDari: holiday.descriptionDari,
+      descriptionPashto: holiday.descriptionPashto,
       gregorianDate,
       category: 'afghan',
       shamsiMonth: holiday.shamsiMonth,
@@ -147,8 +153,8 @@ export function getEventsForGregorianMonth(year: number, month: number, from: Da
   });
 }
 
-export function formatEventDateLabel(event: CalendarEvent): string {
-  const parts = formatEventDateParts(event);
+export function formatEventDateLabel(event: CalendarEvent, language: 'dari' | 'pashto' = 'dari'): string {
+  const parts = formatEventDateParts(event, language);
   if (parts.month) {
     const yearPart = parts.year ? ` ${parts.year}` : '';
     return `${parts.day} ${parts.month}${yearPart}`;
@@ -156,14 +162,17 @@ export function formatEventDateLabel(event: CalendarEvent): string {
   return parts.day;
 }
 
-export function formatEventDateParts(event: CalendarEvent): { day: string; month?: string; year?: string } {
+export function formatEventDateParts(
+  event: CalendarEvent,
+  language: 'dari' | 'pashto' = 'dari',
+): { day: string; month?: string; year?: string } {
   if (event.category === 'islamic' && event.hijriMonth && event.hijriDay) {
-    const monthName = HIJRI_MONTHS[event.hijriMonth - 1]?.dari ?? '';
+    const monthName = HIJRI_MONTHS[event.hijriMonth - 1]?.[language === 'pashto' ? 'pashto' : 'dari'] ?? '';
     return { day: toArabicNumerals(event.hijriDay), month: monthName };
   }
 
   const shamsi = gregorianToAfghanSolarHijri(event.gregorianDate);
-  const monthName = AFGHAN_SOLAR_MONTHS[shamsi.month - 1]?.dari ?? '';
+  const monthName = AFGHAN_SOLAR_MONTHS[shamsi.month - 1]?.[language === 'pashto' ? 'pashto' : 'dari'] ?? '';
   return {
     day: toArabicNumerals(shamsi.day),
     month: monthName,

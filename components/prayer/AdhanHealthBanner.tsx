@@ -51,12 +51,12 @@ export function AdhanHealthBanner({ onSelectCity: _onSelectCity }: AdhanHealthBa
           <MaterialIcons name="alarm" size={22} color={theme.warning} />
           <View style={styles.textBlock}>
             <Text style={[styles.body, { color: theme.text }]}>
-              {tAdhanPermission('adhanPermissions.banner.body')}
+              {tAdhanPermission('adhanPermissions.banner.body', 'fa')}
             </Text>
           </View>
         </View>
         <Button
-          label={tAdhanPermission('adhanPermissions.banner.button')}
+          label={tAdhanPermission('adhanPermissions.banner.button', 'fa')}
           onPress={() => handleExactAlarmAction().catch(() => {})}
         />
         <Pressable
@@ -64,7 +64,7 @@ export function AdhanHealthBanner({ onSelectCity: _onSelectCity }: AdhanHealthBa
           style={[styles.secondaryButton, { borderColor: theme.cardBorder }]}
         >
           <Text style={[styles.secondaryButtonText, { color: theme.text }]}>
-            {tAdhanPermission('adhanPermissions.health.fullCheck')}
+            {tAdhanPermission('adhanPermissions.health.fullCheck', 'fa')}
           </Text>
         </Pressable>
       </Card>

@@ -8,6 +8,7 @@ import { Spacing } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
+import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { PRAYER_LABELS_DARI, PrayerTimes } from '@/utils/prayerTimes';
 
 const PRAYERS = [
@@ -37,7 +38,12 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
           return (
             <PrayerChip
               key={prayer.key}
-              label={prayer.label}
+              label={displayPrayerLabel(
+                prayer.key,
+                prayer.label,
+                state.settings.selectedCity,
+                state.location,
+              )}
               time={time ? formatPrayerTime12h(time, timeZone) : '--:--'}
               active={active}
             />

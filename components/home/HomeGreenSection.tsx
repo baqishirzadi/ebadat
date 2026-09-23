@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import React, { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import { DreamInterpreterWidget } from '@/components/home/DreamInterpreterWidget';
 import { HanafiMuftiWidget } from '@/components/home/HanafiMuftiWidget';
 import { NextPrayerCard } from '@/components/home/NextPrayerCard';
 import { BorderRadius, NAAT_GRADIENT, RTL_CONTAINER, Spacing } from '@/constants/theme';
@@ -28,6 +29,8 @@ function HomeGreenSectionInner({ prayerTimes, onMuftiInputFocus }: HomeGreenSect
         <NextPrayerCard prayerTimes={prayerTimes} variant="compact" embedded />
         <View style={styles.divider} />
         <HanafiMuftiWidget onInputFocus={onMuftiInputFocus} />
+        <View style={styles.divider} />
+        <DreamInterpreterWidget onInputFocus={onMuftiInputFocus} />
       </LinearGradient>
     </View>
   );

@@ -9,6 +9,7 @@ export interface AfghanHoliday {
   nameDari: string;
   namePashto: string;
   descriptionDari: string;
+  descriptionPashto: string;
 }
 
 export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
@@ -18,6 +19,7 @@ export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
     nameDari: 'نوروز',
     namePashto: 'نوروز',
     descriptionDari: 'آغاز سال نو شمسی',
+    descriptionPashto: 'د لمریز کال پیل',
   },
   {
     shamsiMonth: 5,
@@ -25,6 +27,7 @@ export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
     nameDari: 'روز فتح',
     namePashto: 'د فتحې ورځ',
     descriptionDari: 'یاد روز فتح و پایان حضور نظامی خارجی',
+    descriptionPashto: 'د فتحې او د بهرنیو ځواکونو د حضور د پای یاد',
   },
   {
     shamsiMonth: 9,
@@ -32,6 +35,7 @@ export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
     nameDari: 'شب چله (یلدا)',
     namePashto: 'د چلې شپه (یلدا)',
     descriptionDari: 'بلندترین شب زمستان',
+    descriptionPashto: 'د ژمي تر ټولو اوږده شپه',
   },
   {
     shamsiMonth: 10,
@@ -39,6 +43,7 @@ export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
     nameDari: 'آغاز چله کلان',
     namePashto: 'د لویې چلې پیل',
     descriptionDari: 'آغاز چهل روز سرد بزرگ زمستان',
+    descriptionPashto: 'د ژمي د لویې څلوېښت ورځنۍ سړې دورې پیل',
   },
   {
     shamsiMonth: 11,
@@ -46,6 +51,7 @@ export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
     nameDari: 'آغاز چله خرد',
     namePashto: 'د وړې چلې پیل',
     descriptionDari: 'آغاز بیست روز پایانی سرما پس از چله کلان',
+    descriptionPashto: 'د لویې چلې وروسته د یخنۍ د وروستیو شلو ورځو پیل',
   },
   {
     shamsiMonth: 12,
@@ -53,6 +59,7 @@ export const AFGHAN_HOLIDAYS: AfghanHoliday[] = [
     nameDari: 'یادبود ۲۴ حوت هرات',
     namePashto: 'د هرات د ۲۴ حوت یاد',
     descriptionDari: 'یاد فرهنگی مردم هرات',
+    descriptionPashto: 'د هرات د خلکو کلتوري یاد',
   },
 ];
 

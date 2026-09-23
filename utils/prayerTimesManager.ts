@@ -5,8 +5,10 @@
  * Now supports international cities
  */
 
-import { Coordinates, CalculationMethod, PrayerTimes, Madhab } from 'adhan';
+import { Coordinates, CalculationMethod, PrayerTimes as AdhanPrayerTimes, Madhab, SunnahTimes } from 'adhan';
 import { getCity, ALL_CITIES, CityKey } from './cities';
+import { applyPrayerTimeOffsets } from './prayerOffsets';
+import type { Location as AppLocation, PrayerTimes as AppPrayerTimes } from './prayerTimes';
 
 // Legacy support: Keep old AFGHAN_CITIES for backward compatibility
 export const AFGHAN_CITIES = {
@@ -130,15 +132,34 @@ export function calculatePrayerTimesWithAdhan(
     params.madhab = Madhab.Hanafi;
     
     // Calculate prayer times
-    const prayerTimes = new PrayerTimes(coordinates, date, params);
-    
+    const prayerTimes = new AdhanPrayerTimes(coordinates, date, params);
+    const sunnahTimes = new SunnahTimes(prayerTimes);
+    const location: AppLocation = {
+      latitude: city.lat,
+      longitude: city.lon,
+      altitude: city.altitude,
+      timezone: city.timezone,
+      countryCode: city.country || (city.category === 'afghanistan' || String(cityKey).startsWith('afghanistan_') ? 'AF' : undefined),
+    };
+    const rawTimes: AppPrayerTimes = {
+      fajr: prayerTimes.fajr,
+      sunrise: prayerTimes.sunrise,
+      dhuhr: prayerTimes.dhuhr,
+      asr: prayerTimes.asr,
+      maghrib: prayerTimes.maghrib,
+      isha: prayerTimes.isha,
+      midnight: sunnahTimes.middleOfTheNight,
+      qiyam: sunnahTimes.lastThirdOfTheNight,
+    };
+    const adjustedTimes = applyPrayerTimeOffsets(rawTimes, cityKey, location);
+
     return {
-      fajr: toArabicNumeralsString(format12Hour(prayerTimes.fajr)),
-      sunrise: toArabicNumeralsString(format12Hour(prayerTimes.sunrise)),
-      dhuhr: toArabicNumeralsString(format12Hour(prayerTimes.dhuhr)),
-      asr: toArabicNumeralsString(format12Hour(prayerTimes.asr)), // Hanafi Asr (later)
-      maghrib: toArabicNumeralsString(format12Hour(prayerTimes.maghrib)),
-      isha: toArabicNumeralsString(format12Hour(prayerTimes.isha)),
+      fajr: toArabicNumeralsString(format12Hour(adjustedTimes.fajr)),
+      sunrise: toArabicNumeralsString(format12Hour(adjustedTimes.sunrise)),
+      dhuhr: toArabicNumeralsString(format12Hour(adjustedTimes.dhuhr)),
+      asr: toArabicNumeralsString(format12Hour(adjustedTimes.asr)), // Hanafi Asr (later)
+      maghrib: toArabicNumeralsString(format12Hour(adjustedTimes.maghrib)),
+      isha: toArabicNumeralsString(format12Hour(adjustedTimes.isha)),
       date: date.toLocaleDateString('fa-AF'),
     };
   } catch (error) {

@@ -23,20 +23,19 @@ export const WEEKDAYS_AR = [
   'السبت',
 ];
 
+/** Compact Gregorian month labels used consistently in app and widget dates. */
 export const GREG_MONTHS_EN = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+  'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
 ];
+
+export function formatGregorianDateCompact(
+  gregorianDate: Date,
+  formatNumber: (value: number) => string = String,
+): string {
+  const parts = getKabulDateParts(gregorianDate);
+  return `${formatNumber(parts.day)} ${GREG_MONTHS_EN[parts.month - 1]} ${formatNumber(parts.year)}`;
+}
 
 function padFa2(num: number): string {
   const s = toArabicNumerals(num);

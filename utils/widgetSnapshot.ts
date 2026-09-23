@@ -1,11 +1,13 @@
 import { addDaysToDateKey, getDateKeyInTimezone, nextLocalMidnightMs } from '@/utils/prayerTimezone';
-import { formatGregorianParts, formatShamsiSlash, WEEKDAYS_DARI } from '@/utils/calendarDisplay';
+import { formatGregorianDateCompact, formatShamsiSlash, WEEKDAYS_DARI } from '@/utils/calendarDisplay';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { toArabicNumerals } from '@/utils/numbers';
 import { PRAYER_LABELS_DARI, type PrayerTimes } from '@/utils/prayerTimes';
 import { PRAYER_POLICY_VERSION } from '@/utils/prayerCalculationPolicy';
+import { MAGHRIB_OFFSET_MINUTES } from '@/utils/adhanSchedulePolicy';
 import { getWidgetHadithForDateKey, type WidgetHadith } from '@/utils/widgetHadith';
+import type { DailyHadithLanguage } from '@/utils/ahadith/daily';
 
 export const WIDGET_SNAPSHOT_KEY = 'ebadat_widget_snapshot_v1';
 
@@ -62,8 +64,21 @@ export interface WidgetSnapshot {
 const PRAYER_ORDER: WidgetPrayerKey[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 function formatGregorianDisplay(gregorianDate: Date): string {
-  const greg = formatGregorianParts(gregorianDate);
-  return `${greg.day} ${greg.monthEn} ${gregorianDate.getUTCFullYear()}`;
+  return formatGregorianDateCompact(gregorianDate);
+}
+
+function refreshDayCalendarDisplays(day: WidgetDaySnapshot): WidgetDaySnapshot {
+  const date = new Date(`${day.dateKey}T12:00:00+04:30`);
+  if (!Number.isFinite(date.getTime())) return day;
+
+  const truth = getCalendarTruth(date);
+  return {
+    ...day,
+    weekdayDari: WEEKDAYS_DARI[truth.weekday],
+    shamsiDisplay: formatShamsiSlash(truth.shamsi),
+    hijriDisplay: `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNameDari} ${toArabicNumerals(truth.hijri.year)}`,
+    gregorianDisplay: formatGregorianDisplay(truth.gregorianDate),
+  };
 }
 
 function formatSunriseDisplay(prayerTimes: PrayerTimes, timezone: string): string {
@@ -76,9 +91,11 @@ function buildDaySnapshot(
   timezone: string,
   noonAnchor: Date,
   hadith?: WidgetHadith,
+  language: DailyHadithLanguage = 'dari',
+  maghribOffsetMinutes = 0,
 ): WidgetDaySnapshot {
   const truth = getCalendarTruth(noonAnchor);
-  const dailyHadith = hadith || getWidgetHadithForDateKey(dateKey);
+  const dailyHadith = hadith || getWidgetHadithForDateKey(dateKey, language);
   return {
     dateKey,
     weekdayDari: WEEKDAYS_DARI[truth.weekday],
@@ -90,6 +107,8 @@ function buildDaySnapshot(
     hadithSource: dailyHadith.source,
     prayers: PRAYER_ORDER.map((key) => ({
       key,
+      // The canonical time already includes the country policy. Keep the
+      // prayer label itself free of offset metadata.
       labelDari: PRAYER_LABELS_DARI[key],
       time12h: formatPrayerTime12h(prayerTimes[key], timezone),
       atMs: prayerTimes[key].getTime(),
@@ -155,6 +174,19 @@ function computeNextRefreshAtMs(
   return Math.min(nextPrayerMs, midnightMs);
 }
 
+function migrateLegacyMaghribEntries(
+  prayers: WidgetPrayerEntry[],
+  missingOffsetMinutes: number,
+  timezone: string,
+): WidgetPrayerEntry[] {
+  if (missingOffsetMinutes <= 0) return prayers;
+  return prayers.map((entry) => {
+    if (entry.key !== 'maghrib') return entry;
+    const atMs = entry.atMs + missingOffsetMinutes * 60_000;
+    return { ...entry, atMs, time12h: formatPrayerTime12h(new Date(atMs), timezone) };
+  });
+}
+
 export function buildWidgetSnapshot(
   prayerTimes: PrayerTimes,
   cityName: string,
@@ -167,18 +199,38 @@ export function buildWidgetSnapshot(
     asrMethod?: 'Standard' | 'Hanafi';
     maghribOffsetMinutes?: number;
     fixedDhuhrLocalTime?: string | null;
+    appLanguage?: DailyHadithLanguage;
     multiDay?: Array<{ dateKey: string; times: PrayerTimes; noonAnchor: Date }>;
   },
 ): WidgetSnapshot {
   const timezone = options?.timezone || 'Asia/Kabul';
+  const appLanguage = options?.appLanguage || 'dari';
+  const maghribOffsetMinutes =
+    options?.maghribOffsetMinutes ?? MAGHRIB_OFFSET_MINUTES;
   const todayKey = getDateKeyInTimezone(now, timezone);
 
   const days: WidgetDaySnapshot[] =
     options?.multiDay && options.multiDay.length > 0
       ? options.multiDay.map((day) =>
-          buildDaySnapshot(day.times, day.dateKey, timezone, day.noonAnchor),
+          buildDaySnapshot(
+            day.times,
+            day.dateKey,
+            timezone,
+            day.noonAnchor,
+            undefined,
+            appLanguage,
+            maghribOffsetMinutes,
+          ),
         )
-      : [buildDaySnapshot(prayerTimes, todayKey, timezone, now)];
+      : [buildDaySnapshot(
+          prayerTimes,
+          todayKey,
+          timezone,
+          now,
+          undefined,
+          appLanguage,
+          maghribOffsetMinutes,
+        )];
 
   const active = selectDay(days, now, timezone) || days[0];
   const previous = findPreviousDay(days, active);
@@ -195,7 +247,7 @@ export function buildWidgetSnapshot(
     altitude: options?.location?.altitude ?? 1791,
     calculationMethod: options?.calculationMethod || 'Karachi',
     asrMethod: options?.asrMethod || 'Hanafi',
-    maghribOffsetMinutes: options?.maghribOffsetMinutes ?? 0,
+    maghribOffsetMinutes,
     fixedDhuhrLocalTime: options?.fixedDhuhrLocalTime ?? null,
     sourceLabel: options?.sourceLabel,
     days,
@@ -215,7 +267,7 @@ export function buildWidgetSnapshot(
 export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new Date()): WidgetSnapshot {
   const timezone = snapshot.timezone || 'Asia/Kabul';
   const todayKey = getDateKeyInTimezone(now, timezone);
-  const days = Array.isArray(snapshot.days) && snapshot.days.length > 0
+  const storedDays = Array.isArray(snapshot.days) && snapshot.days.length > 0
     ? snapshot.days
     : [
         {
@@ -230,6 +282,7 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
           prayers: snapshot.prayers,
         },
       ];
+  const days = storedDays.map(refreshDayCalendarDisplays);
 
   const activeDay = days.find((day) => day.dateKey === todayKey);
   const active = activeDay || days[0];
@@ -328,7 +381,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         altitude: 1791,
         calculationMethod: 'Karachi',
         asrMethod: 'Hanafi',
-        maghribOffsetMinutes: 0,
+        maghribOffsetMinutes: MAGHRIB_OFFSET_MINUTES,
         fixedDhuhrLocalTime: null,
         days: [day],
         weekdayDari: day.weekdayDari,
@@ -353,30 +406,44 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       return null;
     }
 
+    const timezone = parsed.timezone || 'Asia/Kabul';
+    const previousOffset = Number.isFinite(parsed.maghribOffsetMinutes)
+      ? parsed.maghribOffsetMinutes!
+      : timezone === 'Asia/Kabul'
+        ? MAGHRIB_OFFSET_MINUTES
+        : 0;
+    const missingMaghribOffset = (parsed.policyVersion || 0) < PRAYER_POLICY_VERSION
+      ? Math.max(0, MAGHRIB_OFFSET_MINUTES - previousOffset)
+      : 0;
     const days = (parsed.days || []).map((day) => ({
       ...day,
       sunriseDisplay: day.sunriseDisplay || parsed.sunriseDisplay || '',
       hadithText: day.hadithText || getWidgetHadithForDateKey(day.dateKey).text,
       hadithSource: day.hadithSource || getWidgetHadithForDateKey(day.dateKey).source,
-      prayers: (day.prayers || []).filter((entry): entry is WidgetPrayerEntry =>
-        typeof entry?.atMs === 'number' &&
-        typeof entry?.key === 'string' &&
-        PRAYER_ORDER.includes(entry.key as WidgetPrayerKey),
+      prayers: migrateLegacyMaghribEntries(
+        (day.prayers || []).filter((entry): entry is WidgetPrayerEntry =>
+          typeof entry?.atMs === 'number' &&
+          typeof entry?.key === 'string' &&
+          PRAYER_ORDER.includes(entry.key as WidgetPrayerKey),
+        ),
+        missingMaghribOffset,
+        timezone,
       ),
     }));
+    const migratedPrayers = migrateLegacyMaghribEntries(prayers, missingMaghribOffset, timezone);
 
     return {
       version: 3,
       updatedAt: parsed.updatedAt || new Date().toISOString(),
       cityName: parsed.cityName || '',
-      timezone: parsed.timezone || 'Asia/Kabul',
-      policyVersion: parsed.policyVersion || PRAYER_POLICY_VERSION,
+      timezone,
+      policyVersion: PRAYER_POLICY_VERSION,
       latitude: Number.isFinite(parsed.latitude) ? parsed.latitude! : 34.5553,
       longitude: Number.isFinite(parsed.longitude) ? parsed.longitude! : 69.2075,
       altitude: Number.isFinite(parsed.altitude) ? parsed.altitude! : 1791,
       calculationMethod: parsed.calculationMethod || 'Karachi',
       asrMethod: parsed.asrMethod === 'Standard' ? 'Standard' : 'Hanafi',
-      maghribOffsetMinutes: Number.isFinite(parsed.maghribOffsetMinutes) ? parsed.maghribOffsetMinutes! : 0,
+      maghribOffsetMinutes: MAGHRIB_OFFSET_MINUTES,
       fixedDhuhrLocalTime: parsed.fixedDhuhrLocalTime ?? null,
       sourceLabel: parsed.sourceLabel,
       days,
@@ -391,7 +458,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         parsed.currentPrayer && PRAYER_ORDER.includes(parsed.currentPrayer)
           ? parsed.currentPrayer
           : null,
-      prayers: prayers.length > 0 ? prayers : days[0]?.prayers || [],
+      prayers: migratedPrayers.length > 0 ? migratedPrayers : days[0]?.prayers || [],
       nextRefreshAtMs: parsed.nextRefreshAtMs || Date.now() + 30 * 60 * 1000,
     };
   } catch {

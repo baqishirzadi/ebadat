@@ -22,6 +22,16 @@ function getLocalHadiths(): readonly Hadith[] {
   return localHadithsCache;
 }
 
+/**
+ * The daily feed is deliberately sourced only from the bundled, reviewed
+ * collection. Remote records remain useful for browsing and administration,
+ * but must never cause the Home/notification/widget Hadith to disagree while
+ * the app is offline or while a remote edit is still propagating.
+ */
+export function getCanonicalDailyHadiths(): Hadith[] {
+  return getLocalHadiths().slice();
+}
+
 let remoteHadiths: Hadith[] = [];
 let mergedCache: Hadith[] | null = null;
 let topicCache: Map<string, Hadith[]> | null = null;

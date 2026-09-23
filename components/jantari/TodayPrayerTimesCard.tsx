@@ -10,6 +10,7 @@ import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
+import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { PRAYER_LABELS_DARI } from '@/utils/prayerTimes';
 
 const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
@@ -30,7 +31,12 @@ function TodayPrayerTimesCardInner() {
         {PRAYER_KEYS.map((key) => (
           <PrayerChip
             key={key}
-            label={PRAYER_LABELS_DARI[key]}
+            label={displayPrayerLabel(
+              key,
+              PRAYER_LABELS_DARI[key],
+              state.settings.selectedCity,
+              state.location,
+            )}
             time={formatPrayerTime12h(prayerTimes[key], state.location?.timezone)}
             active={current === key}
           />

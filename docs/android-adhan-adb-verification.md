@@ -2,6 +2,28 @@
 
 Run on a physical device with USB debugging enabled.
 
+## Global Maghrib policy
+
+Every location uses its existing country-specific calculation settings, then
+schedules Maghrib exactly **300,000 ms (5 minutes)** after the raw API or
+calculated time. This includes all cities, GPS/custom locations, and unknown
+country codes. Canonical JavaScript schedules are already adjusted; Android
+consumes them verbatim. Native fallback calculation applies the delay once.
+
+Android maintains a 7-day rolling horizon. Daily maintenance at 00:05 and
+periodic WorkManager maintenance refresh future days across month and year
+boundaries. It does not attempt to store a full year of alarms.
+
+Run the automated regression before device testing:
+
+```bash
+npm run verify:afghanistan-adhan-policy
+```
+
+The native config includes a `scheduleFingerprint` and
+`maghribOffsetMinutes=5`; policy version 6 invalidates older canonical
+schedules, and changing the city, timezone, or schedule rebuilds the alarm set.
+
 ## Fresh install (Android 14+)
 
 1. Install release/debug APK.

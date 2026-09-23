@@ -6,15 +6,20 @@
 
 import React from 'react';
 import { Text, TextProps, StyleSheet } from 'react-native';
+import { useAppLanguage } from '@/context/AppContext';
+import { localizeUiText } from '@/utils/i18n/ui';
 
 export function CenteredText(props: TextProps) {
-  const { style, ...rest } = props;
+  const { style, children, ...rest } = props;
+  const language = useAppLanguage();
   
   return (
     <Text
       {...rest}
       style={[styles.centered, style]}
-    />
+    >
+      {localizeUiText(children, language) as React.ReactNode}
+    </Text>
   );
 }
 

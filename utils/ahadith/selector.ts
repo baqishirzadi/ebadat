@@ -1,7 +1,7 @@
 import { AhadithCalendarContext, DailyHadithSelection, DailySelectionReason, Hadith } from '@/types/hadith';
 import { getAhadithCalendarContext } from '@/utils/ahadith/calendarContext';
 import { getHadithsSortedByDailyIndex } from '@/utils/ahadith/repository';
-import { addDaysToKabulDate, getKabulEpochDay, getKabulNoon } from '@/utils/afghanistanCalendar';
+import { getKabulEpochDay } from '@/utils/afghanistanCalendar';
 
 const SPECIAL_PRIORITY: ReadonlyArray<NonNullable<Hadith['special_days']>[number]> = [
   'laylat_al_qadr',
@@ -14,9 +14,6 @@ const SPECIAL_PRIORITY: ReadonlyArray<NonNullable<Hadith['special_days']>[number
   'ashura',
   'ramadan',
 ];
-const CAMPAIGN_START = getKabulNoon(new Date('2026-05-23T12:00:00+04:30'));
-const CAMPAIGN_LENGTH_DAYS = 120;
-
 function sortDeterministic(items: Hadith[]): Hadith[] {
   return getHadithsSortedByDailyIndex(items);
 }
@@ -54,11 +51,6 @@ function getPrioritySpecialDayPool(
   return hadiths.filter((item) => matchesSpecialDays(item, context));
 }
 
-function getCampaignDayIndex(date: Date): number | null {
-  const dayIndex = getKabulEpochDay(date) - getKabulEpochDay(CAMPAIGN_START);
-  return dayIndex >= 0 && dayIndex < CAMPAIGN_LENGTH_DAYS ? dayIndex : null;
-}
-
 function getContextualPool(
   hadiths: Hadith[],
   context: AhadithCalendarContext
@@ -68,56 +60,19 @@ function getContextualPool(
     return { pool: specialPool, reason: 'special_days' };
   }
 
+  const hijriRangePool = context.hijriVerified
+    ? hadiths.filter((item) => matchesHijriRange(item, context))
+    : [];
+  if (hijriRangePool.length > 0) {
+    return { pool: hijriRangePool, reason: 'hijri_range' };
+  }
+
   const weekdayPool = hadiths.filter((item) => matchesWeekday(item, context));
   if (weekdayPool.length > 0) {
     return { pool: weekdayPool, reason: 'weekday_only' };
   }
 
-  const hijriRangePool = hadiths.filter((item) => matchesHijriRange(item, context));
-  if (hijriRangePool.length > 0) {
-    return { pool: hijriRangePool, reason: 'hijri_range' };
-  }
-
   return null;
-}
-
-function pickFirstUnused(pool: Hadith[], usedIds: Set<number>): Hadith | null {
-  const sorted = sortDeterministic(pool);
-  return sorted.find((item) => !usedIds.has(item.id)) ?? null;
-}
-
-function selectCampaignHadith(hadiths: Hadith[], date: Date): DailyHadithSelection | null {
-  const targetIndex = getCampaignDayIndex(date);
-  if (targetIndex === null) return null;
-
-  const usedIds = new Set<number>();
-  const sortedHadiths = sortDeterministic(hadiths);
-  const dailyPool = sortedHadiths.filter(
-    (item) => !item.special_days?.length && !item.hijri_range
-  );
-  let targetSelection: DailyHadithSelection | null = null;
-
-  for (let offset = 0; offset <= targetIndex; offset++) {
-    const candidateDate = addDaysToKabulDate(CAMPAIGN_START, offset);
-    const context = getAhadithCalendarContext(candidateDate);
-    const contextual = getContextualPool(hadiths, context);
-    const selected =
-      (contextual ? pickFirstUnused(contextual.pool, usedIds) : null) ??
-      pickFirstUnused(dailyPool, usedIds) ??
-      pickFirstUnused(sortedHadiths, usedIds) ??
-      pickFromPool(sortedHadiths, context);
-    const reason = contextual && contextual.pool.some((item) => item.id === selected.id)
-      ? contextual.reason
-      : 'daily_index';
-
-    usedIds.add(selected.id);
-
-    if (offset === targetIndex) {
-      targetSelection = buildSelection(selected, reason, context);
-    }
-  }
-
-  return targetSelection;
 }
 
 function matchesHijriRange(hadith: Hadith, context: AhadithCalendarContext): boolean {
@@ -146,27 +101,15 @@ export function selectDailyHadith(hadiths: Hadith[], date: Date = new Date()): D
   }
 
   const context = getAhadithCalendarContext(date);
-  const campaignSelection = selectCampaignHadith(hadiths, date);
-  if (campaignSelection) {
-    return campaignSelection;
+  const contextual = getContextualPool(hadiths, context);
+  if (contextual) {
+    return buildSelection(pickFromPool(contextual.pool, context), contextual.reason, context);
   }
 
-  const specialDayPool = getPrioritySpecialDayPool(hadiths, context);
-  if (specialDayPool.length > 0) {
-    return buildSelection(pickFromPool(specialDayPool, context), 'special_days', context);
-  }
-
-  const hijriRangePool = hadiths.filter((item) => matchesHijriRange(item, context));
-  if (hijriRangePool.length > 0) {
-    return buildSelection(pickFromPool(hijriRangePool, context), 'hijri_range', context);
-  }
-
-  const weekdayPool = hadiths.filter((item) => matchesWeekday(item, context));
-  if (weekdayPool.length > 0) {
-    return buildSelection(pickFromPool(weekdayPool, context), 'weekday_only', context);
-  }
-
-  const fallbackPool = sortDeterministic(hadiths);
+  const generalPool = hadiths.filter(
+    (item) => !item.special_days?.length && !item.hijri_range && !item.weekday_only,
+  );
+  const fallbackPool = sortDeterministic(generalPool.length > 0 ? generalPool : hadiths);
   const fallbackIndex = Math.abs(context.epochDay) % fallbackPool.length;
   return buildSelection(fallbackPool[fallbackIndex], 'daily_index', context);
 }

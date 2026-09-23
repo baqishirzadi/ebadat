@@ -8,17 +8,52 @@ struct WidgetPrayerTimes {
   let sunrise: Date
   let dhuhr: Date
   let asr: Date
+  let rawMaghrib: Date
   let maghrib: Date
   let isha: Date
 }
 
 enum WidgetPrayerCalculator {
+  private struct HijriDateParts {
+    let year: Int
+    let month: Int
+    let day: Int
+  }
+
+  private struct VerifiedAfghanHijriPeriod {
+    let startDateKey: String
+    let dayCount: Int
+    let hijriYear: Int
+    let hijriMonth: Int
+    let firstHijriDay: Int
+  }
+
+  private struct AfghanHijriCorrectionRange {
+    let startDateKey: String
+    let endDateKey: String
+    let shiftDays: Int
+  }
+
+  private static let maghribOffsetMinutes = 5
   private static let degToRad = Double.pi / 180
   private static let radToDeg = 180 / Double.pi
   private static let solarMonths = ["حمل", "ثور", "جوزا", "سرطان", "اسد", "سنبله", "میزان", "عقرب", "قوس", "جدی", "دلو", "حوت"]
   private static let hijriMonths = ["محرم", "صفر", "ربیع‌الاول", "ربیع‌الثانی", "جمادی‌الاول", "جمادی‌الثانی", "رجب", "شعبان", "رمضان", "شوال", "ذوالقعده", "ذوالحجه"]
-  private static let gregorianMonths = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  private static let gregorianMonths = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
   private static let weekdays = ["یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه"]
+  // Keep these verified periods aligned with utils/ahadith/officialAfghanistanCalendar.ts.
+  private static let verifiedAfghanHijriPeriods = [
+    VerifiedAfghanHijriPeriod(startDateKey: "2026-02-18", dayCount: 29, hijriYear: 1447, hijriMonth: 9, firstHijriDay: 1),
+    VerifiedAfghanHijriPeriod(startDateKey: "2026-03-19", dayCount: 30, hijriYear: 1447, hijriMonth: 10, firstHijriDay: 1),
+    VerifiedAfghanHijriPeriod(startDateKey: "2026-05-18", dayCount: 30, hijriYear: 1447, hijriMonth: 12, firstHijriDay: 1),
+    VerifiedAfghanHijriPeriod(startDateKey: "2026-06-17", dayCount: 10, hijriYear: 1448, hijriMonth: 1, firstHijriDay: 1),
+  ]
+  // Keep in sync with AFGHAN_HIJRI_CORRECTIONS in utils/islamicCalendar.ts.
+  private static let afghanHijriCorrectionRanges = [
+    AfghanHijriCorrectionRange(startDateKey: "2026-01-20", endDateKey: "2026-02-17", shiftDays: 2),
+    AfghanHijriCorrectionRange(startDateKey: "2026-04-18", endDateKey: "2026-05-17", shiftDays: 2),
+    AfghanHijriCorrectionRange(startDateKey: "2026-06-27", endDateKey: "2026-09-12", shiftDays: 1),
+  ]
 
   static func calculate(snapshot: WidgetSnapshot, date: Date) -> WidgetPrayerTimes {
     let timezone = TimeZone(identifier: snapshot.timezone.isEmpty ? "Asia/Kabul" : snapshot.timezone) ?? .current
@@ -54,9 +89,13 @@ enum WidgetPrayerCalculator {
     let sunrise = localDate(hour: sunriseHour, on: noon, calendar: calendar)
     let dhuhr = localDate(hour: noonHour, on: noon, calendar: calendar)
     let asr = localDate(hour: asrHour, on: noon, calendar: calendar)
-    let maghrib = localDate(hour: maghribHour, on: noon, calendar: calendar).addingTimeInterval(Double(snapshot.maghribOffsetMinutes) * 60)
+    // This calculator creates a raw offline time. Stored canonical day entries
+    // bypass this path, so the universal delay is applied exactly once here.
+    let rawMaghrib = localDate(hour: maghribHour, on: noon, calendar: calendar)
+    let maghrib = rawMaghrib
+      .addingTimeInterval(Double(maghribOffsetMinutes) * 60)
     let isha = localDate(hour: rawIshaHour, on: noon, calendar: calendar)
-    return WidgetPrayerTimes(fajr: fajr, sunrise: sunrise, dhuhr: dhuhr, asr: asr, maghrib: maghrib, isha: isha)
+    return WidgetPrayerTimes(fajr: fajr, sunrise: sunrise, dhuhr: dhuhr, asr: asr, rawMaghrib: rawMaghrib, maghrib: maghrib, isha: isha)
   }
 
   static func daySnapshot(snapshot: WidgetSnapshot, date: Date) -> WidgetDaySnapshot {
@@ -64,8 +103,8 @@ enum WidgetPrayerCalculator {
     var calendar = Calendar(identifier: .gregorian)
     calendar.timeZone = timezone
     let times = calculate(snapshot: snapshot, date: date)
-    let parts = calendar.dateComponents([.year, .month, .day, .weekday], from: date)
-    let dateKey = String(format: "%04d-%02d-%02d", parts.year ?? 0, parts.month ?? 0, parts.day ?? 0)
+    let dateKey = dateKey(for: date, timezone: timezone)
+    let labels = calendarLabels(date: date, timezone: timezone)
     let prayers: [WidgetPrayerEntry] = [
       ("fajr", "صبح", times.fajr),
       ("dhuhr", "ظهر", times.dhuhr),
@@ -73,16 +112,38 @@ enum WidgetPrayerCalculator {
       ("maghrib", "شام", times.maghrib),
       ("isha", "خفتن", times.isha)
     ].map { key, label, value in
-      WidgetPrayerEntry(key: key, labelDari: label, time12h: formatTime(value, timezone: timezone), atMs: value.timeIntervalSince1970 * 1000)
+      WidgetPrayerEntry(
+        key: key,
+        labelDari: label,
+        time12h: formatTime(value, timezone: timezone),
+        atMs: value.timeIntervalSince1970 * 1000
+      )
     }
     return WidgetDaySnapshot(
       dateKey: dateKey,
+      weekdayDari: labels.weekdayDari,
+      shamsiDisplay: labels.shamsiDisplay,
+      hijriDisplay: labels.hijriDisplay,
+      gregorianDisplay: labels.gregorianDisplay,
+      sunriseDisplay: "طلوع آفتاب \(formatTime(times.sunrise, timezone: timezone))",
+      prayers: prayers
+    )
+  }
+
+  static func calendarLabels(date: Date, timezone: TimeZone) -> (
+    weekdayDari: String,
+    shamsiDisplay: String,
+    hijriDisplay: String,
+    gregorianDisplay: String
+  ) {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = timezone
+    let parts = calendar.dateComponents([.year, .month, .day, .weekday], from: date)
+    return (
       weekdayDari: weekdays[max(0, min(6, (parts.weekday ?? 1) - 1))],
       shamsiDisplay: solarDisplay(date: date, timezone: timezone),
       hijriDisplay: hijriDisplay(date: date, timezone: timezone),
-      gregorianDisplay: gregorianDisplay(date: date, calendar: calendar),
-      sunriseDisplay: "طلوع آفتاب \(formatTime(times.sunrise, timezone: timezone))",
-      prayers: prayers
+      gregorianDisplay: gregorianDisplay(date: date, calendar: calendar)
     )
   }
 
@@ -181,11 +242,54 @@ enum WidgetPrayerCalculator {
 
   private static func hijriDisplay(date: Date, timezone: TimeZone) -> String {
     var calendar = Calendar(identifier: .islamicUmmAlQura)
-    calendar.timeZone = timezone
-    let shifted = calendar.date(byAdding: .day, value: -1, to: date) ?? date
-    let parts = calendar.dateComponents([.year, .month, .day], from: shifted)
-    let month = max(1, min(12, parts.month ?? 1))
-    return "\(persianDigits(String(parts.day ?? 1))) \(hijriMonths[month - 1]) \(persianDigits(String(parts.year ?? 0)))"
+    let kabulTimezone = TimeZone(identifier: "Asia/Kabul") ?? timezone
+    calendar.timeZone = kabulTimezone
+    let kabulDateKey = dateKey(for: date, timezone: kabulTimezone)
+    let parts: HijriDateParts
+    if let verified = verifiedAfghanHijriDate(dateKey: kabulDateKey) {
+      parts = verified
+    } else if kabulDateKey == "2026-09-13" {
+      parts = HijriDateParts(year: 1448, month: 3, day: 30)
+    } else {
+      let correction = afghanHijriCorrectionRanges.first(where: {
+        kabulDateKey >= $0.startDateKey && kabulDateKey <= $0.endDateKey
+      })?.shiftDays ?? 0
+      let shifted = calendar.date(byAdding: .day, value: -2 + correction, to: date) ?? date
+      let components = calendar.dateComponents([.year, .month, .day], from: shifted)
+      parts = HijriDateParts(
+        year: components.year ?? 0,
+        month: components.month ?? 1,
+        day: components.day ?? 1
+      )
+    }
+    let month = max(1, min(12, parts.month))
+    return "\(persianDigits(String(parts.day))) \(hijriMonths[month - 1]) \(persianDigits(String(parts.year)))"
+  }
+
+  private static func verifiedAfghanHijriDate(dateKey: String) -> HijriDateParts? {
+    guard let targetEpochDay = epochDay(for: dateKey) else { return nil }
+    for period in verifiedAfghanHijriPeriods {
+      guard let startEpochDay = epochDay(for: period.startDateKey) else { continue }
+      let offset = targetEpochDay - startEpochDay
+      guard offset >= 0 && offset < period.dayCount else { continue }
+      return HijriDateParts(
+        year: period.hijriYear,
+        month: period.hijriMonth,
+        day: period.firstHijriDay + offset
+      )
+    }
+    return nil
+  }
+
+  private static func epochDay(for dateKey: String) -> Int? {
+    let values = dateKey.split(separator: "-").compactMap { Int($0) }
+    guard values.count == 3 else { return nil }
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+    guard let date = calendar.date(from: DateComponents(year: values[0], month: values[1], day: values[2])) else {
+      return nil
+    }
+    return Int(floor(date.timeIntervalSince1970 / 86_400))
   }
 
   private static func persianDigits(_ value: String) -> String {

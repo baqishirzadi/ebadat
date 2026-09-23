@@ -3,6 +3,8 @@ import Foundation
 enum WidgetShared {
   static let appGroupId = "group.com.afghandev.ebadat"
   static let snapshotKey = "ebadat_widget_snapshot_v1"
+  private static let currentPrayerPolicyVersion = 6
+  private static let globalMaghribOffsetMinutes = 5
 
   static func loadSnapshot() -> WidgetSnapshot? {
     guard
@@ -134,7 +136,38 @@ enum WidgetShared {
     let timezone = TimeZone(identifier: snapshot.timezone.isEmpty ? "Asia/Kabul" : snapshot.timezone) ?? .current
     let key = WidgetPrayerCalculator.dateKey(for: date, timezone: timezone)
     if let storedDay = snapshot.days?.first(where: { $0.dateKey == key }) {
-      return storedDay
+      let refreshedDate = WidgetPrayerCalculator.calendarLabels(date: date, timezone: timezone)
+      var prayers = storedDay.prayers
+      if (snapshot.policyVersion ?? 0) < currentPrayerPolicyVersion {
+        let missingMinutes = max(0, globalMaghribOffsetMinutes - snapshot.maghribOffsetMinutes)
+        if missingMinutes > 0 {
+          prayers = storedDay.prayers.map { entry -> WidgetPrayerEntry in
+            guard entry.key == "maghrib" else { return entry }
+            let adjustedMs = entry.atMs + Double(missingMinutes * 60_000)
+            let formatter = DateFormatter()
+            formatter.timeZone = timezone
+            formatter.locale = Locale(identifier: "fa_AF")
+            formatter.dateFormat = "h:mm"
+            return WidgetPrayerEntry(
+              key: entry.key,
+              labelDari: entry.labelDari,
+              time12h: formatter.string(from: Date(timeIntervalSince1970: adjustedMs / 1000)),
+              atMs: adjustedMs
+            )
+          }
+        }
+      }
+      return WidgetDaySnapshot(
+        dateKey: storedDay.dateKey,
+        weekdayDari: refreshedDate.weekdayDari,
+        shamsiDisplay: refreshedDate.shamsiDisplay,
+        hijriDisplay: refreshedDate.hijriDisplay,
+        gregorianDisplay: refreshedDate.gregorianDisplay,
+        sunriseDisplay: storedDay.sunriseDisplay,
+        hadithText: storedDay.hadithText,
+        hadithSource: storedDay.hadithSource,
+        prayers: prayers
+      )
     }
     return WidgetPrayerCalculator.daySnapshot(snapshot: snapshot, date: date)
   }

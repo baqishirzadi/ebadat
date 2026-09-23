@@ -8,6 +8,7 @@ import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
+  AccessibilityInfo,
   Alert,
   Dimensions,
   FlatList,
@@ -16,6 +17,7 @@ import {
   Pressable,
   StyleSheet,
   TextInput,
+  ToastAndroid,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -63,7 +65,11 @@ function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
   const handleCopy = useCallback(async () => {
     try {
       await Clipboard.setStringAsync(normalizeMarkdownForClipboard(text));
-      Alert.alert('کپی شد', 'متن پاسخ در کلیپ‌بورد ذخیره شد.');
+      if (Platform.OS === 'android') {
+        ToastAndroid.show('کپی شد', ToastAndroid.SHORT);
+      } else {
+        void AccessibilityInfo.announceForAccessibility('متن پاسخ کپی شد');
+      }
     } catch {
       Alert.alert('خطا', 'کپی پاسخ انجام نشد.');
     }
@@ -93,13 +99,9 @@ function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
         ]}
         boldStyle={{ color: isUser ? '#fff' : theme.text }}
         headingStyle={{ color: isUser ? '#fff' : theme.text }}
+        onLongPress={!isUser ? () => void handleCopy() : undefined}
+        testID={!isUser ? 'mufti-assistant-message' : undefined}
       >{displayText}</MarkdownText>
-      {!isUser && (
-        <Pressable testID="mufti-copy-response" onPress={() => void handleCopy()} style={styles.copyButton} hitSlop={8}>
-          <MaterialIcons name="content-copy" size={16} color={theme.textSecondary} />
-          <RtlText align="center" style={[styles.copyLabel, { color: theme.textSecondary }]}>کپی</RtlText>
-        </Pressable>
-      )}
       </View>
     </RtlView>
   );
@@ -537,17 +539,6 @@ const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'right',
     writingDirection: 'rtl',
-  },
-  copyButton: {
-    alignSelf: 'flex-end',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginTop: Spacing.xs,
-  },
-  copyLabel: {
-    fontFamily: 'Vazirmatn',
-    fontSize: Typography.ui.caption,
   },
   typing: {
     ...persianCaptionText,

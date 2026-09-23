@@ -8,18 +8,20 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import type { TranslationLanguage } from '@/types/quran';
+import type { AppLanguage } from '@/types/quran';
 
-const OPTIONS: { key: TranslationLanguage; label: string; hint: string }[] = [
+const OPTIONS: { key: AppLanguage; label: string; hint: string }[] = [
   { key: 'dari', label: 'فارسی (دری)', hint: 'ترجمه و متن‌های برنامه به دری' },
   { key: 'pashto', label: 'پښتو', hint: 'ترجمه و متن‌های برنامه به پښتو' },
 ];
 
 export default function OnboardingLanguageScreen() {
-  const { theme, setTranslationLanguage } = useApp();
-  const [selected, setSelected] = useState<TranslationLanguage>('dari');
+  const { theme, setAppLanguage, setTranslationLanguage } = useApp();
+  const [selected, setSelected] = useState<AppLanguage>('dari');
 
   const handleContinue = () => {
+    setAppLanguage(selected);
+    // Keep the initial Quran translation aligned with the selected interface.
     setTranslationLanguage(selected);
     router.push('/onboarding/location' as never);
   };

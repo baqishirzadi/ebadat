@@ -12,6 +12,7 @@ import { useDua } from '@/context/DuaContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import adhkarData from '@/data/adhkar.json';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { RtlText } from '@/components/ui/RtlText';
 
 // Category type
 interface AdhkarCategory {
@@ -24,7 +25,8 @@ interface AdhkarCategory {
 }
 
 export default function AdhkarScreen() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const isPashto = state.preferences.appLanguage === 'pashto';
   const { unreadCount } = useDua();
   const router = useRouter();
   const categories = adhkarData.categories as AdhkarCategory[];
@@ -46,9 +48,9 @@ export default function AdhkarScreen() {
 
       {/* Featured Adhkar Section */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+        <RtlText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
           اذکار پرکاربرد
-        </Text>
+        </RtlText>
         <View style={styles.featuredGrid}>
           {categories
             .filter(c => featuredCategories.includes(c.id))
@@ -63,9 +65,9 @@ export default function AdhkarScreen() {
                 ]}
               >
                 <MaterialIcons name={category.icon as any} size={28} color="#fff" />
-                <Text style={styles.featuredTitle} numberOfLines={2}>{category.nameDari}</Text>
+                <RtlText style={styles.featuredTitle} numberOfLines={2}>{isPashto ? category.namePashto : category.nameDari}</RtlText>
                 <Text style={styles.featuredCount}>
-                  {(adhkarData.adhkar as Record<string, unknown[]>)[category.id]?.length || 0} ذکر
+                  {(adhkarData.adhkar as Record<string, unknown[]>)[category.id]?.length || 0} {isPashto ? 'ذکر' : 'ذکر'}
                 </Text>
               </Pressable>
             ))}
@@ -74,9 +76,9 @@ export default function AdhkarScreen() {
 
       {/* All Categories */}
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+        <RtlText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
           همه دسته‌بندی‌ها
-        </Text>
+        </RtlText>
         <View style={styles.categoriesList}>
           {categories.map((category) => (
             <Pressable
@@ -92,9 +94,9 @@ export default function AdhkarScreen() {
                 <MaterialIcons name={category.icon as any} size={24} color={category.color} />
               </View>
               <View style={styles.categoryInfo}>
-                <Text style={[styles.categoryName, { color: theme.text }]}>
-                  {category.nameDari}
-                </Text>
+                <RtlText style={[styles.categoryName, { color: theme.text }]}>
+                  {isPashto ? category.namePashto : category.nameDari}
+                </RtlText>
                 <Text style={[styles.categoryNameArabic, { color: theme.textSecondary }]}>
                   {category.nameArabic}
                 </Text>
@@ -118,8 +120,8 @@ export default function AdhkarScreen() {
         <View style={styles.counterContent}>
           <MaterialIcons name="touch-app" size={32} color="#fff" />
           <View style={styles.counterInfo}>
-            <Text style={styles.counterTitle}>شمارنده ذکر</Text>
-            <Text style={styles.counterSubtitle}>تسبیح دیجیتال</Text>
+            <RtlText style={styles.counterTitle}>شمارنده ذکر</RtlText>
+            <RtlText style={styles.counterSubtitle}>تسبیح دیجیتال</RtlText>
           </View>
         </View>
         <MaterialIcons name="chevron-left" size={28} color="rgba(255,255,255,0.8)" />
@@ -144,10 +146,10 @@ export default function AdhkarScreen() {
             ) : null}
           </View>
           <View style={styles.duaCardInfo}>
-            <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
-            <Text style={styles.duaCardSubtitle}>
+            <RtlText style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</RtlText>
+            <RtlText style={styles.duaCardSubtitle}>
               درخواست دعای خیر و راهنمایی شرعی؛ با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
-            </Text>
+            </RtlText>
           </View>
         </View>
         <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />

@@ -1,6 +1,6 @@
 /**
  * Generates parity fixtures from the JS adhan library for native PrayerTimeEngine tests.
- * Afghanistan: Maghrib +3, Dhuhr fixed 12:30 (including Friday). No global Friday 13:00.
+ * Global Maghrib +5; Afghanistan Dhuhr fixed 12:30 (including Friday). No global Friday 13:00.
  * Run: node scripts/verify-prayer-engine-parity.js
  */
 
@@ -51,8 +51,8 @@ function computeJsTimes(fixture) {
   let maghrib = times.maghrib;
   let dhuhr = times.dhuhr;
 
+  maghrib = new Date(maghrib.getTime() + 5 * 60 * 1000);
   if (fixture.country === 'AF') {
-    maghrib = new Date(maghrib.getTime() + 3 * 60 * 1000);
     dhuhr = buildLocal(fixture.date, '12:30', fixture.tz);
   }
 

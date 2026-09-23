@@ -23,8 +23,12 @@ if (!/(?:###|\{3\})/.test(renderer) || !/heading/.test(renderer)) {
 if (!/fontStyle:\s*'italic'/.test(renderer) || !/•/.test(renderer) || !/normalizeMarkdownForClipboard/.test(renderer)) {
   throw new Error('MarkdownText must render italic/bullet syntax and expose plain-text clipboard normalization');
 }
-if (!/expo-clipboard/.test(read('app/mufti-chat.tsx')) || !/mufti-copy-response/.test(read('app/mufti-chat.tsx'))) {
-  throw new Error('Mufti response copy action is missing');
+const muftiChat = read('app/mufti-chat.tsx');
+if (!/expo-clipboard/.test(muftiChat) || !/onLongPress={!isUser/.test(muftiChat) || !/normalizeMarkdownForClipboard/.test(muftiChat)) {
+  throw new Error('Mufti response long-press copy action is missing');
+}
+if (/mufti-copy-response/.test(muftiChat) || /کپی<\/RtlText>/.test(muftiChat)) {
+  throw new Error('Mufti response still exposes a persistent copy control');
 }
 if (!/expo-clipboard/.test(read('app/dua-request/[id].tsx')) || !/dua-copy-response/.test(read('app/dua-request/[id].tsx'))) {
   throw new Error('Dua response copy action is missing');

@@ -2061,5 +2061,165 @@
       "akhlaq"
     ],
     "daily_index": 120
+  },
+  {
+    "id": 121,
+    "arabic_text": "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى",
+    "dari_translation": "همانا اعمال به نیت‌ها بستگی دارد و هر انسان همان چیزی را دارد که نیت کرده است.",
+    "pashto_translation": "عملونه یوازې په نیتونو پورې تړلي دي، او هر انسان ته هغه څه دي چې نیت یې کړی وي.",
+    "source_book": "Bukhari",
+    "source_number": "1",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "intention",
+      "sincerity",
+      "worship"
+    ],
+    "daily_index": 121
+  },
+  {
+    "id": 122,
+    "arabic_text": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
+    "dari_translation": "هیچ‌یک از شما مؤمن کامل نیست تا برای برادرش همان را دوست بدارد که برای خود دوست می‌دارد.",
+    "pashto_translation": "له تاسو څخه هېڅوک تر هغه بشپړ مؤمن نه دی، څو د خپل ورور لپاره هغه څه خوښ نه کړي چې د ځان لپاره یې خوښوي.",
+    "source_book": "Muslim",
+    "source_number": "45",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "brotherhood",
+      "faith",
+      "akhlaq"
+    ],
+    "daily_index": 122
+  },
+  {
+    "id": 123,
+    "arabic_text": "إِنَّ اللَّهَ رَفِيقٌ يُحِبُّ الرِّفْقَ فِي الأَمْرِ كُلِّهِ",
+    "dari_translation": "همانا خداوند نرم‌خو است و نرمی را در همهٔ کارها دوست دارد.",
+    "pashto_translation": "بېشکه الله نرم دی او په ټولو چارو کې نرمي خوښوي.",
+    "source_book": "Muslim",
+    "source_number": "2593",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "gentleness",
+      "mercy",
+      "akhlaq"
+    ],
+    "daily_index": 123
+  },
+  {
+    "id": 124,
+    "arabic_text": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
+    "dari_translation": "هر کس به خدا و روز آخرت ایمان دارد، باید سخن نیک بگوید یا سکوت کند.",
+    "pashto_translation": "څوک چې پر الله او د آخرت پر ورځې ایمان لري، باید ښه خبره وکړي یا چوپ پاتې شي.",
+    "source_book": "Bukhari",
+    "source_number": "6018",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "speech",
+      "faith",
+      "manners"
+    ],
+    "daily_index": 124
+  },
+  {
+    "id": 125,
+    "arabic_text": "مَنْ سَلَكَ طَرِيقًا يَلْتَمِسُ فِيهِ عِلْمًا سَهَّلَ اللَّهُ لَهُ بِهِ طَرِيقًا إِلَى الْجَنَّةِ",
+    "dari_translation": "هر کس راهی را برای جستجوی دانش بپیماید، خداوند به سبب آن راهی به سوی بهشت برایش آسان می‌کند.",
+    "pashto_translation": "څوک چې د علم د لټون لپاره یوه لار ونیسي، الله به د همدې له امله د جنت لار ورته اسانه کړي.",
+    "source_book": "Muslim",
+    "source_number": "2699",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "knowledge",
+      "education",
+      "guidance"
+    ],
+    "daily_index": 125
+  },
+  {
+    "id": 126,
+    "arabic_text": "الدِّينُ النَّصِيحَةُ",
+    "dari_translation": "دین خیرخواهی و خیراندیشی است.",
+    "pashto_translation": "دین خیرخواهي ده.",
+    "source_book": "Muslim",
+    "source_number": "55",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "sincerity",
+      "advice",
+      "faith"
+    ],
+    "daily_index": 126
+  },
+  {
+    "id": 127,
+    "arabic_text": "أَحَبُّ الأَعْمَالِ إِلَى اللَّهِ أَدْوَمُهَا وَإِنْ قَلَّ",
+    "dari_translation": "محبوب‌ترین اعمال نزد خداوند، پایدارترین آن‌هاست؛ هرچند کم باشد.",
+    "pashto_translation": "الله ته تر ټولو ګران عمل هغه دی چې دوام ولري، که څه هم لږ وي.",
+    "source_book": "Bukhari",
+    "source_number": "6465",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "consistency",
+      "worship",
+      "good_deeds"
+    ],
+    "daily_index": 127
+  },
+  {
+    "id": 128,
+    "arabic_text": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ ضَيْفَهُ",
+    "dari_translation": "هر کس به خدا و روز آخرت ایمان دارد، باید مهمان خود را گرامی بدارد.",
+    "pashto_translation": "څوک چې پر الله او د آخرت پر ورځې ایمان لري، باید خپل مېلمه درناوی کړي.",
+    "source_book": "Bukhari",
+    "source_number": "6019",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "hospitality",
+      "manners",
+      "faith"
+    ],
+    "daily_index": 128
+  },
+  {
+    "id": 129,
+    "arabic_text": "الْمُؤْمِنُ الْقَوِيُّ خَيْرٌ وَأَحَبُّ إِلَى اللَّهِ مِنَ الْمُؤْمِنِ الضَّعِيفِ، وَفِي كُلٍّ خَيْرٌ",
+    "dari_translation": "مؤمن نیرومند نزد خداوند بهتر و محبوب‌تر از مؤمن ناتوان است، و در هر دو خیر وجود دارد.",
+    "pashto_translation": "زورور مؤمن الله ته له کمزوري مؤمنه غوره او ډېر ګران دی، او په دواړو کې خیر شته.",
+    "source_book": "Muslim",
+    "source_number": "2664",
+    "is_muttafaq": false,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "strength",
+      "faith",
+      "good_deeds"
+    ],
+    "daily_index": 129
+  },
+  {
+    "id": 130,
+    "arabic_text": "الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ",
+    "dari_translation": "مسلمان کسی است که مسلمانان از زبان و دست او در امان باشند.",
+    "pashto_translation": "مسلمان هغه دی چې مسلمانان یې له ژبې او لاسه خوندي وي.",
+    "source_book": "Bukhari",
+    "source_number": "10",
+    "is_muttafaq": true,
+    "authenticity_grade": "sahih",
+    "topics": [
+      "akhlaq",
+      "community",
+      "speech"
+    ],
+    "daily_index": 130
   }
 ]

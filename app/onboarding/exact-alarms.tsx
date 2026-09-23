@@ -60,18 +60,18 @@ export default function OnboardingExactAlarmsScreen() {
       testID="android-onboarding-exact-alarms"
       step={5}
       totalSteps={totalSteps}
-      title={tAdhanPermission('adhanPermissions.exactAlarm.title')}
-      subtitle={tAdhanPermission('adhanPermissions.exactAlarm.body')}
+      title={tAdhanPermission('adhanPermissions.exactAlarm.title', 'fa')}
+      subtitle={tAdhanPermission('adhanPermissions.exactAlarm.body', 'fa')}
       primaryLabel={
         granted
-          ? tAdhanPermission('adhanPermissions.continue')
+          ? tAdhanPermission('adhanPermissions.continue', 'fa')
           : busy
             ? '...'
-            : tAdhanPermission('adhanPermissions.exactAlarm.button')
+            : tAdhanPermission('adhanPermissions.exactAlarm.button', 'fa')
       }
       onPrimary={granted ? goNext : handleEnable}
       primaryDisabled={busy}
-      secondaryLabel={granted ? undefined : tAdhanPermission('adhanPermissions.exactAlarm.skip')}
+      secondaryLabel={granted ? undefined : tAdhanPermission('adhanPermissions.exactAlarm.skip', 'fa')}
       onSecondary={granted ? undefined : goNext}
       secondaryMuted
       showBack
@@ -83,8 +83,8 @@ export default function OnboardingExactAlarmsScreen() {
         </View>
         <RtlText align="center" style={[styles.status, { color: granted ? '#1b7f4d' : theme.warning }]}>
           {granted
-            ? `${tAdhanPermission('adhanPermissions.exactAlarm.granted')} ✅`
-            : `${tAdhanPermission('adhanPermissions.exactAlarm.denied')} ⚠️`}
+            ? `${tAdhanPermission('adhanPermissions.exactAlarm.granted', 'fa')} ✅`
+            : `${tAdhanPermission('adhanPermissions.exactAlarm.denied', 'fa')} ⚠️`}
         </RtlText>
         {!granted ? (
           <RtlText align="center" style={[styles.hint, { color: theme.textSecondary }]}>

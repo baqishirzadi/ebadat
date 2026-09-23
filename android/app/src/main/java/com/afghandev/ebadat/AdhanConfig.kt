@@ -13,6 +13,8 @@ data class AdhanConfig(
   val calculationMethod: String = "Karachi",
   val madhab: String = "Hanafi",
   val policyVersion: Long = 0L,
+  val scheduleFingerprint: String = "",
+  val maghribOffsetMinutes: Long = 5L,
   val scheduleJson: String? = null,
   val masterEnabled: Boolean,
   val fajrEnabled: Boolean,
@@ -93,6 +95,8 @@ data class AdhanConfig(
     json.put("calculationMethod", calculationMethod)
     json.put("madhab", madhab)
     json.put("policyVersion", policyVersion)
+    json.put("scheduleFingerprint", scheduleFingerprint)
+    json.put("maghribOffsetMinutes", maghribOffsetMinutes)
     json.put("scheduleJson", scheduleJson ?: "")
     json.put("masterEnabled", masterEnabled)
     json.put("fajrEnabled", fajrEnabled)
@@ -145,6 +149,14 @@ data class AdhanConfig(
         } else {
           0L
         },
+        scheduleFingerprint = map.getString("scheduleFingerprint")?.trim().orEmpty(),
+        maghribOffsetMinutes = if (!map.hasKey("policyVersion") || map.getDouble("policyVersion").toLong() < 6L) {
+          5L
+        } else if (map.hasKey("maghribOffsetMinutes") && !map.isNull("maghribOffsetMinutes")) {
+          map.getDouble("maghribOffsetMinutes").toLong()
+        } else {
+          5L
+        },
         scheduleJson = map.getString("scheduleJson")?.takeIf { it.isNotBlank() },
         masterEnabled = readBoolean(map, "masterEnabled", true),
         fajrEnabled = readBoolean(map, "fajrEnabled", true),
@@ -190,6 +202,8 @@ data class AdhanConfig(
           calculationMethod = json.optString("calculationMethod", "Karachi"),
           madhab = json.optString("madhab", "Hanafi"),
           policyVersion = json.optLong("policyVersion", 0L),
+          scheduleFingerprint = json.optString("scheduleFingerprint", ""),
+          maghribOffsetMinutes = if (json.optLong("policyVersion", 0L) < 6L) 5L else json.optLong("maghribOffsetMinutes", 5L),
           scheduleJson = json.optString("scheduleJson", "").takeIf { it.isNotBlank() },
           masterEnabled = json.optBoolean("masterEnabled", true),
           fajrEnabled = json.optBoolean("fajrEnabled", true),

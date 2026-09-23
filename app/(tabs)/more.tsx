@@ -22,8 +22,9 @@ import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { useStats } from '@/context/StatsContext';
-import { gregorianToAfghanSolarHijri, formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
-import { getKabulDateKey, getKabulDateParts, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
+import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
+import { getKabulDateKey, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
+import { formatGregorianDateCompact } from '@/utils/calendarDisplay';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import {
   formatEventDateLabel,
@@ -35,21 +36,7 @@ import { formatHijriDate } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
 
 const WEEKDAY_DARI = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
-const GREGORIAN_MONTHS_DARI = [
-  'جنوری',
-  'فبروری',
-  'مارچ',
-  'اپریل',
-  'می',
-  'جون',
-  'جولای',
-  'اگست',
-  'سپتمبر',
-  'اکتوبر',
-  'نومبر',
-  'دسمبر',
-];
-
+const WEEKDAY_PASHTO = ['یکشنبه', 'دوشنبه', 'سې شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
 type DeferredSectionKey = 'summary' | 'today' | 'upcoming' | 'support' | 'creatorMessage' | 'creatorCompany';
 
 interface UpcomingDayCard {
@@ -65,13 +52,13 @@ interface UpcomingDayCard {
   badgeColor: string;
 }
 
-function formatGregorianDateDari(date: Date): string {
-  const { day, month, year } = getKabulDateParts(date);
-  return `${toArabicNumerals(day)} ${GREGORIAN_MONTHS_DARI[month - 1]} ${toArabicNumerals(year)}`;
+function formatGregorianDate(date: Date): string {
+  return formatGregorianDateCompact(date, toArabicNumerals);
 }
 
 export default function MoreScreen() {
-  const { theme, themeMode } = useApp();
+  const { theme, themeMode, state } = useApp();
+  const language = state.preferences.appLanguage;
   const { dashboardSnapshot } = useStats();
   const { state: prayer } = usePrayer();
   const { unreadCount } = useDua();
@@ -81,7 +68,7 @@ export default function MoreScreen() {
 
   const kabulDayKey = getKabulDateKey(new Date());
   const truth = useMemo(() => getCalendarTruth(new Date()), [kabulDayKey]);
-  const weekdayLabel = WEEKDAY_DARI[truth.weekday];
+  const weekdayLabel = (language === 'pashto' ? WEEKDAY_PASHTO : WEEKDAY_DARI)[truth.weekday];
   const locationLabel = useMemo(
     () => prayer.locationName?.trim() || 'کابل',
     [prayer.locationName],
@@ -117,17 +104,17 @@ export default function MoreScreen() {
     let cancelled = false;
     const task = InteractionManager.runAfterInteractions(() => {
       const cards = getUpcomingEvents(truth.gregorianDate, 5).map((event) => {
-        const dateParts = formatEventDateParts(event);
+        const dateParts = formatEventDateParts(event, language);
         return {
           key: event.id,
-          nameDari: event.titleDari,
-          descriptionDari: event.descriptionDari,
+          nameDari: language === 'pashto' ? event.titlePashto : event.titleDari,
+          descriptionDari: language === 'pashto' ? event.descriptionPashto : event.descriptionDari,
           isFasting: event.isFasting,
           isEid: event.isEid,
-          dateLabel: formatEventDateLabel(event),
+          dateLabel: formatEventDateLabel(event, language),
           dateDay: dateParts.day,
           dateMonth: dateParts.month,
-          weekdayLabel: WEEKDAY_DARI[getKabulWeekdayIndex(event.gregorianDate)],
+          weekdayLabel: (language === 'pashto' ? WEEKDAY_PASHTO : WEEKDAY_DARI)[getKabulWeekdayIndex(event.gregorianDate)],
           badgeColor: getEventCategoryColor(event.category, theme),
         };
       });
@@ -141,10 +128,11 @@ export default function MoreScreen() {
       cancelled = true;
       task.cancel();
     };
-  }, [showDeferredSections, truth.gregorianDate, theme.tint, theme.bookmark]);
+  }, [language, showDeferredSections, truth.gregorianDate, theme.tint, theme.bookmark]);
 
   const quickActions = useMemo(() => [
     { icon: 'menu-book' as const, label: 'مفتی هوشمند حنفی', subtitle: 'سوال دینی و فقهی', route: '/mufti-chat' },
+    { icon: 'nights-stay' as const, label: 'تعبیر خواب اسلامی', subtitle: 'بر اساس قرآن و حدیث', route: '/dream-chat' },
     { icon: 'auto-awesome' as const, label: 'اذکار', subtitle: 'اذکار روزانه', route: '/(tabs)/adhkar' },
     { icon: 'format-quote' as const, label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith' },
     { icon: 'article' as const, label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles' },
@@ -255,13 +243,13 @@ export default function MoreScreen() {
 
           <CenteredText style={[styles.heroLead, { color: theme.textSecondary }]}>امروز در یک نگاه</CenteredText>
           <CenteredText style={[styles.heroHijri, { color: theme.text }]}>
-            {formatHijriDate(truth.hijri, 'dari')}
+            {formatHijriDate(truth.hijri, language)}
           </CenteredText>
           <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
-            {formatAfghanSolarHijriDateWithPersianNumerals(truth.shamsi, 'dari')}
+            {formatAfghanSolarHijriDateWithPersianNumerals(truth.shamsi, language)}
           </CenteredText>
           <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
-            {formatGregorianDateDari(truth.gregorianDate)}
+            {formatGregorianDate(truth.gregorianDate)}
           </CenteredText>
 
           <View style={styles.heroMetricsRow}>
@@ -311,6 +299,7 @@ export default function MoreScreen() {
       truth.shamsi,
       truth.gregorianDate,
       quickActions,
+      language,
       router,
     ],
   );

@@ -16,6 +16,7 @@ import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { getPrayerProgress } from '@/utils/prayerDisplay';
+import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { getNextPrayer, PrayerTimes } from '@/utils/prayerTimes';
 import { toArabicNumeralsString } from '@/utils/numbers';
 
@@ -156,12 +157,18 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
   const next = getNextPrayer(prayerTimes);
   const adhanOn = state.adhanPreferences.masterEnabled;
   const timeZone = state.location?.timezone;
+  const nextName = displayPrayerLabel(
+    next.key === 'sunrise' ? 'fajr' : next.key,
+    next.nameDari,
+    state.settings.selectedCity,
+    state.location,
+  );
 
   const compactContent = (
     <RtlView style={styles.compactContainer}>
       <RtlText align="center" style={styles.compactLabel}>نماز بعدی</RtlText>
       <RtlView style={styles.compactNameBlock}>
-        <RtlText align="center" wrap={false} style={styles.compactPrayerName}>{next.nameDari}</RtlText>
+        <RtlText align="center" wrap={false} style={styles.compactPrayerName}>{nextName}</RtlText>
         <RtlText align="center" wrap={false} style={[styles.compactTime, { color: theme.bookmark }]}>
           {formatPrayerTime12h(next.time, timeZone)}
         </RtlText>
@@ -176,7 +183,7 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
   const fullContent = (
     <>
       <RtlText align="center" style={styles.label}>نماز بعدی</RtlText>
-      <RtlText align="center" style={styles.prayerName}>{next.nameDari}</RtlText>
+      <RtlText align="center" style={styles.prayerName}>{nextName}</RtlText>
       <RtlText align="center" style={[styles.time, { color: theme.bookmark }]}>
         {formatPrayerTime12h(next.time, timeZone)}
       </RtlText>

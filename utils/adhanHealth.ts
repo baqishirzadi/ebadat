@@ -70,6 +70,27 @@ export interface AdhanHealthReport {
   overallStatus: 'healthy' | 'warning' | 'critical';
 }
 
+/**
+ * The Home card is intentionally a small readiness summary. On Android only
+ * the OS gates that can prevent delivery altogether belong here; detailed
+ * channel, autostart, schedule, and delivery diagnostics remain in Adhan
+ * Health. The app master switch is shown as a non-critical warning when the
+ * user has explicitly disabled Adhan.
+ */
+export function homeCardStatusFromReport(
+  report: AdhanHealthReport | null,
+): 'healthy' | 'warning' | 'critical' {
+  if (!report) return 'warning';
+  if (Platform.OS !== 'android') return report.overallStatus;
+
+  const { health } = report;
+  const sdkInt = typeof Platform.Version === 'number' ? Platform.Version : 0;
+  if (!health.notificationsEnabled) return 'critical';
+  if (sdkInt >= 31 && !health.canScheduleExactAlarms) return 'critical';
+  if (!health.isIgnoringBatteryOptimizations || !health.masterEnabled) return 'warning';
+  return 'healthy';
+}
+
 export function isAggressiveOem(manufacturer: string): boolean {
   const normalized = manufacturer.toLowerCase();
   return AGGRESSIVE_OEMS.some((oem) => normalized.includes(oem));
@@ -122,6 +143,7 @@ async function fetchIOSAdhanHealth(): Promise<AdhanHealthState> {
     manufacturer: 'apple',
     issues,
     lastMaintenanceFiredAtMs: null,
+    maghribOffsetMinutes: 5,
     shouldShowBatteryNudge: false,
     shouldShowHealthBanner,
     shouldShowExactAlarmBanner: false,
@@ -325,12 +347,12 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
 
   checks.push({
     id: 'notifications',
-    title: tAdhanPermission('adhanPermissions.health.notifications'),
+    title: tAdhanPermission('adhanPermissions.health.notifications', 'fa'),
     body: health.notificationsEnabled
       ? 'اعلان‌ها در سطح سیستم فعال است.'
       : 'اعلان‌ها غیرفعال است؛ بدون آن اذان زمان‌بندی نمی‌شود.',
     status: health.notificationsEnabled ? 'pass' : 'fail',
-    fixLabel: health.notificationsEnabled ? undefined : tAdhanPermission('adhanPermissions.health.fix'),
+    fixLabel: health.notificationsEnabled ? undefined : tAdhanPermission('adhanPermissions.health.fix', 'fa'),
   });
 
   if (Platform.OS === 'android' && channelHealth) {
@@ -352,25 +374,25 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
     if (health.canScheduleExactAlarms) {
       checks.push({
         id: 'exact_alarm',
-        title: tAdhanPermission('adhanPermissions.health.exactAlarm'),
+        title: tAdhanPermission('adhanPermissions.health.exactAlarm', 'fa'),
         body: 'دستگاه اجازه زمان‌بندی دقیق اذان را دارد.',
         status: 'pass',
       });
     } else if (isDegraded || (sdkInt >= 33 && health.scheduledAlarmCount > 0)) {
       checks.push({
         id: 'exact_alarm',
-        title: tAdhanPermission('adhanPermissions.health.exactAlarm'),
+        title: tAdhanPermission('adhanPermissions.health.exactAlarm', 'fa'),
         body: 'اذان با تأخیر احتمالی زمان‌بندی شده؛ برای دقت کامل «زنگ دقیق» را فعال کنید.',
         status: 'warn',
-        fixLabel: tAdhanPermission('adhanPermissions.health.fix'),
+        fixLabel: tAdhanPermission('adhanPermissions.health.fix', 'fa'),
       });
     } else {
       checks.push({
         id: 'exact_alarm',
-        title: tAdhanPermission('adhanPermissions.health.exactAlarm'),
+        title: tAdhanPermission('adhanPermissions.health.exactAlarm', 'fa'),
         body: 'اجازه «زنگ‌ها و یادآوری‌ها» فعال نیست؛ اذان ممکن است دقیق نباشد.',
         status: 'fail',
-        fixLabel: tAdhanPermission('adhanPermissions.health.fix'),
+        fixLabel: tAdhanPermission('adhanPermissions.health.fix', 'fa'),
       });
     }
   }
@@ -378,12 +400,12 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
   if (Platform.OS === 'android') {
     checks.push({
       id: 'battery',
-      title: tAdhanPermission('adhanPermissions.health.battery'),
+      title: tAdhanPermission('adhanPermissions.health.battery', 'fa'),
       body: health.isIgnoringBatteryOptimizations
         ? 'محدودیت باتری برای عبادت اعمال نشده است.'
         : 'بهینه‌سازی باتری ممکن است اذان را متوقف کند.',
       status: health.isIgnoringBatteryOptimizations ? 'pass' : 'warn',
-      fixLabel: health.isIgnoringBatteryOptimizations ? undefined : tAdhanPermission('adhanPermissions.health.fix'),
+      fixLabel: health.isIgnoringBatteryOptimizations ? undefined : tAdhanPermission('adhanPermissions.health.fix', 'fa'),
     });
 
     const autostartAck = await isOemAutostartAcknowledged();
@@ -391,12 +413,12 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
     if (isAggressiveOem(health.manufacturer)) {
       checks.push({
         id: 'autostart',
-        title: tAdhanPermission('adhanPermissions.health.autostart'),
+        title: tAdhanPermission('adhanPermissions.health.autostart', 'fa'),
         body: autostartAck
           ? 'راهنمای شروع خودکار بررسی شد.'
           : 'گوشی شما ممکن است اجرای پس‌زمینه را محدود کند.',
         status: needsAutostart ? 'warn' : 'pass',
-        fixLabel: needsAutostart ? tAdhanPermission('adhanPermissions.health.fix') : undefined,
+        fixLabel: needsAutostart ? tAdhanPermission('adhanPermissions.health.fix', 'fa') : undefined,
       });
     }
   }
@@ -424,6 +446,16 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
       fixLabel: alarmsOk ? undefined : 'بازیابی',
     });
   }
+
+  checks.push({
+    id: 'maghrib_policy',
+    title: 'تأخیر نماز شام',
+    body: health.maghribOffsetMinutes === 5
+      ? 'اذان شام در همهٔ موقعیت‌ها دقیقاً ۵ دقیقه پس از وقت محاسبه‌شده زمان‌بندی می‌شود.'
+      : 'سیاست تأخیر ۵ دقیقه‌ای نماز شام فعال نیست؛ زمان‌بندی را بازیابی کنید.',
+    status: health.maghribOffsetMinutes === 5 ? 'pass' : 'fail',
+    fixLabel: health.maghribOffsetMinutes === 5 ? undefined : 'بازیابی',
+  });
 
   if (Platform.OS === 'android' && health.masterEnabled) {
     const lastAdhan = firedEvents.find((event) => event.type === 'adhan' || event.type === 'system_test');

@@ -14,7 +14,7 @@ appId: com.afghandev.ebadat
       text: "به عبادت خوش آمدید"
     timeout: 25000
 - tapOn:
-    point: "50%,94%"
+    text: "شروع"
 - extendedWaitUntil:
     visible:
       text: "زبان برنامه"
@@ -24,6 +24,13 @@ appId: com.afghandev.ebadat
 - extendedWaitUntil:
     visible:
       text: "انتخاب کشور و شهر"
+    timeout: 15000
+- tapOn:
+    text: "جستجوی همه شهرها"
+- scrollUntilVisible:
+    element:
+      text: "کابل"
+    direction: DOWN
     timeout: 15000
 - tapOn:
     text: "کابل"
@@ -50,6 +57,10 @@ appId: com.afghandev.ebadat
 - assertNotVisible: "شروع خودکار"
 - tapOn:
     text: "فعلاً نه"
+    optional: true
+- tapOn:
+    text: "ادامه"
+    optional: true
 - extendedWaitUntil:
     visible:
       id: "android-onboarding-battery"
@@ -57,6 +68,10 @@ appId: com.afghandev.ebadat
 - assertNotVisible: "شروع خودکار"
 - tapOn:
     text: "بعداً"
+    optional: true
+- tapOn:
+    text: "ادامه"
+    optional: true
 - extendedWaitUntil:
     visible:
       text: "مفتی هوشمند حنفی"

@@ -101,12 +101,12 @@ export default function OnboardingNotificationsScreen() {
       testID="android-onboarding-notifications"
       step={4}
       totalSteps={totalSteps}
-      title={tAdhanPermission('adhanPermissions.notifications.title')}
-      subtitle={tAdhanPermission('adhanPermissions.notifications.body')}
-      primaryLabel={busy ? 'در حال آماده‌سازی...' : tAdhanPermission('adhanPermissions.notifications.button')}
+      title={tAdhanPermission('adhanPermissions.notifications.title', 'fa')}
+      subtitle={tAdhanPermission('adhanPermissions.notifications.body', 'fa')}
+      primaryLabel={busy ? 'در حال آماده‌سازی...' : tAdhanPermission('adhanPermissions.notifications.button', 'fa')}
       onPrimary={handleEnable}
       primaryDisabled={busy}
-      secondaryLabel={tAdhanPermission('adhanPermissions.notifications.skip')}
+      secondaryLabel={tAdhanPermission('adhanPermissions.notifications.skip', 'fa')}
       onSecondary={goNext}
       showBack
       scrollable={false}

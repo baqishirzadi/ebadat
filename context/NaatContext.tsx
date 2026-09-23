@@ -4,6 +4,7 @@ import NetInfo from '@react-native-community/netinfo';
 import * as FileSystem from 'expo-file-system/legacy';
 import TrackPlayer, { Event, State, type AddTrack } from 'react-native-track-player';
 import { useStartupPhase } from '@/context/StartupPhaseContext';
+import { useApp } from '@/context/AppContext';
 import { Naat, NaatDraft } from '@/types/naat';
 import {
   createDraftPayload,
@@ -20,6 +21,7 @@ import {
 import { getSupabaseClient, isSupabaseConfigured } from '@/utils/supabase';
 import fallbackNaatsData from '@/data/naats.fallback.json';
 import { ensureSharedTrackPlayerReady } from '@/utils/sharedTrackPlayer';
+import { shouldAutoDownloadCompletedNaat } from '@/utils/naatCompletion';
 
 type PlayerState = {
   current: Naat | null;
@@ -92,8 +94,10 @@ export function useNaat() {
   return useMemo(() => ({ ...catalog, ...playback }), [catalog, playback]);
 }
 
-const TRACK_POLL_INTERVAL_MS = Platform.OS === 'android' ? 800 : 500;
-const PLAYER_PROGRESS_QUANTIZE_MS = Platform.OS === 'android' ? 500 : 300;
+const TRACK_POLL_INTERVAL_MS = Platform.OS === 'android' ? 400 : 250;
+const PLAYER_PROGRESS_QUANTIZE_MS = Platform.OS === 'android' ? 250 : 100;
+const PROGRESS_EVENT_STALE_MS = 350;
+const RESUME_TAIL_RESET_MS = 3000;
 const DOWNLOAD_PROGRESS_THROTTLE_MS = 350;
 const SUPABASE_FETCH_TIMEOUT_MS = 8000;
 const PLAYBACK_START_TIMEOUT_MS = 12000;
@@ -183,7 +187,7 @@ async function loadAndStartTrackQueue(
 ): Promise<void> {
   await TrackPlayer.reset();
   await TrackPlayer.add(queueTracks);
-  await TrackPlayer.skip(selectedIndex, initialPosition > 0 ? initialPosition : undefined);
+  await TrackPlayer.skip(selectedIndex, initialPosition);
   await TrackPlayer.play();
 
   await waitForPlaybackStart(selectedId);
@@ -281,6 +285,8 @@ function quantizeMillis(value: number): number {
 
 export function NaatProvider({ children }: { children: React.ReactNode }) {
   const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
+  const { state: appState } = useApp();
+  const isPashto = appState.preferences.appLanguage === 'pashto';
   const [naats, setNaats] = useState<Naat[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -299,6 +305,14 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const naatsRef = useRef<Naat[]>([]);
   const sessionRef = useRef<NaatSessionState>(EMPTY_SESSION);
   const lastSavedPosition = useRef<number>(0);
+  const completedNaatIdRef = useRef<string | null>(null);
+  const completionEligibleByNaatRef = useRef<Record<string, boolean>>({});
+  const completionDurationByNaatRef = useRef<Record<string, number>>({});
+  const autoDownloadTriggeredRef = useRef<Set<string>>(new Set());
+  const downloadTasksRef = useRef<Map<string, Promise<void>>>(new Map());
+  const autoDownloadByIdRef = useRef<(id: string) => void>(() => {});
+  const lastProgressEventAtRef = useRef(0);
+  const progressGenerationRef = useRef(0);
   const lastPlaybackErrorAt = useRef<number>(0);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const downloadProgressTickRef = useRef<Record<string, number>>({});
@@ -357,9 +371,10 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           source = 'supabase';
           await saveCatalog(catalog);
         } catch (remoteError) {
-          const reason =
-            remoteError instanceof Error ? remoteError.message : 'remote-unknown-error';
-          errorMessage = `همگام‌سازی نعت انجام نشد (${reason}).`;
+          // A provider error can contain an internal URL or database detail.
+          // The catalogue has already fallen back safely, so give the listener
+          // a useful recovery message instead of leaking a technical error.
+          errorMessage = 'همگام‌سازی نعت فعلاً انجام نشد؛ فهرست ذخیره‌شده نمایش داده می‌شود.';
         }
       } else {
         errorMessage = 'اتصال آنلاین نعت تنظیم نشده است.';
@@ -441,6 +456,16 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       }
 
       currentNaatRef.current = activeNaat;
+      if (completedNaatIdRef.current === activeNaat.id) {
+        setPlayer((prev) => ({
+          ...prev,
+          current: activeNaat,
+          isPlaying: false,
+          positionMillis: 0,
+          durationMillis: prev.durationMillis || (activeNaat.duration_seconds ?? 0) * 1000,
+        }));
+        return;
+      }
       const progress = await TrackPlayer.getProgress();
       let queueIds = sessionRef.current.queueIds;
       if (!queueIds.includes(activeNaat.id)) {
@@ -656,6 +681,35 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     return tracks;
   }, [getLocalUriIfExists]);
 
+  const maybeAutoDownloadCompletedNaat = useCallback((
+    naat: Naat | null,
+    positionSeconds: number,
+    durationSeconds: number,
+  ) => {
+    if (!naat) return false;
+
+    const eligible = completionEligibleByNaatRef.current[naat.id] === true;
+    completionEligibleByNaatRef.current[naat.id] = false;
+    const knownDuration = Math.max(
+      durationSeconds || 0,
+      completionDurationByNaatRef.current[naat.id] || 0,
+      naat.duration_seconds || 0,
+    );
+    if (!shouldAutoDownloadCompletedNaat({
+      eligible,
+      positionSeconds,
+      durationSeconds: knownDuration,
+    })) {
+      return false;
+    }
+
+    if (!autoDownloadTriggeredRef.current.has(naat.id)) {
+      autoDownloadTriggeredRef.current.add(naat.id);
+      autoDownloadByIdRef.current(naat.id);
+    }
+    return true;
+  }, []);
+
   useEffect(() => {
     if (!playerReady) return;
     syncPlayerSnapshot().catch(() => {});
@@ -679,9 +733,29 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     if (!playerReady) return;
 
     const activeTrackSub = TrackPlayer.addEventListener(Event.PlaybackActiveTrackChanged, async (event) => {
+      const previousNaat = findNaatByTrack(event.lastTrack);
+      const previousTrackDuration = Number((event.lastTrack as { duration?: number } | undefined)?.duration) || 0;
+      if (previousNaat) {
+        completionDurationByNaatRef.current[previousNaat.id] = Math.max(
+          completionDurationByNaatRef.current[previousNaat.id] || 0,
+          previousTrackDuration,
+          previousNaat.duration_seconds || 0,
+        );
+        maybeAutoDownloadCompletedNaat(
+          previousNaat,
+          event.lastPosition,
+          completionDurationByNaatRef.current[previousNaat.id],
+        );
+      }
+
       const nextNaat = findNaatByTrack(event.track);
+      if (nextNaat && completedNaatIdRef.current !== nextNaat.id) {
+        completedNaatIdRef.current = null;
+      }
       currentNaatRef.current = nextNaat;
       lastSavedPosition.current = 0;
+      lastProgressEventAtRef.current = 0;
+      progressGenerationRef.current += 1;
       await syncPlayerSnapshot(event.track);
     });
 
@@ -694,6 +768,9 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     });
 
     const playbackErrorSub = TrackPlayer.addEventListener(Event.PlaybackError, (event) => {
+      if (currentNaatRef.current) {
+        completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+      }
       if (__DEV__) {
         console.log('[NaatPlayer] Native playback error:', event);
       }
@@ -702,16 +779,39 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       const now = Date.now();
       if (now - lastPlaybackErrorAt.current > 5000) {
         lastPlaybackErrorAt.current = now;
-        Alert.alert('خطا', 'پخش نعت قطع شد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.');
+        Alert.alert(
+          isPashto ? 'تېروتنه' : 'خطا',
+          isPashto
+            ? 'د نعت غږول ودرېدل. انټرنېټ یا غږیزه فایل وګورئ.'
+            : 'پخش نعت قطع شد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.',
+        );
       }
+    });
+
+    const queueEndedSub = TrackPlayer.addEventListener(Event.PlaybackQueueEnded, (event) => {
+      const finished = currentNaatRef.current;
+      if (finished) {
+        const activeTrackDuration = completionDurationByNaatRef.current[finished.id] || finished.duration_seconds || 0;
+        maybeAutoDownloadCompletedNaat(finished, event.position, activeTrackDuration);
+        completedNaatIdRef.current = finished.id;
+        lastSavedPosition.current = 0;
+        upsertLocalMeta(finished.id, { lastPositionMillis: 0 }).catch(() => {});
+      }
+      progressGenerationRef.current += 1;
+      setPlayer((prev) => ({
+        ...prev,
+        isPlaying: false,
+        positionMillis: 0,
+      }));
     });
 
     return () => {
       activeTrackSub.remove();
       playbackStateSub.remove();
       playbackErrorSub.remove();
+      queueEndedSub.remove();
     };
-  }, [playerReady, findNaatByTrack, syncPlayerSnapshot]);
+  }, [playerReady, findNaatByTrack, maybeAutoDownloadCompletedNaat, syncPlayerSnapshot]);
 
   // Remote notification / lock-screen controls (main app context)
   useEffect(() => {
@@ -725,15 +825,37 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         TrackPlayer.pause().catch(() => {});
       }),
       TrackPlayer.addEventListener(Event.RemoteStop, () => {
+        if (currentNaatRef.current) {
+          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+        }
         TrackPlayer.reset().catch(() => {});
       }),
       TrackPlayer.addEventListener(Event.RemoteSeek, (e) => {
+        if (currentNaatRef.current) {
+          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+        }
         TrackPlayer.seekTo(e.position).catch(() => {});
       }),
       TrackPlayer.addEventListener(Event.RemoteNext, () => {
+        if (currentNaatRef.current) {
+          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+        }
         TrackPlayer.skipToNext().catch(() => {});
       }),
+      TrackPlayer.addEventListener(Event.RemoteJumpForward, () => {
+        if (currentNaatRef.current) {
+          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+        }
+      }),
+      TrackPlayer.addEventListener(Event.RemoteJumpBackward, () => {
+        if (currentNaatRef.current) {
+          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+        }
+      }),
       TrackPlayer.addEventListener(Event.RemotePrevious, async () => {
+        if (currentNaatRef.current) {
+          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+        }
         try {
           const progress = await TrackPlayer.getProgress();
           if (progress.position > 3) {
@@ -750,7 +872,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     return () => {
       subs.forEach((sub) => sub.remove());
     };
-  }, [playerReady]);
+  }, [playerReady, isPashto]);
 
   // Progress updates from native player (works in background too)
   useEffect(() => {
@@ -759,11 +881,20 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     const progressSub = TrackPlayer.addEventListener(Event.PlaybackProgressUpdated, (event) => {
       const resolvedNaat = currentNaatRef.current;
       if (!resolvedNaat) return;
+      if (completedNaatIdRef.current === resolvedNaat.id) return;
 
+      lastProgressEventAtRef.current = Date.now();
+      progressGenerationRef.current += 1;
       const positionMillis = quantizeMillis(Math.floor(event.position * 1000));
       const durationMillis = event.duration > 0
         ? Math.floor(event.duration * 1000)
         : (resolvedNaat.duration_seconds ?? 0) * 1000;
+      if (durationMillis > 0) {
+        completionDurationByNaatRef.current[resolvedNaat.id] = Math.max(
+          completionDurationByNaatRef.current[resolvedNaat.id] || 0,
+          durationMillis / 1000,
+        );
+      }
 
       if (positionMillis - lastSavedPosition.current > 5000) {
         lastSavedPosition.current = positionMillis;
@@ -802,9 +933,12 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     const poll = async () => {
       try {
         if (AppState.currentState !== 'active') return;
+        if (Date.now() - lastProgressEventAtRef.current < PROGRESS_EVENT_STALE_MS) return;
+        const generationAtStart = progressGenerationRef.current;
         const activeTrack = await TrackPlayer.getActiveTrack();
         const resolvedNaat = findNaatByTrack(activeTrack) ?? currentNaatRef.current;
         if (!resolvedNaat) return;
+        if (completedNaatIdRef.current === resolvedNaat.id) return;
 
         currentNaatRef.current = resolvedNaat;
 
@@ -813,10 +947,24 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           TrackPlayer.getPlaybackState(),
         ]);
 
+        // A native progress event or track change may have arrived while the
+        // asynchronous snapshot was in flight. Never let that older poll
+        // overwrite the newer position.
+        if (generationAtStart !== progressGenerationRef.current ||
+          Date.now() - lastProgressEventAtRef.current < PROGRESS_EVENT_STALE_MS) {
+          return;
+        }
+
         const positionMillis = quantizeMillis(Math.floor(progress.position * 1000));
         const durationMillis = progress.duration > 0
           ? Math.floor(progress.duration * 1000)
           : (resolvedNaat.duration_seconds ?? 0) * 1000;
+        if (durationMillis > 0) {
+          completionDurationByNaatRef.current[resolvedNaat.id] = Math.max(
+            completionDurationByNaatRef.current[resolvedNaat.id] || 0,
+            durationMillis / 1000,
+          );
+        }
 
         if (positionMillis - lastSavedPosition.current > 5000) {
           lastSavedPosition.current = positionMillis;
@@ -944,8 +1092,25 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       // persisted 1.25x/1.5x/2x setting.
       await TrackPlayer.setRate(1);
 
-      const initialPosition = Math.max(0, (selectedNaat.lastPositionMillis ?? 0) / 1000);
+      // Selecting a Naat is an explicit replay action: always start at zero.
+      // Pause/Resume uses the separate resume() path and keeps its position.
+      completedNaatIdRef.current = null;
+      currentNaatRef.current = null;
+      lastSavedPosition.current = 0;
+      progressGenerationRef.current += 1;
+      await upsertLocalMeta(selectedNaat.id, { lastPositionMillis: 0 });
+      const initialPositionMillis = 0;
+      const initialPosition = 0;
       const queueIds = queueTracks.map((track) => String(track.id));
+      completionEligibleByNaatRef.current = Object.fromEntries(queueIds.map((id) => [id, false]));
+      completionDurationByNaatRef.current = {};
+      for (const track of queueTracks) {
+        const id = String(track.id);
+        const matchingNaat = queueItems.find((item) => item.id === id) ?? selectedNaat;
+        const trackDuration = Number((track as { duration?: number }).duration) || matchingNaat.duration_seconds || 0;
+        if (trackDuration > 0) completionDurationByNaatRef.current[id] = trackDuration;
+        autoDownloadTriggeredRef.current.delete(id);
+      }
 
       try {
         await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
@@ -979,11 +1144,15 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
+      // Enable completion downloads only after the new queue has started. This
+      // prevents the reset of a previously active track from looking like a
+      // completed listen in the newly selected queue.
+      for (const id of queueIds) completionEligibleByNaatRef.current[id] = true;
       currentNaatRef.current = selectedNaat;
-      lastSavedPosition.current = selectedNaat.lastPositionMillis ?? 0;
+      lastSavedPosition.current = initialPositionMillis;
       setSession(makeSession(queueIds, selectedNaat.id, source));
       setPlayer((prev) => {
-        const nextPosition = quantizeMillis(selectedNaat.lastPositionMillis ?? 0);
+        const nextPosition = quantizeMillis(initialPositionMillis);
         const nextDuration = (selectedNaat.duration_seconds ?? 0) * 1000;
         if (
           prev.current?.id === selectedNaat.id &&
@@ -1003,19 +1172,24 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       });
     } catch (error: any) {
       if (error?.message === 'offline') {
-        Alert.alert('آفلاین', 'ابتدا دانلود نمایید');
+        Alert.alert(isPashto ? 'بې‌انټرنېټه' : 'آفلاین', isPashto ? 'لومړی نعت ښکته کړئ.' : 'ابتدا دانلود نمایید');
         return;
       }
       if (error?.message === 'no-audio') {
-        Alert.alert('خطا', 'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.');
+        Alert.alert(isPashto ? 'تېروتنه' : 'خطا', isPashto ? 'د غږیز فایل لینک ونه موندل شو.' : 'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.');
         return;
       }
       if (__DEV__) {
         console.log('[NaatPlayer] Playback unavailable:', getErrorMessage(error));
       }
-      Alert.alert('خطا', 'پخش نعت شروع نشد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.');
+      Alert.alert(
+        isPashto ? 'تېروتنه' : 'خطا',
+        isPashto
+          ? 'د نعت غږول پیل نه شول. انټرنېټ یا غږیزه فایل وګورئ.'
+          : 'پخش نعت شروع نشد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.',
+      );
     }
-  }, [ensurePlayerReady, resolveAudioSource, cacheNaatForPlayback, buildQueueTracks]);
+  }, [ensurePlayerReady, resolveAudioSource, cacheNaatForPlayback, buildQueueTracks, isPashto]);
 
   const play = useCallback(async (naat: Naat) => {
     const sourceList = naatsRef.current.length > 0 ? naatsRef.current : [naat];
@@ -1038,8 +1212,14 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       await ensurePlayerReady('resume');
       const progress = await TrackPlayer.getProgress();
       const duration = (currentNaatRef.current?.duration_seconds ?? 0) * 1000;
-      if (duration > 0 && progress.position * 1000 >= duration - 500) {
+      const isCompleted = completedNaatIdRef.current === currentNaatRef.current?.id;
+      if (isCompleted || (duration > 0 && progress.position * 1000 >= duration - RESUME_TAIL_RESET_MS)) {
         await TrackPlayer.seekTo(0);
+        if (currentNaatRef.current) {
+          completedNaatIdRef.current = null;
+          lastSavedPosition.current = 0;
+          await upsertLocalMeta(currentNaatRef.current.id, { lastPositionMillis: 0 });
+        }
       }
       await TrackPlayer.play();
       setPlayer((prev) => (prev.isPlaying ? prev : { ...prev, isPlaying: true }));
@@ -1059,6 +1239,9 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const skipNext = useCallback(async () => {
     try {
       if (!sessionRef.current.canSkipNext) return;
+      if (currentNaatRef.current) {
+        completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+      }
       await ensurePlayerReady('skip-next');
       await TrackPlayer.skipToNext();
       await TrackPlayer.play();
@@ -1071,6 +1254,9 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const skipPrevious = useCallback(async () => {
     try {
       await ensurePlayerReady('skip-previous');
+      if (currentNaatRef.current) {
+        completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+      }
       const progress = await TrackPlayer.getProgress();
       if (progress.position > 3 || !sessionRef.current.canSkipPrevious) {
         await TrackPlayer.seekTo(0);
@@ -1090,6 +1276,9 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   }, [ensurePlayerReady, syncPlayerSnapshot]);
 
   const stop = useCallback(async () => {
+    if (currentNaatRef.current) {
+      completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+    }
     try {
       await ensurePlayerReady('stop');
       await TrackPlayer.reset();
@@ -1102,6 +1291,9 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   }, [ensurePlayerReady]);
 
   const seek = useCallback((millis: number) => {
+    if (currentNaatRef.current) {
+      completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+    }
     const dur = player.durationMillis || 0;
     const clamped = dur > 0 ? Math.max(0, Math.min(millis, dur)) : Math.max(0, millis);
     const quantized = quantizeMillis(clamped);
@@ -1111,12 +1303,40 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       .catch(() => {});
   }, [ensurePlayerReady, player.durationMillis]);
 
-  const download = useCallback(async (naat: Naat) => {
+  const download = useCallback(async (naat: Naat, options?: { silent?: boolean }) => {
+    const silent = options?.silent === true;
+    const existingTask = downloadTasksRef.current.get(naat.id);
+    if (existingTask) {
+      await existingTask;
+      return;
+    }
+
+    let releaseTask!: () => void;
+    const task = new Promise<void>((resolve) => {
+      releaseTask = resolve;
+    });
+    downloadTasksRef.current.set(naat.id, task);
+
     try {
-      if (naat.isDownloaded && naat.localFileUri) {
-        Alert.alert('اطلاع', 'این نعت قبلاً دانلود شده است');
+      const existingUri = await getLocalUriIfExists(naat);
+      if (existingUri) {
+        const info = await FileSystem.getInfoAsync(existingUri);
+        const sizeMb = info.exists && info.size ? Number((info.size / (1024 * 1024)).toFixed(2)) : undefined;
+        await upsertLocalMeta(naat.id, {
+          localFileUri: existingUri,
+          isDownloaded: true,
+          downloadProgress: undefined,
+          file_size_mb: sizeMb,
+        });
+        setNaats((prev) => prev.map((item) => item.id === naat.id
+          ? { ...item, localFileUri: existingUri, isDownloaded: true, downloadProgress: undefined, file_size_mb: sizeMb }
+          : item));
+        if (!silent) {
+          Alert.alert(isPashto ? 'خبرتیا' : 'اطلاع', isPashto ? 'دا نعت مخکې ښکته شوی دی.' : 'این نعت قبلاً دانلود شده است');
+        }
         return;
       }
+
       await ensureNaatDirectory();
       const source = await resolveAudioSource(naat);
       const dir = getNaatDirectory();
@@ -1124,9 +1344,8 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       const extension = cleanUrl.endsWith('.m4a') ? 'm4a' : 'mp3';
       const target = `${dir}${naat.id}.${extension}`;
       await upsertLocalMeta(naat.id, { downloadProgress: 0 });
-      setNaats((prev) =>
-        prev.map((item) => (item.id === naat.id ? { ...item, downloadProgress: 0 } : item)),
-      );
+      setNaats((prev) => prev.map((item) => item.id === naat.id ? { ...item, downloadProgress: 0 } : item));
+
       const resumable = FileSystem.createDownloadResumable(
         source.uri,
         target,
@@ -1137,68 +1356,71 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
             : 0;
           const now = Date.now();
           const lastTick = downloadProgressTickRef.current[naat.id] ?? 0;
-          if (now - lastTick < DOWNLOAD_PROGRESS_THROTTLE_MS && pct < 0.99) {
-            return;
-          }
+          if (now - lastTick < DOWNLOAD_PROGRESS_THROTTLE_MS && pct < 0.99) return;
           downloadProgressTickRef.current[naat.id] = now;
           upsertLocalMeta(naat.id, { downloadProgress: pct }).catch(() => {});
-          setNaats((prev) =>
-            prev.map((item) => (item.id === naat.id ? { ...item, downloadProgress: pct } : item)),
-          );
+          setNaats((prev) => prev.map((item) => item.id === naat.id ? { ...item, downloadProgress: pct } : item));
         },
       );
+
       let result;
       try {
         result = await resumable.downloadAsync();
       } catch {
         result = await FileSystem.downloadAsync(source.uri, target);
       }
-      if (!result?.uri) {
-        throw new Error('download-empty');
-      }
-      if (result?.status && result.status >= 400) {
-        throw new Error(`download-status-${result.status}`);
-      }
-      const info = await FileSystem.getInfoAsync(result?.uri ?? target);
-      const sizeMb = info.exists && info.size ? Number((info.size / (1024 * 1024)).toFixed(2)) : undefined;
+      if (!result?.uri) throw new Error('download-empty');
+      if (result.status && result.status >= 400) throw new Error(`download-status-${result.status}`);
+
+      const info = await FileSystem.getInfoAsync(result.uri);
+      if (!info.exists || !info.size) throw new Error('download-empty-file');
+      const sizeMb = Number((info.size / (1024 * 1024)).toFixed(2));
       await upsertLocalMeta(naat.id, {
-        localFileUri: result?.uri ?? target,
+        localFileUri: result.uri,
         isDownloaded: true,
         downloadProgress: undefined,
         file_size_mb: sizeMb,
       });
-      setNaats((prev) =>
-        prev.map((item) =>
-          item.id === naat.id
-            ? {
-                ...item,
-                localFileUri: result?.uri ?? target,
-                isDownloaded: true,
-                downloadProgress: undefined,
-                file_size_mb: sizeMb,
-              }
-            : item,
-        ),
-      );
+      setNaats((prev) => prev.map((item) => item.id === naat.id
+        ? { ...item, localFileUri: result.uri, isDownloaded: true, downloadProgress: undefined, file_size_mb: sizeMb }
+        : item));
       delete downloadProgressTickRef.current[naat.id];
-      Alert.alert('موفق', 'نعت ذخیره شد و آفلاین قابل پخش است');
+      if (!silent) {
+        Alert.alert(isPashto ? 'بریالی' : 'موفق', isPashto ? 'نعت وساتل شو او بې‌انټرنېټه غږېدای شي.' : 'نعت ذخیره شد و آفلاین قابل پخش است');
+      }
     } catch (error: any) {
+      if (__DEV__) console.log('Naat download failed', error);
+      delete downloadProgressTickRef.current[naat.id];
+      await upsertLocalMeta(naat.id, { downloadProgress: undefined }).catch(() => {});
+      setNaats((prev) => prev.map((item) => item.id === naat.id ? { ...item, downloadProgress: undefined } : item));
+      if (silent) return;
       if (error?.message === 'offline') {
-        Alert.alert('آفلاین', 'ابتدا دانلود نمایید');
+        Alert.alert(isPashto ? 'بې‌انټرنېټه' : 'آفلاین', isPashto ? 'لومړی نعت ښکته کړئ.' : 'ابتدا دانلود نمایید');
         return;
       }
       if (error?.message === 'no-audio') {
-        Alert.alert('خطا', 'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.');
+        Alert.alert(isPashto ? 'تېروتنه' : 'خطا', isPashto ? 'د غږیز فایل لینک ونه موندل شو.' : 'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.');
         return;
       }
-      if (__DEV__) {
-        console.log('Naat download failed', error);
-      }
-      delete downloadProgressTickRef.current[naat.id];
-      await upsertLocalMeta(naat.id, { downloadProgress: undefined });
-      Alert.alert('خطا', 'دانلود ناموفق است. لطفاً مطمئن شوید لینک فایل عمومی است.');
+      Alert.alert(
+        isPashto ? 'تېروتنه' : 'خطا',
+        isPashto
+          ? 'ښکته کول بریالي نه شول. د عام فایل لینک وګورئ.'
+          : 'دانلود ناموفق است. لطفاً مطمئن شوید لینک فایل عمومی است.',
+      );
+    } finally {
+      if (downloadTasksRef.current.get(naat.id) === task) downloadTasksRef.current.delete(naat.id);
+      releaseTask();
     }
-  }, [resolveAudioSource]);
+  }, [getLocalUriIfExists, resolveAudioSource, isPashto]);
+
+  autoDownloadByIdRef.current = (id) => {
+    const naat = naatsRef.current.find((item) => item.id === id);
+    if (!naat) return;
+    // `download` verifies that the local file still exists before skipping.
+    // Do not trust stale catalogue metadata here: it can outlive a removed file.
+    void download(naat, { silent: true });
+  };
 
   const catalogValue = useMemo<NaatCatalogContextValue>(() => ({
     naats,

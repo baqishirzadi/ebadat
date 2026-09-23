@@ -63,10 +63,12 @@ export interface ReadingPosition {
 
 // View modes
 export type ViewMode = 'mushaf' | 'scroll';
+export type AppLanguage = 'dari' | 'pashto';
 export type TranslationLanguage = 'dari' | 'pashto' | 'both' | 'none';
 
 // User preferences
 export interface UserPreferences {
+  appLanguage: AppLanguage;
   theme: import('../constants/theme').ThemeMode;
   quranFont: import('../constants/theme').QuranFontFamily;
   dariFont: import('../constants/theme').DariFontFamily;
