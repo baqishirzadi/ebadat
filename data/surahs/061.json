@@ -14,7 +14,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "آنچه در آسمان‌ها و آنچه در زمین است الله را به پاکی یاد می‌کند و او غالب با حکمت است.",
-      "translation_pashto": "61-1 د الله پاكي بیانوي هر هغه څه چې په اسمانونو كې دي او هر هغه څه چې په ځمكه كې دي او هم دى ښه  غالب، ډېر حكمت والا دى"
+      "translation_pashto": "61-1 د الله پاكي بیانوي هر هغه څه چې په اسمانونو كې دي او هر هغه څه چې په ځمكه كې دي او هم دى ښه  غالب، ډېر حكمت والا دى",
+      "translation_english": "All that is in the heavens and all that is on earth glorifies Allah, for He is the All-Mighty, the All-Wise."
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "ای کسانی که ایمان آورده‌اید! چرا چیزی را می‌گوئید که آنرا انجام نمی‌دهید؟",
-      "translation_pashto": "61-2 اى هغو كسانو چې ایمان يې راوړى دى! تاسو هغه (خبره) ولې وایئ چې نه يې كوئ! "
+      "translation_pashto": "61-2 اى هغو كسانو چې ایمان يې راوړى دى! تاسو هغه (خبره) ولې وایئ چې نه يې كوئ! ",
+      "translation_english": "O you who believe, why do you say what you do not do?"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "بسیار ناپسند است نزد الله؛ اینکه چیزی بگوئید که آنرا انجام نمی‌دهید.",
-      "translation_pashto": "61-3 دا (خبره) د الله په نیز د غضب په لحاظ  لویه ده چې تاسو هغه (خبره) ووایئ چې نه يې كوئ"
+      "translation_pashto": "61-3 دا (خبره) د الله په نیز د غضب په لحاظ  لویه ده چې تاسو هغه (خبره) ووایئ چې نه يې كوئ",
+      "translation_english": "It is most loathsome to Allah that you say what you do not do."
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "يقينا الله کسانی را دوست دارد که در راه او صف بسته می‌جنگند گویی بنایی استوار و به هم پیوسته‌اند.",
-      "translation_pashto": "61-4 بېشكه الله هغه كسان خوښوي چې  د هغه په لاره كې صف تړلي جنګېږي، ګویاكې دوى په قلعي سره په یو بل پورې ټینګ كړى شوى (ښه محكم) عمارت دي"
+      "translation_pashto": "61-4 بېشكه الله هغه كسان خوښوي چې  د هغه په لاره كې صف تړلي جنګېږي، ګویاكې دوى په قلعي سره په یو بل پورې ټینګ كړى شوى (ښه محكم) عمارت دي",
+      "translation_english": "Indeed, Allah loves those who fight in His way in firm ranks, as if they were a solid structure."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "و یادآور شو آن وقت که موسی به قوم خود گفت : ای قوم من! چرا مرا آزار می‌دهید حال آنکه خوب می‌دانید که من فرستادۀ الله به‌سوی شما هستم؟! پس چون منحرف شدند الله دل‌هایشان را منحرف ساخت و الله گروه فاسقان را هدایت نمی‌کند.",
-      "translation_pashto": "61-5 او (یاد كړه) هغه وخت چې موسٰی خپل قوم ته وویل: اى زما قومه! تاسو ما ته ولې ضرر رارسوئ، حال دا چې تاسو پوهېږئ چې یقینًا زه تاسو ته د الله رسول  یم، نو كله چې دوى (د الله له حكم نه) كاږه شول، نوالله د دوى زړونه كاږه كړل او الله نافرمانه قوم ته هدایت نه كوي"
+      "translation_pashto": "61-5 او (یاد كړه) هغه وخت چې موسٰی خپل قوم ته وویل: اى زما قومه! تاسو ما ته ولې ضرر رارسوئ، حال دا چې تاسو پوهېږئ چې یقینًا زه تاسو ته د الله رسول  یم، نو كله چې دوى (د الله له حكم نه) كاږه شول، نوالله د دوى زړونه كاږه كړل او الله نافرمانه قوم ته هدایت نه كوي",
+      "translation_english": "And [remember] when Moses said to his people, “O my people, why do you hurt me when you know that I am a messenger of Allah to you?” So when they chose to deviate, Allah caused their hearts to deviate, for Allah does not guide the rebellious people."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "و یادآور شو وقتی که عیسی پسر مریم گفت: ای بنی اسرائیل! من فرستادۀ الله به‌سوی شما هستم و تورات را که پیش از من آمده تصدیق می‌کنم و به پیغمبری که بعد از من می‌آید و نام او احمد است مژده می‌دهم. پس چون با معجزه‌ها به‌سوی آنان آمد گفتند: این جادویی آشکار است.",
-      "translation_pashto": "61-6 او (یاده كړه) هغه وخت چې د مریمې زوى عیسٰی وویل: اى بني اسرائیلو! بېشكه زه تاسو ته د الله رسول یم، چې د هغه څه  تصدیق كوونكى یم چې له ما نه مخكې تېر شوى دى، چې تورات دى او د داسې رسول زېرى دركوونكى یم چې له ما نه وروسته به راځي، چې د هغه نوم احمد دى، نو كله چې دوى ته دغه (رسول) له ښكاره معجزو سره راغى (نو) دوى وویل: دا ښكاره جادو دى"
+      "translation_pashto": "61-6 او (یاده كړه) هغه وخت چې د مریمې زوى عیسٰی وویل: اى بني اسرائیلو! بېشكه زه تاسو ته د الله رسول یم، چې د هغه څه  تصدیق كوونكى یم چې له ما نه مخكې تېر شوى دى، چې تورات دى او د داسې رسول زېرى دركوونكى یم چې له ما نه وروسته به راځي، چې د هغه نوم احمد دى، نو كله چې دوى ته دغه (رسول) له ښكاره معجزو سره راغى (نو) دوى وویل: دا ښكاره جادو دى",
+      "translation_english": "And [remember] when Jesus, son of Mary, said, “O Children of Israel, I am truly a messenger of Allah to you, confirming the Torah which came before me, and giving glad tidings of a messenger after me whose name will be Ahmad.” But when he came to them with clear proofs, they said, “This is clear magic.”"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "و کیست ظالم‌تر از آنکه بر الله دروغ می‌بندد در حالیکه به اسلام دعوت می‌شود و الله گروه ظالمان را هدایت نمی‌کند.",
-      "translation_pashto": "61-7 او له هغه چا نه لوى ظالم څوك دى چې په الله پورې له ځانه دروغ تړي، حال دا چې هغه  اسلام ته بللى شي او الله ظالم قوم ته هدایت نه كوي"
+      "translation_pashto": "61-7 او له هغه چا نه لوى ظالم څوك دى چې په الله پورې له ځانه دروغ تړي، حال دا چې هغه  اسلام ته بللى شي او الله ظالم قوم ته هدایت نه كوي",
+      "translation_english": "Who could be more wrong than the one who fabricates lies against Allah when invited to Islam? And Allah does not guide the wrongdoing people."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "(منافقان و اهل کتاب) می‌خواهند با دهانهای خود نور الله را خاموش کنند و الله کامل کنندۀ نور خود است هر چند کافران خوش نداشته باشند.",
-      "translation_pashto": "61-8 دوى غواړي چې په خپلو خولو سره د الله رڼا مړه كړي او الله د خپلې رڼا پوره كوونكى دى اګر كه كافران (دا كار) بد ګڼي"
+      "translation_pashto": "61-8 دوى غواړي چې په خپلو خولو سره د الله رڼا مړه كړي او الله د خپلې رڼا پوره كوونكى دى اګر كه كافران (دا كار) بد ګڼي",
+      "translation_english": "They wish to extinguish the light of Allah with their mouths, but Allah will complete His light, even though the disbelievers dislike it."
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "اوست ذاتی که پیغمبر خود را با هدایت و دین حق فرستاد تا آن را بر همۀ ادیان غالب سازد، هر چند مشرکان خوش نداشته باشند.",
-      "translation_pashto": "61-9 دغه (الله) هغه ذات دى چې خپل رسول يې په هدایت او حق دین سره لېږلى دى،  د دې لپاره چې دغه (الله) دغه (حق دین) ته په نورو ټولو دینونو باندې غلبه وركړي، اګر كه مشركان دغه (كار) بد ګڼي"
+      "translation_pashto": "61-9 دغه (الله) هغه ذات دى چې خپل رسول يې په هدایت او حق دین سره لېږلى دى،  د دې لپاره چې دغه (الله) دغه (حق دین) ته په نورو ټولو دینونو باندې غلبه وركړي، اګر كه مشركان دغه (كار) بد ګڼي",
+      "translation_english": "It is He Who has sent His Messenger with guidance and the religion of truth, so that He may make it prevail over all religions, even though the polytheists may dislike it."
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "ای کسانی که ایمان آورده‌اید؟ آیا شما را بر تجارتی راهنمایی کنم که شما را از عذاب دردناک نجات دهد؟",
-      "translation_pashto": "61-10 اى هغو كسانو چې ایمان يې راوړى دى! ایا زه تاسو ته داسې تجارت (سوداګري) وښیم چې تاسو ته به له ډېر دردونكي عذاب نه نجات دركوي"
+      "translation_pashto": "61-10 اى هغو كسانو چې ایمان يې راوړى دى! ایا زه تاسو ته داسې تجارت (سوداګري) وښیم چې تاسو ته به له ډېر دردونكي عذاب نه نجات دركوي",
+      "translation_english": "O you who believe, shall I tell you about a trade that will save you from a painful punishment?"
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "(آن تجارت این است که) به الله و پیغمبرش ایمان آورید و در راه الله با اموال و جان‌هایتان جهاد کنید، این برای شما بهتر است اگر بدانید.",
-      "translation_pashto": "61-11 تاسو په الله او د هغه په رسول ایمان لرئ او د الله په لاره كې په خپلو مالونو او خپلو ځانونو سره جهاد كوئ، دا تاسو لپاره ډېر غوره دي كه تاسو  پوهېږئ"
+      "translation_pashto": "61-11 تاسو په الله او د هغه په رسول ایمان لرئ او د الله په لاره كې په خپلو مالونو او خپلو ځانونو سره جهاد كوئ، دا تاسو لپاره ډېر غوره دي كه تاسو  پوهېږئ",
+      "translation_english": "It is to believe in Allah and His Messenger and to struggle in the way of Allah with your wealth and your lives. That is better for you, if only you knew."
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "تا گناهان شما را برایتان بیامرزد و شما را به باغ‌هایی درآورد که از زیر (قصرها و درختان) آن نهرها روان است. و خانه‌های دلپسند در بهشت‌های جاودان به دست آورید، این است کامیابی بزرگ.",
-      "translation_pashto": "61-12 هغه به تاسو ته ستاسو ګناهونه وبخښي او  تاسو  به داسې جنتونو ته داخل كړي چې د هغو له لاندې ولې بهېږي او د تل اوسېدنې په جنتونو كې په  ډېرو پاكېزه استوګنو كې (به مو داخل كړي)، دغه ډېره لویه كامیابي ده"
+      "translation_pashto": "61-12 هغه به تاسو ته ستاسو ګناهونه وبخښي او  تاسو  به داسې جنتونو ته داخل كړي چې د هغو له لاندې ولې بهېږي او د تل اوسېدنې په جنتونو كې په  ډېرو پاكېزه استوګنو كې (به مو داخل كړي)، دغه ډېره لویه كامیابي ده",
+      "translation_english": "He will forgive you your sins and admit you to gardens under which rivers flow, and pleasant dwellings in Gardens of Eternity. That is the supreme triumph."
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "و (نعمتی) دیگر (به شما می‌دهد) که آن را دوست دارید؛ پیروزی از سوی الله و فتحی نزدیک (فتح مکه) است و به مؤمنان مژده ده.",
-      "translation_pashto": "61-13 او بل (نعمت) چې تاسو يې خوښوئ، د الله له جانبه مرسته او نژدې برى دى او ته مومنانو ته زېرى وركړه"
+      "translation_pashto": "61-13 او بل (نعمت) چې تاسو يې خوښوئ، د الله له جانبه مرسته او نژدې برى دى او ته مومنانو ته زېرى وركړه",
+      "translation_english": "And [He will grant you] another favor that you love: help from Allah [against your enemies] and an imminent conquest. Give glad tidings to the believers."
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 55,
       "sajda": false,
       "translation_dari": "ای کسانی که ایمان آورده‌اید، نصرت دهندگان (دین) الله باشید طوری که عیسی پسر مریم به حواریان گفت: مددگاران من (در دعوت) به‌سوی الله کیست؟ حواریان گفتند: ما مددگاران (دین) الله‌ایم، پس گروهی از بنی اسرائیل ایمان آوردند و گروهی کفر ورزیدند در نهایت مؤمنان را بر دشمنانشان توان دادیم پس (تا اینکه) پیروز شدند.",
-      "translation_pashto": "61-14 اى هغو كسانو چې ایمان يې راوړى دى! تاسو د الله مدد كوونكي شئ، لكه چې د مریمې زوى عیسٰی حواریانو (خپلو ملګرو) ته ویلي وو: د الله طرف ته زما مدد كوونكي څوك دي؟ حواریانو وویل: مونږ د الله مدد كوونكي یو، نو په بني اسرائیلو كې یوې ډلې ایمان راوړو او بله ډله كافره شوه، نو مونږ هغو كسانو ته د خپل دښمن په خلاف قوت وركړو چې ایمان يې راوړى و، نو دوى غالبه شول"
+      "translation_pashto": "61-14 اى هغو كسانو چې ایمان يې راوړى دى! تاسو د الله مدد كوونكي شئ، لكه چې د مریمې زوى عیسٰی حواریانو (خپلو ملګرو) ته ویلي وو: د الله طرف ته زما مدد كوونكي څوك دي؟ حواریانو وویل: مونږ د الله مدد كوونكي یو، نو په بني اسرائیلو كې یوې ډلې ایمان راوړو او بله ډله كافره شوه، نو مونږ هغو كسانو ته د خپل دښمن په خلاف قوت وركړو چې ایمان يې راوړى و، نو دوى غالبه شول",
+      "translation_english": "O you who believe, be supporters of Allah’s cause, as Jesus, son of Mary, said to the disciples, “Who will be my supporters for Allah’s cause?” The disciples said, “We are the supporters of Allah’s cause.” Then a group of the Children of Israel believed and another disbelieved. We then supported those who believed against their enemies, so they prevailed."
     }
   ]
 }

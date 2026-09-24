@@ -31,6 +31,7 @@ import {
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 import { SELECTED_CITY_STORAGE_KEY } from '@/utils/prayerOnboarding';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const FEATURED_CATEGORIES = [
   'afghanistan',
@@ -49,8 +50,16 @@ const FEATURED_CATEGORIES = [
   'oceania',
 ] as const;
 
+const PASHTO_REGION_NAMES: Record<string, string> = {
+  afghanistan: 'افغانستان', iran: 'ایران', turkey: 'ترکیه', pakistan: 'پاکستان',
+  gulf: 'خلیجي هېوادونه', germany: 'جرمني', uk: 'بریتانیا', france: 'فرانسه',
+  netherlands: 'هالنډ', 'central-asia': 'منځنۍ اسیا', russia: 'روسیه', europe: 'اروپا',
+  americas: 'امریکا', oceania: 'اوشیانیا',
+};
+
 export default function OnboardingLocationScreen() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const { t, language } = useI18n();
   const { setCustomLocation } = usePrayer();
   const [pickerVisible, setPickerVisible] = useState(false);
   const [gpsLoading, setGpsLoading] = useState(false);
@@ -79,17 +88,17 @@ export default function OnboardingLocationScreen() {
         ({ key }) => !featuredProvinceKeys.has(key),
       );
       return [
-        { title: 'شهرهای پرکاربرد', items: featured },
-        { title: 'ولایت‌ها', items: provinces },
+        { title: t('onboarding.location.featuredCities'), items: featured },
+        { title: t('onboarding.location.provinces'), items: provinces },
       ];
     }
     const provinces = getProvincesForRegion(selectedCategory);
     const majors = getMajorCitiesForRegion(selectedCategory);
     const sections: Array<{ title: string; items: ReturnType<typeof getProvincesForRegion> }> = [];
-    if (provinces.length > 0) sections.push({ title: 'استان‌ها / ایالت‌ها', items: provinces });
-    if (majors.length > 0) sections.push({ title: 'شهرهای بزرگ', items: majors });
+    if (provinces.length > 0) sections.push({ title: t('onboarding.location.states'), items: provinces });
+    if (majors.length > 0) sections.push({ title: t('onboarding.location.majorCities'), items: majors });
     return sections;
-  }, [selectedCategory]);
+  }, [selectedCategory, t]);
 
   const resolveCity = useCallback((cityKey: CityKey) => {
     return getWorldCity(cityKey) ?? getCity(cityKey);
@@ -99,7 +108,7 @@ export default function OnboardingLocationScreen() {
     async (cityKey: CityKey) => {
       const city = resolveCity(cityKey);
       if (!city) {
-        Alert.alert('خطا', 'شهر انتخاب‌شده پیدا نشد.');
+        Alert.alert(t('common.error'), t('onboarding.location.cityMissing'));
         return;
       }
 
@@ -118,12 +127,12 @@ export default function OnboardingLocationScreen() {
         );
         router.push('/onboarding/notifications' as never);
       } catch {
-        Alert.alert('خطا', 'تنظیم شهر انجام نشد. لطفاً دوباره تلاش کنید.');
+        Alert.alert(t('common.error'), t('onboarding.location.citySaveFailed'));
       } finally {
         setSaving(false);
       }
     },
-    [resolveCity, setCustomLocation],
+    [resolveCity, setCustomLocation, t],
   );
 
   const handleGps = async () => {
@@ -142,22 +151,29 @@ export default function OnboardingLocationScreen() {
         if (city) setSelectedCategory(city.category);
         return;
       }
-      Alert.alert('موقعیت پیدا نشد', result.error || 'لطفاً کشور و شهر را دستی انتخاب کنید.');
+      Alert.alert(t('onboarding.location.gpsNotFound'), result.error || t('onboarding.location.manualSelect'));
     } finally {
       setGpsLoading(false);
     }
   };
 
   const selectedPreview = pendingCityKey ? resolveCity(pendingCityKey) : null;
-  const selectedCategoryName = categoryOptions.find((c) => c.id === selectedCategory)?.name;
+  const selectedCategoryEntry = categoryOptions.find((c) => c.id === selectedCategory);
+  const selectedCategoryName = selectedCategoryEntry
+    ? (language === 'pashto'
+        ? PASHTO_REGION_NAMES[selectedCategoryEntry.id] ?? selectedCategoryEntry.nameEn
+        : language === 'english'
+          ? selectedCategoryEntry.nameEn
+          : selectedCategoryEntry.name)
+    : undefined;
 
   return (
     <OnboardingShell
       step={3}
       totalSteps={5}
-      title="انتخاب کشور و شهر"
-      subtitle="استان یا شهر نزدیک‌ترین محل زندگی‌تان را برگزینید — داخل یا خارج افغانستان."
-      primaryLabel={selectedPreview ? `ادامه با ${selectedPreview.name}` : 'جستجوی همه شهرها'}
+      title={t('onboarding.location.title')}
+      subtitle={t('onboarding.location.subtitle')}
+      primaryLabel={selectedPreview ? t('onboarding.location.continueWith', { city: selectedPreview.name }) : t('onboarding.location.searchAll')}
       onPrimary={() => {
         if (pendingCityKey) {
           finalizeCity(pendingCityKey);
@@ -181,9 +197,9 @@ export default function OnboardingLocationScreen() {
             <MaterialIcons name="my-location" size={28} color="#fff" />
           )}
           <RtlView style={styles.gpsTextWrap}>
-            <RtlText align="center" style={styles.gpsTitle}>تشخیص خودکار موقعیت</RtlText>
+            <RtlText align="center" style={styles.gpsTitle}>{t('onboarding.location.gpsTitle')}</RtlText>
             <RtlText align="center" style={styles.gpsSubtitle}>
-              با GPS نزدیک‌ترین استان یا شهر بزرگ را پیدا کنید
+              {t('onboarding.location.gpsSubtitle')}
             </RtlText>
           </RtlView>
           <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.8)" />
@@ -211,7 +227,7 @@ export default function OnboardingLocationScreen() {
           </RtlView>
         ) : null}
 
-        <RtlText align="center" style={[styles.sectionTitle, { color: theme.text }]}>کشور / منطقه</RtlText>
+        <RtlText align="center" style={[styles.sectionTitle, { color: theme.text }]}>{t('onboarding.location.countryRegion')}</RtlText>
         <RtlView style={styles.countryGrid}>
           {categoryOptions.map((cat) => {
             const active = selectedCategory === cat.id;
@@ -233,7 +249,11 @@ export default function OnboardingLocationScreen() {
                 ]}
               >
                 <RtlText align="center" style={[styles.countryText, { color: active ? '#fff' : theme.text }]}>
-                  {cat.name}
+                  {language === 'pashto'
+                    ? PASHTO_REGION_NAMES[cat.id] ?? cat.nameEn
+                    : language === 'english'
+                      ? cat.nameEn
+                      : cat.name}
                 </RtlText>
               </Pressable>
             );
@@ -299,7 +319,7 @@ export default function OnboardingLocationScreen() {
         >
           <MaterialIcons name="search" size={20} color={theme.tint} />
           <RtlText align="center" style={[styles.searchAllText, { color: theme.tint }]}>
-            جستجو در همه کشورها و شهرها
+            {t('onboarding.location.searchAllDetails')}
           </RtlText>
         </Pressable>
       </ScrollView>
@@ -316,7 +336,7 @@ export default function OnboardingLocationScreen() {
           setPendingCityKey(key as CityKey);
           setGpsDetected(null);
         }}
-        title="انتخاب شهر"
+        title={t('qibla.chooseCity')}
       />
     </OnboardingShell>
   );

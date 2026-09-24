@@ -1,10 +1,13 @@
 import type { DailyHadithSelection, Hadith } from '@/types/hadith';
+import type { AppLanguage } from '@/types/quran';
+import { resolveContent } from '@/utils/i18n/content';
 import { KABUL_TIME_ZONE, getKabulDateKey } from '@/utils/afghanistanCalendar';
 import { buildDateFromLocalTimeInTimezone } from '@/utils/prayerTimezone';
 import { getCanonicalDailyHadiths } from '@/utils/ahadith/repository';
 import { selectDailyHadith } from '@/utils/ahadith/selector';
 
-export type DailyHadithLanguage = 'dari' | 'pashto';
+/** The daily hadith follows the app language like every other surface. */
+export type DailyHadithLanguage = AppLanguage;
 
 export interface CanonicalDailyHadith extends DailyHadithSelection {
   dateKey: string;
@@ -28,15 +31,13 @@ export function resolveCanonicalDailyHadith(
   const dateKey = typeof dateOrKey === 'string' ? dateOrKey : getKabulDateKey(dateOrKey);
   const date = buildDateFromLocalTimeInTimezone(dateKey, '12:00', KABUL_TIME_ZONE);
   const selection = selectDailyHadith(getCanonicalDailyHadiths(), date);
-  const text = language === 'pashto'
-    ? selection.hadith.pashto_translation
-    : selection.hadith.dari_translation;
+  const resolved = resolveContent(selection.hadith, 'translation', language);
 
   return {
     ...selection,
     dateKey,
-    text: text.replace(/\s+/g, ' ').trim(),
+    text: (resolved?.text ?? '').replace(/\s+/g, ' ').trim(),
     source: sourceFor(selection.hadith),
-    language,
+    language: resolved?.language ?? language,
   };
 }

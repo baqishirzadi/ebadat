@@ -14,7 +14,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "ای پیغمبر! چرا چیزی را که الله برایت حلال کرده است به خاطر به دست آوردن خشنودی همسرانت بر خود حرام می‌کنی؟ و الله آمرزگار مهربان است.",
-      "translation_pashto": "66-1 اى نبي! ته ولې هغه شى حراموې (بندوې) چې الله تا ته حلال كړى دى؟ ته د خپلو ښځو خوشحالول (او راضی كول) غواړې او الله ډېر بخښونكى، بې حده رحم كوونكى دى"
+      "translation_pashto": "66-1 اى نبي! ته ولې هغه شى حراموې (بندوې) چې الله تا ته حلال كړى دى؟ ته د خپلو ښځو خوشحالول (او راضی كول) غواړې او الله ډېر بخښونكى، بې حده رحم كوونكى دى",
+      "translation_english": "O Prophet, why do you prohibit [yourself from] what Allah has made lawful to you, seeking to please your wives? Allah is All-Forgiving, Most Merciful."
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "البته الله گشودن (شکستن) سوگندهایتان را برای شما مقرر کرده است و الله مددگار شماست و اوست دانای باحکمت.",
-      "translation_pashto": "66-2 یقینًا الله تاسو لپاره ستاسو د قسمونو حلالوالى مقرر كړى دى او الله ستا مددګار دى، او هم دى ښه پوه، ښه حكمت والا دى"
+      "translation_pashto": "66-2 یقینًا الله تاسو لپاره ستاسو د قسمونو حلالوالى مقرر كړى دى او الله ستا مددګار دى، او هم دى ښه پوه، ښه حكمت والا دى",
+      "translation_english": "Allah has ordained for you the way to absolve yourselves from your oaths. Allah is your Guardian, and He is the All-Knowing, the All-Wise."
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "و وقتی که پیغمبر با یکی از زنانش سخنی نهانی گفت، پس چون وی آن (سخن) را برای (زن دیگر) بازگو کرد و الله (پیغمبر) را بر آن مطلع گردانید (پیغمبر) بخشی از آن را اظهار کرد و از بخشی (دیگر) اعراض نمود. و چون (موضوع) را به آن (زن) خبر داد، وی گفت: چه کسی این را به تو خبر داده است؟ گفت: (الله) دانای آگاه به من خبر داده است.",
-      "translation_pashto": "66-3 او (یاد كړه) هغه وخت چې نبي په خپلو ښځو كې كومې ته په راز كې یوه خبره وویله، نو كله چې هغې په دې سره (بلې ته) خبر وركړ او الله ده ته دغه (خبره) ښكاره كړه (نو) ده ځینې خبره وښودله او له ځینې نه يې اعراض وكړ، نو كله چې ده هغه (ښځه) په دې خبره كړه (نو) هغې وویل: ته په دې باندې چا خبر كړې؟ ده وویل: ما ته ډېر پوه (او) ښه خبردار ذات خبر راكړ"
+      "translation_pashto": "66-3 او (یاد كړه) هغه وخت چې نبي په خپلو ښځو كې كومې ته په راز كې یوه خبره وویله، نو كله چې هغې په دې سره (بلې ته) خبر وركړ او الله ده ته دغه (خبره) ښكاره كړه (نو) ده ځینې خبره وښودله او له ځینې نه يې اعراض وكړ، نو كله چې ده هغه (ښځه) په دې خبره كړه (نو) هغې وویل: ته په دې باندې چا خبر كړې؟ ده وویل: ما ته ډېر پوه (او) ښه خبردار ذات خبر راكړ",
+      "translation_english": "And [remember] when the Prophet told one of his wives something in secret. Then when she disclosed it [to another wife], and Allah made it known to him, he told [the disclosing wife] part of what was disclosed and overlooked a part. When he informed her of that, she said, “Who informed you of this?” He said, “I was informed by the All-Knowing, the All-Aware."
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "(شما ای دو همسر پیغمبر) اگر به درگاه الله توبه کنید (برایتان بهتر است)، بی‌گمان دلهایتان منحرف گشته است و اگر بر ضد او همدست شوید (بدانید) که الله مددگار اوست و (نیز) جبرئیل و مؤمنان نیک و فرشتگان مددگار او هستند.",
-      "translation_pashto": "66-4 كه چېرې تاسو دواړه الله ته توبه وباسئ، نو یقینًا ستاسو د دواړو زړونه مايله شوي دي او كه د ده (نبي) په خلاف تاسو یوه له بلې سره مدد وكړئ، نو بېشكه چې الله، همغه د ده مددګار دى او جبریل او صالح مومنان او ملايك له دې نه پس مددګاران دي"
+      "translation_pashto": "66-4 كه چېرې تاسو دواړه الله ته توبه وباسئ، نو یقینًا ستاسو د دواړو زړونه مايله شوي دي او كه د ده (نبي) په خلاف تاسو یوه له بلې سره مدد وكړئ، نو بېشكه چې الله، همغه د ده مددګار دى او جبریل او صالح مومنان او ملايك له دې نه پس مددګاران دي",
+      "translation_english": "You both had better turn to Allah in repentance, for your hearts have faltered. But if you insist on conspiring against him, then indeed Allah is his Protector, as well as Gabriel and the righteous believers, and moreover, the angels are his supporters."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "اگر (پیغمبر) شما را طلاق دهد زود است که پروردگارش او را همسرانی بهتر از شما اعم از بیوه و دختر، عوض دهد که زنانی مسلمان، مؤمن، فرمانبردار، توبه‌گار، عبادت‌پیشه (و) روزه‌دار باشند.",
-      "translation_pashto": "66-5 كه دى تاسو ته طلاق دركړي (، نو) امېد دى چې د ده رب به ده ته په بدل كې له تاسو نه ډېرې غوره ښځې وركړي، چې مسلمانانې، مومنانې، اطاعت ګزارې، توبه اېستونكې، عبادت كوونكې، روژه نیوونكې، (هجرت كوونكې) څښتن لیدلې او پېغلې به وي"
+      "translation_pashto": "66-5 كه دى تاسو ته طلاق دركړي (، نو) امېد دى چې د ده رب به ده ته په بدل كې له تاسو نه ډېرې غوره ښځې وركړي، چې مسلمانانې، مومنانې، اطاعت ګزارې، توبه اېستونكې، عبادت كوونكې، روژه نیوونكې، (هجرت كوونكې) څښتن لیدلې او پېغلې به وي",
+      "translation_english": "Perhaps, if he were to divorce you all, his Lord would replace you with better wives who are submissive to Allah, who are believers, obedient, repentant, devout in worship and fasting – previously married and virgins."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "ای کسانی که ایمان آورده‌اید! خودتان و خانواده تان را از آتشی حفظ کنید که هیزمش مردم و سنگها خواهند بود. فرشتگانی بر آن مقرر است که خشن و سخت گیر و زورمند و توانا هستند، از الله در آن چه به آنان امر کند نافرمانی نمی‌کنند و آنچه را که فرمان یابند، انجام می‌دهند.",
-      "translation_pashto": "66-6 اى هغو كسانو چې ایمان يې راوړى دى! تاسو خپل ځانونه او خپل اهل له داسې اور نه بچ وساتئ چې د هغه خشاك خلق او كاڼي دي، په ده باندې ډېر سخت خویه، قوتناك ملايك مقرر دي، چې دوى په هغه څه كې د الله نافرمانۍ نه كوي چې دوى ته يې حكم كړى وي او دوى هغه څه كوي چې دوى ته يې حكم كولى شي"
+      "translation_pashto": "66-6 اى هغو كسانو چې ایمان يې راوړى دى! تاسو خپل ځانونه او خپل اهل له داسې اور نه بچ وساتئ چې د هغه خشاك خلق او كاڼي دي، په ده باندې ډېر سخت خویه، قوتناك ملايك مقرر دي، چې دوى په هغه څه كې د الله نافرمانۍ نه كوي چې دوى ته يې حكم كړى وي او دوى هغه څه كوي چې دوى ته يې حكم كولى شي",
+      "translation_english": "O you who believe, protect yourselves and your families from a Fire whose fuel is people and stones, and is overseen by rigorous and stern angels, who never disobey whatever Allah commands and do whatever they are commanded."
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "ای آنانی که کافر شده‌اید! امروز عذرخواهی نکنید. جز این نیست که در برابر آنچه (در دنیا) می‌کردید، جزا داده می‌شوید.",
-      "translation_pashto": "66-7 اى هغو كسانو چې كافران شوي دي! تاسو نن ورځ عذرونه مه وړاندې كوئ، بېشكه همدا خبره ده چې تاسو ته به د هغه څه بدله دركولى شي چې تاسو به كول"
+      "translation_pashto": "66-7 اى هغو كسانو چې كافران شوي دي! تاسو نن ورځ عذرونه مه وړاندې كوئ، بېشكه همدا خبره ده چې تاسو ته به د هغه څه بدله دركولى شي چې تاسو به كول",
+      "translation_english": "“O you who disbelieve, make no excuses this Day. You will only be recompensed for what you used to do.”"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "ای کسانی که ایمان آورده‌اید! به درگاه الله رجوع کنید و توبه خالصانه بکنید امید است پروردگارتان گناهانتان را محو کند و شما را به باغهایی در آورد که از زیر (درختان و قصرهای آن) نهرها روان است. روزی که الله پیغمبرش و آنانی را که با او ایمان آورده‌اند خوار و رسوا نمی‌سازد. نورشان پیش روی آنان و به سمت راستشان با شتاب روان است. می‌گویند: ای پروردگار ما! نور ما را برای ما کامل گردان و ما را بیامرز چون تو بر هر کاری توانایی.",
-      "translation_pashto": "66-8 اى هغو كسانو چې ایمان يې راوړى دى! تاسو الله ته توبه وباسئ خالصه رښتینې توبه، امېد دى چې ستاسو رب به له تاسو نه ستاسو ګناهونه ورژوي او تاسو به داسې جنتونو ته داخل كړي چې د هغو له لاندې  ولې بهېږي، په هغه ورځ كې چې الله به نبي او هغه كسان چې له ده سره يې ایمان راوړى دى رسوا نه كړي، د دوى رڼا به د دوى په وړاندې او د دوى په ښي اړخ منډې وهي، دوى به وايي: اى زمونږه ربه! ته مونږ ته زمونږ رڼا پوره كړه او مونږ وبخښه، بېشكه ته په هر شي باندې ښه قادر يې"
+      "translation_pashto": "66-8 اى هغو كسانو چې ایمان يې راوړى دى! تاسو الله ته توبه وباسئ خالصه رښتینې توبه، امېد دى چې ستاسو رب به له تاسو نه ستاسو ګناهونه ورژوي او تاسو به داسې جنتونو ته داخل كړي چې د هغو له لاندې  ولې بهېږي، په هغه ورځ كې چې الله به نبي او هغه كسان چې له ده سره يې ایمان راوړى دى رسوا نه كړي، د دوى رڼا به د دوى په وړاندې او د دوى په ښي اړخ منډې وهي، دوى به وايي: اى زمونږه ربه! ته مونږ ته زمونږ رڼا پوره كړه او مونږ وبخښه، بېشكه ته په هر شي باندې ښه قادر يې",
+      "translation_english": "O you who believe, turn to Allah in sincere repentance. It may be that your Lord will absolve you of your bad deeds and admit you to gardens under which rivers flow, on the Day when Allah will not disgrace the Prophet and those who believed with him. Their light will stream ahead of them and on their right. They will say, “Our Lord, complete our light for us and forgive us, for You are Most Capable of all things.”"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "ای پیغمبر! با کافران و منافقان جهاد کن و بر آنان سخت گیر، و جایگاه آنان دوزخ است و بدجای بازگشت است.",
-      "translation_pashto": "66-9 اى نبي! ته له كافرانو او منافقانو سره جهاد كوه او په دوى باندې سختي كوه او د دوى استوګنه جهنم دى او هغه د ورتلو بد ځاى دى"
+      "translation_pashto": "66-9 اى نبي! ته له كافرانو او منافقانو سره جهاد كوه او په دوى باندې سختي كوه او د دوى استوګنه جهنم دى او هغه د ورتلو بد ځاى دى",
+      "translation_english": "O Prophet, strive [i.e., fight] against the disbelievers and the hypocrites, and be harsh with them. Their abode will be Hell. What a terrible destination!"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "الله برای کافران، زن نوح و زن لوط را مثال زده است که (آن دو) در نکاح دو بنده از بندگان صالح ما بودند ولی به آنان خیانت کردند پس آن (دو پیغمبر) نتوانستند از (عذاب) الله چیزی را از آن (دو زن) دفع کنند و گفته شد: با واردشدگان به آتش (دوزخ) درآئید.",
-      "translation_pashto": "66-10 الله د هغو كسانو لپاره مثال بیانوي چې كافران شوي دي: د نوح ښځه او د لوط ښځه، دا دواړه  زمونږ په بنده ګانو كې ددوه نېكو بنده ګانو لاندې وې، نو دغو دواړو (ښځو) له هغو سره خیانت وكړ، نو هغوى د الله په مقابله كې د دوى هېڅ په كار رانغلل او دغو دواړو (ښځو) ته وویل شول چې تاسو اور ته له ننوتونكو سره ننوځئ"
+      "translation_pashto": "66-10 الله د هغو كسانو لپاره مثال بیانوي چې كافران شوي دي: د نوح ښځه او د لوط ښځه، دا دواړه  زمونږ په بنده ګانو كې ددوه نېكو بنده ګانو لاندې وې، نو دغو دواړو (ښځو) له هغو سره خیانت وكړ، نو هغوى د الله په مقابله كې د دوى هېڅ په كار رانغلل او دغو دواړو (ښځو) ته وویل شول چې تاسو اور ته له ننوتونكو سره ننوځئ",
+      "translation_english": "Allah sets forth an example for the disbelievers: the wife of Noah and the wife of Lot, who were under two of Our righteous slaves, but they betrayed them. Their husbands could not avail them anything against Allah, and they both were told, “Enter the Fire along with those who enter!”"
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "و الله برای مؤمنان (نیز) زن فرعون را مثل زده است، هنگامی که گفت: ای پروردگار من! برای من در بهشت نزد خودت خانه‌ای بساز و مرا از فرعون و کارهایش نجات بده و مرا از (دست) گروه ظالم نیز نجات بده.",
-      "translation_pashto": "66-11 او الله د ایمان راوړونكو لپاره یو بل مثال بیانوي: د فرعون ښځه ده، كله چې هغې وویل: اى زما ربه! ته ما ته زما لپاره خپلې خوا كې په جنت كې یو كور جوړ كړه او ته ما له فرعون او د هغه له عمل نه خلاصه كړه او ته ما ته له ظالم قوم نه نجات راكړه"
+      "translation_pashto": "66-11 او الله د ایمان راوړونكو لپاره یو بل مثال بیانوي: د فرعون ښځه ده، كله چې هغې وویل: اى زما ربه! ته ما ته زما لپاره خپلې خوا كې په جنت كې یو كور جوړ كړه او ته ما له فرعون او د هغه له عمل نه خلاصه كړه او ته ما ته له ظالم قوم نه نجات راكړه",
+      "translation_english": "And Allah sets forth an example for the believers: the wife of Pharaoh, who said, “My Lord, build for me a house in Paradise near You, save me from Pharaoh and his [evil] deeds, and save me from the wrongdoing people.”"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 56,
       "sajda": false,
       "translation_dari": "و (الله) مریم دختر عمران (را نیز مثل زده) که شرمگاه خود را از حرام نگه داشت (و پاکدامنی ورزید)، پس از روح (آفریدۀ) خود در او دمیدیم و او سخنان پروردگارش و کتاب‌های او را تصدیق کرد و از اطاعت کنندگان بود.",
-      "translation_pashto": "66-12 او د عمران لور مریم ده، هغه چې د خپل شرم ځاى حفاظت يې كړى و، پس مونږ له خپل روح نه په ده كې پوكى وواهه او دې د خپل رب د كلمو (خبرو) او د هغه د كتابونو تصدیق كړى و او دا له حكم منونكو ځنې وه"
+      "translation_pashto": "66-12 او د عمران لور مریم ده، هغه چې د خپل شرم ځاى حفاظت يې كړى و، پس مونږ له خپل روح نه په ده كې پوكى وواهه او دې د خپل رب د كلمو (خبرو) او د هغه د كتابونو تصدیق كړى و او دا له حكم منونكو ځنې وه",
+      "translation_english": "Also [the example of] Mary, daughter of ‘Imrān who guarded her chastity, so We breathed into her through Our angel [Gabriel], and she firmly believed in the words of her Lord and His Scriptures and was one of the obedient."
     }
   ]
 }

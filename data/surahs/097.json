@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "یقیناً ما قرآن را در شب قدر (شب دارای مرتبه و فضیلت) نازل کردیم.",
-      "translation_pashto": "97-1 بېشكه مونږ دا (قرآن) د قدر په شپه كې نازل كړى دى"
+      "translation_pashto": "97-1 بېشكه مونږ دا (قرآن) د قدر په شپه كې نازل كړى دى",
+      "translation_english": "Indeed, We sent this [Qur’an] down on the Night of Decree."
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و تو چه می‌دانی که شب قدر چیست؟",
-      "translation_pashto": "97-2 او ته څه شي پوه كړې چې د قدر شپه څه شى دى؟"
+      "translation_pashto": "97-2 او ته څه شي پوه كړې چې د قدر شپه څه شى دى؟",
+      "translation_english": "How do you know what the Night of Decree is?"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "شب قدر بهتر است از هزار ماه.",
-      "translation_pashto": "97-3 د قدر شپه له زرو میاشتو نه غوره ده"
+      "translation_pashto": "97-3 د قدر شپه له زرو میاشتو نه غوره ده",
+      "translation_english": "The Night of Decree is better than a thousand months."
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(خاصیت آن شب این است که) فرشتگان و جبرئیل در آن شب به حکم پروردگار خود فرود می‌آیند، برای انجام دادن هر کاری (که الله خواهد).",
-      "translation_pashto": "97-4 په دغه (شپه) كې (نور) ملايك او روح (جبریل) د خپل رب په حكم سره نازلېږي لپاره (د پوره كولو) د هر (مقرر شوي) كار"
+      "translation_pashto": "97-4 په دغه (شپه) كې (نور) ملايك او روح (جبریل) د خپل رب په حكم سره نازلېږي لپاره (د پوره كولو) د هر (مقرر شوي) كار",
+      "translation_english": "On that night the angels and the Spirit [i.e., Gabriel] descend by their Lord’s permission with all decrees."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آن شب محل نزول سلامتی و رحمت است تا طلوع صبح.",
-      "translation_pashto": "97-5 (دغه شپه) سلامتیا ده، دغه (شپه) تر سبا ختلو پورې ده"
+      "translation_pashto": "97-5 (دغه شپه) سلامتیا ده، دغه (شپه) تر سبا ختلو پورې ده",
+      "translation_english": "It is all peace until the break of dawn."
     }
   ]
 }

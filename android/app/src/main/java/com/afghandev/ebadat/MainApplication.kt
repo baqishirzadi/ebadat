@@ -59,9 +59,17 @@ class MainApplication : Application(), ReactApplication {
   override fun onCreate() {
     StartupTrace.mark("Application.onCreate start")
     super.onCreate()
-    val sharedI18nUtilInstance = I18nUtil.getInstance()
-    sharedI18nUtilInstance.allowRTL(this, true)
-    sharedI18nUtilInstance.forceRTL(this, true)
+    // Seed RTL on first launch only (the app defaults to Dari). After that the
+    // stored value is owned by JS so switching to English can turn RTL off.
+    val i18nPrefs = getSharedPreferences(
+      "com.facebook.react.modules.i18nmanager.I18nUtil",
+      android.content.Context.MODE_PRIVATE
+    )
+    if (!i18nPrefs.contains("RCTI18nUtil_forceRTL")) {
+      val sharedI18nUtilInstance = I18nUtil.getInstance()
+      sharedI18nUtilInstance.allowRTL(this, true)
+      sharedI18nUtilInstance.forceRTL(this, true)
+    }
     // @generated begin xml-fonts-init - expo prebuild (DO NOT MODIFY) sync-d1f94ccd9842f98ac34cfe7bdfd65093cbd57923
     ReactFontManager.getInstance().addCustomFont(this, "ScheherazadeNew", R.font.xml_scheherazade_new)
     ReactFontManager.getInstance().addCustomFont(this, "ScheherazadeNew-Bold", R.font.xml_scheherazade_new_bold)

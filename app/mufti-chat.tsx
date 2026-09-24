@@ -6,27 +6,19 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  AccessibilityInfo,
-  Alert,
-  Dimensions,
-  FlatList,
-  Keyboard,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  ToastAndroid,
-  View,
-} from 'react-native';
+
+import { ActivityIndicator, AccessibilityInfo, Alert, Dimensions, FlatList, Keyboard, Platform, Pressable, StyleSheet, ToastAndroid, View } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { MarkdownText, normalizeMarkdownForClipboard } from '@/components/MarkdownText';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
-import { HANAFI_MUFTI_STARTER_QUESTIONS_DARI } from '@/constants/hanafiMuftiStarterQuestions';
+import {
+  HANAFI_MUFTI_STARTER_QUESTIONS_DARI,
+  HANAFI_MUFTI_STARTER_QUESTIONS_PASHTO,
+} from '@/constants/hanafiMuftiStarterQuestions';
 import { BorderRadius, RTL_CONTAINER, Spacing, ThemeColors, Typography } from '@/constants/theme';
 import {
   persianCaptionText,
@@ -34,7 +26,7 @@ import {
 } from '@/constants/persianTextLayout';
 import { useApp } from '@/context/AppContext';
 import { useHanafiMufti } from '@/hooks/useHanafiMufti';
-import { detectLanguage } from '@/utils/duaAdvisor';
+import { useI18n } from '@/utils/i18n/useI18n';
 import type { StoredHanafiMuftiMessage } from '@/utils/hanafiMuftiStorage';
 
 /** Android can flip Persian paragraphs LTR; RLM forces RTL direction. */
@@ -43,10 +35,6 @@ const RLM = '\u200F';
 type ChatRow =
   | { type: 'message'; message: StoredHanafiMuftiMessage; key: string }
   | { type: 'streaming'; content: string; key: string };
-
-function getClearLabel(sampleText: string): string {
-  return detectLanguage(sampleText) === 'pashto' ? 'د خبرو پاکول' : 'پاک کردن گفتگو';
-}
 
 function formatAssistantBubbleText(text: string): string {
   const plain = text;
@@ -60,20 +48,22 @@ interface ChatBubbleProps {
   theme: ThemeColors;
 }
 
-function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
+function ChatBubble({ isUser, text, theme, copiedLabel, copyFailedLabel, errorLabel }: ChatBubbleProps & {
+  copiedLabel: string; copyFailedLabel: string; errorLabel: string;
+}) {
   const displayText = isUser ? text : formatAssistantBubbleText(text);
   const handleCopy = useCallback(async () => {
     try {
       await Clipboard.setStringAsync(normalizeMarkdownForClipboard(text));
       if (Platform.OS === 'android') {
-        ToastAndroid.show('کپی شد', ToastAndroid.SHORT);
+        ToastAndroid.show(copiedLabel, ToastAndroid.SHORT);
       } else {
-        void AccessibilityInfo.announceForAccessibility('متن پاسخ کپی شد');
+        void AccessibilityInfo.announceForAccessibility(copiedLabel);
       }
     } catch {
-      Alert.alert('خطا', 'کپی پاسخ انجام نشد.');
+      Alert.alert(errorLabel, copyFailedLabel);
     }
-  }, [text]);
+  }, [text, copiedLabel, errorLabel, copyFailedLabel]);
 
   return (
     <RtlView style={[styles.messageRow, isUser ? styles.userRow : styles.assistantRow]}>
@@ -113,13 +103,15 @@ interface StarterChipsProps {
   onSelect: (question: string) => void;
 }
 
-function StarterChips({ theme, disabled, onSelect }: StarterChipsProps) {
+function StarterChips({ theme, disabled, onSelect, isPashto, t }: StarterChipsProps & {
+  isPashto: boolean; t: (key: 'mufti.disclaimer' | 'mufti.duaHint') => string;
+}) {
   const router = useRouter();
 
   return (
     <RtlView style={styles.emptyWrap}>
       <RtlView style={styles.chipsWrap}>
-        {HANAFI_MUFTI_STARTER_QUESTIONS_DARI.map((question) => (
+        {(isPashto ? HANAFI_MUFTI_STARTER_QUESTIONS_PASHTO : HANAFI_MUFTI_STARTER_QUESTIONS_DARI).map((question) => (
           <Pressable
             key={question}
             disabled={disabled}
@@ -140,14 +132,14 @@ function StarterChips({ theme, disabled, onSelect }: StarterChipsProps) {
         ))}
       </RtlView>
       <RtlText align="center" style={[styles.emptyDisclaimer, { color: theme.textSecondary }]}>
-        سوال فقهی حنفی خود را بپرسید. احکام نهایی نیازمند مشورت با عالم مجرب است.
+        {t('mufti.disclaimer')}
       </RtlText>
       <Pressable
         onPress={() => router.push('/dua-request' as never)}
         style={styles.duaHintPress}
       >
         <RtlText align="center" style={[styles.duaHint, { color: theme.tint }]}>
-          برای دعای شخصی به بخش دعای خیر بروید
+          {t('mufti.duaHint')}
         </RtlText>
       </Pressable>
     </RtlView>
@@ -156,6 +148,7 @@ function StarterChips({ theme, disabled, onSelect }: StarterChipsProps) {
 
 export default function MuftiChatScreen() {
   const { theme } = useApp();
+  const { t, fontFamily, isPashto } = useI18n();
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<ChatRow>>(null);
   const [input, setInput] = useState('');
@@ -190,10 +183,7 @@ export default function MuftiChatScreen() {
     return items;
   }, [messages, isStreaming, streamingContent]);
 
-  const clearLabel = useMemo(
-    () => getClearLabel(input || messages[messages.length - 1]?.content || ''),
-    [input, messages],
-  );
+  const clearLabel = t('mufti.clear.title');
 
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const scrollRafRef = useRef<number | null>(null);
@@ -272,8 +262,8 @@ export default function MuftiChatScreen() {
   const handleClear = useCallback(() => {
     if (messages.length === 0) return;
 
-    Alert.alert(clearLabel, 'آیا مطمئن هستید؟', [
-      { text: 'انصراف', style: 'cancel' },
+    Alert.alert(t('mufti.clear.confirmTitle'), t('mufti.clear.confirmBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
         text: clearLabel,
         style: 'destructive',
@@ -282,7 +272,7 @@ export default function MuftiChatScreen() {
         },
       },
     ]);
-  }, [clearConversation, clearLabel, messages.length]);
+  }, [clearConversation, clearLabel, messages.length, t]);
 
   const renderItem = useCallback(
     ({ item }: { item: ChatRow }) => {
@@ -316,10 +306,13 @@ export default function MuftiChatScreen() {
           isUser={item.message.role === 'user'}
           text={item.message.content}
           theme={theme}
+          copiedLabel={t('common.copyReply')}
+          copyFailedLabel={t('common.copyFailed')}
+          errorLabel={t('common.error')}
         />
       );
     },
-    [theme],
+    [theme, t],
   );
 
   const chatBody = (
@@ -348,12 +341,14 @@ export default function MuftiChatScreen() {
                 theme={theme}
                 disabled={isStreaming || !isConfigured}
                 onSelect={handleStarterSelect}
+                isPashto={isPashto}
+                t={t}
               />
             }
             ListFooterComponent={
               isStreaming && !streamingContent ? (
                 <RtlText align="right" style={[styles.typing, { color: theme.textSecondary }]}>
-                  در حال نوشتن...
+                  {t('mufti.typing')}
                 </RtlText>
               ) : null
             }
@@ -380,6 +375,9 @@ export default function MuftiChatScreen() {
         <Pressable
           onPress={() => void handleSend()}
           disabled={!input.trim() || isStreaming || !isConfigured}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.send')}
+          testID="mufti-chat-send"
           style={[
             styles.sendButton,
             { backgroundColor: theme.tint },
@@ -392,7 +390,9 @@ export default function MuftiChatScreen() {
             <MaterialIcons name="send" size={22} color="#fff" />
           )}
         </Pressable>
-        <TextInput
+        <LocalizedTextInput
+          testID="mufti-chat-input"
+          accessibilityLabel={t('mufti.placeholder')}
           style={[
             styles.input,
             {
@@ -400,12 +400,13 @@ export default function MuftiChatScreen() {
               borderColor: theme.cardBorder,
               backgroundColor: theme.card,
               opacity: 1,
+              fontFamily,
             },
           ]}
           value={input}
           onChangeText={setInput}
           onFocus={() => scrollToBottom(false)}
-          placeholder="سوال فقهی خود را بنویسید..."
+          placeholder={t('mufti.placeholder')}
           placeholderTextColor={theme.textSecondary}
           multiline
           maxLength={4000}
@@ -425,8 +426,8 @@ export default function MuftiChatScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <RtlView style={[styles.screen, RTL_CONTAINER, { backgroundColor: theme.background }]}>
         <ScreenHeader
-          title="مفتی هوشمند حنفی"
-          subtitle="فقه حنفی — پاسخ راهنما"
+          title={t('home.mufti.title')}
+          subtitle={t('mufti.subtitle')}
           rightAction={
             messages.length > 0 ? (
               <Pressable onPress={handleClear} hitSlop={10}>
@@ -562,6 +563,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    minWidth: 0,
+    flexShrink: 1,
     minHeight: 44,
     maxHeight: 120,
     borderRadius: BorderRadius.lg,
@@ -576,6 +579,7 @@ const styles = StyleSheet.create({
   sendButton: {
     width: 44,
     height: 44,
+    flexShrink: 0,
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',

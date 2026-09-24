@@ -6,17 +6,19 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { isFastingDay } from '@/utils/islamicCalendar';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export function FastingCard() {
   const { theme } = useApp();
+  const { isPashto, t } = useI18n();
   const fasting = isFastingDay(new Date());
 
   if (!fasting.isFasting) return null;
 
   return (
     <RtlView style={[styles.card, { backgroundColor: theme.card, borderColor: theme.tint }]}>
-      <RtlText align="center" style={[styles.title, { color: theme.tint }]}>روزه امروز</RtlText>
-      <RtlText align="center" style={[styles.reason, { color: theme.text }]}>{fasting.reasonDari}</RtlText>
+      <RtlText align="center" style={[styles.title, { color: theme.tint }]}>{t('calendar.fasting.today')}</RtlText>
+      <RtlText align="center" style={[styles.reason, { color: theme.text }]}>{isPashto ? fasting.reasonPashto : fasting.reasonDari}</RtlText>
     </RtlView>
   );
 }

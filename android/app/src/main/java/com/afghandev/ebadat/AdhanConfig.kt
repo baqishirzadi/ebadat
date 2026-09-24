@@ -124,8 +124,8 @@ data class AdhanConfig(
   }
 
   companion object {
-    const val DEFAULT_FAJR_CHANNEL = "adhan-fajr-v7"
-    const val DEFAULT_REGULAR_CHANNEL = "adhan-regular-v7"
+    const val DEFAULT_FAJR_CHANNEL = "adhan-fajr-v8-fa"
+    const val DEFAULT_REGULAR_CHANNEL = "adhan-regular-v8-fa"
 
     fun fromReadableMap(map: ReadableMap): AdhanConfig {
       val latitude = map.getDouble("latitude")

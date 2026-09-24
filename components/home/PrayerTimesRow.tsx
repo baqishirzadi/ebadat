@@ -9,7 +9,8 @@ import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
 import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
-import { PRAYER_LABELS_DARI, PrayerTimes } from '@/utils/prayerTimes';
+import { PRAYER_LABELS_DARI, prayerLabel, PrayerTimes } from '@/utils/prayerTimes';
+import { useApp } from '@/context/AppContext';
 
 const PRAYERS = [
   { key: 'fajr' as const, label: PRAYER_LABELS_DARI.fajr },
@@ -24,6 +25,7 @@ interface PrayerTimesRowProps {
 }
 
 export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
+  const { state: appState } = useApp();
   const { state } = usePrayer();
   const now = new Date();
   const current = prayerTimes ? getCurrentPrayerKey(prayerTimes, now) : null;
@@ -40,7 +42,7 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
               key={prayer.key}
               label={displayPrayerLabel(
                 prayer.key,
-                prayer.label,
+                prayerLabel(prayer.key, appState.preferences.appLanguage),
                 state.settings.selectedCity,
                 state.location,
               )}

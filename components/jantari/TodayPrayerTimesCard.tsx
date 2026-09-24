@@ -11,12 +11,14 @@ import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
 import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
-import { PRAYER_LABELS_DARI } from '@/utils/prayerTimes';
+import { PRAYER_LABELS_DARI, prayerLabel } from '@/utils/prayerTimes';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
 function TodayPrayerTimesCardInner() {
   const { theme } = useApp();
+  const { isPashto, language, t } = useI18n();
   const { state } = usePrayer();
   const prayerTimes = state.prayerTimes;
   const now = new Date();
@@ -26,14 +28,14 @@ function TodayPrayerTimesCardInner() {
 
   return (
     <RtlView style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-      <RtlText align="center" style={[styles.title, { color: theme.text }]}>اوقات نماز امروز</RtlText>
+      <RtlText align="center" style={[styles.title, { color: theme.text }]}>{t('calendar.prayerTimes.today')}</RtlText>
       <RtlView style={styles.chips}>
         {PRAYER_KEYS.map((key) => (
           <PrayerChip
             key={key}
             label={displayPrayerLabel(
               key,
-              PRAYER_LABELS_DARI[key],
+              prayerLabel(key, language),
               state.settings.selectedCity,
               state.location,
             )}
@@ -44,7 +46,7 @@ function TodayPrayerTimesCardInner() {
       </RtlView>
       <Pressable onPress={() => router.push('/adhan-settings')} style={styles.link}>
         <RtlText align="center" style={{ color: theme.tint, fontFamily: 'Vazirmatn-Bold', fontSize: Typography.ui.caption }}>
-          تنظیمات اذان
+          {t('calendar.prayerSettings')}
         </RtlText>
       </Pressable>
     </RtlView>

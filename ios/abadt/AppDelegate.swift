@@ -13,6 +13,8 @@ public class AppDelegate: ExpoAppDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+    seedInitialLayoutDirection()
+
     let delegate = ReactNativeDelegate()
     let factory = ExpoReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
@@ -30,6 +32,15 @@ public class AppDelegate: ExpoAppDelegate {
 #endif
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  /// Seeds RTL on the very first launch only (the app defaults to Dari). After
+  /// that the stored value is owned by JS so picking English can turn RTL off.
+  private func seedInitialLayoutDirection() {
+    let defaults = UserDefaults.standard
+    guard defaults.object(forKey: "RCTI18nUtil_forceRTL") == nil else { return }
+    defaults.set(true, forKey: "RCTI18nUtil_allowRTL")
+    defaults.set(true, forKey: "RCTI18nUtil_forceRTL")
   }
 
   // Linking API

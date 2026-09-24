@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+
+import { Alert, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { HadithAdminPayload, HadithAuthenticityGrade, HadithSourceBook, HadithSpecialDay } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
@@ -155,7 +157,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
 
       <View style={styles.group}>
         <CText style={[styles.label, { color: theme.textSecondary }]}>متن عربی</CText>
-        <TextInput
+        <LocalizedTextInput
           value={arabicText}
           onChangeText={setArabicText}
           multiline
@@ -173,7 +175,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
 
       <View style={styles.group}>
         <CText style={[styles.label, { color: theme.textSecondary }]}>ترجمه دری</CText>
-        <TextInput
+        <LocalizedTextInput
           value={dariTranslation}
           onChangeText={setDariTranslation}
           multiline
@@ -191,7 +193,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
 
       <View style={styles.group}>
         <CText style={[styles.label, { color: theme.textSecondary }]}>ترجمه پشتو</CText>
-        <TextInput
+        <LocalizedTextInput
           value={pashtoTranslation}
           onChangeText={setPashtoTranslation}
           multiline
@@ -283,7 +285,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
       <View style={styles.inlineRow}>
         <View style={styles.inlineItem}>
           <CText style={[styles.label, { color: theme.textSecondary }]}>شماره منبع</CText>
-          <TextInput
+          <LocalizedTextInput
             value={sourceNumber}
             onChangeText={setSourceNumber}
             textAlign="center"
@@ -300,7 +302,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
 
         <View style={styles.inlineItem}>
           <CText style={[styles.label, { color: theme.textSecondary }]}>شماره روزانه (اختیاری)</CText>
-          <TextInput
+          <LocalizedTextInput
             value={dailyIndexInput}
             onChangeText={setDailyIndexInput}
             keyboardType="number-pad"
@@ -319,7 +321,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
 
       <View style={styles.group}>
         <CText style={[styles.label, { color: theme.textSecondary }]}>موضوعات (با ویرگول جدا کنید)</CText>
-        <TextInput
+        <LocalizedTextInput
           value={topicsInput}
           onChangeText={setTopicsInput}
           textAlign="center"
@@ -374,7 +376,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
         <View style={styles.inlineRow}>
           <View style={styles.inlineItem}>
             <CText style={[styles.subLabel, { color: theme.textSecondary }]}>ماه</CText>
-            <TextInput
+            <LocalizedTextInput
               value={hijriMonthInput}
               onChangeText={setHijriMonthInput}
               keyboardType="number-pad"
@@ -391,7 +393,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
           </View>
           <View style={styles.inlineItem}>
             <CText style={[styles.subLabel, { color: theme.textSecondary }]}>از روز</CText>
-            <TextInput
+            <LocalizedTextInput
               value={hijriDayStartInput}
               onChangeText={setHijriDayStartInput}
               keyboardType="number-pad"
@@ -408,7 +410,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
           </View>
           <View style={styles.inlineItem}>
             <CText style={[styles.subLabel, { color: theme.textSecondary }]}>تا روز</CText>
-            <TextInput
+            <LocalizedTextInput
               value={hijriDayEndInput}
               onChangeText={setHijriDayEndInput}
               keyboardType="number-pad"

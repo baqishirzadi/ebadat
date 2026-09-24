@@ -1,14 +1,8 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  InteractionManager,
-  LayoutChangeEvent,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+
+import { ActivityIndicator, InteractionManager, LayoutChangeEvent, Pressable, StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
@@ -23,15 +17,11 @@ import { getDayEventTypeFromParts, type DayEventType } from '@/utils/calendarEve
 import { debugLog } from '@/utils/debugLog';
 import { gregorianToHijri, hijriToGregorian, HIJRI_MONTHS } from '@/utils/islamicCalendar';
 import { shamsiToGregorian } from '@/utils/afghanSolarHijri';
-import { toArabicNumerals } from '@/utils/numbers';
+import { GREG_MONTHS_EN, weekdayGridHeaders } from '@/utils/calendarDisplay';
+import { formatNumber, toArabicNumerals } from '@/utils/numbers';
+import { useI18n } from '@/utils/i18n/useI18n';
 
-const WEEKDAY_HEADERS = ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'];
 const FRIDAY_COLUMN = 6;
-
-const GREG_MONTHS_FA = [
-  'جنوری', 'فبروری', 'مارچ', 'اپریل', 'می', 'جون',
-  'جولای', 'اگست', 'سپتمبر', 'اکتوبر', 'نومبر', 'دسمبر',
-];
 
 type DayCellData = {
   day: number;
@@ -225,7 +215,8 @@ interface MonthGridProps {
 }
 
 export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const { t, language } = useI18n();
   const truth = useTodayCalendar();
   const [deferredMode, setDeferredMode] = useState(mode);
   const [isBuilding, setIsBuilding] = useState(false);
@@ -275,12 +266,13 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
 
     const { year: y, month: m } = addMonths(baseYear, baseMonth, monthOffset);
 
+    const year = formatNumber(y, language);
     const title =
       deferredMode === 'qamari'
-        ? `${HIJRI_MONTHS[m - 1]?.dari ?? ''} ${toArabicNumerals(y)}`
+        ? `${HIJRI_MONTHS[m - 1]?.[language] ?? ''} ${year}`
         : deferredMode === 'shamsi'
-          ? `${AFGHAN_SOLAR_MONTHS[m - 1]?.dari ?? ''} ${toArabicNumerals(y)}`
-          : `${GREG_MONTHS_FA[m - 1]} ${toArabicNumerals(y)}`;
+          ? `${AFGHAN_SOLAR_MONTHS[m - 1]?.[language] ?? ''} ${year}`
+          : `${GREG_MONTHS_EN[m - 1]} ${year}`;
 
     setGridMeta({ year: y, month: m, monthTitle: title });
     setIsBuilding(true);
@@ -312,7 +304,7 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
       cancelled = true;
       cancelBuild();
     };
-  }, [deferredMode, monthOffset, todayKey, truth.gregorianDate, truth.hijri.month, truth.hijri.year, truth.shamsi.month, truth.shamsi.year]);
+  }, [deferredMode, monthOffset, todayKey, truth.gregorianDate, truth.hijri.month, truth.hijri.year, truth.shamsi.month, truth.shamsi.year, language]);
 
   const { year, month, monthTitle } = gridMeta;
 
@@ -340,19 +332,19 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
 
       <View style={styles.gridLayout} onLayout={handleGridLayout}>
         <RtlView style={styles.weekHeader}>
-          {WEEKDAY_HEADERS.map((d, i) => (
+          {weekdayGridHeaders(language).map((d, i) => (
             <View
               key={i}
               style={[styles.weekdayCell, colWidth > 0 ? { width: colWidth } : styles.weekdayCellFlex]}
             >
-              <Text
+              <LocalizedText
                 style={[
                   styles.weekday,
                   { color: i === FRIDAY_COLUMN ? theme.textSecondary : theme.textSecondary },
                 ]}
               >
                 {d}
-              </Text>
+              </LocalizedText>
             </View>
           ))}
         </RtlView>
@@ -380,22 +372,22 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
       <RtlView style={styles.legendRow}>
         <View style={styles.legendItem}>
           <View style={[styles.legendSwatch, { backgroundColor: `${theme.tint}18`, borderColor: theme.tint }]} />
-          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>مناسبت اسلامی</RtlText>
+          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>{t('calendar.legend.islamic')}</RtlText>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendSwatch, { backgroundColor: `${theme.bookmark}22`, borderColor: theme.bookmark }]} />
-          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>مناسبت فرهنگی</RtlText>
+          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>{t('calendar.legend.cultural')}</RtlText>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendSwatch, { backgroundColor: theme.tint, borderColor: theme.bookmark, borderWidth: 2 }]} />
-          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>امروز</RtlText>
+          <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>{t('calendar.today')}</RtlText>
         </View>
       </RtlView>
 
       {monthOffset !== 0 ? (
         <Pressable onPress={() => setMonthOffset(0)} style={styles.todayLink}>
           <RtlText align="center" style={{ color: theme.tint, fontFamily: 'Vazirmatn-Bold', fontSize: Typography.ui.caption }}>
-            برو به امروز
+            {t('calendar.goToToday')}
           </RtlText>
         </Pressable>
       ) : null}

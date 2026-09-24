@@ -31,7 +31,7 @@ export function OnboardingStartupRedirect() {
         .then((route) => router.replace(route as never))
         .catch(() => router.replace('/onboarding/notifications' as never));
     } else {
-      router.replace('/onboarding' as never);
+      router.replace('/onboarding/language' as never);
     }
   }, [checked, needsOnboarding, hasCity, router, segments]);
 

@@ -16,19 +16,18 @@ import { Bookmark } from '@/types/quran';
 import CenteredText from '@/components/CenteredText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { toArabicNumerals } from '@/utils/numbers';
+import { formatGregorianDateCompact } from '@/utils/calendarDisplay';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 // Format date
 const formatDate = (timestamp: number): string => {
   const date = new Date(timestamp);
-  return date.toLocaleDateString('fa-AF', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
+  return formatGregorianDateCompact(date, toArabicNumerals);
 };
 
 export default function BookmarksScreen() {
   const { theme, state } = useApp();
+  const { t, n } = useI18n();
   const { bookmarks, removeBookmark } = useBookmarks();
   const { getSurah, getAyah } = useQuranData();
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
@@ -58,19 +57,22 @@ export default function BookmarksScreen() {
     (bookmark: Bookmark) => {
       const surah = getSurah(bookmark.surahNumber);
       Alert.alert(
-        'حذف نشانه',
-        `آیا می‌خواهید نشانه سوره ${surah?.name || ''} آیه ${toArabicNumerals(bookmark.ayahNumber)} را حذف کنید؟`,
+        t('bookmarks.delete.title'),
+        t('bookmarks.delete.body', {
+          surah: surah?.name || '',
+          ayah: n(bookmark.ayahNumber),
+        }),
         [
-          { text: 'لغو', style: 'cancel' },
+          { text: t('common.cancel'), style: 'cancel' },
           {
-            text: 'حذف',
+            text: t('common.delete'),
             style: 'destructive',
             onPress: () => removeBookmark(bookmark.id),
           },
         ]
       );
     },
-    [getSurah, removeBookmark]
+    [getSurah, removeBookmark, t, n]
   );
 
   const renderBookmark = useCallback(

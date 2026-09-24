@@ -16,7 +16,7 @@ import { tUi } from '@/utils/i18n/ui';
 
 export default function NaatDownloadsScreen() {
   const { theme, state } = useApp();
-  const isPashto = state.preferences.appLanguage === 'pashto';
+  const language = state.preferences.appLanguage;
   const router = useRouter();
   const { naats, player, play, playFromQueue, togglePlayPause, download, seek } = useNaat();
 
@@ -50,7 +50,7 @@ export default function NaatDownloadsScreen() {
 
       <ScrollView contentContainerStyle={[styles.content, player.current && styles.contentWithMiniPlayer]}>
         <View style={[styles.summaryCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <RtlText align="center" style={[styles.summaryTitle, { color: theme.text }]}>{isPashto ? 'ساتل شوې اندازه' : 'حجم ذخیره‌شده'}</RtlText>
+          <RtlText align="center" style={[styles.summaryTitle, { color: theme.text }]}>{tUi('حجم ذخیره‌شده', language)}</RtlText>
           <RtlText align="center" style={[styles.summaryValue, { color: theme.tint }]}>{totalSize} MB</RtlText>
         </View>
 
@@ -87,9 +87,9 @@ export default function NaatDownloadsScreen() {
         )}
 
         <View style={styles.section}>
-          <RtlText align="center" style={[styles.sectionTitle, { color: theme.textSecondary }]}>{isPashto ? 'ښکته شوي نعتونه' : 'دانلود شده'}</RtlText>
+          <RtlText align="center" style={[styles.sectionTitle, { color: theme.textSecondary }]}>{tUi('دانلود شده', language)}</RtlText>
           {downloaded.length === 0 ? (
-            <RtlText align="center" style={[styles.emptyText, { color: theme.textSecondary }]}>{isPashto ? 'لا څه نه دي ښکته شوي' : 'هنوز چیزی دانلود نشده است'}</RtlText>
+            <RtlText align="center" style={[styles.emptyText, { color: theme.textSecondary }]}>{tUi('هنوز چیزی دانلود نشده است', language)}</RtlText>
           ) : (
             downloaded.map((naat) => {
               const isActive = player.current?.id === naat.id;

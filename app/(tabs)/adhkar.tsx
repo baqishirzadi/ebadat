@@ -4,7 +4,10 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, ScrollView, Pressable, Text } from 'react-native';
+
+import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
+import { RtlView } from '@/components/ui/RtlView';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
@@ -13,6 +16,7 @@ import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import adhkarData from '@/data/adhkar.json';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { RtlText } from '@/components/ui/RtlText';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 // Category type
 interface AdhkarCategory {
@@ -25,8 +29,8 @@ interface AdhkarCategory {
 }
 
 export default function AdhkarScreen() {
-  const { theme, state } = useApp();
-  const isPashto = state.preferences.appLanguage === 'pashto';
+  const { theme } = useApp();
+  const { t, n, content, fontFamily } = useI18n();
   const { unreadCount } = useDua();
   const router = useRouter();
   const categories = adhkarData.categories as AdhkarCategory[];
@@ -42,14 +46,14 @@ export default function AdhkarScreen() {
     <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
       <ScreenHeader
         icon="auto-awesome"
-        title="اذکار"
-        subtitle="یادآوری‌های روزانه"
+        title={t('adhkar.title')}
+        subtitle={t('adhkar.subtitle')}
       />
 
       {/* Featured Adhkar Section */}
       <View style={styles.section}>
-        <RtlText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          اذکار پرکاربرد
+        <RtlText align="center" style={[styles.sectionTitle, { color: theme.textSecondary, fontFamily }]}>
+          {t('adhkar.featured')}
         </RtlText>
         <View style={styles.featuredGrid}>
           {categories
@@ -65,10 +69,12 @@ export default function AdhkarScreen() {
                 ]}
               >
                 <MaterialIcons name={category.icon as any} size={28} color="#fff" />
-                <RtlText style={styles.featuredTitle} numberOfLines={2}>{isPashto ? category.namePashto : category.nameDari}</RtlText>
-                <Text style={styles.featuredCount}>
-                  {(adhkarData.adhkar as Record<string, unknown[]>)[category.id]?.length || 0} {isPashto ? 'ذکر' : 'ذکر'}
-                </Text>
+                <RtlText align="center" style={styles.featuredTitle} numberOfLines={2}>{content(category, 'name')}</RtlText>
+                <LocalizedText style={styles.featuredCount}>
+                  {t('adhkar.count', {
+                    count: n((adhkarData.adhkar as Record<string, unknown[]>)[category.id]?.length || 0),
+                  })}
+                </LocalizedText>
               </Pressable>
             ))}
         </View>
@@ -76,8 +82,8 @@ export default function AdhkarScreen() {
 
       {/* All Categories */}
       <View style={styles.section}>
-        <RtlText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-          همه دسته‌بندی‌ها
+        <RtlText align="center" style={[styles.sectionTitle, { color: theme.textSecondary, fontFamily }]}>
+          {t('adhkar.allCategories')}
         </RtlText>
         <View style={styles.categoriesList}>
           {categories.map((category) => (
@@ -90,23 +96,25 @@ export default function AdhkarScreen() {
                 pressed && styles.cardPressed,
               ]}
             >
-              <View style={[styles.categoryIcon, { backgroundColor: `${category.color}20` }]}>
-                <MaterialIcons name={category.icon as any} size={24} color={category.color} />
-              </View>
-              <View style={styles.categoryInfo}>
-                <RtlText style={[styles.categoryName, { color: theme.text }]}>
-                  {isPashto ? category.namePashto : category.nameDari}
-                </RtlText>
-                <Text style={[styles.categoryNameArabic, { color: theme.textSecondary }]}>
-                  {category.nameArabic}
-                </Text>
-              </View>
-              <View style={styles.categoryMeta}>
-                <Text style={[styles.categoryCount, { color: theme.textSecondary }]}>
-                  {(adhkarData.adhkar as Record<string, unknown[]>)[category.id]?.length || 0}
-                </Text>
-                <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
-              </View>
+              <RtlView style={styles.categoryCardContent}>
+                <View style={[styles.categoryIcon, { backgroundColor: `${category.color}20` }]}>
+                  <MaterialIcons name={category.icon as any} size={24} color={category.color} />
+                </View>
+                <View style={styles.categoryInfo}>
+                  <RtlText align="center" style={[styles.categoryName, { color: theme.text }]} numberOfLines={2}>
+                    {content(category, 'name')}
+                  </RtlText>
+                  <LocalizedText style={[styles.categoryNameArabic, { color: theme.textSecondary }]}>
+                    {category.nameArabic}
+                  </LocalizedText>
+                  <LocalizedText style={[styles.categoryCount, { color: theme.textSecondary }]}>
+                    {n((adhkarData.adhkar as Record<string, unknown[]>)[category.id]?.length || 0)}
+                  </LocalizedText>
+                </View>
+                <View style={styles.categoryActionSlot}>
+                  <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
+                </View>
+              </RtlView>
             </Pressable>
           ))}
         </View>
@@ -117,14 +125,18 @@ export default function AdhkarScreen() {
         onPress={() => router.push('/counter')}
         style={[styles.counterCard, { backgroundColor: theme.tint }]}
       >
-        <View style={styles.counterContent}>
-          <MaterialIcons name="touch-app" size={32} color="#fff" />
-          <View style={styles.counterInfo}>
-            <RtlText style={styles.counterTitle}>شمارنده ذکر</RtlText>
-            <RtlText style={styles.counterSubtitle}>تسبیح دیجیتال</RtlText>
+        <RtlView style={styles.counterRow}>
+          <View style={styles.counterSideSlot}>
+            <MaterialIcons name="touch-app" size={32} color="#fff" />
           </View>
-        </View>
-        <MaterialIcons name="chevron-left" size={28} color="rgba(255,255,255,0.8)" />
+          <View style={styles.counterInfo}>
+            <RtlText align="center" style={[styles.counterTitle, { fontFamily }]}>{t('adhkar.counter')}</RtlText>
+            <RtlText align="center" style={[styles.counterSubtitle, { fontFamily }]}>{t('adhkar.counter.subtitle')}</RtlText>
+          </View>
+          <View style={styles.counterSideSlot}>
+            <MaterialIcons name="chevron-left" size={28} color="rgba(255,255,255,0.8)" />
+          </View>
+        </RtlView>
       </Pressable>
 
       {/* Dua Request Section - below counter */}
@@ -136,23 +148,25 @@ export default function AdhkarScreen() {
           pressed && styles.duaCardPressed,
         ]}
       >
-        <View style={styles.duaCardContent}>
+        <RtlView style={styles.duaCardRow}>
           <View style={styles.duaIconContainer}>
-            <Text style={styles.duaEmoji}>🤲</Text>
+            <LocalizedText style={styles.duaEmoji}>🤲</LocalizedText>
             {unreadCount > 0 ? (
               <View style={styles.duaUnreadBadge}>
-                <Text style={styles.duaUnreadText}>{unreadCount > 9 ? '۹+' : String(unreadCount)}</Text>
+                <LocalizedText style={styles.duaUnreadText}>{unreadCount > 9 ? `${n(9)}+` : n(unreadCount)}</LocalizedText>
               </View>
             ) : null}
           </View>
           <View style={styles.duaCardInfo}>
-            <RtlText style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</RtlText>
-            <RtlText style={styles.duaCardSubtitle}>
-              درخواست دعای خیر و راهنمایی شرعی؛ با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
+            <RtlText align="center" style={[styles.duaCardTitle, { fontFamily }]}>{t('adhkar.dua.title')}</RtlText>
+            <RtlText align="center" style={[styles.duaCardSubtitle, { fontFamily }]}>
+              {t('adhkar.dua.body')}
             </RtlText>
           </View>
-        </View>
-        <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
+          <View style={styles.duaActionSlot}>
+            <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
+          </View>
+        </RtlView>
       </Pressable>
       <View style={styles.bottomPadding} />
     </ScrollView>
@@ -200,7 +214,9 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     fontWeight: '600',
     marginBottom: Spacing.md,
-paddingRight: Spacing.sm,
+    alignSelf: 'stretch',
+    textAlign: 'center',
+    paddingHorizontal: Spacing.sm,
     textTransform: 'uppercase',
   },
   featuredGrid: {
@@ -226,6 +242,8 @@ paddingRight: Spacing.sm,
   featuredCount: {
     fontSize: Typography.ui.caption,
     color: 'rgba(255,255,255,0.8)',
+    textAlign: 'center',
+    includeFontPadding: false,
   },
   cardPressed: {
     opacity: 0.9,
@@ -235,11 +253,14 @@ paddingRight: Spacing.sm,
     gap: Spacing.sm,
   },
   categoryCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
+  },
+  categoryCardContent: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: Spacing.md,
   },
   categoryIcon: {
@@ -251,9 +272,9 @@ paddingRight: Spacing.sm,
   },
   categoryInfo: {
     flex: 1,
+    minWidth: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.sm,
   },
   categoryName: {
     fontSize: Typography.ui.body,
@@ -271,30 +292,39 @@ paddingRight: Spacing.sm,
     includeFontPadding: false,
     alignSelf: 'stretch',
   },
-  categoryMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.xs,
-  },
   categoryCount: {
     fontSize: Typography.ui.caption,
+    marginTop: 3,
+    textAlign: 'center',
+    includeFontPadding: false,
+  },
+  categoryActionSlot: {
+    width: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   counterCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     marginHorizontal: Spacing.md,
     marginTop: Spacing.xl,
     padding: Spacing.lg,
     borderRadius: BorderRadius.xl,
   },
-  counterContent: {
+  counterRow: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
+    gap: Spacing.sm,
+  },
+  counterSideSlot: {
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   counterInfo: {
-    alignItems: 'flex-start',
+    flex: 1,
+    minWidth: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   counterTitle: {
     fontSize: Typography.ui.subtitle,
@@ -306,9 +336,6 @@ paddingRight: Spacing.sm,
     color: 'rgba(255,255,255,0.8)',
   },
   duaCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
     marginHorizontal: Spacing.md,
     marginTop: Spacing.md,
     paddingVertical: Spacing.md,
@@ -324,11 +351,11 @@ paddingRight: Spacing.sm,
     opacity: 0.9,
     transform: [{ scale: 0.98 }],
   },
-  duaCardContent: {
+  duaCardRow: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
-    flex: 1,
   },
   duaIconContainer: {
     width: 44,
@@ -341,7 +368,7 @@ paddingRight: Spacing.sm,
   duaUnreadBadge: {
     position: 'absolute',
     top: -4,
-    left: -4,
+    right: -4,
     minWidth: 18,
     height: 18,
     borderRadius: 9,
@@ -365,7 +392,13 @@ paddingRight: Spacing.sm,
   },
   duaCardInfo: {
     flex: 1,
+    minWidth: 0,
     alignItems: 'center',
+  },
+  duaActionSlot: {
+    width: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   duaCardTitle: {
     fontSize: Typography.ui.body,

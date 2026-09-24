@@ -1,16 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  NativeSyntheticEvent,
-  TextInputSelectionChangeEventData,
-} from 'react-native';
+
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, View, NativeSyntheticEvent, TextInputSelectionChangeEventData } from 'react-native';
+import { LocalizedText, LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { ArticleCategory, ArticleLanguage, ARTICLE_CATEGORIES, Scholar } from '@/types/articles';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
@@ -206,7 +197,7 @@ export function ArticleComposer({
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}> 
       <View style={styles.section}>
-        <Text style={[styles.label, { color: theme.text }]}>نویسنده</Text>
+        <LocalizedText style={[styles.label, { color: theme.text }]}>نویسنده</LocalizedText>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
           {normalizedScholars.map((scholar) => {
             const selected = selectedAuthorId === scholar.id;
@@ -223,9 +214,9 @@ export function ArticleComposer({
                   },
                 ]}
               >
-                <Text style={[styles.chipText, { color: selected ? '#fff' : theme.text }]} numberOfLines={1}>
+                <LocalizedText style={[styles.chipText, { color: selected ? '#fff' : theme.text }]} numberOfLines={1}>
                   {scholar.fullName}
-                </Text>
+                </LocalizedText>
               </Pressable>
             );
           })}
@@ -233,7 +224,7 @@ export function ArticleComposer({
       </View>
 
       <View style={styles.section}>
-        <Text style={[styles.label, { color: theme.text }]}>زبان</Text>
+        <LocalizedText style={[styles.label, { color: theme.text }]}>زبان</LocalizedText>
         <View style={styles.languageRow}>
           <Pressable
             onPress={() => setLanguage('dari')}
@@ -246,7 +237,7 @@ export function ArticleComposer({
               },
             ]}
           >
-            <Text style={[styles.languageText, { color: language === 'dari' ? '#fff' : theme.text }]}>دری</Text>
+            <LocalizedText style={[styles.languageText, { color: language === 'dari' ? '#fff' : theme.text }]}>دری</LocalizedText>
           </Pressable>
           <Pressable
             onPress={() => setLanguage('pashto')}
@@ -259,13 +250,13 @@ export function ArticleComposer({
               },
             ]}
           >
-            <Text style={[styles.languageText, { color: language === 'pashto' ? '#fff' : theme.text }]}>پښتو</Text>
+            <LocalizedText style={[styles.languageText, { color: language === 'pashto' ? '#fff' : theme.text }]}>پښتو</LocalizedText>
           </Pressable>
         </View>
       </View>
 
       <View style={styles.section}>
-        <Text style={[styles.label, { color: theme.text }]}>دسته‌بندی</Text>
+        <LocalizedText style={[styles.label, { color: theme.text }]}>دسته‌بندی</LocalizedText>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chipRow}>
           {categories.map((item) => {
             const selected = category === item.id;
@@ -283,9 +274,9 @@ export function ArticleComposer({
                 ]}
               >
                 <MaterialIcons name={item.icon as never} size={14} color={selected ? '#fff' : item.color} />
-                <Text style={[styles.categoryText, { color: selected ? '#fff' : theme.text }]}>
+                <LocalizedText style={[styles.categoryText, { color: selected ? '#fff' : theme.text }]}>
                   {item.nameDari}
-                </Text>
+                </LocalizedText>
               </Pressable>
             );
           })}
@@ -293,8 +284,8 @@ export function ArticleComposer({
       </View>
 
       <View style={styles.section}>
-        <Text style={[styles.label, { color: theme.text }]}>عنوان</Text>
-        <TextInput
+        <LocalizedText style={[styles.label, { color: theme.text }]}>عنوان</LocalizedText>
+        <LocalizedTextInput
           value={title}
           onChangeText={setTitle}
           editable={!busy}
@@ -313,46 +304,46 @@ export function ArticleComposer({
       </View>
 
       <View style={styles.section}>
-        <Text style={[styles.label, { color: theme.text }]}>ابزار نگارش</Text>
+        <LocalizedText style={[styles.label, { color: theme.text }]}>ابزار نگارش</LocalizedText>
         <View style={styles.toolbar}>
           <Pressable
             onPress={() => applyFormat('h2')}
             disabled={busy}
             style={[styles.toolButton, { borderColor: theme.cardBorder, backgroundColor: theme.backgroundSecondary }]}
           >
-            <Text style={[styles.toolButtonText, { color: theme.text }]}>H2</Text>
+            <LocalizedText style={[styles.toolButtonText, { color: theme.text }]}>H2</LocalizedText>
           </Pressable>
           <Pressable
             onPress={() => applyFormat('mark')}
             disabled={busy}
             style={[styles.toolButton, { borderColor: theme.cardBorder, backgroundColor: theme.backgroundSecondary }]}
           >
-            <Text style={[styles.toolButtonText, { color: theme.text }]}>هایلایت</Text>
+            <LocalizedText style={[styles.toolButtonText, { color: theme.text }]}>هایلایت</LocalizedText>
           </Pressable>
           <Pressable
             onPress={() => applyFormat('strong')}
             disabled={busy}
             style={[styles.toolButton, { borderColor: theme.cardBorder, backgroundColor: theme.backgroundSecondary }]}
           >
-            <Text style={[styles.toolButtonText, { color: theme.text }]}>Bold</Text>
+            <LocalizedText style={[styles.toolButtonText, { color: theme.text }]}>Bold</LocalizedText>
           </Pressable>
           <Pressable
             onPress={() => applyFormat('em')}
             disabled={busy}
             style={[styles.toolButton, { borderColor: theme.cardBorder, backgroundColor: theme.backgroundSecondary }]}
           >
-            <Text style={[styles.toolButtonText, { color: theme.text }]}>Em</Text>
+            <LocalizedText style={[styles.toolButtonText, { color: theme.text }]}>Em</LocalizedText>
           </Pressable>
           <Pressable
             onPress={() => applyFormat('p')}
             disabled={busy}
             style={[styles.toolButton, { borderColor: theme.cardBorder, backgroundColor: theme.backgroundSecondary }]}
           >
-            <Text style={[styles.toolButtonText, { color: theme.text }]}>P</Text>
+            <LocalizedText style={[styles.toolButtonText, { color: theme.text }]}>P</LocalizedText>
           </Pressable>
         </View>
 
-        <TextInput
+        <LocalizedTextInput
           value={body}
           onChangeText={setBody}
           onSelectionChange={handleSelectionChange}
@@ -380,7 +371,7 @@ export function ArticleComposer({
           disabled={busy}
           style={[styles.actionSecondary, { borderColor: theme.cardBorder, backgroundColor: theme.backgroundSecondary }]}
         >
-          <Text style={[styles.actionSecondaryText, { color: theme.text }]}>بستن</Text>
+          <LocalizedText style={[styles.actionSecondaryText, { color: theme.text }]}>بستن</LocalizedText>
         </Pressable>
 
         <Pressable
@@ -391,7 +382,7 @@ export function ArticleComposer({
           {isSaving ? (
             <ActivityIndicator size="small" color={theme.text} />
           ) : (
-            <Text style={[styles.actionSecondaryText, { color: theme.text }]}>ذخیره پیش‌نویس</Text>
+            <LocalizedText style={[styles.actionSecondaryText, { color: theme.text }]}>ذخیره پیش‌نویس</LocalizedText>
           )}
         </Pressable>
 
@@ -403,7 +394,7 @@ export function ArticleComposer({
           {isPublishing ? (
             <ActivityIndicator size="small" color="#fff" />
           ) : (
-            <Text style={styles.actionPrimaryText}>انتشار</Text>
+            <LocalizedText style={styles.actionPrimaryText}>انتشار</LocalizedText>
           )}
         </Pressable>
       </View>

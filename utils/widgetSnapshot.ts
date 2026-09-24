@@ -1,13 +1,14 @@
 import { addDaysToDateKey, getDateKeyInTimezone, nextLocalMidnightMs } from '@/utils/prayerTimezone';
-import { formatGregorianDateCompact, formatShamsiSlash, WEEKDAYS_DARI } from '@/utils/calendarDisplay';
+import { formatGregorianDateCompact, formatShamsiSlash, weekdayName, WEEKDAYS_DARI, WEEKDAYS_PASHTO } from '@/utils/calendarDisplay';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
+import { formatHijriDate } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
-import { PRAYER_LABELS_DARI, type PrayerTimes } from '@/utils/prayerTimes';
+import { PRAYER_LABELS_DARI, PRAYER_LABELS_PASHTO, prayerLabel, type PrayerTimes } from '@/utils/prayerTimes';
 import { PRAYER_POLICY_VERSION } from '@/utils/prayerCalculationPolicy';
 import { MAGHRIB_OFFSET_MINUTES } from '@/utils/adhanSchedulePolicy';
-import { getWidgetHadithForDateKey, type WidgetHadith } from '@/utils/widgetHadith';
 import type { DailyHadithLanguage } from '@/utils/ahadith/daily';
+import type { DariFontFamily, PashtoFontFamily } from '@/constants/theme';
 
 export const WIDGET_SNAPSHOT_KEY = 'ebadat_widget_snapshot_v1';
 
@@ -16,6 +17,8 @@ export type WidgetPrayerKey = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 export interface WidgetPrayerEntry {
   key: WidgetPrayerKey;
   labelDari: string;
+  labelPashto?: string;
+  labelEnglish?: string;
   time12h: string;
   atMs: number;
 }
@@ -23,18 +26,27 @@ export interface WidgetPrayerEntry {
 export interface WidgetDaySnapshot {
   dateKey: string;
   weekdayDari: string;
+  weekdayPashto?: string;
+  weekdayEnglish?: string;
   shamsiDisplay: string;
+  shamsiDisplayPashto?: string;
+  shamsiDisplayEnglish?: string;
   hijriDisplay: string;
+  hijriDisplayPashto?: string;
+  hijriDisplayEnglish?: string;
   gregorianDisplay: string;
   sunriseDisplay: string;
-  hadithText: string;
-  hadithSource: string;
+  sunriseDisplayPashto?: string;
+  sunriseDisplayEnglish?: string;
   prayers: WidgetPrayerEntry[];
 }
 
 export interface WidgetSnapshot {
-  /** Snapshot schema. Version 3 adds the inputs required for offline widget calculation. */
-  version: 3;
+  /** Snapshot schema 6 removes Hadith payloads from prayer widgets. */
+  version: 6;
+  appLanguage?: DailyHadithLanguage;
+  dariFont?: DariFontFamily;
+  pashtoFont?: PashtoFontFamily;
   updatedAt: string;
   cityName: string;
   timezone: string;
@@ -50,12 +62,18 @@ export interface WidgetSnapshot {
   days: WidgetDaySnapshot[];
   /** Derived display fields for the active day (kept for renderers). */
   weekdayDari: string;
+  weekdayPashto?: string;
+  weekdayEnglish?: string;
   shamsiDisplay: string;
+  shamsiDisplayPashto?: string;
+  shamsiDisplayEnglish?: string;
   hijriDisplay: string;
+  hijriDisplayPashto?: string;
+  hijriDisplayEnglish?: string;
   gregorianDisplay: string;
   sunriseDisplay: string;
-  hadithText: string;
-  hadithSource: string;
+  sunriseDisplayPashto?: string;
+  sunriseDisplayEnglish?: string;
   currentPrayer: WidgetPrayerKey | null;
   prayers: WidgetPrayerEntry[];
   nextRefreshAtMs: number;
@@ -75,14 +93,29 @@ function refreshDayCalendarDisplays(day: WidgetDaySnapshot): WidgetDaySnapshot {
   return {
     ...day,
     weekdayDari: WEEKDAYS_DARI[truth.weekday],
+    weekdayPashto: WEEKDAYS_PASHTO[truth.weekday],
+    weekdayEnglish: weekdayName(truth.weekday, 'english'),
     shamsiDisplay: formatShamsiSlash(truth.shamsi),
+    shamsiDisplayPashto: formatShamsiSlash(truth.shamsi, 'pashto'),
+    shamsiDisplayEnglish: formatShamsiSlash(truth.shamsi, 'english'),
     hijriDisplay: `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNameDari} ${toArabicNumerals(truth.hijri.year)}`,
+    hijriDisplayPashto: `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNamePashto} ${toArabicNumerals(truth.hijri.year)}`,
+    hijriDisplayEnglish: formatHijriDate(truth.hijri, 'english'),
     gregorianDisplay: formatGregorianDisplay(truth.gregorianDate),
   };
 }
 
-function formatSunriseDisplay(prayerTimes: PrayerTimes, timezone: string): string {
-  return `طلوع آفتاب ${formatPrayerTime12h(prayerTimes.sunrise, timezone)}`;
+function formatSunriseDisplay(prayerTimes: PrayerTimes, timezone: string, language: DailyHadithLanguage): string {
+  const time = formatPrayerTime12h(prayerTimes.sunrise, timezone);
+  if (language === 'english') return `Sunrise ${time}`;
+  return language === 'pashto' ? `لمر ختل ${time}` : `طلوع آفتاب ${time}`;
+}
+
+type LegacyHadithFields = { hadithText?: unknown; hadithSource?: unknown };
+
+function stripLegacyHadith<T extends object>(value: T): Omit<T, 'hadithText' | 'hadithSource'> {
+  const { hadithText: _hadithText, hadithSource: _hadithSource, ...clean } = value as T & LegacyHadithFields;
+  return clean as Omit<T, 'hadithText' | 'hadithSource'>;
 }
 
 function buildDaySnapshot(
@@ -90,26 +123,32 @@ function buildDaySnapshot(
   dateKey: string,
   timezone: string,
   noonAnchor: Date,
-  hadith?: WidgetHadith,
   language: DailyHadithLanguage = 'dari',
   maghribOffsetMinutes = 0,
 ): WidgetDaySnapshot {
   const truth = getCalendarTruth(noonAnchor);
-  const dailyHadith = hadith || getWidgetHadithForDateKey(dateKey, language);
   return {
     dateKey,
     weekdayDari: WEEKDAYS_DARI[truth.weekday],
+    weekdayPashto: WEEKDAYS_PASHTO[truth.weekday],
+    weekdayEnglish: weekdayName(truth.weekday, 'english'),
     shamsiDisplay: formatShamsiSlash(truth.shamsi),
+    shamsiDisplayPashto: formatShamsiSlash(truth.shamsi, 'pashto'),
+    shamsiDisplayEnglish: formatShamsiSlash(truth.shamsi, 'english'),
     hijriDisplay: `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNameDari} ${toArabicNumerals(truth.hijri.year)}`,
+    hijriDisplayPashto: `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNamePashto} ${toArabicNumerals(truth.hijri.year)}`,
+    hijriDisplayEnglish: formatHijriDate(truth.hijri, 'english'),
     gregorianDisplay: formatGregorianDisplay(truth.gregorianDate),
-    sunriseDisplay: formatSunriseDisplay(prayerTimes, timezone),
-    hadithText: dailyHadith.text,
-    hadithSource: dailyHadith.source,
+    sunriseDisplay: formatSunriseDisplay(prayerTimes, timezone, language),
+    sunriseDisplayPashto: formatSunriseDisplay(prayerTimes, timezone, 'pashto'),
+    sunriseDisplayEnglish: formatSunriseDisplay(prayerTimes, timezone, 'english'),
     prayers: PRAYER_ORDER.map((key) => ({
       key,
       // The canonical time already includes the country policy. Keep the
       // prayer label itself free of offset metadata.
       labelDari: PRAYER_LABELS_DARI[key],
+      labelPashto: PRAYER_LABELS_PASHTO[key],
+      labelEnglish: prayerLabel(key, 'english'),
       time12h: formatPrayerTime12h(prayerTimes[key], timezone),
       atMs: prayerTimes[key].getTime(),
     })),
@@ -200,6 +239,8 @@ export function buildWidgetSnapshot(
     maghribOffsetMinutes?: number;
     fixedDhuhrLocalTime?: string | null;
     appLanguage?: DailyHadithLanguage;
+    dariFont?: DariFontFamily;
+    pashtoFont?: PashtoFontFamily;
     multiDay?: Array<{ dateKey: string; times: PrayerTimes; noonAnchor: Date }>;
   },
 ): WidgetSnapshot {
@@ -217,7 +258,6 @@ export function buildWidgetSnapshot(
             day.dateKey,
             timezone,
             day.noonAnchor,
-            undefined,
             appLanguage,
             maghribOffsetMinutes,
           ),
@@ -227,7 +267,6 @@ export function buildWidgetSnapshot(
           todayKey,
           timezone,
           now,
-          undefined,
           appLanguage,
           maghribOffsetMinutes,
         )];
@@ -237,7 +276,10 @@ export function buildWidgetSnapshot(
   const currentPrayer = getCurrentPrayerFromEntries(active.prayers, now, previous?.prayers);
 
   return {
-    version: 3,
+    version: 6,
+    appLanguage,
+    dariFont: options?.dariFont ?? 'vazirmatn',
+    pashtoFont: options?.pashtoFont ?? 'amiri',
     updatedAt: now.toISOString(),
     cityName,
     timezone,
@@ -252,12 +294,14 @@ export function buildWidgetSnapshot(
     sourceLabel: options?.sourceLabel,
     days,
     weekdayDari: active.weekdayDari,
+    weekdayPashto: active.weekdayPashto,
     shamsiDisplay: active.shamsiDisplay,
+    shamsiDisplayPashto: active.shamsiDisplayPashto,
     hijriDisplay: active.hijriDisplay,
+    hijriDisplayPashto: active.hijriDisplayPashto,
     gregorianDisplay: active.gregorianDisplay,
     sunriseDisplay: active.sunriseDisplay,
-    hadithText: active.hadithText,
-    hadithSource: active.hadithSource,
+    sunriseDisplayPashto: active.sunriseDisplayPashto,
     currentPrayer,
     prayers: active.prayers,
     nextRefreshAtMs: computeNextRefreshAtMs(days, timezone, now),
@@ -265,21 +309,25 @@ export function buildWidgetSnapshot(
 }
 
 export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new Date()): WidgetSnapshot {
-  const timezone = snapshot.timezone || 'Asia/Kabul';
+  const cleanSnapshot = stripLegacyHadith(snapshot);
+  const timezone = cleanSnapshot.timezone || 'Asia/Kabul';
+  const appLanguage = cleanSnapshot.appLanguage || 'dari';
   const todayKey = getDateKeyInTimezone(now, timezone);
-  const storedDays = Array.isArray(snapshot.days) && snapshot.days.length > 0
-    ? snapshot.days
+  const storedDays = Array.isArray(cleanSnapshot.days) && cleanSnapshot.days.length > 0
+    ? cleanSnapshot.days.map((day) => stripLegacyHadith(day))
     : [
         {
           dateKey: getDateKeyInTimezone(now, timezone),
-          weekdayDari: snapshot.weekdayDari,
-          shamsiDisplay: snapshot.shamsiDisplay,
-          hijriDisplay: snapshot.hijriDisplay,
-          gregorianDisplay: snapshot.gregorianDisplay,
-          sunriseDisplay: snapshot.sunriseDisplay || '',
-          hadithText: snapshot.hadithText || getWidgetHadithForDateKey(getDateKeyInTimezone(now, timezone)).text,
-          hadithSource: snapshot.hadithSource || getWidgetHadithForDateKey(getDateKeyInTimezone(now, timezone)).source,
-          prayers: snapshot.prayers,
+          weekdayDari: cleanSnapshot.weekdayDari,
+          weekdayPashto: cleanSnapshot.weekdayPashto,
+          shamsiDisplay: cleanSnapshot.shamsiDisplay,
+          shamsiDisplayPashto: cleanSnapshot.shamsiDisplayPashto,
+          hijriDisplay: cleanSnapshot.hijriDisplay,
+          hijriDisplayPashto: cleanSnapshot.hijriDisplayPashto,
+          gregorianDisplay: cleanSnapshot.gregorianDisplay,
+          sunriseDisplay: cleanSnapshot.sunriseDisplay || '',
+          sunriseDisplayPashto: cleanSnapshot.sunriseDisplayPashto || '',
+          prayers: cleanSnapshot.prayers,
         },
       ];
   const days = storedDays.map(refreshDayCalendarDisplays);
@@ -287,33 +335,27 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
   const activeDay = days.find((day) => day.dateKey === todayKey);
   const active = activeDay || days[0];
   const previous = findPreviousDay(days, active);
-  // The prayer horizon is intentionally bounded. Even after it expires, the
-  // small daily Hadith strip must continue rotating from bundled data without
-  // waiting for the app to regenerate a snapshot.
-  // The stored day may have been generated several days ago. Always derive
-  // the Hadith from today's local key during a widget render so Android's
-  // periodic/date rollover update cannot keep displaying a stale entry.
-  const dateHadith = getWidgetHadithForDateKey(todayKey);
-  const dailyHadith = {
-    text: dateHadith.text || activeDay?.hadithText || snapshot.hadithText,
-    source: dateHadith.source || activeDay?.hadithSource || snapshot.hadithSource,
-  };
   const truth = getCalendarTruth(now);
 
   return {
-    ...snapshot,
-    version: 3,
+    ...cleanSnapshot,
+    version: 6,
+    appLanguage,
     updatedAt: now.toISOString(),
     days,
     weekdayDari: active?.weekdayDari || WEEKDAYS_DARI[truth.weekday],
+    weekdayPashto: active?.weekdayPashto || WEEKDAYS_PASHTO[truth.weekday],
     shamsiDisplay: active?.shamsiDisplay || formatShamsiSlash(truth.shamsi),
+    shamsiDisplayPashto: active?.shamsiDisplayPashto || formatShamsiSlash(truth.shamsi, 'pashto'),
     hijriDisplay:
       active?.hijriDisplay ||
       `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNameDari} ${toArabicNumerals(truth.hijri.year)}`,
+    hijriDisplayPashto:
+      active?.hijriDisplayPashto ||
+      `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNamePashto} ${toArabicNumerals(truth.hijri.year)}`,
     gregorianDisplay: active?.gregorianDisplay || formatGregorianDisplay(truth.gregorianDate),
     sunriseDisplay: active?.sunriseDisplay || snapshot.sunriseDisplay || '',
-    hadithText: dailyHadith.text || snapshot.hadithText || '',
-    hadithSource: dailyHadith.source || snapshot.hadithSource || '',
+    sunriseDisplayPashto: active?.sunriseDisplayPashto || snapshot.sunriseDisplayPashto || '',
     currentPrayer: getCurrentPrayerFromEntries(active.prayers, now, previous?.prayers),
     prayers: active.prayers,
     nextRefreshAtMs: computeNextRefreshAtMs(days, timezone, now),
@@ -325,6 +367,9 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
   try {
     const parsed = JSON.parse(raw) as {
       version?: number;
+      appLanguage?: DailyHadithLanguage;
+      dariFont?: DariFontFamily;
+      pashtoFont?: PashtoFontFamily;
       updatedAt?: string;
       cityName?: string;
       timezone?: string;
@@ -339,17 +384,21 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       sourceLabel?: string;
       days?: WidgetDaySnapshot[];
       weekdayDari?: string;
+      weekdayPashto?: string;
       shamsiDisplay?: string;
+      shamsiDisplayPashto?: string;
       hijriDisplay?: string;
+      hijriDisplayPashto?: string;
       gregorianDisplay?: string;
       sunriseDisplay?: string;
+      sunriseDisplayPashto?: string;
       hadithText?: string;
       hadithSource?: string;
       currentPrayer?: WidgetPrayerKey | null;
       prayers?: WidgetPrayerEntry[];
       nextRefreshAtMs?: number;
     };
-    if (!parsed || (parsed.version !== 1 && parsed.version !== 2 && parsed.version !== 3)) return null;
+    if (!parsed || ![1, 2, 3, 4, 5, 6].includes(parsed.version ?? 0)) return null;
     if ((!Array.isArray(parsed.prayers) || parsed.prayers.length === 0) &&
       (!Array.isArray(parsed.days) || parsed.days.length === 0)) {
       return null;
@@ -361,17 +410,19 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         dateKey: getDateKeyInTimezone(new Date(parsed.updatedAt || Date.now()), timezone),
         weekdayDari: parsed.weekdayDari || '',
         shamsiDisplay: parsed.shamsiDisplay || '',
+        shamsiDisplayPashto: parsed.shamsiDisplayPashto || '',
         hijriDisplay: parsed.hijriDisplay || '',
         gregorianDisplay: parsed.gregorianDisplay || '',
         sunriseDisplay: parsed.sunriseDisplay || '',
-        hadithText: parsed.hadithText || getWidgetHadithForDateKey(getDateKeyInTimezone(new Date(parsed.updatedAt || Date.now()), timezone)).text,
-        hadithSource: '',
         prayers: (parsed.prayers || []).filter((p): p is WidgetPrayerEntry =>
           PRAYER_ORDER.includes(p.key as WidgetPrayerKey),
         ),
       };
       return refreshWidgetSnapshot({
-        version: 3,
+        version: 6,
+        appLanguage: parsed.appLanguage || 'dari',
+        dariFont: parsed.dariFont || 'vazirmatn',
+        pashtoFont: parsed.pashtoFont || 'amiri',
         updatedAt: parsed.updatedAt || new Date().toISOString(),
         cityName: parsed.cityName || '',
         timezone,
@@ -386,11 +437,10 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         days: [day],
         weekdayDari: day.weekdayDari,
         shamsiDisplay: day.shamsiDisplay,
+        shamsiDisplayPashto: day.shamsiDisplayPashto,
         hijriDisplay: day.hijriDisplay,
         gregorianDisplay: day.gregorianDisplay,
         sunriseDisplay: day.sunriseDisplay,
-        hadithText: day.hadithText,
-        hadithSource: day.hadithSource,
         currentPrayer: parsed.currentPrayer ?? null,
         prayers: day.prayers,
         nextRefreshAtMs: parsed.nextRefreshAtMs || Date.now() + 30 * 60 * 1000,
@@ -415,25 +465,34 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
     const missingMaghribOffset = (parsed.policyVersion || 0) < PRAYER_POLICY_VERSION
       ? Math.max(0, MAGHRIB_OFFSET_MINUTES - previousOffset)
       : 0;
-    const days = (parsed.days || []).map((day) => ({
-      ...day,
-      sunriseDisplay: day.sunriseDisplay || parsed.sunriseDisplay || '',
-      hadithText: day.hadithText || getWidgetHadithForDateKey(day.dateKey).text,
-      hadithSource: day.hadithSource || getWidgetHadithForDateKey(day.dateKey).source,
-      prayers: migrateLegacyMaghribEntries(
-        (day.prayers || []).filter((entry): entry is WidgetPrayerEntry =>
-          typeof entry?.atMs === 'number' &&
-          typeof entry?.key === 'string' &&
-          PRAYER_ORDER.includes(entry.key as WidgetPrayerKey),
-        ),
-        missingMaghribOffset,
-        timezone,
-      ),
-    }));
-    const migratedPrayers = migrateLegacyMaghribEntries(prayers, missingMaghribOffset, timezone);
+    const days = (parsed.days || []).map((legacyDay) => {
+      const day = stripLegacyHadith(legacyDay);
+      return {
+        ...day,
+        sunriseDisplay: day.sunriseDisplay || parsed.sunriseDisplay || '',
+        weekdayPashto: day.weekdayPashto || WEEKDAYS_PASHTO[getCalendarTruth(new Date(`${day.dateKey}T12:00:00+04:30`)).weekday],
+        shamsiDisplayPashto: day.shamsiDisplayPashto || formatShamsiSlash(getCalendarTruth(new Date(`${day.dateKey}T12:00:00+04:30`)).shamsi, 'pashto'),
+        hijriDisplayPashto: day.hijriDisplayPashto || '',
+        sunriseDisplayPashto: day.sunriseDisplayPashto || '',
+        prayers: migrateLegacyMaghribEntries(
+          (day.prayers || []).filter((entry): entry is WidgetPrayerEntry =>
+            typeof entry?.atMs === 'number' &&
+            typeof entry?.key === 'string' &&
+            PRAYER_ORDER.includes(entry.key as WidgetPrayerKey),
+          ),
+          missingMaghribOffset,
+          timezone,
+        ).map((entry) => ({ ...entry, labelPashto: entry.labelPashto || PRAYER_LABELS_PASHTO[entry.key] })),
+      };
+    });
+    const migratedPrayers = migrateLegacyMaghribEntries(prayers, missingMaghribOffset, timezone)
+      .map((entry) => ({ ...entry, labelPashto: entry.labelPashto || PRAYER_LABELS_PASHTO[entry.key] }));
 
     return {
-      version: 3,
+      version: 6,
+      appLanguage: parsed.appLanguage || 'dari',
+      dariFont: parsed.dariFont || 'vazirmatn',
+      pashtoFont: parsed.pashtoFont || 'amiri',
       updatedAt: parsed.updatedAt || new Date().toISOString(),
       cityName: parsed.cityName || '',
       timezone,
@@ -448,12 +507,14 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       sourceLabel: parsed.sourceLabel,
       days,
       weekdayDari: parsed.weekdayDari || '',
+      weekdayPashto: parsed.weekdayPashto || '',
       shamsiDisplay: parsed.shamsiDisplay || '',
+      shamsiDisplayPashto: parsed.shamsiDisplayPashto || days[0]?.shamsiDisplayPashto || '',
       hijriDisplay: parsed.hijriDisplay || '',
+      hijriDisplayPashto: parsed.hijriDisplayPashto || '',
       gregorianDisplay: parsed.gregorianDisplay || '',
       sunriseDisplay: parsed.sunriseDisplay || days[0]?.sunriseDisplay || '',
-      hadithText: parsed.hadithText || days[0]?.hadithText || '',
-      hadithSource: parsed.hadithSource || days[0]?.hadithSource || '',
+      sunriseDisplayPashto: parsed.sunriseDisplayPashto || days[0]?.sunriseDisplayPashto || '',
       currentPrayer:
         parsed.currentPrayer && PRAYER_ORDER.includes(parsed.currentPrayer)
           ? parsed.currentPrayer

@@ -14,7 +14,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "قسم می‌خورم به روز قیامت.",
-      "translation_pashto": "75-1 زه د قیامت په ورځې باندې قسم خورم"
+      "translation_pashto": "75-1 زه د قیامت په ورځې باندې قسم خورم",
+      "translation_english": "I swear by the Day of Resurrection,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و قسم می‌خورم به نفس ملامت کننده (و پشیمان‌شونده).",
-      "translation_pashto": "75-2 او زه په ډېر ملامت كوونكي نفس باندې قسم خورم"
+      "translation_pashto": "75-2 او زه په ډېر ملامت كوونكي نفس باندې قسم خورم",
+      "translation_english": "and I swear by the self-reproaching soul!"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "آیا انسان گمان می‌کند که استخوان‌هایش را جمع نخواهیم کرد؟",
-      "translation_pashto": "75-3 ایا (كافر) انسان دا ګمان كوي چې مونږ به د ده  هډوكي له سره راجمع نه كړو"
+      "translation_pashto": "75-3 ایا (كافر) انسان دا ګمان كوي چې مونږ به د ده  هډوكي له سره راجمع نه كړو",
+      "translation_english": "Does man think that We cannot reassemble his bones?"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "بلی! (چنین خواهیم کرد) در حالیکه قادریم بر آن که (حتى) سرانگشتان او را (هم) برابر سازیم.",
-      "translation_pashto": "75-4 ولې نه! (جمع به يې كړو)، په داسې حال كې چې مونږ  په دې قادر یو چې د ده (هډوكي او) د ګوتو بندونه (هم) برابر كړو"
+      "translation_pashto": "75-4 ولې نه! (جمع به يې كړو)، په داسې حال كې چې مونږ  په دې قادر یو چې د ده (هډوكي او) د ګوتو بندونه (هم) برابر كړو",
+      "translation_english": "In fact, We are able to restore even his very fingertips."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "بلکه انسان می‌خواهد (با انکار نمودن) راه فسق و فجور را پیش روی خود باز کند.",
-      "translation_pashto": "75-5 بلكې (كافر) انسان اراده لري چې په خپله مخه  (راتلونكې زمانه) كې هم  نافرماني وكړي"
+      "translation_pashto": "75-5 بلكې (كافر) انسان اراده لري چې په خپله مخه  (راتلونكې زمانه) كې هم  نافرماني وكړي",
+      "translation_english": "But man desires to persist in sin,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(و به طور استهزا) می‌پرسد: روز قیامت چه وقت است؟",
-      "translation_pashto": "75-6 دى تپوس كوي چې د قیامت ورځ به كله وي؟"
+      "translation_pashto": "75-6 دى تپوس كوي چې د قیامت ورځ به كله وي؟",
+      "translation_english": "and asks [mockingly], “When is the Day of Resurrection?”"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس وقتی که چشم‌ها خیره شود.",
-      "translation_pashto": "75-7 نو كله چې سترګې  خړې (سپینې) شي"
+      "translation_pashto": "75-7 نو كله چې سترګې  خړې (سپینې) شي",
+      "translation_english": "But when the sight is dazzled,"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و ماه بی‌نور و تاریک شود.",
-      "translation_pashto": "75-8 او سپوږمۍ توره  (بې رڼا) شي"
+      "translation_pashto": "75-8 او سپوږمۍ توره  (بې رڼا) شي",
+      "translation_english": "and the moon is darkened,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و آفتاب و ماه یکجا جمع شود.",
-      "translation_pashto": "75-9 او لمر او سپوږمۍ سره جمع كړى شي"
+      "translation_pashto": "75-9 او لمر او سپوږمۍ سره جمع كړى شي",
+      "translation_english": "and the sun and the moon are brought together,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و (وقتی روز قیامت برپا شود) انسان می‌گوید: راه گریز کجاست؟",
-      "translation_pashto": "75-10 نو (كافر) انسان به په دغه وخت كې وايي: د تېښتې ځاى چېرته دى؟"
+      "translation_pashto": "75-10 نو (كافر) انسان به په دغه وخت كې وايي: د تېښتې ځاى چېرته دى؟",
+      "translation_english": "on that Day man will say, “Where is the escape?”"
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "نه! هرگز جای (گریز و) پناه نیست.",
-      "translation_pashto": "75-11 هیڅكله داسې نه ده، هېڅ پناه ځاى نشته"
+      "translation_pashto": "75-11 هیڅكله داسې نه ده، هېڅ پناه ځاى نشته",
+      "translation_english": "No indeed! There will be no refuge."
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(بلکه) در آن روز قرارگاه تنها به‌سوی پروردگار توست.",
-      "translation_pashto": "75-12 په دغې ورځ كې ځاى د قرار ستا د رب په طرف دى"
+      "translation_pashto": "75-12 په دغې ورځ كې ځاى د قرار ستا د رب په طرف دى",
+      "translation_english": "On that Day all will end up before your Lord."
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "انسان در آن روز به آنچه پیش فرستاده و به آنچه پس گذاشته است خبر داده می‌شود.",
-      "translation_pashto": "75-13 په  دغې ورځ كې به انسان په هغه څه خبر كړى شي چې ده مخكې لېږلي دي او وروسته يې پرېښي دي"
+      "translation_pashto": "75-13 په  دغې ورځ كې به انسان په هغه څه خبر كړى شي چې ده مخكې لېږلي دي او وروسته يې پرېښي دي",
+      "translation_english": "On that Day man will be informed of what he has sent forth and left behind."
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "بلکه انسان به (خوب و بد) نفس خود بیناست.",
-      "translation_pashto": "75-14 بلكې انسان په خپل ځان باندې ښه دلیل دى"
+      "translation_pashto": "75-14 بلكې انسان په خپل ځان باندې ښه دلیل دى",
+      "translation_english": "In fact, man will be a witness against himself,"
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "اگرچه (در آن روز) عذرهایی پیش کند.",
-      "translation_pashto": "75-15 اګر كه دى خپل عذرونه وړاندې كړي"
+      "translation_pashto": "75-15 اګر كه دى خپل عذرونه وړاندې كړي",
+      "translation_english": "despite the excuses he may put forward."
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(ای پیغمبر! در وقت نزول وحی) زبانت را حرکت مده تا در یاد کردن آن شتاب کنی.",
-      "translation_pashto": "75-16 (اى نبي!) ته خپله ژبه په دې (قرآن) سره مه خوځوه، د دې لپاره چې ته دا په تُندۍ سره حاصل كړې"
+      "translation_pashto": "75-16 (اى نبي!) ته خپله ژبه په دې (قرآن) سره مه خوځوه، د دې لپاره چې ته دا په تُندۍ سره حاصل كړې",
+      "translation_english": "Do not move your tongue [O Prophet] in haste trying to memorize it."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "بی‌گمان جمع کردن آن در سینۀ تو و خواندنش بر عهدۀ ماست.",
-      "translation_pashto": "75-17 بېشكه پر مونږ باندې د ده جمع كول او د ده لوستل دي"
+      "translation_pashto": "75-17 بېشكه پر مونږ باندې د ده جمع كول او د ده لوستل دي",
+      "translation_english": "It is upon Us to make you memorize and recite it."
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس چون آن را (به زبان جبریل) خواندیم، پس قرائت آن را پیروی کن.",
-      "translation_pashto": "75-18 نو كله چې مونږ دى ولولو، نو ته د ده د لوستلو پیروي كوه"
+      "translation_pashto": "75-18 نو كله چې مونږ دى ولولو، نو ته د ده د لوستلو پیروي كوه",
+      "translation_english": "Then when We recite it [through Gabriel], follow its recitation attentively;"
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "باز بیان (حقایق و تفسیر) آن بر عهدۀ ماست.",
-      "translation_pashto": "75-19 بیا یقینًا زمونږ په ذمه د ده بیانول دي"
+      "translation_pashto": "75-19 بیا یقینًا زمونږ په ذمه د ده بیانول دي",
+      "translation_english": "then it is upon Us to explain its meanings."
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "نه، چنین نیست (که می‌گویید) بلکه شما دنیای زودگذر را دوست می‌دارید.",
-      "translation_pashto": "75-20 هیڅكله داسې نه ده بلكې تاسو تادي كوونكې (زر تېرېدونكې فاني كېدونكې دنیا) خوښوئ"
+      "translation_pashto": "75-20 هیڅكله داسې نه ده بلكې تاسو تادي كوونكې (زر تېرېدونكې فاني كېدونكې دنیا) خوښوئ",
+      "translation_english": "No indeed! You [people] love this fleeting world,"
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و آخرت را ترک می‌کنید.",
-      "translation_pashto": "75-21 او تاسو اخرت پرېږدئ"
+      "translation_pashto": "75-21 او تاسو اخرت پرېږدئ",
+      "translation_english": "and neglect the Hereafter."
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(حال آن که کامیاب و ناکام در آخرت معلوم شود) در آن روز چهره‌هایی شاداب (و خرم) هستند.",
-      "translation_pashto": "75-22 په دغې ورځ كې به څه مخونه تازه روښانه وي"
+      "translation_pashto": "75-22 په دغې ورځ كې به څه مخونه تازه روښانه وي",
+      "translation_english": "On that Day some faces will be bright,"
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(چرا که) به پروردگار خود می‌نگرند.",
-      "translation_pashto": "75-23 خپل رب ته به كتونكي وي"
+      "translation_pashto": "75-23 خپل رب ته به كتونكي وي",
+      "translation_english": "looking at their Lord."
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و چهره‌هایی در آن روز گرفته (و غمگین) است.",
-      "translation_pashto": "75-24 او  په دغې ورځ كې به څه مخونه سخت تریو (او سپېره) وي"
+      "translation_pashto": "75-24 او  په دغې ورځ كې به څه مخونه سخت تریو (او سپېره) وي",
+      "translation_english": "And on that Day, some faces will be gloomy,"
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(چون) یقین دارند که به معصیت کمرشکن گرفتار می‌شوند.",
-      "translation_pashto": "75-25 یقین به كوي چې له دوى سره  به مَلا ماتوونكى عمل  وشي"
+      "translation_pashto": "75-25 یقین به كوي چې له دوى سره  به مَلا ماتوونكى عمل  وشي",
+      "translation_english": "knowing that a crushing calamity will befall them."
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "چنین نیست (که ایشان گمان دارند) هنگامی که جان به گلوگاه رسد.",
-      "translation_pashto": "75-26 داسې نه ده كله چې ساه د ستوني هډوكي ته ورسېږي"
+      "translation_pashto": "75-26 داسې نه ده كله چې ساه د ستوني هډوكي ته ورسېږي",
+      "translation_english": "Indeed, when the soul reaches the throat,"
     },
     {
       "number": 27,
@@ -274,7 +300,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و گفته شود: آیا کسی هست که افسون بخواند؟",
-      "translation_pashto": "75-27 او وبه ویل شي: څوك دى  دم كوونكى؟"
+      "translation_pashto": "75-27 او وبه ویل شي: څوك دى  دم كوونكى؟",
+      "translation_english": "and it is said, “Is there any healer?”"
     },
     {
       "number": 28,
@@ -284,7 +311,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و (محتضر) يقين کند که زمان جدایی (روح از بدن) فرا رسیده است.",
-      "translation_pashto": "75-28 او دى به یقین وكړي چې بېشكه دغه (وخت د) بېلتون دى"
+      "translation_pashto": "75-28 او دى به یقین وكړي چې بېشكه دغه (وخت د) بېلتون دى",
+      "translation_english": "And he realizes that it is time to depart,"
     },
     {
       "number": 29,
@@ -294,7 +322,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و ساق پا به ساق دیگر بپیچد (که دیگر حرکت نتواند).",
-      "translation_pashto": "75-29 او یوه پنډۍ به له بلې پنډۍ تاوېږي"
+      "translation_pashto": "75-29 او یوه پنډۍ به له بلې پنډۍ تاوېږي",
+      "translation_english": "when legs are brought together [in a shroud];"
     },
     {
       "number": 30,
@@ -304,7 +333,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "آن روز، روز سوق دادنش به‌سوی پروردگار توست.",
-      "translation_pashto": "75-30 ستا د رب په لوري به دغې ورځ كې ورتله دي"
+      "translation_pashto": "75-30 ستا د رب په لوري به دغې ورځ كې ورتله دي",
+      "translation_english": "on that Day, he will be driven to your Lord."
     },
     {
       "number": 31,
@@ -314,7 +344,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس (انسان نافرمان) نه تصدیق کرد و نه نماز گزارد.",
-      "translation_pashto": "75-31 پس ده نه تصدیق وكړ او نه يې  لمونځ وكړ"
+      "translation_pashto": "75-31 پس ده نه تصدیق وكړ او نه يې  لمونځ وكړ",
+      "translation_english": "He neither believed nor prayed;"
     },
     {
       "number": 32,
@@ -324,7 +355,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "بلکه دروغ شمرد و اعراض نمود.",
-      "translation_pashto": "75-32 او لېكن دروغ يې وګاڼه (قرآن) او مخ يې  وګرځاوه"
+      "translation_pashto": "75-32 او لېكن دروغ يې وګاڼه (قرآن) او مخ يې  وګرځاوه",
+      "translation_english": "rather he denied and turned away,"
     },
     {
       "number": 33,
@@ -334,7 +366,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "باز متکبرانه و خرامان به‌سوی خانواده‌اش رفت.",
-      "translation_pashto": "75-33 بیا  خپل اهل ته لاړ، په داسې حال كې چې تكبر يې كاوه"
+      "translation_pashto": "75-33 بیا  خپل اهل ته لاړ، په داسې حال كې چې تكبر يې كاوه",
+      "translation_english": "then he went to his people, elated with pride,"
     },
     {
       "number": 34,
@@ -344,7 +377,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "وای بر تو، باز وای بر تو.",
-      "translation_pashto": "75-34 تا ته دې  هلاكت (او افسوس) وي، پس هلاكت دې وي"
+      "translation_pashto": "75-34 تا ته دې  هلاكت (او افسوس) وي، پس هلاكت دې وي",
+      "translation_english": "Woe to you, and woe!"
     },
     {
       "number": 35,
@@ -354,7 +388,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "باز وای بر تو، وای بر تو.",
-      "translation_pashto": "75-35 بیا دې تا لپاره هلاكت وي، نو هلاكت دې وي"
+      "translation_pashto": "75-35 بیا دې تا لپاره هلاكت وي، نو هلاكت دې وي",
+      "translation_english": "Again, woe to you, and woe!"
     },
     {
       "number": 36,
@@ -364,7 +399,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "آیا انسان گمان می‌کند که به حال خود گذاشته می‌شود (و با او حساب و کتاب صورت نمی‌گیرد)؟",
-      "translation_pashto": "75-36 ایا(كافر) انسان ګمان كوي چې دى به مهمل (او بې كاره) پرېښودل شي"
+      "translation_pashto": "75-36 ایا(كافر) انسان ګمان كوي چې دى به مهمل (او بې كاره) پرېښودل شي",
+      "translation_english": "Does man think that he will be left neglected?"
     },
     {
       "number": 37,
@@ -374,7 +410,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "آیا او نطفه‌ای از منی که در رحم ریخته شده، نبود؟",
-      "translation_pashto": "75-37 ایا دغه (انسان) د هغې منۍ یو څاڅكى نه و چې تویولى شي"
+      "translation_pashto": "75-37 ایا دغه (انسان) د هغې منۍ یو څاڅكى نه و چې تویولى شي",
+      "translation_english": "Was he not once a drop of semen emitted,"
     },
     {
       "number": 38,
@@ -384,7 +421,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "باز خون بسته‌ای بود که (الله آن را) آفرید باز (خلقت او را) استوار و برابر کرد.",
-      "translation_pashto": "75-38 بیا دى د وینې یوه ټوټه وه، نو دغه (الله دى) پیدا كړ،  پس برابر يې كړ"
+      "translation_pashto": "75-38 بیا دى د وینې یوه ټوټه وه، نو دغه (الله دى) پیدا كړ،  پس برابر يې كړ",
+      "translation_english": "then he became a clinging clot, then He created him and perfected his form,"
     },
     {
       "number": 39,
@@ -394,7 +432,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس از آن (قطرۀ منی) دو جفت مرد و زن را آفرید.",
-      "translation_pashto": "75-39 نو له دغې (منۍ) نه يې دوه قسمه پیدا كړل (یعنې) سړى او ښځه"
+      "translation_pashto": "75-39 نو له دغې (منۍ) نه يې دوه قسمه پیدا كړل (یعنې) سړى او ښځه",
+      "translation_english": "and made from him both genders, male and female?"
     },
     {
       "number": 40,
@@ -404,7 +443,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و آیا همین (آفرینندۀ انسان‌ها از منی) قادر نیست که (بار دوم) مُرده‌ها را زنده کند؟",
-      "translation_pashto": "75-40 ایا دغه (الله) په دې قادر نه دى چې مړي راژوندي كړي؟"
+      "translation_pashto": "75-40 ایا دغه (الله) په دې قادر نه دى چې مړي راژوندي كړي؟",
+      "translation_english": "Is not He able to bring the dead back to life?"
     }
   ]
 }

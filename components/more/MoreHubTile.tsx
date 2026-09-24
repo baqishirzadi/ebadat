@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface MoreHubTileProps {
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -16,6 +17,9 @@ interface MoreHubTileProps {
 
 export function MoreHubTile({ icon, label, subtitle, testID, onPress }: MoreHubTileProps) {
   const { theme } = useApp();
+  const { isPashto, fontFamily } = useI18n();
+  const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
+  const subtitleLineHeight = isPashto ? (isNastaliq ? 30 : 26) : 22;
 
   return (
     <Pressable
@@ -31,7 +35,9 @@ export function MoreHubTile({ icon, label, subtitle, testID, onPress }: MoreHubT
         <MaterialIcons name={icon} size={24} color={theme.tint} />
       </View>
       <CenteredText style={[styles.label, { color: theme.text }]}>{label}</CenteredText>
-      <CenteredText style={[styles.subtitle, { color: theme.textSecondary }]}>{subtitle}</CenteredText>
+      <CenteredText style={[styles.subtitle, { color: theme.textSecondary, lineHeight: subtitleLineHeight }]}>
+        {subtitle}
+      </CenteredText>
     </Pressable>
   );
 }

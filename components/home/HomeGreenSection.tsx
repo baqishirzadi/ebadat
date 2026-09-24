@@ -8,6 +8,7 @@ import { NextPrayerCard } from '@/components/home/NextPrayerCard';
 import { BorderRadius, NAAT_GRADIENT, RTL_CONTAINER, Spacing } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { PrayerTimes } from '@/utils/prayerTimes';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface HomeGreenSectionProps {
   prayerTimes: PrayerTimes | null;
@@ -16,10 +17,11 @@ interface HomeGreenSectionProps {
 
 function HomeGreenSectionInner({ prayerTimes, onMuftiInputFocus }: HomeGreenSectionProps) {
   const { themeMode } = useApp();
+  const { isPashto } = useI18n();
   const gradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
 
   return (
-    <View style={[styles.shell, styles.shadow]}>
+    <View testID="home-green-section" style={[styles.shell, styles.shadow]}>
       <LinearGradient
         colors={gradient}
         start={{ x: 0, y: 0 }}
@@ -27,9 +29,9 @@ function HomeGreenSectionInner({ prayerTimes, onMuftiInputFocus }: HomeGreenSect
         style={[styles.card, RTL_CONTAINER]}
       >
         <NextPrayerCard prayerTimes={prayerTimes} variant="compact" embedded />
-        <View style={styles.divider} />
+        <View style={[styles.divider, isPashto && styles.dividerPashto]} />
         <HanafiMuftiWidget onInputFocus={onMuftiInputFocus} />
-        <View style={styles.divider} />
+        <View style={[styles.divider, isPashto && styles.dividerPashto]} />
         <DreamInterpreterWidget onInputFocus={onMuftiInputFocus} />
       </LinearGradient>
     </View>
@@ -41,7 +43,7 @@ export const HomeGreenSection = memo(HomeGreenSectionInner);
 const styles = StyleSheet.create({
   shell: {
     marginHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
     borderRadius: BorderRadius.xl,
     overflow: 'hidden',
   },
@@ -65,5 +67,8 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.xs,
     backgroundColor: 'rgba(212,175,55,0.25)',
     alignSelf: 'stretch',
+  },
+  dividerPashto: {
+    marginVertical: 6,
   },
 });

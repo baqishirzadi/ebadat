@@ -6,7 +6,8 @@
       "nameDari": "اذکار ابتدایی",
       "namePashto": "د پیل پړاونې اذکار",
       "icon": "school",
-      "color": "#0EA5E9"
+      "color": "#0EA5E9",
+      "nameEnglish": "Adhkar for beginners"
     },
     {
       "id": "morning",
@@ -14,7 +15,8 @@
       "nameDari": "اذکار صبح",
       "namePashto": "د سهار اذکار",
       "icon": "wb-sunny",
-      "color": "#F59E0B"
+      "color": "#F59E0B",
+      "nameEnglish": "Morning adhkar"
     },
     {
       "id": "evening",
@@ -22,7 +24,8 @@
       "nameDari": "اذکار شام",
       "namePashto": "د ماښام اذکار",
       "icon": "nights-stay",
-      "color": "#6366F1"
+      "color": "#6366F1",
+      "nameEnglish": "Evening adhkar"
     },
     {
       "id": "sleep",
@@ -30,7 +33,8 @@
       "nameDari": "اذکار خواب",
       "namePashto": "د خوب اذکار",
       "icon": "bedtime",
-      "color": "#8B5CF6"
+      "color": "#8B5CF6",
+      "nameEnglish": "Adhkar before sleep"
     },
     {
       "id": "wake",
@@ -38,7 +42,8 @@
       "nameDari": "اذکار بیداری",
       "namePashto": "د پاڅېدو اذکار",
       "icon": "alarm",
-      "color": "#EC4899"
+      "color": "#EC4899",
+      "nameEnglish": "Adhkar upon waking"
     },
     {
       "id": "travel",
@@ -46,7 +51,8 @@
       "nameDari": "اذکار سفر",
       "namePashto": "د سفر اذکار",
       "icon": "flight",
-      "color": "#14B8A6"
+      "color": "#14B8A6",
+      "nameEnglish": "Travel adhkar"
     },
     {
       "id": "rizq",
@@ -54,7 +60,8 @@
       "nameDari": "اذکار رزق",
       "namePashto": "د رزق اذکار",
       "icon": "payments",
-      "color": "#22C55E"
+      "color": "#22C55E",
+      "nameEnglish": "Adhkar for provision"
     },
     {
       "id": "illness",
@@ -62,7 +69,8 @@
       "nameDari": "اذکار بیماری",
       "namePashto": "د ناروغۍ اذکار",
       "icon": "healing",
-      "color": "#EF4444"
+      "color": "#EF4444",
+      "nameEnglish": "Adhkar in illness"
     },
     {
       "id": "anxiety",
@@ -70,7 +78,8 @@
       "nameDari": "اذکار غم و اندوه",
       "namePashto": "د غم او خفګان اذکار",
       "icon": "psychology",
-      "color": "#3B82F6"
+      "color": "#3B82F6",
+      "nameEnglish": "Adhkar for worry and grief"
     },
     {
       "id": "protection",
@@ -78,7 +87,8 @@
       "nameDari": "اذکار محافظت",
       "namePashto": "د ساتنې اذکار",
       "icon": "shield",
-      "color": "#10B981"
+      "color": "#10B981",
+      "nameEnglish": "Adhkar for protection"
     },
     {
       "id": "afterPrayer",
@@ -86,7 +96,8 @@
       "nameDari": "اذکار بعد از نماز",
       "namePashto": "د لمانځه وروسته اذکار",
       "icon": "mosque",
-      "color": "#1E6F5C"
+      "color": "#1E6F5C",
+      "nameEnglish": "Adhkar after prayer"
     }
   ],
   "adhkar": {
@@ -98,7 +109,8 @@
         "pashto": "موږ سهار وکړ او بادشاهي د الله ده، ستاینه د الله ده، هیڅ معبود نشته مګر الله یوازې چې شریک نه لري، بادشاهي او ستاینه د هغه ده او هغه پر هر څه قادر دی",
         "reference": "مسلم",
         "count": 1,
-        "virtue": "من قالها حين يصبح وحين يمسي كان حقاً على الله أن يرضيه يوم القيامة"
+        "virtue": "من قالها حين يصبح وحين يمسي كان حقاً على الله أن يرضيه يوم القيامة",
+        "english": "We have entered the morning and the dominion belongs to Allah. All praise is for Allah. There is no god but Allah, alone without partner. His is the dominion and His is the praise, and He is over all things competent."
       },
       {
         "id": "m2",
@@ -106,7 +118,8 @@
         "dari": "خدایا! به یاری تو صبح کردیم و به یاری تو شام می‌کنیم، به تو زنده‌ایم و به فرمان تو می‌میریم، و بازگشت به سوی توست",
         "pashto": "الله! ستا په مرسته موږ سهار وکړ او ستا په مرسته ماښام کوو، ستا په مرسته ژوندي یو او ستا په حکم مړه کېږو، او بیرته راستنیدل ستا لور ته دي",
         "reference": "الترمذي",
-        "count": 1
+        "count": 1,
+        "english": "O Allah, by You we enter the morning and by You we enter the evening. By You we live and by You we die, and to You is the resurrection."
       },
       {
         "id": "m3",
@@ -115,7 +128,8 @@
         "pashto": "الله! ته زما رب یې، هیڅ معبود نشته مګر ته، ته ما پیدا کړم او زه ستا بنده یم، او زه ستا د ژمنې او وعدې پر وس یم، زه ستا نه پناه غواړم له هغه شر نه چې مې کړي، زه ستا نعمت باندې اعتراف کوم، او زه ستا نه خپل ګناه اعتراف کوم، نو ما وبخښه چې ته پرته بل څوک ګناهونه نه بخښي",
         "reference": "البخاري",
         "count": 1,
-        "virtue": "سيد الاستغفار - من قالها موقناً بها فمات من يومه دخل الجنة"
+        "virtue": "سيد الاستغفار - من قالها موقناً بها فمات من يومه دخل الجنة",
+        "english": "O Allah, You are my Lord; there is no god but You. You created me and I am Your servant. I am upon Your covenant and promise as much as I am able. I seek refuge in You from the evil of what I have done. I acknowledge Your favour upon me and I acknowledge my sin, so forgive me, for none forgives sins except You."
       },
       {
         "id": "m4",
@@ -123,7 +137,8 @@
         "dari": "خدایا! از تو عافیت در دنیا و آخرت می‌خواهم، خدایا! از تو عفو و عافیت در دین و دنیا و خانواده و مالم می‌خواهم",
         "pashto": "الله! زه له تا د دنیا او آخرت عافیت غواړم، الله! زه له تا بخښنه او عافیت غواړم په خپل دین، دنیا، کورنۍ او مال کې",
         "reference": "ابن ماجه",
-        "count": 1
+        "count": 1,
+        "english": "O Allah, I ask You for well-being in this world and the Hereafter. O Allah, I ask You for pardon and well-being in my religion, my worldly life, my family and my wealth."
       },
       {
         "id": "m5",
@@ -131,7 +146,8 @@
         "dari": "خدایا! در بدنم عافیت ده، خدایا! در شنوایی‌ام عافیت ده، خدایا! در بینایی‌ام عافیت ده، معبودی جز تو نیست",
         "pashto": "الله! زما په بدن کې ما عافیت راکړه، الله! زما په غوږونو کې ما عافیت راکړه، الله! زما په سترګو کې ما عافیت راکړه، هیڅ معبود نشته مګر ته",
         "reference": "أبو داود",
-        "count": 3
+        "count": 3,
+        "english": "O Allah, grant me well-being in my body. O Allah, grant me well-being in my hearing. O Allah, grant me well-being in my sight. There is no god but You."
       },
       {
         "id": "m6",
@@ -140,7 +156,8 @@
         "pashto": "د هغه الله په نوم چې د هغه د نوم سره هیڅ شی په ځمکه او آسمان کې زیان نه رسوي او هغه اوریدونکی پوهیدونکی دی",
         "reference": "الترمذي",
         "count": 3,
-        "virtue": "لم يضره شيء"
+        "virtue": "لم يضره شيء",
+        "english": "In the name of Allah, with Whose name nothing on earth or in the heaven can cause harm, and He is the All-Hearing, the All-Knowing."
       },
       {
         "id": "m7",
@@ -149,7 +166,8 @@
         "pashto": "زه راضي یم له الله سره د رب په توګه، او له اسلام سره د دین په توګه، او له محمد ﷺ سره د پیغمبر په توګه",
         "reference": "أبو داود",
         "count": 3,
-        "virtue": "من قالها حين يصبح وحين يمسي كان حقاً على الله أن يرضيه"
+        "virtue": "من قالها حين يصبح وحين يمسي كان حقاً على الله أن يرضيه",
+        "english": "I am pleased with Allah as Lord, with Islam as religion, and with Muhammad ﷺ as Prophet."
       },
       {
         "id": "m8",
@@ -158,7 +176,8 @@
         "pashto": "الله پاک دی او ستاینه یې ده",
         "reference": "مسلم",
         "count": 100,
-        "virtue": "من قالها مائة مرة حين يصبح وحين يمسي لم يأت أحد يوم القيامة بأفضل مما جاء به إلا من قال مثلها أو زاد"
+        "virtue": "من قالها مائة مرة حين يصبح وحين يمسي لم يأت أحد يوم القيامة بأفضل مما جاء به إلا من قال مثلها أو زاد",
+        "english": "Glory be to Allah and praise be to Him."
       },
       {
         "id": "m9",
@@ -167,7 +186,8 @@
         "pashto": "هیڅ معبود نشته مګر الله یوازې چې شریک نه لري، بادشاهي او ستاینه د هغه ده او هغه پر هر څه قادر دی",
         "reference": "البخاري ومسلم",
         "count": 10,
-        "virtue": "كانت له عدل عشر رقاب، وكتبت له مائة حسنة، ومحيت عنه مائة سيئة، وكانت له حرزاً من الشيطان"
+        "virtue": "كانت له عدل عشر رقاب، وكتبت له مائة حسنة، ومحيت عنه مائة سيئة، وكانت له حرزاً من الشيطان",
+        "english": "There is no god but Allah, alone without partner. His is the dominion and His is the praise, and He is over all things competent."
       },
       {
         "id": "m10",
@@ -175,7 +195,8 @@
         "dari": "از خدا آمرزش می‌خواهم و به سوی او توبه می‌کنم",
         "pashto": "زه له الله بخښنه غواړم او ورته توبه کوم",
         "reference": "البخاري ومسلم",
-        "count": 100
+        "count": 100,
+        "english": "I seek Allah’s forgiveness and I repent to Him."
       }
     ],
     "evening": [
@@ -185,7 +206,8 @@
         "dari": "شام کردیم و پادشاهی از آن خداست، و ستایش برای خداست، معبودی جز خدا نیست، یگانه است و شریکی ندارد، پادشاهی و ستایش از آن اوست و او بر همه چیز تواناست",
         "pashto": "موږ ماښام وکړ او بادشاهي د الله ده، ستاینه د الله ده، هیڅ معبود نشته مګر الله یوازې چې شریک نه لري، بادشاهي او ستاینه د هغه ده او هغه پر هر څه قادر دی",
         "reference": "مسلم",
-        "count": 1
+        "count": 1,
+        "english": "We have entered the evening and the dominion belongs to Allah. All praise is for Allah. There is no god but Allah, alone without partner. His is the dominion and His is the praise, and He is over all things competent."
       },
       {
         "id": "e2",
@@ -193,7 +215,8 @@
         "dari": "خدایا! به یاری تو شام کردیم و به یاری تو صبح می‌کنیم، به تو زنده‌ایم و به فرمان تو می‌میریم، و بازگشت به سوی توست",
         "pashto": "الله! ستا په مرسته موږ ماښام وکړ او ستا په مرسته سهار کوو، ستا په مرسته ژوندي یو او ستا په حکم مړه کېږو، او بیرته راستنیدل ستا لور ته دي",
         "reference": "الترمذي",
-        "count": 1
+        "count": 1,
+        "english": "O Allah, by You we enter the evening and by You we enter the morning. By You we live and by You we die, and to You is the return."
       },
       {
         "id": "e3",
@@ -202,7 +225,8 @@
         "pashto": "زه د الله بشپړو کلمو ته پناه وړم له هغه شر نه چې پیدا یې کړي",
         "reference": "مسلم",
         "count": 3,
-        "virtue": "لم يضره شيء"
+        "virtue": "لم يضره شيء",
+        "english": "I seek refuge in the perfect words of Allah from the evil of what He has created."
       }
     ],
     "sleep": [
@@ -212,7 +236,8 @@
         "dari": "به نام تو خدایا می‌میرم و زنده می‌شوم",
         "pashto": "ستا په نوم الله زه مړه کېږم او ژوندی کېږم",
         "reference": "البخاري",
-        "count": 1
+        "count": 1,
+        "english": "In Your name, O Allah, I die and I live."
       },
       {
         "id": "s2",
@@ -220,7 +245,8 @@
         "dari": "خدایا! مرا از عذابت در روزی که بندگانت را برمی‌انگیزی نگاه دار",
         "pashto": "الله! ما خپل عذاب نه وساته په هغه ورځ چې خپل بندګان راپورته کوې",
         "reference": "أبو داود والترمذي",
-        "count": 3
+        "count": 3,
+        "english": "O Allah, protect me from Your punishment on the Day You raise Your servants."
       },
       {
         "id": "s3",
@@ -228,7 +254,8 @@
         "dari": "پاک است خدا",
         "pashto": "الله پاک دی",
         "reference": "البخاري ومسلم",
-        "count": 33
+        "count": 33,
+        "english": "Glory be to Allah."
       },
       {
         "id": "s4",
@@ -236,7 +263,8 @@
         "dari": "ستایش برای خداست",
         "pashto": "ستاینه د الله ده",
         "reference": "البخاري ومسلم",
-        "count": 33
+        "count": 33,
+        "english": "All praise is for Allah."
       },
       {
         "id": "s5",
@@ -244,7 +272,8 @@
         "dari": "خدا بزرگ‌تر است",
         "pashto": "الله لوی دی",
         "reference": "البخاري ومسلم",
-        "count": 34
+        "count": 34,
+        "english": "Allah is the Greatest."
       },
       {
         "id": "s6",
@@ -253,7 +282,8 @@
         "pashto": "آیة الکرسي (د بقرې سورت ۲۵۵ آیت)",
         "reference": "البخاري",
         "count": 1,
-        "virtue": "لم يزل عليه من الله حافظ ولا يقربه شيطان حتى يصبح"
+        "virtue": "لم يزل عليه من الله حافظ ولا يقربه شيطان حتى يصبح",
+        "english": "Ayat al-Kursi (Surah al-Baqarah, ayah 255)."
       }
     ],
     "wake": [
@@ -263,7 +293,8 @@
         "dari": "ستایش خدایی را که ما را پس از مرگ زنده کرد و بازگشت به سوی اوست",
         "pashto": "ستاینه د هغه الله ده چې موږ یې له مړینې وروسته ژوندي کړو او بیرته راستنیدل ورته دي",
         "reference": "البخاري",
-        "count": 1
+        "count": 1,
+        "english": "All praise is for Allah, Who gave us life after He caused us to die, and to Him is the resurrection."
       }
     ],
     "travel": [
@@ -273,7 +304,8 @@
         "dari": "پاک است آن که این را مسخر ما کرد و ما توانایی آن را نداشتیم و ما به سوی پروردگارمان بازمی‌گردیم",
         "pashto": "پاک دی هغه چې دا مو لپاره رام کړل او موږ دې ته توان نه درلود او موږ خپل رب ته بیرته راستون شو",
         "reference": "أبو داود والترمذي",
-        "count": 1
+        "count": 1,
+        "english": "Glory be to Him Who has subjected this to us, and we could not have done it ourselves. And indeed, to our Lord we will return."
       },
       {
         "id": "t2",
@@ -281,7 +313,8 @@
         "dari": "خدایا! در این سفر از تو نیکی و تقوا و عملی که خشنودت کند می‌خواهیم",
         "pashto": "الله! موږ پدې سفر کې له تا نیکي، تقوا او داسې عمل غواړو چې تا خوښ کړي",
         "reference": "مسلم",
-        "count": 1
+        "count": 1,
+        "english": "O Allah, in this journey of ours we ask You for righteousness, piety, and deeds that please You."
       }
     ],
     "rizq": [
@@ -291,7 +324,8 @@
         "dari": "خدایا! مرا با حلالت از حرامت بی‌نیاز کن و با فضلت از غیر خودت غنی گردان",
         "pashto": "الله! ما په خپل حلال سره له حرام نه بې نیازه کړه او ما په خپل فضل سره له نورو نه بې نیازه کړه",
         "reference": "الترمذي",
-        "count": 1
+        "count": 1,
+        "english": "O Allah, suffice me with what You have made lawful instead of what You have made unlawful, and make me independent by Your bounty of all besides You."
       },
       {
         "id": "r2",
@@ -299,7 +333,8 @@
         "dari": "خدایا! از فقر به تو پناه می‌برم",
         "pashto": "الله! زه له فقر نه تاته پناه وړم",
         "reference": "أبو داود",
-        "count": 1
+        "count": 1,
+        "english": "O Allah, I seek refuge in You from poverty."
       }
     ],
     "illness": [
@@ -309,7 +344,8 @@
         "dari": "خدایا! ای پروردگار مردم، درد را ببر و شفا ده که تو شفادهنده‌ای، شفایی نیست جز شفای تو، شفایی که بیماری نگذارد",
         "pashto": "الله! ای د خلکو ربه، درد لرې کړه او روغ یې کړه چې ته روغوونکی یې، هیڅ روغتیا نشته مګر ستا روغتیا، داسې روغتیا چې ناروغي پرې نه ږدي",
         "reference": "البخاري ومسلم",
-        "count": 3
+        "count": 3,
+        "english": "O Allah, Lord of the people, remove the harm and heal, for You are the Healer. There is no healing except Your healing, a healing that leaves no illness behind."
       },
       {
         "id": "i2",
@@ -317,7 +353,8 @@
         "dari": "به نام خدا تو را رقیه می‌کنم از هر چیزی که آزارت می‌دهد، از شر هر نفس یا چشم حسود، خدا شفایت دهد، به نام خدا تو را رقیه می‌کنم",
         "pashto": "د الله په نوم درباندې رقیه کوم له هر څه نه چې تا آزاروي، له هر نفس یا حسود سترګې شر نه، الله به دې روغ کړي، د الله په نوم درباندې رقیه کوم",
         "reference": "مسلم",
-        "count": 3
+        "count": 3,
+        "english": "In the name of Allah I recite over you, from everything that harms you, from the evil of every soul or envious eye. Allah heals you. In the name of Allah I recite over you."
       }
     ],
     "anxiety": [
@@ -327,7 +364,8 @@
         "dari": "خدایا! از غم و اندوه به تو پناه می‌برم، از ناتوانی و تنبلی به تو پناه می‌برم، از ترس و بخل به تو پناه می‌برم، از سنگینی قرض و غلبه مردان به تو پناه می‌برم",
         "pashto": "الله! زه له غم او خفګان نه تاته پناه وړم، له ناتواني او سستۍ نه تاته پناه وړم، له ویرې او بخل نه تاته پناه وړم، له پور د درندوالي او د خلکو د غلبې نه تاته پناه وړم",
         "reference": "البخاري",
-        "count": 1
+        "count": 1,
+        "english": "O Allah, I seek refuge in You from worry and grief, from incapacity and laziness, from cowardice and miserliness, and from being overcome by debt and overpowered by people."
       },
       {
         "id": "a2",
@@ -336,7 +374,8 @@
         "pashto": "هیڅ معبود نشته مګر ته، پاک یې ته، زه له ظالمانو وم",
         "reference": "دعاء يونس عليه السلام",
         "count": 1,
-        "virtue": "دعوة ذي النون إذ دعا وهو في بطن الحوت، فإنه لم يدع بها رجل مسلم في شيء قط إلا استجاب الله له"
+        "virtue": "دعوة ذي النون إذ دعا وهو في بطن الحوت، فإنه لم يدع بها رجل مسلم في شيء قط إلا استجاب الله له",
+        "english": "There is no god but You. Glory be to You. Indeed I was among the wrongdoers."
       },
       {
         "id": "a3",
@@ -344,7 +383,8 @@
         "dari": "خدا ما را کافی است و او بهترین وکیل است",
         "pashto": "الله موږ ته کافي دی او هغه غوره وکیل دی",
         "reference": "البخاري",
-        "count": 7
+        "count": 7,
+        "english": "Allah is sufficient for us, and He is the best Disposer of affairs."
       }
     ],
     "protection": [
@@ -354,7 +394,8 @@
         "dari": "پناه می‌برم به کلمات کامل خدا از شر آنچه آفریده",
         "pashto": "زه د الله بشپړو کلمو ته پناه وړم له هغه شر نه چې پیدا یې کړي",
         "reference": "مسلم",
-        "count": 3
+        "count": 3,
+        "english": "I seek refuge in the perfect words of Allah from the evil of what He has created."
       },
       {
         "id": "p2",
@@ -362,7 +403,8 @@
         "dari": "به نام خدایی که با نام او هیچ چیزی در زمین و آسمان زیان نمی‌رساند و او شنوا و داناست",
         "pashto": "د هغه الله په نوم چې د هغه د نوم سره هیڅ شی په ځمکه او آسمان کې زیان نه رسوي او هغه اوریدونکی پوهیدونکی دی",
         "reference": "الترمذي",
-        "count": 3
+        "count": 3,
+        "english": "In the name of Allah, with Whose name nothing on earth or in the heaven can cause harm, and He is the All-Hearing, the All-Knowing."
       }
     ],
     "afterPrayer": [
@@ -372,7 +414,8 @@
         "dari": "از خدا آمرزش می‌خواهم",
         "pashto": "زه له الله بخښنه غواړم",
         "reference": "مسلم",
-        "count": 3
+        "count": 3,
+        "english": "I seek Allah’s forgiveness."
       },
       {
         "id": "ap2",
@@ -380,7 +423,8 @@
         "dari": "خدایا! تو سلامی و سلامت از توست، بزرگی تو را ای صاحب جلال و کرامت",
         "pashto": "الله! ته سلام یې او سلامتي له تا ده، بزرګي ستا ده ای د جلال او عزت خاوند",
         "reference": "مسلم",
-        "count": 1
+        "count": 1,
+        "english": "O Allah, You are Peace and from You is peace. Blessed are You, O Owner of majesty and honour."
       },
       {
         "id": "ap3",
@@ -388,7 +432,8 @@
         "dari": "پاک است خدا",
         "pashto": "الله پاک دی",
         "reference": "متفق عليه",
-        "count": 33
+        "count": 33,
+        "english": "Glory be to Allah."
       },
       {
         "id": "ap4",
@@ -396,7 +441,8 @@
         "dari": "ستایش برای خداست",
         "pashto": "ستاینه د الله ده",
         "reference": "متفق عليه",
-        "count": 33
+        "count": 33,
+        "english": "All praise is for Allah."
       },
       {
         "id": "ap5",
@@ -404,7 +450,8 @@
         "dari": "خدا بزرگ‌تر است",
         "pashto": "الله لوی دی",
         "reference": "متفق عليه",
-        "count": 33
+        "count": 33,
+        "english": "Allah is the Greatest."
       },
       {
         "id": "ap6",
@@ -412,7 +459,8 @@
         "dari": "معبودی جز خدا نیست، یگانه است و شریکی ندارد، پادشاهی و ستایش از آن اوست و او بر همه چیز تواناست",
         "pashto": "هیڅ معبود نشته مګر الله یوازې چې شریک نه لري، بادشاهي او ستاینه د هغه ده او هغه پر هر څه قادر دی",
         "reference": "مسلم",
-        "count": 1
+        "count": 1,
+        "english": "There is no god but Allah, alone without partner. His is the dominion and His is the praise, and He is over all things competent."
       },
       {
         "id": "ap7",
@@ -421,7 +469,8 @@
         "pashto": "آیة الکرسي",
         "reference": "النسائي",
         "count": 1,
-        "virtue": "من قرأها دبر كل صلاة لم يمنعه من دخول الجنة إلا الموت"
+        "virtue": "من قرأها دبر كل صلاة لم يمنعه من دخول الجنة إلا الموت",
+        "english": "Ayat al-Kursi."
       }
     ],
     "beginner": [
@@ -432,7 +481,8 @@
         "pashto": "هیڅ معبود نشته مګر الله",
         "reference": "البخاري ومسلم",
         "count": 100,
-        "virtue": "أفضل الذكر - أساس طريقة نقشبنديه"
+        "virtue": "أفضل الذكر - أساس طريقة نقشبنديه",
+        "english": "There is no god but Allah."
       },
       {
         "id": "b2",
@@ -440,7 +490,8 @@
         "dari": "خدا پاک است",
         "pashto": "الله پاک دی",
         "reference": "البخاري ومسلم",
-        "count": 33
+        "count": 33,
+        "english": "Glory be to Allah."
       },
       {
         "id": "b3",
@@ -448,7 +499,8 @@
         "dari": "ستایش از آن خداست",
         "pashto": "ستاینه د الله ده",
         "reference": "البخاري ومسلم",
-        "count": 33
+        "count": 33,
+        "english": "All praise is for Allah."
       },
       {
         "id": "b4",
@@ -456,7 +508,8 @@
         "dari": "خدا بزرگ‌تر است",
         "pashto": "الله لوی دی",
         "reference": "البخاري ومسلم",
-        "count": 33
+        "count": 33,
+        "english": "Allah is the Greatest."
       },
       {
         "id": "b5",
@@ -464,7 +517,8 @@
         "dari": "از خدا آمرزش می‌خواهم",
         "pashto": "زه له الله بخښنه غواړم",
         "reference": "البخاري ومسلم",
-        "count": 100
+        "count": 100,
+        "english": "I seek Allah’s forgiveness."
       },
       {
         "id": "b6",
@@ -473,7 +527,8 @@
         "pashto": "هیڅ حرکت او قدرت نشته مګر د الله په مرسته",
         "reference": "البخاري ومسلم",
         "count": 10,
-        "virtue": "كنز من كنوز الجنة"
+        "virtue": "كنز من كنوز الجنة",
+        "english": "There is no power and no strength except with Allah."
       },
       {
         "id": "b7",
@@ -481,7 +536,8 @@
         "dari": "به نام خداوند بخشنده مهربان",
         "pashto": "د زښتناست او مهربان الله په نوم",
         "reference": "سنت",
-        "count": 1
+        "count": 1,
+        "english": "In the name of Allah, the Most Compassionate, the Most Merciful."
       },
       {
         "id": "b8",
@@ -489,7 +545,8 @@
         "dari": "ای خداوند بزرگ، بر محمد، خاندان پاکش و یاران گرامی او درود و رحمت بفرست.",
         "pashto": "ای لوی خدا، پر محمد، د هغه پاک کورنۍ او د هغه ګران ملګرو برکت او رحمت ولیږه.",
         "reference": "متفق عليه",
-        "count": 10
+        "count": 10,
+        "english": "O Allah, send blessings upon Muhammad, the family of Muhammad, and the companions of Muhammad."
       },
       {
         "id": "b9",
@@ -497,7 +554,8 @@
         "dari": "خدا ما را کافی است و او بهترین نگهبان است",
         "pashto": "الله موږ ته کافي دی او هغه ښه ساتونکی دی",
         "reference": "آل عمران: ۱۷۳",
-        "count": 7
+        "count": 7,
+        "english": "Allah is sufficient for us, and He is the best Protector."
       },
       {
         "id": "b10",
@@ -506,7 +564,8 @@
         "pashto": "هیڅ معبود نشته مګر الله او محمد د الله رسول دی",
         "reference": "سنت نقشبنديه",
         "count": 100,
-        "virtue": "شهادت - ذکر اصلي طريقه"
+        "virtue": "شهادت - ذکر اصلي طريقه",
+        "english": "There is no god but Allah, and Muhammad is the Messenger of Allah."
       }
     ]
   }

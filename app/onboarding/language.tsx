@@ -9,43 +9,61 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import type { AppLanguage } from '@/types/quran';
+import { APP_LANGUAGE_ORDER } from '@/utils/i18n/languages';
+import { useI18n } from '@/utils/i18n/useI18n';
 
-const OPTIONS: { key: AppLanguage; label: string; hint: string }[] = [
-  { key: 'dari', label: 'فارسی (دری)', hint: 'ترجمه و متن‌های برنامه به دری' },
-  { key: 'pashto', label: 'پښتو', hint: 'ترجمه و متن‌های برنامه به پښتو' },
-];
+/**
+ * Each option describes itself in its own language so a user who only reads one
+ * of the three can still find their language in the list.
+ */
+const LANGUAGE_OPTIONS: Record<AppLanguage, { label: string; hint: string; fontFamily?: string }> = {
+  dari: {
+    label: 'فارسی (دری)',
+    hint: 'ترجمه و متن‌های برنامه به دری',
+    fontFamily: 'Vazirmatn',
+  },
+  pashto: {
+    label: 'پښتو',
+    hint: 'د اپ ژبه او ژباړې په پښتو',
+    fontFamily: 'Vazirmatn',
+  },
+  english: {
+    label: 'English',
+    hint: 'App text and translations in English',
+    fontFamily: undefined,
+  },
+};
 
 export default function OnboardingLanguageScreen() {
-  const { theme, setAppLanguage, setTranslationLanguage } = useApp();
-  const [selected, setSelected] = useState<AppLanguage>('dari');
+  const { theme, setAppLanguage, state } = useApp();
+  const { t } = useI18n();
+  const [selected, setSelected] = useState<AppLanguage>(state.preferences.appLanguage || 'dari');
 
   const handleContinue = () => {
     setAppLanguage(selected);
-    // Keep the initial Quran translation aligned with the selected interface.
-    setTranslationLanguage(selected);
-    router.push('/onboarding/location' as never);
+    router.push('/onboarding' as never);
   };
 
   return (
     <OnboardingShell
-      step={2}
+      step={1}
       totalSteps={5}
-      title="زبان برنامه"
-      subtitle="زبان ترجمه قرآن و متن‌های برنامه را انتخاب کنید. بعداً می‌توانید تغییر دهید."
-      primaryLabel="ادامه"
+      title={t('onboarding.language.title')}
+      subtitle={t('onboarding.language.subtitle')}
+      primaryLabel={t('onboarding.continue')}
       onPrimary={handleContinue}
-      showBack
     >
       <RtlView style={styles.list}>
         <View style={[styles.iconCircle, { backgroundColor: `${theme.tint}18` }]}>
           <MaterialIcons name="translate" size={40} color={theme.tint} />
         </View>
-        {OPTIONS.map((option) => {
-          const active = selected === option.key;
+        {APP_LANGUAGE_ORDER.map((key) => {
+          const option = LANGUAGE_OPTIONS[key];
+          const active = selected === key;
           return (
             <Pressable
-              key={option.key}
-              onPress={() => setSelected(option.key)}
+              key={key}
+              onPress={() => setSelected(key)}
               style={[
                 styles.option,
                 {
@@ -54,8 +72,21 @@ export default function OnboardingLanguageScreen() {
                 },
               ]}
             >
-              <RtlText align="center" style={[styles.optionLabel, { color: theme.text }]}>{option.label}</RtlText>
-              <RtlText align="center" style={[styles.optionHint, { color: theme.textSecondary }]}>{option.hint}</RtlText>
+              <RtlText
+                align="center"
+                style={[
+                  styles.optionLabel,
+                  { color: theme.text, fontFamily: option.fontFamily ? `${option.fontFamily}-Bold` : undefined },
+                ]}
+              >
+                {option.label}
+              </RtlText>
+              <RtlText
+                align="center"
+                style={[styles.optionHint, { color: theme.textSecondary, fontFamily: option.fontFamily }]}
+              >
+                {option.hint}
+              </RtlText>
             </Pressable>
           );
         })}
@@ -87,14 +118,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   optionLabel: {
-    fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
     // Preserve the upper/lower marks in Pashto glyphs (پښتو) on Android.
     includeFontPadding: true,
     lineHeight: 34,
   },
   optionHint: {
-    fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
     includeFontPadding: true,
     lineHeight: 28,

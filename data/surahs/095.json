@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "قسم به انجیر و زیتون.",
-      "translation_pashto": "95-1 قسم دى په انځر او زیتون (ښوون) باندې"
+      "translation_pashto": "95-1 قسم دى په انځر او زیتون (ښوون) باندې",
+      "translation_english": "By the fig and the olive,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به طور سینا.",
-      "translation_pashto": "95-2 او په طور سینین (غره) باندې"
+      "translation_pashto": "95-2 او په طور سینین (غره) باندې",
+      "translation_english": "and by Mount Sinai,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به این شهر امن (مکه).",
-      "translation_pashto": "95-3 او په دې امان وركوونكي/امن والا ښار باندې"
+      "translation_pashto": "95-3 او په دې امان وركوونكي/امن والا ښار باندې",
+      "translation_english": "and by this secure city [of Makkah],"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "بی‌گمان انسان را در بهترین صورت (و ترکیب) آفریدیم.",
-      "translation_pashto": "95-4 چې یقینًا یقینًا مونږ انسان په ډېر ښكلي صورت (او اعتدال) كې پیدا كړى دى"
+      "translation_pashto": "95-4 چې یقینًا یقینًا مونږ انسان په ډېر ښكلي صورت (او اعتدال) كې پیدا كړى دى",
+      "translation_english": "Surely We have created man in the best form,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "باز او را به پست‌ترین مرحله (حقیرترین مرتبه؛ به سبب کفر) بازگردانیدیم.",
-      "translation_pashto": "95-5 بیا دى مونږ وګرځاوه د ښكتو ډېر ښكته"
+      "translation_pashto": "95-5 بیا دى مونږ وګرځاوه د ښكتو ډېر ښكته",
+      "translation_english": "then We will reduce him to the lowest of the low,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "مگر آنانی که ایمان آوردند و کارهای نیک انجام دادند، پس برای آن‌ها اجریست قطع ناشدنی.",
-      "translation_pashto": "95-6 مګر  هغه كسان چې ایمان يې راوړى دى او نېك عملونه يې كړې دي،  نو د دوى لپاره نه ختمېدونكى اجر دى"
+      "translation_pashto": "95-6 مګر  هغه كسان چې ایمان يې راوړى دى او نېك عملونه يې كړې دي،  نو د دوى لپاره نه ختمېدونكى اجر دى",
+      "translation_english": "except those who believe and do righteous deeds; they will have a never-ending reward."
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس چه چیز سبب می‌شود (ای انسان) که قیامت را تکذیب کنی.",
-      "translation_pashto": "95-7 نو (اى د قیامت منكره!) له دې نه وروسته تا څه شى د قیامت په هكله دروغ ګڼلو ته اماده كوي؟"
+      "translation_pashto": "95-7 نو (اى د قیامت منكره!) له دې نه وروسته تا څه شى د قیامت په هكله دروغ ګڼلو ته اماده كوي؟",
+      "translation_english": "Then, what makes you deny the Judgment Day?"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا الله بزرگ‌ترین فرمانروایان نیست؟ (بلی هست! و من بر آن از جملۀ گواهانم).",
-      "translation_pashto": "95-8 ایا الله تر ټولو لوى حاكم نه دى؟"
+      "translation_pashto": "95-8 ایا الله تر ټولو لوى حاكم نه دى؟",
+      "translation_english": "Is not Allah the Most Just of all judges?"
     }
   ]
 }

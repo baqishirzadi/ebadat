@@ -1,3 +1,4 @@
+import type { AppLanguage } from '@/types/quran';
 import { getKabulDateParts } from '@/utils/afghanistanCalendar';
 import { gregorianToAfghanSolarHijri, shamsiToGregorian, AFGHAN_SOLAR_MONTHS } from '@/utils/afghanSolarHijri';
 import { AFGHAN_HOLIDAYS } from '@/utils/afghanHolidays';
@@ -10,7 +11,7 @@ import {
   SPECIAL_DAYS,
   type HijriDate,
 } from '@/utils/islamicCalendar';
-import { toArabicNumerals } from '@/utils/numbers';
+import { formatNumber } from '@/utils/numbers';
 
 export type CalendarEventCategory = 'islamic' | 'afghan' | 'international';
 
@@ -18,8 +19,10 @@ export interface CalendarEvent {
   id: string;
   titleDari: string;
   titlePashto: string;
+  titleEnglish: string;
   descriptionDari: string;
   descriptionPashto: string;
+  descriptionEnglish: string;
   gregorianDate: Date;
   category: CalendarEventCategory;
   isFasting?: boolean;
@@ -58,8 +61,10 @@ function collectAllEventsForYears(hijriYear: number, shamsiYear: number): Calend
       id: `islamic-${hijriYear}-${day.month}-${day.day}`,
       titleDari: day.nameDari,
       titlePashto: day.namePashto,
+      titleEnglish: day.nameEnglish,
       descriptionDari: day.descriptionDari,
       descriptionPashto: day.descriptionPashto,
+      descriptionEnglish: day.description,
       gregorianDate,
       category: 'islamic',
       isFasting: day.isFasting,
@@ -76,8 +81,10 @@ function collectAllEventsForYears(hijriYear: number, shamsiYear: number): Calend
       id: `afghan-${shamsiYear}-${holiday.shamsiMonth}-${holiday.shamsiDay}`,
       titleDari: holiday.nameDari,
       titlePashto: holiday.namePashto,
+      titleEnglish: holiday.nameEnglish,
       descriptionDari: holiday.descriptionDari,
       descriptionPashto: holiday.descriptionPashto,
+      descriptionEnglish: holiday.descriptionEnglish,
       gregorianDate,
       category: 'afghan',
       shamsiMonth: holiday.shamsiMonth,
@@ -153,7 +160,7 @@ export function getEventsForGregorianMonth(year: number, month: number, from: Da
   });
 }
 
-export function formatEventDateLabel(event: CalendarEvent, language: 'dari' | 'pashto' = 'dari'): string {
+export function formatEventDateLabel(event: CalendarEvent, language: AppLanguage = 'dari'): string {
   const parts = formatEventDateParts(event, language);
   if (parts.month) {
     const yearPart = parts.year ? ` ${parts.year}` : '';
@@ -164,19 +171,22 @@ export function formatEventDateLabel(event: CalendarEvent, language: 'dari' | 'p
 
 export function formatEventDateParts(
   event: CalendarEvent,
-  language: 'dari' | 'pashto' = 'dari',
+  language: AppLanguage = 'dari',
 ): { day: string; month?: string; year?: string } {
+  const digits = (value: number) => formatNumber(value, language);
+  const key = language === 'pashto' ? 'pashto' : language === 'english' ? 'english' : 'dari';
+
   if (event.category === 'islamic' && event.hijriMonth && event.hijriDay) {
-    const monthName = HIJRI_MONTHS[event.hijriMonth - 1]?.[language === 'pashto' ? 'pashto' : 'dari'] ?? '';
-    return { day: toArabicNumerals(event.hijriDay), month: monthName };
+    const monthName = HIJRI_MONTHS[event.hijriMonth - 1]?.[key] ?? '';
+    return { day: digits(event.hijriDay), month: monthName };
   }
 
   const shamsi = gregorianToAfghanSolarHijri(event.gregorianDate);
-  const monthName = AFGHAN_SOLAR_MONTHS[shamsi.month - 1]?.[language === 'pashto' ? 'pashto' : 'dari'] ?? '';
+  const monthName = AFGHAN_SOLAR_MONTHS[shamsi.month - 1]?.[key] ?? '';
   return {
-    day: toArabicNumerals(shamsi.day),
+    day: digits(shamsi.day),
     month: monthName,
-    year: toArabicNumerals(shamsi.year),
+    year: digits(shamsi.year),
   };
 }
 

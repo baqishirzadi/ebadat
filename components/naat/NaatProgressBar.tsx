@@ -1,5 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { PanResponder, StyleSheet, Text, View } from 'react-native';
+
+import { PanResponder, StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 
 type Props = {
@@ -142,12 +144,12 @@ export function NaatProgressBar({
       </View>
       {showTimeLabels && (
         <View style={styles.timeRow}>
-          <Text style={[styles.timeText, large && styles.timeTextLarge, { color: textColor }]}>
+          <LocalizedText style={[styles.timeText, large && styles.timeTextLarge, { color: textColor }]}>
             {formatNaatTime(seekingRatio !== null ? seekingRatio * durationMillis : positionMillis)}
-          </Text>
-          <Text style={[styles.timeText, large && styles.timeTextLarge, { color: textColor }]}>
+          </LocalizedText>
+          <LocalizedText style={[styles.timeText, large && styles.timeTextLarge, { color: textColor }]}>
             {formatNaatTime(durationMillis)}
-          </Text>
+          </LocalizedText>
         </View>
       )}
     </View>

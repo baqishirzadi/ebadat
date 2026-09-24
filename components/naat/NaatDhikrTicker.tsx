@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { AccessibilityInfo, StyleSheet, Text } from 'react-native';
+
+import { AccessibilityInfo, StyleSheet } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -74,9 +76,9 @@ export function NaatDhikrTicker({ playing, color }: Props) {
 
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
-      <Text style={[styles.text, { color }]} numberOfLines={1}>
+      <LocalizedText style={[styles.text, { color }]} numberOfLines={1}>
         {PHRASES[phraseIndex]}
-      </Text>
+      </LocalizedText>
     </Animated.View>
   );
 }

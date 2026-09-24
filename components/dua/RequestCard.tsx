@@ -12,6 +12,10 @@ import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { StatusBadge } from './StatusBadge';
 import CenteredText from '@/components/CenteredText';
+import { formatGregorianDateCompact } from '@/utils/calendarDisplay';
+import { toArabicNumerals } from '@/utils/numbers';
+import { useI18n } from '@/utils/i18n/useI18n';
+import { pickContent } from '@/utils/i18n/content';
 
 interface RequestCardProps {
   request: DuaRequest;
@@ -28,19 +32,18 @@ export function RequestCard({
   showArrow = true,
   unread = false,
 }: RequestCardProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const { t, language } = useI18n();
   const router = useRouter();
 
   const category = DUA_CATEGORIES.find((c) => c.id === request.category);
-  const categoryName = category?.nameDari || 'نامشخص';
+  const categoryName = category
+    ? pickContent(category, 'name', language)
+    : t('dua.gender.unknown');
 
   // Format date
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('fa-AF', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    return formatGregorianDateCompact(date, toArabicNumerals);
   };
 
   const handlePress =
@@ -95,7 +98,7 @@ export function RequestCard({
           <View style={styles.answeredIndicator}>
             <MaterialIcons name="check-circle" size={16} color="#10B981" />
             <CenteredText style={styles.answeredText}>
-              {unread ? 'پاسخ جدید' : 'پاسخ داده شده'}
+              {unread ? t('dua.reply.new') : t('dua.status.answered')}
             </CenteredText>
           </View>
         )}

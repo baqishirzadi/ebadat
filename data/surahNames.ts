@@ -1,5 +1,5 @@
 /**
- * Complete Surah Names in Arabic and Dari
+ * Complete Surah Names in Arabic, Dari, Pashto and English
  * With meanings for Afghan users
  * Prophet names include "حضرت ... علیه‌السلام"
  */
@@ -11,8 +11,16 @@ export interface SurahNameData {
   arabic: string;
   dari: string;
   meaning: string;
+  pashto: string;
+  meaningPashto: string;
+  /** Transliterated Arabic title, the label English readers actually use. */
+  english: string;
+  /** Dari meaning under the camel-case field name `pickContent` looks for. */
+  meaningDari: string;
+  meaningEnglish: string;
   ayahCount: number;
   revelationType: 'مکی' | 'مدنی';
+  revelation: 'meccan' | 'medinan';
   juz: number[];
 }
 
@@ -20,7 +28,10 @@ export interface SurahNameData {
 export const toArabicNumerals = toArabicNumeralsUtil;
 
 // Complete list of 114 Surahs with Dari names and meanings
-export const SURAH_NAMES: SurahNameData[] = [
+const SURAH_NAMES_DARI: Omit<
+  SurahNameData,
+  'pashto' | 'meaningPashto' | 'english' | 'meaningDari' | 'meaningEnglish' | 'revelation'
+>[] = [
   { number: 1, arabic: 'الفاتحة', dari: 'فاتحه', meaning: 'آغازگر', ayahCount: 7, revelationType: 'مکی', juz: [1] },
   { number: 2, arabic: 'البقرة', dari: 'بقره', meaning: 'گاو ماده', ayahCount: 286, revelationType: 'مدنی', juz: [1, 2, 3] },
   { number: 3, arabic: 'آل عمران', dari: 'آل‌عمران', meaning: 'خاندان عمران', ayahCount: 200, revelationType: 'مدنی', juz: [3, 4] },
@@ -136,6 +147,88 @@ export const SURAH_NAMES: SurahNameData[] = [
   { number: 113, arabic: 'الفلق', dari: 'فلق', meaning: 'سپیده‌دم', ayahCount: 5, revelationType: 'مکی', juz: [30] },
   { number: 114, arabic: 'الناس', dari: 'ناس', meaning: 'مردم', ayahCount: 6, revelationType: 'مکی', juz: [30] },
 ];
+
+/** Curated Pashto surah title and meaning, in Mushaf order (1–114). */
+const PASHTO_SURAH_METADATA: ReadonlyArray<readonly [name: string, meaning: string]> = [
+  ['فاتحه', 'پیلونکې'], ['بقره', 'غوا'], ['آل عمران', 'د عمران کورنۍ'], ['نساء', 'ښځې'], ['مائده', 'د خوړو دسترخوان'],
+  ['انعام', 'څاروي'], ['اعراف', 'لوړې څوکې'], ['انفال', 'غنیمتونه'], ['توبه', 'توبه'], ['یونس', 'حضرت یونس علیه السلام'],
+  ['هود', 'حضرت هود علیه السلام'], ['یوسف', 'حضرت یوسف علیه السلام'], ['رعد', 'تندر'], ['ابراهیم', 'حضرت ابراهیم علیه السلام'], ['حجر', 'د حجر سیمه'],
+  ['نحل', 'د شاتو مچۍ'], ['اسراء', 'د شپې سفر'], ['کهف', 'غار'], ['مریم', 'حضرت مریم علیهاالسلام'], ['طه', 'طه'],
+  ['انبیاء', 'پیغمبران'], ['حج', 'حج'], ['مؤمنون', 'مؤمنان'], ['نور', 'رڼا'], ['فرقان', 'د حق او باطل بېلوونکی'],
+  ['شعراء', 'شاعران'], ['نمل', 'مېږیان'], ['قصص', 'کیسې'], ['عنکبوت', 'غڼه'], ['روم', 'رومیان'],
+  ['لقمان', 'لقمان حکیم'], ['سجده', 'سجده'], ['احزاب', 'ډلې'], ['سبأ', 'د سبأ قوم'], ['فاطر', 'پیداکوونکی'],
+  ['یس', 'یس'], ['صافات', 'صف تړلي کسان'], ['ص', 'ص'], ['زمر', 'ډلې ډلې'], ['غافر', 'بښونکی'],
+  ['فصلت', 'روښانه شوي'], ['شوری', 'مشوره'], ['زخرف', 'زر او ګاڼه'], ['دخان', 'لوګی'], ['جاثیه', 'پر ګونډو کېناستونکې'],
+  ['احقاف', 'شګلنې غونډۍ'], ['محمد', 'حضرت محمد صلی الله علیه وسلم'], ['فتح', 'بریا'], ['حجرات', 'کوټې'], ['ق', 'ق'],
+  ['ذاریات', 'بادونه خپروونکي'], ['طور', 'د طور غر'], ['نجم', 'ستوری'], ['قمر', 'سپوږمۍ'], ['رحمن', 'ډېر مهربان'],
+  ['واقعه', 'لویه پېښه'], ['حدید', 'اوسپنه'], ['مجادله', 'شکایت کوونکې ښځه'], ['حشر', 'راټولېدل'], ['ممتحنه', 'ازمویل شوې ښځه'],
+  ['صف', 'لیکه'], ['جمعه', 'جمعه'], ['منافقون', 'منافقان'], ['تغابن', 'ګټه او تاوان څرګندېدل'], ['طلاق', 'طلاق'],
+  ['تحریم', 'حرامول'], ['ملک', 'پاچاهي'], ['قلم', 'قلم'], ['حاقه', 'حتمي حقیقت'], ['معارج', 'لوړې درجې'],
+  ['نوح', 'حضرت نوح علیه السلام'], ['جن', 'پېریان'], ['مزمل', 'په جامو کې نغښتلی'], ['مدثر', 'په څادر کې نغښتلی'], ['قیامه', 'قیامت'],
+  ['انسان', 'انسان'], ['مرسلات', 'لېږل شوي بادونه'], ['نبأ', 'لوی خبر'], ['نازعات', 'راایستونکي'], ['عبس', 'تندی یې تریو کړ'],
+  ['تکویر', 'تاوېدل'], ['انفطار', 'چاودل'], ['مطففین', 'په پیمانه کې کم کوونکي'], ['انشقاق', 'څېرېدل'], ['بروج', 'برجونه'],
+  ['طارق', 'د شپې راتلونکی'], ['اعلی', 'تر ټولو لوړ'], ['غاشیه', 'راچاپېره کېدونکې'], ['فجر', 'سپیده چاود'], ['بلد', 'ښار'],
+  ['شمس', 'لمر'], ['لیل', 'شپه'], ['ضحی', 'څاښت'], ['شرح', 'پراخي'], ['تین', 'انځر'],
+  ['علق', 'کلک نښتی شی'], ['قدر', 'قدر'], ['بینه', 'روښانه دلیل'], ['زلزله', 'زلزله'], ['عادیات', 'ځغاستونکي آسونه'],
+  ['قارعه', 'سخته ټکونکې پېښه'], ['تکاثر', 'د ډېروالي سیالي'], ['عصر', 'زمان'], ['همزه', 'عیب لټوونکی'], ['فیل', 'فیل'],
+  ['قریش', 'قریش'], ['ماعون', 'وړه مرسته'], ['کوثر', 'ډېر خیر'], ['کافرون', 'کافران'], ['نصر', 'مرسته'],
+  ['مسد', 'د کجورو رسۍ'], ['اخلاص', 'سوچه والی'], ['فلق', 'سپیده چاود'], ['ناس', 'خلک'],
+];
+
+/**
+ * English surah title and meaning, in Mushaf order (1–114).
+ *
+ * The title is the transliterated Arabic name (`Al-Baqarah`) because that is
+ * what English-speaking Muslims use to refer to a surah; the translated meaning
+ * (`The Cow`) is the secondary line.
+ */
+const ENGLISH_SURAH_METADATA: ReadonlyArray<readonly [name: string, meaning: string]> = [
+  ['Al-Fatihah', 'The Opening'], ['Al-Baqarah', 'The Cow'], ["Ali 'Imran", 'The Family of Imran'], ['An-Nisa', 'The Women'], ["Al-Ma'idah", 'The Table Spread'],
+  ["Al-An'am", 'The Cattle'], ["Al-A'raf", 'The Heights'], ['Al-Anfal', 'The Spoils of War'], ['At-Tawbah', 'The Repentance'], ['Yunus', 'Jonah'],
+  ['Hud', 'Hud'], ['Yusuf', 'Joseph'], ["Ar-Ra'd", 'The Thunder'], ['Ibrahim', 'Abraham'], ['Al-Hijr', 'The Rocky Tract'],
+  ['An-Nahl', 'The Bee'], ['Al-Isra', 'The Night Journey'], ['Al-Kahf', 'The Cave'], ['Maryam', 'Mary'], ['Taha', 'Ta Ha'],
+  ['Al-Anbiya', 'The Prophets'], ['Al-Hajj', 'The Pilgrimage'], ["Al-Mu'minun", 'The Believers'], ['An-Nur', 'The Light'], ['Al-Furqan', 'The Criterion'],
+  ["Ash-Shu'ara", 'The Poets'], ['An-Naml', 'The Ants'], ['Al-Qasas', 'The Stories'], ["Al-'Ankabut", 'The Spider'], ['Ar-Rum', 'The Romans'],
+  ['Luqman', 'Luqman'], ['As-Sajdah', 'The Prostration'], ['Al-Ahzab', 'The Confederates'], ['Saba', 'Sheba'], ['Fatir', 'The Originator'],
+  ['Ya-Sin', 'Ya Sin'], ['As-Saffat', 'Those Ranged in Ranks'], ['Sad', 'Sad'], ['Az-Zumar', 'The Throngs'], ['Ghafir', 'The Forgiver'],
+  ['Fussilat', 'Explained in Detail'], ['Ash-Shura', 'The Consultation'], ['Az-Zukhruf', 'The Ornaments of Gold'], ['Ad-Dukhan', 'The Smoke'], ['Al-Jathiyah', 'The Kneeling'],
+  ['Al-Ahqaf', 'The Sand Dunes'], ['Muhammad', 'Muhammad'], ['Al-Fath', 'The Victory'], ['Al-Hujurat', 'The Chambers'], ['Qaf', 'Qaf'],
+  ['Adh-Dhariyat', 'The Winnowing Winds'], ['At-Tur', 'The Mount'], ['An-Najm', 'The Star'], ['Al-Qamar', 'The Moon'], ['Ar-Rahman', 'The Most Merciful'],
+  ["Al-Waqi'ah", 'The Inevitable Event'], ['Al-Hadid', 'The Iron'], ['Al-Mujadilah', 'The Pleading Woman'], ['Al-Hashr', 'The Gathering'], ['Al-Mumtahanah', 'The Woman Examined'],
+  ['As-Saff', 'The Ranks'], ["Al-Jumu'ah", 'Friday'], ['Al-Munafiqun', 'The Hypocrites'], ['At-Taghabun', 'The Mutual Loss and Gain'], ['At-Talaq', 'The Divorce'],
+  ['At-Tahrim', 'The Prohibition'], ['Al-Mulk', 'The Sovereignty'], ['Al-Qalam', 'The Pen'], ['Al-Haqqah', 'The Inevitable Reality'], ["Al-Ma'arij", 'The Ascending Stairways'],
+  ['Nuh', 'Noah'], ['Al-Jinn', 'The Jinn'], ['Al-Muzzammil', 'The Enshrouded One'], ['Al-Muddaththir', 'The Cloaked One'], ['Al-Qiyamah', 'The Resurrection'],
+  ['Al-Insan', 'Man'], ['Al-Mursalat', 'Those Sent Forth'], ['An-Naba', 'The Great News'], ["An-Nazi'at", 'Those Who Tear Out'], ["'Abasa", 'He Frowned'],
+  ['At-Takwir', 'The Folding Up'], ['Al-Infitar', 'The Cleaving Asunder'], ['Al-Mutaffifin', 'Those Who Give Short Measure'], ['Al-Inshiqaq', 'The Splitting Open'], ['Al-Buruj', 'The Great Constellations'],
+  ['At-Tariq', 'The Night Star'], ["Al-A'la", 'The Most High'], ['Al-Ghashiyah', 'The Overwhelming Event'], ['Al-Fajr', 'The Dawn'], ['Al-Balad', 'The City'],
+  ['Ash-Shams', 'The Sun'], ['Al-Layl', 'The Night'], ['Ad-Duha', 'The Morning Brightness'], ['Ash-Sharh', 'The Relief'], ['At-Tin', 'The Fig'],
+  ["Al-'Alaq", 'The Clinging Clot'], ['Al-Qadr', 'The Night of Decree'], ['Al-Bayyinah', 'The Clear Proof'], ['Az-Zalzalah', 'The Earthquake'], ["Al-'Adiyat", 'The Racing Horses'],
+  ["Al-Qari'ah", 'The Striking Calamity'], ['At-Takathur', 'The Rivalry for Increase'], ["Al-'Asr", 'The Declining Day'], ['Al-Humazah', 'The Slanderer'], ['Al-Fil', 'The Elephant'],
+  ['Quraysh', 'Quraysh'], ["Al-Ma'un", 'The Small Kindnesses'], ['Al-Kawthar', 'The Abundance'], ['Al-Kafirun', 'The Disbelievers'], ['An-Nasr', 'The Divine Support'],
+  ['Al-Masad', 'The Palm Fibre'], ['Al-Ikhlas', 'The Sincerity'], ['Al-Falaq', 'The Daybreak'], ['An-Nas', 'Mankind'],
+];
+
+if (
+  PASHTO_SURAH_METADATA.length !== 114 ||
+  ENGLISH_SURAH_METADATA.length !== 114 ||
+  SURAH_NAMES_DARI.length !== 114
+) {
+  throw new Error('Surah localization metadata must contain exactly 114 entries.');
+}
+
+export const SURAH_NAMES: SurahNameData[] = SURAH_NAMES_DARI.map((surah, index) => {
+  const [pashto, meaningPashto] = PASHTO_SURAH_METADATA[index];
+  const [english, meaningEnglish] = ENGLISH_SURAH_METADATA[index];
+  return {
+    ...surah,
+    pashto,
+    meaningPashto,
+    english,
+    meaningDari: surah.meaning,
+    meaningEnglish,
+    revelation: surah.revelationType === 'مکی' ? 'meccan' : 'medinan',
+  };
+});
 
 // Get surah by number
 export function getSurah(number: number): SurahNameData | undefined {

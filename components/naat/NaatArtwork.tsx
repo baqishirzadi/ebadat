@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import { StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
@@ -31,9 +33,9 @@ export function NaatArtwork({
       <View style={[styles.outerRing, { borderColor: `${accentColor}55` }]} />
       <View style={[styles.innerRing, { borderColor: `${accentColor}30` }]} />
       <View style={styles.starField}>
-        <Text style={[styles.star, styles.starTop, { color: accentColor }]}>✦</Text>
-        <Text style={[styles.star, styles.starLeft, { color: `${accentColor}cc` }]}>۞</Text>
-        <Text style={[styles.star, styles.starRight, { color: `${accentColor}cc` }]}>✧</Text>
+        <LocalizedText style={[styles.star, styles.starTop, { color: accentColor }]}>✦</LocalizedText>
+        <LocalizedText style={[styles.star, styles.starLeft, { color: `${accentColor}cc` }]}>۞</LocalizedText>
+        <LocalizedText style={[styles.star, styles.starRight, { color: `${accentColor}cc` }]}>✧</LocalizedText>
       </View>
 
       <View style={[styles.iconSeal, { backgroundColor: `${accentColor}24`, borderColor: `${accentColor}80` }]}>
@@ -42,12 +44,12 @@ export function NaatArtwork({
 
       <NaatDhikrTicker playing={playing} color={accentColor} />
 
-      <Text style={[styles.artTitle, { color: textColor }]} numberOfLines={2}>
+      <LocalizedText style={[styles.artTitle, { color: textColor }]} numberOfLines={2}>
         {title || 'نعت'}
-      </Text>
-      <Text style={[styles.artReciter, { color: `${textColor}cc` }]} numberOfLines={1}>
+      </LocalizedText>
+      <LocalizedText style={[styles.artReciter, { color: `${textColor}cc` }]} numberOfLines={1}>
         {reciter || 'ذکر و مناجات'}
-      </Text>
+      </LocalizedText>
     </View>
   );
 }

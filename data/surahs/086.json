@@ -14,7 +14,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "قسم به آسمان، و قسم به طارق (یعنی ستاره ظاهرشونده در شب).",
-      "translation_pashto": "86-1 قسم دى په اسمان او د شپې په راتلونكي"
+      "translation_pashto": "86-1 قسم دى په اسمان او د شپې په راتلونكي",
+      "translation_english": "By the sky and the night comer –"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "تو چه می‌دانی که طارق چیست؟",
-      "translation_pashto": "86-2 او ته څه شي  پوه كړې چې د شپې راتلونكى څه شى دى؟"
+      "translation_pashto": "86-2 او ته څه شي  پوه كړې چې د شپې راتلونكى څه شى دى؟",
+      "translation_english": "and how do you know what the night comer is?"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "آن ستارۀ درخشنده است.",
-      "translation_pashto": "86-3 ځلېدونكى ستورى دى"
+      "translation_pashto": "86-3 ځلېدونكى ستورى دى",
+      "translation_english": "It is the star of piercing brightness –"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "کسی نیست مگر آن که بر او نگهبانی است.",
-      "translation_pashto": "86-4 نشته هېڅ یو نفس مګر  په هغه باندې څارونكى (ساتونكى) شته"
+      "translation_pashto": "86-4 نشته هېڅ یو نفس مګر  په هغه باندې څارونكى (ساتونكى) شته",
+      "translation_english": "there is no soul except that there is a watcher over it."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس باید انسان بنگرد که از چه آفریده شده است؟",
-      "translation_pashto": "86-5 نو انسان دې وګوري چې دى له څه شي نه پیدا كړى شوى دى؟"
+      "translation_pashto": "86-5 نو انسان دې وګوري چې دى له څه شي نه پیدا كړى شوى دى؟",
+      "translation_english": "Let man reflect on what he was created from."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "از آب (منی) زودریزنده آفریده شده است.",
-      "translation_pashto": "86-6 دى له ټوپ وهونكو اوبو نه پیدا كړى شوى دى"
+      "translation_pashto": "86-6 دى له ټوپ وهونكو اوبو نه پیدا كړى شوى دى",
+      "translation_english": "He was created from a spurting fluid,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "که از میان استخوان پشت (مرد) و استخوان سینه (زن) بیرون می‌شود.",
-      "translation_pashto": "86-7 چې د شا او له سینو د هډوكو له مینځ نه راوځي"
+      "translation_pashto": "86-7 چې د شا او له سینو د هډوكو له مینځ نه راوځي",
+      "translation_english": "emerging from between the backbone and the ribs."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "لذا الله بر بازگردانیدن (یعنی دوباره زنده کردنِ) انسان‌ها قادر است.",
-      "translation_pashto": "86-8 بېشكه دغه (الله) د دغه (انسان) په بیا راژوندي كولو یقینًا قادر دى"
+      "translation_pashto": "86-8 بېشكه دغه (الله) د دغه (انسان) په بیا راژوندي كولو یقینًا قادر دى",
+      "translation_english": "Indeed, Allah is able to bring him back to life."
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "روزی که رازهای پوشیده ظاهر شود.",
-      "translation_pashto": "86-9 په هغې ورځ چې د پټو څیزونو به (په كې) څېړنه (او څرګندونه) كولى شي"
+      "translation_pashto": "86-9 په هغې ورځ چې د پټو څیزونو به (په كې) څېړنه (او څرګندونه) كولى شي",
+      "translation_english": "On the Day when all secrets will be disclosed,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس در آن روز (برای انسان) هیچ قوتی و هیچ یاری‌دهنده‌ای نیست.",
-      "translation_pashto": "86-10 نو د دغه (انسان) لپاره به نه هېڅ قوت وي او نه څوك مدد كوونكى"
+      "translation_pashto": "86-10 نو د دغه (انسان) لپاره به نه هېڅ قوت وي او نه څوك مدد كوونكى",
+      "translation_english": "he will then have no power, nor any helper."
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "قسم به آسمان باران‌دار.",
-      "translation_pashto": "86-11 قسم دى په اسمان چې خاوند د باران دى"
+      "translation_pashto": "86-11 قسم دى په اسمان چې خاوند د باران دى",
+      "translation_english": "By the sky and its recurring rain,"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و قسم به زمین شگافنده (برای رویانیدن نباتات).",
-      "translation_pashto": "86-12 او په ځمكه چې د (زرغونې راوتلو لپاره) چاودېدلو والا ده"
+      "translation_pashto": "86-12 او په ځمكه چې د (زرغونې راوتلو لپاره) چاودېدلو والا ده",
+      "translation_english": "and by the earth that cracks open [with the sprout of plants],"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "که قرآن کلام فیصله‌کننده (بین حق و باطل) است.",
-      "translation_pashto": "86-13 بېشكه دا (قرآن) یقینًا (د حق او باطل) بېلونكې وینا ده"
+      "translation_pashto": "86-13 بېشكه دا (قرآن) یقینًا (د حق او باطل) بېلونكې وینا ده",
+      "translation_english": "Indeed, this [Qur’an] is a decisive word,"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و سخن بیهوده و شوخی نیست.",
-      "translation_pashto": "86-14 او دا هیڅكله عبثه (او د ټوقو) خبره نه ده"
+      "translation_pashto": "86-14 او دا هیڅكله عبثه (او د ټوقو) خبره نه ده",
+      "translation_english": "which is not for amusement."
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "البته آن‌ها (کفار) سخت نیرنگ می‌کنند.",
-      "translation_pashto": "86-15 بېشكه دوى مكر  او چل كوي، یو چل كول"
+      "translation_pashto": "86-15 بېشكه دوى مكر  او چل كوي، یو چل كول",
+      "translation_english": "Indeed, they are devising a plan."
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و من نیز (برای مجازات‌شان) چاره‌اندیشی می‌کنم.",
-      "translation_pashto": "86-16 او زه هم یو تدبیر كوم، تدبیر كول"
+      "translation_pashto": "86-16 او زه هم یو تدبیر كوم، تدبیر كول",
+      "translation_english": "I am too devising a plan."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس کافران را مهلت ده (تا فکر کنند و) زمانِ اندک آن‌ها را رها کن.",
-      "translation_pashto": "86-17 نو ته كافرانو ته مهلت وركړه، ته دوى ته لږ مهلت وركړه"
+      "translation_pashto": "86-17 نو ته كافرانو ته مهلت وركړه، ته دوى ته لږ مهلت وركړه",
+      "translation_english": "So bear with the disbelievers, and give them respite for a while."
     }
   ]
 }

@@ -4,16 +4,9 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+
+import { View, StyleSheet, Pressable, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -71,7 +64,7 @@ export default function ScholarLoginScreen() {
           <CenteredText style={[styles.label, { color: theme.text }]}>ایمیل</CenteredText>
           <View style={[styles.inputContainer, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <MaterialIcons name="email" size={20} color={theme.icon} />
-            <TextInput
+            <LocalizedTextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="ایمیل خود را وارد کنید"
               placeholderTextColor={theme.textSecondary}
@@ -89,7 +82,7 @@ export default function ScholarLoginScreen() {
           <CenteredText style={[styles.label, { color: theme.text }]}>رمز عبور</CenteredText>
           <View style={[styles.inputContainer, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <MaterialIcons name="lock" size={20} color={theme.icon} />
-            <TextInput
+            <LocalizedTextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="رمز عبور خود را وارد کنید"
               placeholderTextColor={theme.textSecondary}

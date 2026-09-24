@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "بگو: ای کافران.",
-      "translation_pashto": "109-1 (اى نبي!) ته (دوى ته) ووایه: اى كافرانو!"
+      "translation_pashto": "109-1 (اى نبي!) ته (دوى ته) ووایه: اى كافرانو!",
+      "translation_english": "Say, “O disbelievers,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "من نمی‌پرستم چیزی را که شما می‌پرستید.",
-      "translation_pashto": "109-2 زه د هغو (شیانو) عبادت نه كوم چی تاسو يې عبادت كوئ"
+      "translation_pashto": "109-2 زه د هغو (شیانو) عبادت نه كوم چی تاسو يې عبادت كوئ",
+      "translation_english": "I do not worship what you worship,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و نه شما می‌پرستید آنچه را که من می‌پرستم.",
-      "translation_pashto": "109-3 او نه تاسو د هغه  ذات عبادت كوونكي يئ چې زه يې عبادت كوم "
+      "translation_pashto": "109-3 او نه تاسو د هغه  ذات عبادت كوونكي يئ چې زه يې عبادت كوم ",
+      "translation_english": "nor do you worship what I worship."
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و نه من می‌پرستم آنچه را که شما پرستش کرده‌اید.",
-      "translation_pashto": "109-4 او نه زه د هغه شي عبادت كوونكى یم چی تاسو يې عبادت كړى دى "
+      "translation_pashto": "109-4 او نه زه د هغه شي عبادت كوونكى یم چی تاسو يې عبادت كړى دى ",
+      "translation_english": "Never will I worship what you worship,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و نه شما (در آینده) آنچه را که من می‌پرستم، می‌پرستید.",
-      "translation_pashto": "109-5 او نه تاسو عبادت كوونكي یئ د هغه ذات چې زه يې عبادت كوم "
+      "translation_pashto": "109-5 او نه تاسو عبادت كوونكي یئ د هغه ذات چې زه يې عبادت كوم ",
+      "translation_english": "nor will you ever worship what I worship."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(لذا) دین شما برای خودتان و دین من برای خودم است.",
-      "translation_pashto": "109-6 تاسو لپاره ستاسو دین دى او زما لپاره زما دین دى"
+      "translation_pashto": "109-6 تاسو لپاره ستاسو دین دى او زما لپاره زما دین دى",
+      "translation_english": "You have your religion and I have my religion.\""
     }
   ]
 }

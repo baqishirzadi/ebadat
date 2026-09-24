@@ -3,9 +3,11 @@ import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { formatSourceLabel } from '@/utils/ahadith/labels';
+import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
 import { alphaColor } from '@/utils/ahadith/theme';
-import { getQuranFontFamily, getDariFontFamily } from '@/hooks/useFonts';
+import { useI18n } from '@/utils/i18n/useI18n';
+import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 
 interface MuttafaqListProps {
   items: Hadith[];
@@ -14,6 +16,8 @@ interface MuttafaqListProps {
 
 export function MuttafaqList({ items, onOpen }: MuttafaqListProps) {
   const { theme, state } = useApp();
+  const { t, language } = useI18n();
+  const isPashto = language === 'pashto';
 
   return (
     <FlatList
@@ -52,20 +56,20 @@ export function MuttafaqList({ items, onOpen }: MuttafaqListProps) {
               styles.translation,
               {
                 color: theme.textSecondary,
-                fontFamily: getDariFontFamily(state.preferences.dariFont),
+                fontFamily: isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont),
               },
             ]}
           >
-            {item.dari_translation}
+            {getHadithTranslation(item, language)}
           </CenteredText>
 
           <CenteredText style={[styles.source, { color: theme.primary }]}>
-            {formatSourceLabel(item.source_book, item.source_number)}
+            {formatSourceLabel(item.source_book, item.source_number, language)}
           </CenteredText>
         </Pressable>
       )}
       ListEmptyComponent={
-        <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>حدیث متفق‌علیه موجود نیست</CenteredText>
+        <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>{t('ahadith.muttafaq.empty')}</CenteredText>
       }
     />
   );

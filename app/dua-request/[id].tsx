@@ -15,6 +15,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
+import { formatGregorianDateTimeCompact } from '@/utils/calendarDisplay';
+import { toArabicNumerals } from '@/utils/numbers';
+import { useI18n } from '@/utils/i18n/useI18n';
 import {
   ActivityIndicator,
   Alert,
@@ -26,7 +29,9 @@ import {
 } from 'react-native';
 
 export default function DuaRequestDetailScreen() {
-  const { theme } = useApp();
+  const { theme, state: appState } = useApp();
+  const { t } = useI18n();
+  const isPashto = appState.preferences.appLanguage === 'pashto';
   const { getRequestById, refreshRequests, markRequestSeen } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
@@ -70,11 +75,11 @@ export default function DuaRequestDetailScreen() {
   const handleCopyResponse = useCallback(async (response: string) => {
     try {
       await Clipboard.setStringAsync(normalizeMarkdownForClipboard(response));
-      Alert.alert('کپی شد', 'متن پاسخ در کلیپ‌بورد ذخیره شد.');
+      Alert.alert(t('common.success'), t('dua.detail.copySuccess'));
     } catch {
-      Alert.alert('خطا', 'کپی پاسخ انجام نشد.');
+      Alert.alert(t('common.error'), t('dua.detail.copyFailure'));
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     loadRequest();
@@ -88,13 +93,7 @@ export default function DuaRequestDetailScreen() {
   );
 
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('fa-AF', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return formatGregorianDateTimeCompact(date, toArabicNumerals, isPashto ? 'ps-AF' : 'fa-AF');
   };
 
   if (loading) {
@@ -104,13 +103,13 @@ export default function DuaRequestDetailScreen() {
           <Pressable onPress={handleBack} style={styles.backButton}>
             <MaterialIcons name="arrow-forward" size={24} color="#fff" />
           </Pressable>
-          <CenteredText style={styles.headerTitle}>جزئیات درخواست</CenteredText>
+          <CenteredText style={styles.headerTitle}>{t('dua.detail.title')}</CenteredText>
           <View style={styles.headerRight} />
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.tint} />
           <CenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>
-            در حال بارگذاری...
+            {t('dua.index.loading')}
           </CenteredText>
         </View>
       </View>
@@ -124,13 +123,13 @@ export default function DuaRequestDetailScreen() {
           <Pressable onPress={handleBack} style={styles.backButton}>
             <MaterialIcons name="arrow-forward" size={24} color="#fff" />
           </Pressable>
-          <CenteredText style={styles.headerTitle}>جزئیات درخواست</CenteredText>
+          <CenteredText style={styles.headerTitle}>{t('dua.detail.title')}</CenteredText>
           <View style={styles.headerRight} />
         </View>
         <View style={styles.emptyContainer}>
           <MaterialIcons name="error-outline" size={64} color={theme.textSecondary} />
           <CenteredText style={[styles.emptyText, { color: theme.text }]}>
-            درخواست یافت نشد
+            {t('dua.detail.notFound')}
           </CenteredText>
         </View>
       </View>
@@ -139,7 +138,9 @@ export default function DuaRequestDetailScreen() {
 
   const category = DUA_CATEGORIES.find((c) => c.id === request.category);
   const statusInfo = STATUS_INFO[request.status];
-  const genderLabel = request.gender ? GENDER_INFO[request.gender].nameDari : 'نامشخص';
+  const genderLabel = request.gender
+    ? (isPashto ? GENDER_INFO[request.gender].namePashto : GENDER_INFO[request.gender].nameDari)
+    : isPashto ? 'نامعلوم' : 'نامشخص';
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -148,7 +149,7 @@ export default function DuaRequestDetailScreen() {
         <Pressable onPress={handleBack} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
-        <CenteredText style={styles.headerTitle}>جزئیات درخواست</CenteredText>
+        <CenteredText style={styles.headerTitle}>{t('dua.detail.title')}</CenteredText>
         <View style={styles.headerRight} />
       </View>
 
@@ -175,7 +176,7 @@ export default function DuaRequestDetailScreen() {
               color={theme.tint}
             />
             <CenteredText style={[styles.categoryText, { color: theme.tint }]}>
-              {category?.nameDari || 'نامشخص'}
+              {isPashto ? category?.namePashto || 'نامعلوم' : category?.nameDari || 'نامشخص'}
             </CenteredText>
           </View>
         </View>
@@ -184,7 +185,7 @@ export default function DuaRequestDetailScreen() {
             <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
               <MaterialIcons name="person-outline" size={14} color={theme.textSecondary} />
               <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
-                پاسخ‌دهنده: {request.responderName || getResponder(request.responderId)?.nameDari}
+                {t('dua.detail.responder', { name: request.responderName || (isPashto ? getResponder(request.responderId)?.namePashto : getResponder(request.responderId)?.nameDari) || '' })}
               </CenteredText>
             </View>
           </View>
@@ -193,7 +194,7 @@ export default function DuaRequestDetailScreen() {
           <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
             <MaterialIcons name="person" size={14} color={theme.textSecondary} />
             <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
-              {`جنسیت: ${genderLabel}`}
+              {t('dua.detail.gender', { gender: genderLabel })}
             </CenteredText>
           </View>
           <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
@@ -209,7 +210,7 @@ export default function DuaRequestDetailScreen() {
           <View style={styles.cardHeader}>
             <MaterialIcons name="message" size={20} color={theme.tint} />
             <CenteredText style={[styles.cardTitle, { color: theme.text }]}>
-              متن درخواست
+              {t('dua.detail.requestText')}
             </CenteredText>
           </View>
           <MarkdownText style={[styles.messageText, { color: theme.text }]} boldStyle={{ color: theme.text }}>
@@ -226,7 +227,7 @@ export default function DuaRequestDetailScreen() {
             <View style={styles.cardHeader}>
               <MaterialIcons name="check-circle" size={20} color={statusInfo.color} />
               <CenteredText style={[styles.cardTitle, { color: theme.text }]}>
-              پاسخ
+              {t('dua.detail.response')}
             </CenteredText>
               <Pressable
                 testID="dua-copy-response"
@@ -235,7 +236,7 @@ export default function DuaRequestDetailScreen() {
                 style={styles.copyResponseButton}
               >
                 <MaterialIcons name="content-copy" size={17} color={theme.textSecondary} />
-                <CenteredText style={[styles.copyResponseLabel, { color: theme.textSecondary }]}>کپی</CenteredText>
+                <CenteredText style={[styles.copyResponseLabel, { color: theme.textSecondary }]}>{t('dua.detail.copy')}</CenteredText>
               </Pressable>
             </View>
             <MarkdownText style={[styles.responseText, { color: theme.text }]} boldStyle={{ color: theme.text }}>
@@ -245,8 +246,7 @@ export default function DuaRequestDetailScreen() {
               <View style={[styles.distressBox, { backgroundColor: theme.backgroundSecondary }]}>
                 <MaterialIcons name="phone-in-talk" size={18} color={theme.tint} />
                 <CenteredText style={[styles.distressText, { color: theme.textSecondary }]}>
-                  برای مشورت حضوری یا کمک در افکار منفی: لنگر خلیفه صاحب شیرزاد — کابل، تایمنی سابقه،
-                  سرک ۱۲، خانه ۲۱ — تماس ۰۷۸۷۵۰۶۶۶۶
+                  {t('dua.detail.distress')}
                 </CenteredText>
               </View>
             ) : null}
@@ -254,7 +254,7 @@ export default function DuaRequestDetailScreen() {
               <View style={styles.reviewerInfo}>
                 <MaterialIcons name="person" size={16} color={theme.textSecondary} />
                 <CenteredText style={[styles.reviewerText, { color: theme.textSecondary }]}>
-                  پاسخ توسط: {request.reviewerName}
+                  {t('dua.detail.responderLabel', { name: request.reviewerName })}
                 </CenteredText>
               </View>
             )}
@@ -271,7 +271,7 @@ export default function DuaRequestDetailScreen() {
           <View style={[styles.infoCard, { backgroundColor: theme.backgroundSecondary }]}>
             <MaterialIcons name="schedule" size={24} color={theme.tint} />
             <CenteredText style={[styles.infoText, { color: theme.textSecondary }]}>
-              درخواست شما در حال بررسی است. پاسخ شما از طریق اعلان اطلاع‌رسانی خواهد شد.
+              {t('dua.detail.pending')}
             </CenteredText>
           </View>
         )}

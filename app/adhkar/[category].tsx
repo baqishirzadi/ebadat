@@ -14,12 +14,14 @@ import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import adhkarData from '@/data/adhkar.json';
 import CenteredText from '@/components/CenteredText';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface Dhikr {
   id: string;
   arabic: string;
   dari: string;
   pashto: string;
+  english?: string;
   reference: string;
   count: number;
   virtue?: string;
@@ -30,6 +32,7 @@ interface Category {
   nameArabic: string;
   nameDari: string;
   namePashto: string;
+  nameEnglish?: string;
   icon: string;
   color: string;
 }
@@ -37,6 +40,7 @@ interface Category {
 export default function AdhkarDetailScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
   const { theme, state } = useApp();
+  const { t, content } = useI18n();
   const { addDhikr } = useStats();
   const navigation = useNavigation();
   const router = useRouter();
@@ -123,14 +127,8 @@ export default function AdhkarDetailScreen() {
           {item.arabic}
         </CenteredText>
 
-        {/* Dari translation */}
         <CenteredText style={[styles.translationText, { color: theme.translationText }]}>
-          {item.dari}
-        </CenteredText>
-
-        {/* Pashto translation */}
-        <CenteredText style={[styles.translationText, styles.pashtoText, { color: theme.textSecondary }]}>
-          {item.pashto}
+          {content(item, null)}
         </CenteredText>
 
         {/* Reference and virtue */}
@@ -166,16 +164,16 @@ export default function AdhkarDetailScreen() {
 
         {/* Tap hint */}
         <CenteredText style={[styles.tapHint, { color: theme.textSecondary }]}>
-          برای شمارش لمس کنید • نگه دارید برای صفر
+          {t('adhkar.tapHint')}
         </CenteredText>
       </Pressable>
     );
-  }, [counters, theme, fontFamily, categoryInfo, handleCount, resetCounter]);
+  }, [counters, theme, fontFamily, categoryInfo, handleCount, resetCounter, content, t]);
 
   if (!categoryInfo) {
     return (
       <View style={[styles.container, { backgroundColor: theme.background }]}>
-        <CenteredText style={{ color: theme.text }}>دسته‌بندی یافت نشد</CenteredText>
+        <CenteredText style={{ color: theme.text }}>{t('adhkar.categoryMissing')}</CenteredText>
       </View>
     );
   }
@@ -189,7 +187,7 @@ export default function AdhkarDetailScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen
         options={{
-          title: categoryInfo.nameDari,
+          title: content(categoryInfo, 'name'),
           headerStyle: { backgroundColor: categoryInfo.color },
           headerTintColor: '#fff',
           headerLeft: () => (
@@ -203,7 +201,7 @@ export default function AdhkarDetailScreen() {
       {/* Progress header */}
       <View style={[styles.progressHeader, { backgroundColor: categoryInfo.color }]}>
         <View style={styles.progressInfo}>
-          <CenteredText style={styles.progressLabel}>پیشرفت کلی</CenteredText>
+          <CenteredText style={styles.progressLabel}>{t('adhkar.progress')}</CenteredText>
           <CenteredText style={styles.progressValue}>{Math.round(totalProgress)}%</CenteredText>
         </View>
         <View style={[styles.totalProgressBar, { backgroundColor: 'rgba(255,255,255,0.3)' }, styles.ltrProgress]}>

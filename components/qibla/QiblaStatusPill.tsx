@@ -1,9 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import { StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { useApp } from '@/context/AppContext';
 import type { QiblaAccuracyLevel } from '@/hooks/useQiblaHeading';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface QiblaStatusPillProps {
   accuracyLevel: QiblaAccuracyLevel;
@@ -14,25 +17,26 @@ interface QiblaStatusPillProps {
 
 export function QiblaStatusPill({ accuracyLevel, isDegraded, headingLabel, qiblaLabel }: QiblaStatusPillProps) {
   const { theme } = useApp();
+  const { t, fontFamily } = useI18n();
 
   const accuracyText =
-    accuracyLevel === 'high' ? 'دقت بالا' : accuracyLevel === 'medium' ? 'دقت متوسط' : 'دقت پایین';
+    accuracyLevel === 'high' ? t('qibla.accuracy.high') : accuracyLevel === 'medium' ? t('qibla.accuracy.medium') : t('qibla.accuracy.low');
 
   return (
     <View style={styles.row}>
       <View style={[styles.pill, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-        <Text style={[styles.text, { color: theme.text }]}>جهت: {headingLabel}°</Text>
+          <LocalizedText style={[styles.text, { color: theme.text, fontFamily }]}>{t('qibla.direction')}: {headingLabel}°</LocalizedText>
       </View>
       <View style={[styles.pill, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-        <Text style={[styles.text, { color: theme.tint }]}>قبله: {qiblaLabel}°</Text>
+          <LocalizedText style={[styles.text, { color: theme.tint, fontFamily }]}>{t('qibla.label')}: {qiblaLabel}°</LocalizedText>
       </View>
       {isDegraded ? (
         <View style={[styles.pill, { backgroundColor: theme.backgroundSecondary, borderColor: theme.accent }]}>
-          <Text style={[styles.text, { color: theme.accent }]}>دقت پایین</Text>
+            <LocalizedText style={[styles.text, { color: theme.accent, fontFamily }]}>{t('qibla.accuracy.low')}</LocalizedText>
         </View>
       ) : (
         <View style={[styles.pill, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-          <Text style={[styles.text, { color: theme.textSecondary }]}>{accuracyText}</Text>
+          <LocalizedText style={[styles.text, { color: theme.textSecondary, fontFamily }]}>{accuracyText}</LocalizedText>
         </View>
       )}
     </View>

@@ -5,7 +5,6 @@ import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet } from 'react
 
 import {
   AdhanHealthStatusChip,
-  healthSummaryLine,
   type HealthVisualStatus,
 } from '@/components/prayer/AdhanHealthUi';
 import { RtlText } from '@/components/ui/RtlText';
@@ -17,6 +16,8 @@ import {
   homeCardStatusFromReport,
   openNotificationSettings,
 } from '@/utils/adhanHealth';
+import { adhanPermissionLocale } from '@/utils/i18n/adhanPermissions';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const PASS_COLOR = '#1b7f4d';
 const FAIL_COLOR = '#c0392b';
@@ -43,16 +44,31 @@ function iconForStatus(status: HealthVisualStatus): keyof typeof MaterialIcons.g
   }
 }
 
+function summaryKeyForStatus(status: HealthVisualStatus) {
+  switch (status) {
+    case 'healthy':
+      return 'home.adhan.summary.healthy' as const;
+    case 'warning':
+      return 'home.adhan.summary.warning' as const;
+    default:
+      return 'home.adhan.summary.critical' as const;
+  }
+}
+
 export function AdhanStatusCard() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const { t, isPashto, fontFamily } = useI18n();
+  const locale = adhanPermissionLocale(state.preferences.appLanguage);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<HealthVisualStatus>('warning');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
+  const subtitleLineHeight = isPashto ? (isNastaliq ? 28 : 24) : 20;
 
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const report = await buildAdhanHealthReport();
+      const report = await buildAdhanHealthReport(locale);
       setStatus(homeCardStatusFromReport(report));
       setNotificationsEnabled(report.health.notificationsEnabled);
     } catch {
@@ -61,7 +77,7 @@ export function AdhanStatusCard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [locale]);
 
   useFocusEffect(
     useCallback(() => {
@@ -74,38 +90,42 @@ export function AdhanStatusCard() {
       const opened = await openNotificationSettings();
       if (!opened) {
         Alert.alert(
-          'دسترسی اعلان‌ها',
-          'برای فعال‌کردن اعلان‌های اذان، به Settings → Apps → Ebadat → Notifications بروید و Allow Notifications را روشن کنید.',
-          [{ text: 'باشه' }],
+          t('home.adhan.notificationsAccessTitle'),
+          t('home.adhan.notificationsAccessBody'),
+          [{ text: t('common.ok') }],
         );
       }
       return;
     }
     router.push((Platform.OS === 'ios' ? '/adhan-settings' : '/adhan-health') as never);
-  }, [notificationsEnabled]);
+  }, [notificationsEnabled, t]);
 
   const accent = borderColorForStatus(status, theme);
+  const statusTitle = t('home.adhan.statusTitle');
 
   return (
     <Pressable
       onPress={handlePress}
       testID="adhan-status-card"
       accessibilityRole="button"
-      accessibilityLabel="وضعیت اذان"
+      accessibilityLabel={statusTitle}
       style={[styles.card, { backgroundColor: theme.card, borderColor: accent }]}
     >
       <RtlView style={styles.inner}>
         <MaterialIcons name={iconForStatus(status)} size={32} color={accent} />
         <RtlView style={styles.textBlock}>
           <RtlText align="center" style={[styles.title, { color: theme.text }]}>
-            وضعیت اذان
+            {statusTitle}
           </RtlText>
           {loading ? (
             <ActivityIndicator color={theme.tint} size="small" style={styles.loader} />
           ) : (
             <>
-              <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
-                {healthSummaryLine(status).replace(/\.$/, '')}
+              <RtlText
+                align="center"
+                style={[styles.subtitle, { color: theme.textSecondary, lineHeight: subtitleLineHeight }]}
+              >
+                {t(summaryKeyForStatus(status))}
               </RtlText>
               <AdhanHealthStatusChip status={status} />
             </>

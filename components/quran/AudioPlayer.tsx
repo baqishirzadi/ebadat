@@ -20,6 +20,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Modal, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface AudioPlayerProps {
   surahNumber: number;
@@ -55,6 +56,7 @@ export function AudioPlayer({
   onClose,
 }: AudioPlayerProps) {
   const { theme } = useApp();
+  const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const [currentReciter, setCurrentReciter] = useState<ReciterKey>('yasser_ad_dussary');
   const [showReciterModal, setShowReciterModal] = useState(false);
@@ -88,13 +90,13 @@ export function AudioPlayer({
             juzNumber,
           })
           .catch((error) => {
-            Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+            Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
           });
       } catch (error) {
-        Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
       }
     },
-    [currentReciter, surahNumber, ayahNumber, totalAyahs, scopeType, scopeStartAyah, scopeEndAyah, juzNumber]
+    [currentReciter, surahNumber, ayahNumber, totalAyahs, scopeType, scopeStartAyah, scopeEndAyah, juzNumber, t]
   );
 
   const handlePlayPause = useCallback(() => {

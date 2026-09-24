@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "طلب کثرت مال و اولاد شما را مشغول (غافل) ساخت.",
-      "translation_pashto": "102-1 تاسو غافله كړئ فخر كولو په یو بل باندې په ډېروالي (د مال، اولاد او قام) سره "
+      "translation_pashto": "102-1 تاسو غافله كړئ فخر كولو په یو بل باندې په ډېروالي (د مال، اولاد او قام) سره ",
+      "translation_english": "Competition for worldly gains distracts you [from Allah],"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "تا آن که به قبرستان رسیدید (یعنی دفن گردیدید).",
-      "translation_pashto": "102-2 تر  هغه پورې چې تاسو هدېرو ته ورشئ"
+      "translation_pashto": "102-2 تر  هغه پورې چې تاسو هدېرو ته ورشئ",
+      "translation_english": "until you come to your graves."
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "چنین نیست؛ خواهید دانست (در قبر).",
-      "translation_pashto": "102-3 داسې نه ده په كار، ژر ده چې تاسو به پوه شئ"
+      "translation_pashto": "102-3 داسې نه ده په كار، ژر ده چې تاسو به پوه شئ",
+      "translation_english": "No indeed! You will come to know."
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "باز (می‌گویم) که چنین نیست، خواهید دانست (در روز قیامت).",
-      "translation_pashto": "102-4 بیا بېخي داسې نه ده، ژر ده چې تاسو به پوه شئ"
+      "translation_pashto": "102-4 بیا بېخي داسې نه ده، ژر ده چې تاسو به پوه شئ",
+      "translation_english": "Again no! You will come to know."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "چنین نیست، اگر شما (حق‌بودنِ قیامت را) به یقین می‌دانستید (از آمدن آن غافل نمی‌شدید).",
-      "translation_pashto": "102-5 داسې نه ده كه تاسو په علم اليقين سره پوهېدلى"
+      "translation_pashto": "102-5 داسې نه ده كه تاسو په علم اليقين سره پوهېدلى",
+      "translation_english": "No indeed! If only you knew for certain."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "البته دوزخ را (بعد از موت در برزخ) خواهید دید.",
-      "translation_pashto": "102-6 تاسو به خامخا ضرور دوزخ وینئ"
+      "translation_pashto": "102-6 تاسو به خامخا ضرور دوزخ وینئ",
+      "translation_english": "You will surely see the Blazing Fire,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "باز البته آن (دوزخ) را به دیدۀ یقین (در روز قیامت) خواهید دید.",
-      "translation_pashto": "102-7 بیا به تاسو خامخا ضرور دغه (دوزخ) د یقین په سترګو وینئ"
+      "translation_pashto": "102-7 بیا به تاسو خامخا ضرور دغه (دوزخ) د یقین په سترګو وینئ",
+      "translation_english": "Again, you will see it with absolute certainty."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "باز البته در آن روز دربارۀ نعمت‌های که الله به شما داده است، پرسیده خواهید شد.",
-      "translation_pashto": "102-8 بیا به په دغې ورځ كې له تاسو نه خامخا ضرور د نعمتونو په باره كې تپوس كېږي"
+      "translation_pashto": "102-8 بیا به په دغې ورځ كې له تاسو نه خامخا ضرور د نعمتونو په باره كې تپوس كېږي",
+      "translation_english": "Then on that Day you will surely be asked about your worldly pleasures."
     }
   ]
 }

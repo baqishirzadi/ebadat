@@ -46,6 +46,7 @@ export interface CategoryInfo {
   id: DuaCategory;
   nameDari: string;
   namePashto: string;
+  nameEnglish: string;
   icon: string;
   description: string;
 }
@@ -55,6 +56,7 @@ export const DUA_CATEGORIES: CategoryInfo[] = [
     id: 'dua',
     nameDari: 'دعای خیر',
     namePashto: 'دعا',
+    nameEnglish: 'Dua request',
     icon: 'favorite',
     description: 'درخواست دعای خیر و طلب رحمت',
   },
@@ -62,6 +64,7 @@ export const DUA_CATEGORIES: CategoryInfo[] = [
     id: 'advice',
     nameDari: 'مشورت شرعی',
     namePashto: 'شرعي مشوره',
+    nameEnglish: 'Religious guidance',
     icon: 'school',
     description: 'راهنمایی و مشورت طبق فقه حنفی',
   },
@@ -69,6 +72,7 @@ export const DUA_CATEGORIES: CategoryInfo[] = [
     id: 'personal',
     nameDari: 'مسائل شخصی',
     namePashto: 'شخصي مسایل',
+    nameEnglish: 'Personal matters',
     icon: 'person',
     description: 'مسائل و مشکلات شخصی',
   },
@@ -76,6 +80,7 @@ export const DUA_CATEGORIES: CategoryInfo[] = [
     id: 'other',
     nameDari: 'سایر',
     namePashto: 'نور',
+    nameEnglish: 'Other',
     icon: 'help',
     description: 'سایر درخواست‌ها',
   },

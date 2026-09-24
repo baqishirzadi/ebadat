@@ -4,17 +4,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+
+import { View, StyleSheet, ScrollView, Pressable, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useNavigation, useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -27,9 +19,12 @@ import { StatusBadge } from '@/components/dua/StatusBadge';
 import { detectLanguage, ensureSignature } from '@/utils/duaAdvisor';
 import { fetchHanafiDuaSuggestion } from '@/utils/hanafiDuaSuggestion';
 import { RESPONDERS, getResponder, type ResponderId } from '@/constants/responders';
+import { formatGregorianDateTimeCompact } from '@/utils/calendarDisplay';
+import { toArabicNumerals } from '@/utils/numbers';
 
 export default function AdminRequestResponseScreen() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const isPashto = state.preferences.appLanguage === 'pashto';
   const router = useRouter();
   const navigation = useNavigation();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -89,6 +84,7 @@ export default function AdminRequestResponseScreen() {
         (request.gender || 'male') as UserGender,
         reviewerId,
         responder.nameDari,
+        state.preferences.appLanguage,
         undefined,
       );
       setResponse(draft);
@@ -147,13 +143,7 @@ export default function AdminRequestResponseScreen() {
   };
 
   const formatDate = (date: Date): string => {
-    return date.toLocaleDateString('fa-AF', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    return formatGregorianDateTimeCompact(date, toArabicNumerals, isPashto ? 'ps-AF' : 'fa-AF');
   };
 
   if (loading) {
@@ -305,7 +295,7 @@ export default function AdminRequestResponseScreen() {
             </Pressable>
           </View>
           <View style={[styles.inputContainer, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <TextInput
+            <LocalizedTextInput
               style={[styles.textInput, { color: theme.text }]}
               placeholder="پاسخ خود را بنویسید..."
               placeholderTextColor={theme.textSecondary}

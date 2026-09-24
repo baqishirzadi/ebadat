@@ -1,13 +1,56 @@
 /**
- * Config plugin to force RTL layout on first app launch.
- * Modifies MainApplication.kt to call I18nUtil.forceRTL() and allowRTL() in onCreate.
- * Without this, RTL only applies after app restart (known React Native issue).
+ * Config plugin that seeds RTL layout on the very first app launch.
+ * Modifies MainApplication.kt to call I18nUtil.allowRTL()/forceRTL() in onCreate,
+ * because otherwise RTL only applies after a restart (known React Native issue).
+ *
+ * The seed is guarded on the stored preference being absent: once the user has a
+ * stored direction, JS owns it, so picking English can turn RTL back off.
  */
-const { withFinalizedMod } = require('expo/config-plugins');
+const { withFinalizedMod, withPlugins } = require('expo/config-plugins');
 const fs = require('fs');
 const path = require('path');
 
-function withForceRTL(config) {
+const IOS_SEED = `  /// Seeds RTL on the very first launch only (the app defaults to Dari). After
+  /// that the stored value is owned by JS so picking English can turn RTL off.
+  private func seedInitialLayoutDirection() {
+    let defaults = UserDefaults.standard
+    guard defaults.object(forKey: "RCTI18nUtil_forceRTL") == nil else { return }
+    defaults.set(true, forKey: "RCTI18nUtil_allowRTL")
+    defaults.set(true, forKey: "RCTI18nUtil_forceRTL")
+  }
+
+`;
+
+function withForceRTLIos(config) {
+  return withFinalizedMod(config, [
+    'ios',
+    async (config) => {
+      const projectRoot = config.modRequest?.projectRoot ?? process.cwd();
+      const appDelegatePath = path.join(
+        projectRoot,
+        'ios',
+        config.modRequest?.projectName ?? 'abadt',
+        'AppDelegate.swift'
+      );
+
+      if (!fs.existsSync(appDelegatePath)) return config;
+
+      let contents = fs.readFileSync(appDelegatePath, 'utf8');
+      if (contents.includes('seedInitialLayoutDirection')) return config;
+
+      contents = contents.replace(
+        /(\n\s*let delegate = ReactNativeDelegate\(\))/,
+        '\n    seedInitialLayoutDirection()\n$1'
+      );
+      contents = contents.replace(/(\n  \/\/ Linking API)/, `\n${IOS_SEED}$1`);
+
+      fs.writeFileSync(appDelegatePath, contents);
+      return config;
+    },
+  ]);
+}
+
+function withForceRTLAndroid(config) {
   return withFinalizedMod(config, [
     'android',
     async (config) => {
@@ -39,11 +82,19 @@ function withForceRTL(config) {
         );
       }
 
-      // Add forceRTL and allowRTL right after super.onCreate()
+      // Seed the direction right after super.onCreate(), first launch only.
       const rtlInit = `
-    val sharedI18nUtilInstance = I18nUtil.getInstance()
-    sharedI18nUtilInstance.allowRTL(this, true)
-    sharedI18nUtilInstance.forceRTL(this, true)`;
+    // Seed RTL on first launch only (the app defaults to Dari). After that the
+    // stored value is owned by JS so switching to English can turn RTL off.
+    val i18nPrefs = getSharedPreferences(
+      "com.facebook.react.modules.i18nmanager.I18nUtil",
+      android.content.Context.MODE_PRIVATE
+    )
+    if (!i18nPrefs.contains("RCTI18nUtil_forceRTL")) {
+      val sharedI18nUtilInstance = I18nUtil.getInstance()
+      sharedI18nUtilInstance.allowRTL(this, true)
+      sharedI18nUtilInstance.forceRTL(this, true)
+    }`;
 
       contents = contents.replace(
         /override fun onCreate\(\) \{\s*\n\s*super\.onCreate\(\)/,
@@ -54,6 +105,10 @@ function withForceRTL(config) {
       return config;
     },
   ]);
+}
+
+function withForceRTL(config) {
+  return withForceRTLIos(withForceRTLAndroid(config));
 }
 
 module.exports = withForceRTL;

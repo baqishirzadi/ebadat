@@ -6,6 +6,7 @@
 import { HapticTab } from '@/components/haptic-tab';
 import { useApp } from '@/context/AppContext';
 import { tUi } from '@/utils/i18n/ui';
+import { getTextDirection } from '@/utils/i18n/languages';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Tabs, useSegments } from 'expo-router';
 import React, { useMemo } from 'react';
@@ -36,7 +37,7 @@ export default function TabLayout() {
     const baseStyle =
       Platform.OS === 'ios'
         ? {
-            direction: 'rtl' as const,
+            direction: getTextDirection(language),
             backgroundColor: theme.tabBar,
             borderTopColor: theme.tabBarBorder,
             paddingBottom: insets.bottom,
@@ -44,7 +45,7 @@ export default function TabLayout() {
             height: 49 + insets.bottom,
           }
         : {
-            direction: 'rtl' as const,
+            direction: getTextDirection(language),
             backgroundColor: theme.tabBar,
             borderTopColor: theme.tabBarBorder,
             paddingBottom: insets.bottom + 12,
@@ -57,7 +58,7 @@ export default function TabLayout() {
     }
 
     return baseStyle;
-  }, [theme.tabBar, theme.tabBarBorder, insets.bottom, shouldHideFooter]);
+  }, [theme.tabBar, theme.tabBarBorder, insets.bottom, shouldHideFooter, language]);
 
   const tabBarItemStyle = useMemo(
     () => (Platform.OS === 'ios' ? { paddingTop: 2, paddingBottom: 2 } : undefined),

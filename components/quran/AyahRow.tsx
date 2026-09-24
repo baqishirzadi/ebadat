@@ -24,6 +24,7 @@ interface AyahRowProps {
   surahNumber: number;
   dariTranslation?: string;
   pashtoTranslation?: string;
+  englishTranslation?: string;
   isPlaying?: boolean;
   onPress?: () => void;
   onLongPress?: () => void;
@@ -55,6 +56,7 @@ export const AyahRow = memo(function AyahRow({
   surahNumber,
   dariTranslation,
   pashtoTranslation,
+  englishTranslation,
   isPlaying = false,
   onPress,
   onLongPress,
@@ -87,15 +89,12 @@ export const AyahRow = memo(function AyahRow({
     }
   };
 
-  const renderTranslation = (text: string | undefined, lang: 'dari' | 'pashto') => {
+  const renderTranslation = (text: string | undefined, lang: 'dari' | 'pashto' | 'english') => {
     if (!text || text.trim() === '') return null;
 
-    const fontFamily = lang === 'dari' ? dariFontFamily : pashtoFontFamily;
+    const fontFamily = lang === 'pashto' ? pashtoFontFamily : lang === 'dari' ? dariFontFamily : undefined;
     return (
       <View style={styles.translationContainer}>
-        <QuranText style={[styles.translationLabel, { color: theme.textSecondary, fontFamily }]}>
-          {lang === 'dari' ? 'فارسی (دری)' : 'پښتو'}
-        </QuranText>
         <QuranText
           style={[
             styles.translationText,
@@ -152,10 +151,18 @@ export const AyahRow = memo(function AyahRow({
 
       {showTranslation !== 'none' && (
         <View style={[styles.translationsWrapper, { borderTopColor: theme.divider }]}>
-          {(showTranslation === 'dari' || showTranslation === 'both') &&
-            renderTranslation(dariTranslation, 'dari')}
-          {(showTranslation === 'pashto' || showTranslation === 'both') &&
-            renderTranslation(pashtoTranslation, 'pashto')}
+          {showTranslation === 'both' ? (
+            <>
+              {renderTranslation(dariTranslation, 'dari')}
+              {renderTranslation(pashtoTranslation, 'pashto')}
+            </>
+          ) : showTranslation === 'pashto' ? (
+            renderTranslation(pashtoTranslation, 'pashto')
+          ) : showTranslation === 'english' ? (
+            renderTranslation(englishTranslation, 'english')
+          ) : (
+            renderTranslation(dariTranslation, 'dari')
+          )}
         </View>
       )}
 

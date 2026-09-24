@@ -5,7 +5,25 @@
 import NetInfo from '@react-native-community/netinfo';
 import Constants from 'expo-constants';
 
+import type { AppLanguage } from '@/types/quran';
+
 export type HanafiMuftiRole = 'user' | 'assistant';
+export type HanafiMuftiErrorCode =
+  | 'not_configured'
+  | 'offline'
+  | 'invalid_request'
+  | 'unavailable'
+  | 'rate_limited'
+  | 'server_error'
+  | 'connection_error'
+  | 'empty_response'
+  | 'aborted';
+/**
+ * Sent as `preferred_language`. The edge function currently composes its answer
+ * in Dari regardless of this value, so changing it needs a server-side prompt
+ * update to take effect.
+ */
+export type HanafiMuftiLanguage = AppLanguage;
 
 export interface HanafiMuftiMessage {
   role: HanafiMuftiRole;
@@ -15,10 +33,11 @@ export interface HanafiMuftiMessage {
 export interface AskHanafiMuftiOptions {
   onDelta: (chunk: string) => void;
   onDone: () => void;
-  onError: (message: string) => void;
+  onError: (code: HanafiMuftiErrorCode) => void;
   signal?: AbortSignal;
   /** Set only for Dua/admin persona requests; normal Mufti chat omits it. */
   responderId?: string;
+  preferredLanguage?: HanafiMuftiLanguage;
 }
 
 const DEFAULT_MUFTI_URL =
@@ -54,27 +73,17 @@ async function hasNetwork(): Promise<boolean> {
   return true;
 }
 
-function mapHttpError(status: number, bodyText: string): string {
-  let parsedError = '';
-  try {
-    const parsed = JSON.parse(bodyText) as { error?: string };
-    parsedError = typeof parsed.error === 'string' ? parsed.error : '';
-  } catch {
-    parsedError = bodyText.trim();
-  }
-
-  if (parsedError) return parsedError;
-
+function mapHttpError(status: number): HanafiMuftiErrorCode {
   switch (status) {
     case 400:
-      return 'درخواست نامعتبر است.';
+      return 'invalid_request';
     case 402:
-      return 'سرویس موقتاً در دسترس نیست. لطفاً بعداً تلاش کنید.';
+      return 'unavailable';
     case 429:
-      return 'لطفاً چند لحظه صبر کنید و دوباره تلاش کنید.';
+      return 'rate_limited';
     case 500:
     default:
-      return 'خطای سرور. لطفاً دوباره تلاش کنید.';
+      return 'server_error';
   }
 }
 
@@ -183,21 +192,22 @@ export async function askHanafiMufti(
   const { onError, signal } = options;
 
   if (!isHanafiMuftiConfigured()) {
-    onError('سرویس مفتی پیکربندی نشده است.');
+    onError('not_configured');
     return;
   }
 
   if (!(await hasNetwork())) {
-    onError('اتصال اینترنت برقرار نیست.');
+    onError('offline');
     return;
   }
 
   const payload = {
     messages: sanitizeMessages(messages),
+    preferred_language: options.preferredLanguage || 'dari',
     ...(options.responderId ? { responder_id: options.responderId } : {}),
   };
   if (payload.messages.length === 0) {
-    onError('پیامی برای ارسال وجود ندارد.');
+    onError('invalid_request');
     return;
   }
 
@@ -216,17 +226,17 @@ export async function askHanafiMufti(
     if (signal?.aborted) return;
     const message = error instanceof Error ? error.message : String(error);
     if (/network request failed|failed to fetch|aborted/i.test(message)) {
-      onError('اتصال اینترنت برقرار نیست.');
+      onError('offline');
       return;
     }
-    onError('خطا در ارتباط با سرور.');
+    onError('connection_error');
     return;
   }
 
   if (!response.ok) {
     const bodyText = await response.text().catch(() => '');
     if (signal?.aborted) return;
-    onError(mapHttpError(response.status, bodyText));
+    onError(mapHttpError(response.status));
     return;
   }
 
@@ -235,6 +245,6 @@ export async function askHanafiMufti(
   } catch (error) {
     if (signal?.aborted) return;
     const message = error instanceof Error ? error.message : String(error);
-    onError(message || 'خطا در دریافت پاسخ.');
+    onError(message ? 'connection_error' : 'empty_response');
   }
 }

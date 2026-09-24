@@ -45,7 +45,6 @@ require.extensions['.ts'] = (module, filename) => {
 const { calculatePrayerTimes } = require('../utils/prayerTimes.ts');
 const { buildDateFromLocalTimeInTimezone, getHoursMinutesInTimeZone } = require('../utils/prayerTimezone.ts');
 const { buildWidgetSnapshot, listWidgetTimelineBoundaries, parseWidgetSnapshot, refreshWidgetSnapshot } = require('../utils/widgetSnapshot.ts');
-const { getWidgetHadithForDateKey } = require('../utils/widgetHadith.ts');
 const { formatPrayerTime12h } = require('../utils/formatPrayerTime.ts');
 
 const fixtures = [
@@ -78,16 +77,11 @@ for (const fixture of fixtures) {
     maghribOffsetMinutes: fixture.offset,
     fixedDhuhrLocalTime: fixture.fixedDhuhr,
   });
-  assert(snapshot.version === 3, `${fixture.name}: expected schema version 3`);
+  assert(snapshot.version === 6, `${fixture.name}: expected schema version 6`);
   assert(snapshot.latitude === fixture.latitude && snapshot.longitude === fixture.longitude, `${fixture.name}: location was not persisted`);
   assert(snapshot.calculationMethod === 'Karachi' && snapshot.asrMethod === 'Hanafi', `${fixture.name}: policy was not persisted`);
-  assert(snapshot.hadithText && snapshot.hadithSource, `${fixture.name}: daily Hadith was not persisted`);
+  assert(!('hadithText' in snapshot) && !('hadithSource' in snapshot), `${fixture.name}: new widget snapshot retained Hadith fields`);
   assert(snapshot.gregorianDisplay.endsWith(fixture.date.slice(5, 7) === '07' ? 'JUL 2026' : 'DEC 2026'), `${fixture.name}: widget Gregorian date must use compact uppercase month codes`);
-  assert(
-    getWidgetHadithForDateKey(fixture.date).text === snapshot.hadithText,
-    `${fixture.name}: daily Hadith selection is not date-stable`,
-  );
-
   const entries = entryMap(snapshot);
   assert(entries.maghrib.atMs - calculated.maghrib.getTime() === 300000, `${fixture.name}: widget must use raw + 300 seconds`);
   for (const key of ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']) {
@@ -101,7 +95,8 @@ for (const fixture of fixtures) {
   assert(!maghribLabel.includes('+۳') && !maghribLabel.includes('+3'), `${fixture.name}: widget prayer label must not expose offset metadata`);
 
   const roundTrip = parseWidgetSnapshot(JSON.stringify(snapshot));
-  assert(roundTrip?.version === 3 && roundTrip.latitude === fixture.latitude, `${fixture.name}: snapshot round-trip failed`);
+  assert(roundTrip?.version === 6 && roundTrip.latitude === fixture.latitude, `${fixture.name}: snapshot round-trip failed`);
+  assert(!JSON.stringify(roundTrip).includes('hadithText'), `${fixture.name}: Hadith reappeared after snapshot round-trip`);
   const boundaries = listWidgetTimelineBoundaries(snapshot, anchor);
   const hasPrayerBoundary = Object.values(entries).some((entry) => boundaries.includes(entry.atMs));
   assert(hasPrayerBoundary, `${fixture.name}: prayer boundary missing from timeline (${boundaries.join(',')} vs ${Object.values(entries).map((entry) => entry.atMs).join(',')})`);
@@ -116,11 +111,13 @@ const legacy = parseWidgetSnapshot(JSON.stringify({
   shamsiDisplay: '۱۵ سرطان ۱۴۰۵',
   hijriDisplay: '۲۱ محرم ۱۴۴۸',
   gregorianDisplay: '6 JUL 2026',
+  hadithText: 'legacy daily hadith',
+  hadithSource: 'legacy source',
   prayers: [{ key: 'fajr', labelDari: 'صبح', time12h: '۴:۳۰', atMs: 1783336200000 }],
   nextRefreshAtMs: 1783336200000,
 }));
-assert(legacy?.version === 3 && legacy.latitude === 34.5553 && legacy.asrMethod === 'Hanafi', 'legacy snapshot migration failed');
-assert(legacy?.hadithText, 'legacy snapshot did not receive a deterministic Hadith fallback');
+assert(legacy?.version === 6 && legacy.latitude === 34.5553 && legacy.asrMethod === 'Hanafi', 'legacy snapshot migration failed');
+assert(!JSON.stringify(legacy).includes('hadithText') && !JSON.stringify(legacy).includes('hadithSource'), 'legacy widget Hadith fields were not discarded');
 assert(legacy?.gregorianDisplay === '6 JUL 2026', 'legacy widget snapshot did not migrate to compact Gregorian month codes');
 
 const staleCalendarDisplaySnapshot = refreshWidgetSnapshot({
@@ -182,13 +179,11 @@ const oldThreeMinuteSnapshot = parseWidgetSnapshot(JSON.stringify({
 }));
 assert(oldThreeMinuteSnapshot?.prayers[0].atMs === oldWorldMaghrib + 300000, 'old +3 widget snapshot must receive only the missing two minutes');
 
-const nextHadith = getWidgetHadithForDateKey('2026-07-07');
-assert(nextHadith.text && nextHadith.id !== getWidgetHadithForDateKey('2026-07-06').id, 'daily Hadith does not rotate with the local date');
 const expiredHorizon = refreshWidgetSnapshot(
   parseWidgetSnapshot(JSON.stringify({ ...legacy, days: [legacy.days[0]] })) || legacy,
   new Date('2026-08-15T08:00:00.000Z'),
 );
-assert(expiredHorizon.hadithText === getWidgetHadithForDateKey('2026-08-15').text, 'daily Hadith stopped rotating after the stored horizon');
+assert(!JSON.stringify(expiredHorizon).includes('hadithText'), 'widget refresh restored removed Hadith content');
 
 const rolloverTimes = { fajr: '04:05', dhuhr: '12:30', asr: '16:05', maghrib: '19:02', isha: '20:32' };
 const makeRolloverDay = (dateKey) => ({
@@ -215,7 +210,7 @@ const fajrSnapshot = refreshWidgetSnapshot(
 assert(fajrSnapshot.currentPrayer === 'fajr', 'Android widget did not switch highlight at Fajr');
 
 const androidWidgetSource = fs.readFileSync(path.join(root, 'widgets', 'PrayerTimesWidget.tsx'), 'utf8');
-assert(androidWidgetSource.includes('حدیث روز'), 'Android widget does not render the daily Hadith strip');
+assert(!androidWidgetSource.includes('snapshot.hadithText') && !androidWidgetSource.includes('حدیث روز'), 'Android widget still renders the daily Hadith strip');
 assert(androidWidgetSource.includes('prayer.labelDari'), 'Android widget does not render the policy-labelled Maghrib entry');
 assert(!androidWidgetSource.includes("justifyContent: 'space-between'"), 'Android widget still distributes a large sunrise/prayer gap');
 
@@ -223,6 +218,9 @@ const sharedPath = path.join(root, 'ios', 'EbadatPrayerWidget', 'WidgetShared.sw
 const calculatorPath = path.join(root, 'ios', 'EbadatPrayerWidget', 'WidgetPrayerCalculator.swift');
 const sharedSource = fs.readFileSync(sharedPath, 'utf8');
 const calculatorSource = fs.readFileSync(calculatorPath, 'utf8');
+const widgetViewSource = fs.readFileSync(path.join(root, 'ios', 'EbadatPrayerWidget', 'PrayerTimesWidgetView.swift'), 'utf8');
+assert(!widgetViewSource.includes('hadithText') && !widgetViewSource.includes('حدیث روز'), 'iOS widget still renders daily Hadith');
+assert(!sharedSource.includes('hadithText') && !sharedSource.includes('hadithSource'), 'iOS widget snapshot still stores Hadith fields');
 assert(sharedSource.includes('WidgetPrayerCalculator.daySnapshot'), 'WidgetShared does not calculate entries independently');
 assert(sharedSource.includes('for offset in 0...14'), 'Widget timeline horizon is not bounded');
 assert(calculatorSource.includes('islamicUmmAlQura') && calculatorSource.includes('Calendar(identifier: .persian)'), 'native calendar conversion is incomplete');
@@ -234,21 +232,25 @@ const binaryPath = path.join(tempDir, 'widget-harness');
 const moduleCachePath = path.join(tempDir, 'swift-module-cache');
 fs.mkdirSync(moduleCachePath, { recursive: true });
 fs.writeFileSync(mainPath, `import Foundation
-let snapshot = WidgetSnapshot(version: 3, updatedAt: "2026-07-06T08:00:00Z", cityName: "Kabul", timezone: "Asia/Kabul", policyVersion: 6, sourceLabel: "Karachi+AF", latitude: 34.5553, longitude: 69.2075, altitude: 1791, calculationMethod: "Karachi", asrMethod: "Hanafi", maghribOffsetMinutes: 5, fixedDhuhrLocalTime: "12:30", weekdayDari: "", shamsiDisplay: "", hijriDisplay: "", gregorianDisplay: "", currentPrayer: nil, prayers: [], nextRefreshAtMs: 0)
+let snapshot = WidgetSnapshot(version: 6, appLanguage: "pashto", updatedAt: "2026-07-06T08:00:00Z", cityName: "Kabul", timezone: "Asia/Kabul", policyVersion: 6, sourceLabel: "Karachi+AF", latitude: 34.5553, longitude: 69.2075, altitude: 1791, calculationMethod: "Karachi", asrMethod: "Hanafi", maghribOffsetMinutes: 5, fixedDhuhrLocalTime: "12:30", weekdayDari: "", shamsiDisplay: "", hijriDisplay: "", gregorianDisplay: "", currentPrayer: nil, prayers: [], nextRefreshAtMs: 0)
 let formatter = ISO8601DateFormatter()
 let date = formatter.date(from: "2026-07-06T07:30:00Z")!
 let day = WidgetPrayerCalculator.daySnapshot(snapshot: snapshot, date: date)
 let calculated = WidgetPrayerCalculator.calculate(snapshot: snapshot, date: date)
 var rawObject = try! JSONSerialization.jsonObject(with: JSONEncoder().encode(snapshot)) as! [String: Any]
 rawObject["maghribOffsetMinutes"] = 0
+rawObject["hadithText"] = "old widget hadith"
+rawObject["hadithSource"] = "old widget source"
 let rawSnapshot = try! JSONDecoder().decode(WidgetSnapshot.self, from: JSONSerialization.data(withJSONObject: rawObject))
+let reencodedRawSnapshot = try! JSONSerialization.jsonObject(with: JSONEncoder().encode(rawSnapshot)) as! [String: Any]
+let strippedLegacyHadith = reencodedRawSnapshot["hadithText"] == nil && reencodedRawSnapshot["hadithSource"] == nil
 let rawDay = WidgetPrayerCalculator.daySnapshot(snapshot: rawSnapshot, date: date)
-let staleDay = WidgetDaySnapshot(dateKey: day.dateKey, weekdayDari: day.weekdayDari, shamsiDisplay: day.shamsiDisplay, hijriDisplay: "stale Hijri", gregorianDisplay: "6 July 2026", sunriseDisplay: day.sunriseDisplay, hadithText: day.hadithText, hadithSource: day.hadithSource, prayers: day.prayers.map { entry in
+let staleDay = WidgetDaySnapshot(dateKey: day.dateKey, weekdayDari: day.weekdayDari, shamsiDisplay: day.shamsiDisplay, hijriDisplay: "stale Hijri", gregorianDisplay: "6 July 2026", sunriseDisplay: day.sunriseDisplay, prayers: day.prayers.map { entry in
   entry.key == "maghrib"
     ? WidgetPrayerEntry(key: entry.key, labelDari: entry.labelDari, time12h: entry.time12h, atMs: entry.atMs - 120000)
     : entry
 })
-let staleSnapshot = WidgetSnapshot(version: 3, updatedAt: snapshot.updatedAt, cityName: "New York", timezone: "America/New_York", policyVersion: 5, sourceLabel: "MWL", latitude: 40.7128, longitude: -74.006, altitude: 10, calculationMethod: "NorthAmerica", asrMethod: "Standard", maghribOffsetMinutes: 3, fixedDhuhrLocalTime: nil, days: [staleDay], weekdayDari: day.weekdayDari, shamsiDisplay: day.shamsiDisplay, hijriDisplay: day.hijriDisplay, gregorianDisplay: day.gregorianDisplay, sunriseDisplay: day.sunriseDisplay, hadithText: day.hadithText, hadithSource: day.hadithSource, currentPrayer: nil, prayers: staleDay.prayers, nextRefreshAtMs: 0)
+let staleSnapshot = WidgetSnapshot(version: 3, updatedAt: snapshot.updatedAt, cityName: "New York", timezone: "America/New_York", policyVersion: 5, sourceLabel: "MWL", latitude: 40.7128, longitude: -74.006, altitude: 10, calculationMethod: "NorthAmerica", asrMethod: "Standard", maghribOffsetMinutes: 3, fixedDhuhrLocalTime: nil, days: [staleDay], weekdayDari: day.weekdayDari, shamsiDisplay: day.shamsiDisplay, hijriDisplay: day.hijriDisplay, gregorianDisplay: day.gregorianDisplay, sunriseDisplay: day.sunriseDisplay, currentPrayer: nil, prayers: staleDay.prayers, nextRefreshAtMs: 0)
 let migrated = WidgetShared.derivedSnapshot(from: staleSnapshot, at: date)
 let septemberDate = formatter.date(from: "2026-09-23T07:30:00Z")!
 let septemberDay = WidgetPrayerCalculator.daySnapshot(snapshot: snapshot, date: septemberDate)
@@ -264,7 +266,7 @@ let monthLabels = (1...12).map { month -> String in
   let monthDate = calendar.date(from: DateComponents(year: 2026, month: month, day: 15, hour: 12))!
   return WidgetPrayerCalculator.daySnapshot(snapshot: snapshot, date: monthDate).gregorianDisplay
 }
-let output = ["dateKey": day.dateKey, "gregorianDisplay": day.gregorianDisplay, "hijriDisplay": day.hijriDisplay, "migratedHijriDisplay": migrated.hijriDisplay, "migratedGregorianDisplay": migrated.gregorianDisplay, "septemberHijriDisplay": septemberDay.hijriDisplay, "septemberGregorianDisplay": septemberDay.gregorianDisplay, "verifiedHijriDisplay": verifiedDay.hijriDisplay, "june27HijriDisplay": june27Day.hijriDisplay, "september13HijriDisplay": september13Day.hijriDisplay, "february17HijriDisplay": february17Day.hijriDisplay, "april18HijriDisplay": april18Day.hijriDisplay, "monthLabels": monthLabels, "dhuhr": day.prayers.first(where: { $0.key == "dhuhr" })!.atMs, "maghrib": day.prayers.first(where: { $0.key == "maghrib" })!.atMs, "rawMaghrib": calculated.rawMaghrib.timeIntervalSince1970 * 1000, "zeroOffsetMaghrib": rawDay.prayers.first(where: { $0.key == "maghrib" })!.atMs, "migratedMaghrib": migrated.prayers.first(where: { $0.key == "maghrib" })!.atMs, "maghribLabel": day.prayers.first(where: { $0.key == "maghrib" })!.labelDari] as [String: Any]
+let output = ["dateKey": day.dateKey, "gregorianDisplay": day.gregorianDisplay, "shamsiDisplayPashto": day.shamsiDisplayPashto ?? "", "hijriDisplay": day.hijriDisplay, "migratedHijriDisplay": migrated.hijriDisplay, "migratedGregorianDisplay": migrated.gregorianDisplay, "septemberHijriDisplay": septemberDay.hijriDisplay, "septemberGregorianDisplay": septemberDay.gregorianDisplay, "verifiedHijriDisplay": verifiedDay.hijriDisplay, "june27HijriDisplay": june27Day.hijriDisplay, "september13HijriDisplay": september13Day.hijriDisplay, "february17HijriDisplay": february17Day.hijriDisplay, "april18HijriDisplay": april18Day.hijriDisplay, "monthLabels": monthLabels, "dhuhr": day.prayers.first(where: { $0.key == "dhuhr" })!.atMs, "maghrib": day.prayers.first(where: { $0.key == "maghrib" })!.atMs, "rawMaghrib": calculated.rawMaghrib.timeIntervalSince1970 * 1000, "zeroOffsetMaghrib": rawDay.prayers.first(where: { $0.key == "maghrib" })!.atMs, "migratedMaghrib": migrated.prayers.first(where: { $0.key == "maghrib" })!.atMs, "strippedLegacyHadith": strippedLegacyHadith, "maghribLabel": day.prayers.first(where: { $0.key == "maghrib" })!.labelDari] as [String: Any]
 print(String(data: try! JSONSerialization.data(withJSONObject: output), encoding: .utf8)!)
 `);
 try {
@@ -273,6 +275,7 @@ try {
   const dhuhrLocal = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kabul', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(output.dhuhr));
   assert(output.dateKey === '2026-07-06' && dhuhrLocal === '12:30', `native harness returned ${output.dateKey}/${dhuhrLocal}`);
   assert(output.gregorianDisplay === '6 JUL 2026', `iOS fallback returned long Gregorian month ${output.gregorianDisplay}`);
+  assert(output.shamsiDisplayPashto === '۱۵ چنګاښ ۱۴۰۵', `iOS widget did not render the Pashto Solar Hijri month: ${output.shamsiDisplayPashto}`);
   assert(output.migratedGregorianDisplay === '6 JUL 2026', 'iOS widget did not refresh a cached long Gregorian date');
   assert(output.migratedHijriDisplay === output.hijriDisplay, 'iOS widget did not refresh a cached Hijri date');
   assert(output.septemberGregorianDisplay === '23 SEP 2026', `iOS fallback returned ${output.septemberGregorianDisplay} for September 23`);
@@ -283,6 +286,7 @@ try {
   assert(output.february17HijriDisplay === '۲۹ شعبان ۱۴۴۷', `iOS widget has a discontinuity before Ramadan: ${output.february17HijriDisplay}`);
   assert(output.april18HijriDisplay === '۱ ذوالقعده ۱۴۴۷', `iOS widget has a discontinuity after Shawwal: ${output.april18HijriDisplay}`);
   assert(JSON.stringify(output.monthLabels) === JSON.stringify(['15 JAN 2026', '15 FEB 2026', '15 MAR 2026', '15 APR 2026', '15 MAY 2026', '15 JUN 2026', '15 JUL 2026', '15 AUG 2026', '15 SEP 2026', '15 OCT 2026', '15 NOV 2026', '15 DEC 2026']), 'iOS widget month-code coverage is incomplete');
+  assert(output.strippedLegacyHadith, 'iOS widget snapshot did not discard legacy Hadith fields');
   assert(output.maghrib - output.rawMaghrib === 300000, 'iOS fallback widget must schedule Maghrib exactly 300 seconds after raw time');
   assert(output.maghrib === output.zeroOffsetMaghrib, 'iOS global fallback must not depend on the stored country offset');
   assert(output.migratedMaghrib === output.maghrib, 'iOS must migrate an old +3 canonical widget time by only the missing two minutes');

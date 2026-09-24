@@ -13,12 +13,15 @@ import { formatSourceLabel, getAuthenticityGradeLabelFa } from '@/utils/ahadith/
 import { NAAT_GRADIENT } from '@/constants/theme';
 import { getPublishedHadithById } from '@/utils/ahadithRemoteService';
 import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
+import { getHadithTranslation } from '@/utils/ahadith/translation';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export default function HadithDetailScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { theme, themeMode, state } = useApp();
+  const { t, language, fontFamily } = useI18n();
   const { hadiths, syncRemoteHadiths } = useAhadith();
 
   const [hadith, setHadith] = useState<Hadith | null>(null);
@@ -35,7 +38,7 @@ export default function HadithDetailScreen() {
 
     const load = async () => {
       if (!hadithId) {
-        setError('شناسه حدیث معتبر نیست.');
+        setError(t('ahadith.detail.invalidId'));
         setLoading(false);
         return;
       }
@@ -68,12 +71,12 @@ export default function HadithDetailScreen() {
           if (remoteHadith) {
             setHadith(remoteHadith);
           } else {
-            setError('حدیث مورد نظر پیدا نشد.');
+            setError(t('ahadith.detail.notFound'));
           }
         }
       } catch (loadError) {
         if (!cancelled) {
-          setError('دریافت حدیث ممکن نشد.');
+          setError(t('ahadith.detail.loadFailed'));
           if (__DEV__) {
             console.warn('[HadithDetail] load failed', loadError);
           }
@@ -90,7 +93,7 @@ export default function HadithDetailScreen() {
     return () => {
       cancelled = true;
     };
-  }, [hadithId, hadiths, syncRemoteHadiths]);
+  }, [hadithId, hadiths, syncRemoteHadiths, t]);
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
@@ -110,7 +113,7 @@ export default function HadithDetailScreen() {
         >
           <MaterialIcons name="arrow-forward" size={22} color="#fff" />
         </Pressable>
-        <CText style={styles.headerTitle}>حدیث</CText>
+        <CText style={styles.headerTitle}>{t('hadith.title')}</CText>
         <View style={styles.headerIconButton} />
       </LinearGradient>
 
@@ -146,26 +149,16 @@ export default function HadithDetailScreen() {
 
             <CText
               style={[
-                styles.dari,
+                language === 'pashto' ? styles.pashto : styles.dari,
                 {
                   color: theme.textPrimary,
-                  fontFamily: getDariFontFamily(state.preferences.dariFont),
+                  fontFamily: fontFamily ?? (language === 'pashto'
+                    ? getPashtoFontFamily(state.preferences.pashtoFont)
+                    : getDariFontFamily(state.preferences.dariFont)),
                 },
               ]}
             >
-              {hadith.dari_translation}
-            </CText>
-
-            <CText
-              style={[
-                styles.pashto,
-                {
-                  color: theme.textSecondary,
-                  fontFamily: getPashtoFontFamily(state.preferences.pashtoFont),
-                },
-              ]}
-            >
-              {hadith.pashto_translation}
+              {getHadithTranslation(hadith, language)}
             </CText>
 
             <CText style={[styles.source, { color: theme.primary }]}>

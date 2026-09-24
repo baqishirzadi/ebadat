@@ -1,7 +1,9 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { memo, useCallback, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import { StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import Svg, { Circle } from 'react-native-svg';
 
 import { RtlText } from '@/components/ui/RtlText';
@@ -19,9 +21,32 @@ import { getPrayerProgress } from '@/utils/prayerDisplay';
 import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { getNextPrayer, PrayerTimes } from '@/utils/prayerTimes';
 import { toArabicNumeralsString } from '@/utils/numbers';
+import { pickContent } from '@/utils/i18n/content';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const RING_SIZE = 128;
 const STROKE = 5;
+
+const pashtoCompactMetrics = {
+  amiri: {
+    container: { gap: 4 },
+    label: { fontSize: 12, lineHeight: 28, includeFontPadding: true, paddingTop: 4, paddingBottom: 6 },
+    prayerName: { fontSize: 17, lineHeight: 28, includeFontPadding: true },
+    time: { fontSize: 16, lineHeight: 24, includeFontPadding: true },
+    countdown: { fontSize: 14, lineHeight: 18 },
+    hint: { fontSize: 12, lineHeight: 16, color: 'rgba(255,255,255,0.8)' },
+    embedded: { paddingTop: 10, paddingBottom: 2 },
+  },
+  nastaliq: {
+    container: { gap: 3 },
+    label: { fontSize: 12, lineHeight: 24, includeFontPadding: true },
+    prayerName: { fontSize: 15, lineHeight: 32, includeFontPadding: true },
+    time: { fontSize: 15, lineHeight: 22 },
+    countdown: { fontSize: 14, lineHeight: 22 },
+    hint: { fontSize: 12, lineHeight: 24, includeFontPadding: true, color: 'rgba(255,255,255,0.8)' },
+    embedded: { paddingTop: 6, paddingBottom: 2 },
+  },
+} as const;
 
 function formatCountdown(ms: number): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
@@ -75,7 +100,7 @@ function ProgressRingWithCountdown({
         />
       </Svg>
       <View style={styles.ringCenter} pointerEvents="none">
-        <Text style={styles.countdownInside}>{countdown}</Text>
+        <LocalizedText style={styles.countdownInside}>{countdown}</LocalizedText>
       </View>
     </View>
   );
@@ -91,6 +116,12 @@ const CountdownBlock = memo(function CountdownBlock({
   compact?: boolean;
 }) {
   const [now, setNow] = useState(() => new Date());
+  const { isPashto, fontFamily } = useI18n();
+  const compactMetrics = isPashto
+    ? fontFamily === 'NotoNastaliqUrdu'
+      ? pashtoCompactMetrics.nastaliq
+      : pashtoCompactMetrics.amiri
+    : null;
 
   useFocusEffect(
     useCallback(() => {
@@ -107,10 +138,10 @@ const CountdownBlock = memo(function CountdownBlock({
   if (compact) {
     return (
       <View style={styles.compactCountdownWrap}>
-        <View style={styles.compactProgressTrack}>
+        <View style={[styles.compactProgressTrack, isPashto && styles.compactProgressTrackPashto]}>
           <View style={[styles.compactProgressFill, { width: `${Math.round(progress * 100)}%`, backgroundColor: ringColor }]} />
         </View>
-        <RtlText align="center" wrap={false} style={styles.compactCountdown}>{countdown}</RtlText>
+        <RtlText align="center" wrap={false} style={[styles.compactCountdown, compactMetrics?.countdown]}>{countdown}</RtlText>
       </View>
     );
   }
@@ -132,17 +163,23 @@ interface NextPrayerCardProps {
 
 function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }: NextPrayerCardProps) {
   const { theme, themeMode } = useApp();
+  const { isPashto, language, t, fontFamily } = useI18n();
   const { state } = usePrayer();
   const gradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const isCompact = variant === 'compact';
+  const compactMetrics = isPashto
+    ? fontFamily === 'NotoNastaliqUrdu'
+      ? pashtoCompactMetrics.nastaliq
+      : pashtoCompactMetrics.amiri
+    : null;
 
   if (!prayerTimes) {
     const emptyContent = (
-      <RtlText align="center" style={styles.empty}>اوقات نماز در دسترس نیست</RtlText>
+      <RtlText align="center" style={[styles.empty, { fontFamily }]}>{t('home.prayerUnavailable')}</RtlText>
     );
 
     if (embedded) {
-      return <View style={styles.embeddedCompact}>{emptyContent}</View>;
+      return <View style={[styles.embeddedCompact, compactMetrics?.embedded]}>{emptyContent}</View>;
     }
 
     return (
@@ -159,43 +196,51 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
   const timeZone = state.location?.timezone;
   const nextName = displayPrayerLabel(
     next.key === 'sunrise' ? 'fajr' : next.key,
-    next.nameDari,
+    pickContent(next, 'name', language),
     state.settings.selectedCity,
     state.location,
   );
 
   const compactContent = (
-    <RtlView style={styles.compactContainer}>
-      <RtlText align="center" style={styles.compactLabel}>نماز بعدی</RtlText>
+    <RtlView style={[styles.compactContainer, compactMetrics?.container]}>
+      {isPashto ? (
+        <View style={styles.pashtoCompactLabelWrap}>
+          <LocalizedText style={[styles.pashtoCompactLabel, { fontFamily }]}>
+            {t('home.nextPrayer')}
+          </LocalizedText>
+        </View>
+      ) : (
+        <RtlText align="center" style={[styles.compactLabel, { fontFamily }]}>{t('home.nextPrayer')}</RtlText>
+      )}
       <RtlView style={styles.compactNameBlock}>
-        <RtlText align="center" wrap={false} style={styles.compactPrayerName}>{nextName}</RtlText>
-        <RtlText align="center" wrap={false} style={[styles.compactTime, { color: theme.bookmark }]}>
+        <RtlText testID="home-next-prayer-name" align="center" wrap={false} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={[styles.compactPrayerName, compactMetrics?.prayerName]}>{nextName}</RtlText>
+        <RtlText testID="home-next-prayer-time" align="center" wrap={false} numberOfLines={1} style={[styles.compactTime, compactMetrics?.time, { color: theme.bookmark }]}>
           {formatPrayerTime12h(next.time, timeZone)}
         </RtlText>
       </RtlView>
       <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} compact />
-      <RtlText align="center" style={styles.compactHint}>
-        {adhanOn ? 'اذان فعال' : 'اذان خاموش'}
+      <RtlText align="center" style={[styles.compactHint, compactMetrics?.hint, isPashto && styles.compactHintPashto]}>
+        {t(adhanOn ? 'home.adhan.enabled' : 'home.adhan.disabled')}
       </RtlText>
     </RtlView>
   );
 
   const fullContent = (
     <>
-      <RtlText align="center" style={styles.label}>نماز بعدی</RtlText>
+      <RtlText align="center" style={[styles.label, { fontFamily }]}>{t('home.nextPrayer')}</RtlText>
       <RtlText align="center" style={styles.prayerName}>{nextName}</RtlText>
       <RtlText align="center" style={[styles.time, { color: theme.bookmark }]}>
         {formatPrayerTime12h(next.time, timeZone)}
       </RtlText>
       <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} />
       <RtlText align="center" style={styles.hint}>
-        {adhanOn ? 'اذان فعال است' : 'اذان غیرفعال است'}
+        {t(adhanOn ? 'home.adhan.enabled' : 'home.adhan.disabled')}
       </RtlText>
     </>
   );
 
   if (embedded && isCompact) {
-    return <RtlView style={styles.embeddedCompact}>{compactContent}</RtlView>;
+    return <RtlView style={[styles.embeddedCompact, compactMetrics?.embedded]}>{compactContent}</RtlView>;
   }
 
   return (
@@ -303,8 +348,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   compactNameBlock: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 2,
+    gap: Spacing.sm,
     alignSelf: 'stretch',
     paddingHorizontal: Spacing.sm,
   },
@@ -312,20 +359,40 @@ const styles = StyleSheet.create({
     ...persianCenterCaptionText,
     color: 'rgba(255,255,255,0.7)',
   },
+  pashtoCompactLabelWrap: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 28,
+    paddingTop: 2,
+    paddingBottom: 2,
+    overflow: 'visible',
+  },
+  pashtoCompactLabel: {
+    width: '100%',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    fontSize: 13,
+    lineHeight: 24,
+    includeFontPadding: true,
+    color: 'rgba(255,255,255,0.85)',
+  },
   compactPrayerName: {
     ...persianCenterSubtitleText,
     fontFamily: 'Vazirmatn-Bold',
     color: '#fff',
+    flexShrink: 1,
   },
   compactTime: {
     ...persianCenterText,
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.subtitle,
     fontVariant: ['tabular-nums'],
+    flexShrink: 0,
   },
   compactCountdownWrap: {
-    marginTop: 4,
-    gap: 5,
+    marginTop: 2,
+    gap: 3,
     alignSelf: 'stretch',
     alignItems: 'center',
   },
@@ -335,6 +402,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     overflow: 'hidden',
     width: '100%',
+  },
+  compactProgressTrackPashto: {
+    height: 4,
+    width: '72%',
+    borderRadius: 3,
   },
   compactProgressFill: {
     height: '100%',
@@ -351,5 +423,8 @@ const styles = StyleSheet.create({
     ...persianCenterText,
     fontSize: 11,
     color: 'rgba(255,255,255,0.55)',
+  },
+  compactHintPashto: {
+    color: 'rgba(255,255,255,0.8)',
   },
 });

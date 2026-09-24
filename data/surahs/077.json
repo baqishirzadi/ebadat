@@ -14,7 +14,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "قسم به بادهای فرستاده شده‌ای پی در پی.",
-      "translation_pashto": "77-1 قسم دى په هغو بادونو چې پرله پسې لېږل شوي دي!"
+      "translation_pashto": "77-1 قسم دى په هغو بادونو چې پرله پسې لېږل شوي دي!",
+      "translation_english": "By those [winds] sent forth in succession,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(باز) قسم به بادهای تیز وزنده.",
-      "translation_pashto": "77-2 بیا په هغو سختو تېزو چلېدونكو بادونو باندې، تېز تلل"
+      "translation_pashto": "77-2 بیا په هغو سختو تېزو چلېدونكو بادونو باندې، تېز تلل",
+      "translation_english": "those that blow violently,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و قسم به بادهای که ابرها را منتشر می‌کنند (برای باریدن باران).",
-      "translation_pashto": "77-3 او په خورونكو بادونو باندې، خورول"
+      "translation_pashto": "77-3 او په خورونكو بادونو باندې، خورول",
+      "translation_english": "and scatter [rainclouds] far and wide,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "باز قسم به فرشتگان فرق‌کننده (بین حق و باطل).",
-      "translation_pashto": "77-4 بیا په  هغو بادونو چې جدا والى راولي، جدا كول"
+      "translation_pashto": "77-4 بیا په  هغو بادونو چې جدا والى راولي، جدا كول",
+      "translation_english": "And by those [angels] who bring criterion;"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس قسم به فرشتگان القا کنندۀ وعظ و وحی.",
-      "translation_pashto": "77-5 بیا په هغو بادونو  باندې چې د ذكر اچونكي دي"
+      "translation_pashto": "77-5 بیا په هغو بادونو  باندې چې د ذكر اچونكي دي",
+      "translation_english": "and those who deliver revelation,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "برای رفع عذر یا بیم دادن (از عذاب الله).",
-      "translation_pashto": "77-6 د عذر  لپاره او وېرولو لپاره"
+      "translation_pashto": "77-6 د عذر  لپاره او وېرولو لپاره",
+      "translation_english": "leaving no excuse or giving warning –"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "که البته آنچه وعده داده می‌شوید (از جزا و سزا) واقع شدنی است.",
-      "translation_pashto": "77-7 بېشكه چې له تاسو سره څه وعده كولى شي یقینًا (هغه) واقع كېدونكې ده"
+      "translation_pashto": "77-7 بېشكه چې له تاسو سره څه وعده كولى شي یقینًا (هغه) واقع كېدونكې ده",
+      "translation_english": "what you are promised will surely come to pass."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس وقتی که ستاره‌ها بی‌نور و محو شوند.",
-      "translation_pashto": "77-8 نو كله چې ستوري بې رڼا كړى شي"
+      "translation_pashto": "77-8 نو كله چې ستوري بې رڼا كړى شي",
+      "translation_english": "So when the stars are effaced,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و وقتی که آسمان شگافته شود.",
-      "translation_pashto": "77-9 او كله چې اسمان څیرې كړى شي"
+      "translation_pashto": "77-9 او كله چې اسمان څیرې كړى شي",
+      "translation_english": "and when the sky is split apart,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و وقتی که کوه‌ها ریشه کن و پراگنده شوند.",
-      "translation_pashto": "77-10 او كله چې غرونه والوزول شي"
+      "translation_pashto": "77-10 او كله چې غرونه والوزول شي",
+      "translation_english": "and when the mountains are blown away,"
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و وقتی که برای (جمع شدن) پیغمبران وقت تعیین شود.",
-      "translation_pashto": "77-11 او كله چې رسولانو ته وخت وټاكل شي"
+      "translation_pashto": "77-11 او كله چې رسولانو ته وخت وټاكل شي",
+      "translation_english": "and when the messengers are summoned,"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "برای کدام روزی پس انداخته شده‌اند؟",
-      "translation_pashto": "77-12 د كومې ورځې لپاره دغه (څیزونه) وروسته كړى شوي دي؟"
+      "translation_pashto": "77-12 د كومې ورځې لپاره دغه (څیزونه) وروسته كړى شوي دي؟",
+      "translation_english": "until which Day has all this been postponed?"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "برای روز فیصله (به دادگاه الهی پس انداخته شده‌اند).",
-      "translation_pashto": "77-13 د فیصلې د ورځې لپاره "
+      "translation_pashto": "77-13 د فیصلې د ورځې لپاره ",
+      "translation_english": "Until the Day of Judgment."
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و تو چه می‌دانی که روز فیصله چیست؟",
-      "translation_pashto": "77-14 او ته څه  شي پوه كړې چې د فیصلې ورځ كله ده "
+      "translation_pashto": "77-14 او ته څه  شي پوه كړې چې د فیصلې ورځ كله ده ",
+      "translation_english": "How do you know what the Day of Judgment is?"
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-15 د دروغ ګڼونكو لپاره په دغې ورځ كې هلاكت دى"
+      "translation_pashto": "77-15 د دروغ ګڼونكو لپاره په دغې ورځ كې هلاكت دى",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "آیا ما پیشینیان (مجرم) را هلاک نکردیم؟",
-      "translation_pashto": "77-16 ایا مونږ ړومبني (مجرمان) نه دي هلاك كړي"
+      "translation_pashto": "77-16 ایا مونږ ړومبني (مجرمان) نه دي هلاك كړي",
+      "translation_english": "Did We not destroy the earlier nations?"
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "باز پسينيان [مجرم‌] را در پی آنان می‌آوریم.",
-      "translation_pashto": "77-17 بیا مونږ په دوى پسې  وروستني خلق ورلېږو"
+      "translation_pashto": "77-17 بیا مونږ په دوى پسې  وروستني خلق ورلېږو",
+      "translation_english": "Then We will do likewise to the later ones."
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "ما با مجرمان اینگونه رفتار می‌کنیم.",
-      "translation_pashto": "77-18 همداسې كار مونږ له مجرمانو (كافرانو)  سره كوو"
+      "translation_pashto": "77-18 همداسې كار مونږ له مجرمانو (كافرانو)  سره كوو",
+      "translation_english": "This is how We deal with the wicked."
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-19 په دغې ورځې كې د تكذیب كوونكو  (دروغ ګڼونكو) لپاره هلاكت دى"
+      "translation_pashto": "77-19 په دغې ورځې كې د تكذیب كوونكو  (دروغ ګڼونكو) لپاره هلاكت دى",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "آیا شما را از آب حقیر (منی) نیافریدیم؟",
-      "translation_pashto": "77-20 ایا مونږ  تاسو له سپكو اوبو نه نه یئ پیدا كړي"
+      "translation_pashto": "77-20 ایا مونږ  تاسو له سپكو اوبو نه نه یئ پیدا كړي",
+      "translation_english": "Did We not create you from a worthless fluid,"
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "باز آن را در قرارگاه محفوظ و استوار (رحم مادر) قرار دادیم.",
-      "translation_pashto": "77-21 پس مونږ دغه (اوبه) په مضبوط ځاى كې كېښودلې"
+      "translation_pashto": "77-21 پس مونږ دغه (اوبه) په مضبوط ځاى كې كېښودلې",
+      "translation_english": "then We placed it in a secure repository"
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "تا مدتی معین.",
-      "translation_pashto": "77-22 تر مقررې نېټې (اندازې) پورې"
+      "translation_pashto": "77-22 تر مقررې نېټې (اندازې) پورې",
+      "translation_english": "for a determined period?"
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس اندازه کردیم (برای بودنِ آن در رحم مادر) پس ما چه خوب اندازه‌کنندگانیم.",
-      "translation_pashto": "77-23 نو مونږ قادر یو، پس (مونږ) ښه قدرت لرونكي یو"
+      "translation_pashto": "77-23 نو مونږ قادر یو، پس (مونږ) ښه قدرت لرونكي یو",
+      "translation_english": "For We determined it; How excellently We determine!"
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-24 په دغې ورځې كې د دروغ ګڼونكو لپاره هلاكت دى"
+      "translation_pashto": "77-24 په دغې ورځې كې د دروغ ګڼونكو لپاره هلاكت دى",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "آیا زمین را جمع‌کننده نگردانیدیم؟",
-      "translation_pashto": "77-25 ایا مونږ ځمكه نه ده ګرځولې راجمع كوونكې"
+      "translation_pashto": "77-25 ایا مونږ ځمكه نه ده ګرځولې راجمع كوونكې",
+      "translation_english": "Have We not made the earth a receptacle"
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(برای) زنده‌ها و مرده‌ها؟",
-      "translation_pashto": "77-26 ژوندیو لره او مړیو لره"
+      "translation_pashto": "77-26 ژوندیو لره او مړیو لره",
+      "translation_english": "for the living and the dead,"
     },
     {
       "number": 27,
@@ -274,7 +300,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و در آن کوه‌های بلند قرار دادیم و به شما (از زمین) آب شیرین نوشانیدیم.",
-      "translation_pashto": "77-27 او مونږ په دې كې اوچت لوى غرونه پیدا كړي دي او په تاسو مو خوږې تنده ماتوونكې اوبه څښلي"
+      "translation_pashto": "77-27 او مونږ په دې كې اوچت لوى غرونه پیدا كړي دي او په تاسو مو خوږې تنده ماتوونكې اوبه څښلي",
+      "translation_english": "and placed therein firm towering mountains, and given you fresh water to drink?"
     },
     {
       "number": 28,
@@ -284,7 +311,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-28 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى"
+      "translation_pashto": "77-28 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 29,
@@ -294,7 +322,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(به مجرمان گویند) بروید به‌سوی آنچه که آن را دروغ می‌شمردید.",
-      "translation_pashto": "77-29 تاسو ځئ لاړ شئ هغه څیز ته چې تاسو به هغه دروغ ګاڼه"
+      "translation_pashto": "77-29 تاسو ځئ لاړ شئ هغه څیز ته چې تاسو به هغه دروغ ګاڼه",
+      "translation_english": "[They will be told,] “Proceed to that [Fire] which you used to deny!"
     },
     {
       "number": 30,
@@ -304,7 +333,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "بروید به‌سوی سایۀ سه شاخه (سایۀ آتش دوزخ).",
-      "translation_pashto": "77-30 تاسو ځئ لاړ شئ هغه سیوري ته چې د دریوڅانګو والا دى"
+      "translation_pashto": "77-30 تاسو ځئ لاړ شئ هغه سیوري ته چې د دریوڅانګو والا دى",
+      "translation_english": "Proceed to the shadow [of smoke] ascending in three columns,"
     },
     {
       "number": 31,
@@ -314,7 +344,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(آن سایه) نه سردی دارد و نه گرمی شعلۀ آتش را دفع می‌کند.",
-      "translation_pashto": "77-31 چې نه یخ دى او نه د اور لمبې لرې كولى شي"
+      "translation_pashto": "77-31 چې نه یخ دى او نه د اور لمبې لرې كولى شي",
+      "translation_english": "that provides neither shade nor protection from the flames."
     },
     {
       "number": 32,
@@ -324,7 +355,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "آتش پاره‌هایی از خود بیرون می‌اندازد که مانند قصر (بزرگ) است.",
-      "translation_pashto": "77-32 بېشكه دغه (اور) داسې سرې سكروټې ولي (غورځوي)، لكه اوچتې ماڼۍ "
+      "translation_pashto": "77-32 بېشكه دغه (اور) داسې سرې سكروټې ولي (غورځوي)، لكه اوچتې ماڼۍ ",
+      "translation_english": "Indeed, it [i.e., Hell] throws up sparks as big as castles,"
     },
     {
       "number": 33,
@@ -334,7 +366,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "گویی شعله‌های آن (در بزرگی) مانند شترهای زردرنگ است.",
-      "translation_pashto": "77-33 ګویا كې دغه (سكروټې، بڅركي)  زېړ تور بخن اوښان دي"
+      "translation_pashto": "77-33 ګویا كې دغه (سكروټې، بڅركي)  زېړ تور بخن اوښان دي",
+      "translation_english": "as if they were tawny camels."
     },
     {
       "number": 34,
@@ -344,7 +377,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-34 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى "
+      "translation_pashto": "77-34 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى ",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 35,
@@ -354,7 +388,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "این روزی است که (کفار) نمی‌توانند سخن بگویند.",
-      "translation_pashto": "77-35 دغه ورځ ده چې دوى به (په كې) خبرې نشي كولى"
+      "translation_pashto": "77-35 دغه ورځ ده چې دوى به (په كې) خبرې نشي كولى",
+      "translation_english": "On that Day they won’t speak,"
     },
     {
       "number": 36,
@@ -364,7 +399,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و به آنان اجازه داده نمی‌شود تا عذرخواهی کنند.",
-      "translation_pashto": "77-36 او دوى ته به اجازت وركولى نشي، پس چې دوى عذر وكړي"
+      "translation_pashto": "77-36 او دوى ته به اجازت وركولى نشي، پس چې دوى عذر وكړي",
+      "translation_english": "nor will they be allowed to make excuses."
     },
     {
       "number": 37,
@@ -374,7 +410,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-37 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى"
+      "translation_pashto": "77-37 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 38,
@@ -384,7 +421,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(و گفته شود) این روز روزِ فیصله است که شما و مردمان پیشین را جمع کردیم.",
-      "translation_pashto": "77-38 دغه د فیصلې ورځ ده، مونږ، تاسو او ړومبني خلق  راجمع كړي دي"
+      "translation_pashto": "77-38 دغه د فیصلې ورځ ده، مونږ، تاسو او ړومبني خلق  راجمع كړي دي",
+      "translation_english": "[They will be told,] “This is the Day of Judgment: We have gathered you along with the earlier generations."
     },
     {
       "number": 39,
@@ -394,7 +432,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس اگر حیله‌ای دارید پس به کار گیرید.",
-      "translation_pashto": "77-39 نو كه له تاسو سره څه چل مكر وي، نو زما سره (دغه) چل مكر وكړئ"
+      "translation_pashto": "77-39 نو كه له تاسو سره څه چل مكر وي، نو زما سره (دغه) چل مكر وكړئ",
+      "translation_english": "So if you have any scheme, then plot it against Me.”"
     },
     {
       "number": 40,
@@ -404,7 +443,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-40 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى"
+      "translation_pashto": "77-40 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 41,
@@ -414,7 +454,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "البته پرهیزگاران در سایه‌ها و چشمه‌ها قرار دارند.",
-      "translation_pashto": "77-41 یقینًا پرهېزګاران به په سیورو او چینو كې وي"
+      "translation_pashto": "77-41 یقینًا پرهېزګاران به په سیورو او چینو كې وي",
+      "translation_english": "Indeed, the righteous will be amid shades and springs"
     },
     {
       "number": 42,
@@ -424,7 +465,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و از هر نوع میوه که بخواهند.",
-      "translation_pashto": "77-42 او په داسې مېوو كې چې دوى يې غواړي"
+      "translation_pashto": "77-42 او په داسې مېوو كې چې دوى يې غواړي",
+      "translation_english": "and will have whatever fruit they desire."
     },
     {
       "number": 43,
@@ -434,7 +476,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(به آن‌ها گفته شود که) بخورید و بنوشید خوشگوار به پاداش آنچه (در دنیا) می‌کردید.",
-      "translation_pashto": "77-43 (ملايك به مومنانو ته وايي:) تاسو خورئ او څښئ، په داسې حال كې چې خوند اخيستونكي يئ د هغو عملونو په بدل كې چې تاسو به كول"
+      "translation_pashto": "77-43 (ملايك به مومنانو ته وايي:) تاسو خورئ او څښئ، په داسې حال كې چې خوند اخيستونكي يئ د هغو عملونو په بدل كې چې تاسو به كول",
+      "translation_english": "[They will be told,] “Eat and drink joyfully, as a reward for what you used to do.”"
     },
     {
       "number": 44,
@@ -444,7 +487,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "همانا ما اینطور نیکوکاران را پاداش می‌دهیم.",
-      "translation_pashto": "77-44 بېشكه همداسې مونږ نېكي كوونكو ته بدله وركوو"
+      "translation_pashto": "77-44 بېشكه همداسې مونږ نېكي كوونكو ته بدله وركوو",
+      "translation_english": "This is how We reward those who do good."
     },
     {
       "number": 45,
@@ -454,7 +498,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-45 په دغې ورځ كې د دروغ ګڼونكو  لپاره هلاكت دى"
+      "translation_pashto": "77-45 په دغې ورځ كې د دروغ ګڼونكو  لپاره هلاكت دى",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 46,
@@ -464,7 +509,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(به تکذیب‌کنندگان گفته می‌شود) بخورید و بهره گیرید اندک، یقیناً شما مجرمید.",
-      "translation_pashto": "77-46 تاسو خورئ او فايده واخلئ لږه، بېشكه تاسو مجرمان یئ"
+      "translation_pashto": "77-46 تاسو خورئ او فايده واخلئ لږه، بېشكه تاسو مجرمان یئ",
+      "translation_english": "“Eat and enjoy yourselves for a while; you are truly wicked.”"
     },
     {
       "number": 47,
@@ -474,7 +520,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-47 په دغې ورځ كې د تكذیب كوونكو (دروغ ویونكو) لپاره هلاكت او تباهي ده"
+      "translation_pashto": "77-47 په دغې ورځ كې د تكذیب كوونكو (دروغ ویونكو) لپاره هلاكت او تباهي ده",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 48,
@@ -484,7 +531,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و چون به آنان گفته شود به رکوع بروید نمی‌توانند به رکوع بروند.",
-      "translation_pashto": "77-48 او كله چې دوى ته وویل شي تاسو ركوع كوئ (نو) دوى ركوع نه كوي"
+      "translation_pashto": "77-48 او كله چې دوى ته وویل شي تاسو ركوع كوئ (نو) دوى ركوع نه كوي",
+      "translation_english": "When it is said to them, “Bow [in prayer],” they do not bow."
     },
     {
       "number": 49,
@@ -494,7 +542,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
-      "translation_pashto": "77-49 په دغې ورځ كې د تكذیب كوونكو لپاره هلاكت دى"
+      "translation_pashto": "77-49 په دغې ورځ كې د تكذیب كوونكو لپاره هلاكت دى",
+      "translation_english": "Woe on that Day to the deniers!"
     },
     {
       "number": 50,
@@ -504,7 +553,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس بعد از این (انکار قرآن) به کدام سخن ایمان می‌آورند؟",
-      "translation_pashto": "77-50 نو له دې (قرآن)  نه وروسته دوى په څه شي ایمان راوړي؟"
+      "translation_pashto": "77-50 نو له دې (قرآن)  نه وروسته دوى په څه شي ایمان راوړي؟",
+      "translation_english": "In which message after this [Qur’an] will they believe?"
     }
   ]
 }

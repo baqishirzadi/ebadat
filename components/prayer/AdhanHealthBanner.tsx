@@ -1,7 +1,9 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Linking, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { Linking, Platform, Pressable, StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -12,14 +14,15 @@ import {
   fetchAdhanHealth,
   openExactAlarmSettings,
 } from '@/utils/adhanHealth';
-import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { adhanPermissionLocale, tAdhanPermission } from '@/utils/i18n/adhanPermissions';
 
 interface AdhanHealthBannerProps {
   onSelectCity?: () => void;
 }
 
 export function AdhanHealthBanner({ onSelectCity: _onSelectCity }: AdhanHealthBannerProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const locale = adhanPermissionLocale(state.preferences.appLanguage);
   const router = useRouter();
   const [health, setHealth] = useState<AdhanHealthState | null>(null);
 
@@ -50,22 +53,22 @@ export function AdhanHealthBanner({ onSelectCity: _onSelectCity }: AdhanHealthBa
         <View style={styles.row}>
           <MaterialIcons name="alarm" size={22} color={theme.warning} />
           <View style={styles.textBlock}>
-            <Text style={[styles.body, { color: theme.text }]}>
-              {tAdhanPermission('adhanPermissions.banner.body', 'fa')}
-            </Text>
+            <LocalizedText style={[styles.body, { color: theme.text }]}>
+              {tAdhanPermission('adhanPermissions.banner.body', locale)}
+            </LocalizedText>
           </View>
         </View>
         <Button
-          label={tAdhanPermission('adhanPermissions.banner.button', 'fa')}
+          label={tAdhanPermission('adhanPermissions.banner.button', locale)}
           onPress={() => handleExactAlarmAction().catch(() => {})}
         />
         <Pressable
           onPress={() => router.push('/adhan-health')}
           style={[styles.secondaryButton, { borderColor: theme.cardBorder }]}
         >
-          <Text style={[styles.secondaryButtonText, { color: theme.text }]}>
-            {tAdhanPermission('adhanPermissions.health.fullCheck', 'fa')}
-          </Text>
+          <LocalizedText style={[styles.secondaryButtonText, { color: theme.text }]}>
+            {tAdhanPermission('adhanPermissions.health.fullCheck', locale)}
+          </LocalizedText>
         </Pressable>
       </Card>
     </View>

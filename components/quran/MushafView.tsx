@@ -4,7 +4,7 @@
  */
 
 import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator, ViewToken } from 'react-native';
+import { View, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator, ViewToken } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp, useReadingPosition } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
@@ -897,6 +897,7 @@ export const MushafView = React.memo(function MushafView({
     ({ item }: { item: Ayah }) => {
       const dariTranslation = getTranslation(surahNumber, item.number, 'dari');
       const pashtoTranslation = getTranslation(surahNumber, item.number, 'pashto');
+      const englishTranslation = getTranslation(surahNumber, item.number, 'english');
       const isPlaying = activePlayingAyah === item.number;
 
       return (
@@ -905,6 +906,7 @@ export const MushafView = React.memo(function MushafView({
           surahNumber={surahNumber}
           dariTranslation={dariTranslation}
           pashtoTranslation={pashtoTranslation}
+          englishTranslation={englishTranslation}
           isPlaying={isPlaying}
           onPlayPress={() => handlePlayAyah(item.number)}
         />

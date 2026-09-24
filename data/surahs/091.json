@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "قسم به آفتاب و روشنی آن.",
-      "translation_pashto": "91-1 قسم دى په لمر باندې او د هغه په رڼا باندې"
+      "translation_pashto": "91-1 قسم دى په لمر باندې او د هغه په رڼا باندې",
+      "translation_english": "By the sun and its brightness,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به ماه چون از پی آفتاب رود (بعد از غروب آفتاب ظاهر شود).",
-      "translation_pashto": "91-2 اوسپوږمۍ باندې كله چې په ده پسې وروسته راځي"
+      "translation_pashto": "91-2 اوسپوږمۍ باندې كله چې په ده پسې وروسته راځي",
+      "translation_english": "and by the moon as it follows it,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به روز چون ظاهر کند روشنی آفتاب را.",
-      "translation_pashto": "91-3 او په ورځ باندې كله چې دغه (لمر) ښكاره كاندي"
+      "translation_pashto": "91-3 او په ورځ باندې كله چې دغه (لمر) ښكاره كاندي",
+      "translation_english": "and by the day as it displays it,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به شب چون بپوشاند نور آفتاب را.",
-      "translation_pashto": "91-4 او په شپه باندې كله چې دغه (لمر) پټ كاندي (په خپلو تیارو كې)"
+      "translation_pashto": "91-4 او په شپه باندې كله چې دغه (لمر) پټ كاندي (په خپلو تیارو كې)",
+      "translation_english": "and by the night as it covers it,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به آسمان و به آن ذاتی آن را ساخته است.",
-      "translation_pashto": "91-5 او په اسمان باندې او په هغه ذات چې دغه يې جوړ كړى دى"
+      "translation_pashto": "91-5 او په اسمان باندې او په هغه ذات چې دغه يې جوړ كړى دى",
+      "translation_english": "and by the sky and how He made it,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به زمین و به آن ذاتی که آن را هموار کرده است.",
-      "translation_pashto": "91-6 او په ځمكه باندې او په هغه ذات چې دغه (ځمكه) يې غوړولې ده"
+      "translation_pashto": "91-6 او په ځمكه باندې او په هغه ذات چې دغه (ځمكه) يې غوړولې ده",
+      "translation_english": "and by the earth and how He spread it,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به نفس انسانی و به آن ذاتی که برابر کرده است (قوت جسمی و روحی او را).",
-      "translation_pashto": "91-7 او په نفس باندې او په هغه ذات چې دغه يې ښه برابر كړى دى"
+      "translation_pashto": "91-7 او په نفس باندې او په هغه ذات چې دغه يې ښه برابر كړى دى",
+      "translation_english": "and by the soul and how He fashioned it,"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "باز به او راه بدی و نیکی او را الهام کرد.",
-      "translation_pashto": "91-8 نو ده ته يې د ده بدي او د ده تقوٰی (نېكي) الهام كړې (او ورښودلې) ده"
+      "translation_pashto": "91-8 نو ده ته يې د ده بدي او د ده تقوٰی (نېكي) الهام كړې (او ورښودلې) ده",
+      "translation_english": "then inspired it [to know] its wickedness and righteousness,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "البته کامیاب شد هرکس که نفس خود را پاک کرد.",
-      "translation_pashto": "91-9 چې یقینًا كامیاب شو هغه څوك چې دغه (نفس) يې پاك كړ"
+      "translation_pashto": "91-9 چې یقینًا كامیاب شو هغه څوك چې دغه (نفس) يې پاك كړ",
+      "translation_english": "Indeed, he who purifies his soul will attain success,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و البته ناکام و ناامید شد آن که نفس خود را به گناه آلود.",
-      "translation_pashto": "91-10 او یقینًا نامراده شو هغه څوك چې دغه (نفس) يې په خاورو كې پټ كړ"
+      "translation_pashto": "91-10 او یقینًا نامراده شو هغه څوك چې دغه (نفس) يې په خاورو كې پټ كړ",
+      "translation_english": "and he who corrupts it will be doomed."
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(مانند) قوم ثمود که به سبب سرکشی رسول الله را تکذیب نمودند.",
-      "translation_pashto": "91-11 ثمودیانو د خپلې سركشۍ په سبب (د رسولانو) تكذیب كړى و"
+      "translation_pashto": "91-11 ثمودیانو د خپلې سركشۍ په سبب (د رسولانو) تكذیب كړى و",
+      "translation_english": "Thamūd rejected [the messenger] because of their transgression,"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آن وقت که بدبخت‌ترین آن‌ها برخواست.",
-      "translation_pashto": "91-12 كله چې د دوى لوى بدبخت راپورته شو"
+      "translation_pashto": "91-12 كله چې د دوى لوى بدبخت راپورته شو",
+      "translation_english": "when the most wretched among them rose."
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس رسول الله به آن‌ها گفت: شترِ (آفریدۀ) الله و آب‌خوردن آن را بگذارید.",
-      "translation_pashto": "91-13 نو دوى ته د الله رسول وویل: تاسو د الله اوښه او د هغې اوبه څښل پرېږدئ"
+      "translation_pashto": "91-13 نو دوى ته د الله رسول وویل: تاسو د الله اوښه او د هغې اوبه څښل پرېږدئ",
+      "translation_english": "Although the messenger of Allah warned them, “Hands off the she-camel of Allah and her drink!”"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس او را تکذیب نمودند و شتر را کشتند، پس به سزای گناهانشان، پروردگارشان بر آنان عذاب نازل کرد و ایشان را هلاک کرد و آن عقوبت همۀ آن‌ها را با خاک برابر کرد.",
-      "translation_pashto": "91-14 نو دوى د هغه تكذیب وكړ (دروغجن يې وګاڼه) نو دوى د هغې پړكي (لينګي) پرې كړل (او مړه يې كړه) نو په دوى باندې د دوى رب د خپلو ګناهونو په سبب راګېروونكى عذاب راولېږه، نو دغه (ټول) يې (په هلاكت كې) برابر كړل"
+      "translation_pashto": "91-14 نو دوى د هغه تكذیب وكړ (دروغجن يې وګاڼه) نو دوى د هغې پړكي (لينګي) پرې كړل (او مړه يې كړه) نو په دوى باندې د دوى رب د خپلو ګناهونو په سبب راګېروونكى عذاب راولېږه، نو دغه (ټول) يې (په هلاكت كې) برابر كړل",
+      "translation_english": "Yet they rejected him and hamstrung her. So their Lord destroyed them for their sin and leveled them to the ground."
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و الله از عاقبت آن کار نمی‌ترسد.",
-      "translation_pashto": "91-15 او دى (الله) د دغه (هلاكت او عذاب) له انجام نه نه وېرېږي"
+      "translation_pashto": "91-15 او دى (الله) د دغه (هلاكت او عذاب) له انجام نه نه وېرېږي",
+      "translation_english": "And He has no fear of the consequences thereof."
     }
   ]
 }

@@ -1,8 +1,15 @@
 import type { AppLanguage } from '@/types/quran';
 
+import { toLatinNumeralsString } from '@/utils/numbers';
+import { UI_MESSAGES, type UiMessage } from './catalog';
+
 // The app's UI is intentionally kept separate from religious content. This
 // dictionary localizes stable interface labels; Quran, hadith, article, dua,
-// and prayer-learning content keeps its own Dari/Pashto source text.
+// and prayer-learning content keeps its own Dari/Pashto/English source text.
+//
+// New copy should use a semantic key from `catalog.ts` instead. This Dari-keyed
+// map stays for the screens that still pass literal Dari strings through
+// `tUi()` / `RtlText`.
 const PASHTO: Record<string, string> = {
   'خانه': 'کور',
   'قرآن': 'قرآن',
@@ -98,6 +105,7 @@ const PASHTO: Record<string, string> = {
   'خیلی بزرگ': 'ډېر لوی',
   'بدون ترجمه': 'بې ژباړې',
   'هردو': 'دواړه',
+  'انگلیسی': 'انګلیسي',
   'نسخه ۱.۰.۰': 'نسخه ۱.۰.۰',
   'قبله': 'قبله',
   'دعا': 'دعا',
@@ -180,26 +188,277 @@ const PASHTO: Record<string, string> = {
   'روزه امروز': 'د نن روژه',
   'طلوع آفتاب': 'د لمر راختل',
   'این تاریخ امروز است': 'دا د نن نېټه ده',
+  'حجم ذخیره‌شده': 'ساتل شوې اندازه',
+  'دانلود شده': 'ښکته شوي',
+  'هنوز چیزی دانلود نشده است': 'لا څه نه دي ښکته شوي',
 };
 
-function localizeUiText(value: unknown, language: AppLanguage): unknown {
-  if (language !== 'pashto' || typeof value !== 'string') return value;
-  const exact = PASHTO[value];
-  if (exact) return exact;
+const ENGLISH: Record<string, string> = {
+  'خانه': 'Home',
+  'قرآن': 'Quran',
+  'جنتری': 'Calendar',
+  'نعت': 'Naat',
+  'بیشتر': 'More',
+  'تنظیمات': 'Settings',
+  'اذکار': 'Adhkar',
+  'احادیث': 'Hadith',
+  'مقالات': 'Articles',
+  'قبله‌نما': 'Qibla compass',
+  'تعبیر خواب اسلامی': 'Islamic dream interpretation',
+  'بر اساس قرآن و حدیث': 'Based on the Quran and Hadith',
+  'دعای خیر': 'Dua request',
+  'دعای خیر و مشورت شرعی': 'Dua and religious guidance',
+  'سوال دینی و فقهی': 'Religious and fiqh questions',
+  'اذکار روزانه': 'Daily adhkar',
+  'حدیث روز و جستجو': 'Hadith of the day and search',
+  'مطالعه و مدیریت': 'Read and manage',
+  'تقویم اسلامی': 'Islamic calendar',
+  'جهت قبله': 'Qibla direction',
+  'فقه و راهنما': 'Fiqh and guidance',
+  'نشانه‌های من': 'My bookmarks',
+  'موارد ذخیره‌شده': 'Saved items',
+  'زمان‌بندی و صدا': 'Schedule and sound',
+  'ارسال درخواست دعا': 'Send a dua request',
+  'پنل مدیریت': 'Admin panel',
+  'بخش مدیریتی': 'Administration',
+  'تم و ترجمه': 'Theme and translation',
+  'مرکز امکانات': 'Feature hub',
+  'میان‌بُرهای مهم، پیگیری پیشرفت و همراه همیشگی عبادت': 'Key shortcuts, progress tracking and your constant companion in worship',
+  'امروز در یک نگاه': 'Today at a glance',
+  'میان‌بُرهای اصلی': 'Main shortcuts',
+  'خلاصه پیشرفت': 'Progress summary',
+  'مرور امروز': "Today's review",
+  'مناسبت‌های آینده': 'Upcoming occasions',
+  'راهنما و پشتیبانی': 'Help and support',
+  'آیات خوانده‌شده': 'Ayahs read',
+  'آیات شنیده‌شده': 'Ayahs listened to',
+  'بهترین پیوستگی': 'Longest streak',
+  'ختم قرآن': 'Quran completions',
+  'آیات خوانده‌شده امروز': 'Ayahs read today',
+  'آیات شنیده‌شده امروز': 'Ayahs listened to today',
+  'صفحه‌های امروز': 'Pages today',
+  'اذکار امروز': 'Adhkar today',
+  'روز متوالی': 'Day streak',
+  'دقیقه قرآن': 'Minutes of Quran',
+  'ذکر ثبت‌شده': 'Dhikr recorded',
+  'اذان دقیق': 'Exact Adhan',
+  'اذان عادی': 'Standard Adhan',
+  'اذان آماده': 'Adhan ready',
+  'یکشنبه': 'Sunday',
+  'دوشنبه': 'Monday',
+  'سه‌شنبه': 'Tuesday',
+  'چهارشنبه': 'Wednesday',
+  'پنجشنبه': 'Thursday',
+  'جمعه': 'Friday',
+  'شنبه': 'Saturday',
+  'آموزش نماز': 'Learn to pray',
+  'نشانه‌ها': 'Bookmarks',
+  'اوقات نماز': 'Prayer times',
+  'انتخاب شهر': 'Choose a city',
+  'جستجو': 'Search',
+  'ادامه': 'Continue',
+  'انصراف': 'Cancel',
+  'بستن': 'Close',
+  'حذف': 'Delete',
+  'ذخیره': 'Save',
+  'بروزرسانی': 'Refresh',
+  'انتخاب': 'Select',
+  'تأیید': 'Confirm',
+  'باشه': 'OK',
+  'موفق': 'Done',
+  'خطا': 'Error',
+  'اطلاعات': 'Information',
+  'اطلاع': 'Notice',
+  'ترجمه': 'Translation',
+  'ظاهر برنامه': 'Appearance',
+  'خط قرآن': 'Quran font',
+  'خط دری': 'Dari font',
+  'خط پښتو': 'Pashto font',
+  'اندازه متن عربی قرآن': 'Arabic Quran text size',
+  'اندازه متن ترجمه': 'Translation text size',
+  'روش محاسبه نماز': 'Prayer calculation method',
+  'تنظیمات اذان': 'Adhan settings',
+  'روشن': 'Light',
+  'شب (سیاه)': 'Night (black)',
+  'فیروزه‌ای': 'Turquoise',
+  'زیتونی': 'Olive',
+  'کوچک': 'Small',
+  'متوسط': 'Medium',
+  'بزرگ': 'Large',
+  'خیلی بزرگ': 'Extra large',
+  'بدون ترجمه': 'No translation',
+  'هردو': 'Both',
+  'انگلیسی': 'English',
+  'نسخه ۱.۰.۰': 'Version 1.0.0',
+  'قبله': 'Qibla',
+  'دعا': 'Dua',
+  'دعا درخواست': 'Dua request',
+  'مفتی حنفی': 'Hanafi Mufti',
+  'هوش مصنوعی': 'Artificial intelligence',
+  'پروفایل': 'Profile',
+  'آمار': 'Statistics',
+  'پیشرفت': 'Progress',
+  'امروز': 'Today',
+  'فردا': 'Tomorrow',
+  'امروز در عبادت': 'Today in worship',
+  'ادامه مطالعه': 'Continue reading',
+  'سوره‌ها': 'Surahs',
+  'جزء‌ها': 'Juz',
+  'فهرست سوره‌ها': 'List of surahs',
+  'فهرست جزءها': 'List of juz',
+  'خواندن قرآن': 'Read the Quran',
+  'نمایش ترجمه': 'Show translation',
+  'پخش صوت': 'Play audio',
+  'سرعت پخش': 'Playback speed',
+  'ذکر شمار': 'Dhikr counter',
+  'ذکرها': 'Adhkar',
+  'حدیث روز': 'Hadith of the day',
+  'موضوعات': 'Topics',
+  'جستجوی حدیث': 'Search hadith',
+  'مقالات اسلامی': 'Islamic articles',
+  'علما': 'Scholars',
+  'رمضان': 'Ramadan',
+  'تقویم': 'Calendar',
+  'قمری': 'Hijri',
+  'شمسی': 'Solar Hijri',
+  'میلادی': 'Gregorian',
+  'رویدادهای آینده': 'Upcoming events',
+  'زمان باقی‌مانده': 'Time remaining',
+  'شروع': 'Start',
+  'بازگشت': 'Back',
+  'بعدی': 'Next',
+  'قبلی': 'Previous',
+  'صفحه': 'Page',
+  'صفحات': 'Pages',
+  'آیه': 'Ayah',
+  'آیات': 'Ayahs',
+  'سوره': 'Surah',
+  'جز': 'Juz',
+  'در حال بارگذاری...': 'Loading…',
+  'در حال آماده‌سازی...': 'Preparing…',
+  'هیچ موردی یافت نشد': 'No results found',
+  'ذخیره شد': 'Saved',
+  'دانلود': 'Download',
+  'دانلودها': 'Downloads',
+  'دانلود نشده': 'Not downloaded',
+  'در حال دانلود': 'Downloading',
+  'آفلاین': 'Offline',
+  'پخش': 'Play',
+  'توقف': 'Stop',
+  'اشتراک‌گذاری': 'Share',
+  'راهنما': 'Help',
+  'پشتیبانی': 'Support',
+  'درباره برنامه': 'About the app',
+  'زبان برنامه': 'App language',
+  'فارسی (دری)': 'Dari',
+  'فارسی (دری) - انور بدخشانی': 'Dari — Anwar Badakhshani',
+  'پښتو': 'Pashto',
+  'همه': 'All',
+  'صف پخش': 'Play queue',
+  'تلاش دوباره': 'Try again',
+  'هیچ نعتی ثبت نشده است': 'No naat has been added yet',
+  'برای افزودن، هدر را طولانی لمس کنید': 'Press and hold the header to add one',
+  'ورود به مدیریت نعت': 'Sign in to naat administration',
+  'PIN را وارد کنید': 'Enter the PIN',
+  'دانلود نعت': 'Download naat',
+  'توقف نعت': 'Stop naat',
+  'پخش نعت': 'Play naat',
+  'نعت بعدی': 'Next naat',
+  'نعت قبلی': 'Previous naat',
+  'بستن پلیر نعت': 'Close the naat player',
+  'مناسبت‌ها': 'Occasions',
+  'شمارش معکوس': 'Countdown',
+  'روزه امروز': "Today's fast",
+  'طلوع آفتاب': 'Sunrise',
+  'این تاریخ امروز است': 'This is today',
+  'حجم ذخیره‌شده': 'Stored size',
+  'دانلود شده': 'Downloaded',
+  'هنوز چیزی دانلود نشده است': 'Nothing has been downloaded yet',
+};
 
-  // Only translate obvious UI prefixes. This avoids altering Quran and other
-  // religious content that happens to contain words such as «صفحه» or «آیه».
-  return value
-    .replace(/^سوره\s+/, 'سورت ')
-    .replace(/^جز\s+/, 'جزء ')
-    .replace(/^صفحه\s+/, 'مخ ')
-    .replace(/^آیه\s+/, 'آیت ')
-    .replace(/^آیات\s+/, 'آیتونه ')
-    .replace(/^جستجو:\s*/, 'لټون: ');
+/**
+ * Dari source string -> catalog entry, so any copy already keyed in
+ * `catalog.ts` is translated even when a screen still passes a literal.
+ */
+const CATALOG_BY_DARI: Map<string, UiMessage> = (() => {
+  const index = new Map<string, UiMessage>();
+  for (const message of Object.values(UI_MESSAGES) as UiMessage[]) {
+    if (!index.has(message.dari)) index.set(message.dari, message);
+  }
+  return index;
+})();
+
+const PASHTO_PREFIX_RULES: Array<[RegExp, string]> = [
+  [/^سوره\s+/, 'سورت '],
+  [/^جز\s+/, 'جزء '],
+  [/^صفحه\s+/, 'مخ '],
+  [/^آیه\s+/, 'آیت '],
+  [/^آیات\s+/, 'آیتونه '],
+  [/^جستجو:\s*/, 'لټون: '],
+];
+
+const ENGLISH_PREFIX_RULES: Array<[RegExp, string]> = [
+  [/^سوره\s+/, 'Surah '],
+  [/^جز\s+/, 'Juz '],
+  [/^صفحه\s+/, 'Page '],
+  [/^آیه\s+/, 'Ayah '],
+  [/^آیات\s+/, 'Ayahs '],
+  [/^جستجو:\s*/, 'Search: '],
+];
+
+function applyPrefixRules(value: string, rules: Array<[RegExp, string]>): string {
+  for (const [pattern, replacement] of rules) {
+    if (pattern.test(value)) return value.replace(pattern, replacement);
+  }
+  return value;
+}
+
+function localizeUiText(value: unknown, language: AppLanguage): unknown {
+  if (language === 'dari' || typeof value !== 'string') return value;
+
+  const catalogEntry = CATALOG_BY_DARI.get(value);
+  if (catalogEntry) return catalogEntry[language] ?? value;
+
+  if (language === 'pashto') {
+    const exact = PASHTO[value];
+    if (exact) return exact;
+    // Only translate obvious UI prefixes. This avoids altering Quran and other
+    // religious content that happens to contain words such as «صفحه» or «آیه».
+    return applyPrefixRules(value, PASHTO_PREFIX_RULES);
+  }
+
+  const english = ENGLISH[value];
+  if (english) return english;
+  return applyPrefixRules(value, ENGLISH_PREFIX_RULES);
 }
 
 export function tUi(value: string, language: AppLanguage): string {
   return String(localizeUiText(value, language));
+}
+
+/**
+ * Localize a React children tree: translates leftover Dari literals and, for
+ * English, rewrites Arabic-Indic digits so times and counts read as `4:18`
+ * rather than `٤:١٨`. Callers pass `latinDigits: false` for Quran and other
+ * Arabic-script content, where the original numerals are part of the text.
+ */
+export function localizeUiNode(
+  value: unknown,
+  language: AppLanguage,
+  options?: { latinDigits?: boolean; translate?: boolean },
+): unknown {
+  const latinDigits = options?.latinDigits ?? language === 'english';
+  const translate = options?.translate ?? true;
+  if (!latinDigits && (!translate || language === 'dari')) return value;
+
+  const walk = (node: unknown): unknown => {
+    if (Array.isArray(node)) return node.map(walk);
+    if (typeof node !== 'string') return node;
+    const text = translate ? String(localizeUiText(node, language)) : node;
+    return latinDigits ? toLatinNumeralsString(text) : text;
+  };
+
+  return walk(value);
 }
 
 export { localizeUiText };

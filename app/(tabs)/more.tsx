@@ -24,7 +24,7 @@ import { usePrayer } from '@/context/PrayerContext';
 import { useStats } from '@/context/StatsContext';
 import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
 import { getKabulDateKey, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
-import { formatGregorianDateCompact } from '@/utils/calendarDisplay';
+import { formatGregorianDateCompact, weekdayName } from '@/utils/calendarDisplay';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import {
   formatEventDateLabel,
@@ -32,11 +32,10 @@ import {
   getEventCategoryColor,
   getUpcomingEvents,
 } from '@/utils/calendarEvents';
+import { pickContent } from '@/utils/i18n/content';
 import { formatHijriDate } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
 
-const WEEKDAY_DARI = ['یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
-const WEEKDAY_PASHTO = ['یکشنبه', 'دوشنبه', 'سې شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه', 'شنبه'];
 type DeferredSectionKey = 'summary' | 'today' | 'upcoming' | 'support' | 'creatorMessage' | 'creatorCompany';
 
 interface UpcomingDayCard {
@@ -68,7 +67,7 @@ export default function MoreScreen() {
 
   const kabulDayKey = getKabulDateKey(new Date());
   const truth = useMemo(() => getCalendarTruth(new Date()), [kabulDayKey]);
-  const weekdayLabel = (language === 'pashto' ? WEEKDAY_PASHTO : WEEKDAY_DARI)[truth.weekday];
+  const weekdayLabel = weekdayName(truth.weekday, language);
   const locationLabel = useMemo(
     () => prayer.locationName?.trim() || 'کابل',
     [prayer.locationName],
@@ -107,14 +106,14 @@ export default function MoreScreen() {
         const dateParts = formatEventDateParts(event, language);
         return {
           key: event.id,
-          nameDari: language === 'pashto' ? event.titlePashto : event.titleDari,
-          descriptionDari: language === 'pashto' ? event.descriptionPashto : event.descriptionDari,
+          nameDari: pickContent(event, 'title', language),
+          descriptionDari: pickContent(event, 'description', language),
           isFasting: event.isFasting,
           isEid: event.isEid,
           dateLabel: formatEventDateLabel(event, language),
           dateDay: dateParts.day,
           dateMonth: dateParts.month,
-          weekdayLabel: (language === 'pashto' ? WEEKDAY_PASHTO : WEEKDAY_DARI)[getKabulWeekdayIndex(event.gregorianDate)],
+          weekdayLabel: weekdayName(getKabulWeekdayIndex(event.gregorianDate), language),
           badgeColor: getEventCategoryColor(event.category, theme),
         };
       });

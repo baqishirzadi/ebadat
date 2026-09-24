@@ -3,7 +3,7 @@ import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
 import { AhadithNotificationPreferences } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
-import { toArabicNumeralsString } from '@/utils/numbers';
+import { useI18n } from '@/utils/i18n/useI18n';
 import CenteredText from '@/components/CenteredText';
 
 interface HadithNotificationTimePickerProps {
@@ -29,16 +29,14 @@ function to24Hour(hour12: number, meridiem: Meridiem): number {
   return meridiem === 'pm' ? normalized + 12 : normalized;
 }
 
-function getMeridiemLabel(meridiem: Meridiem): string {
-  return meridiem === 'am' ? 'قبل‌ازظهر' : 'بعدازظهر';
-}
-
 export function HadithNotificationTimePicker({
   prefs,
   onToggleEnabled,
   onSaveTime,
 }: HadithNotificationTimePickerProps) {
   const { theme } = useApp();
+  const { t, digits } = useI18n();
+  const getMeridiemLabel = (value: Meridiem) => t(value === 'am' ? 'ahadith.time.am' : 'ahadith.time.pm');
   const initial = to12Hour(prefs.hour);
   const [hour12, setHour12] = useState(initial.hour12);
   const [minute, setMinute] = useState(prefs.minute);
@@ -54,10 +52,12 @@ export function HadithNotificationTimePicker({
 
   const displayTime = useMemo(
     () =>
-      `زمان فعلی: ${getMeridiemLabel(meridiem)} • ساعت ${toArabicNumeralsString(
-        pad(hour12)
-      )} • دقیقه ${toArabicNumeralsString(pad(minute))}`,
-    [hour12, meridiem, minute]
+      t('ahadith.notification.preview', {
+        meridiem: getMeridiemLabel(meridiem),
+        hour: digits(pad(hour12)),
+        minute: digits(pad(minute)),
+      }),
+    [digits, getMeridiemLabel, hour12, meridiem, minute, t],
   );
 
   const changeHour = (delta: number) => {
@@ -106,7 +106,7 @@ export function HadithNotificationTimePicker({
         <CenteredText style={[styles.stepText, { color: theme.primary }]}>+</CenteredText>
       </Pressable>
       <CenteredText style={[styles.timeValue, { color: theme.textPrimary }]}>
-        {toArabicNumeralsString(pad(hour12))}
+        {digits(pad(hour12))}
       </CenteredText>
       <Pressable
         onPress={() => changeHour(-1)}
@@ -114,7 +114,7 @@ export function HadithNotificationTimePicker({
       >
         <CenteredText style={[styles.stepText, { color: theme.primary }]}>-</CenteredText>
       </Pressable>
-      <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>ساعت</CenteredText>
+      <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>{t('ahadith.time.hour')}</CenteredText>
     </View>
   );
 
@@ -127,7 +127,7 @@ export function HadithNotificationTimePicker({
         <CenteredText style={[styles.stepText, { color: theme.primary }]}>+</CenteredText>
       </Pressable>
       <CenteredText style={[styles.timeValue, { color: theme.textPrimary }]}>
-        {toArabicNumeralsString(pad(minute))}
+        {digits(pad(minute))}
       </CenteredText>
       <Pressable
         onPress={() => changeMinute(-5)}
@@ -135,7 +135,7 @@ export function HadithNotificationTimePicker({
       >
         <CenteredText style={[styles.stepText, { color: theme.primary }]}>-</CenteredText>
       </Pressable>
-      <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>دقیقه</CenteredText>
+      <CenteredText style={[styles.unitLabel, { color: theme.textSecondary }]}>{t('ahadith.time.minute')}</CenteredText>
     </View>
   );
 
@@ -147,7 +147,7 @@ export function HadithNotificationTimePicker({
       ]}
     >
       <View style={styles.headerRow}>
-        <CenteredText style={[styles.title, { color: theme.textPrimary }]}>اعلان حدیث روز</CenteredText>
+        <CenteredText style={[styles.title, { color: theme.textPrimary }]}>{t('ahadith.notification.title')}</CenteredText>
         <Pressable
           onPress={handleToggle}
           disabled={isBusy}
@@ -170,13 +170,13 @@ export function HadithNotificationTimePicker({
               { color: prefs.enabled ? theme.primary : theme.textSecondary },
             ]}
           >
-            {prefs.enabled ? 'فعال' : 'غیرفعال'}
+            {prefs.enabled ? t('ahadith.notification.enabled') : t('ahadith.notification.disabled')}
           </CenteredText>
         </Pressable>
       </View>
 
       <CenteredText style={[styles.description, { color: theme.textSecondary }]}>
-        زمان دریافت حدیث روزانه را تنظیم کنید
+        {t('ahadith.notification.description')}
       </CenteredText>
 
       <View style={styles.timeControlRow}>
@@ -232,7 +232,7 @@ export function HadithNotificationTimePicker({
           pressed && { opacity: 0.8 },
         ]}
       >
-        <CenteredText style={[styles.saveText, { color: theme.primary }]}>ذخیره زمان اعلان</CenteredText>
+        <CenteredText style={[styles.saveText, { color: theme.primary }]}>{t('ahadith.notification.save')}</CenteredText>
       </Pressable>
     </View>
   );

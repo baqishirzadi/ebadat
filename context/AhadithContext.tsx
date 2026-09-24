@@ -68,6 +68,7 @@ function getDateByOffset(offset: number): Date {
 
 export function AhadithProvider({ children }: { children: React.ReactNode }) {
   const { state: appState } = useApp();
+  const dailyLanguage = appState.preferences.appLanguage;
   const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
   const [hadiths, setHadiths] = useState<Hadith[]>([]);
   const topics = useMemo(() => (hadiths.length ? getHadithTopics() : []), [hadiths]);
@@ -228,8 +229,8 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isLoading) return;
     const date = getDateByOffset(dayOffset);
-    setDailySelection(resolveCanonicalDailyHadith(date));
-  }, [dayOffset, hadiths, isLoading]);
+    setDailySelection(resolveCanonicalDailyHadith(date, dailyLanguage));
+  }, [dayOffset, hadiths, isLoading, dailyLanguage]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -276,11 +277,11 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
     try {
       await syncRemoteHadiths(true);
       const date = getDateByOffset(dayOffset);
-      setDailySelection(resolveCanonicalDailyHadith(date));
+      setDailySelection(resolveCanonicalDailyHadith(date, dailyLanguage));
     } finally {
       setIsRefreshing(false);
     }
-  }, [dayOffset, hadiths, syncRemoteHadiths]);
+  }, [dayOffset, hadiths, syncRemoteHadiths, dailyLanguage]);
 
   const toggleBookmark = useCallback(async (hadithId: number) => {
     setBookmarks((prev) =>

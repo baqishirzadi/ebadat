@@ -8,15 +8,21 @@ import { View, StyleSheet } from 'react-native';
 import { RequestStatus, STATUS_INFO } from '@/types/dua';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface StatusBadgeProps {
   status: RequestStatus;
-  language?: 'dari' | 'pashto';
 }
 
-export function StatusBadge({ status, language = 'dari' }: StatusBadgeProps) {
+export function StatusBadge({ status }: StatusBadgeProps) {
+  const { t } = useI18n();
   const info = STATUS_INFO[status];
-  const label = language === 'pashto' ? info.namePashto : info.nameDari;
+  const label =
+    status === 'pending'
+      ? t('dua.status.pending')
+      : status === 'answered'
+        ? t('dua.status.answered')
+        : t('dua.status.closed');
 
   return (
     <View style={[styles.badge, { backgroundColor: `${info.color}20`, borderColor: info.color }]}>

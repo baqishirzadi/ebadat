@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "قسم به فجر (صبح).",
-      "translation_pashto": "89-1 قسم دى په فجر (سبا) باندې"
+      "translation_pashto": "89-1 قسم دى په فجر (سبا) باندې",
+      "translation_english": "By the dawn,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به شب‌های ده‌گانه.",
-      "translation_pashto": "89-2 او په لسو شپو باندې "
+      "translation_pashto": "89-2 او په لسو شپو باندې ",
+      "translation_english": "and the ten nights,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به جفت و طاق.",
-      "translation_pashto": "89-3 او په جفت او طاق باندې"
+      "translation_pashto": "89-3 او په جفت او طاق باندې",
+      "translation_english": "and the even and the odd,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به شب چون سپری شود.",
-      "translation_pashto": "89-4 او په شپه باندې كله چې روانه وي"
+      "translation_pashto": "89-4 او په شپه باندې كله چې روانه وي",
+      "translation_english": "and by the night when it comes,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا درین (امر) قسم کافی برای صاحبان خرد نیست؟ (بلی هست!).",
-      "translation_pashto": "89-5 ایا په دغو (قسمونو) كې خاوند د عقل لره (كوم قانع كوونكى) قسم شته؟"
+      "translation_pashto": "89-5 ایا په دغو (قسمونو) كې خاوند د عقل لره (كوم قانع كوونكى) قسم شته؟",
+      "translation_english": "are these oaths not sufficient for those who have sense?"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا ندیدی که پروردگارت با قوم عاد چه کرد؟",
-      "translation_pashto": "89-6 ایا تا نه دي كتلي چې ستا رب څه وكړل له ’’قوم عاد‘‘ سره؟"
+      "translation_pashto": "89-6 ایا تا نه دي كتلي چې ستا رب څه وكړل له ’’قوم عاد‘‘ سره؟",
+      "translation_english": "Have you not considered how your Lord dealt with ‘Ād"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "قوم ارم که صاحب قامت‌های بلند و ستون مانند بودند.",
-      "translation_pashto": "89-7 چې ارم و د ستنو والا"
+      "translation_pashto": "89-7 چې ارم و د ستنو والا",
+      "translation_english": "of Iram, who were people of great stature,"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "که مانند آن در (هیچ‌یک) از شهرها آفریده نشده بود.",
-      "translation_pashto": "89-8 هغه چې په ښارونو كې د دوى په مثل نه و پیدا كړى شوي"
+      "translation_pashto": "89-8 هغه چې په ښارونو كې د دوى په مثل نه و پیدا كړى شوي",
+      "translation_english": "the like of whom had never been created in the land;"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و با قوم ثمود؟ آنانی که سنگ‌ها را در وادی (القری) می‌تراشیدند.",
-      "translation_pashto": "89-9 او ثمودیانو سره (يې څه وكړل) هغه چې په دره كې يې تیګې غوڅې كړې (تراشلې) وې؟"
+      "translation_pashto": "89-9 او ثمودیانو سره (يې څه وكړل) هغه چې په دره كې يې تیګې غوڅې كړې (تراشلې) وې؟",
+      "translation_english": "and Thamūd, who carved out the rocks in the Valley;"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "با فرعون؟ که میخ‌ها (برای سزا دادنِ مردم) داشت.",
-      "translation_pashto": "89-10 او له میخونو والا فرعون سره (يې څه وكړل)"
+      "translation_pashto": "89-10 او له میخونو والا فرعون سره (يې څه وكړل)",
+      "translation_english": "and the mighty and powerful Pharaoh?"
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(این سه قوم) همان کسانی بودند که در شهرها سرکشی کردند.",
-      "translation_pashto": "89-11 هغه كسان چې دوى په ښارونو كې سركشي كړې وه"
+      "translation_pashto": "89-11 هغه كسان چې دوى په ښارونو كې سركشي كړې وه",
+      "translation_english": "All of them transgressed in the land,"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس در آن شهرها فساد بیشتر کردند.",
-      "translation_pashto": "89-12 نو په دغو كې يې فساد ډېر كړى و"
+      "translation_pashto": "89-12 نو په دغو كې يې فساد ډېر كړى و",
+      "translation_english": "and spread therein much corruption,"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "لهذا پروردگارت آنان را به عذاب سخت گرفتار کرد.",
-      "translation_pashto": "89-13 نو ستا رب په دوى باندې د عذاب قمچینه (كروړه) نازله كړه"
+      "translation_pashto": "89-13 نو ستا رب په دوى باندې د عذاب قمچینه (كروړه) نازله كړه",
+      "translation_english": "so your Lord poured upon them a scourge of punishment."
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "یقیناً پروردگار تو در کمین‌گاه (مراقب اعمال بندگان) است.",
-      "translation_pashto": "89-14 بېشكه ستا رب یقینًا په ځاى د انتظار كې دى"
+      "translation_pashto": "89-14 بېشكه ستا رب یقینًا په ځاى د انتظار كې دى",
+      "translation_english": "Indeed, your Lord is ever vigilant."
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس اما انسان هرگاه پروردگارش او را امتحان کند و به او مقام و نعمت دهد، می‌گوید: پروردگارم مرا عزت داد.",
-      "translation_pashto": "89-15 نو هر چې انسان دى، كله چې ده لره خپل رب وازمايي، پس ده ته عزت وركړي او ده ته نعمت وركړي، نو دى وايي: زما رب ما ته عزت راكړ"
+      "translation_pashto": "89-15 نو هر چې انسان دى، كله چې ده لره خپل رب وازمايي، پس ده ته عزت وركړي او ده ته نعمت وركړي، نو دى وايي: زما رب ما ته عزت راكړ",
+      "translation_english": "As for man, when he is tested by his Lord by honoring him and bestowing blessings upon him, he says, “My Lord has [deservedly] honored me!”"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و اما وقتی که پروردگارش او را امتحان کند و روزی‌اش را بر او تنگ سازد، می‌گوید: پروردگارم مرا اهانت کرده است.",
-      "translation_pashto": "89-16 او  خو هر كله چې دى وازمايي، پس په ده باندې د ده رزق تنګ كړي، نو دى وايي: زما رب زه سپك كړم"
+      "translation_pashto": "89-16 او  خو هر كله چې دى وازمايي، پس په ده باندې د ده رزق تنګ كړي، نو دى وايي: زما رب زه سپك كړم",
+      "translation_english": "But when he is tested by restricting his provision, he says, “My Lord has [undeservedly] humiliated me!”"
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "نه، چنین نیست، بلکه شما یتیم را گرامی نمی‌دارید.",
-      "translation_pashto": "89-17 داسې نه ده، بلكې تاسو د یتیم (سره احسان او د هغه) عزت نه كوئ"
+      "translation_pashto": "89-17 داسې نه ده، بلكې تاسو د یتیم (سره احسان او د هغه) عزت نه كوئ",
+      "translation_english": "No indeed! You are not kind to the orphan,"
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و همدیگر را بر طعام دادن مسکین ترغیب نمی‌کنید.",
-      "translation_pashto": "89-18 او مسكین ته په طعام وركولو یو بل ته ترغیب نه وركوئ"
+      "translation_pashto": "89-18 او مسكین ته په طعام وركولو یو بل ته ترغیب نه وركوئ",
+      "translation_english": "nor do you urge one another to feed the needy,"
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و میراث دیگران را با مال خود خلط نموده (به طریقۀ نادرست) می‌خورید.",
-      "translation_pashto": "89-19 او تاسو د میراث (پردى) مال خورئ، په خوړلو ټولو سره"
+      "translation_pashto": "89-19 او تاسو د میراث (پردى) مال خورئ، په خوړلو ټولو سره",
+      "translation_english": "and you greedily consume the entire inheritance,"
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و مال را بسیار (بیش از حد) دوست می‌دارید.",
-      "translation_pashto": "89-20 او تاسو له مال سره مینه كوئ، ډېره زیاته مینه"
+      "translation_pashto": "89-20 او تاسو له مال سره مینه كوئ، ډېره زیاته مینه",
+      "translation_english": "and love wealth immensely."
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "چنین نیست، بلکه وقتی زمین به شدت درهم کوبیده شود.",
-      "translation_pashto": "89-21 داسې نه ده كله چې ځمكه وټكولى شي، په ټكولو ماتولو سختو سره"
+      "translation_pashto": "89-21 داسې نه ده كله چې ځمكه وټكولى شي، په ټكولو ماتولو سختو سره",
+      "translation_english": "No indeed! When the earth is crushed over and over,"
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و پروردگارت بیاید و فرشتگان صف بسته حاضر شوند.",
-      "translation_pashto": "89-22 او ستا رب راشي او ملايك قطار  قطار (راشي)"
+      "translation_pashto": "89-22 او ستا رب راشي او ملايك قطار  قطار (راشي)",
+      "translation_english": "and your Lord comes with the angels, rank after rank,"
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و آن روز دوزخ در میان آورده شود، آن روز انسان (کافر) عبرت می‌گیرد، ولی چنین عبرت گرفتن چه سودی برای او دارد؟!",
-      "translation_pashto": "89-23 او په دغې ورځ كې به دوزخ راوستى شي، په دغې ورځ كې به انسان نصیحت (او پند) اخلي او (په دغه وخت كې) د ده لپاره نصیحت به څنګه (نفعمن) وي"
+      "translation_pashto": "89-23 او په دغې ورځ كې به دوزخ راوستى شي، په دغې ورځ كې به انسان نصیحت (او پند) اخلي او (په دغه وخت كې) د ده لپاره نصیحت به څنګه (نفعمن) وي",
+      "translation_english": "and Hell is brought near on that Day – this is when man will understand, but what is the use of that understanding?"
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "می‌گوید: ای کاش برای این زندگی‌ام چیزی قبلاً می‌فرستادم.",
-      "translation_pashto": "89-24 دى به وايي: اى كاشكې ما د خپل ژوند لپاره مخكې (څه نېك عملونه) لېږلي وى"
+      "translation_pashto": "89-24 دى به وايي: اى كاشكې ما د خپل ژوند لپاره مخكې (څه نېك عملونه) لېږلي وى",
+      "translation_english": "He will say, “Would that I had sent forth something for my [eternal] life!”"
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس آن روز هیچ کسی چون عذاب الله عذاب نکند.",
-      "translation_pashto": "89-25 نو په دغې ورځ كې به د ده (يعنې د رب) د عذاب په شان هیڅوك عذاب نه وركوي"
+      "translation_pashto": "89-25 نو په دغې ورځ كې به د ده (يعنې د رب) د عذاب په شان هیڅوك عذاب نه وركوي",
+      "translation_english": "None can punish as He punishes on that Day,"
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و هیچ کسی هم چون الله او را به بند (زنجیرها) نمی‌بندد.",
-      "translation_pashto": "89-26 او د ده د تړلو په شان به هیڅوك تړل نه كوي"
+      "translation_pashto": "89-26 او د ده د تړلو په شان به هیڅوك تړل نه كوي",
+      "translation_english": "and none can bind as He binds."
     },
     {
       "number": 27,
@@ -274,7 +300,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(و در حالت نزع گفته شود که) ای نفس (شخص) آرام‌گیرنده (به ایمان)!",
-      "translation_pashto": "89-27 اى اطمینان نیوونكیه نفسه!"
+      "translation_pashto": "89-27 اى اطمینان نیوونكیه نفسه!",
+      "translation_english": "[It will be said to the believer,] “O the tranquil soul!"
     },
     {
       "number": 28,
@@ -284,7 +311,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "به‌سوی پروردگارت بازگرد، (در حالی که) تو از او راضی و او از تو راضی است.",
-      "translation_pashto": "89-28 ته وګرځه خپل رب ته، په داسې حال كې چې خوشاله او راضي كړى شوى به يې"
+      "translation_pashto": "89-28 ته وګرځه خپل رب ته، په داسې حال كې چې خوشاله او راضي كړى شوى به يې",
+      "translation_english": "Return to your Lord, well pleased and pleasing [to Him]."
     },
     {
       "number": 29,
@@ -294,7 +322,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس در زمره بندگانم داخل شو.",
-      "translation_pashto": "89-29 نو ته زما په بنده ګانو كې داخل شه"
+      "translation_pashto": "89-29 نو ته زما په بنده ګانو كې داخل شه",
+      "translation_english": "Join My [righteous] slaves,"
     },
     {
       "number": 30,
@@ -304,7 +333,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و در جنت من داخل شو.",
-      "translation_pashto": "89-30 او زما جنت ته ننوځه"
+      "translation_pashto": "89-30 او زما جنت ته ننوځه",
+      "translation_english": "and enter My Paradise.”"
     }
   ]
 }

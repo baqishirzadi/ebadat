@@ -5,16 +5,17 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { resolveOemGuideKey, tAdhanPermissionSteps } from '@/utils/i18n/adhanPermissions';
+import { adhanPermissionLocale, resolveOemGuideKey, tAdhanPermissionSteps } from '@/utils/i18n/adhanPermissions';
 
 interface OemAutostartGuideProps {
   manufacturer: string;
 }
 
 export function OemAutostartGuide({ manufacturer }: OemAutostartGuideProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const locale = adhanPermissionLocale(state.preferences.appLanguage);
   const oemKey = resolveOemGuideKey(manufacturer);
-  const steps = tAdhanPermissionSteps(oemKey, 'fa');
+  const steps = tAdhanPermissionSteps(oemKey, locale);
 
   return (
     <RtlView style={[styles.card, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
@@ -22,7 +23,7 @@ export function OemAutostartGuide({ manufacturer }: OemAutostartGuideProps) {
         <RtlView key={`${oemKey}-${index}`} style={styles.stepRow}>
           <View style={[styles.badge, { backgroundColor: theme.tint }]}>
             <RtlText align="center" style={styles.badgeText}>
-              {(index + 1).toLocaleString('fa-AF')}
+              {(index + 1).toLocaleString(locale === 'ps' ? 'ps-AF' : 'fa-AF')}
             </RtlText>
           </View>
           <RtlText style={[styles.stepText, { color: theme.text }]}>{step}</RtlText>

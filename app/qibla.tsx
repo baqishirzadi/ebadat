@@ -28,10 +28,11 @@ import { Typography, Spacing } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { useQiblaHeading } from '@/hooks/useQiblaHeading';
-import { CityKey, getCity, normalizeCityKey } from '@/utils/cities';
+import { CityKey, getCity, localizeCityName, normalizeCityKey } from '@/utils/cities';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 import { getDisplayQiblaBearing, distanceToKaaba } from '@/utils/prayerTimes';
 import { hydratePrayerCityFromStorage } from '@/utils/qiblaLocationReady';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const { width } = Dimensions.get('window');
 const COMPASS_SIZE = Math.min(width * 0.82, 340);
@@ -40,6 +41,7 @@ type LocationResolveStatus = 'idle' | 'resolving' | 'resolved' | 'denied';
 
 export default function QiblaScreen() {
   const { theme } = useApp();
+  const { language, n, t } = useI18n();
   const insets = useSafeAreaInsets();
   const { state, setCustomLocation, requestPrayerSchedule } = usePrayer();
   const [gpsCoords, setGpsCoords] = useState<{ lat: number; lon: number } | null>(null);
@@ -76,15 +78,15 @@ export default function QiblaScreen() {
   const isSensorWarming = sensorStatus === 'loading';
   const needsCitySetup = !hasResolvedCity && locationResolveStatus === 'denied' && !isPreparing;
 
-  const qiblaDirectionLabel = Math.round(qiblaDirection).toLocaleString('fa-AF');
-  const headingLabel = Math.round(heading).toLocaleString('fa-AF');
-  const distanceLabel = distance.toLocaleString('fa-AF');
+  const qiblaDirectionLabel = n(Math.round(qiblaDirection));
+  const headingLabel = n(Math.round(heading));
+  const distanceLabel = n(distance);
 
   const saveQiblaCity = useCallback(
     async (cityKey: CityKey) => {
       const city = getCity(cityKey);
       if (!city) {
-        Alert.alert('انتخاب شهر', 'شهر انتخاب‌شده پیدا نشد.');
+        Alert.alert(t('qibla.chooseCity'), t('qibla.cityMissing'));
         return false;
       }
 
@@ -106,7 +108,7 @@ export default function QiblaScreen() {
         requestPrayerSchedule('qibla-city-selected').catch(() => {});
         return true;
       } catch {
-        Alert.alert('انتخاب شهر', 'ذخیره شهر انجام نشد. لطفاً دوباره تلاش کنید.');
+        Alert.alert(t('qibla.chooseCity'), t('qibla.citySaveFailed'));
         return false;
       } finally {
         setIsResolvingLocation(false);
@@ -145,10 +147,10 @@ export default function QiblaScreen() {
         return;
       }
       setLocationResolveStatus('denied');
-      Alert.alert('موقعیت پیدا نشد', result.error || 'لطفاً شهر را دستی انتخاب کنید.');
+      Alert.alert(t('qibla.locationMissing'), result.error || t('qibla.chooseCityManually'));
     } catch {
       setLocationResolveStatus('denied');
-      Alert.alert('موقعیت پیدا نشد', 'لطفاً شهر را دستی انتخاب کنید.');
+      Alert.alert(t('qibla.locationMissing'), t('qibla.chooseCityManually'));
     } finally {
       setIsResolvingLocation(false);
     }
@@ -209,19 +211,19 @@ export default function QiblaScreen() {
       : theme.tint;
 
   const statusText = !hasLiveCompass
-    ? 'جهت قبله بر اساس شهر شما؛ برای قطب‌نمای زنده گوشی را آرام بچرخانید'
+    ? t('qibla.status.cityOnly')
     : sensorStatus === 'calibrating'
-      ? 'قطب‌نما در حال کالیبراسیون است'
+      ? t('qibla.status.calibrating')
       : isDegraded
-        ? 'حسگر مغناطیسی؛ برای دقت بیشتر گوشی را صاف نگه دارید'
+        ? t('qibla.status.degraded')
         : isAligned
-          ? 'جهت قبله صحیح است — کعبه در بالا'
-          : 'گوشی را بچرخانید تا کعبه به نشانگر بالا برسد';
+          ? t('qibla.status.aligned')
+          : t('qibla.status.rotate');
 
   const hintText =
     showCalibration || sensorStatus === 'calibrating'
-      ? 'اگر قطب‌نما دقیق نیست، دستگاه را به شکل ۸ حرکت دهید'
-      : 'همان شهر اذان برای جهت قبله استفاده می‌شود';
+      ? t('qibla.hint.calibrate')
+      : t('qibla.hint.city');
 
   const header = (
     <RtlView style={[styles.header, { backgroundColor: theme.surahHeader, paddingTop: insets.top + Spacing.xs }]}>
@@ -238,7 +240,7 @@ export default function QiblaScreen() {
       >
         <MaterialIcons name="arrow-forward" size={24} color="#fff" />
       </Pressable>
-      <RtlText align="center" style={styles.headerTitle}>قبله‌نما</RtlText>
+      <RtlText align="center" style={styles.headerTitle}>{t('qibla.title')}</RtlText>
       <View style={styles.headerBack} />
     </RtlView>
   );
@@ -247,7 +249,7 @@ export default function QiblaScreen() {
     <CitySelectorModal
       visible={cityPickerVisible}
       selectedCity={(state.settings.selectedCity as CityKey | null) ?? null}
-      title="شهر قبله‌نما را انتخاب کنید"
+      title={t('qibla.chooseCityTitle')}
       testID="qibla-city-selector"
       onSelectCity={(cityKey) => {
         saveQiblaCity(cityKey).catch(() => {});
@@ -263,9 +265,9 @@ export default function QiblaScreen() {
         <View style={styles.container}>
         <View style={[styles.setupPanel, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
           <MaterialIcons name="explore" size={48} color={theme.tint} />
-          <CenteredText style={[styles.setupTitle, { color: theme.text }]}>قبله‌نما</CenteredText>
+          <CenteredText style={[styles.setupTitle, { color: theme.text }]}>{t('qibla.setup.title')}</CenteredText>
           <CenteredText style={[styles.setupText, { color: theme.textSecondary }]}>
-            برای نمایش دقیق جهت قبله، اجازه موقعیت را بدهید تا نزدیک‌ترین شهر پیدا شود.
+            {t('qibla.setup.body')}
           </CenteredText>
           <Pressable
             testID="qibla-detect-precise-location"
@@ -281,7 +283,7 @@ export default function QiblaScreen() {
             ) : (
               <RtlView style={styles.actionRow}>
                 <MaterialIcons name="my-location" size={22} color="#fff" />
-                <CenteredText style={styles.primaryActionText}>استفاده از موقعیت من</CenteredText>
+                <CenteredText style={styles.primaryActionText}>{t('qibla.useMyLocation')}</CenteredText>
               </RtlView>
             )}
           </Pressable>
@@ -294,7 +296,7 @@ export default function QiblaScreen() {
               { borderColor: theme.cardBorder, opacity: pressed ? 0.85 : 1 },
             ]}
           >
-            <CenteredText style={[styles.secondaryActionText, { color: theme.text }]}>انتخاب شهر</CenteredText>
+            <CenteredText style={[styles.secondaryActionText, { color: theme.text }]}>{t('qibla.chooseCity')}</CenteredText>
           </Pressable>
         </View>
         </View>
@@ -312,14 +314,14 @@ export default function QiblaScreen() {
       {(isPreparing || state.isLoading) && (
         <RtlView style={[styles.banner, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
           <ActivityIndicator size="small" color={theme.tint} />
-          <CenteredText style={[styles.bannerText, { color: theme.textSecondary }]}>در حال آماده‌سازی شهر اذان...</CenteredText>
+          <CenteredText style={[styles.bannerText, { color: theme.textSecondary }]}>{t('qibla.loadingCity')}</CenteredText>
         </RtlView>
       )}
 
       {locationResolveStatus === 'resolving' && !isPreparing && (
         <RtlView style={[styles.banner, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
           <ActivityIndicator size="small" color={theme.tint} />
-          <CenteredText style={[styles.bannerText, { color: theme.textSecondary }]}>در حال یافتن نزدیک‌ترین شهر...</CenteredText>
+          <CenteredText style={[styles.bannerText, { color: theme.textSecondary }]}>{t('qibla.findingCity')}</CenteredText>
         </RtlView>
       )}
 
@@ -333,7 +335,7 @@ export default function QiblaScreen() {
           ]}
         >
           <MaterialIcons name="location-disabled" size={20} color={theme.tint} />
-          <CenteredText style={[styles.bannerText, { color: theme.text }]}>برای قطب‌نمای زنده، اجازه موقعیت را فعال کنید</CenteredText>
+          <CenteredText style={[styles.bannerText, { color: theme.text }]}>{t('qibla.permission')}</CenteredText>
         </Pressable>
       )}
 
@@ -347,16 +349,16 @@ export default function QiblaScreen() {
       >
         <MaterialIcons name="location-on" size={20} color={theme.tint} />
         <View style={styles.locationChipLabels}>
-          <CenteredText style={[styles.locationChipText, { color: theme.text }]}>{state.locationName}</CenteredText>
+          <CenteredText style={[styles.locationChipText, { color: theme.text }]}>{localizeCityName(state.locationName, language)}</CenteredText>
           {hasResolvedCity && (
-            <CenteredText style={[styles.locationChipCaption, { color: theme.textSecondary }]}>همان شهر اذان شما</CenteredText>
+            <CenteredText style={[styles.locationChipCaption, { color: theme.textSecondary }]}>{t('qibla.cityCaption')}</CenteredText>
           )}
         </View>
         <MaterialIcons name="keyboard-arrow-down" size={22} color={theme.textSecondary} />
       </Pressable>
 
       <CenteredText style={[styles.distanceText, { color: theme.textSecondary }]}>
-        {distanceLabel} کیلومتر تا کعبه
+        {t('qibla.distanceToKaaba', { distance: distanceLabel })}
       </CenteredText>
 
       <View testID="qibla-compass-status" style={styles.compassContainer}>
@@ -370,7 +372,7 @@ export default function QiblaScreen() {
           <View testID="qibla-compass-loading" style={[styles.compassOverlay, { backgroundColor: `${theme.background}CC` }]}>
             <ActivityIndicator size="large" color={theme.tint} />
             <CenteredText style={[styles.compassOverlayText, { color: theme.textSecondary }]}>
-              در حال آماده‌سازی قطب‌نما...
+              {t('qibla.preparingCompass')}
             </CenteredText>
           </View>
         )}
@@ -387,12 +389,12 @@ export default function QiblaScreen() {
 
       <RtlView style={styles.degreeInfo}>
         <View style={styles.degreeItem}>
-          <CenteredText style={[styles.degreeLabel, { color: theme.textSecondary }]}>جهت قبله</CenteredText>
+          <CenteredText style={[styles.degreeLabel, { color: theme.textSecondary }]}>{t('qibla.bearing')}</CenteredText>
           <CenteredText style={[styles.degreeValue, { color: theme.text }]}>{qiblaDirectionLabel}°</CenteredText>
         </View>
         <View style={[styles.degreeDivider, { backgroundColor: theme.divider }]} />
         <View style={styles.degreeItem}>
-          <CenteredText style={[styles.degreeLabel, { color: theme.textSecondary }]}>جهت فعلی</CenteredText>
+          <CenteredText style={[styles.degreeLabel, { color: theme.textSecondary }]}>{t('qibla.currentHeading')}</CenteredText>
           <CenteredText style={[styles.degreeValue, { color: theme.text }]}>
             {hasLiveCompass ? `${headingLabel}°` : '—'}
           </CenteredText>
@@ -401,7 +403,7 @@ export default function QiblaScreen() {
 
       <CenteredText style={[styles.hint, { color: theme.textSecondary }]}>{hintText}</CenteredText>
       <CenteredText style={[styles.mosqueNote, { color: theme.textSecondary }]}>
-        اگر با جهت مسجد شما فرق داشت، قطب‌نما را کالیبره کنید و از فلز/آهن‌ربا دور شوید؛ تداخل مغناطیسی محل می‌تواند نتیجه را چند درجه جابجا کند.
+        {t('qibla.mosqueNote')}
       </CenteredText>
       {cityModal}
       </ScrollView>

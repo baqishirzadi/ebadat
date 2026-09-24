@@ -3,9 +3,11 @@ import { FlatList, Pressable, ScrollView, StyleSheet, View } from 'react-native'
 import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
-import { getTopicLabelFa } from '@/utils/ahadith/labels';
+import { getTopicLabel } from '@/utils/ahadith/labels';
+import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
-import { getDariFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
+import { useI18n } from '@/utils/i18n/useI18n';
+import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 
 interface TopicBrowserProps {
   allHadiths: Hadith[];
@@ -25,10 +27,14 @@ export function TopicBrowser({
   onOpenHadith,
 }: TopicBrowserProps) {
   const { theme, state } = useApp();
+  const { t, language } = useI18n();
+  const isPashto = language === 'pashto';
 
   const title = useMemo(
-    () => (selectedTopic ? `موضوع: ${getTopicLabelFa(selectedTopic)}` : 'موضوع: همه'),
-    [selectedTopic]
+    () => (selectedTopic
+      ? t('ahadith.topics.selected', { topic: getTopicLabel(selectedTopic, language) })
+      : t('ahadith.topics.all')),
+    [selectedTopic, language, t]
   );
 
   const allHadithsNewestFirst = useMemo(
@@ -52,7 +58,7 @@ export function TopicBrowser({
             pressed && { opacity: 0.85 },
           ]}
         >
-          <CenteredText numberOfLines={1} style={[styles.topicChipText, { color: selectedTopic === null ? theme.primary : theme.textSecondary }]}>همه</CenteredText>
+          <CenteredText numberOfLines={1} style={[styles.topicChipText, { color: selectedTopic === null ? theme.primary : theme.textSecondary }]}>{t('ahadith.topics.allChip')}</CenteredText>
         </Pressable>
 
         {topics.map((topic) => {
@@ -71,7 +77,7 @@ export function TopicBrowser({
               ]}
             >
               <CenteredText numberOfLines={1} style={[styles.topicChipText, { color: selected ? theme.primary : theme.textSecondary }]}>
-                {getTopicLabelFa(topic)}
+                {getTopicLabel(topic, language)}
               </CenteredText>
             </Pressable>
           );
@@ -114,17 +120,17 @@ export function TopicBrowser({
                 styles.translation,
                 {
                   color: theme.textSecondary,
-                  fontFamily: getDariFontFamily(state.preferences.dariFont),
+                  fontFamily: isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont),
                 },
               ]}
             >
-              {item.dari_translation}
+              {getHadithTranslation(item, language)}
             </CenteredText>
           </Pressable>
         )}
         ListEmptyComponent={
           <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>
-            {selectedTopic ? 'در این موضوع حدیثی یافت نشد' : 'حدیثی برای نمایش موجود نیست'}
+            {t(selectedTopic ? 'ahadith.topics.emptyForTopic' : 'ahadith.topics.empty')}
           </CenteredText>
         }
         contentContainerStyle={styles.listContent}

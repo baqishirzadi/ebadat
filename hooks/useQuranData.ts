@@ -8,6 +8,7 @@
 import { useMemo, useCallback } from 'react';
 import { QuranData, Surah, Ayah, SearchResult } from '@/types/quran';
 import metadata from '@/data/metadata.json';
+import { getSurah as getSurahNameMetadata } from '@/data/surahNames';
 import { getJuzRange, JUZ_RANGES } from '@/data/juzRanges';
 import { getSurahSync, SurahData, SurahMetadata } from './useSurahData';
 import { searchArabicIndex, searchTranslationIndex, searchQuranPaged, type QuranSearchMode } from '@/utils/quranSearchEngine';
@@ -50,7 +51,7 @@ export function useQuranData() {
       englishName: '', // Not available in new format
       englishNameTranslation: '', // Not available in new format
       dariName: s.name_dari,
-      pashtoName: s.name_dari, // Using dari name as fallback
+      pashtoName: getSurahNameMetadata(s.number)?.pashto ?? s.name_dari,
       ayahCount: s.numberOfAyahs,
       revelationType: s.revelationType === 'مکی' ? 'Meccan' : 'Medinan',
       startPage: 1, // Would need to be added to metadata
@@ -170,7 +171,7 @@ export function useQuranData() {
   const getTranslation = useCallback((
     surahNumber: number,
     ayahNumber: number,
-    language: 'dari' | 'pashto'
+    language: 'dari' | 'pashto' | 'english'
   ): string | undefined => {
     const surahData = getSurahSync(surahNumber);
     if (!surahData) return undefined;
@@ -178,7 +179,9 @@ export function useQuranData() {
     const ayah = surahData.ayahs.find(a => a.number === ayahNumber);
     if (!ayah) return undefined;
 
-    return language === 'dari' ? ayah.translation_dari : ayah.translation_pashto;
+    if (language === 'pashto') return ayah.translation_pashto;
+    if (language === 'english') return ayah.translation_english;
+    return ayah.translation_dari;
   }, []);
 
   // Get next ayah reference
@@ -285,7 +288,7 @@ function convertToLegacyFormat(surahData: SurahData): Surah {
     englishName: '', // Not available
     englishNameTranslation: '', // Not available
     dariName: surahData.name_dari,
-    pashtoName: surahData.name_dari,
+    pashtoName: getSurahNameMetadata(surahData.number)?.pashto ?? surahData.name_dari,
     ayahCount: surahData.numberOfAyahs,
     revelationType: surahData.revelationType === 'مکی' ? 'Meccan' : 'Medinan',
     startPage: surahData.ayahs[0]?.page || 1,
@@ -298,6 +301,10 @@ function convertToLegacyFormat(surahData: SurahData): Surah {
       pashto: surahData.ayahs.map(a => ({
         ayahNumber: a.number,
         text: a.translation_pashto,
+      })),
+      english: surahData.ayahs.map(a => ({
+        ayahNumber: a.number,
+        text: a.translation_english ?? '',
       })),
     },
   };

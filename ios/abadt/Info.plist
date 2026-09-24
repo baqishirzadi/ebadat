@@ -71,10 +71,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>15</string>
-	<key>ExpoLocalization_forcesRTL</key>
-	<true/>
-	<key>ExpoLocalization_supportsRTL</key>
-	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSMinimumSystemVersion</key>

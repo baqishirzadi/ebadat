@@ -4,18 +4,9 @@
  */
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  RefreshControl,
-  ActivityIndicator,
-  Animated,
-  useWindowDimensions,
-  Pressable,
-  Modal,
-  TextInput,
-} from 'react-native';
+
+import { View, StyleSheet, FlatList, RefreshControl, ActivityIndicator, Animated, useWindowDimensions, Pressable, Modal } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
@@ -654,7 +645,7 @@ export default function ArticlesFeed() {
               ورود به مدیریت مقالات
             </CenteredText>
 
-            <TextInput
+            <LocalizedTextInput
               value={adminPin}
               onChangeText={(value) => {
                 setAdminPin(value);

@@ -38,17 +38,9 @@ function startupMark(label: string): void {
   console.log(`[Startup][${elapsed}ms] ${label}`);
 }
 
-// Force RTL for Dari/Pashto/Arabic UI (required on some Android/Huawei builds)
-if (!I18nManager.isRTL) {
-  startupMark('RTL not active; enabling RTL support');
-  I18nManager.allowRTL(true);
-  const rtlGuard = globalThis as typeof globalThis & { __EBADAT_RTL_FORCE_DONE__?: boolean };
-  if (!rtlGuard.__EBADAT_RTL_FORCE_DONE__) {
-    rtlGuard.__EBADAT_RTL_FORCE_DONE__ = true;
-    I18nManager.forceRTL(true);
-    startupMark('Applied one-time RTL force');
-  }
-}
+// Layout direction is owned by the saved app language: AppContext applies it
+// once preferences load (see utils/i18n/direction.ts), and the native side
+// seeds RTL on first launch. Forcing RTL here would override English.
 
 // ───────────────────────────────────────────────────
 // Global safety for unhandled promise rejections

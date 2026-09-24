@@ -11,9 +11,11 @@ import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export function DuaFeatureTile() {
   const { theme } = useApp();
+  const { t } = useI18n();
   const { unreadCount } = useDua();
   const router = useRouter();
 
@@ -44,10 +46,10 @@ export function DuaFeatureTile() {
       {/* Content */}
       <View style={styles.content}>
         <CenteredText style={[styles.title, { color: theme.text }]}>
-          دعای خیر و مشورت شرعی
+          {t('adhkar.dua.title')}
         </CenteredText>
         <CenteredText style={[styles.description, { color: theme.textSecondary }]} numberOfLines={2}>
-          درخواست دعای خیر و راهنمایی شرعی؛ با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
+          {t('adhkar.dua.body')}
         </CenteredText>
       </View>
 

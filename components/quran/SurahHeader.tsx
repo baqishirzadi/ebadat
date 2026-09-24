@@ -10,6 +10,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import { NumericText } from '@/components/ui/NumericText';
 import { RtlView } from '@/components/ui/RtlView';
 import { TranslationToggle } from './TranslationToggle';
 import { toArabicNumerals } from '@/utils/numbers';
@@ -23,6 +24,8 @@ import {
   getSurahDownloadScope,
 } from '@/utils/quranDownloadService';
 import type { ReciterKey } from '@/utils/quranAudio';
+import { getSurah } from '@/data/surahNames';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface SurahHeaderProps {
   number: number;
@@ -45,6 +48,8 @@ export const SurahHeader = memo(function SurahHeader({
   onSettingsPress,
 }: SurahHeaderProps) {
   const { theme, state } = useApp();
+  const { isPashto, t } = useI18n();
+  const metadata = getSurah(number);
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
   const [surahDownloaded, setSurahDownloaded] = useState(false);
   const [showDownloadSheet, setShowDownloadSheet] = useState(false);
@@ -78,9 +83,9 @@ export const SurahHeader = memo(function SurahHeader({
 
         {/* Surah Number */}
         <View style={[styles.numberBadge, { backgroundColor: `${theme.surahHeaderText}20` }]}>
-          <CenteredText style={[styles.numberText, { color: theme.surahHeaderText }]}>
+          <NumericText style={[styles.numberText, { color: theme.surahHeaderText }]}>
             {toArabicNumerals(number)}
-          </CenteredText>
+          </NumericText>
         </View>
 
         {/* Arabic Name + Play Button - same row for alignment */}
@@ -111,6 +116,12 @@ export const SurahHeader = memo(function SurahHeader({
           )}
         </View>
 
+        {isPashto && metadata ? (
+          <CenteredText style={[styles.pashtoName, { color: theme.surahHeaderText }]} numberOfLines={2}>
+            {metadata.pashto} ({metadata.meaningPashto})
+          </CenteredText>
+        ) : null}
+
         {/* Meta Info */}
         <View style={styles.metaContainer}>
           <View style={[styles.metaItem, { backgroundColor: `${theme.surahHeaderText}20` }]}>
@@ -126,12 +137,14 @@ export const SurahHeader = memo(function SurahHeader({
               color={theme.surahHeaderText}
             />
             <CenteredText style={[styles.metaText, { color: theme.surahHeaderText }]}>
-              {revelationType === 'Meccan' ? 'مکی' : 'مدنی'}
+              {isPashto
+                ? t(revelationType === 'Meccan' ? 'quran.meccan' : 'quran.medinan')
+                : revelationType === 'Meccan' ? 'مکی' : 'مدنی'}
             </CenteredText>
           </View>
           <Pressable
             testID="quran-download-surah-header"
-            accessibilityLabel={surahDownloaded ? 'سوره دانلود شده' : 'دانلود کل سوره'}
+            accessibilityLabel={surahDownloaded ? t('quran.downloaded') : t('quran.downloadAll')}
             onPress={handleHeaderDownload}
             style={[styles.metaDownload, { backgroundColor: surahDownloaded ? `${theme.surahHeaderText}35` : theme.surahHeaderText }]}
           >
@@ -141,7 +154,7 @@ export const SurahHeader = memo(function SurahHeader({
               color={surahDownloaded ? theme.surahHeaderText : theme.surahHeader}
             />
             <CenteredText style={[styles.metaText, { color: surahDownloaded ? theme.surahHeaderText : theme.surahHeader }]}>
-              {surahDownloaded ? 'دانلود شد' : 'کل سوره'}
+              {surahDownloaded ? t('quran.downloaded') : t('quran.wholeSurah')}
             </CenteredText>
           </Pressable>
         </View>
@@ -163,8 +176,8 @@ export const SurahHeader = memo(function SurahHeader({
         visible={showDownloadSheet}
         scope={getSurahDownloadScope(number, ayahCount)}
         theme={theme}
-        title="دانلود کل سوره"
-        primaryLabel="کل سوره"
+        title={t('quran.downloadAll')}
+        primaryLabel={t('quran.wholeSurah')}
         onClose={() => setShowDownloadSheet(false)}
         onCompleted={(nextReciter) => {
           setDownloadReciter(nextReciter);
@@ -266,6 +279,11 @@ const styles = StyleSheet.create({
     fontFamily: getQuranFontFamily('scheherazade'),
     textAlign: 'center',
     writingDirection: 'rtl',
+  },
+  pashtoName: {
+    fontSize: Typography.ui.caption,
+    marginTop: Spacing.xs,
+    textAlign: 'center',
   },
   metaContainer: {
     flexDirection: 'row',

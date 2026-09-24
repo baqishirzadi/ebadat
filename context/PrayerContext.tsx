@@ -3,6 +3,7 @@
  * Manages prayer times, location, Qibla direction, and Adhan notifications
  */
 
+import type { AppLanguage } from '@/types/quran';
 import { playAdhan, preloadAdhanAudio } from '@/utils/adhanAudio';
 import { registerAdhanBackgroundRefresh } from '@/utils/backgroundRefresh';
 import {
@@ -76,6 +77,7 @@ import {
   syncNativeAdhanConfig,
 } from '@/utils/nativeAdhanScheduler';
 import { openNotificationSettings as openSystemNotificationSettings } from '@/utils/adhanHealth';
+import { translateUi } from '@/utils/i18n/catalog';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useReducer, useRef } from 'react';
 import { Alert, AppState, InteractionManager, Linking, NativeModules, Platform } from 'react-native';
@@ -151,27 +153,60 @@ const STARTUP_MIGRATION_DELAY_MS = 1500;
 
 const ANDROID_ADHAN_SOUND_FILENAME = getAdhanSoundFilename('android');
 const CHANNEL_IDS = {
-  ADHAN_FAJR: 'adhan-fajr-v7',
-  ADHAN_REGULAR: 'adhan-regular-v7',
+  ADHAN_FAJR: 'adhan-fajr-v8-fa',
+  ADHAN_REGULAR: 'adhan-regular-v8-fa',
+  ADHAN_FAJR_PASHTO: 'adhan-fajr-v8-ps',
+  ADHAN_REGULAR_PASHTO: 'adhan-regular-v8-ps',
+  ADHAN_FAJR_ENGLISH: 'adhan-fajr-v8-en',
+  ADHAN_REGULAR_ENGLISH: 'adhan-regular-v8-en',
   PRAYER_SILENT: 'prayer-silent-v2',
-  PRAYER_REMINDER: 'prayer-reminder-v2',
+  PRAYER_REMINDER: 'prayer-reminder-v3-fa',
+  PRAYER_REMINDER_PASHTO: 'prayer-reminder-v3-ps',
+  PRAYER_REMINDER_ENGLISH: 'prayer-reminder-v3-en',
   CALENDAR_QAMARI: 'calendar-qamari',
   JUMMAH_REMINDER: 'jummah-reminder-v2',
 } as const;
 
-const JUMMAH_NOTIFICATION_COPY = getJummahNotificationContent();
+/**
+ * Android bakes a channel's name into the system at creation time, so each
+ * language gets its own channel rather than one channel we cannot rename.
+ */
+function adhanChannelIds(language: AppLanguage) {
+  switch (language) {
+    case 'pashto':
+      return {
+        fajr: CHANNEL_IDS.ADHAN_FAJR_PASHTO,
+        regular: CHANNEL_IDS.ADHAN_REGULAR_PASHTO,
+        reminder: CHANNEL_IDS.PRAYER_REMINDER_PASHTO,
+      };
+    case 'english':
+      return {
+        fajr: CHANNEL_IDS.ADHAN_FAJR_ENGLISH,
+        regular: CHANNEL_IDS.ADHAN_REGULAR_ENGLISH,
+        reminder: CHANNEL_IDS.PRAYER_REMINDER_ENGLISH,
+      };
+    default:
+      return {
+        fajr: CHANNEL_IDS.ADHAN_FAJR,
+        regular: CHANNEL_IDS.ADHAN_REGULAR,
+        reminder: CHANNEL_IDS.PRAYER_REMINDER,
+      };
+  }
+}
 
 function buildNativeAdhanConfig(
   location: LocationType,
   cityKey: string,
   adhanPreferences: AdhanPreferences,
   scheduleJson?: string,
+  language: AppLanguage = 'dari',
 ): NativeAdhanConfigInput {
-  const fajrContent = getNotificationContent('fajr', true);
-  const dhuhrContent = getNotificationContent('dhuhr', true);
-  const asrContent = getNotificationContent('asr', true);
-  const maghribContent = getNotificationContent('maghrib', true);
-  const ishaContent = getNotificationContent('isha', true);
+  const fajrContent = getNotificationContent('fajr', true, language);
+  const dhuhrContent = getNotificationContent('dhuhr', true, language);
+  const asrContent = getNotificationContent('asr', true, language);
+  const maghribContent = getNotificationContent('maghrib', true, language);
+  const ishaContent = getNotificationContent('isha', true, language);
+  const jummahContent = getJummahNotificationContent(language);
   const policy = resolvePrayerCalculationPolicy(cityKey, location);
   const scheduleFingerprint = buildAdhanScheduleFingerprint({
     policyVersion: policy.policyVersion,
@@ -210,10 +245,10 @@ function buildNativeAdhanConfig(
     maghribBody: maghribContent.body,
     ishaTitle: ishaContent.title,
     ishaBody: ishaContent.body,
-    jummahTitle: JUMMAH_NOTIFICATION_COPY.title,
-    jummahBody: JUMMAH_NOTIFICATION_COPY.body,
-    fajrChannelId: CHANNEL_IDS.ADHAN_FAJR,
-    regularChannelId: CHANNEL_IDS.ADHAN_REGULAR,
+    jummahTitle: jummahContent.title,
+    jummahBody: jummahContent.body,
+    fajrChannelId: adhanChannelIds(language).fajr,
+    regularChannelId: adhanChannelIds(language).regular,
   };
 
   return {
@@ -1001,6 +1036,46 @@ async function configureAndroidNotificationChannels(
         showBadge: true,
       }, ANDROID_ADHAN_SOUND_FILENAME);
 
+      await ensureChannel(CHANNEL_IDS.ADHAN_FAJR_PASHTO, {
+        name: 'د سهار اذان',
+        importance: NotificationsModule.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#1a4d3e',
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
+        enableVibrate: true,
+        showBadge: true,
+      }, ANDROID_ADHAN_SOUND_FILENAME);
+
+      await ensureChannel(CHANNEL_IDS.ADHAN_REGULAR_PASHTO, {
+        name: 'د نورو لمونځونو اذان',
+        importance: NotificationsModule.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#1a4d3e',
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
+        enableVibrate: true,
+        showBadge: true,
+      }, ANDROID_ADHAN_SOUND_FILENAME);
+
+      await ensureChannel(CHANNEL_IDS.ADHAN_FAJR_ENGLISH, {
+        name: 'Fajr adhan',
+        importance: NotificationsModule.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#1a4d3e',
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
+        enableVibrate: true,
+        showBadge: true,
+      }, ANDROID_ADHAN_SOUND_FILENAME);
+
+      await ensureChannel(CHANNEL_IDS.ADHAN_REGULAR_ENGLISH, {
+        name: 'Adhan (other prayers)',
+        importance: NotificationsModule.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#1a4d3e',
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
+        enableVibrate: true,
+        showBadge: true,
+      }, ANDROID_ADHAN_SOUND_FILENAME);
+
       // Channel for silent prayer notifications
       await ensureChannel(CHANNEL_IDS.PRAYER_SILENT, {
         name: 'یادآوری نماز (بی‌صدا)',
@@ -1015,6 +1090,26 @@ async function configureAndroidNotificationChannels(
       // Channel for early reminders
       await ensureChannel(CHANNEL_IDS.PRAYER_REMINDER, {
         name: 'یادآوری قبل از نماز',
+        importance: NotificationsModule.AndroidImportance.LOW,
+        vibrationPattern: [0, 50],
+        lightColor: '#D4AF37',
+        sound: null,
+        enableVibrate: true,
+        showBadge: false,
+      }, null);
+
+      await ensureChannel(CHANNEL_IDS.PRAYER_REMINDER_PASHTO, {
+        name: 'د لمانځه مخکینۍ یادونه',
+        importance: NotificationsModule.AndroidImportance.LOW,
+        vibrationPattern: [0, 50],
+        lightColor: '#D4AF37',
+        sound: null,
+        enableVibrate: true,
+        showBadge: false,
+      }, null);
+
+      await ensureChannel(CHANNEL_IDS.PRAYER_REMINDER_ENGLISH, {
+        name: 'Pre-prayer reminder',
         importance: NotificationsModule.AndroidImportance.LOW,
         vibrationPattern: [0, 50],
         lightColor: '#D4AF37',
@@ -1343,7 +1438,9 @@ async function configureAndroidNotificationChannels(
       cityKey: toCityKey(state.settings.selectedCity),
       location: state.location,
       timezone: state.location.timezone,
-      appLanguage: appState.preferences.appLanguage === 'pashto' ? 'pashto' : 'dari',
+      appLanguage: appState.preferences.appLanguage,
+      dariFont: appState.preferences.dariFont,
+      pashtoFont: appState.preferences.pashtoFont,
       horizonDays: 30,
     });
     // Multi-day only after adhan schedule settles — avoids racing 7-day native JSON.
@@ -1359,7 +1456,9 @@ async function configureAndroidNotificationChannels(
           cityKey: toCityKey(state.settings.selectedCity),
           location: state.location,
           timezone: state.location.timezone,
-          appLanguage: appState.preferences.appLanguage === 'pashto' ? 'pashto' : 'dari',
+          appLanguage: appState.preferences.appLanguage,
+          dariFont: appState.preferences.dariFont,
+          pashtoFont: appState.preferences.pashtoFont,
           horizonDays: 30,
         });
       });
@@ -1377,6 +1476,8 @@ async function configureAndroidNotificationChannels(
     state.location,
     state.settings.selectedCity,
     appState.preferences.appLanguage,
+    appState.preferences.dariFont,
+    appState.preferences.pashtoFont,
   ]);
 
   useEffect(() => {
@@ -1387,7 +1488,9 @@ async function configureAndroidNotificationChannels(
         cityKey: toCityKey(state.settings.selectedCity),
         location: state.location,
         timezone: state.location.timezone,
-        appLanguage: appState.preferences.appLanguage === 'pashto' ? 'pashto' : 'dari',
+        appLanguage: appState.preferences.appLanguage,
+        dariFont: appState.preferences.dariFont,
+        pashtoFont: appState.preferences.pashtoFont,
         // Keep a long local horizon so WidgetKit remains correct while the app is closed.
         horizonDays: 30,
       });
@@ -1400,6 +1503,8 @@ async function configureAndroidNotificationChannels(
     state.locationName,
     state.location,
     appState.preferences.appLanguage,
+    appState.preferences.dariFont,
+    appState.preferences.pashtoFont,
     state.settings.selectedCity,
   ]);
 
@@ -1856,9 +1961,10 @@ async function configureAndroidNotificationChannels(
 
         if (!useNativeEngine) {
           const content = isFridayJummah
-            ? JUMMAH_NOTIFICATION_COPY
-            : getNotificationContent(prayerKey, true);
-          const channelId = prayerKey === 'fajr' ? CHANNEL_IDS.ADHAN_FAJR : CHANNEL_IDS.ADHAN_REGULAR;
+            ? getJummahNotificationContent(appState.preferences.appLanguage)
+            : getNotificationContent(prayerKey, true, appState.preferences.appLanguage);
+          const channels = adhanChannelIds(appState.preferences.appLanguage);
+          const channelId = prayerKey === 'fajr' ? channels.fajr : channels.regular;
           const adhanId = isFridayJummah
             ? `adhan-jummah-${dayKey}`
             : `adhan-${prayerKey}-${dayKey}`;
@@ -1898,14 +2004,21 @@ async function configureAndroidNotificationChannels(
           if (reminderTime > now && isValidDate(reminderTime)) {
             const reminderContent = isFridayJummah
               ? (() => {
-                const heading = getNotificationHeading('یادآوری نماز');
+                const language = appState.preferences.appLanguage;
+                const heading = getNotificationHeading(language === 'pashto' ? 'د لمانځه یادونه' : 'یادآوری نماز');
                 return {
                   title: heading.title,
                   subtitle: heading.subtitle,
-                  body: `${adhanPreferences.earlyReminderMinutes} دقیقه تا نماز جمعه`,
+                  body: language === 'pashto'
+                    ? `تر د جمعې لمانځه پورې ${adhanPreferences.earlyReminderMinutes} دقیقې پاتې دي`
+                    : `${adhanPreferences.earlyReminderMinutes} دقیقه تا نماز جمعه`,
                 };
               })()
-              : getEarlyReminderContent(prayerKey, adhanPreferences.earlyReminderMinutes);
+              : getEarlyReminderContent(
+                  prayerKey,
+                  adhanPreferences.earlyReminderMinutes,
+                  appState.preferences.appLanguage,
+                );
             const reminderId = isFridayJummah
               ? `adhan-jummah-${dayKey}-reminder`
               : `adhan-${prayerKey}-${dayKey}-reminder`;
@@ -1915,7 +2028,7 @@ async function configureAndroidNotificationChannels(
               prayerKey,
               dayKey,
               triggerDate: reminderTime,
-              channelId: CHANNEL_IDS.PRAYER_REMINDER,
+              channelId: adhanChannelIds(appState.preferences.appLanguage).reminder,
               title: reminderContent.title,
               subtitle: reminderContent.subtitle,
               body: reminderContent.body,
@@ -2136,6 +2249,7 @@ async function configureAndroidNotificationChannels(
           masterEnabled,
         },
         scheduleJson,
+        appState.preferences.appLanguage,
       );
       await syncNativeAdhanConfig(nativeConfig);
     };
@@ -2415,6 +2529,7 @@ async function configureAndroidNotificationChannels(
         resolvedCityKey,
         state.adhanPreferences,
         scheduleJson,
+        appState.preferences.appLanguage,
       );
       const nativeResult = await syncNativeAdhanConfig(nativeConfig);
       nativeExactScheduledCount = nativeResult.expectedCount;
@@ -2674,9 +2789,13 @@ async function configureAndroidNotificationChannels(
   }, [requestPrayerSchedule, state.adhanPreferences]);
 
   const openNotificationSettings = useCallback(async () => {
+    const language = appState.preferences.appLanguage;
     const NotificationsModule = await loadNotificationsIfAvailable();
     if (!NotificationsModule) {
-      Alert.alert('خطا', 'ماژول اعلان در دسترس نیست');
+      Alert.alert(
+        translateUi('common.error', language),
+        translateUi('prayer.notifications.moduleUnavailable', language),
+      );
       return;
     }
 
@@ -2714,10 +2833,13 @@ async function configureAndroidNotificationChannels(
       try {
         await Linking.openSettings();
       } catch {
-        Alert.alert('خطا', 'نمی‌توان تنظیمات را باز کرد. لطفاً دستی به تنظیمات دستگاه بروید.');
+        Alert.alert(
+          translateUi('common.error', language),
+          translateUi('prayer.notifications.settingsOpenFailed', language),
+        );
       }
     }
-  }, [getExactAlarmModule, state.exactAlarmStatus]);
+  }, [getExactAlarmModule, state.exactAlarmStatus, appState.preferences.appLanguage]);
 
   const scheduleAdhanSystemTest = useCallback(async (): Promise<boolean> => {
     if (Platform.OS === 'android' && canUseNativeAdhanScheduler()) {

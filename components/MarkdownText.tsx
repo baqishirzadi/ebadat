@@ -1,5 +1,7 @@
 import React from 'react';
-import { StyleProp, Text, TextStyle } from 'react-native';
+
+import { StyleProp, TextStyle } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 
 type MarkdownTextProps = {
   children: string;
@@ -54,15 +56,15 @@ export function MarkdownText({
       }
       if (match[1] !== undefined) {
         inline.push(
-          <Text key={`bold-${key++}`} style={[{ fontWeight: '700' }, boldStyle]}>
+          <LocalizedText key={`bold-${key++}`} style={[{ fontWeight: '700' }, boldStyle]}>
             {match[1]}
-          </Text>,
+          </LocalizedText>,
         );
       } else {
         inline.push(
-          <Text key={`italic-${key++}`} style={[{ fontStyle: 'italic' }, italicStyle]}>
+          <LocalizedText key={`italic-${key++}`} style={[{ fontStyle: 'italic' }, italicStyle]}>
             {match[2]}
-          </Text>,
+          </LocalizedText>,
         );
       }
       cursor = match.index + match[0].length;
@@ -85,10 +87,10 @@ export function MarkdownText({
         ? bulletStyle
         : undefined;
     parts.push(
-      <Text key={`line-${key++}`} style={lineStyle}>
+      <LocalizedText key={`line-${key++}`} style={lineStyle}>
         {bullet ? '• ' : null}
         {lineChildren}
-      </Text>,
+      </LocalizedText>,
     );
     if (index < lines.length - 1) {
       parts.push(<React.Fragment key={`newline-${key++}`}>{'\n'}</React.Fragment>);
@@ -96,12 +98,12 @@ export function MarkdownText({
   });
 
   return (
-    <Text
+    <LocalizedText
       testID={testID}
       style={style}
       onLongPress={onLongPress}
     >
       {parts.length > 0 ? parts : sanitizePlainText(children)}
-    </Text>
+    </LocalizedText>
   );
 }

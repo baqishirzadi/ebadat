@@ -14,7 +14,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "حاقه (حادثۀ ثابت و واقع شدنی).",
-      "translation_pashto": "69-1 دغه (قیامت) خامخا واقع كېدونكى "
+      "translation_pashto": "69-1 دغه (قیامت) خامخا واقع كېدونكى ",
+      "translation_english": "The Inevitable Hour!"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "چیست آن حاقه (حادثۀ ثابت و واقع شدنی)؟",
-      "translation_pashto": "69-2 دغه لازمًا واقع كېدونكى څه شى دى "
+      "translation_pashto": "69-2 دغه لازمًا واقع كېدونكى څه شى دى ",
+      "translation_english": "What is the Inevitable Hour?"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و تو چه می‌دانی که آن حاقه (حادثۀ ثابت و واقع شدنی) چیست؟",
-      "translation_pashto": "69-3 او ته څه شي پوه كړې چې دغه قیامت څه شى دى "
+      "translation_pashto": "69-3 او ته څه شي پوه كړې چې دغه قیامت څه شى دى ",
+      "translation_english": "How do you know what the Inevitable Hour is?"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "قوم ثمود و عاد آن حادثۀ کوبنده و واقع شدنی را تکذیب نمودند.",
-      "translation_pashto": "69-4 ثمودیانو او عادیانو د ټكوونكي (قیامت) تكذیب كړى و  "
+      "translation_pashto": "69-4 ثمودیانو او عادیانو د ټكوونكي (قیامت) تكذیب كړى و  ",
+      "translation_english": "Thamūd and ‘Ād denied the Striking Calamity of the Hour."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "اما ثمود به (وسیلۀ) آواز سخت و مرگبار هلاک شدند.",
-      "translation_pashto": "69-5 نو هر چې ثمودیان وو، پس هغوى  په سخت اواز سره هلاك كړى شول  "
+      "translation_pashto": "69-5 نو هر چې ثمودیان وو، پس هغوى  په سخت اواز سره هلاك كړى شول  ",
+      "translation_english": "As for Thamūd, they were destroyed by a dreadful blast."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و اما عاد به (وسیلۀ) تندبادی سرد و سوزنده هلاک شدند.",
-      "translation_pashto": "69-6 او هر چې عادیان وو، نو دوى په ډېر سخت اواز، له حده وتونكي باد سره هلاك كړى شول "
+      "translation_pashto": "69-6 او هر چې عادیان وو، نو دوى په ډېر سخت اواز، له حده وتونكي باد سره هلاك كړى شول ",
+      "translation_english": "And as for ‘Ād, they were destroyed by a furious windstorm"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "که الله آن را هفت شب و هشت روز پی در پی بر آنان مسلط کرد آنگاه مردمان را می‌دیدی که روی زمین افتاده‌اند و گویی تنه‌های پوک درختان خرما‌اند.",
-      "translation_pashto": "69-7 (الله) دغه (باد) په دوى باندې اوه شپې او اته ورځې متواتر (پرله پسې د دوى د هلاكت لپاره) مسخر كړى و، نو تا به دغه قوم په دغه (شپو ورځو، كورونو، باد) كې لویدلي مړه پراته لیدل، ګویاكې دوى د زړو كجورو تش ډډونه دي "
+      "translation_pashto": "69-7 (الله) دغه (باد) په دوى باندې اوه شپې او اته ورځې متواتر (پرله پسې د دوى د هلاكت لپاره) مسخر كړى و، نو تا به دغه قوم په دغه (شپو ورځو، كورونو، باد) كې لویدلي مړه پراته لیدل، ګویاكې دوى د زړو كجورو تش ډډونه دي ",
+      "translation_english": "which He unleashed against them for seven successive nights and eight days, so you would see the people lying dead as if they were hollow trunks of palm trees."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "پس آیا می‌بینی که اثری از آنها باقی مانده باشد؟",
-      "translation_pashto": "69-8 نو ایا ته دوى لره څه باقي پاتې شوي وینې "
+      "translation_pashto": "69-8 نو ایا ته دوى لره څه باقي پاتې شوي وینې ",
+      "translation_english": "Do you see any trace of them now?"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و فرعون و کسانی که پیش از او بودند و همچنین اهالی قریه‌های زیر و زبر شده (قوم لوط) مرتکب گناه و نافرمانی شدند.",
-      "translation_pashto": "69-9 او فرعون او هغه چا چې له ده نه مخكې وو او چپه كړى شویو كلیو غټ  جرم (شرك) وكړ   "
+      "translation_pashto": "69-9 او فرعون او هغه چا چې له ده نه مخكې وو او چپه كړى شویو كلیو غټ  جرم (شرك) وكړ   ",
+      "translation_english": "Also, Pharaoh and those who came before him, and the overturned cities [of Lot] committed the grave sin,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "زیرا آنان از (فرمان) فرستادۀ پروردگارشان نافرمانی کردند، و الله ایشان را به سختی گرفت.",
-      "translation_pashto": "69-10 نو دوى د خپل رب د رسول نافرماني وكړه، نو هغه دوى ونیول، ډېر سخت نیول   "
+      "translation_pashto": "69-10 نو دوى د خپل رب د رسول نافرماني وكړه، نو هغه دوى ونیول، ډېر سخت نیول   ",
+      "translation_english": "each disobeying the messenger of their Lord, so He seized them with a severe punishment."
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "البته وقتی که آب (به امر ما) طغیان کرد، شما را در کشتی روان برداشتیم.",
-      "translation_pashto": "69-11 بېشكه مونږ، كله چې اوبه له حده ووتې، (نو) مونږ تاسو په بېړۍ كې سواره كړئ  "
+      "translation_pashto": "69-11 بېشكه مونږ، كله چې اوبه له حده ووتې، (نو) مونږ تاسو په بېړۍ كې سواره كړئ  ",
+      "translation_english": "Indeed, when the floodwater overflowed, We carried you [O humans] in the sailing Ark,"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "تا آن (عذاب) را برایتان پندی قرار دهیم و گوش‌هایی شنوا آن را به خاطر بسپارد.",
-      "translation_pashto": "69-12 د دې لپاره چې مونږ دغه (بېړۍ) تاسو لپاره پند وګرځوو او یاد ساتونكي غوږونه  دغه (پند) یاد ولري  "
+      "translation_pashto": "69-12 د دې لپاره چې مونږ دغه (بېړۍ) تاسو لپاره پند وګرځوو او یاد ساتونكي غوږونه  دغه (پند) یاد ولري  ",
+      "translation_english": "so that We might make it a reminder for you, and that attentive ears may take heed."
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "پس چون در صور دمیده شود یک دمیدنی.",
-      "translation_pashto": "69-13 نو كله چې په شپېلۍ كې پوكى وكړى شي، یو پوكى  "
+      "translation_pashto": "69-13 نو كله چې په شپېلۍ كې پوكى وكړى شي، یو پوكى  ",
+      "translation_english": "Then when the Trumpet is blown with a single blast,"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و زمین و کوه‌ها برداشته شوند، پس يکباره درهم کوبیده شوند.",
-      "translation_pashto": "69-14 او ځمكه او غرونه پورته كړى شي، پس دغه دواړه رېزه رېزه كړى شي، یو ځلې رېزه كول  "
+      "translation_pashto": "69-14 او ځمكه او غرونه پورته كړى شي، پس دغه دواړه رېزه رېزه كړى شي، یو ځلې رېزه كول  ",
+      "translation_english": "and the earth and mountains are lifted up and crushed with a single blow,"
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "پس در آن روز واقعه (قیامت) رخ دهد.",
-      "translation_pashto": "69-15 نو په دغې ورځ كې به واقع كېدونكى (قیامت) واقع شي   "
+      "translation_pashto": "69-15 نو په دغې ورځ كې به واقع كېدونكى (قیامت) واقع شي   ",
+      "translation_english": "on that Day the Inevitable Event will occur."
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و آسمان (نیز) بشگافد و در آن روز سست گردد.",
-      "translation_pashto": "69-16 او اسمان به وچوي، نو دغه (اسمان) به په دغې ورځ كې سست وي "
+      "translation_pashto": "69-16 او اسمان به وچوي، نو دغه (اسمان) به په دغې ورځ كې سست وي ",
+      "translation_english": "And the sky will split asunder and will be frail on that day,"
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و فرشته‌ها بر اطراف آن (آسمان) خواهند بود و عرش پروردگارت را در آن روز هشت فرشته بالای سر خود حمل می‌کنند.",
-      "translation_pashto": "69-17 او ملايك به د ده د څنډو له پاسه وي او په دغې ورځ كې به ستا د رب عرش اتو (ملايكو) د دوى له پاسه اوچت كړى وي  "
+      "translation_pashto": "69-17 او ملايك به د ده د څنډو له پاسه وي او په دغې ورځ كې به ستا د رب عرش اتو (ملايكو) د دوى له پاسه اوچت كړى وي  ",
+      "translation_english": "with the angels on all its sides, and on that Day, eight [mighty angels] will bear the Throne of your Lord above them."
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "در آن روز شما (به بارگاه پروردگارتان) عرضه می‌شوید، هیچ پوشیدۀ شما (که آنرا انجام داده بودید) مخفی نماند.",
-      "translation_pashto": "69-18 په دغې ورځ كې به تاسو وړاندې كولى شئ، ستاسو له پټو (عملونو) نه به هېڅ (شى) پټ پاتې نشي  "
+      "translation_pashto": "69-18 په دغې ورځ كې به تاسو وړاندې كولى شئ، ستاسو له پټو (عملونو) نه به هېڅ (شى) پټ پاتې نشي  ",
+      "translation_english": "On that day, you will be brought forth [before Allah], and none of your secrets will remain hidden."
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "پس هر کس که نامۀ اعمالش به دست راستش داده شود (شادی کنان) می‌گوید: بگیرید نامۀ اعمال مرا بخوانید.",
-      "translation_pashto": "69-19 نو  هر چې هغه څوك دى چې هغه ته خپل كتاب  (عمل نامه) د ده په ښي لاس كې وركړى شوه، نو دى به وايي: چې واخلئ! زما عمل نامه ولولئ  "
+      "translation_pashto": "69-19 نو  هر چې هغه څوك دى چې هغه ته خپل كتاب  (عمل نامه) د ده په ښي لاس كې وركړى شوه، نو دى به وايي: چې واخلئ! زما عمل نامه ولولئ  ",
+      "translation_english": "As for the one who is given his Record in his right hand, he will say, “Here is my Record, read it!"
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "چون من یقین داشتم که البته با حساب خودم روبرو خواهم شد.",
-      "translation_pashto": "69-20 بېشكه ما دا یقین كاوه چې زه به خامخا له خپل حساب سره مېلاوېدونكى یم"
+      "translation_pashto": "69-20 بېشكه ما دا یقین كاوه چې زه به خامخا له خپل حساب سره مېلاوېدونكى یم",
+      "translation_english": "I was sure that I would meet my reckoning.”"
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "پس او در زندگانی خوش و رضایت بخش خواهد بود.",
-      "translation_pashto": "69-21 نو دغه (كس) به په خوشاله ژوند كې وي  "
+      "translation_pashto": "69-21 نو دغه (كس) به په خوشاله ژوند كې وي  ",
+      "translation_english": "So he will be in a pleasant life,"
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "در بهشت (بسیار) بلند خواهد بود.",
-      "translation_pashto": "69-22 په اوچت جنت كې  "
+      "translation_pashto": "69-22 په اوچت جنت كې  ",
+      "translation_english": "in a lofty garden,"
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "که میوۀ آن در دسترس است.",
-      "translation_pashto": "69-23 چې د هغه مېوې به نژدې وي  "
+      "translation_pashto": "69-23 چې د هغه مېوې به نژدې وي  ",
+      "translation_english": "with clustered fruit within his reach."
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "(گفته می‌شود) گوارا بخورید و بنوشید به (پاداش) آنچه در روزگاران گذشته انجام میدادید.",
-      "translation_pashto": "69-24 تاسو ښه په مزې سره خورئ او څښئ، د هغو عملونو په بدل كې چې تاسو په تېرو شویو ورځو كې مخكې لېږلي وو  "
+      "translation_pashto": "69-24 تاسو ښه په مزې سره خورئ او څښئ، د هغو عملونو په بدل كې چې تاسو په تېرو شویو ورځو كې مخكې لېږلي وو  ",
+      "translation_english": "[They will be told,] “Eat and drink joyfully for what you did in the days gone by.”"
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و اما کسی که نامۀ اعمالش به دست چپش داده شود، پس می‌گوید: ای کاش نامه‌ام بمن داده نمی‌شد.",
-      "translation_pashto": "69-25 او هر چې هغه كس دى چې ده ته خپل كتاب د ده په چپ لاس كې وركړى شي، نو دى به وايي: اى كاشكې ما ته زما كتاب (عمل نامه) نه وى راكړى شوې  "
+      "translation_pashto": "69-25 او هر چې هغه كس دى چې ده ته خپل كتاب د ده په چپ لاس كې وركړى شي، نو دى به وايي: اى كاشكې ما ته زما كتاب (عمل نامه) نه وى راكړى شوې  ",
+      "translation_english": "As for the one who is given his Record in his left hand, he will say, “Would that I had not been given my Record,"
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و (ای کاش) نمی‌دانستم که حساب من چیست.",
-      "translation_pashto": "69-26 او زه نه وى خبر شوى چې زما حساب څه دى  "
+      "translation_pashto": "69-26 او زه نه وى خبر شوى چې زما حساب څه دى  ",
+      "translation_english": "nor had I known anything of my reckoning!"
     },
     {
       "number": 27,
@@ -274,7 +300,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و ای کاش مرگ فیصله کننده و پایان کارم بود.",
-      "translation_pashto": "69-27 اى كاشكې چې هغه (مرګ) فیصله كوونكى وى "
+      "translation_pashto": "69-27 اى كاشكې چې هغه (مرګ) فیصله كوونكى وى ",
+      "translation_english": "Would that it [i.e., death] had been the end of me!"
     },
     {
       "number": 28,
@@ -284,7 +311,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "دارایی من هیچ نفعی بمن نرساند.",
-      "translation_pashto": "69-28 زما مال زما هېڅ په كار رانغى "
+      "translation_pashto": "69-28 زما مال زما هېڅ په كار رانغى ",
+      "translation_english": "My wealth has been of no avail to me."
     },
     {
       "number": 29,
@@ -294,7 +322,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "قدرت و پادشاهی من از دستم رفت.",
-      "translation_pashto": "69-29 له ما نه زما بادشاهي برباده شوه "
+      "translation_pashto": "69-29 له ما نه زما بادشاهي برباده شوه ",
+      "translation_english": "My authority has vanished.”"
     },
     {
       "number": 30,
@@ -304,7 +333,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "(گفته می‌شود) او را بگیرید، پس به زنجیرش کشید.",
-      "translation_pashto": "69-30 (وبه ویل شي:) دى ونیسئ، پس دى په زلونو سره وتړئ  "
+      "translation_pashto": "69-30 (وبه ویل شي:) دى ونیسئ، پس دى په زلونو سره وتړئ  ",
+      "translation_english": "[It will be said,] “Seize him and shackle him,"
     },
     {
       "number": 31,
@@ -314,7 +344,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "باز او را در دوزخ داخل کنید.",
-      "translation_pashto": "69-31 بیا دى دوزخ ته داخل كړئ  "
+      "translation_pashto": "69-31 بیا دى دوزخ ته داخل كړئ  ",
+      "translation_english": "then make him burn in the Blazing Fire,"
     },
     {
       "number": 32,
@@ -324,7 +355,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "باز در زنجیری که درازی آن هفتاد گز باشد او را ببندید.",
-      "translation_pashto": "69-32 بیا په یو  ځنځیر كې چې د هغه ګزونه (اوږدوالى) اویا ګزه وي،  پس دى ننه باسئ  "
+      "translation_pashto": "69-32 بیا په یو  ځنځیر كې چې د هغه ګزونه (اوږدوالى) اویا ګزه وي،  پس دى ننه باسئ  ",
+      "translation_english": "then tie him up with a chain of seventy cubits long."
     },
     {
       "number": 33,
@@ -334,7 +366,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "چون او به الله بزرگ ایمان نمی‌آورد.",
-      "translation_pashto": "69-33 بېشكه  ده په ډېر لوى الله باندې ایمان نه راوړ"
+      "translation_pashto": "69-33 بېشكه  ده په ډېر لوى الله باندې ایمان نه راوړ",
+      "translation_english": "For he did not believe in Allah, the Most Great,"
     },
     {
       "number": 34,
@@ -344,7 +377,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و (مردم را) بر طعام دادن مسکین ترغیب نمی‌کرد.",
-      "translation_pashto": "69-34 او مسكین ته په طعام وركولو يې ترغیب نه وركاوه  "
+      "translation_pashto": "69-34 او مسكین ته په طعام وركولو يې ترغیب نه وركاوه  ",
+      "translation_english": "nor did he encourage feeding the needy."
     },
     {
       "number": 35,
@@ -354,7 +388,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "پس او امروز در این جا هیچ دوست مهربانی ندارد.",
-      "translation_pashto": "69-35 نو  د ده لپاره دلته نن ورځ هېڅ دوست نشته  "
+      "translation_pashto": "69-35 نو  د ده لپاره دلته نن ورځ هېڅ دوست نشته  ",
+      "translation_english": "So Today he will have no close friend here,"
     },
     {
       "number": 36,
@@ -364,7 +399,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و نه طعامی دارد جز زرداب دوزخیان.",
-      "translation_pashto": "69-36 او  نه څه طعام، سوا له غِسلین (د دوزخیانو د زخمونو د وینې او زوې) نه  "
+      "translation_pashto": "69-36 او  نه څه طعام، سوا له غِسلین (د دوزخیانو د زخمونو د وینې او زوې) نه  ",
+      "translation_english": "nor any food except the discharge of wounds,"
     },
     {
       "number": 37,
@@ -374,7 +410,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "که جز گنهگاران آن را نمی‌خورند.",
-      "translation_pashto": "69-37 چې دغه نه خوري مګر (دغه) خطاكاران "
+      "translation_pashto": "69-37 چې دغه نه خوري مګر (دغه) خطاكاران ",
+      "translation_english": "none will eat it except the sinners.”"
     },
     {
       "number": 38,
@@ -384,7 +421,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "پس قسم به آنچه می‌بینید.",
-      "translation_pashto": "69-38 نو زه قسم خورم په هغو شیانو چې تاسو يې وینئ "
+      "translation_pashto": "69-38 نو زه قسم خورم په هغو شیانو چې تاسو يې وینئ ",
+      "translation_english": "I swear by what you can see."
     },
     {
       "number": 39,
@@ -394,7 +432,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و به آنچه نمی‌بینید.",
-      "translation_pashto": "69-39 او په هغو چې تاسو يې نه وینئ  "
+      "translation_pashto": "69-39 او په هغو چې تاسو يې نه وینئ  ",
+      "translation_english": "and what you cannot see!"
     },
     {
       "number": 40,
@@ -404,7 +443,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "که این (قرآن) سخن فرستاده (فرشته) بزرگوار است.",
-      "translation_pashto": "69-40 بېشكه دا (قرآن) یقینًا د ډېر عزتمن رسول خبره ده "
+      "translation_pashto": "69-40 بېشكه دا (قرآن) یقینًا د ډېر عزتمن رسول خبره ده ",
+      "translation_english": "Indeed, this is the word of a noble Messenger,"
     },
     {
       "number": 41,
@@ -414,7 +454,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و آن سخن شاعری نیست، اندکی ایمان می‌آورید.",
-      "translation_pashto": "69-41 او دا د كوم شاعر خبره بېخي نه ده، تاسو ډېر لږ ایمان راوړئ "
+      "translation_pashto": "69-41 او دا د كوم شاعر خبره بېخي نه ده، تاسو ډېر لږ ایمان راوړئ ",
+      "translation_english": "and it is not the word of a poet; little do you believe!"
     },
     {
       "number": 42,
@@ -424,7 +465,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و (قرآن) گفتۀ غیبگو و کاهن نیست، اندکی عبرت می‌گیرید.",
-      "translation_pashto": "69-42 او نه د كاهن (ترویتي) خبره ده، تاسو ډېر لږ پند اخلئ"
+      "translation_pashto": "69-42 او نه د كاهن (ترویتي) خبره ده، تاسو ډېر لږ پند اخلئ",
+      "translation_english": "Nor is it the word of a soothsayer; little do you take heed!"
     },
     {
       "number": 43,
@@ -434,7 +476,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "(بلکه) از سوی پروردگار جهانیان نازل شده است.",
-      "translation_pashto": "69-43 (دغه قرآن) د رب العلمین نازلول دي  "
+      "translation_pashto": "69-43 (دغه قرآن) د رب العلمین نازلول دي  ",
+      "translation_english": "It is a revelation from the Lord of the worlds."
     },
     {
       "number": 44,
@@ -444,7 +487,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و اگر (بالفرض) پیغمبر بعضی از سخنان را به دروغ به ما نسبت می‌کرد.",
-      "translation_pashto": "69-44 او كه ده پر مونږ باندې له ځانه ځینې خبرې جوړې كړې وى  "
+      "translation_pashto": "69-44 او كه ده پر مونږ باندې له ځانه ځینې خبرې جوړې كړې وى  ",
+      "translation_english": "If he had falsely attributed something to Us,"
     },
     {
       "number": 45,
@@ -454,7 +498,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "البته او را با قدرت می‌گرفتیم.",
-      "translation_pashto": "69-45 (نو) مونږ به د ده ښى لاس نیولى وى  "
+      "translation_pashto": "69-45 (نو) مونږ به د ده ښى لاس نیولى وى  ",
+      "translation_english": "We would have surely seized him by the right hand,"
     },
     {
       "number": 46,
@@ -464,7 +509,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "باز رگ دلش را قطع می‌کردیم.",
-      "translation_pashto": "69-46 بیا به مونږ خامخا د ده د زړه رګ پرې كړى وى "
+      "translation_pashto": "69-46 بیا به مونږ خامخا د ده د زړه رګ پرې كړى وى ",
+      "translation_english": "then severed his aorta,"
     },
     {
       "number": 47,
@@ -474,7 +520,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "پس هیچ کس از شما منع کننده‌ای (جزای ما) از او نیست.",
-      "translation_pashto": "69-47 نو په  تاسو كې به هیڅوك له ده نه منع كوونكي نه وو "
+      "translation_pashto": "69-47 نو په  تاسو كې به هیڅوك له ده نه منع كوونكي نه وو ",
+      "translation_english": "and none of you could have rescued him."
     },
     {
       "number": 48,
@@ -484,7 +531,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "البته قرآن برای پرهیزگاران نصیحت و پند است.",
-      "translation_pashto": "69-48 او بېشكه دا (قرآن) د پرهېزګارانو لپاره پند (او نصیحت) دى "
+      "translation_pashto": "69-48 او بېشكه دا (قرآن) د پرهېزګارانو لپاره پند (او نصیحت) دى ",
+      "translation_english": "This [Qur’an] is indeed a reminder for those who are righteous."
     },
     {
       "number": 49,
@@ -494,7 +542,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و البته ما به یقین می‌دانیم که برخی از شما تکذیب‌کننده‌اید.",
-      "translation_pashto": "69-49 او بېشكه مونږ خامخا پوهېږو چې یقینًا په تاسو كې تكذیب كوونكي دي "
+      "translation_pashto": "69-49 او بېشكه مونږ خامخا پوهېږو چې یقینًا په تاسو كې تكذیب كوونكي دي ",
+      "translation_english": "And We surely know that some of you will be deniers,"
     },
     {
       "number": 50,
@@ -504,7 +553,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و البته آن (تکذیب) مایۀ حسرت بر کافران است.",
-      "translation_pashto": "69-50 او بېشكه دغه (قرآن) په كافرانو باندې د پښېمانۍ سبب دى"
+      "translation_pashto": "69-50 او بېشكه دغه (قرآن) په كافرانو باندې د پښېمانۍ سبب دى",
+      "translation_english": "and it will certainly be a source of regret for the disbelievers."
     },
     {
       "number": 51,
@@ -514,7 +564,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "و البته آن (قرآن سخن) حق و یقینی است.",
-      "translation_pashto": "69-51 او بېشكه دغه (قرآن) خامخا یقیني حق دى"
+      "translation_pashto": "69-51 او بېشكه دغه (قرآن) خامخا یقیني حق دى",
+      "translation_english": "And this is indeed the absolute truth."
     },
     {
       "number": 52,
@@ -524,7 +575,8 @@
       "hizb": 57,
       "sajda": false,
       "translation_dari": "پس نام پروردگار بزرگت را به پاکی یاد کن.",
-      "translation_pashto": "69-52 نو ته د خپل عظیم رب د نوم تسبیح وایه"
+      "translation_pashto": "69-52 نو ته د خپل عظیم رب د نوم تسبیح وایه",
+      "translation_english": "So glorify the name of your Lord, the Most Great."
     }
   ]
 }

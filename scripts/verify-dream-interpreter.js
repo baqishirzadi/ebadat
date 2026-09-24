@@ -17,6 +17,7 @@ const hook = read('hooks/useDreamInterpreter.ts');
 const chat = read('app/dream-chat.tsx');
 const copy = read('constants/dreamInterpreterCopy.ts');
 const widget = read('components/home/DreamInterpreterWidget.tsx');
+const homeComposerRow = read('components/home/HomeComposerRow.tsx');
 const homeGreen = read('components/home/HomeGreenSection.tsx');
 const more = read('app/(tabs)/more.tsx');
 
@@ -78,7 +79,9 @@ if (!copy.includes('2000')) fail('Input max length constant is missing');
 if (!copy.includes('خواب دیدم باران می‌بارد')) fail('Dari chips are missing');
 if (!copy.includes('خوب مې ولید چې باران ورېږي')) fail('Pashto chips are missing');
 
-if (!widget.includes('home-dream-input')) fail('Home dream composer testID is missing');
+if (!widget.includes('testIDPrefix="home-dream"') || !homeComposerRow.includes('${testIDPrefix}-input')) {
+  fail('Home dream composer testID is missing');
+}
 if (!widget.includes("router.push('/dream-chat'")) fail('Home dream widget must open /dream-chat');
 if (!homeGreen.includes('DreamInterpreterWidget')) fail('Green card must include the dream composer');
 if (!more.includes("route: '/dream-chat'")) fail('More hub is missing the dream interpreter row');

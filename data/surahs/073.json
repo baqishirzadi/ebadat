@@ -14,7 +14,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "ای جامه بخود پیچیده!",
-      "translation_pashto": "73-1 اى په ځان پورې جامه راتاوونكیه!"
+      "translation_pashto": "73-1 اى په ځان پورې جامه راتاوونكیه!",
+      "translation_english": "O you the enwrapped one,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "شب برخیز مگر اندکی (از آن را).",
-      "translation_pashto": "73-2 په شپه كې لمانځه ته ودرېږه مګر لږه حصه (نه)"
+      "translation_pashto": "73-2 په شپه كې لمانځه ته ودرېږه مګر لږه حصه (نه)",
+      "translation_english": "Stand up in prayer at night except a little,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(برخیز) نیمی از شب یا اندکی از آن کم کن.",
-      "translation_pashto": "73-3 چې  هغه د دغې (شپې) نیمه (ده)، یا ته له دغې (نیمې) نه لږ څه  كم شه"
+      "translation_pashto": "73-3 چې  هغه د دغې (شپې) نیمه (ده)، یا ته له دغې (نیمې) نه لږ څه  كم شه",
+      "translation_english": "half of it, or a little less,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "یا اندکی بر آن بیافزای و قرآن را با تدبر و تأمل و شمرده بخوان.",
-      "translation_pashto": "73-4 یا ته په  دغې (نیمې) باندې څه اضافه وكړه او قرآن ښه ښكاره واضح لوله، واضح لوستل"
+      "translation_pashto": "73-4 یا ته په  دغې (نیمې) باندې څه اضافه وكړه او قرآن ښه ښكاره واضح لوله، واضح لوستل",
+      "translation_english": "or a little more, and recite the Qur’an at a measured pace."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(چون) ما کلام نهایت گران (و موجب مسئولیت را) بر تو القا خواهیم کرد.",
-      "translation_pashto": "73-5 بېشكه مونږ  به خامخا په تا باندې ډېر دروند قول  نازلوو"
+      "translation_pashto": "73-5 بېشكه مونږ  به خامخا په تا باندې ډېر دروند قول  نازلوو",
+      "translation_english": "We will send down upon you a heavy Word."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "به يقين شب زنده داری در تزکیه و اصلاح نفس مؤثرتر و در سخن استوارتر است.",
-      "translation_pashto": "73-6 بېشكه د شپې پورته كېدل، دغه  (پاڅېدل) د (نفس) د پايمال كولو په لحاظ ډېر سخت دي او د (قرآن د) ویلو په لحاظ ډېر سموونكي دي"
+      "translation_pashto": "73-6 بېشكه د شپې پورته كېدل، دغه  (پاڅېدل) د (نفس) د پايمال كولو په لحاظ ډېر سخت دي او د (قرآن د) ویلو په لحاظ ډېر سموونكي دي",
+      "translation_english": "Indeed, worship at night is more effective and more conducive to proper recitation."
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "چون تو در روز مشغولیت و تلاش طولانی داری.",
-      "translation_pashto": "73-7 بېشكه تا لره  په ورځ كې ډېره اوږده  مشغولتیا (مصروفيت) وي"
+      "translation_pashto": "73-7 بېشكه تا لره  په ورځ كې ډېره اوږده  مشغولتیا (مصروفيت) وي",
+      "translation_english": "In the daytime, you have plenty of time for your worldly matters."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و نام پروردگارت را یاد کن و (از هر چیز صرف نظر کرده و) به‌سوی او متوجه شو.",
-      "translation_pashto": "73-8 او ته د خپل رب نوم یادوه او  ده ته (له هر څه نه) جدا شه، پوره جدا كېدل"
+      "translation_pashto": "73-8 او ته د خپل رب نوم یادوه او  ده ته (له هر څه نه) جدا شه، پوره جدا كېدل",
+      "translation_english": "And remember the Name of your Lord, and devote yourself completely to Him."
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(چون) او پروردگار مشرق و مغرب و (همه جهات) است که هیچ معبودی (بر حق) به جز او نیست، پس او را وکیل و کارساز خود قرار ده.",
-      "translation_pashto": "73-9 (دغه الله) د مشرق او مغرب رب دى، نشته هېڅ لايق د عبادت مګر هم دى دى، نو ته دى (خپل) كار ساز ونیسه"
+      "translation_pashto": "73-9 (دغه الله) د مشرق او مغرب رب دى، نشته هېڅ لايق د عبادت مګر هم دى دى، نو ته دى (خپل) كار ساز ونیسه",
+      "translation_english": "[He is] Lord of the east and the west; none has the right to be worshiped except Him, so take Him as the Disposer of your affairs."
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و بر آنچه (کفار) می‌گویند صبر کن و به شیوۀ نیکو از ایشان دوری کن.",
-      "translation_pashto": "73-10 او ته په هغو خبرو صبر كوه چې دوى يې وايي او ته دوى پرېږده ډېر ښه پرېښودل"
+      "translation_pashto": "73-10 او ته په هغو خبرو صبر كوه چې دوى يې وايي او ته دوى پرېږده ډېر ښه پرېښودل",
+      "translation_english": "Bear patiently what they say, and avoid them in a gracious manner."
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و مرا با این تکذیب کنندگان برخوردار از ناز و نعمت تنها بگذار و آنها را اندکی مهلت ده.",
-      "translation_pashto": "73-11 او پرېږده ما او دروغ ګڼونكي چې د نعمت والا دي او دوى ته لږ مهلت وركړه"
+      "translation_pashto": "73-11 او پرېږده ما او دروغ ګڼونكي چې د نعمت والا دي او دوى ته لږ مهلت وركړه",
+      "translation_english": "Leave to Me the deniers who are having a life of luxury, and bear with them for a little while."
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(که) نزد ما (سزاهایی چون) زنجیرهای سنگین و آتش سوزان دوزخ است.",
-      "translation_pashto": "73-12 بېشكه زمونږ سره درانه ځنځیرونه (زولنې) او سوځوونكى  اور  دى"
+      "translation_pashto": "73-12 بېشكه زمونږ سره درانه ځنځیرونه (زولنې) او سوځوونكى  اور  دى",
+      "translation_english": "Indeed, We have heavy shackles and a Blazing Fire,"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "و (نزد ما) غذایی گلوگیر و عذاب دردناک است.",
-      "translation_pashto": "73-13 او داسې طعام دى چې په مرۍ كې نښتونكى دى او ډېر دردوونكى عذاب دى"
+      "translation_pashto": "73-13 او داسې طعام دى چې په مرۍ كې نښتونكى دى او ډېر دردوونكى عذاب دى",
+      "translation_english": "and food that chokes, and a painful punishment,"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "(این عذاب) در روزی خواهد بود که زمین و کوه‌ها بجنبند و کوه‌ها به توده‌های پراگنده و تپه‌های ریگ روان تبدیل می‌گردند.",
-      "translation_pashto": "73-14 په هغې ورځ كې چې ځمكه او غرونه به خوځېږي او غرونه به  د شګو روانې ډېرۍ شي"
+      "translation_pashto": "73-14 په هغې ورځ كې چې ځمكه او غرونه به خوځېږي او غرونه به  د شګو روانې ډېرۍ شي",
+      "translation_english": "on the Day when the earth and the mountains will convulse, and the mountains will be like dunes of loose sand."
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "البته ما پیغمبری را که بر شما گواه است به‌سوی شما فرستادیم، چنانکه به‌سوی فرعون پیغمبری فرستادیم.",
-      "translation_pashto": "73-15 بېشكه مونږ تاسو ته رسول  درلېږلى دى، چې په تاسو (د قیامت په ورځ) شاهد دى، لكه څنګه چې مونږ فرعون ته رسول لېږلى و"
+      "translation_pashto": "73-15 بېشكه مونږ تاسو ته رسول  درلېږلى دى، چې په تاسو (د قیامت په ورځ) شاهد دى، لكه څنګه چې مونږ فرعون ته رسول لېږلى و",
+      "translation_english": "Indeed, We have sent to you a Messenger to be a witness over you, just as We sent to Pharaoh a messenger."
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس فرعون از آن رسول نافرمانی کرد (لذا) او را به سزای سخت گرفتیم.",
-      "translation_pashto": "73-16 نو  فرعون د دغه رسول نافرماني وكړه، نو مونږ دغه (فرعون) ونیولو په  سختو نیولو سره"
+      "translation_pashto": "73-16 نو  فرعون د دغه رسول نافرماني وكړه، نو مونږ دغه (فرعون) ونیولو په  سختو نیولو سره",
+      "translation_english": "But Pharaoh disobeyed the messenger, so We seized him with a severe punishment."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "پس اگر کفر ورزید، چگونه خود را از (عذاب) روزی که کودکان را پیر می‌گرداند نگاه می‌دارید؟!",
-      "translation_pashto": "73-17 كه تاسو كافر شئ، نو تاسو به ځان له هغې ورځې نه څنګه وساتئ چې (واړه) هلكان به سپین ږیري (بوډاګان) وګرځوي"
+      "translation_pashto": "73-17 كه تاسو كافر شئ، نو تاسو به ځان له هغې ورځې نه څنګه وساتئ چې (واړه) هلكان به سپین ږیري (بوډاګان) وګرځوي",
+      "translation_english": "If you disbelieve, then how will you protect yourselves against a Day that will turn children’s hair gray?"
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "آسمان به سبب (هول) آن روز شق می‌شود (چون) وعدۀ او حتما شدنی است.",
-      "translation_pashto": "73-18 اسمان په دغې (ورځ) كې چاودېدونكى دى، د دغه (الله) وعده كېدونكې ده"
+      "translation_pashto": "73-18 اسمان په دغې (ورځ) كې چاودېدونكى دى، د دغه (الله) وعده كېدونكې ده",
+      "translation_english": "It will cause the sky to break asunder. His promise will certainly be fulfilled."
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "البته این (قرآن) پند است، پس هرکس که بخواهد راهی به‌سوی پروردگار خود در پیش بگیرد.",
-      "translation_pashto": "73-19 بېشكه دا (ایتونه) نصیحت (او پند) دى، نو هغه څوك چې غواړي چې خپل رب ته تلونكې لاره غوره كړي، (نو غوره دې كړي)"
+      "translation_pashto": "73-19 بېشكه دا (ایتونه) نصیحت (او پند) دى، نو هغه څوك چې غواړي چې خپل رب ته تلونكې لاره غوره كړي، (نو غوره دې كړي)",
+      "translation_english": "Indeed, this is a reminder; so whoever wills may take a way to his Lord."
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 58,
       "sajda": false,
       "translation_dari": "همانا پروردگارت می‌داند که تو و گروهی از کسانی که با تو هستند نزدیک به دو سوم شب، یا نصف و یا یک سوم آن را به نماز می‌ایستید. و الله شب و روز را اندازه می‌کند. الله دانست که شما نمی‌توانید حساب آن را داشته باشید، لذا از شما درگذشت، پس آن مقدار از قرآن را (در نماز) بخوانید که برایتان میسر است و الله دانست که برخی از شما بیمار خواهند بود و دیگرانی هم برای به دست آوردن نعمت الله در زمین مسافرت می‌کنند و گروهی دیگر در راه الله جهاد می‌کنند. پس آنچه میسر باشد از آن بخوانید. و نماز را برپا کنید و زکات را بپردازید و به الله قرض الحسنه بدهید (در راه او به اخلاص انفاق کنید). و کارهای نیکی را که برای خودتان پیش می‌فرستید آن را نزد الله بهتر و با پاداش بیشتر خواهید یافت. و از الله مغفرت بخواهید که یقینا الله آمرزندۀ مهربان است.",
-      "translation_pashto": "73-20 بېشكه ستا رب یقینًا په دې پوهېږي چې ته د شپې (په درې برخو كې) له دوو نه لږ كم (لمانحهٔ ته) پاڅېږې او (كله) د دې نیمه برخه او (كله) دریمه برخه (هم) او له هغو كسانو نه یوه ډله هم چې له تا سره دي او الله شپه او ورځ مقدار (او اندازه) كوي، دى په دې پوه دى چې بېشكه حقیقت دا دى چې تاسو به هرګز د دې طاقت ونه لرئ، نو ده پر تاسو  باندې رجوع وكړه، نو تاسو له قرآنه هومره لولئ چې اسان وي. دى په دې پوه دى چې یقینًا شان دا دى چې په تاسو كې به مریضان وي او نور به په ځمكه كې سفر كوي، چې د الله فضل به لټوي او نور به د الله په لاره كې جنګ كوي، نو تاسو له دغه (قرآنه) هومره لولئ چې (درته) اسان وي او لمونځ قايموئ او زكاۃت ادا كوئ او  الله ته قرض وركوئ، ډېر ښكلى قرض او هر هغه څه چې تاسو يې د خپلو ځانونو لپاره له څه خیره مخكې لېږئ (نو) هغه به تاسو له الله سره  ومومئ.  دغه ډېر غوره او د اجر په لحاظ ډېر لوى دي او تاسو له الله نه بخښنه وغواړئ، بېشكه الله ډېر بخښونكى، بې حده رحم كوونكى دى"
+      "translation_pashto": "73-20 بېشكه ستا رب یقینًا په دې پوهېږي چې ته د شپې (په درې برخو كې) له دوو نه لږ كم (لمانحهٔ ته) پاڅېږې او (كله) د دې نیمه برخه او (كله) دریمه برخه (هم) او له هغو كسانو نه یوه ډله هم چې له تا سره دي او الله شپه او ورځ مقدار (او اندازه) كوي، دى په دې پوه دى چې بېشكه حقیقت دا دى چې تاسو به هرګز د دې طاقت ونه لرئ، نو ده پر تاسو  باندې رجوع وكړه، نو تاسو له قرآنه هومره لولئ چې اسان وي. دى په دې پوه دى چې یقینًا شان دا دى چې په تاسو كې به مریضان وي او نور به په ځمكه كې سفر كوي، چې د الله فضل به لټوي او نور به د الله په لاره كې جنګ كوي، نو تاسو له دغه (قرآنه) هومره لولئ چې (درته) اسان وي او لمونځ قايموئ او زكاۃت ادا كوئ او  الله ته قرض وركوئ، ډېر ښكلى قرض او هر هغه څه چې تاسو يې د خپلو ځانونو لپاره له څه خیره مخكې لېږئ (نو) هغه به تاسو له الله سره  ومومئ.  دغه ډېر غوره او د اجر په لحاظ ډېر لوى دي او تاسو له الله نه بخښنه وغواړئ، بېشكه الله ډېر بخښونكى، بې حده رحم كوونكى دى",
+      "translation_english": "Indeed, your Lord knows that you [O Prophet] stand up in prayer for nearly two-thirds of the night, or half of it, or one-third of it, as do others among your companions. Allah determines the night and the day; He knows that you [Muslims] cannot keep an accurate count of it, so He pardoned you. Recite then as much of the Qur’an as is easy for you [in the night prayers]. He knows that there are some among you who will be ill, and others traveling in the land, seeking the grace of Allah, and others fighting in Allah’s way. So recite as much of it as is easy for you; establish prayer and give zakah; and lend to Allah a goodly loan. Whatever good you send forth for yourselves, you will find it with Allah, much better in condition and much greater in reward. And seek forgiveness of Allah, for indeed Allah is All-Forgiving, Most-Merciful."
     }
   ]
 }

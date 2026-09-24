@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا ندیدی که پروردگارت با صاحبان فیل چه کرد؟",
-      "translation_pashto": "105-1 ایا ته نه يې خبر شوى چې ستا رب له فیل والاو سره څنګه كار كړى و؟"
+      "translation_pashto": "105-1 ایا ته نه يې خبر شوى چې ستا رب له فیل والاو سره څنګه كار كړى و؟",
+      "translation_english": "Have you not seen how your Lord dealt with the people of the Elephant?"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا نیرنگ آن‌ها را تباه و باطل نگردانید؟",
-      "translation_pashto": "105-2 ایا د هغوى چل (او مكر) يې په ګمراهۍ او زیان كې نه و ګرځولى؟"
+      "translation_pashto": "105-2 ایا د هغوى چل (او مكر) يې په ګمراهۍ او زیان كې نه و ګرځولى؟",
+      "translation_english": "Did He not turn their scheme into a total loss?"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و بر آن‌ها پرنده‌های (کوچک) را گروه گروه فرستاد.",
-      "translation_pashto": "105-3 او په دوى باندې يې ډلې ډلې مرغان راخوشې كړل"
+      "translation_pashto": "105-3 او په دوى باندې يې ډلې ډلې مرغان راخوشې كړل",
+      "translation_english": "He sent against them swarms of birds,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "که بر آن‌ها سنگریزه‌های از گل انداختند.",
-      "translation_pashto": "105-4 چې دغو (مرغانو) به دوى لره په داسې كاڼو ویشتل چې له خټو نه جوړ، په اور پخ شوي وو"
+      "translation_pashto": "105-4 چې دغو (مرغانو) به دوى لره په داسې كاڼو ویشتل چې له خټو نه جوړ، په اور پخ شوي وو",
+      "translation_english": "pelting them with stones of baked clay,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس (الله) آن‌ها را مانند کاه جویده‌شده ساخت.",
-      "translation_pashto": "105-5 نو دغه (خلق) يې د خوړل شویو وښو په شان وګرځول"
+      "translation_pashto": "105-5 نو دغه (خلق) يې د خوړل شویو وښو په شان وګرځول",
+      "translation_english": "leaving them like chewed-up chaff."
     }
   ]
 }

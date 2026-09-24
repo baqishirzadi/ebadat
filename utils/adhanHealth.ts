@@ -14,7 +14,7 @@ import {
   scheduleNativeSystemTestAlarm,
 } from '@/utils/nativeAdhanScheduler';
 import { triggerPrayerScheduleFromBackground } from '@/utils/prayerScheduleCoordinator';
-import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { tAdhanPermission, type AdhanPermissionLocale } from '@/utils/i18n/adhanPermissions';
 import { isOemAutostartAcknowledged } from '@/utils/prayerOnboarding';
 
 const BATTERY_NUDGE_SNOOZE_KEY = '@ebadat/battery_nudge_snooze_until';
@@ -319,27 +319,42 @@ export async function openAdhanChannelSettings(): Promise<boolean> {
   return openNativeAdhanChannelSettings();
 }
 
-function formatRelativeTime(timestampMs: number | null): string {
-  if (timestampMs == null) return 'هنوز ثبت نشده';
-  const diffMs = Date.now() - timestampMs;
-  if (diffMs < 60_000) return 'همین الان';
-  const minutes = Math.floor(diffMs / 60_000);
-  if (minutes < 60) return `${minutes} دقیقه پیش`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 48) return `${hours} ساعت پیش`;
-  const days = Math.floor(hours / 24);
-  return `${days} روز پیش`;
+function healthText(
+  locale: AdhanPermissionLocale,
+  dari: string,
+  pashto: string,
+  english?: string,
+): string {
+  if (locale === 'en') return english ?? dari;
+  return locale === 'ps' ? pashto : dari;
 }
 
-function formatClockTime(timestampMs: number | null): string {
+function formatRelativeTime(timestampMs: number | null, locale: AdhanPermissionLocale = 'fa'): string {
+  if (timestampMs == null) return healthText(locale, 'هنوز ثبت نشده', 'لا نه دی ثبت شوی', 'not recorded yet');
+  const diffMs = Date.now() - timestampMs;
+  if (diffMs < 60_000) return healthText(locale, 'همین الان', 'همدا اوس', 'just now');
+  const minutes = Math.floor(diffMs / 60_000);
+  if (minutes < 60) {
+    return healthText(locale, `${minutes} دقیقه پیش`, `${minutes} دقیقې مخکې`, `${minutes} min ago`);
+  }
+  const hours = Math.floor(minutes / 60);
+  if (hours < 48) {
+    return healthText(locale, `${hours} ساعت پیش`, `${hours} ساعته مخکې`, `${hours} h ago`);
+  }
+  const days = Math.floor(hours / 24);
+  return healthText(locale, `${days} روز پیش`, `${days} ورځې مخکې`, `${days} days ago`);
+}
+
+function formatClockTime(timestampMs: number | null, locale: AdhanPermissionLocale = 'fa'): string {
   if (timestampMs == null) return '—';
-  return new Date(timestampMs).toLocaleTimeString('fa-AF', {
+  const tag = locale === 'ps' ? 'ps-AF' : locale === 'en' ? 'en' : 'fa-AF';
+  return new Date(timestampMs).toLocaleTimeString(tag, {
     hour: '2-digit',
     minute: '2-digit',
   });
 }
 
-export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
+export async function buildAdhanHealthReport(locale: AdhanPermissionLocale = 'fa'): Promise<AdhanHealthReport> {
   const health = await fetchAdhanHealth();
   const channelHealth = Platform.OS === 'android' ? await getNativeAdhanChannelHealth() : null;
   const firedEvents = Platform.OS === 'android' ? await getNativeAdhanFiredEvents() : [];
@@ -347,24 +362,24 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
 
   checks.push({
     id: 'notifications',
-    title: tAdhanPermission('adhanPermissions.health.notifications', 'fa'),
+    title: tAdhanPermission('adhanPermissions.health.notifications', locale),
     body: health.notificationsEnabled
-      ? 'اعلان‌ها در سطح سیستم فعال است.'
-      : 'اعلان‌ها غیرفعال است؛ بدون آن اذان زمان‌بندی نمی‌شود.',
+      ? healthText(locale, 'اعلان‌ها در سطح سیستم فعال است.', 'خبرتیاوې په سیسټم کې فعالې دي.', 'Notifications are enabled at the system level.')
+      : healthText(locale, 'اعلان‌ها غیرفعال است؛ بدون آن اذان زمان‌بندی نمی‌شود.', 'خبرتیاوې بندې دي؛ له هغو پرته اذان نه شي مهالوېش کېدای.', 'Notifications are off; without them the adhan cannot be scheduled.'),
     status: health.notificationsEnabled ? 'pass' : 'fail',
-    fixLabel: health.notificationsEnabled ? undefined : tAdhanPermission('adhanPermissions.health.fix', 'fa'),
+    fixLabel: health.notificationsEnabled ? undefined : tAdhanPermission('adhanPermissions.health.fix', locale),
   });
 
   if (Platform.OS === 'android' && channelHealth) {
     const channelsOk = channelHealth.fajrHealthy && channelHealth.regularHealthy;
     checks.push({
       id: 'channels',
-      title: 'کانال‌های اذان',
+      title: healthText(locale, 'کانال‌های اذان', 'د اذان چینلونه', 'Adhan channels'),
       body: channelsOk
-        ? 'کانال‌های اذان با صدا و اولویت بالا فعال هستند.'
-        : 'کانال اذان خاموش، بی‌صدا یا با اولویت پایین است.',
+        ? healthText(locale, 'کانال‌های اذان با صدا و اولویت بالا فعال هستند.', 'د اذان چینلونه له غږ او لوړ لومړیتوب سره فعال دي.', 'Adhan channels are active with sound and high priority.')
+        : healthText(locale, 'کانال اذان خاموش، بی‌صدا یا با اولویت پایین است.', 'د اذان چینل بند، بې‌غږه یا ټیټ لومړیتوب لري.', 'The adhan channel is off, silent, or set to low priority.'),
       status: channelsOk ? 'pass' : 'fail',
-      fixLabel: channelsOk ? undefined : 'تنظیم کانال‌ها',
+      fixLabel: channelsOk ? undefined : healthText(locale, 'تنظیم کانال‌ها', 'د چینلونو امستنې', 'Channel settings'),
     });
   }
 
@@ -374,25 +389,25 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
     if (health.canScheduleExactAlarms) {
       checks.push({
         id: 'exact_alarm',
-        title: tAdhanPermission('adhanPermissions.health.exactAlarm', 'fa'),
-        body: 'دستگاه اجازه زمان‌بندی دقیق اذان را دارد.',
+        title: tAdhanPermission('adhanPermissions.health.exactAlarm', locale),
+        body: healthText(locale, 'دستگاه اجازه زمان‌بندی دقیق اذان را دارد.', 'وسیله د اذان د دقیق مهالوېش اجازه لري.', 'This device allows exact adhan scheduling.'),
         status: 'pass',
       });
     } else if (isDegraded || (sdkInt >= 33 && health.scheduledAlarmCount > 0)) {
       checks.push({
         id: 'exact_alarm',
-        title: tAdhanPermission('adhanPermissions.health.exactAlarm', 'fa'),
-        body: 'اذان با تأخیر احتمالی زمان‌بندی شده؛ برای دقت کامل «زنگ دقیق» را فعال کنید.',
+        title: tAdhanPermission('adhanPermissions.health.exactAlarm', locale),
+        body: healthText(locale, 'اذان با تأخیر احتمالی زمان‌بندی شده؛ برای دقت کامل «زنگ دقیق» را فعال کنید.', 'اذان ښايي په ځنډ مهالوېش شوی وي؛ د کره وخت لپاره «دقیق زنګ» فعال کړئ.', 'The adhan may fire late; enable "exact alarms" for full accuracy.'),
         status: 'warn',
-        fixLabel: tAdhanPermission('adhanPermissions.health.fix', 'fa'),
+        fixLabel: tAdhanPermission('adhanPermissions.health.fix', locale),
       });
     } else {
       checks.push({
         id: 'exact_alarm',
-        title: tAdhanPermission('adhanPermissions.health.exactAlarm', 'fa'),
-        body: 'اجازه «زنگ‌ها و یادآوری‌ها» فعال نیست؛ اذان ممکن است دقیق نباشد.',
+        title: tAdhanPermission('adhanPermissions.health.exactAlarm', locale),
+        body: healthText(locale, 'اجازه «زنگ‌ها و یادآوری‌ها» فعال نیست؛ اذان ممکن است دقیق نباشد.', 'د «الارمونو او یادونو» اجازه فعاله نه ده؛ د اذان وخت ښايي دقیق نه وي.', 'The "alarms and reminders" permission is off; adhan times may not be exact.'),
         status: 'fail',
-        fixLabel: tAdhanPermission('adhanPermissions.health.fix', 'fa'),
+        fixLabel: tAdhanPermission('adhanPermissions.health.fix', locale),
       });
     }
   }
@@ -400,12 +415,12 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
   if (Platform.OS === 'android') {
     checks.push({
       id: 'battery',
-      title: tAdhanPermission('adhanPermissions.health.battery', 'fa'),
+      title: tAdhanPermission('adhanPermissions.health.battery', locale),
       body: health.isIgnoringBatteryOptimizations
-        ? 'محدودیت باتری برای عبادت اعمال نشده است.'
-        : 'بهینه‌سازی باتری ممکن است اذان را متوقف کند.',
+        ? healthText(locale, 'محدودیت باتری برای عبادت اعمال نشده است.', 'په عبادت اپ د بیټرۍ محدودیت نشته.', 'No battery restriction is applied to Ebadat.')
+        : healthText(locale, 'بهینه‌سازی باتری ممکن است اذان را متوقف کند.', 'د بیټرۍ سپما ښايي اذان ودروي.', 'Battery optimization may stop the adhan.'),
       status: health.isIgnoringBatteryOptimizations ? 'pass' : 'warn',
-      fixLabel: health.isIgnoringBatteryOptimizations ? undefined : tAdhanPermission('adhanPermissions.health.fix', 'fa'),
+      fixLabel: health.isIgnoringBatteryOptimizations ? undefined : tAdhanPermission('adhanPermissions.health.fix', locale),
     });
 
     const autostartAck = await isOemAutostartAcknowledged();
@@ -413,24 +428,24 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
     if (isAggressiveOem(health.manufacturer)) {
       checks.push({
         id: 'autostart',
-        title: tAdhanPermission('adhanPermissions.health.autostart', 'fa'),
+        title: tAdhanPermission('adhanPermissions.health.autostart', locale),
         body: autostartAck
-          ? 'راهنمای شروع خودکار بررسی شد.'
-          : 'گوشی شما ممکن است اجرای پس‌زمینه را محدود کند.',
+          ? healthText(locale, 'راهنمای شروع خودکار بررسی شد.', 'د اتومات پیل لارښود وکتل شو.', 'The autostart guide has been reviewed.')
+          : healthText(locale, 'گوشی شما ممکن است اجرای پس‌زمینه را محدود کند.', 'ستاسو موبایل ښايي په شالید کې چلول محدود کړي.', 'Your phone may restrict background execution.'),
         status: needsAutostart ? 'warn' : 'pass',
-        fixLabel: needsAutostart ? tAdhanPermission('adhanPermissions.health.fix', 'fa') : undefined,
+        fixLabel: needsAutostart ? tAdhanPermission('adhanPermissions.health.fix', locale) : undefined,
       });
     }
   }
 
   checks.push({
     id: 'config',
-    title: 'تنظیمات اذان',
+    title: healthText(locale, 'تنظیمات اذان', 'د اذان امستنې', 'Adhan settings'),
     body: health.configPresent && health.masterEnabled
-      ? 'اذان در برنامه فعال است.'
+      ? healthText(locale, 'اذان در برنامه فعال است.', 'اذان په اپ کې فعال دی.', 'The adhan is enabled in the app.')
       : health.configPresent
-        ? 'اذان در برنامه غیرفعال است.'
-        : 'تنظیمات اذان هنوز همگام نشده؛ شهر را انتخاب کنید.',
+        ? healthText(locale, 'اذان در برنامه غیرفعال است.', 'اذان په اپ کې بند دی.', 'The adhan is disabled in the app.')
+        : healthText(locale, 'تنظیمات اذان هنوز همگام نشده؛ شهر را انتخاب کنید.', 'د اذان امستنې لا همغږې شوې نه دي؛ ښار وټاکئ.', 'Adhan settings are not synced yet; choose your city.'),
     status: health.configPresent && health.masterEnabled ? 'pass' : health.configPresent ? 'info' : 'fail',
   });
 
@@ -438,23 +453,28 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
     const alarmsOk = health.scheduledAlarmCount > 0;
     checks.push({
       id: 'scheduled',
-      title: 'اذان‌های زمان‌بندی‌شده',
+      title: healthText(locale, 'اذان‌های زمان‌بندی‌شده', 'مهالوېش شوي اذانونه', 'Scheduled adhans'),
       body: alarmsOk
-        ? `${health.scheduledAlarmCount} اذان آینده ثبت شده${health.nextAlarmAtMs ? `؛ بعدی ساعت ${formatClockTime(health.nextAlarmAtMs)}` : ''}.`
-        : 'هیچ اذانی زمان‌بندی نشده است.',
+        ? healthText(
+            locale,
+            `${health.scheduledAlarmCount} اذان آینده ثبت شده${health.nextAlarmAtMs ? `؛ بعدی ساعت ${formatClockTime(health.nextAlarmAtMs, locale)}` : ''}.`,
+            `${health.scheduledAlarmCount} راتلونکي اذانونه ثبت شوي${health.nextAlarmAtMs ? `؛ بل یې په ${formatClockTime(health.nextAlarmAtMs, locale)}` : ''}.`,
+            `${health.scheduledAlarmCount} upcoming adhans registered${health.nextAlarmAtMs ? `; next at ${formatClockTime(health.nextAlarmAtMs, locale)}` : ''}.`,
+          )
+        : healthText(locale, 'هیچ اذانی زمان‌بندی نشده است.', 'هېڅ اذان نه دی مهالوېش شوی.', 'No adhan is scheduled.'),
       status: alarmsOk ? 'pass' : 'fail',
-      fixLabel: alarmsOk ? undefined : 'بازیابی',
+      fixLabel: alarmsOk ? undefined : healthText(locale, 'بازیابی', 'بیا رغول', 'Repair'),
     });
   }
 
   checks.push({
     id: 'maghrib_policy',
-    title: 'تأخیر نماز شام',
+    title: healthText(locale, 'تأخیر نماز شام', 'د ماښام لمانځه ځنډ', 'Maghrib delay'),
     body: health.maghribOffsetMinutes === 5
-      ? 'اذان شام در همهٔ موقعیت‌ها دقیقاً ۵ دقیقه پس از وقت محاسبه‌شده زمان‌بندی می‌شود.'
-      : 'سیاست تأخیر ۵ دقیقه‌ای نماز شام فعال نیست؛ زمان‌بندی را بازیابی کنید.',
+      ? healthText(locale, 'اذان شام در همهٔ موقعیت‌ها دقیقاً ۵ دقیقه پس از وقت محاسبه‌شده زمان‌بندی می‌شود.', 'د ماښام اذان په ټولو ځایونو کې د حساب شوي وخت څخه دقیقې ۵ دقیقې وروسته مهالوېش کېږي.', 'The Maghrib adhan is scheduled exactly 5 minutes after the calculated time everywhere.')
+      : healthText(locale, 'سیاست تأخیر ۵ دقیقه‌ای نماز شام فعال نیست؛ زمان‌بندی را بازیابی کنید.', 'د ماښام لمانځه د ۵ دقیقو ځنډ تګلاره فعاله نه ده؛ مهالوېش بیا جوړ کړئ.', 'The 5-minute Maghrib delay is not applied; repair the schedule.'),
     status: health.maghribOffsetMinutes === 5 ? 'pass' : 'fail',
-    fixLabel: health.maghribOffsetMinutes === 5 ? undefined : 'بازیابی',
+    fixLabel: health.maghribOffsetMinutes === 5 ? undefined : healthText(locale, 'بازیابی', 'بیا رغول', 'Repair'),
   });
 
   if (Platform.OS === 'android' && health.masterEnabled) {
@@ -462,16 +482,21 @@ export async function buildAdhanHealthReport(): Promise<AdhanHealthReport> {
     const maintenanceStale = health.issues.includes('alarms_not_firing');
     checks.push({
       id: 'delivery',
-      title: 'تحویل واقعی اذان',
+      title: healthText(locale, 'تحویل واقعی اذان', 'د اذان واقعي رسېدل', 'Actual adhan delivery'),
       body: maintenanceStale
-        ? 'سیستم بیش از ۲۶ ساعت هیچ نگهداری/اذانی اجرا نکرده؛ ممکن است زنگ‌ها واقعاً نرسند.'
+        ? healthText(locale, 'سیستم بیش از ۲۶ ساعت هیچ نگهداری/اذانی اجرا نکرده؛ ممکن است زنگ‌ها واقعاً نرسند.', 'سیسټم له ۲۶ ساعتونو ډېر هېڅ ساتنه یا اذان نه دی اجرا کړی؛ ښايي زنګونه ونه رسېږي.', 'The system has run no maintenance or adhan for over 26 hours; alarms may not actually arrive.')
         : lastAdhan
-          ? `آخرین اجرا ${formatRelativeTime(lastAdhan.actualFireAtMs)}${lastAdhan.delaySeconds > 0 ? ` (تأخیر ${lastAdhan.delaySeconds} ثانیه)` : ''}.`
+          ? healthText(
+              locale,
+              `آخرین اجرا ${formatRelativeTime(lastAdhan.actualFireAtMs, locale)}${lastAdhan.delaySeconds > 0 ? ` (تأخیر ${lastAdhan.delaySeconds} ثانیه)` : ''}.`,
+              `وروستی اجرا ${formatRelativeTime(lastAdhan.actualFireAtMs, locale)}${lastAdhan.delaySeconds > 0 ? ` (ځنډ ${lastAdhan.delaySeconds} ثانیې)` : ''}.`,
+              `Last fired ${formatRelativeTime(lastAdhan.actualFireAtMs, locale)}${lastAdhan.delaySeconds > 0 ? ` (${lastAdhan.delaySeconds}s late)` : ''}.`,
+            )
           : health.lastMaintenanceFiredAtMs
-            ? `نگهداری سیستم ${formatRelativeTime(health.lastMaintenanceFiredAtMs)} اجرا شد؛ هنوز اذانی ثبت نشده.`
-            : 'هنوز اذانی اجرا نشده؛ تست زنده را امتحان کنید.',
+            ? healthText(locale, `نگهداری سیستم ${formatRelativeTime(health.lastMaintenanceFiredAtMs, locale)} اجرا شد؛ هنوز اذانی ثبت نشده.`, `د سیسټم ساتنه ${formatRelativeTime(health.lastMaintenanceFiredAtMs, locale)} اجرا شوه؛ لا اذان نه دی ثبت شوی.`, `System maintenance ran ${formatRelativeTime(health.lastMaintenanceFiredAtMs, locale)}; no adhan recorded yet.`)
+            : healthText(locale, 'هنوز اذانی اجرا نشده؛ تست زنده را امتحان کنید.', 'تر اوسه اذان نه دی اجرا شوی؛ ژوندۍ ازموینه وکړئ.', 'No adhan has fired yet; try the live test.'),
       status: maintenanceStale ? 'fail' : lastAdhan ? 'pass' : 'info',
-      fixLabel: maintenanceStale || !lastAdhan ? 'تست زنده' : undefined,
+      fixLabel: maintenanceStale || !lastAdhan ? healthText(locale, 'تست زنده', 'ژوندۍ ازموینه', 'Live test') : undefined,
     });
   }
 
@@ -522,45 +547,83 @@ export async function runVerifiedAdhanSystemTest(
   return { passed: false, event: null };
 }
 
-export function getHealthBannerMessage(issues: string[]): { title: string; body: string } {
+export function getHealthBannerMessage(
+  issues: string[],
+  locale: AdhanPermissionLocale = 'fa',
+): { title: string; body: string } {
   if (issues.includes('notification_denied')) {
     return {
-      title: 'اعلان‌ها غیرفعال است',
-      body: 'برای دریافت اذان، اجازه اعلان را در تنظیمات گوشی فعال کنید.',
+      title: healthText(locale, 'اعلان‌ها غیرفعال است', 'خبرتیاوې بندې دي', 'Notifications are off'),
+      body: healthText(
+        locale,
+        'برای دریافت اذان، اجازه اعلان را در تنظیمات گوشی فعال کنید.',
+        'د اذان د اورېدو لپاره د خبرتیا اجازه په امستنو کې فعاله کړئ.',
+        'To receive the adhan, allow notifications in your phone settings.',
+      ),
     };
   }
   if (issues.includes('exact_alarm_missing')) {
     return {
-      title: 'اذان دقیق غیرفعال است',
-      body: 'برای پخش به‌موقع اذان، اجازه «زنگ هشدار و ساعت» را در تنظیمات اندروید فعال کنید.',
+      title: healthText(locale, 'اذان دقیق غیرفعال است', 'دقیق اذان بند دی', 'Exact adhan is off'),
+      body: healthText(
+        locale,
+        'برای پخش به‌موقع اذان، اجازه «زنگ هشدار و ساعت» را در تنظیمات اندروید فعال کنید.',
+        'د اذان د پر وخت غږولو لپاره د «الارم او ساعت» اجازه په اندروید امستنو کې فعاله کړئ.',
+        'To play the adhan on time, allow "alarms and reminders" in Android settings.',
+      ),
     };
   }
   if (issues.includes('no_alarms_scheduled')) {
     return {
-      title: 'اذان زمان‌بندی نشده',
-      body: 'برای بازیابی اذان، یک‌بار برنامه را باز کنید یا دکمه زیر را بزنید.',
+      title: healthText(locale, 'اذان زمان‌بندی نشده', 'اذان مهالوېش شوی نه دی', 'Adhan is not scheduled'),
+      body: healthText(
+        locale,
+        'برای بازیابی اذان، یک‌بار برنامه را باز کنید یا دکمه زیر را بزنید.',
+        'د اذان د بیا رغولو لپاره یو ځل اپ پرانیزئ یا لاندې تڼۍ کېکاږئ.',
+        'Open the app once or tap the button below to restore the adhan.',
+      ),
     };
   }
   if (issues.includes('alarms_not_firing')) {
     return {
-      title: 'اذان ممکن است نرسد',
-      body: 'سیستم چند روز است اذان را اجرا نکرده. بررسی سلامت را باز کنید و «بازیابی» را بزنید.',
+      title: healthText(locale, 'اذان ممکن است نرسد', 'اذان ښايي ونه رسېږي', 'The adhan may not arrive'),
+      body: healthText(
+        locale,
+        'سیستم چند روز است اذان را اجرا نکرده. بررسی سلامت را باز کنید و «بازیابی» را بزنید.',
+        'سیسټم څو ورځې کیږي اذان نه دی اجرا کړی. روغتیا وګورئ او «بیا رغول» کېکاږئ.',
+        'The system has not fired the adhan for days. Open the health check and tap "Repair".',
+      ),
     };
   }
   if (issues.includes('channel_unhealthy')) {
     return {
-      title: 'کانال اذان مشکل دارد',
-      body: 'صدا یا اولویت کانال اذان در تنظیمات گوشی تغییر کرده است.',
+      title: healthText(locale, 'کانال اذان مشکل دارد', 'د اذان چینل ستونزه لري', 'The adhan channel has a problem'),
+      body: healthText(
+        locale,
+        'صدا یا اولویت کانال اذان در تنظیمات گوشی تغییر کرده است.',
+        'د اذان د چینل غږ یا لومړیتوب په امستنو کې بدل شوی دی.',
+        'The adhan channel sound or priority was changed in phone settings.',
+      ),
     };
   }
   if (issues.includes('config_missing')) {
     return {
-      title: 'تنظیمات اذان ناقص است',
-      body: 'شهر خود را انتخاب کنید تا اذان به‌درستی فعال شود.',
+      title: healthText(locale, 'تنظیمات اذان ناقص است', 'د اذان امستنې بشپړې نه دي', 'Adhan settings are incomplete'),
+      body: healthText(
+        locale,
+        'شهر خود را انتخاب کنید تا اذان به‌درستی فعال شود.',
+        'خپل ښار وټاکئ څو اذان سم فعال شي.',
+        'Choose your city so the adhan works correctly.',
+      ),
     };
   }
   return {
-    title: 'مشکل در اذان',
-    body: 'برای رفع مشکل، تنظیمات را بررسی کنید.',
+    title: healthText(locale, 'مشکل در اذان', 'د اذان ستونزه', 'Adhan problem'),
+    body: healthText(
+      locale,
+      'برای رفع مشکل، تنظیمات را بررسی کنید.',
+      'د ستونزې د حل لپاره امستنې وګورئ.',
+      'Check your settings to resolve the problem.',
+    ),
   };
 }

@@ -11,9 +11,11 @@ import { usePrayer } from '@/context/PrayerContext';
 import { normalizeCityKey } from '@/utils/cities';
 import { toArabicNumerals } from '@/utils/numbers';
 import { getDisplayQiblaBearing } from '@/utils/prayerTimes';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export function QiblaCard() {
   const { theme } = useApp();
+  const { t } = useI18n();
   const { state } = usePrayer();
   const bearing = Math.round(
     getDisplayQiblaBearing(state.location, normalizeCityKey(state.settings.selectedCity)),
@@ -29,9 +31,9 @@ export function QiblaCard() {
           <MaterialIcons name="navigation" size={28} color={theme.accent} style={{ transform: [{ rotate: `${bearing}deg` }] }} />
         </RtlView>
         <RtlView style={styles.textBlock}>
-          <RtlText align="center" style={[styles.title, { color: theme.text }]}>قبله‌نما</RtlText>
+          <RtlText align="center" style={[styles.title, { color: theme.text }]}>{t('home.qibla.title')}</RtlText>
           <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
-            جهت قبله: {toArabicNumerals(bearing)}°
+            {t('home.qibla.direction')}: {toArabicNumerals(bearing)}°
           </RtlText>
         </RtlView>
         <MaterialIcons name="chevron-left" size={24} color={theme.textSecondary} />

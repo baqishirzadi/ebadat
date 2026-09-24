@@ -47,7 +47,6 @@ export function NaatCard({
 }: Props) {
   const { theme, state } = useApp();
   const language = state.preferences.appLanguage;
-  const isPashto = language === 'pashto';
   const isDownloading = naat.downloadProgress !== undefined && !naat.isDownloaded;
   const downloadStatus = naat.isDownloaded
     ? tUi('آفلاین', language)
@@ -68,10 +67,10 @@ export function NaatCard({
         <View style={[styles.accentLine, { backgroundColor: `${theme.bookmark}80` }]} />
       </View>
       <View style={styles.headerRow}>
-        <RtlText align="center" style={[styles.title, { color: theme.text }]}>{isPashto ? naat.title_ps : naat.title_fa}</RtlText>
+        <RtlText align="center" style={[styles.title, { color: theme.text }]}>
+          {language === 'pashto' ? naat.title_ps : naat.title_fa}
+        </RtlText>
       </View>
-
-      <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>{isPashto ? naat.title_fa : naat.title_ps}</RtlText>
       <RtlText align="center" style={[styles.reciter, { color: theme.textSecondary }]}>{naat.reciter_name}</RtlText>
 
       {isActive && durationMillis > 0 && (

@@ -13,10 +13,13 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect, useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { BackHandler, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { BackHandler, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 
 // Import prayer learning data
 import prayerData from '@/data/prayerLearning.json';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 // Type definitions for prayer data
 interface PrayerSection {
@@ -62,8 +65,13 @@ const iconMap: Record<string, IconName> = {
 
 export default function PrayerLearningScreen() {
   const { theme, state } = useApp();
+  const { t, content, contentList, fontFamily, language } = useI18n();
   const router = useRouter();
   const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
+  const bodyFont = language === 'pashto' ? pashtoFontFamily : fontFamily || 'Vazirmatn';
+  const titleFont = language === 'pashto' ? pashtoFontFamily : 'Vazirmatn-Bold';
+  const bodyLineHeight = language === 'pashto' ? 42 : 30;
+  const itemLineHeight = language === 'pashto' ? 38 : 26;
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedSection, setSelectedSection] = useState<string | null>(null);
 
@@ -112,8 +120,8 @@ export default function PrayerLearningScreen() {
       {/* Header */}
       <ScreenHeader
         icon="school"
-        title="آموزش نماز"
-        subtitle="طبق مذهب امام ابو حنیفه رحمه‌الله"
+        title={t('prayerLearning.title')}
+        subtitle={t('prayerLearning.subtitle')}
       />
 
       {/* Categories Grid */}
@@ -135,16 +143,13 @@ export default function PrayerLearningScreen() {
                 color={category.color}
               />
             </View>
-            <Text style={[styles.categoryTitle, { color: theme.text }]}>
-              {category.title_dari}
-            </Text>
-            <Text style={[styles.categoryTitlePashto, { color: theme.textSecondary, fontFamily: pashtoFontFamily }]}>
-              {category.title_pashto}
-            </Text>
+            <LocalizedText style={[styles.categoryTitle, { color: theme.text, fontFamily: titleFont }]}>
+              {content(category, 'title')}
+            </LocalizedText>
             <View style={[styles.sectionCount, { backgroundColor: category.color }]}>
-              <Text style={styles.sectionCountText}>
+              <LocalizedText style={styles.sectionCountText}>
                 {category.sections.length}
-              </Text>
+              </LocalizedText>
             </View>
           </Pressable>
         ))}
@@ -152,12 +157,12 @@ export default function PrayerLearningScreen() {
 
       {/* Attribution */}
       <View style={styles.attribution}>
-        <Text style={[styles.attributionText, { color: theme.textSecondary }]}>
-          محتوا بر اساس فقه حنفی تهیه شده است
-        </Text>
-        <Text style={[styles.attributionText, { color: theme.textSecondary }]}>
-          منبع: کتب معتبر فقه حنفی
-        </Text>
+        <LocalizedText style={[styles.attributionText, { color: theme.textSecondary }]}>
+          {t('prayerLearning.attribution')}
+        </LocalizedText>
+        <LocalizedText style={[styles.attributionText, { color: theme.textSecondary }]}>
+          {t('prayerLearning.source')}
+        </LocalizedText>
       </View>
 
       {/* Dua Request Feature Tile */}
@@ -183,8 +188,7 @@ export default function PrayerLearningScreen() {
             size={40}
             color="#fff"
           />
-          <CenteredText style={styles.headerTitle}>{currentCategory.title_dari}</CenteredText>
-          <CenteredText style={styles.headerSubtitle}>{currentCategory.title_pashto}</CenteredText>
+          <CenteredText style={[styles.headerTitle, { fontFamily: titleFont }]}>{content(currentCategory, 'title')}</CenteredText>
         </View>
 
         {/* Sections */}
@@ -200,15 +204,12 @@ export default function PrayerLearningScreen() {
               ]}
             >
               <View style={[styles.sectionNumber, { backgroundColor: currentCategory.color }]}>
-                <Text style={styles.sectionNumberText}>{index + 1}</Text>
+                <LocalizedText style={styles.sectionNumberText}>{index + 1}</LocalizedText>
               </View>
               <View style={styles.sectionInfo}>
-                <Text style={[styles.sectionTitle, { color: theme.text }]}>
-                  {section.title_dari}
-                </Text>
-                <Text style={[styles.sectionTitlePashto, { color: theme.textSecondary, fontFamily: pashtoFontFamily }]}>
-                  {section.title_pashto}
-                </Text>
+                <LocalizedText style={[styles.sectionTitle, { color: theme.text, fontFamily: titleFont }]}>
+                  {content(section, 'title')}
+                </LocalizedText>
               </View>
               <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
             </Pressable>
@@ -229,36 +230,18 @@ export default function PrayerLearningScreen() {
           <Pressable onPress={handleBack} style={styles.backButton}>
             <MaterialIcons name="arrow-forward" size={24} color="#fff" />
           </Pressable>
-          <CenteredText style={styles.headerTitle}>{currentSection.title_dari}</CenteredText>
-          <CenteredText style={styles.headerSubtitle}>{currentSection.title_pashto}</CenteredText>
+          <CenteredText style={[styles.headerTitle, { fontFamily: titleFont }]}>{content(currentSection, 'title')}</CenteredText>
         </View>
 
         <View style={styles.detailContent}>
           {/* Content */}
-          {currentSection.content_dari && (
+          {content(currentSection, 'content') ? (
             <View style={[styles.contentBlock, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-              <View style={styles.langRow}>
-                <View style={[styles.langBadge, { backgroundColor: theme.tint }]}>
-                  <Text style={styles.langBadgeText}>دری</Text>
-                </View>
-              </View>
-              <Text style={[styles.contentText, { color: theme.text }]}>
-                {currentSection.content_dari}
-              </Text>
-              {currentSection.content_pashto && (
-                <>
-                  <View style={[styles.langRow, { marginTop: Spacing.md }]}>
-                    <View style={[styles.langBadge, { backgroundColor: '#FF7043' }]}>
-                      <Text style={styles.langBadgeText}>پښتو</Text>
-                    </View>
-                  </View>
-                  <Text style={[styles.contentText, { color: theme.text, fontFamily: pashtoFontFamily, lineHeight: 42 }]}>
-                    {currentSection.content_pashto}
-                  </Text>
-                </>
-              )}
+              <LocalizedText style={[styles.contentText, { color: theme.text, fontFamily: bodyFont, lineHeight: bodyLineHeight }]}>
+                {content(currentSection, 'content')}
+              </LocalizedText>
             </View>
-          )}
+          ) : null}
 
           {/* Items list */}
           {currentSection.items && (
@@ -267,18 +250,13 @@ export default function PrayerLearningScreen() {
                 <View key={index} style={[styles.itemRow, index > 0 && { borderTopWidth: 1, borderTopColor: theme.cardBorder }]}>
                   {item.number && (
                     <View style={[styles.itemNumber, { backgroundColor: currentCategory.color }]}>
-                      <Text style={styles.itemNumberText}>{item.number}</Text>
+                      <LocalizedText style={styles.itemNumberText}>{item.number}</LocalizedText>
                     </View>
                   )}
                   <View style={styles.itemContent}>
-                    <Text style={[styles.itemText, { color: theme.text }]}>
-                      {item.dari}
-                    </Text>
-                    {item.pashto && (
-                      <Text style={[styles.itemTextPashto, { color: theme.textSecondary, fontFamily: pashtoFontFamily }]}>
-                        {item.pashto}
-                      </Text>
-                    )}
+                    <LocalizedText style={[styles.itemText, { color: theme.text, fontFamily: bodyFont, lineHeight: itemLineHeight }]}>
+                      {content(item, null)}
+                    </LocalizedText>
                   </View>
                 </View>
               ))}
@@ -289,6 +267,7 @@ export default function PrayerLearningScreen() {
           {currentSection.steps && (
             <PrayerStepGuide
               steps={currentSection.steps}
+              showBothLanguages={false}
             />
           )}
 
@@ -303,67 +282,41 @@ export default function PrayerLearningScreen() {
               ]}
             >
               <View style={styles.janazahJumpContent}>
-                <Text style={[styles.janazahJumpTitle, { color: theme.text }]}>
-                  مشاهده دعای نماز جنازه
-                </Text>
-                <Text
+                <LocalizedText style={[styles.janazahJumpTitle, { color: theme.text }]}>
+                  {t('prayerLearning.janazahDua')}
+                </LocalizedText>
+                <LocalizedText
                   style={[
                     styles.janazahJumpSubtitle,
-                    { color: theme.textSecondary, fontFamily: pashtoFontFamily },
+                    { color: theme.textSecondary, fontFamily: bodyFont },
                   ]}
                 >
-                  د جنازې د لمانځه دعا وګورئ
-                </Text>
+                  {t('prayerLearning.janazahDua')}
+                </LocalizedText>
               </View>
               <MaterialIcons name="arrow-back" size={22} color={theme.tint} />
             </Pressable>
           )}
 
           {/* Steps (Dari/Pashto string arrays) */}
-          {(currentSection.steps_dari || currentSection.steps_pashto) && (
+          {contentList(currentSection, 'steps').length > 0 && (
             <View style={[styles.stepsBlock, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-              {currentSection.steps_dari && (
-                <View style={styles.stepsSection}>
-                  <View style={[styles.langBadge, { backgroundColor: theme.tint }]}>
-                    <Text style={styles.langBadgeText}>دری</Text>
-                  </View>
-                  {currentSection.steps_dari.map((step: string, index: number) => (
-                    <View key={index} style={styles.stepItem}>
-                      <View style={[styles.stepBullet, { backgroundColor: currentCategory?.color || theme.tint }]}>
-                        <Text style={styles.stepBulletText}>{index + 1}</Text>
-                      </View>
-                      <Text style={[styles.stepText, { color: theme.text }]}>{step}</Text>
+              <View style={styles.stepsSection}>
+                {contentList(currentSection, 'steps').map((step: string, index: number) => (
+                  <View key={index} style={styles.stepItem}>
+                    <View style={[styles.stepBullet, { backgroundColor: currentCategory?.color || theme.tint }]}>
+                      <LocalizedText style={styles.stepBulletText}>{index + 1}</LocalizedText>
                     </View>
-                  ))}
-                </View>
-              )}
-              {currentSection.steps_pashto && (
-                <View style={[styles.stepsSection, { marginTop: currentSection.steps_dari ? Spacing.md : 0 }]}>
-                  <View style={[styles.langBadge, { backgroundColor: '#FF7043' }]}>
-                    <Text style={styles.langBadgeText}>پښتو</Text>
+                    <LocalizedText style={[styles.stepText, { color: theme.text, fontFamily: bodyFont, lineHeight: itemLineHeight }]}>{step}</LocalizedText>
                   </View>
-                  {currentSection.steps_pashto.map((step: string, index: number) => (
-                    <View key={index} style={styles.stepItem}>
-                      <View style={[styles.stepBullet, { backgroundColor: currentCategory?.color || theme.tint }]}>
-                        <Text style={styles.stepBulletText}>{index + 1}</Text>
-                      </View>
-                      <Text style={[styles.stepText, { color: theme.text, fontFamily: pashtoFontFamily, lineHeight: 38 }]}>{step}</Text>
-                    </View>
-                  ))}
-                </View>
-              )}
+                ))}
+              </View>
             </View>
           )}
 
           {/* Arabic text with translations */}
           {currentSection.arabic && (
-            <PrayerTextBlock
-              arabic={currentSection.arabic}
-              translationDari={currentSection.translation_dari}
-              translationPashto={currentSection.translation_pashto}
-              instructionDari={currentSection.instruction_dari}
-              instructionPashto={currentSection.instruction_pashto}
-            />
+            <PrayerTextBlock arabic={currentSection.arabic} source={currentSection} />
           )}
 
           {/* Prayers list (for five prayers) */}
@@ -375,39 +328,38 @@ export default function PrayerLearningScreen() {
                   style={[styles.prayerCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
                 >
                   <View style={[styles.prayerHeader, { backgroundColor: currentCategory.color }]}>
-                    <Text style={styles.prayerName}>{prayer.name_dari}</Text>
-                    <Text style={[styles.prayerNamePashto, { fontFamily: pashtoFontFamily }]}>{prayer.name_pashto}</Text>
+                    <LocalizedText style={[styles.prayerName, { fontFamily: titleFont }]}>{content(prayer, 'name')}</LocalizedText>
                   </View>
                   <View style={styles.prayerDetails}>
                     <View style={styles.prayerRow}>
-                      <Text style={[styles.prayerLabel, { color: theme.textSecondary }]}>فرض:</Text>
-                      <Text style={[styles.prayerValue, { color: theme.text }]}>{prayer.fardh} رکعت</Text>
+                      <LocalizedText style={[styles.prayerLabel, { color: theme.textSecondary }]}>{t('prayerLearning.fardh')}</LocalizedText>
+                      <LocalizedText style={[styles.prayerValue, { color: theme.text }]}>{prayer.fardh} {t('prayerLearning.rakat')}</LocalizedText>
                     </View>
                     {prayer.sunnah_before > 0 && (
                       <View style={styles.prayerRow}>
-                        <Text style={[styles.prayerLabel, { color: theme.textSecondary }]}>سنت قبل:</Text>
-                        <Text style={[styles.prayerValue, { color: theme.text }]}>{prayer.sunnah_before} رکعت</Text>
+                        <LocalizedText style={[styles.prayerLabel, { color: theme.textSecondary }]}>{t('prayerLearning.sunnahBefore')}</LocalizedText>
+                        <LocalizedText style={[styles.prayerValue, { color: theme.text }]}>{prayer.sunnah_before} {t('prayerLearning.rakat')}</LocalizedText>
                       </View>
                     )}
                     {prayer.sunnah_after > 0 && (
                       <View style={styles.prayerRow}>
-                        <Text style={[styles.prayerLabel, { color: theme.textSecondary }]}>سنت بعد:</Text>
-                        <Text style={[styles.prayerValue, { color: theme.text }]}>{prayer.sunnah_after} رکعت</Text>
+                        <LocalizedText style={[styles.prayerLabel, { color: theme.textSecondary }]}>{t('prayerLearning.sunnahAfter')}</LocalizedText>
+                        <LocalizedText style={[styles.prayerValue, { color: theme.text }]}>{prayer.sunnah_after} {t('prayerLearning.rakat')}</LocalizedText>
                       </View>
                     )}
                     {prayer.witr && (
                       <View style={styles.prayerRow}>
-                        <Text style={[styles.prayerLabel, { color: theme.textSecondary }]}>وتر:</Text>
-                        <Text style={[styles.prayerValue, { color: theme.text }]}>{prayer.witr} رکعت</Text>
+                        <LocalizedText style={[styles.prayerLabel, { color: theme.textSecondary }]}>{t('prayerLearning.witr')}</LocalizedText>
+                        <LocalizedText style={[styles.prayerValue, { color: theme.text }]}>{prayer.witr} {t('prayerLearning.rakat')}</LocalizedText>
                       </View>
                     )}
                     <View style={[styles.totalRow, { backgroundColor: `${currentCategory.color}20` }]}>
-                      <Text style={[styles.totalLabel, { color: theme.text }]}>مجموع:</Text>
-                      <Text style={[styles.totalValue, { color: currentCategory.color }]}>{prayer.total} رکعت</Text>
+                      <LocalizedText style={[styles.totalLabel, { color: theme.text }]}>{t('prayerLearning.total')}</LocalizedText>
+                      <LocalizedText style={[styles.totalValue, { color: currentCategory.color }]}>{prayer.total} {t('prayerLearning.rakat')}</LocalizedText>
                     </View>
-                    <Text style={[styles.prayerNotes, { color: theme.textSecondary }]}>
-                      {prayer.notes_dari}
-                    </Text>
+                    <LocalizedText style={[styles.prayerNotes, { color: theme.textSecondary }]}>
+                      {content(prayer, 'notes')}
+                    </LocalizedText>
                   </View>
                 </View>
               ))}
@@ -417,11 +369,11 @@ export default function PrayerLearningScreen() {
           {/* Qunoot for Witr */}
           {currentSection.qunoot_arabic && (
             <View style={styles.qunootSection}>
-              <Text style={[styles.qunootTitle, { color: theme.text }]}>دعای قنوت</Text>
+              <LocalizedText style={[styles.qunootTitle, { color: theme.text, fontFamily: titleFont }]}>{t('prayerLearning.qunootDua')}</LocalizedText>
               <PrayerTextBlock
                 arabic={currentSection.qunoot_arabic}
-                translationDari={currentSection.qunoot_dari}
-                translationPashto={currentSection.qunoot_pashto}
+                source={currentSection}
+                translationField="qunoot"
               />
             </View>
           )}
@@ -429,20 +381,18 @@ export default function PrayerLearningScreen() {
           {/* Janazah duas */}
           {currentSection.for_adult && (
             <View style={styles.janazahDuas}>
-              <Text style={[styles.duaTitle, { color: theme.text }]}>دعای بزرگسال</Text>
+              <LocalizedText style={[styles.duaTitle, { color: theme.text, fontFamily: titleFont }]}>{t('prayerLearning.adultDua')}</LocalizedText>
               <PrayerTextBlock
                 arabic={currentSection.for_adult.arabic}
-                translationDari={currentSection.for_adult.translation_dari}
-                translationPashto={currentSection.for_adult.translation_pashto}
+                source={currentSection.for_adult}
               />
 
               {currentSection.for_child && (
                 <>
-                  <Text style={[styles.duaTitle, { color: theme.text, marginTop: Spacing.lg }]}>دعای کودک</Text>
+                  <LocalizedText style={[styles.duaTitle, { color: theme.text, marginTop: Spacing.lg, fontFamily: titleFont }]}>{t('prayerLearning.childDua')}</LocalizedText>
                   <PrayerTextBlock
                     arabic={currentSection.for_child.arabic}
-                    translationDari={currentSection.for_child.translation_dari}
-                    translationPashto={currentSection.for_child.translation_pashto}
+                    source={currentSection.for_child}
                   />
                 </>
               )}
@@ -452,11 +402,11 @@ export default function PrayerLearningScreen() {
           {/* Response for Qawmah */}
           {currentSection.response_arabic && (
             <View style={[styles.responseBlock, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-              <Text style={[styles.responseLabel, { color: theme.textSecondary }]}>جواب مقتدی:</Text>
+              <LocalizedText style={[styles.responseLabel, { color: theme.textSecondary, fontFamily: bodyFont }]}>{t('prayerLearning.respondent')}</LocalizedText>
               <PrayerTextBlock
                 arabic={currentSection.response_arabic}
-                translationDari={currentSection.response_dari}
-                translationPashto={currentSection.response_pashto}
+                source={currentSection}
+                translationField="response"
               />
             </View>
           )}

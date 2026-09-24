@@ -14,9 +14,11 @@ import { RequestCard } from '@/components/dua/RequestCard';
 import CenteredText from '@/components/CenteredText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export default function DuaRequestsScreen() {
   const { theme } = useApp();
+  const { t } = useI18n();
   const { state, refreshRequests, syncPending, isRequestUnread } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
@@ -50,10 +52,10 @@ export default function DuaRequestsScreen() {
       <View style={styles.emptyContainer}>
       <MaterialIcons name="inbox" size={64} color={theme.textSecondary} />
       <CenteredText style={[styles.emptyTitle, { color: theme.text }]}>
-        درخواستی وجود ندارد
+        {t('dua.index.emptyTitle')}
       </CenteredText>
       <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-        برای درخواست دعای خیر یا مشورت شرعی، دکمه زیر را بزنید
+        {t('dua.index.emptyBody')}
       </CenteredText>
       <Pressable
         onPress={() => router.push('/dua-request/new')}
@@ -64,7 +66,7 @@ export default function DuaRequestsScreen() {
         ]}
       >
         <MaterialIcons name="add" size={20} color="#fff" />
-        <CenteredText style={styles.newButtonText}>درخواست جدید</CenteredText>
+        <CenteredText style={styles.newButtonText}>{t('dua.index.new')}</CenteredText>
       </Pressable>
     </View>
   );
@@ -74,13 +76,13 @@ export default function DuaRequestsScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={styles.header}>
           <CenteredText style={[styles.headerTitle, { color: theme.text }]}>
-            دعای خیر و مشورت شرعی
+            {t('dua.title')}
           </CenteredText>
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.tint} />
           <CenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>
-            در حال بارگذاری...
+            {t('dua.index.loading')}
           </CenteredText>
         </View>
       </View>
@@ -91,7 +93,7 @@ export default function DuaRequestsScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScreenHeader
         variant="toolbar"
-        title="دعای خیر و مشورت شرعی"
+        title={t('dua.title')}
         onBack={handleBack}
         rightAction={
           <Pressable onPress={() => router.push('/dua-request/new')} style={styles.newButtonHeader}>
@@ -103,9 +105,7 @@ export default function DuaRequestsScreen() {
       {/* Description */}
       <View style={[styles.description, { backgroundColor: theme.backgroundSecondary }]}>
         <CenteredText style={[styles.descriptionText, { color: theme.textSecondary }]}>
-          این بخش جهت دریافت دعای خیر، راهنمایی شرعی و نصیحت دینی ایجاد شده است.
-          درخواست‌ها توسط پاسخ‌دهندهٔ منتخب شما بررسی می‌گردد و در موارد خاص،
-          با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
+          {t('dua.index.description')}
         </CenteredText>
       </View>
 

@@ -14,7 +14,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "قسم به آسمانی که دارای برج‌هاست.",
-      "translation_pashto": "85-1 قسم دى په اسمان چې خاوند د برجونو دى"
+      "translation_pashto": "85-1 قسم دى په اسمان چې خاوند د برجونو دى",
+      "translation_english": "By the sky full of constellations,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و قسم به روز موعود (روز قیامت).",
-      "translation_pashto": "85-2 او په وعده كړى شوې ورځې(د قيامت)"
+      "translation_pashto": "85-2 او په وعده كړى شوې ورځې(د قيامت)",
+      "translation_english": "and by the promised Day,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و قسم به شاهد (روز جمعه)، و قسم به مشهود (روز عرفه).",
-      "translation_pashto": "85-3 او په ګواه يا حاضرېدونكي او په هغې (ورځې) چې هغې ته حاضري كولى شي (چې د قيامت ورځ ده)"
+      "translation_pashto": "85-3 او په ګواه يا حاضرېدونكي او په هغې (ورځې) چې هغې ته حاضري كولى شي (چې د قيامت ورځ ده)",
+      "translation_english": "and by the witness and the witnessed,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "اهل خندق‌ها کشته شدند.",
-      "translation_pashto": "85-4 هلاك دې كړى شي خاوندان د خندق"
+      "translation_pashto": "85-4 هلاك دې كړى شي خاوندان د خندق",
+      "translation_english": "cursed be the makers of the trench,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "خندق‌های پر از آتش و دارای هیزم فراوان.",
-      "translation_pashto": "85-5 چې (په كې) اور و د بلېدلو (او لرګو) والا"
+      "translation_pashto": "85-5 چې (په كې) اور و د بلېدلو (او لرګو) والا",
+      "translation_english": "the fire full of fuel,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "وقتی که بر آن (خندق‌ها) نشسته بودند.",
-      "translation_pashto": "85-6 كله چې دوى په (غاړو د) هغو ناست وو"
+      "translation_pashto": "85-6 كله چې دوى په (غاړو د) هغو ناست وو",
+      "translation_english": "when they sat around it,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و آن‌ها بر آنچه با مؤمنان می‌کردند حاضر بودند.",
-      "translation_pashto": "85-7 او دوى هغه څه ته چې دوى به په مومنانو باندې كول؛ حاضر وو"
+      "translation_pashto": "85-7 او دوى هغه څه ته چې دوى به په مومنانو باندې كول؛ حاضر وو",
+      "translation_english": "and were witnessing what they did to the believers."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و آن‌ها از مؤمنان انتقام نگرفتند مگر این که به الله غالب و ستوده ایمان آورده بودند.",
-      "translation_pashto": "85-8 او دوى له دغو (مومنانو) نه هېڅ عیب نه لیده مګر دا چې دوى په الله باندې ایمان راوړى و، چې ډېر غالب، ښه ستايل شوى  دى"
+      "translation_pashto": "85-8 او دوى له دغو (مومنانو) نه هېڅ عیب نه لیده مګر دا چې دوى په الله باندې ایمان راوړى و، چې ډېر غالب، ښه ستايل شوى  دى",
+      "translation_english": "Their only grievance against them was that they believed in Allah, the All-Mighty, the Praiseworthy,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "آن ذاتی که فرمانروایی آسمان‌ها و زمین خاص از اوست و الله بر همه چیز گواه و آگاه است.",
-      "translation_pashto": "85-9 هغه (الله) چې خاص د هغه لپاره د اسمانونو او ځمكې بادشاهي ده او الله په هر شي باندې ښه خبردار (او ګواه) دى"
+      "translation_pashto": "85-9 هغه (الله) چې خاص د هغه لپاره د اسمانونو او ځمكې بادشاهي ده او الله په هر شي باندې ښه خبردار (او ګواه) دى",
+      "translation_english": "to Whom belongs the dominion of the heavens and earth, and Allah is Witness over all things."
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "یقیناً آنانی که مردان و زنان مؤمن را در فتنه انداختند (عذاب دادند) باز توبه نکردند، پس برای آن‌ها عذاب دوزخ و همچنین عذاب سوزنده است.",
-      "translation_pashto": "85-10 بېشكه هغه كسان چې مومنان سړي او مومنې ښځې يې په فتنه (عذاب) كې اچولي وي، بیا يې توبه نه وي ایستلې، نو د دوى لپاره د جهنم (دوزخ) عذاب دى او د دوى لپاره د ډېر سوځوونكي اور عذاب دى"
+      "translation_pashto": "85-10 بېشكه هغه كسان چې مومنان سړي او مومنې ښځې يې په فتنه (عذاب) كې اچولي وي، بیا يې توبه نه وي ایستلې، نو د دوى لپاره د جهنم (دوزخ) عذاب دى او د دوى لپاره د ډېر سوځوونكي اور عذاب دى",
+      "translation_english": "Indeed, for those who tortured the believing men and women, and then did not repent, there will be the punishment of Hell and the punishment of the burning fire."
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "البته آنانی که ایمان آوردند و کارهای نیک کردند باغ‌هایی دارند که از زیر آن جوی‌ها روان است. این است پیروزی بزرگ.",
-      "translation_pashto": "85-11 بېشكه هغه كسان چې ایمان يې راوړى دى او نېك عملونه يې كړي دي د دوى لپاره داسې جنتونه دي چې د هغو له لاندې ولې بهېږي، همدغه ډېره لویه كامیابي ده"
+      "translation_pashto": "85-11 بېشكه هغه كسان چې ایمان يې راوړى دى او نېك عملونه يې كړي دي د دوى لپاره داسې جنتونه دي چې د هغو له لاندې ولې بهېږي، همدغه ډېره لویه كامیابي ده",
+      "translation_english": "But those who believed and did righteous deeds will certainly have gardens under which rivers flow; that is the supreme triumph."
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(لیکن به یاد داشته باش که) البته گرفتِ پروردگار تو بسیار سخت است.",
-      "translation_pashto": "85-12 بېشكه ستا د رب نیول یقینًا ډېر سخت دي"
+      "translation_pashto": "85-12 بېشكه ستا د رب نیول یقینًا ډېر سخت دي",
+      "translation_english": "Indeed, the punishment of your Lord is severe."
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "چون او (آفرینش) را آغاز می‌کند و (بار دوم نیز) او (زندگی هرچیز را) بازمی‌گرداند.",
-      "translation_pashto": "85-13 بېشكه هم دغه (الله) اول ځلې پیدا كوي او دویم ځلې پیدا كوي"
+      "translation_pashto": "85-13 بېشكه هم دغه (الله) اول ځلې پیدا كوي او دویم ځلې پیدا كوي",
+      "translation_english": "Indeed, it is He Who originates [the creation] and then resurrects all,"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و او آمرزنده و دوستدار مؤمنان است.",
-      "translation_pashto": "85-14 او هم دى ډېر بخښونكى، ډېر محبت كوونكى دى"
+      "translation_pashto": "85-14 او هم دى ډېر بخښونكى، ډېر محبت كوونكى دى",
+      "translation_english": "and He is the All-Forgiving, the Most Affectionate,"
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و اوست صاحب عرش دارای مجد و عظمت.",
-      "translation_pashto": "85-15  د عرش مالك دى، لوى شان (او عزت) والا دى"
+      "translation_pashto": "85-15  د عرش مالك دى، لوى شان (او عزت) والا دى",
+      "translation_english": "the Lord of the Glorious Throne;"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "هرچه را بخواهد حتماً انجام می‌دهد.",
-      "translation_pashto": "85-16 ډېر كوونكى دى هغه څه لره چې دى يې اراده وكړي"
+      "translation_pashto": "85-16 ډېر كوونكى دى هغه څه لره چې دى يې اراده وكړي",
+      "translation_english": "He does whatever He wills."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "آیا قصۀ آن لشکرها (که هلاک شدند) به تو رسیده است؟",
-      "translation_pashto": "85-17 ایا تا ته د لښكرو خبر راغلى دى؟"
+      "translation_pashto": "85-17 ایا تا ته د لښكرو خبر راغلى دى؟",
+      "translation_english": "Has there not come to you the story of the forces"
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(لشکریان) فرعون و ثمود.",
-      "translation_pashto": "85-18 چې فرعونیان او ثمودیان وو"
+      "translation_pashto": "85-18 چې فرعونیان او ثمودیان وو",
+      "translation_english": "of Pharaoh and Thamūd?"
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(اما کفار از قصه‌های قرآن عبرت نمی‌گیرند)، بلکه کافران همیشه در پی تکذیب قرآن‌اند.",
-      "translation_pashto": "85-19 بلكې هغه كسان چې كافران شوي دي په دروغ ګڼلو كې (لګیا) دي "
+      "translation_pashto": "85-19 بلكې هغه كسان چې كافران شوي دي په دروغ ګڼلو كې (لګیا) دي ",
+      "translation_english": "But the disbelievers are in persistent denial,"
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و لیکن الله از هر طرف بر آن‌ها احاطه دارد.",
-      "translation_pashto": "85-20 او الله د دوى له چاپېره نه راګېروونكى دى"
+      "translation_pashto": "85-20 او الله د دوى له چاپېره نه راګېروونكى دى",
+      "translation_english": "although Allah encompasses them from all sides."
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(قرآن قابل تکذیب نیست)، بلکه قرآن کتابی بزرگوار و عالی‌قدر است.",
-      "translation_pashto": "85-21 بلكې دغه د لوى قدر والا قرآن دى"
+      "translation_pashto": "85-21 بلكې دغه د لوى قدر والا قرآن دى",
+      "translation_english": "But this is a glorious Qur’an,"
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "که در لوح المحفوظ (لوحۀ که از دسترسِ مخلوقات محفوظ است) ثبت است.",
-      "translation_pashto": "85-22 په لوح محفوظ كې دى"
+      "translation_pashto": "85-22 په لوح محفوظ كې دى",
+      "translation_english": "[inscribed] in a Preserved Tablet."
     }
   ]
 }

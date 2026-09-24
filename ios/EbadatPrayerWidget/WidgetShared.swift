@@ -37,7 +37,10 @@ enum WidgetShared {
         ?? calendar.date(byAdding: .day, value: 1, to: date).map { $0.timeIntervalSince1970 * 1000 }
         ?? stored.nextRefreshAtMs
       return WidgetSnapshot(
-        version: max(stored.version, 3),
+        version: max(stored.version, 6),
+        appLanguage: stored.appLanguage,
+        dariFont: stored.dariFont,
+        pashtoFont: stored.pashtoFont,
         updatedAt: stored.updatedAt,
         cityName: stored.cityName,
         timezone: stored.timezone,
@@ -52,12 +55,14 @@ enum WidgetShared {
         fixedDhuhrLocalTime: stored.fixedDhuhrLocalTime,
         days: nil,
         weekdayDari: calculated.weekdayDari,
+        weekdayPashto: calculated.weekdayPashto,
         shamsiDisplay: calculated.shamsiDisplay,
+        shamsiDisplayPashto: calculated.shamsiDisplayPashto,
         hijriDisplay: calculated.hijriDisplay,
+        hijriDisplayPashto: calculated.hijriDisplayPashto,
         gregorianDisplay: calculated.gregorianDisplay,
         sunriseDisplay: calculated.sunriseDisplay,
-        hadithText: stored.hadithText,
-        hadithSource: stored.hadithSource,
+        sunriseDisplayPashto: calculated.sunriseDisplayPashto,
         currentPrayer: current,
         prayers: calculated.prayers,
         nextRefreshAtMs: next
@@ -76,12 +81,14 @@ enum WidgetShared {
       day = WidgetDaySnapshot(
         dateKey: "",
         weekdayDari: stored.weekdayDari,
+        weekdayPashto: stored.weekdayPashto,
         shamsiDisplay: stored.shamsiDisplay,
+        shamsiDisplayPashto: stored.shamsiDisplayPashto,
         hijriDisplay: stored.hijriDisplay,
+        hijriDisplayPashto: stored.hijriDisplayPashto,
         gregorianDisplay: stored.gregorianDisplay,
         sunriseDisplay: stored.sunriseDisplay,
-        hadithText: stored.hadithText,
-        hadithSource: stored.hadithSource,
+        sunriseDisplayPashto: stored.sunriseDisplayPashto,
         prayers: stored.prayers
       )
     }
@@ -105,7 +112,10 @@ enum WidgetShared {
     }
 
     return WidgetSnapshot(
-      version: max(stored.version, 3),
+      version: max(stored.version, 6),
+      appLanguage: stored.appLanguage,
+      dariFont: stored.dariFont,
+      pashtoFont: stored.pashtoFont,
       updatedAt: stored.updatedAt,
       cityName: stored.cityName,
       timezone: stored.timezone,
@@ -120,12 +130,14 @@ enum WidgetShared {
       fixedDhuhrLocalTime: stored.fixedDhuhrLocalTime,
       days: stored.days,
       weekdayDari: day.weekdayDari,
+      weekdayPashto: day.weekdayPashto,
       shamsiDisplay: day.shamsiDisplay,
+      shamsiDisplayPashto: day.shamsiDisplayPashto,
       hijriDisplay: day.hijriDisplay,
+      hijriDisplayPashto: day.hijriDisplayPashto,
       gregorianDisplay: day.gregorianDisplay,
       sunriseDisplay: day.sunriseDisplay.isEmpty ? stored.sunriseDisplay : day.sunriseDisplay,
-      hadithText: day.hadithText.isEmpty ? stored.hadithText : day.hadithText,
-      hadithSource: day.hadithSource.isEmpty ? stored.hadithSource : day.hadithSource,
+      sunriseDisplayPashto: day.sunriseDisplayPashto ?? stored.sunriseDisplayPashto,
       currentPrayer: current,
       prayers: day.prayers,
       nextRefreshAtMs: nextRefresh
@@ -151,6 +163,7 @@ enum WidgetShared {
             return WidgetPrayerEntry(
               key: entry.key,
               labelDari: entry.labelDari,
+              labelPashto: entry.labelPashto,
               time12h: formatter.string(from: Date(timeIntervalSince1970: adjustedMs / 1000)),
               atMs: adjustedMs
             )
@@ -160,12 +173,14 @@ enum WidgetShared {
       return WidgetDaySnapshot(
         dateKey: storedDay.dateKey,
         weekdayDari: refreshedDate.weekdayDari,
+        weekdayPashto: refreshedDate.weekdayPashto,
         shamsiDisplay: refreshedDate.shamsiDisplay,
+        shamsiDisplayPashto: refreshedDate.shamsiDisplayPashto,
         hijriDisplay: refreshedDate.hijriDisplay,
+        hijriDisplayPashto: refreshedDate.hijriDisplayPashto,
         gregorianDisplay: refreshedDate.gregorianDisplay,
         sunriseDisplay: storedDay.sunriseDisplay,
-        hadithText: storedDay.hadithText,
-        hadithSource: storedDay.hadithSource,
+        sunriseDisplayPashto: storedDay.sunriseDisplayPashto,
         prayers: prayers
       )
     }
@@ -227,44 +242,70 @@ enum WidgetShared {
 struct WidgetPrayerEntry: Codable {
   let key: String
   let labelDari: String
+  let labelPashto: String?
   let time12h: String
   let atMs: Double
+
+  enum CodingKeys: String, CodingKey { case key, labelDari, labelPashto, time12h, atMs }
+
+  init(key: String, labelDari: String, labelPashto: String? = nil, time12h: String, atMs: Double) {
+    self.key = key
+    self.labelDari = labelDari
+    self.labelPashto = labelPashto
+    self.time12h = time12h
+    self.atMs = atMs
+  }
+
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    key = try container.decode(String.self, forKey: .key)
+    labelDari = try container.decode(String.self, forKey: .labelDari)
+    labelPashto = try container.decodeIfPresent(String.self, forKey: .labelPashto)
+    time12h = try container.decode(String.self, forKey: .time12h)
+    atMs = try container.decode(Double.self, forKey: .atMs)
+  }
 }
 
 struct WidgetDaySnapshot: Codable {
   let dateKey: String
   let weekdayDari: String
+  let weekdayPashto: String?
   let shamsiDisplay: String
+  let shamsiDisplayPashto: String?
   let hijriDisplay: String
+  let hijriDisplayPashto: String?
   let gregorianDisplay: String
   let sunriseDisplay: String
-  let hadithText: String
-  let hadithSource: String
+  let sunriseDisplayPashto: String?
   let prayers: [WidgetPrayerEntry]
 
   enum CodingKeys: String, CodingKey {
-    case dateKey, weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay, sunriseDisplay, hadithText, hadithSource, prayers
+    case dateKey, weekdayDari, weekdayPashto, shamsiDisplay, shamsiDisplayPashto, hijriDisplay, hijriDisplayPashto, gregorianDisplay, sunriseDisplay, sunriseDisplayPashto, prayers
   }
 
   init(
     dateKey: String,
     weekdayDari: String,
+    weekdayPashto: String? = nil,
     shamsiDisplay: String,
+    shamsiDisplayPashto: String? = nil,
     hijriDisplay: String,
+    hijriDisplayPashto: String? = nil,
     gregorianDisplay: String,
     sunriseDisplay: String = "",
-    hadithText: String = "",
-    hadithSource: String = "",
+    sunriseDisplayPashto: String? = nil,
     prayers: [WidgetPrayerEntry]
   ) {
     self.dateKey = dateKey
     self.weekdayDari = weekdayDari
+    self.weekdayPashto = weekdayPashto
     self.shamsiDisplay = shamsiDisplay
+    self.shamsiDisplayPashto = shamsiDisplayPashto
     self.hijriDisplay = hijriDisplay
+    self.hijriDisplayPashto = hijriDisplayPashto
     self.gregorianDisplay = gregorianDisplay
     self.sunriseDisplay = sunriseDisplay
-    self.hadithText = hadithText
-    self.hadithSource = hadithSource
+    self.sunriseDisplayPashto = sunriseDisplayPashto
     self.prayers = prayers
   }
 
@@ -272,18 +313,23 @@ struct WidgetDaySnapshot: Codable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     dateKey = try container.decode(String.self, forKey: .dateKey)
     weekdayDari = try container.decode(String.self, forKey: .weekdayDari)
+    weekdayPashto = try container.decodeIfPresent(String.self, forKey: .weekdayPashto)
     shamsiDisplay = try container.decode(String.self, forKey: .shamsiDisplay)
+    shamsiDisplayPashto = try container.decodeIfPresent(String.self, forKey: .shamsiDisplayPashto)
     hijriDisplay = try container.decode(String.self, forKey: .hijriDisplay)
+    hijriDisplayPashto = try container.decodeIfPresent(String.self, forKey: .hijriDisplayPashto)
     gregorianDisplay = try container.decode(String.self, forKey: .gregorianDisplay)
     sunriseDisplay = try container.decodeIfPresent(String.self, forKey: .sunriseDisplay) ?? ""
-    hadithText = try container.decodeIfPresent(String.self, forKey: .hadithText) ?? ""
-    hadithSource = try container.decodeIfPresent(String.self, forKey: .hadithSource) ?? ""
+    sunriseDisplayPashto = try container.decodeIfPresent(String.self, forKey: .sunriseDisplayPashto)
     prayers = try container.decode([WidgetPrayerEntry].self, forKey: .prayers)
   }
 }
 
 struct WidgetSnapshot: Codable {
   let version: Int
+  let appLanguage: String
+  let dariFont: String?
+  let pashtoFont: String?
   let updatedAt: String
   let cityName: String
   let timezone: String
@@ -298,25 +344,30 @@ struct WidgetSnapshot: Codable {
   let fixedDhuhrLocalTime: String?
   let days: [WidgetDaySnapshot]?
   let weekdayDari: String
+  let weekdayPashto: String?
   let shamsiDisplay: String
+  let shamsiDisplayPashto: String?
   let hijriDisplay: String
+  let hijriDisplayPashto: String?
   let gregorianDisplay: String
   let sunriseDisplay: String
-  let hadithText: String
-  let hadithSource: String
+  let sunriseDisplayPashto: String?
   let currentPrayer: String?
   let prayers: [WidgetPrayerEntry]
   let nextRefreshAtMs: Double
 
   enum CodingKeys: String, CodingKey {
-    case version, updatedAt, cityName, timezone, policyVersion, sourceLabel, latitude, longitude, altitude
+    case version, appLanguage, dariFont, pashtoFont, updatedAt, cityName, timezone, policyVersion, sourceLabel, latitude, longitude, altitude
     case calculationMethod, asrMethod, maghribOffsetMinutes, fixedDhuhrLocalTime, days
-    case weekdayDari, shamsiDisplay, hijriDisplay, gregorianDisplay, sunriseDisplay, hadithText, hadithSource
+    case weekdayDari, weekdayPashto, shamsiDisplay, shamsiDisplayPashto, hijriDisplay, hijriDisplayPashto, gregorianDisplay, sunriseDisplay, sunriseDisplayPashto
     case currentPrayer, prayers, nextRefreshAtMs
   }
 
   init(
     version: Int,
+    appLanguage: String = "dari",
+    dariFont: String? = "vazirmatn",
+    pashtoFont: String? = "amiri",
     updatedAt: String,
     cityName: String,
     timezone: String = "Asia/Kabul",
@@ -331,17 +382,22 @@ struct WidgetSnapshot: Codable {
     fixedDhuhrLocalTime: String? = nil,
     days: [WidgetDaySnapshot]? = nil,
     weekdayDari: String,
+    weekdayPashto: String? = nil,
     shamsiDisplay: String,
+    shamsiDisplayPashto: String? = nil,
     hijriDisplay: String,
+    hijriDisplayPashto: String? = nil,
     gregorianDisplay: String,
     sunriseDisplay: String = "",
-    hadithText: String = "",
-    hadithSource: String = "",
+    sunriseDisplayPashto: String? = nil,
     currentPrayer: String?,
     prayers: [WidgetPrayerEntry],
     nextRefreshAtMs: Double
   ) {
     self.version = version
+    self.appLanguage = appLanguage
+    self.dariFont = dariFont
+    self.pashtoFont = pashtoFont
     self.updatedAt = updatedAt
     self.cityName = cityName
     self.timezone = timezone
@@ -356,12 +412,14 @@ struct WidgetSnapshot: Codable {
     self.fixedDhuhrLocalTime = fixedDhuhrLocalTime
     self.days = days
     self.weekdayDari = weekdayDari
+    self.weekdayPashto = weekdayPashto
     self.shamsiDisplay = shamsiDisplay
+    self.shamsiDisplayPashto = shamsiDisplayPashto
     self.hijriDisplay = hijriDisplay
+    self.hijriDisplayPashto = hijriDisplayPashto
     self.gregorianDisplay = gregorianDisplay
     self.sunriseDisplay = sunriseDisplay
-    self.hadithText = hadithText
-    self.hadithSource = hadithSource
+    self.sunriseDisplayPashto = sunriseDisplayPashto
     self.currentPrayer = currentPrayer
     self.prayers = prayers
     self.nextRefreshAtMs = nextRefreshAtMs
@@ -370,6 +428,9 @@ struct WidgetSnapshot: Codable {
   init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     version = try container.decode(Int.self, forKey: .version)
+    appLanguage = try container.decodeIfPresent(String.self, forKey: .appLanguage) ?? "dari"
+    dariFont = try container.decodeIfPresent(String.self, forKey: .dariFont) ?? "vazirmatn"
+    pashtoFont = try container.decodeIfPresent(String.self, forKey: .pashtoFont) ?? "amiri"
     updatedAt = try container.decode(String.self, forKey: .updatedAt)
     cityName = try container.decode(String.self, forKey: .cityName)
     timezone = try container.decodeIfPresent(String.self, forKey: .timezone) ?? "Asia/Kabul"
@@ -384,18 +445,17 @@ struct WidgetSnapshot: Codable {
     fixedDhuhrLocalTime = try container.decodeIfPresent(String.self, forKey: .fixedDhuhrLocalTime)
     days = try container.decodeIfPresent([WidgetDaySnapshot].self, forKey: .days)
     weekdayDari = try container.decode(String.self, forKey: .weekdayDari)
+    weekdayPashto = try container.decodeIfPresent(String.self, forKey: .weekdayPashto)
     shamsiDisplay = try container.decode(String.self, forKey: .shamsiDisplay)
+    shamsiDisplayPashto = try container.decodeIfPresent(String.self, forKey: .shamsiDisplayPashto)
     hijriDisplay = try container.decode(String.self, forKey: .hijriDisplay)
+    hijriDisplayPashto = try container.decodeIfPresent(String.self, forKey: .hijriDisplayPashto)
     gregorianDisplay = try container.decode(String.self, forKey: .gregorianDisplay)
     sunriseDisplay = try container.decodeIfPresent(String.self, forKey: .sunriseDisplay)
       ?? days?.first?.sunriseDisplay
       ?? ""
-    hadithText = try container.decodeIfPresent(String.self, forKey: .hadithText)
-      ?? days?.first?.hadithText
-      ?? ""
-    hadithSource = try container.decodeIfPresent(String.self, forKey: .hadithSource)
-      ?? days?.first?.hadithSource
-      ?? ""
+    sunriseDisplayPashto = try container.decodeIfPresent(String.self, forKey: .sunriseDisplayPashto)
+      ?? days?.first?.sunriseDisplayPashto
     currentPrayer = try container.decodeIfPresent(String.self, forKey: .currentPrayer)
     prayers = try container.decode([WidgetPrayerEntry].self, forKey: .prayers)
     nextRefreshAtMs = try container.decode(Double.self, forKey: .nextRefreshAtMs)

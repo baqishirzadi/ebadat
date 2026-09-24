@@ -1,24 +1,34 @@
 /**
  * CenteredText Component
- * Universal text component with center alignment
- * Used for RTL languages (Arabic, Dari, Pashto)
+ * Universal centered text primitive. Keeps the bidi base direction aligned
+ * with the active language so mixed Arabic/Latin lines read correctly.
  */
 
 import React from 'react';
 import { Text, TextProps, StyleSheet } from 'react-native';
-import { useAppLanguage } from '@/context/AppContext';
-import { localizeUiText } from '@/utils/i18n/ui';
+import { useAppLanguage, useLocalizedFontPreferences } from '@/context/AppContext';
+import { localizeUiNode } from '@/utils/i18n/ui';
+import { isAppUiFontStyle, resolveUiFontStyle } from '@/utils/i18n/resolveUiFontFamily';
+import { writingDirectionFor } from '@/utils/i18n/direction';
 
 export function CenteredText(props: TextProps) {
   const { style, children, ...rest } = props;
   const language = useAppLanguage();
-  
+  const fonts = useLocalizedFontPreferences();
+  const fontStyle = resolveUiFontStyle(style, language, fonts);
+  const latinDigits = language === 'english' && isAppUiFontStyle(style);
+
   return (
     <Text
       {...rest}
-      style={[styles.centered, style]}
+      style={[
+        styles.centered,
+        style,
+        { writingDirection: writingDirectionFor(language) },
+        fontStyle,
+      ]}
     >
-      {localizeUiText(children, language) as React.ReactNode}
+      {localizeUiNode(children, language, { latinDigits }) as React.ReactNode}
     </Text>
   );
 }
@@ -26,7 +36,6 @@ export function CenteredText(props: TextProps) {
 const styles = StyleSheet.create({
   centered: {
     textAlign: 'center',
-    writingDirection: 'rtl',
     // Note: width: '100%' was removed because it breaks flex layouts
   },
 });

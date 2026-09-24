@@ -20,6 +20,7 @@ export interface Translation {
 export interface SurahTranslations {
   dari: Translation[];
   pashto: Translation[];
+  english: Translation[];
 }
 
 export interface Surah {
@@ -63,12 +64,14 @@ export interface ReadingPosition {
 
 // View modes
 export type ViewMode = 'mushaf' | 'scroll';
-export type AppLanguage = 'dari' | 'pashto';
-export type TranslationLanguage = 'dari' | 'pashto' | 'both' | 'none';
+export type AppLanguage = 'dari' | 'pashto' | 'english';
+/** 'both' predates English and still means Dari + Pashto side by side. */
+export type TranslationLanguage = 'dari' | 'pashto' | 'english' | 'both' | 'none';
 
 // User preferences
 export interface UserPreferences {
   appLanguage: AppLanguage;
+  translationLanguageMode: 'follow_app' | 'manual';
   theme: import('../constants/theme').ThemeMode;
   quranFont: import('../constants/theme').QuranFontFamily;
   dariFont: import('../constants/theme').DariFontFamily;
@@ -107,12 +110,13 @@ export interface SearchResult {
   ayahNumber: number;
   text: string;
   matchedText: string;
-  matchedLanguage?: 'arabic' | 'dari' | 'pashto';
+  matchedLanguage?: 'arabic' | 'dari' | 'pashto' | 'english';
   score?: number;
   snippet?: string;
   highlightRanges?: Array<{ start: number; end: number }>;
   translation?: {
     dari?: string;
     pashto?: string;
+    english?: string;
   };
 }

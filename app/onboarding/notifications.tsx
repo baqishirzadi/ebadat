@@ -11,7 +11,9 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
-import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { adhanPermissionLocale, tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { useI18n } from '@/utils/i18n/useI18n';
+import { prayerLabel } from '@/utils/prayerTimes';
 import { getNextPrayer, type PrayerTimes } from '@/utils/prayerTimes';
 import {
   getAndroidPermissionStepCount,
@@ -20,17 +22,19 @@ import {
 } from '@/utils/prayerOnboarding';
 
 const PRAYER_PREVIEW = [
-  { key: 'fajr', label: 'صبح', icon: 'wb-twilight' as const },
-  { key: 'dhuhr', label: 'ظهر', icon: 'wb-sunny' as const },
-  { key: 'asr', label: 'عصر', icon: 'wb-cloudy' as const },
-  { key: 'maghrib', label: 'شام', icon: 'nights-stay' as const },
-  { key: 'isha', label: 'خفتن', icon: 'bedtime' as const },
+  { key: 'fajr', label: 'سهار', labelDari: 'صبح', icon: 'wb-twilight' as const },
+  { key: 'dhuhr', label: 'غرمه', labelDari: 'ظهر', icon: 'wb-sunny' as const },
+  { key: 'asr', label: 'مازدیګر', labelDari: 'عصر', icon: 'wb-cloudy' as const },
+  { key: 'maghrib', label: 'ماښام', labelDari: 'شام', icon: 'nights-stay' as const },
+  { key: 'isha', label: 'ماخوستن', labelDari: 'خفتن', icon: 'bedtime' as const },
 ];
 
 const THEME_GRADIENT: [string, string, string] = ['#0F1F14', '#1a4d3e', '#2d6a4f'];
 
 export default function OnboardingNotificationsScreen() {
-  const { theme } = useApp();
+  const { theme, state: appState } = useApp();
+  const locale = adhanPermissionLocale(appState.preferences.appLanguage);
+  const { t } = useI18n();
   const { state } = usePrayer();
   const [busy, setBusy] = useState(false);
   const [totalSteps, setTotalSteps] = useState(6);
@@ -74,15 +78,15 @@ export default function OnboardingNotificationsScreen() {
 
       if (result === 'blocked') {
         Alert.alert(
-          'اجازه اعلان غیرفعال است',
-          'برای پخش به‌موقع اذان، اعلان‌های عبادت را از Settings دوباره فعال کنید.',
+          t('onboarding.notifications.blockedTitle'),
+          t('onboarding.notifications.blockedBody'),
         );
         return;
       }
 
       Alert.alert(
-        'اعلان‌ها فعال نشد',
-        'بدون اجازه اعلان، اذان به‌موقع پخش نمی‌شود. می‌توانید دوباره تلاش کنید یا بدون اعلان ادامه دهید.',
+        t('onboarding.notifications.deniedTitle'),
+        t('onboarding.notifications.deniedBody'),
       );
     } finally {
       setBusy(false);
@@ -101,12 +105,12 @@ export default function OnboardingNotificationsScreen() {
       testID="android-onboarding-notifications"
       step={4}
       totalSteps={totalSteps}
-      title={tAdhanPermission('adhanPermissions.notifications.title', 'fa')}
-      subtitle={tAdhanPermission('adhanPermissions.notifications.body', 'fa')}
-      primaryLabel={busy ? 'در حال آماده‌سازی...' : tAdhanPermission('adhanPermissions.notifications.button', 'fa')}
+      title={tAdhanPermission('adhanPermissions.notifications.title', locale)}
+      subtitle={tAdhanPermission('adhanPermissions.notifications.body', locale)}
+      primaryLabel={busy ? (locale === 'ps' ? 'چمتو کېږي...' : 'در حال آماده‌سازی...') : tAdhanPermission('adhanPermissions.notifications.button', locale)}
       onPrimary={handleEnable}
       primaryDisabled={busy}
-      secondaryLabel={tAdhanPermission('adhanPermissions.notifications.skip', 'fa')}
+      secondaryLabel={tAdhanPermission('adhanPermissions.notifications.skip', locale)}
       onSecondary={goNext}
       showBack
       scrollable={false}
@@ -122,7 +126,7 @@ export default function OnboardingNotificationsScreen() {
           <LinearGradient colors={THEME_GRADIENT} style={styles.previewHeader}>
             <MaterialIcons name="schedule" size={18} color="rgba(255,255,255,0.9)" />
             <RtlText align="center" style={styles.previewHeaderText}>
-              اوقات نماز امروز
+              {locale === 'ps' ? 'د نن ورځې د لمانځه وختونه' : 'اوقات نماز امروز'}
             </RtlText>
           </LinearGradient>
 
@@ -154,7 +158,7 @@ export default function OnboardingNotificationsScreen() {
                       isNext && styles.previewLabelNext,
                     ]}
                   >
-                    {item.label}
+                    {prayerLabel(item.key as 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha', appState.preferences.appLanguage)}
                   </RtlText>
                   <RtlText
                     align="center"

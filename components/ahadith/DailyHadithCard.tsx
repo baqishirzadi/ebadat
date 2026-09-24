@@ -14,11 +14,13 @@ import { useApp } from '@/context/AppContext';
 import { alphaColor, deriveDailyCardGradient } from '@/utils/ahadith/theme';
 import {
   formatSourceLabel,
-  getAuthenticityGradeLabelFa,
+  getAuthenticityGradeLabel,
   getMuttafaqBadgeLabel,
-  getReasonLabelFa,
+  getReasonLabel,
 } from '@/utils/ahadith/labels';
+import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
+import { useI18n } from '@/utils/i18n/useI18n';
 import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 
 interface DailyHadithCardProps {
@@ -39,6 +41,7 @@ export function DailyHadithCard({
   onSwipePrevious,
 }: DailyHadithCardProps) {
   const { theme, themeMode, state } = useApp();
+  const { t, language } = useI18n();
   const opacity = useRef(new Animated.Value(1)).current;
   const translateX = useRef(new Animated.Value(0)).current;
   const swipeDirectionRef = useRef<0 | 1 | -1>(0);
@@ -98,7 +101,7 @@ export function DailyHadithCard({
         onLongPress={() => onToggleBookmark(hadith.id)}
         delayLongPress={280}
         accessibilityRole="button"
-        accessibilityHint="برای نشانه‌گذاری حدیث، نگه دارید"
+        accessibilityHint={t('ahadith.card.bookmarkHint')}
       >
         <View
           style={[
@@ -121,14 +124,14 @@ export function DailyHadithCard({
             ]}
           >
             <View style={styles.actionsRow}>
-              <Pressable onPress={onShare} style={[styles.iconButton, { backgroundColor: alphaColor(theme.surface, 0.18) }]} accessibilityLabel="اشتراک‌گذاری حدیث">
+              <Pressable onPress={onShare} style={[styles.iconButton, { backgroundColor: alphaColor(theme.surface, 0.18) }]} accessibilityLabel={t('ahadith.card.share')}>
                 <MaterialIcons name="share" size={20} color={theme.surface} />
               </Pressable>
 
               <Pressable
                 onPress={() => onToggleBookmark(hadith.id)}
                 style={[styles.iconButton, { backgroundColor: alphaColor(theme.surface, 0.18) }]}
-                accessibilityLabel={isBookmarked ? 'حذف نشانه' : 'افزودن نشانه'}
+                accessibilityLabel={t(isBookmarked ? 'ahadith.card.removeBookmark' : 'ahadith.card.addBookmark')}
               >
                 <MaterialIcons
                   name={isBookmarked ? 'bookmark' : 'bookmark-border'}
@@ -140,17 +143,17 @@ export function DailyHadithCard({
 
             <View style={styles.tagRow}>
               <View style={[styles.reasonChip, { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) }]}> 
-                <CenteredText style={[styles.reasonText, { color: theme.surface }]}>{getReasonLabelFa(selection.reason)}</CenteredText>
+                <CenteredText style={[styles.reasonText, { color: theme.surface }]}>{getReasonLabel(selection.reason, language)}</CenteredText>
               </View>
 
               {hadith.is_muttafaq ? (
                 <View style={[styles.badge, { backgroundColor: alphaColor(theme.accent, 0.24), borderColor: alphaColor(theme.accent, 0.45) }]}> 
-                  <CenteredText style={[styles.badgeText, { color: theme.accent }]}>{getMuttafaqBadgeLabel()}</CenteredText>
+                  <CenteredText style={[styles.badgeText, { color: theme.accent }]}>{getMuttafaqBadgeLabel(language)}</CenteredText>
                 </View>
               ) : (
                 <View style={[styles.badge, { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) }]}>
                   <CenteredText style={[styles.badgeText, { color: theme.surface }]}>
-                    {getAuthenticityGradeLabelFa(hadith.authenticity_grade)}
+                    {getAuthenticityGradeLabel(hadith.authenticity_grade, language)}
                   </CenteredText>
                 </View>
               )}
@@ -179,28 +182,16 @@ export function DailyHadithCard({
                 },
               ]}
             >
-              {hadith.dari_translation}
-            </CenteredText>
-
-            <CenteredText
-              style={[
-                styles.pashto,
-                {
-                  color: theme.textSecondary,
-                  fontFamily: getPashtoFontFamily(state.preferences.pashtoFont),
-                },
-              ]}
-            >
-              {hadith.pashto_translation}
+              {getHadithTranslation(hadith, language)}
             </CenteredText>
 
             <View style={[styles.divider, { backgroundColor: alphaColor(theme.textSecondary, 0.22) }]} />
 
             <View style={[styles.footer, { borderTopColor: alphaColor(theme.textSecondary, 0.2) }]}> 
               <CenteredText style={[styles.source, { color: theme.textSecondary }]}>
-                {formatSourceLabel(hadith.source_book, hadith.source_number)}
+                {formatSourceLabel(hadith.source_book, hadith.source_number, language)}
               </CenteredText>
-              <CenteredText style={[styles.hint, { color: theme.textSecondary }]}>برای نشانه‌گذاری، نگه‌دارید</CenteredText>
+              <CenteredText style={[styles.hint, { color: theme.textSecondary }]}>{t('ahadith.card.holdToBookmark')}</CenteredText>
             </View>
           </View>
         </View>

@@ -3,12 +3,11 @@ import Constants from 'expo-constants';
 import { AhadithNotificationPreferences, Hadith } from '@/types/hadith';
 import { resolveCanonicalDailyHadith } from '@/utils/ahadith/daily';
 import type { DailyHadithLanguage } from '@/utils/ahadith/daily';
-import { getContextTitleFa } from '@/utils/ahadith/labels';
+import { getContextTitle } from '@/utils/ahadith/labels';
 import { IOS_AHADITH_DAYS_AHEAD } from '@/utils/notificationBudget';
 import { KABUL_TIME_ZONE, getKabulDateKey } from '@/utils/afghanistanCalendar';
 import { addDaysToDateKey, buildDateFromLocalTimeInTimezone } from '@/utils/prayerTimezone';
 
-const CHANNEL_ID = 'ahadith-daily-v1';
 const IDENTIFIER_PREFIX = 'ahadith-daily-';
 
 let Notifications: typeof import('expo-notifications') | null = null;
@@ -43,16 +42,18 @@ function truncatePreview(text: string, maxLength = 84): string {
   return `${normalized.slice(0, maxLength - 1)}…`;
 }
 
-async function ensureChannel(NotificationsModule: typeof import('expo-notifications')): Promise<void> {
-  if (Platform.OS !== 'android') return;
+async function ensureChannel(NotificationsModule: typeof import('expo-notifications'), language: DailyHadithLanguage): Promise<string> {
+  if (Platform.OS !== 'android') return '';
 
-  await NotificationsModule.setNotificationChannelAsync(CHANNEL_ID, {
-    name: 'احادیث روزانه',
+  const channelId = `ahadith-daily-v2-${language}`;
+  await NotificationsModule.setNotificationChannelAsync(channelId, {
+    name: language === 'pashto' ? 'ورځني حدیثونه' : 'احادیث روزانه',
     importance: NotificationsModule.AndroidImportance.DEFAULT,
     vibrationPattern: [0, 180, 120, 180],
     showBadge: true,
     sound: 'default',
   });
+  return channelId;
 }
 
 async function clearPreviousScheduled(NotificationsModule: typeof import('expo-notifications')): Promise<void> {
@@ -80,7 +81,7 @@ export async function scheduleAhadithNotifications(
     return { scheduled: 0, enabled: false };
   }
 
-  await ensureChannel(NotificationsModule);
+  const channelId = await ensureChannel(NotificationsModule, language);
 
   const now = new Date();
   const todayKey = getKabulDateKey(now);
@@ -100,7 +101,7 @@ export async function scheduleAhadithNotifications(
     }
 
     const identifier = `${IDENTIFIER_PREFIX}${dateKey}`;
-    const title = getContextTitleFa(selection.context);
+    const title = getContextTitle(selection.context, language);
     const body = truncatePreview(selection.text);
 
     await NotificationsModule.scheduleNotificationAsync({
@@ -115,6 +116,7 @@ export async function scheduleAhadithNotifications(
           sourceBook: selection.hadith.source_book,
         },
         sound: true,
+        ...(channelId ? { channelId } : {}),
       },
       trigger: {
         type: NotificationsModule.SchedulableTriggerInputTypes.DATE,

@@ -14,7 +14,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "وقتی که آفتاب پیچانیده شود (بی‌نور گردد).",
-      "translation_pashto": "81-1 كله چې لمر ونغښتل شي"
+      "translation_pashto": "81-1 كله چې لمر ونغښتل شي",
+      "translation_english": "When the sun is wrapped up in darkness,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که ستاره‌ها بی‌نور و تاریک شوند.",
-      "translation_pashto": "81-2 او كله چې ستوري خړ شي"
+      "translation_pashto": "81-2 او كله چې ستوري خړ شي",
+      "translation_english": "and when the stars fall down,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که کوه‌ها را روان سازند.",
-      "translation_pashto": "81-3 او كله چې غرونه روان كړل شي"
+      "translation_pashto": "81-3 او كله چې غرونه روان كړل شي",
+      "translation_english": "and when the mountains are set in motion,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که ماده شترانِ باردار معطل گذاشته شوند.",
-      "translation_pashto": "81-4 او كله چې د لسو میاشتو بلاربې اوښې معطلې (ازادې) پرېښودى شي"
+      "translation_pashto": "81-4 او كله چې د لسو میاشتو بلاربې اوښې معطلې (ازادې) پرېښودى شي",
+      "translation_english": "and when pregnant camels are left unattended,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که حیوانات وحشی حشر شوند.",
-      "translation_pashto": "81-5 او كله چې وحشي ځناوران راجمع كړل شي"
+      "translation_pashto": "81-5 او كله چې وحشي ځناوران راجمع كړل شي",
+      "translation_english": "and when wild beasts are gathered,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که بحرها به جوش آیند.",
-      "translation_pashto": "81-6 او كله چې دریابونه بل كړى شي"
+      "translation_pashto": "81-6 او كله چې دریابونه بل كړى شي",
+      "translation_english": "and when the seas are set on fire,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که اجساد را با ارواح یکجا کنند.",
-      "translation_pashto": "81-7 او كله چې نفسونه جوړه كړل شي"
+      "translation_pashto": "81-7 او كله چې نفسونه جوړه كړل شي",
+      "translation_english": "and when the souls are sorted,"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که از دختر زنده به گورشده پرسیده شود.",
-      "translation_pashto": "81-8 او كله چې ژوندۍ خښه كړى شوې جینۍ وپوښتى شي"
+      "translation_pashto": "81-8 او كله چې ژوندۍ خښه كړى شوې جینۍ وپوښتى شي",
+      "translation_english": "and when the baby girl buried alive is asked,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(که) به کدام گناه کشته شده است؟",
-      "translation_pashto": "81-9 چې دا په كومې ګناه وژل شوې ده"
+      "translation_pashto": "81-9 چې دا په كومې ګناه وژل شوې ده",
+      "translation_english": "for what crime she was killed,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که نامه‌های اعمال گشوده شود.",
-      "translation_pashto": "81-10 او كله چې اعمال نامې وغوړولى شي"
+      "translation_pashto": "81-10 او كله چې اعمال نامې وغوړولى شي",
+      "translation_english": "and when records of deeds are spread open,"
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که آسمان از جای کنده شود.",
-      "translation_pashto": "81-11 او كله چې له اسمان نه پوستكى ووېستل شي"
+      "translation_pashto": "81-11 او كله چې له اسمان نه پوستكى ووېستل شي",
+      "translation_english": "and when the sky is stripped away,"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که دوزخ شعله‌ور شود.",
-      "translation_pashto": "81-12 او كله چې دوزخ بلې لمبې كړى شي"
+      "translation_pashto": "81-12 او كله چې دوزخ بلې لمبې كړى شي",
+      "translation_english": "and when the Blazing Fire is flared up,"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و وقتی که جنت (برای اهلش) نزدیک آورده شود.",
-      "translation_pashto": "81-13 او كله چې جنت ښه نژدې كړى شي"
+      "translation_pashto": "81-13 او كله چې جنت ښه نژدې كړى شي",
+      "translation_english": "and when Paradise is brought near –"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "هرکس آنچه (از نیکی و بدی) را که آماده (و حاضر) کرده است بداند.",
-      "translation_pashto": "81-14 هر نفس به په هغه شي پوه شي چې ده حاضر كړى وي"
+      "translation_pashto": "81-14 هر نفس به په هغه شي پوه شي چې ده حاضر كړى وي",
+      "translation_english": "then every soul will know what it has brought about."
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس قسم به ستاره‌های که بازمی‌گردند.",
-      "translation_pashto": "81-15 نو زه قسم خورم په هغو (ستوریو) چې بېرته ګرځېدونكي دي"
+      "translation_pashto": "81-15 نو زه قسم خورم په هغو (ستوریو) چې بېرته ګرځېدونكي دي",
+      "translation_english": "I swear by the receding stars,"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(ستارگان) حرکت کننده (باز در افق) نهان شونده.",
-      "translation_pashto": "81-16 په روانو، پټېدونكو باندې"
+      "translation_pashto": "81-16 په روانو، پټېدونكو باندې",
+      "translation_english": "that rise and hide,"
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و قسم به شب چون برود.",
-      "translation_pashto": "81-17 او قسم خورم په شپې كله چې شروع شي"
+      "translation_pashto": "81-17 او قسم خورم په شپې كله چې شروع شي",
+      "translation_english": "and by the night as it departs,"
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و قسم به صبح چون بدمد.",
-      "translation_pashto": "81-18 او په سبا كله چې دى ساه واخلي (روښانه شي)"
+      "translation_pashto": "81-18 او په سبا كله چې دى ساه واخلي (روښانه شي)",
+      "translation_english": "and by the day as it breaks –"
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "یقیناً (قرآن) سخن رسول گرامی است.",
-      "translation_pashto": "81-19 بېشكه دا (قرآن) خامخا د ډېر عزتمن رسول قول دى"
+      "translation_pashto": "81-19 بېشكه دا (قرآن) خامخا د ډېر عزتمن رسول قول دى",
+      "translation_english": "Indeed, this [Qur’an] is a word conveyed by a noble angel-messenger."
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(که) او نیرومند است و در بارگاه صاحب عرش (الله) دارای منزلت والایی است.",
-      "translation_pashto": "81-20 چې د عرش د مالك په نیز د قوت والا (او) د مرتبې والا دى"
+      "translation_pashto": "81-20 چې د عرش د مالك په نیز د قوت والا (او) د مرتبې والا دى",
+      "translation_english": "extremely powerful, highly revered by the Lord of the Throne,"
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "از او فرمان می‌برند، در آن جا (او) امین است.",
-      "translation_pashto": "81-21 منلى شوى دى هلته، امین دى"
+      "translation_pashto": "81-21 منلى شوى دى هلته، امین دى",
+      "translation_english": "obeyed there [by other angels] and trustworthy."
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و هم صحبت شما (محمد) دیوانه نیست.",
-      "translation_pashto": "81-22 او ستاسو ملګرى (محمدﷺ) له سره لېونى نه دى"
+      "translation_pashto": "81-22 او ستاسو ملګرى (محمدﷺ) له سره لېونى نه دى",
+      "translation_english": "Your fellow [i.e., the Prophet] is not a madman."
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و البته (او) آن (فرشته) را در کنارۀ آشکار آسمان دید.",
-      "translation_pashto": "81-23 او یقینًا یقینًا ده دغه (جبریل د اسمان) په څرګنده غاړه كې لیدلى و"
+      "translation_pashto": "81-23 او یقینًا یقینًا ده دغه (جبریل د اسمان) په څرګنده غاړه كې لیدلى و",
+      "translation_english": "He indeed saw him [i.e., Gabriel] on the clear horizon."
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و او بر رسانیدن سخن‌های غیب بخیل نیست.",
-      "translation_pashto": "81-24 او دى د وحي په بیانولو كې له سره بخل كوونكى نه دى"
+      "translation_pashto": "81-24 او دى د وحي په بیانولو كې له سره بخل كوونكى نه دى",
+      "translation_english": "He does not withhold [knowledge of] the unseen."
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و قرآن سخن شیطانِ رانده‌شده نیست.",
-      "translation_pashto": "81-25 او بېخي نه دى دا (قرآن) خبره د شیطان رټل شوي "
+      "translation_pashto": "81-25 او بېخي نه دى دا (قرآن) خبره د شیطان رټل شوي ",
+      "translation_english": "This [Qur’an] is not the word of an accursed devil."
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس (قرآن را گذاشته) به کجا می‌روید؟",
-      "translation_pashto": "81-26 نو تاسو (اى كافرانو!)چېرته ځئ؟ "
+      "translation_pashto": "81-26 نو تاسو (اى كافرانو!)چېرته ځئ؟ ",
+      "translation_english": "So which way are you going?"
     },
     {
       "number": 27,
@@ -274,7 +300,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "آن قرآن جز پند و اندرز برای جهانیان نیست.",
-      "translation_pashto": "81-27 نه دى دا (قرآن) مګر د عالمونو لپاره نصیحت (او پند)"
+      "translation_pashto": "81-27 نه دى دا (قرآن) مګر د عالمونو لپاره نصیحت (او پند)",
+      "translation_english": "It is but a reminder to the worlds,"
     },
     {
       "number": 28,
@@ -284,7 +311,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "برای کسی از شما که بخواهد (کردارش) به راه راست، مستقیم شود.",
-      "translation_pashto": "81-28 د هغه چا لپاره چې په تاسو كې غواړې چې دى نېغ برابر شي"
+      "translation_pashto": "81-28 د هغه چا لپاره چې په تاسو كې غواړې چې دى نېغ برابر شي",
+      "translation_english": "for those among you who wish to take the straight path."
     },
     {
       "number": 29,
@@ -294,7 +322,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و شما چیزی را نمی‌خواهید مگر آن که الله، پروردگار جهانیان آن را بخواهد.",
-      "translation_pashto": "81-29 او تاسو د (د سمې لارې) اراده نشئ كولى مګر دا چې الله رب العلمین يې اراده وكړي"
+      "translation_pashto": "81-29 او تاسو د (د سمې لارې) اراده نشئ كولى مګر دا چې الله رب العلمین يې اراده وكړي",
+      "translation_english": "But you cannot wish except by the Will of Allah, the Lord of the worlds."
     }
   ]
 }

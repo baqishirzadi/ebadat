@@ -14,7 +14,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "قسم به ستاره وقتی پنهان شود.",
-      "translation_pashto": "53-1 قسم دى په ستوریو كله چې پرېوځي"
+      "translation_pashto": "53-1 قسم دى په ستوریو كله چې پرېوځي",
+      "translation_english": "By the star when it sets,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "(که) هم صحبت شما نه گمراه شده و نه منحرف گشته است.",
-      "translation_pashto": "53-2 ستاسو ملګرى نه ګمراه شوى دى او نه (په عقيده كې) بې لارې شوى دى"
+      "translation_pashto": "53-2 ستاسو ملګرى نه ګمراه شوى دى او نه (په عقيده كې) بې لارې شوى دى",
+      "translation_english": "Your companion [i.e., the Prophet] has neither strayed nor is he deluded."
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و از روی هوی و هوس سخن نمی‌گوید.",
-      "translation_pashto": "53-3 او دى له خپل خواهش نه خبرې نه كوي"
+      "translation_pashto": "53-3 او دى له خپل خواهش نه خبرې نه كوي",
+      "translation_english": "Nor does he speak out of his own desire."
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "نیست این کلام مگر پیغام الهی که به او وحی می‌شود.",
-      "translation_pashto": "53-4 نه دى دا (قرآن) مګر وحي چې (ده ته) وحي كول شي"
+      "translation_pashto": "53-4 نه دى دا (قرآن) مګر وحي چې (ده ته) وحي كول شي",
+      "translation_english": "It is but a revelation sent down [to him]."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "(فرشتۀ) بس نیرومند آن را به او آموخته است.",
-      "translation_pashto": "53-5 ده ته (دا) د ډېرو سختو قوتونو والا (جبریل) ښودلى دى"
+      "translation_pashto": "53-5 ده ته (دا) د ډېرو سختو قوتونو والا (جبریل) ښودلى دى",
+      "translation_english": "He was taught by [an angel of] mighty power,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "(فرشتۀ نیرومند برای رساندن و حی) راست و برابر ایستاد.",
-      "translation_pashto": "53-6 چې د طاقت والا دى، بیا هغه پورته لاړ"
+      "translation_pashto": "53-6 چې د طاقت والا دى، بیا هغه پورته لاړ",
+      "translation_english": "and of great perfection, who manifested himself [in his true form]"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "در حالیکه او بر کنارۀ بلند آسمان بود.",
-      "translation_pashto": "53-7 او هغه په تر ټولو لوړې غاړې كې و"
+      "translation_pashto": "53-7 او هغه په تر ټولو لوړې غاړې كې و",
+      "translation_english": "when he was on the higher horizon."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "باز نزدیک شد، پس فرود آمد.",
-      "translation_pashto": "53-8 بیا هغه (جبریل محمدﷺ ته) نژدې شو، پس ښه نژدې شو"
+      "translation_pashto": "53-8 بیا هغه (جبریل محمدﷺ ته) نژدې شو، پس ښه نژدې شو",
+      "translation_english": "Then he approached [the Prophet] and descended,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "تا جایی که فاصله‌اش به اندازۀ دو کمان یا کمتر گردید.",
-      "translation_pashto": "53-9 نو د دوه لیندو په مسافت شو بلكې (له دې نه هم) ډېر نژدې"
+      "translation_pashto": "53-9 نو د دوه لیندو په مسافت شو بلكې (له دې نه هم) ډېر نژدې",
+      "translation_english": "until he was only two bow-lengths away or even closer."
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "پس (الله) آنچه را باید وحی می‌کرد (توسط آن فرشته) به بنده‌اش وحی کرد.",
-      "translation_pashto": "53-10 نو هغه (الله د جبریل په ژبه) خپل بنده ته وحي وكړه، هغه چې وحي يې وكړه"
+      "translation_pashto": "53-10 نو هغه (الله د جبریل په ژبه) خپل بنده ته وحي وكړه، هغه چې وحي يې وكړه",
+      "translation_english": "Then he revealed to His slave what he had to reveal."
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "دل (پیغمبر) آنچه را دید دروغ نشمرد.",
-      "translation_pashto": "53-11 د ده (نبي) زړه غلط شوى نه دى په هغه څه كې چې ده ولیدل"
+      "translation_pashto": "53-11 د ده (نبي) زړه غلط شوى نه دى په هغه څه كې چې ده ولیدل",
+      "translation_english": "The [Prophet’s] heart did not deny what he saw."
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "آیا با او دربارۀ چیزی که می‌بیند جدال می‌کنید؟",
-      "translation_pashto": "53-12 ایا تاسو له ده سره په هغه څه كې جګړه كوئ چې دى يې ویني"
+      "translation_pashto": "53-12 ایا تاسو له ده سره په هغه څه كې جګړه كوئ چې دى يې ویني",
+      "translation_english": "Do you dispute with him concerning what he saw?"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و البته او (فرشته) را بار دیگر در فرود آمدنش هم دید.",
-      "translation_pashto": "53-13 او یقینًا یقینًا ده هغه (جبریل) په یو بل ځلې كوزېدو كې لیدلى دى"
+      "translation_pashto": "53-13 او یقینًا یقینًا ده هغه (جبریل) په یو بل ځلې كوزېدو كې لیدلى دى",
+      "translation_english": "He certainly saw him a second time"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "نزد سدرة المنتهى (درختی که علم مخلوقات به آن منتهی می‌شود).",
-      "translation_pashto": "53-14 له سدرۃة المنتهٰى سره"
+      "translation_pashto": "53-14 له سدرۃة المنتهٰى سره",
+      "translation_english": "at the Lote Tree of the Utmost Boundary [in the seventh heaven]"
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "که آرامگاه متقیان در بهشت نزد آن درخت است.",
-      "translation_pashto": "53-15 دغې سره جنة ۃالماوىٰ دى"
+      "translation_pashto": "53-15 دغې سره جنة ۃالماوىٰ دى",
+      "translation_english": "near which is the Garden of Abode,"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "وقتی که (درخت) سدره را پوشاند آنچه که می‌پوشانید.",
-      "translation_pashto": "53-16 كله چې دغه سدرة (د بېرې ونه) هغه څه پټوله چې دا يې پټوله"
+      "translation_pashto": "53-16 كله چې دغه سدرة (د بېرې ونه) هغه څه پټوله چې دا يې پټوله",
+      "translation_english": "when the Lote Tree was overwhelmed with [divine] splendors."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "چشم (پیغمبر) منحرف نشد و از حد تجاوز نکرد.",
-      "translation_pashto": "53-17 سترګې نه كږې شوې او نه يې له حد نه تېرى وكړ"
+      "translation_pashto": "53-17 سترګې نه كږې شوې او نه يې له حد نه تېرى وكړ",
+      "translation_english": "His gaze did not wander, nor did it look beyond the limit."
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "البته او بخشی از نشانه‌های بزرگ پروردگار خود را مشاهده کرد.",
-      "translation_pashto": "53-18 یقینًا یقینًا ده د خپل رب ډېرې لويې نښې ولیدلې"
+      "translation_pashto": "53-18 یقینًا یقینًا ده د خپل رب ډېرې لويې نښې ولیدلې",
+      "translation_english": "He certainly saw some of the greatest signs of his Lord."
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "آیا (بت‌های) «لات» و «عزی» را دیده‌اید؟",
-      "translation_pashto": "53-19 نو تاسو ما ته خبر راكړئ د لات او عُزّٰى"
+      "translation_pashto": "53-19 نو تاسو ما ته خبر راكړئ د لات او عُزّٰى",
+      "translation_english": "Have you [O disbelievers] thought about [the idols of] Lāt and ‘Uzzā,"
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و «منات» آن بت سومی دیگر را؟",
-      "translation_pashto": "53-20 او منات دریم، د بېخي وروستني"
+      "translation_pashto": "53-20 او منات دریم، د بېخي وروستني",
+      "translation_english": "and Manāt, the third one as well?"
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "آیا (گمان دارید که) پسر برای شما است و دختر برای او (الله)؟",
-      "translation_pashto": "53-21 ایا تاسو لپاره هلكان دي او د هغه لپاره جینكۍ"
+      "translation_pashto": "53-21 ایا تاسو لپاره هلكان دي او د هغه لپاره جینكۍ",
+      "translation_english": "Do you choose for yourselves males and for Him females?"
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "در این صورت این تقسیم ظالمانه است.",
-      "translation_pashto": "53-22 دغه په دې وخت كې ډېر ظالمانه تقسیم دى"
+      "translation_pashto": "53-22 دغه په دې وخت كې ډېر ظالمانه تقسیم دى",
+      "translation_english": "That is then an unfair division!"
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "این بتها جز نام‌هایی بیش نیستند که شما و پدرانتان آنرا نام نهاده‌اید که الله دربارۀ (حقانیت) آن دلیلی نازل نکرده است؟! جز از گمان و خواهشات نفس پیروی نمی‌کنند در حالیکه از (سوی) پروردگارشان برای آنان هدایت آمده است.",
-      "translation_pashto": "53-23 دغه (بتان) نه دي مګر تش نومونه چې تاسو او ستاسو پلرونو دغه ايښي دي، الله په دغو هېڅ دلیل نه دى نازل كړى دوى پیروي نه كوي مګر د تش ګمان او د هغه شي چې نفسونه يې غواړي او یقینًا یقینًا دوى ته د خپل رب له جانبه هدایت راغلى دى"
+      "translation_pashto": "53-23 دغه (بتان) نه دي مګر تش نومونه چې تاسو او ستاسو پلرونو دغه ايښي دي، الله په دغو هېڅ دلیل نه دى نازل كړى دوى پیروي نه كوي مګر د تش ګمان او د هغه شي چې نفسونه يې غواړي او یقینًا یقینًا دوى ته د خپل رب له جانبه هدایت راغلى دى",
+      "translation_english": "These [idols] are no more than names you and your forefathers have made up, for which Allah has not sent down any authority. They follow nothing but conjecture and what their souls desire, although there has come to them guidance from their Lord."
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "آیا (گمان دارند که) انسان به هر چه آرزو کند می‌رسد؟",
-      "translation_pashto": "53-24 ایا د انسان لپاره هغه څه دي چې دى يې تمنا كوي"
+      "translation_pashto": "53-24 ایا د انسان لپاره هغه څه دي چې دى يې تمنا كوي",
+      "translation_english": "Is it that man can get whatever he wishes for?"
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "پس آخرت و دنیا برای الله است.",
-      "translation_pashto": "53-25 نو خاص د الله لپاره اخرت او دنیا دي"
+      "translation_pashto": "53-25 نو خاص د الله لپاره اخرت او دنیا دي",
+      "translation_english": "Rather, to Allah belongs the Hereafter and this world."
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و چه بسا فرشتگانی در آسمانهاست (ولی) شفاعتشان سودی ندارد مگر بعد از آنکه الله برای هرکس که بخواهد و راضی شود، اجازه شفاعت دهد.",
-      "translation_pashto": "53-26 او په اسمانونو كې څومره ډېر ملايك دي چې د دوى سفارش هېڅ شى نفع نه وركوي مګر وروسته له دې چې الله اجازت وركړي هغه چا ته چې يې وغواړي  او (د هغه په شفاعت) راضي شي"
+      "translation_pashto": "53-26 او په اسمانونو كې څومره ډېر ملايك دي چې د دوى سفارش هېڅ شى نفع نه وركوي مګر وروسته له دې چې الله اجازت وركړي هغه چا ته چې يې وغواړي  او (د هغه په شفاعت) راضي شي",
+      "translation_english": "How many angels there are in the heavens whose intercession will be of no avail except after Allah’s permission to whom He wills and pleases."
     },
     {
       "number": 27,
@@ -274,7 +300,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "البته آنان که به روز آخرت ایمان ندارند، فرشته‌ها را بنام دختران نام گذاری می‌کنند.",
-      "translation_pashto": "53-27 بېشكه هغه كسان چې په اخرت ایمان نه لري، خامخا دوى د ښځو په نومونو سره ملايك نوموي"
+      "translation_pashto": "53-27 بېشكه هغه كسان چې په اخرت ایمان نه لري، خامخا دوى د ښځو په نومونو سره ملايك نوموي",
+      "translation_english": "Indeed, those who do not believe in the Hereafter give the angels female names."
     },
     {
       "number": 28,
@@ -284,7 +311,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "در حالیکه آنان به آن هیچ علمی ندارند، جز از گمان پیروی نمی‌کنند و به یقین گمان، انسان را از (شناخت) حق بی‌نیاز نمی‌کند.",
-      "translation_pashto": "53-28 حال دا چې دوى ته په دې هېڅ علم نشته، دوى يواځې د تش ګمان پیروي كوي او بېشكه ګمان له حقه هېڅ شى نشي دفع كولى"
+      "translation_pashto": "53-28 حال دا چې دوى ته په دې هېڅ علم نشته، دوى يواځې د تش ګمان پیروي كوي او بېشكه ګمان له حقه هېڅ شى نشي دفع كولى",
+      "translation_english": "They have no knowledge about it. They only follow conjecture, but conjecture is of no avail against the truth."
     },
     {
       "number": 29,
@@ -294,7 +322,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "لذا، از کسی روی بگردان که از یاد ما روی گردان شده و جز زندگی دنیوی نمی‌خواهد.",
-      "translation_pashto": "53-29 نو ته د هغه چا نه مخ واړوه چې زمونږ له ذكر نه يې مخ ګرځولى دى او يواځې دنيايي ژوندون غواړي"
+      "translation_pashto": "53-29 نو ته د هغه چا نه مخ واړوه چې زمونږ له ذكر نه يې مخ ګرځولى دى او يواځې دنيايي ژوندون غواړي",
+      "translation_english": "So pay no heed to those who turn away from Our message and who only seek the life of this world."
     },
     {
       "number": 30,
@@ -304,7 +333,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "این مُنتهای علم و شناخت آنان است، بی‌گمان پروردگارت به کسیکه از راه او گمراه شده داناتر است و او به کسیکه راهیاب شده داناتر می‌باشد.",
-      "translation_pashto": "53-30 دا د دوى د علم انتها ده، بېشكه ستا رب په هغه چا ښه عالم دى چې د هغه (الله) له لارې نه ګمراه شوى دى او هغه ښه عالم دى په هغه چا چې هدایت يې موندلى دى"
+      "translation_pashto": "53-30 دا د دوى د علم انتها ده، بېشكه ستا رب په هغه چا ښه عالم دى چې د هغه (الله) له لارې نه ګمراه شوى دى او هغه ښه عالم دى په هغه چا چې هدایت يې موندلى دى",
+      "translation_english": "That is the limit of their knowledge. Indeed, your Lord knows best who has strayed from His Way, and He knows best who is guided."
     },
     {
       "number": 31,
@@ -314,7 +344,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و آنچه در آسمان‌ها و زمین است برای الله است تا کسانی را که بدی کرده‌اند به (سزای) آنچه کرده‌اند جزا دهد و تا نیکوکاران را به بهترین وجه پاداش دهد.",
-      "translation_pashto": "53-31 او خاص الله لره دي هغه څه چې په اسمانونو كې دي او هغه څه چې په ځمكه كې دي، د دې لپاره چې هغو كسانو ته چې بد يې كړې دي، د خپل عمل بدله وركړي او هغو كسانو ته (هم) ډېره ښه بدله وركړي چې نېكي يې كړې ده"
+      "translation_pashto": "53-31 او خاص الله لره دي هغه څه چې په اسمانونو كې دي او هغه څه چې په ځمكه كې دي، د دې لپاره چې هغو كسانو ته چې بد يې كړې دي، د خپل عمل بدله وركړي او هغو كسانو ته (هم) ډېره ښه بدله وركړي چې نېكي يې كړې ده",
+      "translation_english": "To Allah belongs all that is in the heavens and all that is on earth, so that He may recompense the evildoers for what they did, and reward those who do good with the best reward,"
     },
     {
       "number": 32,
@@ -324,7 +355,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "آنانی که از گناهان کبیره و زشتی‌ها جز گناهان صغيره اجتناب می‌کنند (بدانند که) البته پروردگارت (نسبت به آنان) آمرزشش وسیع است. او به (حال) شما وقتیکه شما را از زمین آفرید و هنگامی که شما در شکم‌های مادرانتان جنينها بودید داناتر است. پس از پاک بودن خود سخن مگویید. او به پرهیزگاران داناتر است.",
-      "translation_pashto": "53-32 هغه كسان چې له غټو ګناهونو او د بې حیایۍ له كارونو نه ځان ساتي، غیر له وړو وړو ګناهونه، بېشكه ستا رب د بخښنې وسیع كوونكى دى، هغه په تاسو ښه عالم دى، كله چې يې تاسو له ځمكې نه راپیدا كړئ او كله چې تاسو د خپلو میندو په خېټو كې پټ بچي وئ، نو تاسو د خپلو ځانونو تزكیه (پاكوالى) مه كوئ، هغه (الله) ښه عالم دى په هغه چا چې ډېر متقي دى"
+      "translation_pashto": "53-32 هغه كسان چې له غټو ګناهونو او د بې حیایۍ له كارونو نه ځان ساتي، غیر له وړو وړو ګناهونه، بېشكه ستا رب د بخښنې وسیع كوونكى دى، هغه په تاسو ښه عالم دى، كله چې يې تاسو له ځمكې نه راپیدا كړئ او كله چې تاسو د خپلو میندو په خېټو كې پټ بچي وئ، نو تاسو د خپلو ځانونو تزكیه (پاكوالى) مه كوئ، هغه (الله) ښه عالم دى په هغه چا چې ډېر متقي دى",
+      "translation_english": "those who avoid major sins and shameful acts, except for minor lapses. Indeed, your Lord is ample in forgiveness. He knows you best, as He created you from the earth and when you were fetuses in the wombs of your mothers. So do not claim purity for yourselves, for He knows best who is truly righteous."
     },
     {
       "number": 33,
@@ -334,7 +366,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "پس آیا دیدی آن شخصی را که اعراض کرد؟",
-      "translation_pashto": "53-33 ایا نو تا هغه كس لیدلى چې مخ يې واړوه (له ایمانه)"
+      "translation_pashto": "53-33 ایا نو تا هغه كس لیدلى چې مخ يې واړوه (له ایمانه)",
+      "translation_english": "Have you seen the one who turned away [from Islam],"
     },
     {
       "number": 34,
@@ -344,7 +377,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و اندکی (از مال) داد و سنگ دل شد (و از دادن آن دست کشید).",
-      "translation_pashto": "53-34 او ډېر لږ (مال) يې وركړ او منع يې كړ (نور مال) "
+      "translation_pashto": "53-34 او ډېر لږ (مال) يې وركړ او منع يې كړ (نور مال) ",
+      "translation_english": "who gave a little, and then stopped?"
     },
     {
       "number": 35,
@@ -354,7 +388,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "آیا او علم غیب دارد پس او (همه چیز را) می‌بیند؟.",
-      "translation_pashto": "53-35 ایا له هغه سره علم غیب دى، پس دى لیدل كوي"
+      "translation_pashto": "53-35 ایا له هغه سره علم غیب دى، پس دى لیدل كوي",
+      "translation_english": "Does he have knowledge of the unseen, so he has insight?"
     },
     {
       "number": 36,
@@ -364,7 +399,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "یا به آنچه که در صحیفه‌های موسی آمده، خبر داده نشده است؟.",
-      "translation_pashto": "53-36 بلكې ایا دى په هغه څه نه دى خبر كړى شوى چې د موسٰى په صحیفو كې دي"
+      "translation_pashto": "53-36 بلكې ایا دى په هغه څه نه دى خبر كړى شوى چې د موسٰى په صحیفو كې دي",
+      "translation_english": "Or has he not been informed of what is in the Scriptures of Moses,"
     },
     {
       "number": 37,
@@ -374,7 +410,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و (نیز به آنچه در صحیفه‌های) ابراهیم که (در عهد خود با الله) وفا کرد.",
-      "translation_pashto": "53-37 او د ابراهیم هغه چې وفا يې كړې ده"
+      "translation_pashto": "53-37 او د ابراهیم هغه چې وفا يې كړې ده",
+      "translation_english": "and of Abraham, who fulfilled his duty?"
     },
     {
       "number": 38,
@@ -384,7 +421,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "(مضمون همۀ کتب آسمانی این بود که) هیچ کس بار گناه دیگری را حمل نمی‌کند.",
-      "translation_pashto": "53-38 چې هېڅ پورته كوونكى د بل بار نه پورته كوی"
+      "translation_pashto": "53-38 چې هېڅ پورته كوونكى د بل بار نه پورته كوی",
+      "translation_english": "That no bearer of burden will bear the burden of another,"
     },
     {
       "number": 39,
@@ -394,7 +432,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و اینکه برای انسان جز آنچه تلاش کرده (نصیب دیگر) نیست.",
-      "translation_pashto": "53-39 او دا چې د انسان لپاره نشته  مګر هغه څه چې ده (يې) كوشش كړى دى"
+      "translation_pashto": "53-39 او دا چې د انسان لپاره نشته  مګر هغه څه چې ده (يې) كوشش كړى دى",
+      "translation_english": "and that man will not receive except what he strives for,"
     },
     {
       "number": 40,
@@ -404,7 +443,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و اینکه تلاش و سعی او به زودی دیده خواهد شد.",
-      "translation_pashto": "53-40 او دا چې بېشكه د ده كوشش به عنقریب وښوول شي"
+      "translation_pashto": "53-40 او دا چې بېشكه د ده كوشش به عنقریب وښوول شي",
+      "translation_english": "and that his efforts will be examined,"
     },
     {
       "number": 41,
@@ -414,7 +454,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "باز جزای کافی به او داده خواهد شد.",
-      "translation_pashto": "53-41  بیا به ده ته بدله وركړى شی، ډېره پوره بدله"
+      "translation_pashto": "53-41  بیا به ده ته بدله وركړى شی، ډېره پوره بدله",
+      "translation_english": "then he will be recompensed in full,"
     },
     {
       "number": 42,
@@ -424,7 +465,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و اینکه انتهای همه چیز به‌سوی پروردگار توست.",
-      "translation_pashto": "53-42 او دا چې بېشكه ستا رب ته (د ټولو مخلوقاتو) ورګرځېدل دي"
+      "translation_pashto": "53-42 او دا چې بېشكه ستا رب ته (د ټولو مخلوقاتو) ورګرځېدل دي",
+      "translation_english": "and that to your Lord is the final return,"
     },
     {
       "number": 43,
@@ -434,7 +476,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و اینکه اوست که می‌خنداند و می‌گریاند.",
-      "translation_pashto": "53-43 او دا چې بېشكه هم دغه (الله) (خلق) خندوي او ژړوي"
+      "translation_pashto": "53-43 او دا چې بېشكه هم دغه (الله) (خلق) خندوي او ژړوي",
+      "translation_english": "and that He is the One Who makes people laugh and weep,"
     },
     {
       "number": 44,
@@ -444,7 +487,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و اینکه اوست که می‌میراند و زنده می‌کند.",
-      "translation_pashto": "53-44  او دا چې هم دغه (الله) مرګ وركوي او ژوند وركوي "
+      "translation_pashto": "53-44  او دا چې هم دغه (الله) مرګ وركوي او ژوند وركوي ",
+      "translation_english": "and that He is the One Who causes death and gives life,"
     },
     {
       "number": 45,
@@ -454,7 +498,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و اوست که دو زوج نر و ماده را آفرید.",
-      "translation_pashto": "53-45 او دا چې بېشكه دغه (الله) دوه جوړې نر او ښځه پیدا كړې دي"
+      "translation_pashto": "53-45 او دا چې بېشكه دغه (الله) دوه جوړې نر او ښځه پیدا كړې دي",
+      "translation_english": "and that He created the pairs, male and female,"
     },
     {
       "number": 46,
@@ -464,7 +509,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "از نطفه‌ای که (در رحم) ریخته می‌شود.",
-      "translation_pashto": "53-46 له یوه څاڅكي (نطفې) نه، كله چې وڅڅول شي"
+      "translation_pashto": "53-46 له یوه څاڅكي (نطفې) نه، كله چې وڅڅول شي",
+      "translation_english": "from a drop of sperm when it is emitted,"
     },
     {
       "number": 47,
@@ -474,7 +520,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و بر (عهدۀ) اوست آفریدن دوباره.",
-      "translation_pashto": "53-47 او دا چې بېشكه د ده په ذمه دي (له دې مرګ نه پس) بل ځلې پیدا كول"
+      "translation_pashto": "53-47 او دا چې بېشكه د ده په ذمه دي (له دې مرګ نه پس) بل ځلې پیدا كول",
+      "translation_english": "and it is upon Him to bring about the second creation."
     },
     {
       "number": 48,
@@ -484,7 +531,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "اوست که غنی می‌سازد و راضی می‌کند.",
-      "translation_pashto": "53-48 او دا چې بېشكه همدغه (الله) غني كول كوي او خزانې وركوي"
+      "translation_pashto": "53-48 او دا چې بېشكه همدغه (الله) غني كول كوي او خزانې وركوي",
+      "translation_english": "And He is the One Who enriches and bestows wealth,"
     },
     {
       "number": 49,
@@ -494,7 +542,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و اوست پروردگار ستارۀ شعری.",
-      "translation_pashto": "53-49 او دا چې همدغه (الله) د شِعرٰى ستوري رب (او مالك) دى"
+      "translation_pashto": "53-49 او دا چې همدغه (الله) د شِعرٰى ستوري رب (او مالك) دى",
+      "translation_english": "and that He is the Lord of Sirius."
     },
     {
       "number": 50,
@@ -504,7 +553,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و او عاد اول را نابود کرد.",
-      "translation_pashto": "53-50 او دا چې بېشكه همده ړومبني عادیان هلاك كړې دي"
+      "translation_pashto": "53-50 او دا چې بېشكه همده ړومبني عادیان هلاك كړې دي",
+      "translation_english": "And that He destroyed the earlier ‘Ād,"
     },
     {
       "number": 51,
@@ -514,7 +564,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و قوم ثمود را (هلاک کرد) و کسی از ایشان را باقی نگذاشت.",
-      "translation_pashto": "53-51 او ثمودیان هم، نو باقي يې پرې نه  ښودل"
+      "translation_pashto": "53-51 او ثمودیان هم، نو باقي يې پرې نه  ښودل",
+      "translation_english": "and Thamūd, sparing none,"
     },
     {
       "number": 52,
@@ -524,7 +575,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و (نیز) پیش از این قوم نوح را (هلاک کرد) چون آنان ظالم‌تر و سرکش‌تر بودند.",
-      "translation_pashto": "53-52 او له دوى نه مخكې يې د نوح قوم هلاك كړ، بېشكه دوى، هم دوى، ډېر ظالمان او ډېر سركشان وو"
+      "translation_pashto": "53-52 او له دوى نه مخكې يې د نوح قوم هلاك كړ، بېشكه دوى، هم دوى، ډېر ظالمان او ډېر سركشان وو",
+      "translation_english": "and [He destroyed] the people of Noah before them; they were indeed more wicked and more rebellious."
     },
     {
       "number": 53,
@@ -534,7 +586,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و (دیار) مؤتفکه (زیر و زبر شدۀ قوم لوط) را سرنگون کرد.",
-      "translation_pashto": "53-53 او اړول شوي كلي يې ښكته راوغورځول"
+      "translation_pashto": "53-53 او اړول شوي كلي يې ښكته راوغورځول",
+      "translation_english": "And He toppled the cities upside down,"
     },
     {
       "number": 54,
@@ -544,7 +597,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "پس آن قریه را (با قهر و غضب خود) پوشانید آنچه پوشانید.",
-      "translation_pashto": "53-54 نو دغه هغه شي پټ كړ چې دى يې پټ كړ"
+      "translation_pashto": "53-54 نو دغه هغه شي پټ كړ چې دى يې پټ كړ",
+      "translation_english": "and they were utterly covered [by stones]."
     },
     {
       "number": 55,
@@ -554,7 +608,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "پس به کدام یک از نعمت‌های پروردگارت شک و تردید می‌کنی؟",
-      "translation_pashto": "53-55 نو (اى انسانه!) ته د خپل رب په كومو نعمتونو كې شك كوې"
+      "translation_pashto": "53-55 نو (اى انسانه!) ته د خپل رب په كومو نعمتونو كې شك كوې",
+      "translation_english": "Then which of the favors of your Lord do you doubt?"
     },
     {
       "number": 56,
@@ -564,7 +619,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "این (پیغمبر) بیم دهنده‌ای از بیم دهندگان پیشین است.",
-      "translation_pashto": "53-56 دا (محمدﷺ) له ړومبنیو وېروونكو ځنې یو وېروونكى دى"
+      "translation_pashto": "53-56 دا (محمدﷺ) له ړومبنیو وېروونكو ځنې یو وېروونكى دى",
+      "translation_english": "This [Prophet] is a warner like the earlier warners."
     },
     {
       "number": 57,
@@ -574,7 +630,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "قیامت نزدیک گردیده است.",
-      "translation_pashto": "53-57 قیامت ډېر نژدى راغى"
+      "translation_pashto": "53-57 قیامت ډېر نژدى راغى",
+      "translation_english": "The imminent Hour has drawn near,"
     },
     {
       "number": 58,
@@ -584,7 +641,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "کسی غیر از الله برطرف کننده‌ای (شدت و سختی آن روز) نیست.",
-      "translation_pashto": "53-58 دې (قيامت) لره له الله نه غیر هېڅ څرګندوونكى نشته"
+      "translation_pashto": "53-58 دې (قيامت) لره له الله نه غیر هېڅ څرګندوونكى نشته",
+      "translation_english": "none but Allah can disclose it."
     },
     {
       "number": 59,
@@ -594,7 +652,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "آیا از این سخن الهی تعجب می‌کنید؟",
-      "translation_pashto": "53-59 ایا نو تاسو له دې خبرې (قرآن) نه تعجب كوئ"
+      "translation_pashto": "53-59 ایا نو تاسو له دې خبرې (قرآن) نه تعجب كوئ",
+      "translation_english": "Do you find this discourse astonishing,"
     },
     {
       "number": 60,
@@ -604,7 +663,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "و می‌خندید و گریه نمی‌کنید.",
-      "translation_pashto": "53-60 او خاندئ او نه ژاړئ"
+      "translation_pashto": "53-60 او خاندئ او نه ژاړئ",
+      "translation_english": "and you laugh [at it] and not weep,"
     },
     {
       "number": 61,
@@ -614,7 +674,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "در حالیکه شما غافليد و هوس رانید؟",
-      "translation_pashto": "53-61 او تاسو غافلان يئ (لوبې كوونكي يئ) "
+      "translation_pashto": "53-61 او تاسو غافلان يئ (لوبې كوونكي يئ) ",
+      "translation_english": "while heedlessly lost in amusement?"
     },
     {
       "number": 62,
@@ -624,7 +685,8 @@
       "hizb": 53,
       "sajda": false,
       "translation_dari": "پس تنها برای الله سجده کنید و (او را) عبادت کنید.",
-      "translation_pashto": "53-62 نو تاسو الله ته سجده وكړئ او (د ده) عبادت وكړئ"
+      "translation_pashto": "53-62 نو تاسو الله ته سجده وكړئ او (د ده) عبادت وكړئ",
+      "translation_english": "So prostrate to Allah and worship [Him]."
     }
   ]
 }

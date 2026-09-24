@@ -48,7 +48,7 @@ struct PrayerTimesWidgetProvider: TimelineProvider {
 
   private func sampleSnapshot() -> WidgetSnapshot {
     WidgetSnapshot(
-      version: 3,
+      version: 6,
       updatedAt: ISO8601DateFormatter().string(from: Date()),
       cityName: "کابل",
       timezone: "Asia/Kabul",
@@ -67,8 +67,6 @@ struct PrayerTimesWidgetProvider: TimelineProvider {
       hijriDisplay: "۱۵ رمضان ۱۴۴۷",
       gregorianDisplay: "19 JUL 2026",
       sunriseDisplay: "طلوع آفتاب ۶:۰۰",
-      hadithText: "اعمال فقط به نیت‌ها بستگی دارد.",
-      hadithSource: "Bukhari 1",
       currentPrayer: "dhuhr",
       prayers: [
         WidgetPrayerEntry(key: "fajr", labelDari: "صبح", time12h: "۴:۳۰", atMs: 0),

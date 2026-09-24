@@ -10,6 +10,8 @@ import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/th
 import { useAhadith } from '@/context/AhadithContext';
 import { useApp } from '@/context/AppContext';
 import { getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
+import { getHadithTranslation } from '@/utils/ahadith/translation';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export function JantariHeader() {
   const insets = useSafeAreaInsets();
@@ -17,19 +19,20 @@ export function JantariHeader() {
   const { dailySelection } = useAhadith();
   const { state, themeMode } = useApp();
 
-  const isPashto = state.preferences.appLanguage === 'pashto';
+  const { t, language, fontFamily } = useI18n();
 
-  const hadithLabel = isPashto ? 'ورځنی حدیث' : 'حدیث روز';
+  const hadithLabel = t('hadith.daily');
 
   const hadithText = useMemo(() => {
     const hadith = dailySelection?.hadith;
     if (!hadith) return '…';
-    return isPashto ? hadith.pashto_translation : hadith.dari_translation;
-  }, [dailySelection?.hadith, isPashto]);
+    return getHadithTranslation(hadith, language);
+  }, [dailySelection?.hadith, language]);
 
-  const hadithFontFamily = isPashto
-    ? getPashtoFontFamily(state.preferences.pashtoFont)
-    : getDariFontFamily(state.preferences.dariFont);
+  const hadithFontFamily = fontFamily
+    ?? (language === 'pashto'
+      ? getPashtoFontFamily(state.preferences.pashtoFont)
+      : getDariFontFamily(state.preferences.dariFont));
 
   return (
     <RtlView style={[styles.wrapper, { paddingTop: insets.top + Spacing.sm }]}>
@@ -45,7 +48,7 @@ export function JantariHeader() {
           style={styles.gradient}
         >
           <RtlText align="center" style={styles.title}>
-            جنتری
+            {t('jantari.title')}
           </RtlText>
           <RtlView style={styles.hadithBlock}>
             <RtlText align="center" style={styles.hadithLabel}>

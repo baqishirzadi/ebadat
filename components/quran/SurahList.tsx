@@ -13,17 +13,21 @@ import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, TextInput, View, I18nManager, Platform } from 'react-native';
+
+import { Pressable, StyleSheet, View, I18nManager, Platform } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
+import { NumericText } from '@/components/ui/NumericText';
 import { getUthmaniFont } from '@/hooks/useFonts';
 import { RtlView } from '@/components/ui/RtlView';
-import { normalizeArabicForSearch, normalizeDariForSearch } from '@/utils/quranSearchNormalize';
+import { normalizeArabicForSearch, normalizeDariForSearch, normalizePashtoForSearch } from '@/utils/quranSearchNormalize';
 import { SearchButton } from './SearchButton';
 import { JuzList } from './JuzList';
+import { useI18n } from '@/utils/i18n/useI18n';
 
-const ITEM_HEIGHT = 96;
+const ITEM_HEIGHT = 108;
 const SEPARATOR_HEIGHT = Spacing.md;
 const TOTAL_ROW_HEIGHT = ITEM_HEIGHT + SEPARATOR_HEIGHT;
 
@@ -39,6 +43,7 @@ const SurahItem = React.memo(function SurahItem({
   onPress,
 }: SurahItemProps) {
   const { theme } = useApp();
+  const { t, n, content } = useI18n();
 
   return (
     <Pressable
@@ -63,14 +68,14 @@ const SurahItem = React.memo(function SurahItem({
       {/* Surah name - center (flex: 1, text centered) */}
       <View style={styles.infoContainer}>
         <CenteredText style={[styles.arabicName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
-          سوره {surah.arabic}
+          {t('quran.mode.surah')} {surah.arabic}
         </CenteredText>
         <CenteredText
           style={[styles.dariName, { color: theme.textSecondary }]}
           numberOfLines={2}
           ellipsizeMode="tail"
         >
-          {surah.dari} ({surah.meaning})
+          {content(surah, null)} ({content(surah, 'meaning')})
         </CenteredText>
       </View>
 
@@ -79,7 +84,7 @@ const SurahItem = React.memo(function SurahItem({
         <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
         <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
         <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <CenteredText style={styles.numberText}>{toArabicNumerals(surah.number)}</CenteredText>
+          <NumericText style={styles.numberText}>{toArabicNumerals(surah.number)}</NumericText>
         </View>
         <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
         <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
@@ -91,16 +96,16 @@ const SurahItem = React.memo(function SurahItem({
       <View style={[styles.metaContainer, { flexShrink: 0 }]}>
         <View style={styles.metaRow}>
           <MaterialIcons
-            name={surah.revelationType === 'مکی' ? 'brightness-5' : 'brightness-2'}
+            name={surah.revelation === 'meccan' ? 'brightness-5' : 'brightness-2'}
             size={12}
             color={theme.textSecondary}
           />
           <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
-            {surah.revelationType}
+            {surah.revelation === 'meccan' ? t('quran.meccan') : t('quran.medinan')}
           </CenteredText>
         </View>
         <CenteredText style={[styles.ayahCount, { color: theme.textSecondary }]}>
-          {toArabicNumerals(surah.ayahCount)} آیات
+          {t('quran.ayahs', { count: n(surah.ayahCount) })}
         </CenteredText>
       </View>
 
@@ -116,6 +121,7 @@ const SurahItem = React.memo(function SurahItem({
 
 export function SurahList() {
   const { theme, themeMode } = useApp();
+  const { t, n } = useI18n();
   const { position } = useReadingPosition();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -130,15 +136,19 @@ export function SurahList() {
     const query = searchQuery.trim();
     const arabicQuery = normalizeArabicForSearch(query);
     const dariQuery = normalizeDariForSearch(query);
+    const pashtoQuery = normalizePashtoForSearch(query);
 
     return SURAH_NAMES.filter((surah) => {
       const arabicName = normalizeArabicForSearch(surah.arabic);
       const dariName = normalizeDariForSearch(surah.dari);
       const meaning = normalizeDariForSearch(surah.meaning);
+      const pashtoName = normalizePashtoForSearch(surah.pashto);
+      const pashtoMeaning = normalizePashtoForSearch(surah.meaningPashto);
 
       return (
         (arabicQuery.length >= 1 && arabicName.includes(arabicQuery)) ||
         (dariQuery.length >= 1 && (dariName.includes(dariQuery) || meaning.includes(dariQuery))) ||
+        (pashtoQuery.length >= 1 && (pashtoName.includes(pashtoQuery) || pashtoMeaning.includes(pashtoQuery))) ||
         surah.number.toString() === query ||
         toArabicNumerals(surah.number).includes(query)
       );
@@ -155,6 +165,7 @@ export function SurahList() {
     const query = searchQuery.trim();
     const arabicQuery = normalizeArabicForSearch(query);
     const dariQuery = normalizeDariForSearch(query);
+    const pashtoQuery = normalizePashtoForSearch(query);
 
     return JUZ_RANGES.filter((juz) => {
       const startSurah = surahByNumber.get(juz.startSurah);
@@ -165,10 +176,12 @@ export function SurahList() {
         toArabicNumerals(juz.juzNumber).includes(query) ||
         (startSurah &&
           ((arabicQuery && normalizeArabicForSearch(startSurah.arabic).includes(arabicQuery)) ||
-            (dariQuery && normalizeDariForSearch(startSurah.dari).includes(dariQuery)))) ||
+            (dariQuery && normalizeDariForSearch(startSurah.dari).includes(dariQuery)) ||
+            (pashtoQuery && normalizePashtoForSearch(startSurah.pashto).includes(pashtoQuery)))) ||
         (endSurah &&
           ((arabicQuery && normalizeArabicForSearch(endSurah.arabic).includes(arabicQuery)) ||
-            (dariQuery && normalizeDariForSearch(endSurah.dari).includes(dariQuery))))
+            (dariQuery && normalizeDariForSearch(endSurah.dari).includes(dariQuery)) ||
+            (pashtoQuery && normalizePashtoForSearch(endSurah.pashto).includes(pashtoQuery))))
       );
     });
   }, [searchQuery, surahByNumber]);
@@ -224,31 +237,44 @@ export function SurahList() {
       <View style={[styles.header, { paddingTop: headerPaddingTop }]}>
         <CenteredText style={styles.headerTitle}>القرآن الکریم</CenteredText>
         <CenteredText style={styles.headerSubtitle}>
-          {toArabicNumerals(114)} سوره • {toArabicNumerals(6236)} آیات
+          {t('quran.surahs', { count: n(114) })} • {t('quran.ayahs', { count: n(6236) })}
         </CenteredText>
       </View>
 
       {position.surahNumber > 0 && (
         <Pressable
           onPress={handleContinueReading}
+          testID="quran-continue-reading"
+          accessibilityRole="button"
           style={({ pressed }) => [
             styles.continueCard,
             { backgroundColor: theme.card, borderColor: theme.playing },
             pressed && styles.continueCardPressed,
           ]}
         >
-          <View style={styles.continueContent}>
+          <View style={styles.continueIconSlot}>
             <MaterialIcons name="bookmark" size={24} color={theme.playing} />
-            <View style={styles.continueInfo}>
-              <CenteredText style={[styles.continueTitle, { color: theme.text }]}>
-                ادامه تلاوت
-              </CenteredText>
-              <CenteredText style={[styles.continueDetails, { color: theme.textSecondary }]}>
-                سوره {toArabicNumerals(position.surahNumber)} • آیه {toArabicNumerals(position.ayahNumber)}
-              </CenteredText>
-            </View>
           </View>
-          <MaterialIcons name="play-circle-filled" size={40} color={theme.playing} />
+          <View style={styles.continueInfo}>
+            <CenteredText
+              testID="quran-continue-title"
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={[styles.continueTitle, { color: theme.text }]}
+            >
+              {t('quran.continue')}
+            </CenteredText>
+            <CenteredText
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={[styles.continueDetails, { color: theme.textSecondary }]}
+            >
+              {t('quran.mode.surah')} {n(position.surahNumber)} • {t('quran.ayah', { number: n(position.ayahNumber) })}
+            </CenteredText>
+          </View>
+          <View style={[styles.continueIconSlot, styles.continuePlaySlot]}>
+            <MaterialIcons name="play-circle-filled" size={36} color={theme.playing} />
+          </View>
         </Pressable>
       )}
 
@@ -261,7 +287,7 @@ export function SurahList() {
           ]}
         >
           <CenteredText style={[styles.modeButtonText, { color: browseMode === 'surah' ? '#fff' : theme.textSecondary }]}>
-            سوره
+            {t('quran.mode.surah')}
           </CenteredText>
         </Pressable>
         <Pressable
@@ -272,16 +298,18 @@ export function SurahList() {
           ]}
         >
           <CenteredText style={[styles.modeButtonText, { color: browseMode === 'juz' ? '#fff' : theme.textSecondary }]}>
-            جزء
+            {t('quran.mode.juz')}
           </CenteredText>
         </Pressable>
       </View>
 
       <View style={[styles.searchContainer, { backgroundColor: theme.backgroundSecondary }]}>
         <MaterialIcons name="search" size={20} color={theme.icon} />
-        <TextInput
+        <LocalizedTextInput
           style={[styles.searchInput, { color: theme.text }]}
-          placeholder={browseMode === 'juz' ? 'جستجوی جزء...' : 'جستجوی سوره...'}
+          placeholder={
+            browseMode === 'juz' ? t('quran.search.juzPlaceholder') : t('quran.search.surahPlaceholder')
+          }
           placeholderTextColor={theme.textSecondary}
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -388,14 +416,16 @@ const styles = StyleSheet.create({
   continueCard: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     marginHorizontal: Spacing.md,
-    marginTop: Spacing.md,
-    marginBottom: Spacing.md,
-    padding: Spacing.md,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.sm,
+    minHeight: 72,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
     borderRadius: BorderRadius.lg,
-    borderWidth: 2,
-    elevation: 4,
+    borderWidth: 1,
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -404,23 +434,37 @@ const styles = StyleSheet.create({
   continueCardPressed: {
     opacity: 0.9,
   },
-  continueContent: {
-    flexDirection: 'row-reverse',
+  continueIconSlot: {
+    width: 40,
+    flexShrink: 0,
     alignItems: 'center',
-    gap: Spacing.sm,
+    justifyContent: 'center',
   },
   continueInfo: {
+    flex: 1,
+    minWidth: 0,
+    paddingHorizontal: Spacing.xs,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   continueTitle: {
-    fontSize: Typography.ui.subtitle,
+    width: '100%',
+    fontSize: Typography.ui.body,
     fontWeight: '600',
     fontFamily: 'Vazirmatn',
-},
+    lineHeight: 23,
+    textAlign: 'center',
+  },
   continueDetails: {
+    width: '100%',
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
-},
+    lineHeight: 18,
+    textAlign: 'center',
+  },
+  continuePlaySlot: {
+    alignItems: 'flex-start',
+  },
   searchContainer: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
@@ -577,6 +621,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+    lineHeight: 22,
+    includeFontPadding: false,
   },
   infoContainer: {
     flex: 1,

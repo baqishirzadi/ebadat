@@ -4,16 +4,9 @@
  */
 
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  FlatList,
-  Pressable,
-  ActivityIndicator,
-  Keyboard,
-  Text,
-} from 'react-native';
+
+import { View, StyleSheet, FlatList, Pressable, ActivityIndicator, Keyboard } from 'react-native';
+import { LocalizedText, LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, Stack, useLocalSearchParams } from 'expo-router';
 import { useApp } from '@/context/AppContext';
@@ -91,11 +84,11 @@ function HighlightedText({
   const after = text.slice(idx + needle.length);
 
   return (
-    <Text style={style} numberOfLines={numberOfLines}>
+    <LocalizedText style={style} numberOfLines={numberOfLines}>
       {before}
-      <Text style={[style, styles.highlight]}>{match}</Text>
+      <LocalizedText style={[style, styles.highlight]}>{match}</LocalizedText>
       {after}
-    </Text>
+    </LocalizedText>
   );
 }
 
@@ -358,7 +351,7 @@ export default function SearchScreen() {
           ]}
         >
           <MaterialIcons name="search" size={22} color={theme.icon} />
-          <TextInput
+          <LocalizedTextInput
             style={[styles.searchInput, { color: theme.text }]}
             placeholder={
               searchMode === 'arabic'

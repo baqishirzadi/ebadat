@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا دیدی آن شخصی را که جزای اعمال را تکذیب می‌کند.",
-      "translation_pashto": "107-1 ایا تا هغه كس لیدلى چې د بدلي ورځ (قیامت) دروغ ګڼي"
+      "translation_pashto": "107-1 ایا تا هغه كس لیدلى چې د بدلي ورځ (قیامت) دروغ ګڼي",
+      "translation_english": "Have you seen the one who denies the Recompense?"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس آن شخص همان است که یتیم را (اهانت کرده) از خود میراند.",
-      "translation_pashto": "107-2 نو همدغه هغه كس دى چې یتیم ته دیكې وركوي"
+      "translation_pashto": "107-2 نو همدغه هغه كس دى چې یتیم ته دیكې وركوي",
+      "translation_english": "Such is the one who repulses the orphan harshly,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(و مردم را) بر طعام‌دادن مسکین ترغیب نمی‌کند.",
-      "translation_pashto": "107-3 او مسكین ته په طعام وركولو ترغیب نه وركوي"
+      "translation_pashto": "107-3 او مسكین ته په طعام وركولو ترغیب نه وركوي",
+      "translation_english": "and does not urge others to feed the needy."
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس وای بر آن نمازگزارانی که،",
-      "translation_pashto": "107-4 نو هلاكت دى لمونځ كوونكو لره"
+      "translation_pashto": "107-4 نو هلاكت دى لمونځ كوونكو لره",
+      "translation_english": "So woe to those who pray,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "از نماز خود غافل‌اند.",
-      "translation_pashto": "107-5 هغه كسان چې دوى له خپلو لمونځونو نه غافله (او اعراض كوونكي) وي"
+      "translation_pashto": "107-5 هغه كسان چې دوى له خپلو لمونځونو نه غافله (او اعراض كوونكي) وي",
+      "translation_english": "but are heedless of their prayer;"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آنانی که خودنمایی می‌کنند.",
-      "translation_pashto": "107-6 هغه كسان چې دوى ریاكاري كوي"
+      "translation_pashto": "107-6 هغه كسان چې دوى ریاكاري كوي",
+      "translation_english": "those who only show off,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و از دادن وسایل (یا حاجت به همسایه) خودداری می‌کنند.",
-      "translation_pashto": "107-7 او دوى ماعون (د استعمال عام څیزونه هم له یو بل نه) منع كوي"
+      "translation_pashto": "107-7 او دوى ماعون (د استعمال عام څیزونه هم له یو بل نه) منع كوي",
+      "translation_english": "and withhold even the small kindnesses."
     }
   ]
 }

@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
-import { Modal, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -11,6 +11,8 @@ import Animated, {
 
 import { useApp } from '@/context/AppContext';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { CenteredText } from '@/components/CenteredText';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface CalibrationOverlayProps {
   visible: boolean;
@@ -18,6 +20,7 @@ interface CalibrationOverlayProps {
 
 export function CalibrationOverlay({ visible }: CalibrationOverlayProps) {
   const { theme } = useApp();
+  const { t } = useI18n();
   const progress = useSharedValue(0);
 
   useEffect(() => {
@@ -46,13 +49,9 @@ export function CalibrationOverlay({ visible }: CalibrationOverlayProps) {
           <Animated.View style={[styles.iconWrap, { backgroundColor: `${theme.tint}1A` }, iconStyle]}>
             <MaterialIcons name="screen-rotation" size={44} color={theme.tint} />
           </Animated.View>
-          <Text style={[styles.title, { color: theme.text }]}>کالیبره کردن قطب‌نما</Text>
-          <Text style={[styles.body, { color: theme.textSecondary }]}>
-            گوشی را چند بار به شکل عدد ۸ (∞) در هوا بچرخانید تا دقت جهت‌یابی بهبود یابد.
-          </Text>
-          <Text style={[styles.note, { color: theme.textSecondary }]}>
-            نکته: از فلزات، آهن‌ربا و قاب مغناطیسی گوشی فاصله بگیرید. جهت قطب‌نمای بعضی مساجد به دلیل تداخل مغناطیسی محل ممکن است کمی فرق کند.
-          </Text>
+          <CenteredText style={[styles.title, { color: theme.text }]}>{t('qibla.calibration.title')}</CenteredText>
+          <CenteredText style={[styles.body, { color: theme.textSecondary }]}>{t('qibla.calibration.body')}</CenteredText>
+          <CenteredText style={[styles.note, { color: theme.textSecondary }]}>{t('qibla.calibration.note')}</CenteredText>
         </View>
       </View>
     </Modal>

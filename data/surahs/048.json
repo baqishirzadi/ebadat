@@ -14,7 +14,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "البته ما برای تو به فتحی آشکار حکم کردیم.",
-      "translation_pashto": "48-1 بېشكه مونږ تا ته فتح دركړې ده، ښكاره فتح"
+      "translation_pashto": "48-1 بېشكه مونږ تا ته فتح دركړې ده، ښكاره فتح",
+      "translation_english": "Indeed, We have given you [O Prophet] a clear conquest,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "تا (در نتیجه) الله همۀ گناهان گذشته و آیندۀ تو را بیامرزد و نعمتش را بر تو تمام سازد و تو را به راه راست هدایت کند.",
-      "translation_pashto": "48-2 د دې لپاره چې الله تا ته ستا هغه ګناهونه وبخښي چې مخكې تېرې شوي دي او هغه چې وروسته دي او په تا باندې خپل نعمتونه پوره كړي او تا ته نېغه لاره وښيي"
+      "translation_pashto": "48-2 د دې لپاره چې الله تا ته ستا هغه ګناهونه وبخښي چې مخكې تېرې شوي دي او هغه چې وروسته دي او په تا باندې خپل نعمتونه پوره كړي او تا ته نېغه لاره وښيي",
+      "translation_english": "so that Allah may forgive you your previous and future sins, complete His favor upon you, and guide you to a straight path,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و تا الله تو را به نصرت قوی و غالب (شکست ناپذیر) مدد کند.",
-      "translation_pashto": "48-3 او د دې لپاره چې الله ستا مدد وكړي، زبردست مدد كول"
+      "translation_pashto": "48-3 او د دې لپاره چې الله ستا مدد وكړي، زبردست مدد كول",
+      "translation_english": "and so that Allah may help you with a mighty victory."
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "اوست ذاتی که در دل مؤمنان سکون و اطمینان را نازل کرد تا ایمانی بر ایمان خود بیافزایند. و لشکرهای آسمان و زمین از الله است و الله دانای باحکمت است.",
-      "translation_pashto": "48-4 دغه (الله) هغه ذات دى چې د مومنانو په زړونو كې يې سكون (اطمینان) نازل كړ، د دې لپاره چې دوى د خپل (مخكیني) ایمان سره د ایمان په لحاظ نور ورزیات شي او خاص الله لره د اسمانونو او ځمكې لښكرې دي او الله ښه پوه،  ښه حكمت والا دى"
+      "translation_pashto": "48-4 دغه (الله) هغه ذات دى چې د مومنانو په زړونو كې يې سكون (اطمینان) نازل كړ، د دې لپاره چې دوى د خپل (مخكیني) ایمان سره د ایمان په لحاظ نور ورزیات شي او خاص الله لره د اسمانونو او ځمكې لښكرې دي او الله ښه پوه،  ښه حكمت والا دى",
+      "translation_english": "It is He Who sent down tranquility into the hearts of the believers so that they may increase in faith along with their faith. To Allah belong the soldiers of the heavens and earth. And Allah is All-Knowing, All-Wise."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "تا مردان و زنان مؤمن را در باغ‌های در آورد که در زیر (درختان و قصرهای) آن نهرها جاری است و همیشه در آن خواهند بود، و اینکه بدی‌هایشان را محو سازد و این در نزد الله کامیابی بزرگ است.",
-      "translation_pashto": "48-5 د دې لپاره چې هغه مومنان سړي او مومنې ښځې داسې جنتونو ته داخل كړي چې د هغو له لاندې ولې بهېږي، چې دوى به په هغو كې تل ترتله وي او (د دې لپاره چې) هغه (الله) له دوى نه  د دوى ګناهونه لرې كړي، او دغه د الله په  نیز ډېره لویه كامیابي ده"
+      "translation_pashto": "48-5 د دې لپاره چې هغه مومنان سړي او مومنې ښځې داسې جنتونو ته داخل كړي چې د هغو له لاندې ولې بهېږي، چې دوى به په هغو كې تل ترتله وي او (د دې لپاره چې) هغه (الله) له دوى نه  د دوى ګناهونه لرې كړي، او دغه د الله په  نیز ډېره لویه كامیابي ده",
+      "translation_english": "So that He may admit the believing men and women to gardens under which rivers flow, abiding therein forever, and absolve them of their sins; that is a supreme triumph before Allah."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و تا مردان و زنان منافق و مردان و زنان مشرک را عذاب دهد که به الله گمان بد دارند، بدیها و بلاها تنها بر ایشان است و الله بر آنان غضب کرده و آنان را لعنت کرده است و دوزخ را برایشان آماده ساخته است که دوزخ بد جایگاه است.",
-      "translation_pashto": "48-6 او د دې لپاره چې منافقو سړیو او منافقو ښځو او مشركو سړیو او مشركو ښځو ته عذاب وركړي، هغه چې په الله باندې ګمان كوونكي دي، بدګمان، په دوى دې د بدۍ راګرځېدل وي، او الله په دوى باندې غضب كړى دى او په دوى يې لعنت كړى دى او د دوى لپاره يې جهنم تیار كړى دى او هغه د ورتلو بد ځاى دى"
+      "translation_pashto": "48-6 او د دې لپاره چې منافقو سړیو او منافقو ښځو او مشركو سړیو او مشركو ښځو ته عذاب وركړي، هغه چې په الله باندې ګمان كوونكي دي، بدګمان، په دوى دې د بدۍ راګرځېدل وي، او الله په دوى باندې غضب كړى دى او په دوى يې لعنت كړى دى او د دوى لپاره يې جهنم تیار كړى دى او هغه د ورتلو بد ځاى دى",
+      "translation_english": "And so that He may punish hypocrite men and women and polytheist men and women, who harbor about Allah evil thoughts. An evil fate will befall them. Allah is angry with them and has cursed them and prepared for them Hell. What a terrible destination!"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و لشکرهای آسمان و زمین از الله می‌باشد و الله غالب با حكمت است.",
-      "translation_pashto": "48-7 او خاص د الله لپاره د اسمانونو او ځمكې لښكرې دي او الله له ازله ښه غالب، ښه حكمت والا دى"
+      "translation_pashto": "48-7 او خاص د الله لپاره د اسمانونو او ځمكې لښكرې دي او الله له ازله ښه غالب، ښه حكمت والا دى",
+      "translation_english": "To Allah belong the soldiers of the heavens and earth, and Allah is All-Mighty, All-Wise."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "البته ما تو را گواه (بر اعمال) و مژده رسان و بیم دهنده فرستادیم،",
-      "translation_pashto": "48-8 بېشكه مونږ ته شاهد او زېرى وركوونكى او وېروونكى لېږلى يې"
+      "translation_pashto": "48-8 بېشكه مونږ ته شاهد او زېرى وركوونكى او وېروونكى لېږلى يې",
+      "translation_english": "Indeed, We have sent you [O prophet] as a witness, a bearer of glad tidings, and a warner,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "تا به الله و پیغمبرش ایمان بیاورید و او را مدد کنید و او را بزرگ بدارید. و صبح و شام الله را به پاکی یاد کنید.",
-      "translation_pashto": "48-9 د دې لپاره چې تاسو (اى خلقو!) په الله او د هغه په رسول ایمان راوړئ او د هغه (الله) مدد وكړئ او د هغه تعظیم وكړئ او سبا او بېګا د هغه تسبیح بیان كړئ"
+      "translation_pashto": "48-9 د دې لپاره چې تاسو (اى خلقو!) په الله او د هغه په رسول ایمان راوړئ او د هغه (الله) مدد وكړئ او د هغه تعظیم وكړئ او سبا او بېګا د هغه تسبیح بیان كړئ",
+      "translation_english": "so that you may believe in Allah and His Messenger, support and revere him, and glorify Him morning and evening."
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "البته کسانیکه با تو بیعت می‌کردند جز این نیست که با الله بیعت می‌کردند. دست الله بالای دست‌های آنان است، پس هرکس پیمان شکنی کند پس به زیان خود پیمان شکنی می‌کند و هر کس به آنچه که بر آن با الله عهد بسته است وفا کند، پس (الله) به زودی پاداش بزرگی به او خواهد داد.",
-      "translation_pashto": "48-10 بېشكه هغه كسان چې له تا سره بیعت كوي، بېشكه همدا خبره ده چې دوى خو له الله سره  بیعت كوي، د الله لاس د دوى د لاسونو له پاسه دى، نو هغه چا چې (دا بیعت) مات كړ، نو بېشكه همدا خبره ده چې د خپل ځان په ضرر يې  ماتوي او هغه څوك چې په هغه څه وفا وكړي چې په هغه يې له الله سره عهد كړى دى، نو  ده ته به هغه خامخا ډېر لوى اجر وركړي"
+      "translation_pashto": "48-10 بېشكه هغه كسان چې له تا سره بیعت كوي، بېشكه همدا خبره ده چې دوى خو له الله سره  بیعت كوي، د الله لاس د دوى د لاسونو له پاسه دى، نو هغه چا چې (دا بیعت) مات كړ، نو بېشكه همدا خبره ده چې د خپل ځان په ضرر يې  ماتوي او هغه څوك چې په هغه څه وفا وكړي چې په هغه يې له الله سره عهد كړى دى، نو  ده ته به هغه خامخا ډېر لوى اجر وركړي",
+      "translation_english": "Those who pledge allegiance to you [O Prophet] are indeed pledging allegiance to Allah; Allah’s Hand is over their hands. Whoever breaks his pledge, he only breaks it to his own detriment, but whoever fulfills his covenant with Allah, He will give him a great reward."
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "زود است که پس ماندگان عرب‌های بادیه نشین به تو بگویند: اموال و فرزندان ما، ما را مشغول ساخت، پس برای ما آمرزش بخواه، با زبانهایشان چیزی را می‌گویند که در دل‌هایشان نیست، بگو: اگر الله بخواهد به شما زیانی یا نفعی برساند چه کسی در برابر او برای شما اختیار چیزی را دارد؟ بلکه الله به آنچه می‌کنید آگاه است.",
-      "translation_pashto": "48-11 ژر ده چې تا ته په اَعرابو كې وروسته پاتې كړى شوي كسان ووايي: مونږ خپلو مالونو او خپلوكورنيو مشغول كړي وو، لهٰذا ته زمونږ لپاره بخښنه وغواړه، دوى په خپلو ژبو سره هغه خبرې وايي چې د دوى په زړونو كې هغه نشته، ته (دوى ته) ووایه: نو  تاسو لپاره د الله (له عذاب) نه څوك د څه شي اختیار لرلى شي، كه هغه (الله) تاسو ته د ضرر رسولو اراده وكړي، یا تاسو ته د نفعې رسولو اراده وكړي، بلكې الله په هغو كارونو چې تاسو يې كوئ ؛ ښه  خبردار دى"
+      "translation_pashto": "48-11 ژر ده چې تا ته په اَعرابو كې وروسته پاتې كړى شوي كسان ووايي: مونږ خپلو مالونو او خپلوكورنيو مشغول كړي وو، لهٰذا ته زمونږ لپاره بخښنه وغواړه، دوى په خپلو ژبو سره هغه خبرې وايي چې د دوى په زړونو كې هغه نشته، ته (دوى ته) ووایه: نو  تاسو لپاره د الله (له عذاب) نه څوك د څه شي اختیار لرلى شي، كه هغه (الله) تاسو ته د ضرر رسولو اراده وكړي، یا تاسو ته د نفعې رسولو اراده وكړي، بلكې الله په هغو كارونو چې تاسو يې كوئ ؛ ښه  خبردار دى",
+      "translation_english": "Those of the Bedouins who lagged behind will say to you, “We were preoccupied with our wealth and our families, so ask for forgiveness for us.” They say with their tongues what is not in their hearts. Say, “Then who can prevent Allah if He intends to harm or benefit you? Indeed, Allah is All-Aware of what you do."
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "(مشغول نبودید) بلکه گمان کردید که پیغمبر و مؤمنان هرگز به‌سوی خانواده‌هایشان باز نخواهند گشت و این در دل‌هایتان آراسته شد و گمان بد کردید و مردمان هلاک شده و بدبخت بودید.",
-      "translation_pashto": "48-12 بلكې (اصل خبره دا ده چې) تاسو دا ګمان كړى و چې رسول او مومنان به خپلو كورنيو ته هېڅ كله هم بېرته له سره  را ونه ګرځي او دغه خبره  ستاسو په زړونو كې ښايسته كړى شوه او تاسو ګمان وكړ، بدګمان، او تاسو  هلاكېدونكى قوم شوئ"
+      "translation_pashto": "48-12 بلكې (اصل خبره دا ده چې) تاسو دا ګمان كړى و چې رسول او مومنان به خپلو كورنيو ته هېڅ كله هم بېرته له سره  را ونه ګرځي او دغه خبره  ستاسو په زړونو كې ښايسته كړى شوه او تاسو ګمان وكړ، بدګمان، او تاسو  هلاكېدونكى قوم شوئ",
+      "translation_english": "But you thought that the Messenger and the believers would never return to their families ever, and that was made appealing in your hearts. You harbored evil thoughts, for you are a doomed people.”"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و هر کس به الله و پیغمبرش ایمان نیاورد پس (بداند که) ما برای کافران آتش شعله ور آماده کرده‌ایم.",
-      "translation_pashto": "48-13 او هر څوك چې په الله او د هغه په  رسول ایمان رانه وړي، نو بېشكه مونږ د كافرانو لپاره لمبې  وهونكى اور تیار كړى دى"
+      "translation_pashto": "48-13 او هر څوك چې په الله او د هغه په  رسول ایمان رانه وړي، نو بېشكه مونږ د كافرانو لپاره لمبې  وهونكى اور تیار كړى دى",
+      "translation_english": "Whoever does not believe in Allah and His Messenger, We have certainly prepared for the disbelievers a Blazing Fire."
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و فرمانروایی آسمان‌ها و زمین از الله است هر کسی را بخواهد می‌آمرزد و هر کسی را بخواهد عذاب می‌دهد و الله آمرزندۀ مهربان است.",
-      "translation_pashto": "48-14 او خاص د الله لپاره د اسمانونو او ځمكې باچايي ده، چا ته چې وغواړي بخښنه كوي او چا ته چې وغواړي عذاب وركوي او الله ډېر بخښونكى، بې حده رحم كوونكى دى"
+      "translation_pashto": "48-14 او خاص د الله لپاره د اسمانونو او ځمكې باچايي ده، چا ته چې وغواړي بخښنه كوي او چا ته چې وغواړي عذاب وركوي او الله ډېر بخښونكى، بې حده رحم كوونكى دى",
+      "translation_english": "To Allah belongs the dominion of the heavens and earth. He forgives whom He wills and punishes whom He wills, and Allah is All-Forgiving, Most Merciful."
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "زود است همان پس ماندگان (غزوۀ حدیبیه) بگویند، وقتی که شما برای به دست آوردن غنیمتهای (خیبر) روان شوید، بگذارید که همراه شما برویم، می‌خواهند سخن الله را تغییر دهند. بگو: هرگز با ما نخواهید رفت، الله از پیش این چنین (دربارۀ شما) فرموده است، پس خواهند گفت: (الله نگفته است) بلکه شما نسبت به ما حسد می‌ورزید. (مسلمانان حسد نمی‌ورزند) ولی آنان جز اندکی نمی‌فهمند.",
-      "translation_pashto": "48-15 ژر به وروسته پاتې كړى شوي كسان ووايي، كله چې تاسو غنیمتونو ته روان شئ، د دې لپاره چې هغه راونیسئ: تاسو مونږ پرېږدئ چې تاسو پسې روان شو، دوى  غواړي چې د الله كلام بدل كړي، ته (دوى ته) ووایه: تاسو به زمونږ پسې له سره رانشئ، الله همداسې مخكې له دې نه فرمایلي دي: بیا به ژر چې دوى ووايي: بلكې تاسو زمونږ سره حسد كوئ (داسې نه ده) بلكې دوى  نه پوهېدل مګر ډېر لږ څه"
+      "translation_pashto": "48-15 ژر به وروسته پاتې كړى شوي كسان ووايي، كله چې تاسو غنیمتونو ته روان شئ، د دې لپاره چې هغه راونیسئ: تاسو مونږ پرېږدئ چې تاسو پسې روان شو، دوى  غواړي چې د الله كلام بدل كړي، ته (دوى ته) ووایه: تاسو به زمونږ پسې له سره رانشئ، الله همداسې مخكې له دې نه فرمایلي دي: بیا به ژر چې دوى ووايي: بلكې تاسو زمونږ سره حسد كوئ (داسې نه ده) بلكې دوى  نه پوهېدل مګر ډېر لږ څه",
+      "translation_english": "Those who lagged behind will say when you set out to collect the spoils of war, “Let us follow you.” They wish to change the word of Allah. Say, “You will never follow us; this is what Allah has already decreed.” They will then say, “Rather, you are jealous of us.” Rather, they do not understand but a little."
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "به پس ماندگان بادیه نشین بگو: به زودی از شما دعوت خواهد شد که به‌سوی قوم جنگجو و قدرتمند بروید، تا با آنان بجنگید، یا اسلام آورند. پس اگر اطاعت کنید، الله پاداش نیک به شما خواهد داد. و اگر روی بگردانید، طوریکه پیش از این روی گرداندید، شما را به عذاب دردناک شکنجه خواهد کرد.",
-      "translation_pashto": "48-16 په اعرابو كې وروسته پاتې كړى شویو كسانو ته ووایه: ژر ده چې تاسو به له داسې قوم سره (د جنګ كولو) لپاره راوبللى شئ، چې د ډېر سخت جنګ والا دي، تاسو به له هغوى سره جنګ كوئ، یا به هغوى مسلمانېږي، نو كه تاسو اطاعت وكړئ، الله به تاسو ته ډېر ښه اجر دركړي او كه تاسو وګرځېدئ، لكه چې له دې نه مخكې ګرځېدلي وئ (نو) هغه به تاسو ته ډېر دردوونكى عذاب دركړي"
+      "translation_pashto": "48-16 په اعرابو كې وروسته پاتې كړى شویو كسانو ته ووایه: ژر ده چې تاسو به له داسې قوم سره (د جنګ كولو) لپاره راوبللى شئ، چې د ډېر سخت جنګ والا دي، تاسو به له هغوى سره جنګ كوئ، یا به هغوى مسلمانېږي، نو كه تاسو اطاعت وكړئ، الله به تاسو ته ډېر ښه اجر دركړي او كه تاسو وګرځېدئ، لكه چې له دې نه مخكې ګرځېدلي وئ (نو) هغه به تاسو ته ډېر دردوونكى عذاب دركړي",
+      "translation_english": "Say to the Bedouins who lagged behind, “You will be called against a people of great might, whom you will fight unless they submit. Then if you obey, Allah will give you a goodly reward, but if you turn away as you turned away before, He will afflict you with a painful punishment."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "بر نابینا گناهی نیست و بر لنگ گناهی نیست و بر بیمار گناهی نیست (که به جهاد نروند) و هرکس از الله و پیغمبرش اطاعت کند، الله او را به باغهایی وارد می‌سازد که از زیر (درختان و قصرهای) آن نهرها روان است. و هرکس روی بگرداند، او را به عذاب دردناک، عذاب خواهد داد.",
-      "translation_pashto": "48-17 نه په ړانده باندې څه ګناه شته او نه په ګوډ باندې څه ګناه شته او نه په بېمار باندې څه  ګناه شته او څوك چې د الله او د هغه د رسول اطاعت وكړي (نو) هغه (الله) به دغه (كس) داسې جنتونو ته داخل كړې چې د هغو له لاندې ولې بهېږي او څوك چې (د الله له احكامو نه) مخ واړوي (،نو) هغه (الله) به ده ته ډېر دردوونكى عذاب وركړي"
+      "translation_pashto": "48-17 نه په ړانده باندې څه ګناه شته او نه په ګوډ باندې څه ګناه شته او نه په بېمار باندې څه  ګناه شته او څوك چې د الله او د هغه د رسول اطاعت وكړي (نو) هغه (الله) به دغه (كس) داسې جنتونو ته داخل كړې چې د هغو له لاندې ولې بهېږي او څوك چې (د الله له احكامو نه) مخ واړوي (،نو) هغه (الله) به ده ته ډېر دردوونكى عذاب وركړي",
+      "translation_english": "There is no blame on the blind, nor on the lame, nor on the sick [for remaining behind]. Whoever obeys Allah and His Messenger, He will admit him into gardens under which rivers flow. But whoever turns away, He will afflict him with a painful punishment."
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "هر آئینه که الله از مؤمنان راضی شد، هنگامیکه زیر درخت با تو بیعت می‌کردند، پس آنچه را که در دل‌هایشان بود دانست، در نتیجه بر آنان سکون و آرامش نازل کرد و به آنان فتح نزدیک را پاداش داد.",
-      "translation_pashto": "48-18 یقینًا یقینًا الله له مومنانو نه راضي شو كله چې دوى له تا سره د ونې لاندې بيعت كاوه، پس ده ته هغه څه معلوم وو چې د دوى په زړونو كې وو، بیا هغه په دوى اطمینان نازل كړ او دوى ته يې په عوض كې نژدې برى وركړ"
+      "translation_pashto": "48-18 یقینًا یقینًا الله له مومنانو نه راضي شو كله چې دوى له تا سره د ونې لاندې بيعت كاوه، پس ده ته هغه څه معلوم وو چې د دوى په زړونو كې وو، بیا هغه په دوى اطمینان نازل كړ او دوى ته يې په عوض كې نژدې برى وركړ",
+      "translation_english": "Allah was much pleased with the believers when they pledged allegiance to you [O Prophet] under the tree. He knew what was in their hearts, so He sent down tranquility upon them and rewarded them with an imminent conquest,"
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "و غنیمت‌های بسیاری که آن را به دست خواهند آورد، و الله غالب باحکمت است.",
-      "translation_pashto": "48-19 او ډېر غنیمتونه چې دوى به هغه راحاصل كړي او الله له همېشه ډېر غالب، ښه حكمت والا دى "
+      "translation_pashto": "48-19 او ډېر غنیمتونه چې دوى به هغه راحاصل كړي او الله له همېشه ډېر غالب، ښه حكمت والا دى ",
+      "translation_english": "and abundant spoils of war they will gain. And Allah is All-Mighty, All-Wise."
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "الله غنيمت‌های بسیار را به شما وعده کرده است که آنها را به دست می‌آورید و این (غنیمت) را زودتر به شما داد و دست تجاوز مردم را از شما باز داشت. تا نشانه‌ای (نصرت الهی) برای مؤمنان باشد و شما را به راه راست هدایت کند.",
-      "translation_pashto": "48-20 الله له تاسو سره د ډېرو غنیموتونو وعده كړې ده چې تاسو به هغه واخلئ، پس دا (غنیمت) يې تاسو ته ژر دركړ او د خلقو لاسونه يې له تاسو نه بند كړل او د دې لپاره چې دا (كار) د مومنانو لپاره  یو نښه شي او د دې لپاره چې هغه تاسو ته نېغه لار وښیي"
+      "translation_pashto": "48-20 الله له تاسو سره د ډېرو غنیموتونو وعده كړې ده چې تاسو به هغه واخلئ، پس دا (غنیمت) يې تاسو ته ژر دركړ او د خلقو لاسونه يې له تاسو نه بند كړل او د دې لپاره چې دا (كار) د مومنانو لپاره  یو نښه شي او د دې لپاره چې هغه تاسو ته نېغه لار وښیي",
+      "translation_english": "Allah has promised you abundant spoils of war that you will gain, and He has hastened for you this [conquest], and He has restrained people’s hands from you, so that it may be a sign for the believers, and so that He may guide you to a straight path."
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "و غنیمتهای دیگری (را نیز نصیب تان خواهد کرد) که هنوز قادر به گرفتن آن نشده‌اید، اما الله بر آن احاطه دارد. و الله بر هر چیزی قادر است.",
-      "translation_pashto": "48-21 او نور داسې (غنیمتونه) دي چې تاسو لا په هغو قادر شوي نه یئ، یقینًا الله هغه راګېر كړي دي او الله په هر شي باندې ښه قادر دى "
+      "translation_pashto": "48-21 او نور داسې (غنیمتونه) دي چې تاسو لا په هغو قادر شوي نه یئ، یقینًا الله هغه راګېر كړي دي او الله په هر شي باندې ښه قادر دى ",
+      "translation_english": "And there are other [spoils] that you have not yet been able to gain, but Allah has full control over them, for Allah is Most Capable of all things."
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "و اگر کافران (در حدیبیه) با شما می‌جنگیدند به یقین پشت‌هایشان را می‌گردانیدند، باز کارساز و مددگاری نمی‌یافتند.",
-      "translation_pashto": "48-22 او كه كافران شویو كسانو له تاسو سره جنګ كړى وى (نو) دوى به خامخا شاګانې ګرځولې وى، بیا به دوى نه څوك كارساز موندلى و او نه كوم مددګار"
+      "translation_pashto": "48-22 او كه كافران شویو كسانو له تاسو سره جنګ كړى وى (نو) دوى به خامخا شاګانې ګرځولې وى، بیا به دوى نه څوك كارساز موندلى و او نه كوم مددګار",
+      "translation_english": "If the disbelievers were to fight you, they would surely turn their backs, then they would not have any protector or helper."
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "این سنت الله است که پیش از این (در مقابل كفار) گذشته است و هرگز برای سنت الله تغییر و تبدیل نخواهی یافت.",
-      "translation_pashto": "48-23 الله هغه طریقه جاري كړې ده چې له دې نه مخكې تېره شوې ده او ته به د الله طریقې لره له سره څه  تبدیلې ونه مومې"
+      "translation_pashto": "48-23 الله هغه طریقه جاري كړې ده چې له دې نه مخكې تېره شوې ده او ته به د الله طریقې لره له سره څه  تبدیلې ونه مومې",
+      "translation_english": "Such was the way of Allah in the past, and you will not find any change in Allah’s way."
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "او همان ذاتی است که در داخل مکه دست کافران را از شما و دست شما را از ایشان بازداشت، بعد از آنکه شما را بر آنان پیروز ساخت و الله به آنچه می‌کنید، بیناست.",
-      "translation_pashto": "48-24 او دى همغه ذات دى چې له تاسو نه يې د هغوى لاسونه بند كړل او له هغوى نه يې ستاسو لاسونه بند كړل، د مكې په داخل كې، وروسته له دې چې تاسو يې پر هغوى غالب كړئ، او الله هغه څه لره چې تاسو يې كوئ ؛ ښه لیدونكى دى"
+      "translation_pashto": "48-24 او دى همغه ذات دى چې له تاسو نه يې د هغوى لاسونه بند كړل او له هغوى نه يې ستاسو لاسونه بند كړل، د مكې په داخل كې، وروسته له دې چې تاسو يې پر هغوى غالب كړئ، او الله هغه څه لره چې تاسو يې كوئ ؛ ښه لیدونكى دى",
+      "translation_english": "It is He Who restrained their hands from you and your hands from them near Makkah, after giving you the upper hand over them. And Allah is All-Seeing of what you do."
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "آنها کسانی هستند که کفر ورزیدند و شما را از مسجد الحرام منع کردند و نگذاشتند قربانی‌هایی نگاه داشته شده به جایگاهش برسد، و اگر مردان و زنان مؤمن (و مستضعف مکه) نبودند که آنان را نمی‌شناسید (و ممکن بود) آنها را پایمال کنید، پس نادانسته دربارۀ آنان رنج و آسیب به شما می‌رسید. (الله هرگز مانع این جنگ نمی‌شد) تا الله هرکسی را بخواهد در رحمت خود در آورد. اگر (مؤمنان و مشرکان) از هم جدا بودند حتما کافران را به عذاب دردناکی گرفتار می‌کردیم.",
-      "translation_pashto": "48-25 دوى هغه كسان دي چې كفر يې كړى دى، او تاسو يې له مسجد حرام نه منع كړي يئ او قربانۍ (د هدي څاروي هم)، په دې حال كې چې له دې نه بندې كړى شوي دي چې خپل د حلالې ځاى ته ورسېږي او كه چېرې څه مومن سړي او څه مومنې ښځې نه وى، چې تاسو دوى نه پېژندل، دا چې تاسو به دوى پايمال كړئ، بیا به تاسو ته د دوى په وجه ګناه ورسېږي (، نو د  جنګ اجازت به يې دركړى و، خو در يې نه كړ) د دې لپاره چې الله په خپل رحمت كې هغه څوك داخل كړي چې يې غواړي، كه دغه (مسلمانان له كفارو نه) جدا شوي وى، نو مونږ به خامخا په دغو (د مكې په اوسېدونكو) كسانو كې كافران شویو خلقو ته ډېر دردوونكى عذاب وركړى و"
+      "translation_pashto": "48-25 دوى هغه كسان دي چې كفر يې كړى دى، او تاسو يې له مسجد حرام نه منع كړي يئ او قربانۍ (د هدي څاروي هم)، په دې حال كې چې له دې نه بندې كړى شوي دي چې خپل د حلالې ځاى ته ورسېږي او كه چېرې څه مومن سړي او څه مومنې ښځې نه وى، چې تاسو دوى نه پېژندل، دا چې تاسو به دوى پايمال كړئ، بیا به تاسو ته د دوى په وجه ګناه ورسېږي (، نو د  جنګ اجازت به يې دركړى و، خو در يې نه كړ) د دې لپاره چې الله په خپل رحمت كې هغه څوك داخل كړي چې يې غواړي، كه دغه (مسلمانان له كفارو نه) جدا شوي وى، نو مونږ به خامخا په دغو (د مكې په اوسېدونكو) كسانو كې كافران شویو خلقو ته ډېر دردوونكى عذاب وركړى و",
+      "translation_english": "It is they who disbelieved and prevented you from the Sacred Mosque and detained the sacrificial animals from reaching their place of sacrifice. If it had not been for the believing men and women whom you could not identify, you might have trampled over them, thus incurring guilt unknowingly, [We would have let you march to Makkah]. [This was] so that Allah may admit to His mercy whom He wills. If they had been distinct [from the disbelievers], We would surely have inflicted on those who disbelieved among them a painful punishment."
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "وقتی که کافران تعصب و ننگ جاهلیت را در دل‌هایشان جای دادند، پس الله سکون و آرامش خود را بر پیغمبرش و (نیز) بر مؤمنان نازل کرد و آنان را به کلمۀ تقوا ملزم ساخت و آنان به آن سزاوارتر و اهل آن بودند و الله به هر چیز داناست.",
-      "translation_pashto": "48-26 كله چې كافران شویو خلقو په خپلو زړونو كې غیرت واچاوه، د جاهلیت غیرت، نو الله خپل اطمینان په خپل رسول او په مومنانو باندې نازل كړ او په دوى پورې يې د تقوىٰ خبره لازمه (ټینګه) كړه او دوى د دغې ډېر حقدار او د دغې اهل وو او الله همېشه په  هر شي ښه پوه دى"
+      "translation_pashto": "48-26 كله چې كافران شویو خلقو په خپلو زړونو كې غیرت واچاوه، د جاهلیت غیرت، نو الله خپل اطمینان په خپل رسول او په مومنانو باندې نازل كړ او په دوى پورې يې د تقوىٰ خبره لازمه (ټینګه) كړه او دوى د دغې ډېر حقدار او د دغې اهل وو او الله همېشه په  هر شي ښه پوه دى",
+      "translation_english": "When the disbelievers harbored pride in their hearts – the pride of ignorance – then Allah sent down His tranquility upon His Messenger and upon the believers, and caused them to adhere to the word of piety, for they were more deserving and worthy of it. And Allah is All-Knowing of everything."
     },
     {
       "number": 27,
@@ -274,7 +300,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "البته الله خواب پیغمبر خود را راست (به او نشان داد) و به حق تحقق بخشید که اگر الله بخواهد ایمن و در حالیکه موی سرتان را تراشیده و کوتاه کرده‌اید بدون ترس وارد مسجد الحرام خواهید شد. ولی الله چیزهایی را می‌دانست که شما نمی‌دانستید. پس، پیش از این فتحی نزدیک را مقرر گردانید.",
-      "translation_pashto": "48-27 یقینًا یقینًا الله خپل رسول ته خوب په حقه سره رښتیا كړ، چې تاسو به، كه الله وغواړي، مسجد حرام ته په امن او ارام سره ننوځئ، چې خپل سرونه به خروونكي یئ او كموونكي به یئ، په داسې حال كې چې تاسو به نه وېرېږئ، پس هغه ته معلوم دي هغه څه چې تاسو ته معلوم نه دي، نو له دغې نه مخكې يې نژدې برى عطا كړ"
+      "translation_pashto": "48-27 یقینًا یقینًا الله خپل رسول ته خوب په حقه سره رښتیا كړ، چې تاسو به، كه الله وغواړي، مسجد حرام ته په امن او ارام سره ننوځئ، چې خپل سرونه به خروونكي یئ او كموونكي به یئ، په داسې حال كې چې تاسو به نه وېرېږئ، پس هغه ته معلوم دي هغه څه چې تاسو ته معلوم نه دي، نو له دغې نه مخكې يې نژدې برى عطا كړ",
+      "translation_english": "Indeed, Allah has fulfilled His Messenger’s dream in truth: that you will surely enter the Sacred Mosque if Allah wills, in peace and safety, and you will have your heads shaved or shortened, without any fear. He knew what you did not know, and He granted you prior to that an imminent conquest."
     },
     {
       "number": 28,
@@ -284,7 +311,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "اوست ذاتی که پیغمبرش را با هدایت و دین حق فرستاد تا آن را بر همۀ ادیان غالب گرداند و کافی است که الله گواه باشد.",
-      "translation_pashto": "48-28 دى همغه ذات دى چې خپل رسول يې په هدایت او حق دین سره رالېږلى دى، د دې لپاره چې هغه (الله) دغه (دین) په ټولو دینونو باندې غالب كړي او هم الله كافي دى ښه ګواه"
+      "translation_pashto": "48-28 دى همغه ذات دى چې خپل رسول يې په هدایت او حق دین سره رالېږلى دى، د دې لپاره چې هغه (الله) دغه (دین) په ټولو دینونو باندې غالب كړي او هم الله كافي دى ښه ګواه",
+      "translation_english": "It is He Who has sent His Messenger with guidance and the religion of truth, to make it prevail over all religions, and sufficient is Allah as a Witness."
     },
     {
       "number": 29,
@@ -294,7 +322,8 @@
       "hizb": 52,
       "sajda": false,
       "translation_dari": "محمد فرستادۀ الله است، و کسانی که با او هستند بر کافران سخت‌گیر و در میان خود مهربانند. آنان را در حال رکوع و سجده می‌بینی که فضل و خشنودی الله را می‌جویند. نشانۀ صلاح ایشان از اثر سجده در چهره‌هایشان نمایان است. این وصف آنان در تورات است، و اما توصیف‌شان در انجیل چنین است که مانند کشتزاری هستند که جوانه‌هایش را بیرون آورده و آنها را نیرو داده و محکم نموده، پس بر ساقه‌های خویش راست ایستاده باشد، طوریکه کشاورزان را در تعجب می‌اندازد تا کافران را به سبب آنان خشمگین کند. الله به کسانی از آنان که ایمان آورده و کارهای شایسته انجام داده‌اند آمرزش و پاداش بزرگ وعده داده است.",
-      "translation_pashto": "48-29 محمد د الله رسول دى او هغه كسان چې له ده سره دي، په كافرانو  باندې ډېر سخت دي، په خپل مینځ كې ډېر مهرباني كوونكي دي، ته به دوى وینې چې ركوع كوونكي، سجده كوونكي دي، له الله نه فضل او رضامندي غواړي، د دوى (د دیندارۍ) نښې د دوى په مخونو كې دي د سجدو له اثر نه، دغه په تورات كې د دوى مثال دى او په انجیل كې د دوى مثال دى، لكه هغه فصل چې خپل تېغ راوباسي، بیا هغه قوي كړي، بیا هغه (فصل، تېغ) پېړ او كلك شي بیا دغه (فصل) په خپلو پنډیو (او بېخونو) ودرېږي، په داسې حال چې زمېنداران (كروندګر) په تعجب كې اچوي، د دې لپاره چې په دغو سره كافران په غصه كړي، الله له هغو كسانو سره چې ایمان يې راوړى دى او نېك عملونه يې كړي دي، چې دغه (اصحابان) دي؛ د بخښنې او د ډېر لوى اجر وعده كړې ده"
+      "translation_pashto": "48-29 محمد د الله رسول دى او هغه كسان چې له ده سره دي، په كافرانو  باندې ډېر سخت دي، په خپل مینځ كې ډېر مهرباني كوونكي دي، ته به دوى وینې چې ركوع كوونكي، سجده كوونكي دي، له الله نه فضل او رضامندي غواړي، د دوى (د دیندارۍ) نښې د دوى په مخونو كې دي د سجدو له اثر نه، دغه په تورات كې د دوى مثال دى او په انجیل كې د دوى مثال دى، لكه هغه فصل چې خپل تېغ راوباسي، بیا هغه قوي كړي، بیا هغه (فصل، تېغ) پېړ او كلك شي بیا دغه (فصل) په خپلو پنډیو (او بېخونو) ودرېږي، په داسې حال چې زمېنداران (كروندګر) په تعجب كې اچوي، د دې لپاره چې په دغو سره كافران په غصه كړي، الله له هغو كسانو سره چې ایمان يې راوړى دى او نېك عملونه يې كړي دي، چې دغه (اصحابان) دي؛ د بخښنې او د ډېر لوى اجر وعده كړې ده",
+      "translation_english": "Muhammad is the Messenger of Allah, and those who are with him are firm against the disbelievers and compassionate among themselves. You see them bowing and prostrating [in prayer], seeking Allah’s grace and pleasure. Their distinguishing sign is on their faces from the effects of prostration. Such is their description in the Torah. And their description in the Gospel is like that of a seed that sprouts its shoot, then makes it strong; then it grows thick and stands straight on its stem, which delights the sowers – so that He may enrage thereby the disbelievers. Allah has promised those among them who believe and do righteous deeds forgiveness and a great reward."
     }
   ]
 }

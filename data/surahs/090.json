@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "قسم به این شهر (مکه مکرمه).",
-      "translation_pashto": "90-1 زه قسم خورم په دې ښار باندې"
+      "translation_pashto": "90-1 زه قسم خورم په دې ښار باندې",
+      "translation_english": "I do swear by this city [of Makkah] –"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و در حالی که تو در این شهر (مکه) ساکن هستی.",
-      "translation_pashto": "90-2 په داسې حال كې چې ته په دې ښار كې اوسېدونكى يې"
+      "translation_pashto": "90-2 په داسې حال كې چې ته په دې ښار كې اوسېدونكى يې",
+      "translation_english": "and you are free of restriction [for a while] in this city –"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به پدر و به آنچه از او تولد شده است.",
-      "translation_pashto": "90-3 او په زېږوونكي باندې او په هغه باندې چې ده زېږولي دي"
+      "translation_pashto": "90-3 او په زېږوونكي باندې او په هغه باندې چې ده زېږولي دي",
+      "translation_english": "and by every parent and his offspring,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "که البته انسان را در (قعر) مشقت و تکلیف آفریدیم.",
-      "translation_pashto": "90-4 یقینًا یقینًا مونږ انسان په مشقت كې پیدا كړى دى"
+      "translation_pashto": "90-4 یقینًا یقینًا مونږ انسان په مشقت كې پیدا كړى دى",
+      "translation_english": "We have created man in hardship."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا (انسان) گمان می‌کند که هرگز کسی بر او قادر نمی‌شود.",
-      "translation_pashto": "90-5 ایا دغه (كافر انسان) خیال كوي چې بېشكه شان دا دى چې په ده باندې به هیڅوك قادر نشي"
+      "translation_pashto": "90-5 ایا دغه (كافر انسان) خیال كوي چې بېشكه شان دا دى چې په ده باندې به هیڅوك قادر نشي",
+      "translation_english": "Does he think that none can ever have power over him?"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و می‌گوید: مال بسیار انفاق کردم.",
-      "translation_pashto": "90-6 دى وايي: ما ډېر زیات مال خرڅ كړى (لګولى) دى"
+      "translation_pashto": "90-6 دى وايي: ما ډېر زیات مال خرڅ كړى (لګولى) دى",
+      "translation_english": "He says, “I have squandered enormous wealth!”"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا گمان می‌کند که او را کسی ندیده است؟",
-      "translation_pashto": "90-7 ایا دى خیال كوي چې بېشكه دى هیچا نه دى لیدلى"
+      "translation_pashto": "90-7 ایا دى خیال كوي چې بېشكه دى هیچا نه دى لیدلى",
+      "translation_english": "Does he think that no one sees him?"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا برای او دو چشم قرار ندادیم؟",
-      "translation_pashto": "90-8 ایا مونږ ده ته دوه سترګې نه دي وركړي"
+      "translation_pashto": "90-8 ایا مونږ ده ته دوه سترګې نه دي وركړي",
+      "translation_english": "Have We not given him two eyes,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و یک زبان و دو لب؟",
-      "translation_pashto": "90-9 او یوه ژبه او دوه شونډي"
+      "translation_pashto": "90-9 او یوه ژبه او دوه شونډي",
+      "translation_english": "and a tongue and two lips,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و به او راه خیر و شر را نشان دادیم.",
-      "translation_pashto": "90-10 اومونږ ده ته دوه لارې ښودلي دي"
+      "translation_pashto": "90-10 اومونږ ده ته دوه لارې ښودلي دي",
+      "translation_english": "and shown him the two ways [of right and wrong]?"
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس در آن گردنۀ سخت قدم نگذاشت؟",
-      "translation_pashto": "90-11 نو ده د غونډۍ په ختلو كې هېڅ تكلیف ونه وېست"
+      "translation_pashto": "90-11 نو ده د غونډۍ په ختلو كې هېڅ تكلیف ونه وېست",
+      "translation_english": "Yet he did not make his way through the steep path,"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و چه می‌دانی که آن گردنۀ سخت چیست؟",
-      "translation_pashto": "90-12 او ته څه شي پوه كړې چې (ختل د) غونډۍ څه شى دى؟"
+      "translation_pashto": "90-12 او ته څه شي پوه كړې چې (ختل د) غونډۍ څه شى دى؟",
+      "translation_english": "and how do you know what the steep path is?"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آزاد کردن گردن‌ها (برده‌ها) است.",
-      "translation_pashto": "90-13 خلاصول د څټ (ازادول د مريي) دي"
+      "translation_pashto": "90-13 خلاصول د څټ (ازادول د مريي) دي",
+      "translation_english": "It is freeing a slave,"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "یا طعام دادن در روزِ گرسنگی است.",
-      "translation_pashto": "90-14 او طعام وركول دي په داسې ورځ كې چې د لوږې والا ده"
+      "translation_pashto": "90-14 او طعام وركول دي په داسې ورځ كې چې د لوږې والا ده",
+      "translation_english": "or giving food on a day of hunger,"
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "به یتیمی که از اقارب باشد.",
-      "translation_pashto": "90-15 یتیم ته چې د خپلوۍ خاوند وي"
+      "translation_pashto": "90-15 یتیم ته چې د خپلوۍ خاوند وي",
+      "translation_english": "to an orphan relative,"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "یا به مسکین خاک‌آلود.",
-      "translation_pashto": "90-16 یا مسكین ته چې په خاورو ككړ وي"
+      "translation_pashto": "90-16 یا مسكین ته چې په خاورو ككړ وي",
+      "translation_english": "or to a needy person in misery,"
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "باز از آنانی باشد که ایمان آورده‌اند و یکدیگر را به صبر نمودن (در راه دین) و نرمی و مهربانی سفارش کرده‌اند.",
-      "translation_pashto": "90-17 بیا دغه له هغو كسانو ځنې وي چې ایمان يې راوړى وي او یو بل ته د صبر وصیت كوي او یو بل ته د مهربانۍ (او شفقت) كولو وصیت كوي"
+      "translation_pashto": "90-17 بیا دغه له هغو كسانو ځنې وي چې ایمان يې راوړى وي او یو بل ته د صبر وصیت كوي او یو بل ته د مهربانۍ (او شفقت) كولو وصیت كوي",
+      "translation_english": "then [most importantly] to be one of those who believe and exhort one another to patience and exhort one another to compassion."
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "این گروه اصحاب دست راست‌اند.",
-      "translation_pashto": "90-18 دغه كسان دښي اړخ والا دي"
+      "translation_pashto": "90-18 دغه كسان دښي اړخ والا دي",
+      "translation_english": "Such are the people of the Right."
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و آنانی که به آیات ما کفر ورزیدند، آن‌ها اصحاب دست چپ‌اند.",
-      "translation_pashto": "90-19 او هغه كسان چې زمونږ په ایتونو باندې كافران شوي دي دوى د چپ (ګس) اړخ  والا دي "
+      "translation_pashto": "90-19 او هغه كسان چې زمونږ په ایتونو باندې كافران شوي دي دوى د چپ (ګس) اړخ  والا دي ",
+      "translation_english": "As for those who reject Our signs, they are the people of the Left,"
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "بر آنان (از هر سو) آتشی مسلط باشد (که راه فرار نداشته باشند).",
-      "translation_pashto": "90-20 په دوى باندې به سرپوښ كړى شوى اور وي"
+      "translation_pashto": "90-20 په دوى باندې به سرپوښ كړى شوى اور وي",
+      "translation_english": "who will be locked up in the Fire."
     }
   ]
 }

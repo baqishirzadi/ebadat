@@ -7,21 +7,24 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import type { TranslationLanguage } from '@/types/quran';
+import { useI18n } from '@/utils/i18n/useI18n';
 
-const LANG_OPTIONS: { key: Exclude<TranslationLanguage, 'none'>; label: string; icon: keyof typeof MaterialIcons.glyphMap }[] = [
-  { key: 'dari', label: 'دری', icon: 'translate' },
-  { key: 'pashto', label: 'پښتو', icon: 'language' },
-  { key: 'both', label: 'هردو', icon: 'menu-book' },
+const LANG_OPTIONS: { key: Exclude<TranslationLanguage, 'none' | 'both'>; icon: keyof typeof MaterialIcons.glyphMap }[] = [
+  { key: 'dari', icon: 'translate' },
+  { key: 'pashto', icon: 'language' },
+  { key: 'english', icon: 'public' },
 ];
 
 export const TranslationToggle = memo(function TranslationToggle() {
   const { theme, state, setTranslationLanguage } = useApp();
-  const current = state.preferences.showTranslation;
+  const { t } = useI18n();
+  const stored = state.preferences.showTranslation;
+  const current = stored === 'both' ? state.preferences.appLanguage : stored;
   const showTranslation = current !== 'none';
-  const activeLang: Exclude<TranslationLanguage, 'none'> =
-    current === 'none' ? 'dari' : current;
+  const activeLang: Exclude<TranslationLanguage, 'none' | 'both'> =
+    current === 'pashto' || current === 'english' || current === 'dari' ? current : 'dari';
 
-  const handleLangSelect = (key: Exclude<TranslationLanguage, 'none'>) => {
+  const handleLangSelect = (key: Exclude<TranslationLanguage, 'none' | 'both'>) => {
     setTranslationLanguage(key);
   };
 
@@ -40,7 +43,9 @@ export const TranslationToggle = memo(function TranslationToggle() {
         { backgroundColor: theme.card, borderColor: theme.cardBorder },
       ]}
     >
-      <CenteredText style={[styles.label, { color: theme.textSecondary }]}>ترجمه</CenteredText>
+      <CenteredText style={[styles.label, { color: theme.textSecondary }]}>
+        {t('quran.translation.label')}
+      </CenteredText>
 
       <View style={[styles.segmented, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
         {LANG_OPTIONS.map((option) => {
@@ -65,7 +70,11 @@ export const TranslationToggle = memo(function TranslationToggle() {
                   { color: active ? '#fff' : theme.text },
                 ]}
               >
-                {option.label}
+                {option.key === 'dari'
+                  ? t('quran.translation.dari')
+                  : option.key === 'pashto'
+                    ? t('quran.translation.pashto')
+                    : t('quran.translation.english')}
               </CenteredText>
             </Pressable>
           );
@@ -74,7 +83,7 @@ export const TranslationToggle = memo(function TranslationToggle() {
 
       <RtlView style={styles.toggleRow}>
         <CenteredText style={[styles.toggleLabel, { color: theme.text }]}>
-          نمایش ترجمه
+          {t('quran.showTranslation')}
         </CenteredText>
         <Switch
           value={showTranslation}

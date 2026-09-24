@@ -21,17 +21,15 @@ import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { CalculationMethods } from '@/utils/prayerTimes';
+import { translateUi } from '@/utils/i18n/catalog';
+import { APP_LANGUAGES, APP_LANGUAGE_ORDER } from '@/utils/i18n/languages';
 import { tUi } from '@/utils/i18n/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 
 export default function SettingsScreen() {
   const {
@@ -45,6 +43,7 @@ export default function SettingsScreen() {
     setTranslationLanguage,
     setArabicFontSize,
     setTranslationFontSize,
+    layoutRestartPending,
   } = useApp();
   const { updateSettings, state: prayerState } = usePrayer();
   const uiLanguage = state.preferences.appLanguage;
@@ -153,10 +152,10 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="palette" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('ظاهر برنامه', uiLanguage)}</Text>
-              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('ظاهر برنامه', uiLanguage)}</LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {tUi(themes.find((t) => t.id === state.preferences.theme)?.name ?? '', uiLanguage)}
-              </Text>
+              </LocalizedText>
             </View>
             <MaterialIcons
               name={expandedSection === 'theme' ? 'expand-less' : 'expand-more'}
@@ -181,14 +180,14 @@ export default function SettingsScreen() {
                     size={20}
                     color={state.preferences.theme === t.id ? theme.tint : theme.icon}
                   />
-                  <Text
+                  <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}
                     style={[
                       styles.optionText,
                       { color: state.preferences.theme === t.id ? theme.tint : theme.text },
                     ]}
                   >
                     {tUi(t.name, uiLanguage)}
-                  </Text>
+                  </LocalizedText>
                   {state.preferences.theme === t.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
                   )}
@@ -204,10 +203,10 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="language" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('زبان برنامه', uiLanguage)}</Text>
-              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
-                {state.preferences.appLanguage === 'pashto' ? 'پښتو' : tUi('فارسی (دری)', uiLanguage)}
-              </Text>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('زبان برنامه', uiLanguage)}</LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
+                {APP_LANGUAGES[state.preferences.appLanguage].nativeLabel}
+              </LocalizedText>
             </View>
             <MaterialIcons
               name={expandedSection === 'appLanguage' ? 'expand-less' : 'expand-more'}
@@ -217,34 +216,40 @@ export default function SettingsScreen() {
           </Pressable>
           {expandedSection === 'appLanguage' && (
             <View style={[styles.optionsList, { backgroundColor: theme.card }]}>
-              {[
-                { id: 'dari' as const, name: 'فارسی (دری)' },
-                { id: 'pashto' as const, name: 'پښتو' },
-              ].map((language) => (
-                <Pressable
-                  key={language.id}
-                  onPress={() => setAppLanguage(language.id)}
-                  style={[
-                    styles.optionItem,
-                    { borderBottomColor: theme.divider },
-                    state.preferences.appLanguage === language.id && {
-                      backgroundColor: theme.backgroundSecondary,
-                    },
-                  ]}
-                >
-                  <Text
+              {APP_LANGUAGE_ORDER.map((languageCode) => {
+                const active = state.preferences.appLanguage === languageCode;
+                return (
+                  <Pressable
+                    key={languageCode}
+                    onPress={() => setAppLanguage(languageCode)}
                     style={[
-                      styles.optionText,
-                      { color: state.preferences.appLanguage === language.id ? theme.tint : theme.text },
+                      styles.optionItem,
+                      { borderBottomColor: theme.divider },
+                      active && { backgroundColor: theme.backgroundSecondary },
                     ]}
                   >
-                    {tUi(language.name, uiLanguage)}
-                  </Text>
-                  {state.preferences.appLanguage === language.id && (
-                    <MaterialIcons name="check" size={20} color={theme.tint} />
-                  )}
-                </Pressable>
-              ))}
+                    <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}
+                      style={[styles.optionText, { color: active ? theme.tint : theme.text }]}
+                    >
+                      {APP_LANGUAGES[languageCode].nativeLabel}
+                    </LocalizedText>
+                    {active && <MaterialIcons name="check" size={20} color={theme.tint} />}
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
+          {layoutRestartPending && (
+            <View style={[styles.restartNotice, { backgroundColor: `${theme.tint}14`, borderColor: `${theme.tint}55` }]}>
+              <MaterialIcons name="restart-alt" size={20} color={theme.tint} />
+              <View style={styles.restartNoticeText}>
+                <LocalizedText style={[styles.restartNoticeTitle, { color: theme.text }]}>
+                  {translateUi('language.restart.title', uiLanguage)}
+                </LocalizedText>
+                <LocalizedText style={[styles.restartNoticeBody, { color: theme.textSecondary }]}>
+                  {translateUi('language.restart.body', uiLanguage)}
+                </LocalizedText>
+              </View>
             </View>
           )}
 
@@ -257,10 +262,10 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="font-download" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط قرآن', uiLanguage)}</Text>
-              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط قرآن', uiLanguage)}</LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {QuranFonts[state.preferences.quranFont]?.displayNameDari ?? 'عثمان طه'}
-              </Text>
+              </LocalizedText>
             </View>
             <MaterialIcons
               name={expandedSection === 'quranFont' ? 'expand-less' : 'expand-more'}
@@ -278,20 +283,22 @@ export default function SettingsScreen() {
                   onPress={() => setQuranFont(f.id)}
                   style={[
                     styles.optionItem,
+                    styles.fontPreviewOption,
                     { borderBottomColor: theme.divider },
                     state.preferences.quranFont === f.id && { backgroundColor: theme.backgroundSecondary },
                   ]}
                 >
                   <View style={styles.fontPreview}>
-                    <Text
+                    <LocalizedText
+                      preserveFontFamily
                       style={[
                         styles.fontSample,
                         { color: theme.text, fontFamily: getQuranFontFamily(f.id) },
                       ]}
                     >
                       {f.sample}
-                    </Text>
-                    <Text style={[styles.optionText, { color: theme.text }]}>{f.name}</Text>
+                    </LocalizedText>
+                    <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.optionText, { color: theme.text }]}>{f.name}</LocalizedText>
                   </View>
                   {state.preferences.quranFont === f.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
@@ -308,10 +315,10 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="translate" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط دری', uiLanguage)}</Text>
-              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط دری', uiLanguage)}</LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {DariFonts[state.preferences.dariFont]?.displayNameDari || 'وزیرمتن'}
-              </Text>
+              </LocalizedText>
             </View>
             <MaterialIcons
               name={expandedSection === 'dariFont' ? 'expand-less' : 'expand-more'}
@@ -327,20 +334,22 @@ export default function SettingsScreen() {
                   onPress={() => setDariFont(f.id)}
                   style={[
                     styles.optionItem,
+                    styles.fontPreviewOption,
                     { borderBottomColor: theme.divider },
                     state.preferences.dariFont === f.id && { backgroundColor: theme.backgroundSecondary },
                   ]}
                 >
                   <View style={styles.fontPreview}>
-                    <Text
+                    <LocalizedText
+                      preserveFontFamily
                       style={[
                         styles.fontSample,
                         { color: theme.text, fontFamily: f.id === 'vazirmatn' ? 'Vazirmatn' : 'Amiri' },
                       ]}
                     >
                       {f.sample}
-                    </Text>
-                    <Text style={[styles.optionText, { color: theme.text }]}>{f.name}</Text>
+                    </LocalizedText>
+                    <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.optionText, { color: theme.text }]}>{f.name}</LocalizedText>
                   </View>
                   {state.preferences.dariFont === f.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
@@ -352,15 +361,16 @@ export default function SettingsScreen() {
 
           {/* Pashto Font Settings */}
           <Pressable
+            testID="settings-pashto-font"
             onPress={() => toggleSection('pashtoFont')}
             style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="text-format" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط پښتو', uiLanguage)}</Text>
-              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط پښتو', uiLanguage)}</LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {PashtoFonts[state.preferences.pashtoFont]?.displayNamePashto || 'امیری نسخ'}
-              </Text>
+              </LocalizedText>
             </View>
             <MaterialIcons
               name={expandedSection === 'pashtoFont' ? 'expand-less' : 'expand-more'}
@@ -373,26 +383,32 @@ export default function SettingsScreen() {
               {pashtoFonts.map((f) => (
                 <Pressable
                   key={f.id}
+                  testID={`settings-pashto-font-option-${f.id}`}
                   onPress={() => setPashtoFont(f.id)}
                   style={[
                     styles.optionItem,
+                    styles.fontPreviewOption,
                     { borderBottomColor: theme.divider },
                     state.preferences.pashtoFont === f.id && { backgroundColor: theme.backgroundSecondary },
                   ]}
                 >
                   <View style={styles.fontPreview}>
-                    <Text
+                    <LocalizedText
+                      preserveFontFamily
                       style={[
                         styles.fontSample,
                         {
                           color: theme.text,
                           fontFamily: f.id === 'amiri' ? 'Amiri' : 'NotoNastaliqUrdu',
+                          fontSize: f.id === 'nastaliq' ? 18 : Typography.arabic.small,
+                          lineHeight: f.id === 'nastaliq' ? 42 : 30,
+                          includeFontPadding: f.id === 'nastaliq',
                         },
                       ]}
                     >
                       {f.sample}
-                    </Text>
-                    <Text style={[styles.optionText, { color: theme.text }]}>{f.name}</Text>
+                    </LocalizedText>
+                    <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.optionText, { color: theme.text }]}>{f.name}</LocalizedText>
                   </View>
                   {state.preferences.pashtoFont === f.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
@@ -409,10 +425,10 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="format-size" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('اندازه متن عربی قرآن', uiLanguage)}</Text>
-              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('اندازه متن عربی قرآن', uiLanguage)}</LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {tUi(fontSizes.find((s) => s.id === state.preferences.arabicFontSize)?.name ?? '', uiLanguage)}
-              </Text>
+              </LocalizedText>
             </View>
             <MaterialIcons
               name={expandedSection === 'arabicSize' ? 'expand-less' : 'expand-more'}
@@ -434,14 +450,14 @@ export default function SettingsScreen() {
                     },
                   ]}
                 >
-                  <Text
+                  <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}
                     style={[
                       styles.optionText,
                       { color: state.preferences.arabicFontSize === s.id ? theme.tint : theme.text },
                     ]}
                   >
                     {tUi(s.name, uiLanguage)} ({Typography.arabic[s.id]}px)
-                  </Text>
+                  </LocalizedText>
                   {state.preferences.arabicFontSize === s.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
                   )}
@@ -457,10 +473,10 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="text-fields" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('اندازه متن ترجمه', uiLanguage)}</Text>
-              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('اندازه متن ترجمه', uiLanguage)}</LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {tUi(fontSizes.find((s) => s.id === state.preferences.translationFontSize)?.name ?? '', uiLanguage)}
-              </Text>
+              </LocalizedText>
             </View>
             <MaterialIcons
               name={expandedSection === 'translationSize' ? 'expand-less' : 'expand-more'}
@@ -482,7 +498,7 @@ export default function SettingsScreen() {
                     },
                   ]}
                 >
-                  <Text
+                  <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}
                     style={[
                       styles.optionText,
                       {
@@ -492,7 +508,7 @@ export default function SettingsScreen() {
                     ]}
                   >
                     {tUi(s.name, uiLanguage)} ({Typography.translation[s.id]}px)
-                  </Text>
+                  </LocalizedText>
                   {state.preferences.translationFontSize === s.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
                   )}
@@ -508,16 +524,18 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="subtitles" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('ترجمه', uiLanguage)}</Text>
-              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('ترجمه', uiLanguage)}</LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {state.preferences.showTranslation === 'dari'
                   ? tUi('فارسی (دری) - انور بدخشانی', uiLanguage)
                   : state.preferences.showTranslation === 'pashto'
-                    ? 'پښتو'
+                    ? tUi('پښتو', uiLanguage)
+                    : state.preferences.showTranslation === 'english'
+                      ? tUi('انگلیسی', uiLanguage)
                     : state.preferences.showTranslation === 'both'
                       ? tUi('هردو', uiLanguage)
                       : tUi('بدون ترجمه', uiLanguage)}
-              </Text>
+              </LocalizedText>
             </View>
             <MaterialIcons
               name={expandedSection === 'translation' ? 'expand-less' : 'expand-more'}
@@ -530,12 +548,12 @@ export default function SettingsScreen() {
               {[
                 { id: 'dari', name: 'فارسی (دری) - انور بدخشانی' },
                 { id: 'pashto', name: 'پښتو' },
-                { id: 'both', name: 'هردو' },
+                { id: 'english', name: 'انگلیسی' },
                 { id: 'none', name: 'بدون ترجمه' },
               ].map((t) => (
                 <Pressable
                   key={t.id}
-                  onPress={() => setTranslationLanguage(t.id as 'dari' | 'pashto' | 'both' | 'none')}
+                  onPress={() => setTranslationLanguage(t.id as 'dari' | 'pashto' | 'english' | 'none')}
                   style={[
                     styles.optionItem,
                     { borderBottomColor: theme.divider },
@@ -544,14 +562,14 @@ export default function SettingsScreen() {
                     },
                   ]}
                 >
-                  <Text
+                  <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}
                     style={[
                       styles.optionText,
                       { color: state.preferences.showTranslation === t.id ? theme.tint : theme.text },
                     ]}
                   >
                     {t.name}
-                  </Text>
+                  </LocalizedText>
                   {state.preferences.showTranslation === t.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
                   )}
@@ -567,10 +585,10 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="schedule" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
-              <Text style={[styles.sectionTitle, { color: theme.text }]}>{tUi('روش محاسبه نماز', uiLanguage)}</Text>
-              <Text style={[styles.sectionValue, { color: theme.textSecondary }]}>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('روش محاسبه نماز', uiLanguage)}</LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
                 {calculationMethods.find((m) => m.id === calculationMethod)?.name}
-              </Text>
+              </LocalizedText>
             </View>
             <MaterialIcons
               name={expandedSection === 'prayerMethod' ? 'expand-less' : 'expand-more'}
@@ -590,14 +608,14 @@ export default function SettingsScreen() {
                     calculationMethod === m.id && { backgroundColor: theme.backgroundSecondary },
                   ]}
                 >
-                  <Text
+                  <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}
                     style={[
                       styles.optionText,
                       { color: calculationMethod === m.id ? theme.tint : theme.text },
                     ]}
                   >
                     {m.name}
-                  </Text>
+                  </LocalizedText>
                   {calculationMethod === m.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
                   )}
@@ -614,10 +632,10 @@ export default function SettingsScreen() {
             <View style={styles.adhanSettingsContent}>
               <MaterialIcons name="notifications-active" size={28} color={theme.tint} />
               <View style={styles.adhanSettingsText}>
-                <Text style={[styles.adhanSettingsTitle, { color: theme.text }]}>{tUi('تنظیمات اذان', uiLanguage)}</Text>
-                <Text style={[styles.adhanSettingsSubtitle, { color: theme.textSecondary }]}>
+                <LocalizedText style={[styles.adhanSettingsTitle, { color: theme.text }]}>{tUi('تنظیمات اذان', uiLanguage)}</LocalizedText>
+                <LocalizedText style={[styles.adhanSettingsSubtitle, { color: theme.textSecondary }]}>
                   صدای اذان و یادآوری برای هر نماز
-                </Text>
+                </LocalizedText>
               </View>
             </View>
             <MaterialIcons name="chevron-left" size={24} color={theme.tint} />
@@ -631,15 +649,13 @@ export default function SettingsScreen() {
             ]}
           >
             <MaterialIcons name="info" size={20} color={theme.tint} />
-            <Text style={[styles.noticeText, { color: theme.textSecondary }]}>
-              {uiLanguage === 'pashto'
-                ? 'د مازیګر وخت د حنفي مذهب له مخې محاسبه کېږي (دوه برابره سیوری)'
-                : 'وقت عصر بر اساس مذهب حنفی محاسبه می‌شود (سایه دو برابر)'}
-            </Text>
+            <LocalizedText style={[styles.noticeText, { color: theme.textSecondary }]}>
+              {translateUi('settings.asrNotice', uiLanguage)}
+            </LocalizedText>
           </View>
 
           {/* App Version */}
-          <Text style={[styles.versionText, { color: theme.textSecondary }]}>{tUi('نسخه ۱.۰.۰', uiLanguage)}</Text>
+          <LocalizedText style={[styles.versionText, { color: theme.textSecondary }]}>{tUi('نسخه ۱.۰.۰', uiLanguage)}</LocalizedText>
 
           <View style={styles.spacer} />
         </ScrollView>
@@ -655,29 +671,58 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: Spacing.xl,
   },
+  restartNotice: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.sm,
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+  },
+  restartNoticeText: {
+    flex: 1,
+    gap: 2,
+  },
+  restartNoticeTitle: {
+    fontSize: Typography.ui.body,
+  },
+  restartNoticeBody: {
+    fontSize: Typography.ui.caption,
+    lineHeight: 22,
+  },
   sectionHeader: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
-    padding: Spacing.md,
+    height: 84,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 7,
     marginHorizontal: Spacing.md,
     marginTop: Spacing.sm,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
+    overflow: 'hidden',
   },
   sectionInfo: {
     flex: 1,
-    marginRight: Spacing.md,
+    minWidth: 0,
+    marginHorizontal: Spacing.md,
     alignItems: 'center',
   },
   sectionTitle: {
-    fontSize: Typography.ui.subtitle,
+    width: '100%',
+    fontSize: 14,
+    lineHeight: 28,
     fontWeight: '600',
     textAlign: 'center',
     fontFamily: 'Vazirmatn-Bold',
   },
   sectionValue: {
-    fontSize: Typography.ui.body,
-    marginTop: 2,
+    width: '100%',
+    fontSize: 12,
+    lineHeight: 24,
+    marginTop: 1,
     textAlign: 'center',
     fontFamily: 'Vazirmatn',
   },
@@ -689,13 +734,20 @@ const styles = StyleSheet.create({
   optionItem: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
-    padding: Spacing.md,
+    height: 56,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 7,
     borderBottomWidth: 1,
     gap: Spacing.sm,
   },
+  fontPreviewOption: {
+    height: 88,
+  },
   optionText: {
     flex: 1,
-    fontSize: Typography.ui.body,
+    minWidth: 0,
+    fontSize: 13,
+    lineHeight: 26,
     textAlign: 'center',
     fontFamily: 'Vazirmatn',
   },

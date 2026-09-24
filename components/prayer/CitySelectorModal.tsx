@@ -4,19 +4,9 @@
  */
 
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  Modal,
-  Pressable,
-  TextInput,
-  SectionList,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+
+import { View, StyleSheet, Modal, Pressable, SectionList, ScrollView, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -37,6 +27,7 @@ import {
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface CitySelectorModalProps {
   visible: boolean;
@@ -57,11 +48,13 @@ export function CitySelectorModal({
   onSelectCity,
   onClose,
   allowClose = true,
-  title = 'انتخاب شهر',
+  title,
   testID,
   initialCategory = 'afghanistan',
 }: CitySelectorModalProps) {
   const { theme } = useApp();
+  const { t, isPashto } = useI18n();
+  const modalTitle = title || t('qibla.chooseCity');
   const insets = useSafeAreaInsets();
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,12 +104,14 @@ export function CitySelectorModal({
         const city = getCity(result.cityKey);
         const warning = result.warning ? `\n\n${result.error}` : '';
         Alert.alert(
-          'موقعیت یافت شد',
-          `شهر/استان نزدیک: ${city?.name || result.cityName || 'نامشخص'}${warning}\nآیا می‌خواهید این مکان را انتخاب کنید؟`,
+          isPashto ? 'ځای وموندل شو' : 'موقعیت یافت شد',
+          isPashto
+            ? `نږدې ښار/ولایت: ${city?.name || result.cityName || 'ناڅرګند'}${warning}\nدا ځای ټاکل غواړئ؟`
+            : `شهر/استان نزدیک: ${city?.name || result.cityName || 'نامشخص'}${warning}\nآیا می‌خواهید این مکان را انتخاب کنید؟`,
           [
-            { text: 'لغو', style: 'cancel' },
+            { text: isPashto ? 'لغوه' : 'لغو', style: 'cancel' },
             {
-              text: 'انتخاب',
+              text: isPashto ? 'ټاکل' : 'انتخاب',
               onPress: () => {
                 if (result.cityKey) {
                   onSelectCity(result.cityKey);
@@ -130,14 +125,14 @@ export function CitySelectorModal({
           ],
         );
       } else {
-        Alert.alert('خطا', result.error || 'امکان تشخیص موقعیت وجود ندارد');
+        Alert.alert(isPashto ? 'تېروتنه' : 'خطا', result.error || (isPashto ? 'ځای ونه موندل شو' : 'امکان تشخیص موقعیت وجود ندارد'));
       }
     } catch {
-      Alert.alert('خطا', 'خطا در تشخیص موقعیت');
+      Alert.alert(isPashto ? 'تېروتنه' : 'خطا', isPashto ? 'د ځای په موندلو کې تېروتنه وشوه.' : 'خطا در تشخیص موقعیت');
     } finally {
       setGpsLoading(false);
     }
-  }, [onSelectCity]);
+  }, [onSelectCity, isPashto]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -154,18 +149,18 @@ export function CitySelectorModal({
         ({ key }) => !featuredProvinceKeys.has(key),
       );
       return [
-        ...(featured.length > 0 ? [{ title: 'شهرهای پرکاربرد', data: featured }] : []),
-        ...(provinces.length > 0 ? [{ title: 'ولایت‌ها', data: provinces }] : []),
+        ...(featured.length > 0 ? [{ title: isPashto ? 'ډېر کارېدونکي ښارونه' : 'شهرهای پرکاربرد', data: featured }] : []),
+        ...(provinces.length > 0 ? [{ title: isPashto ? 'ولایتونه' : 'ولایت‌ها', data: provinces }] : []),
       ];
     }
 
     const provinces = getProvincesForRegion(selectedCategory);
     const majors = getMajorCitiesForRegion(selectedCategory);
     const sections: Array<{ title: string; data: CityRow[] }> = [];
-    if (provinces.length > 0) sections.push({ title: 'استان‌ها / ایالت‌ها', data: provinces });
-    if (majors.length > 0) sections.push({ title: 'شهرهای بزرگ', data: majors });
+    if (provinces.length > 0) sections.push({ title: isPashto ? 'ولایتونه / ایالتونه' : 'استان‌ها / ایالت‌ها', data: provinces });
+    if (majors.length > 0) sections.push({ title: isPashto ? 'لوی ښارونه' : 'شهرهای بزرگ', data: majors });
     return sections;
-  }, [selectedCategory, searchQuery, regionReady]);
+  }, [selectedCategory, searchQuery, regionReady, isPashto]);
 
   const renderCity = useCallback(
     ({ item }: { item: CityRow }) => {
@@ -230,7 +225,7 @@ export function CitySelectorModal({
             ) : (
               <RtlView style={styles.closeButton} />
             )}
-            <RtlText align="center" style={styles.headerTitle}>{title}</RtlText>
+            <RtlText align="center" style={styles.headerTitle}>{modalTitle}</RtlText>
             <Pressable
               onPress={handleGpsPress}
               style={({ pressed }) => [styles.gpsButton, pressed && styles.buttonPressed]}
@@ -247,9 +242,9 @@ export function CitySelectorModal({
 
         <RtlView style={[styles.searchContainer, { backgroundColor: theme.backgroundSecondary }]}>
           <MaterialIcons name="search" size={20} color={theme.icon} />
-          <TextInput
+          <LocalizedTextInput
             style={[styles.searchInput, { color: theme.text }]}
-            placeholder="جستجوی شهر یا استان..."
+            placeholder={isPashto ? 'ښار یا ولایت ولټوئ...' : 'جستجوی شهر یا استان...'}
             placeholderTextColor={theme.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -293,7 +288,7 @@ export function CitySelectorModal({
                       },
                     ]}
                   >
-                    {category.name}
+                    {isPashto ? (category.id === 'afghanistan' ? 'افغانستان' : category.nameEn) : category.name}
                   </RtlText>
                 </Pressable>
               ))}
@@ -303,7 +298,7 @@ export function CitySelectorModal({
 
         <SectionList
           testID="city-selector-list"
-          sections={searchQuery.trim() ? [{ title: 'نتایج جستجو', data: searchResults }] : browseSections}
+          sections={searchQuery.trim() ? [{ title: isPashto ? 'د لټون پایلې' : 'نتایج جستجو', data: searchResults }] : browseSections}
           keyExtractor={(item) => item.key}
           renderItem={renderCity}
           renderSectionHeader={({ section: { title } }) => (
@@ -318,7 +313,7 @@ export function CitySelectorModal({
             <RtlView style={styles.emptyContainer}>
               <MaterialIcons name="location-off" size={48} color={theme.textSecondary} />
               <RtlText align="center" style={[styles.emptyText, { color: theme.textSecondary }]}>
-                {searchQuery.trim() ? 'شهری یافت نشد' : 'شهری در این دسته وجود ندارد'}
+                {isPashto ? (searchQuery.trim() ? 'ښار ونه موندل شو' : 'په دې ډله کې ښار نشته') : (searchQuery.trim() ? 'شهری یافت نشد' : 'شهری در این دسته وجود ندارد')}
               </RtlText>
             </RtlView>
           }

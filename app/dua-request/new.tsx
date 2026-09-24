@@ -4,18 +4,9 @@
  */
 
 import React, { useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  Text,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+
+import { View, StyleSheet, ScrollView, Pressable, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { LocalizedText, LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
@@ -27,9 +18,12 @@ import CenteredText from '@/components/CenteredText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import NetInfo from '@react-native-community/netinfo';
 import { RESPONDERS, type ResponderId } from '@/constants/responders';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export default function NewDuaRequestScreen() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const { t } = useI18n();
+  const isPashto = state.preferences.appLanguage === 'pashto';
   const { submitRequest } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
@@ -52,32 +46,32 @@ export default function NewDuaRequestScreen() {
   const handleSubmit = async () => {
     // Validation
     if (!category) {
-      Alert.alert('خطا', 'لطفاً دسته‌بندی را انتخاب کنید');
+      Alert.alert(t('common.error'), t('dua.new.validation.category'));
       return;
     }
 
     if (!gender) {
-      Alert.alert('خطا', 'لطفاً جنسیت خود را مشخص کنید');
+      Alert.alert(t('common.error'), t('dua.new.validation.gender'));
       return;
     }
 
     if (!message.trim()) {
-      Alert.alert('خطا', 'لطفاً متن درخواست را وارد کنید');
+      Alert.alert(t('common.error'), t('dua.new.validation.message'));
       return;
     }
 
     if (message.trim().length < 10) {
-      Alert.alert('خطا', 'متن درخواست باید حداقل ۱۰ کاراکتر باشد');
+      Alert.alert(t('common.error'), t('dua.new.validation.short'));
       return;
     }
 
     if (message.trim().length > 2000) {
-      Alert.alert('خطا', 'متن درخواست نباید بیشتر از ۲۰۰۰ کاراکتر باشد');
+      Alert.alert(t('common.error'), t('dua.new.validation.long'));
       return;
     }
 
     if (!responderId) {
-      Alert.alert('خطا', 'لطفاً دعاکننده/پاسخ‌دهنده را انتخاب کنید');
+      Alert.alert(t('common.error'), t('dua.new.validation.responder'));
       return;
     }
 
@@ -88,15 +82,15 @@ export default function NewDuaRequestScreen() {
       const netInfo = await NetInfo.fetch();
       const isOffline = !netInfo.isConnected || netInfo.isInternetReachable === false;
       const successMessage = isOffline
-        ? 'درخواست شما ثبت شد، اما شما آفلاین هستید. پس از اتصال به اینترنت و بررسی توسط عالم، پاسخ در بخش جزئیات درخواست نمایش داده می‌شود.'
-        : 'درخواست شما با موفقیت ارسال شد. پس از بررسی توسط عالم، پاسخ در بخش جزئیات همان درخواست قابل مشاهده خواهد بود.';
+        ? t('dua.new.success.offline')
+        : t('dua.new.success.online');
 
       Alert.alert(
-        'موفق',
+        t('dua.new.success.title'),
         successMessage,
         [
           {
-            text: 'مشاهده درخواست',
+            text: t('dua.new.viewRequest'),
             onPress: () => router.replace(`/dua-request/${request.id}`),
           },
         ]
@@ -104,9 +98,9 @@ export default function NewDuaRequestScreen() {
     } catch (error) {
       console.error('Failed to submit request:', error);
       Alert.alert(
-        'خطا',
-        'در ارسال درخواست خطایی رخ داد. درخواست شما به صورت محلی ذخیره شده و هنگام اتصال به اینترنت ارسال خواهد شد.',
-        [{ text: 'باشه' }]
+        t('common.error'),
+        t('dua.new.failure'),
+        [{ text: t('common.close') }]
       );
       // Still navigate back
       handleBack();
@@ -125,8 +119,8 @@ export default function NewDuaRequestScreen() {
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
       <ScreenHeader
-        title="درخواست دعا"
-        subtitle="با نیت خالص، با دل آرام"
+        title={t('dua.new.title')}
+        subtitle={t('dua.new.subtitle')}
         icon="auto-awesome"
         onBack={handleBack}
       />
@@ -141,14 +135,14 @@ export default function NewDuaRequestScreen() {
         {/* Message Input */}
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
-            پیام شما
+            {t('dua.new.messageLabel')}
           </CenteredText>
           <View style={[styles.inputWrapper, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <View style={[styles.inputPattern, { borderColor: `${theme.tint}15` }]} />
-            <TextInput
+            <LocalizedTextInput
               testID="dua-message-input"
               style={[styles.textInput, { color: theme.text, height: messageHeight }]}
-              placeholder="پیام خود را به زبان دری یا پشتو بنویسید..."
+              placeholder={t('dua.new.messagePlaceholder')}
               placeholderTextColor={theme.textSecondary}
               value={message}
               onChangeText={setMessage}
@@ -171,7 +165,7 @@ export default function NewDuaRequestScreen() {
         </View>
 
         <View style={styles.section}>
-          <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>دعاکننده/پاسخ‌دهنده</CenteredText>
+          <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>{t('dua.new.responders')}</CenteredText>
           <View style={styles.responderRow}>
             {RESPONDERS.map((responder) => {
               const selected = responderId === responder.id;
@@ -190,31 +184,31 @@ export default function NewDuaRequestScreen() {
                   ]}
                 >
                   <CenteredText style={[styles.responderText, { color: selected ? theme.tint : theme.text }]}>
-                    {responder.nameDari}
+                    {isPashto ? responder.namePashto : responder.nameDari}
                   </CenteredText>
                 </Pressable>
               );
             })}
           </View>
-          <CenteredText style={[styles.genderHint, { color: theme.textSecondary }]}>انتخاب پاسخ‌دهنده الزامی است.</CenteredText>
+          <CenteredText style={[styles.genderHint, { color: theme.textSecondary }]}>{t('dua.new.responderRequired')}</CenteredText>
         </View>
 
         {/* Category + Gender Row */}
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
-            نوع درخواست
+            {t('dua.new.requestType')}
           </CenteredText>
           <CategorySelector selectedCategory={category} onSelect={setCategory} />
         </View>
 
         <View style={styles.section}>
           <CenteredText style={[styles.sectionTitle, { color: theme.text }]}>
-            جنسیت
+            {t('dua.new.gender')}
           </CenteredText>
           <View style={styles.genderRow}>
             {[
-              { id: 'male' as const, label: 'برادر', emoji: '👨' },
-              { id: 'female' as const, label: 'خواهر', emoji: '🧕' },
+              { id: 'male' as const, label: t('dua.gender.male'), emoji: '👨' },
+              { id: 'female' as const, label: t('dua.gender.female'), emoji: '🧕' },
             ].map((option) => {
               const selected = gender === option.id;
               return (
@@ -230,7 +224,7 @@ export default function NewDuaRequestScreen() {
                     pressed && styles.buttonPressed,
                   ]}
                 >
-                  <Text style={styles.genderEmoji}>{option.emoji}</Text>
+                  <LocalizedText style={styles.genderEmoji}>{option.emoji}</LocalizedText>
                   <CenteredText
                     style={[
                       styles.genderText,
@@ -244,7 +238,7 @@ export default function NewDuaRequestScreen() {
             })}
           </View>
           <CenteredText style={[styles.genderHint, { color: theme.textSecondary }]}>
-            برای پاسخ بهتر، جنسیت خود را مشخص کنید.
+            {t('dua.new.genderHint')}
           </CenteredText>
         </View>
 
@@ -267,7 +261,7 @@ export default function NewDuaRequestScreen() {
           ) : (
             <>
               <MaterialIcons name="send" size={20} color="#fff" />
-              <CenteredText style={styles.submitButtonText}>ارسال درخواست</CenteredText>
+              <CenteredText style={styles.submitButtonText}>{t('dua.new.submit')}</CenteredText>
             </>
           )}
         </Pressable>

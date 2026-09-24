@@ -25,9 +25,11 @@ for (const marker of ['ACTION_DATE_CHANGED', 'ACTION_TIME_CHANGED', 'ACTION_TIME
 }
 const widgetTask = read('widgets/widgetTaskHandler.tsx');
 assert(widgetTask.includes('refreshWidgetSnapshot(stored)'), 'Widget task does not refresh the stored snapshot');
-assert(read('utils/widgetHadith.ts').includes('getWidgetHadithForDateKey'), 'Widget Hadith selector is missing');
 const widgetSnapshot = read('utils/widgetSnapshot.ts');
-assert(widgetSnapshot.includes('getWidgetHadithForDateKey(todayKey)'), 'Widget Hadith is not keyed to the current local date');
+assert(widgetSnapshot.includes('version: 6'), 'Widget snapshot schema was not bumped to version 6');
+assert(!widgetSnapshot.includes('getWidgetHadithForDateKey'), 'Prayer widget snapshots still select daily Hadith');
+const androidWidgetUi = read('widgets/PrayerTimesWidget.tsx');
+assert(!androidWidgetUi.includes('snapshot.hadithText') && !androidWidgetUi.includes('حدیث روز'), 'Android widget still renders daily Hadith');
 assert(widgetSnapshot.includes('currentPrayer: getCurrentPrayerFromEntries'), 'Widget prayer rollover refresh is missing');
 
 const cities = read('utils/cities.ts');
@@ -44,8 +46,8 @@ assert(featured.join('|') === [
 const provinceMatch = cities.match(/AFGHANISTAN_PROVINCE_CAPITAL_KEYS\s*=\s*\[([\s\S]*?)\]\s*as const/);
 assert(provinceMatch, 'Afghan province-capital list is missing');
 assert([...provinceMatch[1].matchAll(/'([^']+)'/g)].length === 34, 'Afghan province-capital list must contain 34 entries');
-assert(read('app/onboarding/location.tsx').includes("title: 'شهرهای پرکاربرد'"), 'First-install featured city section is missing');
-assert(read('components/prayer/CitySelectorModal.tsx').includes("title: 'شهرهای پرکاربرد'"), 'Reusable featured city section is missing');
+assert(read('app/onboarding/location.tsx').includes("t('onboarding.location.featuredCities')"), 'First-install featured city section is missing');
+assert(read('components/prayer/CitySelectorModal.tsx').includes("isPashto ? 'ډېر کارېدونکي ښارونه' : 'شهرهای پرکاربرد'"), 'Reusable featured city section is missing');
 
 const adhanHealth = read('utils/adhanHealth.ts');
 const adhanCard = read('components/home/AdhanStatusCard.tsx');

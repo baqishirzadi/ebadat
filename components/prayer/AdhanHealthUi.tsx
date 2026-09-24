@@ -12,7 +12,8 @@ import {
   AdhanHealthReport,
   buildAdhanHealthReport,
 } from '@/utils/adhanHealth';
-import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { adhanPermissionLocale, tAdhanPermission, type AdhanPermissionLocale } from '@/utils/i18n/adhanPermissions';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export type HealthVisualStatus = 'healthy' | 'warning' | 'critical';
 
@@ -26,23 +27,26 @@ export function healthStatusFromReport(
   return report.overallStatus;
 }
 
-export function healthSummaryLine(status: HealthVisualStatus): string {
+export function healthSummaryLine(status: HealthVisualStatus, locale: AdhanPermissionLocale = 'fa'): string {
   switch (status) {
     case 'healthy':
-      return 'اذان آماده است و زمان‌بندی فعال است.';
+      if (locale === 'en') return 'The adhan is ready and scheduling is active.';
+      return locale === 'ps' ? 'اذان چمتو دی او مهالوېش فعال دی.' : 'اذان آماده است و زمان‌بندی فعال است.';
     case 'warning':
-      return 'یک یا چند مورد نیاز به بررسی دارد.';
+      if (locale === 'en') return 'One or more items need attention.';
+      return locale === 'ps' ? 'یو یا څو موارد کتنې ته اړتیا لري.' : 'یک یا چند مورد نیاز به بررسی دارد.';
     default:
-      return 'برای پخش به‌موقع اذان، تنظیمات را اصلاح کنید.';
+      if (locale === 'en') return 'Fix your settings so the adhan plays on time.';
+      return locale === 'ps' ? 'د اذان د پر وخت غږولو لپاره امستنې سمې کړئ.' : 'برای پخش به‌موقع اذان، تنظیمات را اصلاح کنید.';
   }
 }
 
-export function healthChipLabel(status: HealthVisualStatus): string {
+export function healthChipLabel(status: HealthVisualStatus, locale: AdhanPermissionLocale = 'fa'): string {
   switch (status) {
     case 'healthy':
-      return tAdhanPermission('adhanPermissions.health.statusPass', 'fa');
+      return tAdhanPermission('adhanPermissions.health.statusPass', locale);
     default:
-      return tAdhanPermission('adhanPermissions.health.statusWarn', 'fa');
+      return tAdhanPermission('adhanPermissions.health.statusWarn', locale);
   }
 }
 
@@ -73,14 +77,15 @@ interface AdhanHealthStatusChipProps {
 }
 
 export function AdhanHealthStatusChip({ status }: AdhanHealthStatusChipProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const locale = adhanPermissionLocale(state.preferences.appLanguage);
   const color = statusColor(status, theme);
 
   return (
     <RtlView style={[styles.chip, { backgroundColor: `${color}18`, borderColor: color }]}>
       <MaterialIcons name={statusIcon(status)} size={16} color={color} />
       <RtlText align="center" style={[styles.chipText, { color }]}>
-        {healthChipLabel(status)}
+        {healthChipLabel(status, locale)}
       </RtlText>
     </RtlView>
   );
@@ -151,7 +156,9 @@ export function AdhanNotificationHealthPanel({
   showFallbackWarning = false,
   onRecheckSchedule,
 }: AdhanNotificationHealthPanelProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const { t } = useI18n();
+  const locale = adhanPermissionLocale(state.preferences.appLanguage);
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [report, setReport] = useState<AdhanHealthReport | null>(null);
@@ -159,14 +166,14 @@ export function AdhanNotificationHealthPanel({
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const next = await buildAdhanHealthReport();
+      const next = await buildAdhanHealthReport(locale);
       setReport(next);
     } catch {
       setReport(null);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [locale]);
 
   useEffect(() => {
     refresh().catch(() => {});
@@ -177,7 +184,7 @@ export function AdhanNotificationHealthPanel({
   return (
     <View style={[styles.panel, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
       <RtlText align="center" style={[styles.panelTitle, { color: theme.text }]}>
-        {tAdhanPermission('adhanPermissions.health.title', 'fa')}
+        {tAdhanPermission('adhanPermissions.health.title', locale)}
       </RtlText>
 
       {loading ? (
@@ -186,26 +193,26 @@ export function AdhanNotificationHealthPanel({
         <>
           <AdhanHealthStatusChip status={status} />
           <RtlText align="center" style={[styles.panelSummary, { color: theme.textSecondary }]}>
-            {healthSummaryLine(status)}
+            {healthSummaryLine(status, locale)}
           </RtlText>
         </>
       )}
 
       <View style={styles.actionStack}>
         <AdhanHealthActionRow
-          label="بررسی کامل وضعیت"
+          label={tAdhanPermission('adhanPermissions.health.fullCheck', locale)}
           icon="health-and-safety"
           variant="primary"
           onPress={() => router.push('/adhan-health')}
         />
         <AdhanHealthActionRow
           testID="adhan-system-test-button"
-          label="تست اذان (۲۵ ثانیه)"
+          label={t('adhanHealth.testAdhan')}
           icon="notifications-active"
           onPress={onRunSystemTest}
         />
         <AdhanHealthActionRow
-          label="تنظیمات اعلان"
+          label={t('adhanHealth.notificationSettings')}
           icon="settings"
           onPress={onOpenNotificationSettings}
         />
@@ -220,10 +227,10 @@ export function AdhanNotificationHealthPanel({
       {showFallbackWarning ? (
         <View style={[styles.fallbackBox, { backgroundColor: theme.warningSurface, borderColor: theme.warning }]}>
           <RtlText align="center" style={[styles.fallbackText, { color: theme.text }]}>
-            حالت عادی فعال است؛ اذان ممکن است کمی تأخیر داشته باشد.
+            {t('adhanHealth.fallbackHint')}
           </RtlText>
           {onRecheckSchedule ? (
-            <Button label="بررسی دوباره و زمان‌بندی" onPress={onRecheckSchedule} />
+            <Button label={t('adhanHealth.recheckSchedule')} onPress={onRecheckSchedule} />
           ) : null}
         </View>
       ) : null}

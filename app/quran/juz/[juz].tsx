@@ -28,12 +28,14 @@ import {
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 type JuzAyahItem = {
   surahNumber: number;
   ayah: Ayah;
   dariTranslation?: string;
   pashtoTranslation?: string;
+  englishTranslation?: string;
   surahAyahCount: number;
 };
 
@@ -89,6 +91,7 @@ export default function JuzReaderScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { theme } = useApp();
+  const { t } = useI18n();
   const { updatePosition } = useReadingPosition();
   const { getAyahsByJuz, getTranslation } = useQuranData();
 
@@ -168,6 +171,7 @@ export default function JuzReaderScreen() {
         ayah: entry.ayah,
         dariTranslation: getTranslation(surahNumber, entry.ayah.number, 'dari'),
         pashtoTranslation: getTranslation(surahNumber, entry.ayah.number, 'pashto'),
+        englishTranslation: getTranslation(surahNumber, entry.ayah.number, 'english'),
         surahAyahCount: entry.surah.ayahCount,
       };
 
@@ -488,10 +492,10 @@ export default function JuzReaderScreen() {
           juzNumber,
         })
         .catch((error) => {
-          Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+          Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
         });
     },
-    [currentlyPlaying, juzBoundsBySurah, juzNumber]
+    [currentlyPlaying, juzBoundsBySurah, juzNumber, t]
   );
 
   const handlePlayContinuous = useCallback(() => {
@@ -508,9 +512,9 @@ export default function JuzReaderScreen() {
         juzNumber,
       })
       .catch((error) => {
-        Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
       });
-  }, [currentlyPlaying, juzBoundsBySurah, juzNumber]);
+  }, [currentlyPlaying, juzBoundsBySurah, juzNumber, t]);
 
   const handlePause = useCallback(() => {
     setIsPlaying(false);
@@ -629,6 +633,7 @@ export default function JuzReaderScreen() {
           surahNumber={ayahItem.surahNumber}
           dariTranslation={ayahItem.dariTranslation}
           pashtoTranslation={ayahItem.pashtoTranslation}
+          englishTranslation={ayahItem.englishTranslation}
           isPlaying={isAyahPlaying}
           onPlayPress={() => handlePlayAyah(ayahItem)}
         />

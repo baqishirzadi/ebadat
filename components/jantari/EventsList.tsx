@@ -13,12 +13,15 @@ import {
   type CalendarEvent,
 } from '@/utils/calendarEvents';
 import { debugLog } from '@/utils/debugLog';
+import { pickContent } from '@/utils/i18n/content';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 type EventRow = CalendarEvent & { color: string; dateLabel: string };
 
 export function EventsList() {
   const { theme, state } = useApp();
   const language = state.preferences.appLanguage;
+  const { t } = useI18n();
   const truth = useTodayCalendar();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +85,7 @@ export function EventsList() {
 
   return (
     <RtlView style={[styles.wrapper, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-      <RtlText align="center" style={[styles.title, { color: theme.text }]}>مناسبت‌های آینده</RtlText>
+      <RtlText align="center" style={[styles.title, { color: theme.text }]}>{t('calendar.events.upcoming')}</RtlText>
       {events.map((event) => (
         <RtlView
           key={event.id}
@@ -91,13 +94,13 @@ export function EventsList() {
           <View style={[styles.dot, { backgroundColor: event.color }]} />
           <RtlView style={styles.content}>
             <RtlText align="center" style={[styles.eventTitle, { color: theme.text }]}>
-              {language === 'pashto' ? event.titlePashto : event.titleDari}
+              {pickContent(event, 'title', language)}
             </RtlText>
             <RtlText align="center" style={[styles.dateLabel, { color: theme.tint }]}>
               {event.dateLabel}
             </RtlText>
             <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]} numberOfLines={2}>
-              {language === 'pashto' ? event.descriptionPashto : event.descriptionDari}
+              {pickContent(event, 'description', language)}
             </RtlText>
           </RtlView>
         </RtlView>

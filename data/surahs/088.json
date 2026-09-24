@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا خبر حادثۀ احاطه‌کننده (قیامت) به تو رسیده است؟",
-      "translation_pashto": "88-1 ایا تا ته (يعنې خلقو لره) د پټوونكي (قیامت) خبر راغلى دى؟"
+      "translation_pashto": "88-1 ایا تا ته (يعنې خلقو لره) د پټوونكي (قیامت) خبر راغلى دى؟",
+      "translation_english": "Has there come to you the story of the Overwhelming Event?"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "که چهره‌هایی در آن روز خوار و ذلیل‌اند.",
-      "translation_pashto": "88-2 څه مخونه به په دغې ورځ كې خوار (او) وېرېدونكي وي"
+      "translation_pashto": "88-2 څه مخونه به په دغې ورځ كې خوار (او) وېرېدونكي وي",
+      "translation_english": "On that Day, some faces will be humiliated,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(با آن که) مشقت‌کشیده و رنج برده‌اند.",
-      "translation_pashto": "88-3 سخت كار كوونكي، ستړي كېدونكي به وي"
+      "translation_pashto": "88-3 سخت كار كوونكي، ستړي كېدونكي به وي",
+      "translation_english": "overburdened and weary,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(لیکن) در آتش شعله‌ور و سوزان داخل شوند.",
-      "translation_pashto": "88-4 ډېر ګرم اور  ته به ننوځي"
+      "translation_pashto": "88-4 ډېر ګرم اور  ته به ننوځي",
+      "translation_english": "as they burn in a scorching Fire."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "از چشمۀ داغِ جوشان نوشانیده شوند.",
-      "translation_pashto": "88-5 په دوى به له ډېرې ګرمې چېنې نه اوبه څښولى شي"
+      "translation_pashto": "88-5 په دوى به له ډېرې ګرمې چېنې نه اوبه څښولى شي",
+      "translation_english": "They will be made to drink from a boiling spring,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "خوراکی جز ضریع (خار تلخ) ندارند.",
-      "translation_pashto": "88-6 د دوى لپاره به طعام نه وي مګر له اغزنې ترخې ونې نه"
+      "translation_pashto": "88-6 د دوى لپاره به طعام نه وي مګر له اغزنې ترخې ونې نه",
+      "translation_english": "and they will have no food except bitter thorny plants,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "که نه فربه می‌کند و نه از گرسنگی نجات می‌دهد.",
-      "translation_pashto": "88-7 چې نه څربول كوي او نه هېڅ لوږه لرې كوي"
+      "translation_pashto": "88-7 چې نه څربول كوي او نه هېڅ لوږه لرې كوي",
+      "translation_english": "that neither nourishes nor satisfies hunger."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "چهره‌هایی در آن روز خرم و تازه خواهند بود.",
-      "translation_pashto": "88-8 څه مخونه به په دغې ورځ كې تروتازه وي"
+      "translation_pashto": "88-8 څه مخونه به په دغې ورځ كې تروتازه وي",
+      "translation_english": "Other faces on that Day will be joyful,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و از کوشش خود راضی‌اند.",
-      "translation_pashto": "88-9 په خپل كوشش به راضي (خوشاله)  وي"
+      "translation_pashto": "88-9 په خپل كوشش به راضي (خوشاله)  وي",
+      "translation_english": "well-pleased with their past striving,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "در بهشت برین (و بلند جای دارند).",
-      "translation_pashto": "88-10 په اوچت جنت كې به وي"
+      "translation_pashto": "88-10 په اوچت جنت كې به وي",
+      "translation_english": "in an elevated garden,"
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "در آن جا سخن بیهوده نشنوند.",
-      "translation_pashto": "88-11 دوى به په دغه (جنت) كې هېڅ بېكاره خبره نه اوري"
+      "translation_pashto": "88-11 دوى به په دغه (جنت) كې هېڅ بېكاره خبره نه اوري",
+      "translation_english": "wherein no idle talk will be heard."
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "در آن جا چشمۀ جاری است.",
-      "translation_pashto": "88-12 په دغه (جنت) كې روانه چینه ده"
+      "translation_pashto": "88-12 په دغه (جنت) كې روانه چینه ده",
+      "translation_english": "There will be a flowing spring;"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و در آن جا تخت‌های بلند است.",
-      "translation_pashto": "88-13 په دغه (جنت) كې اوچت تختونه دي"
+      "translation_pashto": "88-13 په دغه (جنت) كې اوچت تختونه دي",
+      "translation_english": "and couches raised high,"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و جام‌های چیده شده است.",
-      "translation_pashto": "88-14 او (په اندازې سره) ایښودل شوي جامونه دي"
+      "translation_pashto": "88-14 او (په اندازې سره) ایښودل شوي جامونه دي",
+      "translation_english": "and cups placed ready,"
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و بالش‌های در صف نهاده شده است.",
-      "translation_pashto": "88-15 او په قطار كې ایښودل شوي بالښتونه دي"
+      "translation_pashto": "88-15 او په قطار كې ایښودل شوي بالښتونه دي",
+      "translation_english": "and cushions lined up,"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و فرش‌های گرانبها گسترده شده است.",
-      "translation_pashto": "88-16 او غوړول شوي اعلی فرشونه دي"
+      "translation_pashto": "88-16 او غوړول شوي اعلی فرشونه دي",
+      "translation_english": "and splendid carpets spread out."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا به شتران نمی‌نگرند (منکران توحید) که چگونه آفریده شده‌اند؟",
-      "translation_pashto": "88-17 ایا نو دوى اوښانو ته نه ګوري چې دوى څرنګه پیدا كړى شوي  دي؟"
+      "translation_pashto": "88-17 ایا نو دوى اوښانو ته نه ګوري چې دوى څرنګه پیدا كړى شوي  دي؟",
+      "translation_english": "Do they not reflect on the camel, how it is created;"
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و به‌سوی آسمان نگاه نمی‌کنند که چگونه برافراشته شده است؟",
-      "translation_pashto": "88-18 او اسمان  ته چې دى څنګه اوچت كړى شوى دى؟"
+      "translation_pashto": "88-18 او اسمان  ته چې دى څنګه اوچت كړى شوى دى؟",
+      "translation_english": "and the sky, how it is raised high;"
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و به طرف کوه‌ها (نمی‌نگرند) که چگونه نصب (برقرار) گردیده‌اند؟",
-      "translation_pashto": "88-19 او غرونو ته چې دوى څنګه ودرول شوي دي ؟"
+      "translation_pashto": "88-19 او غرونو ته چې دوى څنګه ودرول شوي دي ؟",
+      "translation_english": "and the mountains, how they are firmly set up;"
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و به طرف زمین که چگونه هموار شده است؟",
-      "translation_pashto": "88-20 او ځمكې ته چې څنګه غوړول شوې ده؟"
+      "translation_pashto": "88-20 او ځمكې ته چې څنګه غوړول شوې ده؟",
+      "translation_english": "and the earth, how it is spread out?"
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس پند و اندرز ده که وظیفۀ تو تنها پند دادن و یادآوری است.",
-      "translation_pashto": "88-21 نو ته پند وركړه، بېشكه ته خو يواځې پند وركوونكى يې"
+      "translation_pashto": "88-21 نو ته پند وركړه، بېشكه ته خو يواځې پند وركوونكى يې",
+      "translation_english": "So remind [O Prophet]; your duty is only to remind;"
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "بر آن‌ها مسلط نیستی.",
-      "translation_pashto": "88-22 ته په دوى باندې مسلط كړى شوى نه يې"
+      "translation_pashto": "88-22 ته په دوى باندې مسلط كړى شوى نه يې",
+      "translation_english": "you are not assigned to compel them."
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "مگر آن که روی گرداند و کفر پیشه کند.",
-      "translation_pashto": "88-23 مګر  هغه څوك چې (له ایمانه) وګرځي او كافر شي"
+      "translation_pashto": "88-23 مګر  هغه څوك چې (له ایمانه) وګرځي او كافر شي",
+      "translation_english": "But whoever turns away and disbelieves,"
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس الله او را به عذاب سخت سزا می‌دهد.",
-      "translation_pashto": "88-24 نو الله به ده ته عذاب وركړي تر ټولو لوى عذاب"
+      "translation_pashto": "88-24 نو الله به ده ته عذاب وركړي تر ټولو لوى عذاب",
+      "translation_english": "Allah will inflict upon him the greatest punishment."
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "یقیناً بازگشت آن‌ها به‌سوی ماست.",
-      "translation_pashto": "88-25 بېشكه خاص مونږ ته د دوى بېرته راتګ دى"
+      "translation_pashto": "88-25 بېشكه خاص مونږ ته د دوى بېرته راتګ دى",
+      "translation_english": "Indeed, to Us is their return,"
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "باز حساب آن‌ها با ما خواهد بود.",
-      "translation_pashto": "88-26 بیا یقینًا د دوى حساب زمونږ په غاړه دى"
+      "translation_pashto": "88-26 بیا یقینًا د دوى حساب زمونږ په غاړه دى",
+      "translation_english": "then it is for Us to call them to account."
     }
   ]
 }

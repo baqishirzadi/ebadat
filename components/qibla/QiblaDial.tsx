@@ -14,15 +14,22 @@ interface QiblaDialProps {
   qiblaBearing: number;
 }
 
-const CARDINALS = [
+const CARDINALS_DARI = [
   { label: 'N', angle: 0, color: '#EF4444' },
   { label: 'E', angle: 90, color: undefined },
   { label: 'S', angle: 180, color: undefined },
   { label: 'W', angle: 270, color: undefined },
 ];
+const CARDINALS_PASHTO = [
+  { label: 'ش', angle: 0, color: '#EF4444' },
+  { label: 'خ', angle: 90, color: undefined },
+  { label: 'ج', angle: 180, color: undefined },
+  { label: 'ل', angle: 270, color: undefined },
+];
 
 export const QiblaDial = memo(function QiblaDial({ size, heading, headingRotation, qiblaBearing }: QiblaDialProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const cardinals = state.preferences.appLanguage === 'pashto' ? CARDINALS_PASHTO : CARDINALS_DARI;
   const radius = size / 2 - 10;
   const center = size / 2;
   const kaabaRadius = radius - 26;
@@ -73,7 +80,7 @@ export const QiblaDial = memo(function QiblaDial({ size, heading, headingRotatio
         <Svg width={size} height={size}>
           <Circle cx={center} cy={center} r={radius} stroke={theme.cardBorder} strokeWidth={3} fill={theme.card} />
           {ticks}
-          {CARDINALS.map((c) => {
+          {cardinals.map((c) => {
             const a = (c.angle * Math.PI) / 180;
             return (
               <SvgText

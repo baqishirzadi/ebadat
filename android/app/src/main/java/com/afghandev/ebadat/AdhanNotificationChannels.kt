@@ -11,6 +11,10 @@ import androidx.core.app.NotificationManagerCompat
 object AdhanNotificationChannels {
   const val ADHAN_FAJR = AdhanConfig.DEFAULT_FAJR_CHANNEL
   const val ADHAN_REGULAR = AdhanConfig.DEFAULT_REGULAR_CHANNEL
+  const val ADHAN_FAJR_PASHTO = "adhan-fajr-v8-ps"
+  const val ADHAN_REGULAR_PASHTO = "adhan-regular-v8-ps"
+  const val ADHAN_FAJR_ENGLISH = "adhan-fajr-v8-en"
+  const val ADHAN_REGULAR_ENGLISH = "adhan-regular-v8-en"
   const val PRAYER_SILENT = "prayer-silent-v2"
   const val PRAYER_REMINDER = "prayer-reminder-v2"
   const val CALENDAR_QAMARI = "calendar-qamari"
@@ -54,6 +58,54 @@ object AdhanNotificationChannels {
       adhanAudioAttributes,
       longArrayOf(0, 250, 250, 250),
       "#1a4d3e",
+    )
+
+    createChannelIfMissing(
+      notificationManager,
+      ADHAN_FAJR_PASHTO,
+      "د سهار اذان",
+      NotificationManager.IMPORTANCE_HIGH,
+      adhanSoundUri,
+      adhanAudioAttributes,
+      longArrayOf(0, 250, 250, 250),
+      "#1a4d3e",
+      "د سهار د لمانځه اذان او خبرتیاوې",
+    )
+
+    createChannelIfMissing(
+      notificationManager,
+      ADHAN_REGULAR_PASHTO,
+      "د نورو لمونځونو اذان",
+      NotificationManager.IMPORTANCE_HIGH,
+      adhanSoundUri,
+      adhanAudioAttributes,
+      longArrayOf(0, 250, 250, 250),
+      "#1a4d3e",
+      "د لمانځه د وخت اذانونه او خبرتیاوې",
+    )
+
+    createChannelIfMissing(
+      notificationManager,
+      ADHAN_FAJR_ENGLISH,
+      "Fajr adhan",
+      NotificationManager.IMPORTANCE_HIGH,
+      adhanSoundUri,
+      adhanAudioAttributes,
+      longArrayOf(0, 250, 250, 250),
+      "#1a4d3e",
+      "Fajr prayer adhan and alerts",
+    )
+
+    createChannelIfMissing(
+      notificationManager,
+      ADHAN_REGULAR_ENGLISH,
+      "Adhan (other prayers)",
+      NotificationManager.IMPORTANCE_HIGH,
+      adhanSoundUri,
+      adhanAudioAttributes,
+      longArrayOf(0, 250, 250, 250),
+      "#1a4d3e",
+      "Prayer time adhan and alerts",
     )
 
     createChannelIfMissing(
@@ -197,12 +249,14 @@ object AdhanNotificationChannels {
     audioAttributes: AudioAttributes?,
     vibrationPattern: LongArray,
     lightColor: String?,
+    description: String? = null,
   ) {
     if (notificationManager.getNotificationChannel(channelId) != null) {
       return
     }
 
     val channel = NotificationChannel(channelId, name, importance).apply {
+      this.description = description
       enableVibration(true)
       this.vibrationPattern = vibrationPattern
       enableLights(lightColor != null)

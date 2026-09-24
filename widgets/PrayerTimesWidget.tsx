@@ -18,14 +18,44 @@ interface PrayerTimesWidgetProps {
 }
 
 export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: PrayerTimesWidgetProps) {
+  const isPashto = snapshot?.appLanguage === 'pashto';
+  const selectedFont = isPashto ? snapshot?.pashtoFont : snapshot?.dariFont;
+  const regularFontFamily = selectedFont === 'nastaliq'
+    ? 'NotoNastaliqUrdu'
+    : selectedFont === 'amiri'
+      ? 'Amiri'
+      : 'Vazirmatn';
+  const boldFontFamily = regularFontFamily === 'Vazirmatn'
+    ? 'Vazirmatn-Bold'
+    : regularFontFamily === 'Amiri'
+      ? 'Amiri-Bold'
+      : 'NotoNastaliqUrdu';
+  const weekdayLabel = isPashto ? snapshot?.weekdayPashto : snapshot?.weekdayDari;
+  const hijriLabel = isPashto ? snapshot?.hijriDisplayPashto : snapshot?.hijriDisplay;
+  const shamsiLabel = isPashto ? snapshot?.shamsiDisplayPashto : snapshot?.shamsiDisplay;
+  const sunriseLabel = isPashto ? snapshot?.sunriseDisplayPashto : snapshot?.sunriseDisplay;
   // Xiaomi/MIUI and some launchers honor a shorter minimum height than the
   // Pixel launcher. Keep a deliberately compact composition for those bounds
   // instead of allowing the lower prayer row to be clipped.
   const compact = height < 145 || width < 300;
   const rootPaddingVertical = compact ? 5 : 7;
   const rootPaddingHorizontal = compact ? 6 : 8;
-  const prayerLabelSize = compact ? 9 : 10;
-  const prayerTimeSize = compact ? 13 : 14;
+  const prayerLabelSize = isPashto
+    ? (compact ? 13 : 14)
+    : (compact ? 9 : 10);
+  const prayerTimeSize = isPashto
+    ? (compact ? 16 : 18)
+    : (compact ? 13 : 15);
+  const prayerChipPaddingVertical = isPashto ? 1 : (compact ? 3 : 4);
+  const prayerTimeMarginTop = isPashto ? -2 : 1;
+  const compactDateSize = isPashto ? 12 : 13;
+  const fullDateSize = isPashto ? 11 : 12;
+  const solarDateSize = isPashto ? 16 : 18;
+  const hijriDateSize = isPashto ? 12 : 13;
+  const sunriseDateSize = isPashto ? 10 : 11;
+  const pashtoHeaderSize = compact ? 17 : 18;
+  const pashtoGregHijriSize = 15;
+  const pashtoSunriseLineSize = 14;
 
   if (!snapshot) {
     return (
@@ -45,7 +75,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           style={{ fontSize: compact ? 16 : 18, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY }}
         />
         <TextWidget
-          text="اپ را باز کنید"
+          text="اپ پرانیزئ"
           style={{ fontSize: compact ? 11 : 12, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 4 }}
         />
       </FlexWidget>
@@ -54,6 +84,96 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
 
   const prayers = snapshot.prayers ?? [];
   const prayersRtl = [...prayers].reverse();
+  const sunriseParts = (sunriseLabel || '').trim().split(/\s+/).filter(Boolean);
+  const sunriseTimeOnly = sunriseParts.slice(-1)[0] || '';
+  const sunriseCaption =
+    sunriseParts.length > 1 ? sunriseParts.slice(0, -1).join(' ') : (isPashto ? 'لمر ختل' : '');
+  const solarDisplay = shamsiLabel || snapshot.shamsiDisplay || '';
+  const pashtoHeaderText = [weekdayLabel, solarDisplay].filter(Boolean).join('، ');
+
+  const pashtoDateRow = isPashto ? (
+    <FlexWidget
+      style={{
+        width: 'match_parent',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 3,
+      }}
+    >
+      <FlexWidget style={{ flex: 1.2, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
+        <TextWidget
+          text={`\u2066${snapshot.gregorianDisplay || ''}\u2069`}
+          maxLines={1}
+          allowFontScaling={false}
+          style={{
+            fontSize: pashtoGregHijriSize,
+            fontFamily: boldFontFamily,
+            color: TEXT_SECONDARY,
+            adjustsFontSizeToFit: true,
+          }}
+        />
+        <TextWidget
+          text=" میلادي"
+          maxLines={1}
+          allowFontScaling={false}
+          style={{
+            fontSize: pashtoGregHijriSize,
+            fontFamily: boldFontFamily,
+            color: TEXT_SECONDARY,
+            adjustsFontSizeToFit: true,
+          }}
+        />
+      </FlexWidget>
+      <FlexWidget style={{ flex: 0.9, alignItems: 'center' }}>
+        <TextWidget
+          text={`${sunriseCaption || 'لمر ختل'}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim()}
+          maxLines={1}
+          allowFontScaling={false}
+          style={{
+            fontSize: pashtoSunriseLineSize,
+            fontFamily: boldFontFamily,
+            color: ACCENT,
+            adjustsFontSizeToFit: true,
+          }}
+        />
+      </FlexWidget>
+      <FlexWidget style={{ flex: 1.35, alignItems: 'center' }}>
+        <TextWidget
+          text={`قمري ${hijriLabel || ''}`.trim()}
+          maxLines={1}
+          allowFontScaling={false}
+          style={{
+            fontSize: pashtoGregHijriSize,
+            fontFamily: boldFontFamily,
+            color: TEXT_PRIMARY,
+            adjustsFontSizeToFit: true,
+          }}
+        />
+      </FlexWidget>
+    </FlexWidget>
+  ) : null;
+
+  const pashtoHeader = isPashto ? (
+    <FlexWidget
+      style={{
+        width: 'match_parent',
+        alignItems: 'center',
+      }}
+    >
+      <TextWidget
+        text={pashtoHeaderText}
+        maxLines={1}
+        allowFontScaling={false}
+        style={{
+          fontSize: pashtoHeaderSize,
+          fontFamily: boldFontFamily,
+          color: ACCENT,
+          adjustsFontSizeToFit: true,
+        }}
+      />
+      {pashtoDateRow}
+    </FlexWidget>
+  ) : null;
 
   return (
     <FlexWidget
@@ -82,7 +202,9 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           paddingHorizontal: rootPaddingHorizontal,
         }}
       >
-        {compact ? (
+        {isPashto ? (
+          pashtoHeader
+        ) : compact ? (
           <FlexWidget
             style={{
               width: 'match_parent',
@@ -90,36 +212,23 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             }}
           >
             <TextWidget
-              text={`${snapshot.weekdayDari} • ${snapshot.shamsiDisplay}`}
+              text={`${weekdayLabel || ''} • ${shamsiLabel || snapshot.shamsiDisplay}`}
               maxLines={1}
               allowFontScaling={false}
-              style={{ fontSize: 13, fontFamily: 'Vazirmatn-Bold', color: TEXT_SECONDARY, adjustsFontSizeToFit: true }}
+              style={{ fontSize: compactDateSize, fontFamily: boldFontFamily, color: TEXT_SECONDARY, adjustsFontSizeToFit: true }}
             />
             <TextWidget
-              text={`${snapshot.hijriDisplay} • ${snapshot.gregorianDisplay || ''}`}
+              text={`${hijriLabel || ''} • ${snapshot.gregorianDisplay || ''}`}
               maxLines={1}
               allowFontScaling={false}
-              style={{ fontSize: 13, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY, marginTop: 1, adjustsFontSizeToFit: true }}
+              style={{ fontSize: compactDateSize, fontFamily: boldFontFamily, color: TEXT_PRIMARY, marginTop: 1, adjustsFontSizeToFit: true }}
             />
-            {snapshot.sunriseDisplay ? (
+            {sunriseLabel ? (
               <TextWidget
-                text={snapshot.sunriseDisplay}
+                text={sunriseLabel}
                 maxLines={1}
                 allowFontScaling={false}
-                style={{ fontSize: 11, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 1, adjustsFontSizeToFit: true }}
-              />
-            ) : null}
-            {snapshot.hadithText ? (
-              <TextWidget
-                text={`حدیث روز • ${snapshot.hadithText}`}
-                maxLines={2}
-                allowFontScaling={false}
-                style={{
-                  fontSize: 13,
-                  fontFamily: 'Vazirmatn-Bold',
-                  color: ACCENT,
-                  marginTop: 3,
-                }}
+                style={{ fontSize: sunriseDateSize, fontFamily: boldFontFamily, color: ACCENT, marginTop: 1, adjustsFontSizeToFit: true }}
               />
             ) : null}
           </FlexWidget>
@@ -131,43 +240,29 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             }}
           >
             <TextWidget
-              text={snapshot.weekdayDari}
+              text={`${weekdayLabel || ''}${snapshot.gregorianDisplay ? ` • ${snapshot.gregorianDisplay}` : ''}`}
               allowFontScaling={false}
-              style={{ fontSize: 14, fontFamily: 'Vazirmatn-Bold', color: TEXT_SECONDARY }}
+              maxLines={1}
+              style={{ fontSize: fullDateSize, fontFamily: boldFontFamily, color: TEXT_SECONDARY, adjustsFontSizeToFit: true }}
             />
             <TextWidget
-              text={snapshot.hijriDisplay}
+              text={shamsiLabel || snapshot.shamsiDisplay}
               allowFontScaling={false}
-              style={{ fontSize: 20, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 1 }}
+              maxLines={1}
+              style={{ fontSize: solarDateSize, fontFamily: boldFontFamily, color: ACCENT, marginTop: 1, adjustsFontSizeToFit: true }}
             />
             <TextWidget
-              text={snapshot.shamsiDisplay}
+              text={hijriLabel || ''}
               allowFontScaling={false}
-              style={{ fontSize: 16, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY, marginTop: 1 }}
+              maxLines={1}
+              style={{ fontSize: hijriDateSize, fontFamily: regularFontFamily, color: TEXT_PRIMARY, marginTop: 1, adjustsFontSizeToFit: true }}
             />
-            <TextWidget
-              text={snapshot.gregorianDisplay || ''}
-              allowFontScaling={false}
-              style={{ fontSize: 12, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 1 }}
-            />
-            {snapshot.sunriseDisplay ? (
+            {sunriseLabel ? (
               <TextWidget
-                text={snapshot.sunriseDisplay}
+                text={sunriseLabel}
                 allowFontScaling={false}
-                style={{ fontSize: 11, fontFamily: 'Vazirmatn-Bold', color: ACCENT, marginTop: 2 }}
-              />
-            ) : null}
-            {snapshot.hadithText ? (
-              <TextWidget
-                text={`حدیث روز • ${snapshot.hadithText}`}
-                maxLines={2}
-                allowFontScaling={false}
-                style={{
-                  fontSize: 13,
-                  fontFamily: 'Vazirmatn',
-                  color: TEXT_SECONDARY,
-                  marginTop: 3,
-                }}
+                maxLines={1}
+                style={{ fontSize: sunriseDateSize, fontFamily: regularFontFamily, color: TEXT_SECONDARY, marginTop: 1, adjustsFontSizeToFit: true }}
               />
             ) : null}
           </FlexWidget>
@@ -177,7 +272,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             flexDirection: 'row',
             width: 'match_parent',
             justifyContent: 'flex-start',
-            marginTop: compact ? 4 : 5,
+            marginTop: compact ? 5 : 7,
           }}
         >
         {prayersRtl.map((prayer) => {
@@ -190,17 +285,17 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                 marginHorizontal: compact ? 1 : 2,
                 backgroundColor: active ? ACTIVE_BG : INACTIVE_BG,
                 borderRadius: 8,
-                paddingVertical: compact ? 2 : 3,
+                paddingVertical: prayerChipPaddingVertical,
                 alignItems: 'center',
               }}
             >
               <TextWidget
-                text={prayer.labelDari}
+                text={isPashto ? prayer.labelPashto || prayer.labelDari : prayer.labelDari}
                 maxLines={1}
                 allowFontScaling={false}
                 style={{
                   fontSize: prayerLabelSize,
-                  fontFamily: 'Vazirmatn-Bold',
+                  fontFamily: boldFontFamily,
                   color: active ? TINT : TEXT_PRIMARY,
                   adjustsFontSizeToFit: true,
                 }}
@@ -211,9 +306,9 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                 allowFontScaling={false}
                 style={{
                   fontSize: prayerTimeSize,
-                  fontFamily: 'Vazirmatn-Bold',
+                  fontFamily: boldFontFamily,
                   color: active ? TINT : TEXT_SECONDARY,
-                  marginTop: 1,
+                  marginTop: prayerTimeMarginTop,
                   adjustsFontSizeToFit: true,
                 }}
               />

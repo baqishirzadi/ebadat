@@ -3,8 +3,11 @@ import { useApp } from '@/context/AppContext';
 import { JuzRange } from '@/data/juzRanges';
 import { SURAH_NAMES, toArabicNumerals } from '@/data/surahNames';
 import { getUthmaniFont } from '@/hooks/useFonts';
+import { useI18n } from '@/utils/i18n/useI18n';
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+import { Pressable, StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 
 interface ReadingPosition {
   surahNumber: number;
@@ -34,12 +37,16 @@ function isPositionInsideJuz(position: ReadingPosition, juz: JuzRange): boolean 
 
 export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps) {
   const { theme } = useApp();
-  const surahNameMap = useMemo(() => new Map(SURAH_NAMES.map((s) => [s.number, s.arabic])), []);
+  const { t, content } = useI18n();
+  const surahNameMap = useMemo(
+    () => new Map(SURAH_NAMES.map((surah) => [surah.number, content(surah, null)])),
+    [content],
+  );
 
   if (juzItems.length === 0) {
     return (
       <View style={styles.emptyContainer}>
-        <Text style={[styles.emptyText, { color: theme.textSecondary }]}>نتیجه‌ای برای جستجوی شما یافت نشد</Text>
+        <LocalizedText style={[styles.emptyText, { color: theme.textSecondary }]}>{t('common.noResults')}</LocalizedText>
       </View>
     );
   }
@@ -50,8 +57,16 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
         const isCurrent = currentPosition ? isPositionInsideJuz(currentPosition, juz) : false;
         const startSurahName = surahNameMap.get(juz.startSurah) || toArabicNumerals(juz.startSurah);
         const endSurahName = surahNameMap.get(juz.endSurah) || toArabicNumerals(juz.endSurah);
-        const pageLine = `صفحه ${toArabicNumerals(juz.startPage)} تا ${toArabicNumerals(juz.endPage)}`;
-        const rangeLine = `از سوره ${startSurahName} آیه ${toArabicNumerals(juz.startAyah)} تا سوره ${endSurahName} آیه ${toArabicNumerals(juz.endAyah)}`;
+        const pageLine = t('quran.pageRange', {
+          start: toArabicNumerals(juz.startPage),
+          end: toArabicNumerals(juz.endPage),
+        });
+        const rangeLine = t('quran.surahAyahRange', {
+          startSurah: startSurahName,
+          startAyah: toArabicNumerals(juz.startAyah),
+          endSurah: endSurahName,
+          endAyah: toArabicNumerals(juz.endAyah),
+        });
 
         return (
           <Pressable
@@ -83,17 +98,19 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
             />
 
             <View style={styles.calligraphyWrap}>
-              <Text style={[styles.calligraphy, { color: `${theme.playing}D9` }]}>﷽</Text>
+              <LocalizedText style={[styles.calligraphy, { color: `${theme.playing}D9` }]}>﷽</LocalizedText>
             </View>
 
             <View style={styles.centerInfo}>
-              <Text style={[styles.title, { color: theme.text }]}>جزء {toArabicNumerals(juz.juzNumber)}</Text>
-              <Text style={[styles.detailLine, { color: theme.textSecondary }]} numberOfLines={1}>
+              <LocalizedText style={[styles.title, { color: theme.text }]}>
+                {t('quran.juzTitle', { number: toArabicNumerals(juz.juzNumber) })}
+              </LocalizedText>
+              <LocalizedText style={[styles.detailLine, { color: theme.textSecondary }]} numberOfLines={1}>
                 {pageLine}
-              </Text>
-              <Text style={[styles.rangeLine, { color: theme.textSecondary }]} numberOfLines={2}>
+              </LocalizedText>
+              <LocalizedText style={[styles.rangeLine, { color: theme.textSecondary }]} numberOfLines={2}>
                 {rangeLine}
-              </Text>
+              </LocalizedText>
             </View>
           </Pressable>
         );

@@ -1,4 +1,6 @@
-import { Pressable, StyleSheet, Text, View, type ViewStyle } from 'react-native';
+
+import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
@@ -33,7 +35,7 @@ export function Button({ label, onPress, variant = 'primary', disabled = false, 
         style,
       ]}
     >
-      <Text style={[styles.label, { color: textColor }]}>{label}</Text>
+      <LocalizedText style={[styles.label, { color: textColor }]}>{label}</LocalizedText>
     </Pressable>
   );
 }

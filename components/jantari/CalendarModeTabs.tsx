@@ -5,12 +5,13 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { useI18n } from '@/utils/i18n/useI18n';
 import type { CalendarGridMode } from '@/utils/calendarMonthGrid';
 
-const MODES: { key: CalendarGridMode; label: string }[] = [
-  { key: 'qamari', label: 'قمری' },
-  { key: 'shamsi', label: 'شمسی' },
-  { key: 'gregorian', label: 'میلادی' },
+const MODES: { key: CalendarGridMode; message: 'calendar.mode.qamari' | 'calendar.mode.shamsi' | 'calendar.mode.gregorian' }[] = [
+  { key: 'qamari', message: 'calendar.mode.qamari' },
+  { key: 'shamsi', message: 'calendar.mode.shamsi' },
+  { key: 'gregorian', message: 'calendar.mode.gregorian' },
 ];
 
 interface CalendarModeTabsProps {
@@ -23,6 +24,7 @@ export const CalendarModeTabs = React.memo(function CalendarModeTabs({
   onModeChange,
 }: CalendarModeTabsProps) {
   const { theme } = useApp();
+  const { t } = useI18n();
 
   return (
     <RtlView style={[styles.segment, { backgroundColor: theme.backgroundSecondary }]}>
@@ -40,7 +42,7 @@ export const CalendarModeTabs = React.memo(function CalendarModeTabs({
               fontSize: 12,
             }}
           >
-            {item.label}
+            {t(item.message)}
           </RtlText>
         </Pressable>
       ))}

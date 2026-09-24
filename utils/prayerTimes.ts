@@ -12,6 +12,8 @@ import {
   SunnahTimes,
 } from 'adhan';
 
+import type { AppLanguage } from '@/types/quran';
+
 
 // Calculation method parameters
 export interface CalculationParams {
@@ -426,6 +428,22 @@ export const PRAYER_LABELS_PASHTO = {
   isha: 'خفتن',
 } as const;
 
+export const PRAYER_LABELS_ENGLISH = {
+  fajr: 'Fajr',
+  dhuhr: 'Dhuhr',
+  asr: 'Asr',
+  maghrib: 'Maghrib',
+  isha: 'Isha',
+} as const;
+
+export type PrayerLabelKey = keyof typeof PRAYER_LABELS_DARI;
+
+export function prayerLabel(key: PrayerLabelKey, language: AppLanguage): string {
+  if (language === 'pashto') return PRAYER_LABELS_PASHTO[key];
+  if (language === 'english') return PRAYER_LABELS_ENGLISH[key];
+  return PRAYER_LABELS_DARI[key];
+}
+
 export function getNextPrayer(
   prayerTimes: PrayerTimes,
   now: Date = new Date(),
@@ -437,14 +455,15 @@ export function getNextPrayer(
   nameArabic: string;
   nameDari: string;
   namePashto: string;
+  nameEnglish: string;
 } {
   const prayers = [
-    { key: 'fajr' as const, nameArabic: 'الفجر', nameDari: PRAYER_LABELS_DARI.fajr, namePashto: PRAYER_LABELS_PASHTO.fajr },
-    { key: 'sunrise' as const, nameArabic: 'الشروق', nameDari: 'طلوع آفتاب', namePashto: 'لمر ختل' },
-    { key: 'dhuhr' as const, nameArabic: 'الظهر', nameDari: PRAYER_LABELS_DARI.dhuhr, namePashto: PRAYER_LABELS_PASHTO.dhuhr },
-    { key: 'asr' as const, nameArabic: 'العصر', nameDari: PRAYER_LABELS_DARI.asr, namePashto: PRAYER_LABELS_PASHTO.asr },
-    { key: 'maghrib' as const, nameArabic: 'المغرب', nameDari: PRAYER_LABELS_DARI.maghrib, namePashto: PRAYER_LABELS_PASHTO.maghrib },
-    { key: 'isha' as const, nameArabic: 'العشاء', nameDari: PRAYER_LABELS_DARI.isha, namePashto: PRAYER_LABELS_PASHTO.isha },
+    { key: 'fajr' as const, nameArabic: 'الفجر', nameDari: PRAYER_LABELS_DARI.fajr, namePashto: PRAYER_LABELS_PASHTO.fajr, nameEnglish: PRAYER_LABELS_ENGLISH.fajr },
+    { key: 'sunrise' as const, nameArabic: 'الشروق', nameDari: 'طلوع آفتاب', namePashto: 'لمر ختل', nameEnglish: 'Sunrise' },
+    { key: 'dhuhr' as const, nameArabic: 'الظهر', nameDari: PRAYER_LABELS_DARI.dhuhr, namePashto: PRAYER_LABELS_PASHTO.dhuhr, nameEnglish: PRAYER_LABELS_ENGLISH.dhuhr },
+    { key: 'asr' as const, nameArabic: 'العصر', nameDari: PRAYER_LABELS_DARI.asr, namePashto: PRAYER_LABELS_PASHTO.asr, nameEnglish: PRAYER_LABELS_ENGLISH.asr },
+    { key: 'maghrib' as const, nameArabic: 'المغرب', nameDari: PRAYER_LABELS_DARI.maghrib, namePashto: PRAYER_LABELS_PASHTO.maghrib, nameEnglish: PRAYER_LABELS_ENGLISH.maghrib },
+    { key: 'isha' as const, nameArabic: 'العشاء', nameDari: PRAYER_LABELS_DARI.isha, namePashto: PRAYER_LABELS_PASHTO.isha, nameEnglish: PRAYER_LABELS_ENGLISH.isha },
   ];
 
   for (const prayer of prayers) {
@@ -457,6 +476,7 @@ export function getNextPrayer(
         nameArabic: prayer.nameArabic,
         nameDari: prayer.nameDari,
         namePashto: prayer.namePashto,
+        nameEnglish: prayer.nameEnglish,
       };
     }
   }
@@ -471,6 +491,7 @@ export function getNextPrayer(
     nameArabic: 'الفجر',
     nameDari: PRAYER_LABELS_DARI.fajr,
     namePashto: PRAYER_LABELS_PASHTO.fajr,
+    nameEnglish: PRAYER_LABELS_ENGLISH.fajr,
   };
 }
 

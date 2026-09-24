@@ -4,15 +4,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  FlatList,
-  TextInput,
-  Pressable,
-  ActivityIndicator,
-  RefreshControl,
-} from 'react-native';
+
+import { View, StyleSheet, FlatList, Pressable, ActivityIndicator, RefreshControl } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -214,7 +208,7 @@ export default function AdminDashboardScreen() {
       {/* Search */}
       <View style={[styles.searchContainer, { backgroundColor: theme.backgroundSecondary }]}>
         <MaterialIcons name="search" size={20} color={theme.icon} />
-        <TextInput
+        <LocalizedTextInput
           style={[styles.searchInput, { color: theme.text }]}
           placeholder="جستجوی متن درخواست..."
           placeholderTextColor={theme.textSecondary}

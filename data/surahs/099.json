@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "وقتی که زمین به لرزش شدید خود لرزانده شود.",
-      "translation_pashto": "99-1 كله چې ځمكه وخوزلى شي په خپلو سختو خوزولو سره"
+      "translation_pashto": "99-1 كله چې ځمكه وخوزلى شي په خپلو سختو خوزولو سره",
+      "translation_english": "When the earth is shaken with a mighty quake,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و زمین بارهای سنگین خود را (معادن و اموات را) بیرون کند.",
-      "translation_pashto": "99-2 او ځمكه خپل درانه بارونه بهر ته راوباسي"
+      "translation_pashto": "99-2 او ځمكه خپل درانه بارونه بهر ته راوباسي",
+      "translation_english": "and the earth throws out its burdens,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و انسان گوید: این زمین را چه شده است؟",
-      "translation_pashto": "99-3 او انسان به ووايي چې په دې څه شوي دي"
+      "translation_pashto": "99-3 او انسان به ووايي چې په دې څه شوي دي",
+      "translation_english": "and man says, “What is the matter with it?”"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "در آن روز زمین خبرهای خود را (راجع به اعمال بنی آدم) اظهار کند.",
-      "translation_pashto": "99-4 په دغې ورځې كې به دا ځمكه خپلې خبرې (حالات) بیانوي"
+      "translation_pashto": "99-4 په دغې ورځې كې به دا ځمكه خپلې خبرې (حالات) بیانوي",
+      "translation_english": "On that Day it will recount all its news,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "چرا که پروردگارت به او (این کار را) وحی کرده است.",
-      "translation_pashto": "99-5 په دې سبب چې ستا رب به دې ته وحي وكړي"
+      "translation_pashto": "99-5 په دې سبب چې ستا رب به دې ته وحي وكړي",
+      "translation_english": "because your Lord has inspired it [to do so]."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "در آن روز مردم (به دربار الهی) گروه‌های متفرق از قبرها بیرون می‌آیند، تا اعمال‌شان به آنان نشان داده شود.",
-      "translation_pashto": "99-6 په دغې ورځ كې به خلق بېرته راګرځي، په داسې حال كې چې بېل بېل (او مختلف) به وي،  د دې لپاره  چې دوى ته خپل عملونه وښودل شي"
+      "translation_pashto": "99-6 په دغې ورځ كې به خلق بېرته راګرځي، په داسې حال كې چې بېل بېل (او مختلف) به وي،  د دې لپاره  چې دوى ته خپل عملونه وښودل شي",
+      "translation_english": "On that Day all people will come forward in separate groups to be shown their deeds."
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس هرکس به اندازۀ ذره‌ای نیکی کرده باشد (پاداش) آن را می‌بیند.",
-      "translation_pashto": "99-7 نو هغه څوك چې د یوې ذرې په اندازه نېك عمل وكړي (،نو) دى به هغه وویني"
+      "translation_pashto": "99-7 نو هغه څوك چې د یوې ذرې په اندازه نېك عمل وكړي (،نو) دى به هغه وویني",
+      "translation_english": "So whoever does an atom’s weight of good will see it,"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و هرکس به اندازۀ ذره‌ای بدی کرده باشد (پاداش) آن را (در آن روز) می‌بیند.",
-      "translation_pashto": "99-8 او هغه څوك چې د یوې ذرې په اندازه د شر (او بدۍ) عمل كوي (، نو) دى به هغه وویني"
+      "translation_pashto": "99-8 او هغه څوك چې د یوې ذرې په اندازه د شر (او بدۍ) عمل كوي (، نو) دى به هغه وویني",
+      "translation_english": "and whoever does an atom’s weight of evil will see it."
     }
   ]
 }

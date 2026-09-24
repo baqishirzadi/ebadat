@@ -4,6 +4,8 @@
  * Includes coordinates, timezone, and display names
  */
 
+import type { AppLanguage } from '@/types/quran';
+
 export interface City {
   lat: number;
   lon: number;
@@ -370,4 +372,26 @@ export function getImportantCities(categoryId?: string): Array<{ key: string; ci
   }
   
   return results;
+}
+
+/**
+ * City names are authored in Dari with an English `nameEn`. This index lets a
+ * display-time lookup localize a name we only have as a string (for example a
+ * persisted `locationName`) without threading the city key through every screen.
+ */
+const CITY_NAME_TO_ENGLISH: Map<string, string> = (() => {
+  const index = new Map<string, string>();
+  Object.values(CITIES).forEach((category) => {
+    Object.values(category.cities).forEach((city) => {
+      if (city.name && city.nameEn) index.set(city.name, city.nameEn);
+    });
+  });
+  return index;
+})();
+
+/** Localized display name for a city, falling back to the authored name. */
+export function localizeCityName(name: string | null | undefined, language: AppLanguage): string {
+  if (!name) return '';
+  if (language !== 'english') return name;
+  return CITY_NAME_TO_ENGLISH.get(name) ?? name;
 }

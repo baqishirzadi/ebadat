@@ -6,6 +6,23 @@ struct PrayerTimesWidgetView: View {
   let entry: PrayerTimesWidgetEntry
 
   private var snapshot: WidgetSnapshot? { entry.snapshot }
+  private var isPashto: Bool { snapshot?.appLanguage == "pashto" }
+  private var uiFontRegular: String {
+    if isPashto {
+      return snapshot?.pashtoFont == "nastaliq" ? "NotoNastaliqUrdu" : "Amiri"
+    }
+    return snapshot?.dariFont == "amiri" ? "Amiri" : "Vazirmatn"
+  }
+  private var uiFontBold: String {
+    if uiFontRegular == "Vazirmatn" { return "Vazirmatn-Bold" }
+    if uiFontRegular == "Amiri" { return "Amiri-Bold" }
+    return "NotoNastaliqUrdu"
+  }
+  private func weekday(_ value: WidgetSnapshot) -> String { isPashto ? (value.weekdayPashto ?? value.weekdayDari) : value.weekdayDari }
+  private func hijri(_ value: WidgetSnapshot) -> String { isPashto ? (value.hijriDisplayPashto ?? value.hijriDisplay) : value.hijriDisplay }
+  private func solar(_ value: WidgetSnapshot) -> String { isPashto ? (value.shamsiDisplayPashto ?? value.shamsiDisplay) : value.shamsiDisplay }
+  private func sunrise(_ value: WidgetSnapshot) -> String { isPashto ? (value.sunriseDisplayPashto ?? value.sunriseDisplay) : value.sunriseDisplay }
+  private func label(_ value: WidgetPrayerEntry) -> String { isPashto ? (value.labelPashto ?? value.labelDari) : value.labelDari }
   private var widgetBackground: LinearGradient {
     LinearGradient(
       colors: [Color(red: 0.06, green: 0.12, blue: 0.08), Color(red: 0.10, green: 0.30, blue: 0.24)],
@@ -36,41 +53,46 @@ struct PrayerTimesWidgetView: View {
   @ViewBuilder
   private var homeMedium: some View {
     if let snapshot {
-      VStack(alignment: .center, spacing: 3) {
-        VStack(spacing: 2) {
-          Text(snapshot.weekdayDari)
-            .font(.custom("Vazirmatn-Bold", size: 12))
+      VStack(alignment: .center, spacing: 5) {
+        HStack(spacing: 6) {
+          Text(weekday(snapshot))
+            .font(.custom(uiFontBold, size: 12))
             .foregroundColor(.white.opacity(0.9))
             .lineLimit(1)
             .minimumScaleFactor(0.7)
-          Text(snapshot.shamsiDisplay)
-            .font(.custom("Vazirmatn-Bold", size: 17))
-            .foregroundColor(accent)
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-          Text("قمری: \(snapshot.hijriDisplay)")
-            .font(.custom("Vazirmatn", size: 10))
-            .foregroundColor(.white.opacity(0.85))
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
+            .allowsTightening(true)
+          Spacer(minLength: 4)
           Text(snapshot.gregorianDisplay)
-            .font(.custom("Vazirmatn", size: 10))
+            .font(.custom(uiFontRegular, size: 10))
             .foregroundColor(.white.opacity(0.75))
             .lineLimit(1)
             .minimumScaleFactor(0.7)
-          if !snapshot.sunriseDisplay.isEmpty {
-            Text(snapshot.sunriseDisplay)
-              .font(.custom("Vazirmatn-Bold", size: 10))
+            .allowsTightening(true)
+        }
+        .frame(maxWidth: .infinity)
+
+        Text(solar(snapshot))
+          .font(.custom(uiFontBold, size: 18))
+          .foregroundColor(accent)
+          .lineLimit(1)
+          .minimumScaleFactor(0.7)
+          .allowsTightening(true)
+
+        HStack(spacing: 6) {
+          Text(isPashto ? "قمري: \(hijri(snapshot))" : "قمری: \(hijri(snapshot))")
+            .font(.custom(uiFontRegular, size: 10))
+            .foregroundColor(.white.opacity(0.85))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .allowsTightening(true)
+          if !sunrise(snapshot).isEmpty {
+            Spacer(minLength: 4)
+            Text(sunrise(snapshot))
+              .font(.custom(uiFontBold, size: 10))
               .foregroundColor(accent)
               .lineLimit(1)
               .minimumScaleFactor(0.7)
-          }
-          if !snapshot.hadithText.isEmpty {
-            Text("حدیث روز • \(snapshot.hadithText)")
-              .font(.custom("Vazirmatn", size: 8))
-              .foregroundColor(.white.opacity(0.78))
-              .lineLimit(1)
-              .minimumScaleFactor(0.65)
+              .allowsTightening(true)
           }
         }
         .frame(maxWidth: .infinity)
@@ -78,9 +100,11 @@ struct PrayerTimesWidgetView: View {
         HStack(spacing: 4) {
           ForEach(snapshot.prayers, id: \.key) { prayer in
             PrayerChipView(
-              label: prayer.labelDari,
+              label: label(prayer),
               time: prayer.time12h,
-              active: snapshot.currentPrayer == prayer.key
+              active: snapshot.currentPrayer == prayer.key,
+              boldFont: uiFontBold,
+              isPashto: isPashto
             )
           }
         }
@@ -98,18 +122,18 @@ struct PrayerTimesWidgetView: View {
   private var accessoryRectangular: some View {
     if let snapshot {
       VStack(alignment: .leading, spacing: 2) {
-        Text(snapshot.shamsiDisplay)
-          .font(.custom("Vazirmatn-Bold", size: 13))
+        Text(solar(snapshot))
+          .font(.custom(uiFontBold, size: 13))
           .minimumScaleFactor(0.8)
-        if !snapshot.sunriseDisplay.isEmpty {
-          Text(snapshot.sunriseDisplay)
-            .font(.custom("Vazirmatn", size: 11))
+        if !sunrise(snapshot).isEmpty {
+          Text(sunrise(snapshot))
+            .font(.custom(uiFontRegular, size: 11))
             .foregroundColor(.secondary)
             .minimumScaleFactor(0.8)
         }
         if let next = nextPrayer(from: snapshot) {
-          Text("\(next.labelDari) \(next.time12h)")
-            .font(.custom("Vazirmatn-Bold", size: 12))
+          Text("\(label(next)) \(next.time12h)")
+            .font(.custom(uiFontBold, size: 12))
             .minimumScaleFactor(0.8)
         }
       }
@@ -117,7 +141,7 @@ struct PrayerTimesWidgetView: View {
       .environment(\.layoutDirection, .rightToLeft)
     } else {
       Text("عبادت")
-        .font(.custom("Vazirmatn-Bold", size: 13))
+        .font(.custom(uiFontBold, size: 13))
     }
   }
 
@@ -125,17 +149,18 @@ struct PrayerTimesWidgetView: View {
   private var accessoryCircular: some View {
     if let snapshot, let next = nextPrayer(from: snapshot) {
       VStack(spacing: 1) {
-        Text(next.labelDari)
-          .font(.custom("Vazirmatn-Bold", size: 10))
+        Text(label(next))
+          .font(.custom(uiFontBold, size: 10))
           .minimumScaleFactor(0.7)
         Text(next.time12h)
-          .font(.custom("Vazirmatn-Bold", size: 12))
+          .font(.custom(uiFontBold, size: 12))
           .minimumScaleFactor(0.7)
       }
       .environment(\.layoutDirection, .rightToLeft)
-    } else if let snapshot, !snapshot.sunriseDisplay.isEmpty {
-      Text(snapshot.sunriseDisplay.replacingOccurrences(of: "طلوع آفتاب ", with: ""))
-        .font(.custom("Vazirmatn-Bold", size: 12))
+    } else if let snapshot, !sunrise(snapshot).isEmpty {
+      let prefix = isPashto ? "لمر ختل " : "طلوع آفتاب "
+      Text(sunrise(snapshot).replacingOccurrences(of: prefix, with: ""))
+        .font(.custom(uiFontBold, size: 12))
         .minimumScaleFactor(0.7)
         .environment(\.layoutDirection, .rightToLeft)
     } else {
@@ -149,9 +174,6 @@ struct PrayerTimesWidgetView: View {
       Text("عبادت")
         .font(.custom("Vazirmatn-Bold", size: 18))
         .foregroundColor(.white)
-      Text("اپ را باز کنید")
-        .font(.custom("Vazirmatn", size: 12))
-        .foregroundColor(.white.opacity(0.8))
     }
     .environment(\.layoutDirection, .rightToLeft)
   }
@@ -172,18 +194,26 @@ private struct PrayerChipView: View {
   let label: String
   let time: String
   let active: Bool
+  let boldFont: String
+  let isPashto: Bool
 
   var body: some View {
     VStack(spacing: 2) {
       Text(label)
-        .font(.custom("Vazirmatn-Bold", size: 10))
+        .font(.custom(boldFont, size: isPashto ? 9 : 10))
         .foregroundColor(active ? Color(red: 0.10, green: 0.30, blue: 0.24) : .white)
+        .lineLimit(1)
+        .minimumScaleFactor(0.62)
+        .allowsTightening(true)
       Text(time)
-        .font(.custom("Vazirmatn-Bold", size: 11))
+        .font(.custom(boldFont, size: 11))
         .foregroundColor(active ? Color(red: 0.10, green: 0.30, blue: 0.24).opacity(0.85) : .white.opacity(0.85))
+        .lineLimit(1)
+        .minimumScaleFactor(0.7)
+        .allowsTightening(true)
     }
     .frame(maxWidth: .infinity)
-    .padding(.vertical, 6)
+    .padding(.vertical, isPashto ? 5 : 6)
     .background(active ? Color.white : Color.white.opacity(0.12))
     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
   }

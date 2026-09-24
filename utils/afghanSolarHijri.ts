@@ -1,4 +1,6 @@
+import type { AppLanguage } from '@/types/quran';
 import { KABUL_TIME_ZONE, getKabulNoon, getKabulDateParts } from '@/utils/afghanistanCalendar';
+import { getLanguage } from '@/utils/i18n/languages';
 
 /**
  * Afghan Solar Hijri (Shamsi) Calendar Utilities
@@ -12,6 +14,7 @@ export interface AfghanSolarHijriDate {
   day: number;
   monthNameDari: string;
   monthNamePashto: string;
+  monthNameEnglish: string;
 }
 
 // Afghan Solar Hijri month names (traditional astronomical names)
@@ -138,6 +141,7 @@ function gregorianToAfghanSolarHijriFallback(date: Date): AfghanSolarHijriDate {
     day,
     monthNameDari: monthInfo.dari,
     monthNamePashto: monthInfo.pashto,
+    monthNameEnglish: monthInfo.english,
   };
 }
 
@@ -170,6 +174,7 @@ export function gregorianToAfghanSolarHijri(date: Date): AfghanSolarHijriDate {
           day,
           monthNameDari: monthInfo.dari,
           monthNamePashto: monthInfo.pashto,
+          monthNameEnglish: monthInfo.english,
         };
         SHAMSI_FROM_GREGORIAN_CACHE.set(cacheKey, resolved);
         return resolved;
@@ -194,12 +199,17 @@ export function getShamsiMonthLength(year: number, month: number): number {
 /**
  * Format Afghan Solar Hijri date for display
  */
+export function solarMonthName(date: AfghanSolarHijriDate, language: AppLanguage): string {
+  if (language === 'pashto') return date.monthNamePashto;
+  if (language === 'english') return date.monthNameEnglish || AFGHAN_SOLAR_MONTHS[date.month - 1]?.english || '';
+  return date.monthNameDari;
+}
+
 export function formatAfghanSolarHijriDate(
   date: AfghanSolarHijriDate,
-  language: 'dari' | 'pashto' = 'dari',
+  language: AppLanguage = 'dari',
 ): string {
-  const monthName = language === 'pashto' ? date.monthNamePashto : date.monthNameDari;
-  return `${date.day} ${monthName} ${date.year}`;
+  return `${date.day} ${solarMonthName(date, language)} ${date.year}`;
 }
 
 /**
@@ -271,8 +281,8 @@ export function shamsiToGregorian(
  */
 export function formatAfghanSolarHijriDateWithPersianNumerals(
   date: AfghanSolarHijriDate,
-  language: 'dari' | 'pashto' = 'dari',
+  language: AppLanguage = 'dari',
 ): string {
-  const monthName = language === 'pashto' ? date.monthNamePashto : date.monthNameDari;
-  return `${toPersianNumerals(date.day)} ${monthName} ${toPersianNumerals(date.year)}`;
+  const digits = getLanguage(language).digits === 'latin' ? String : toPersianNumerals;
+  return `${digits(date.day)} ${solarMonthName(date, language)} ${digits(date.year)}`;
 }

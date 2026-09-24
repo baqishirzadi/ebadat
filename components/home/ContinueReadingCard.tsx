@@ -8,9 +8,11 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp, useReadingPosition } from '@/context/AppContext';
 import { toArabicNumerals } from '@/utils/numbers';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export function ContinueReadingCard() {
   const { theme } = useApp();
+  const { isPashto, t } = useI18n();
   const { position } = useReadingPosition();
 
   if (position.surahNumber <= 0) return null;
@@ -28,9 +30,12 @@ export function ContinueReadingCard() {
       <RtlView style={styles.inner}>
         <MaterialIcons name="menu-book" size={28} color={theme.playing} />
         <RtlView style={styles.textBlock}>
-          <RtlText align="center" style={[styles.title, { color: theme.text }]}>ادامه تلاوت</RtlText>
-          <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
-            سوره {toArabicNumerals(position.surahNumber)} • آیه {toArabicNumerals(position.ayahNumber)}
+          <RtlText align="center" style={[styles.title, { color: theme.text }]}>{t('home.reading.continue')}</RtlText>
+          <RtlText
+            align="center"
+            style={[styles.subtitle, isPashto && styles.subtitlePashto, { color: theme.textSecondary }]}
+          >
+            {isPashto ? 'سورت' : 'سوره'} {toArabicNumerals(position.surahNumber)} • {isPashto ? 'آیت' : 'آیه'} {toArabicNumerals(position.ayahNumber)}
           </RtlText>
         </RtlView>
         <MaterialIcons name="play-circle-filled" size={36} color={theme.playing} />
@@ -63,5 +68,9 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
+  },
+  subtitlePashto: {
+    fontSize: Typography.ui.body,
+    lineHeight: 22,
   },
 });

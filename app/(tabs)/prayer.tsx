@@ -1,13 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-  Pressable,
-  Text,
-  Dimensions,
-} from 'react-native';
+
+import { View, StyleSheet, ScrollView, ActivityIndicator, Pressable, Dimensions } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import CenteredText from '@/components/CenteredText';
@@ -20,9 +14,14 @@ import { usePrayer } from '@/context/PrayerContext';
 import { usePrayerTimes } from '@/hooks/usePrayerTimes';
 import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
 import { getCalendarTruth } from '@/utils/calendarTruth';
-import { getCity, getImportantCities } from '@/utils/cities';
+import { getCity, getImportantCities, localizeCityName } from '@/utils/cities';
 import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { formatGregorianDateCompact } from '@/utils/calendarDisplay';
+import { hijriMonthName } from '@/utils/islamicCalendar';
+import { formatNumber } from '@/utils/numbers';
+import { prayerLabel } from '@/utils/prayerTimes';
+import { useI18n } from '@/utils/i18n/useI18n';
+import type { AppLanguage } from '@/types/quran';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GOLD = '#D4AF37';
@@ -30,16 +29,6 @@ const GOLD_LIGHT = '#E8D48A';
 
 // Afghan cities supported by PrayerContext.setCity (short keys)
 const PRAYER_CONTEXT_AFGHAN_KEYS = ['kabul', 'herat', 'mazar', 'kandahar', 'jalalabad', 'kunduz', 'ghazni', 'bamiyan', 'farah', 'badakhshan'];
-
-// Prayer name translations to Dari
-const PRAYER_NAMES_DARI: Record<string, string> = {
-  'فجر': 'صبح',
-  'طلوع': 'آفتاب',
-  'ظهر': 'پیشین',
-  'عصر': 'نمازدیگر',
-  'مغرب': 'شام',
-  'عشاء': 'خفتن',
-};
 
 // Emojis for each prayer (common in Islamic apps: moon=dawn/night, sun=noon, sunset=maghrib)
 const PRAYER_EMOJIS: Record<string, string> = {
@@ -58,15 +47,16 @@ function toPersianNumerals(num: number): string {
 }
 
 // Format triple date: Hijri Qamari → Hijri Shamsi → Miladi
-function formatTripleDate(date: Date, language: 'dari' | 'pashto'): string {
+function formatTripleDate(date: Date, language: AppLanguage): string {
+  const digits = (value: number) => formatNumber(value, language);
   const truth = getCalendarTruth(date);
   const hijriQamari = truth.hijri;
-  const hijriQamariFormatted = `${toPersianNumerals(hijriQamari.day)} ${language === 'pashto' ? hijriQamari.monthNamePashto : hijriQamari.monthNameDari} ${toPersianNumerals(hijriQamari.year)}`;
+  const hijriQamariFormatted = `${digits(hijriQamari.day)} ${hijriMonthName(hijriQamari, language)} ${digits(hijriQamari.year)}`;
   
   const hijriShamsi = truth.shamsi;
   const hijriShamsiFormatted = formatAfghanSolarHijriDateWithPersianNumerals(hijriShamsi, language);
   
-  const miladiFormatted = formatGregorianDateCompact(truth.gregorianDate, toPersianNumerals);
+  const miladiFormatted = formatGregorianDateCompact(truth.gregorianDate, digits);
   
   return `${hijriQamariFormatted} → ${hijriShamsiFormatted} → ${miladiFormatted}`;
 }
@@ -94,6 +84,7 @@ const GoldenCorner = ({ position }: { position: 'topLeft' | 'topRight' | 'bottom
 export default function NamazScreen() {
   const { theme, state: appState } = useApp();
   const appLanguage = appState.preferences.appLanguage;
+  const { t, n, language, fontFamily } = useI18n();
   const { unreadCount } = useDua();
   const router = useRouter();
   const { setCity, setCustomLocation } = usePrayer();
@@ -108,6 +99,7 @@ export default function NamazScreen() {
   const [showQuickCities, setShowQuickCities] = useState(false);
 
   const selectedCityData = selectedCity ? getCity(selectedCity) : undefined;
+  const selectedCityLabel = localizeCityName(selectedCityData?.name, language) || t('prayer.unknownCity');
   const importantCities = getImportantCities();
 
   // Sync city to PrayerContext so adhan notifications use the same location
@@ -151,7 +143,7 @@ export default function NamazScreen() {
     return (
       <View style={[styles.loading, { backgroundColor: theme.background }]}>
         <ActivityIndicator size="large" color={theme.tint} />
-        <CenteredText style={{ color: theme.text }}>در حال محاسبه اوقات نماز...</CenteredText>
+        <CenteredText style={{ color: theme.text }}>{t('prayer.loading')}</CenteredText>
       </View>
     );
   }
@@ -162,8 +154,8 @@ export default function NamazScreen() {
         <ScreenHeader
           showBack={false}
           icon="schedule"
-          title="اوقات نماز"
-          subtitle="شهر انتخاب نشده"
+          title={t('prayer.title')}
+          subtitle={t('prayer.noCity')}
         />
 
         <View style={styles.contentWrapper}>
@@ -171,10 +163,10 @@ export default function NamazScreen() {
           <View style={[styles.unresolvedCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <MaterialIcons name="location-city" size={28} color={theme.tint} />
             <CenteredText style={[styles.unresolvedTitle, { color: theme.text }]}>
-              ابتدا شهر خود را انتخاب کنید
+              {t('prayer.chooseCityFirst')}
             </CenteredText>
             <CenteredText style={[styles.unresolvedText, { color: theme.textSecondary }]}>
-              تا قبل از انتخاب شهر (یا تشخیص موفق موقعیت)، اذان زمان‌بندی نمی‌شود.
+              {t('prayer.noScheduleYet')}
             </CenteredText>
             <Pressable
               onPress={() => setShowCityModal(true)}
@@ -184,7 +176,7 @@ export default function NamazScreen() {
                 pressed && styles.buttonPressed,
               ]}
             >
-              <CenteredText style={styles.unresolvedButtonText}>انتخاب شهر</CenteredText>
+              <CenteredText style={[styles.unresolvedButtonText, { fontFamily }]}>{t('prayer.selectCity')}</CenteredText>
             </Pressable>
           </View>
         </View>
@@ -206,7 +198,7 @@ export default function NamazScreen() {
     return (
       <View testID="ios-prayer-ready" style={[styles.loading, { backgroundColor: theme.background }]}>
         <ActivityIndicator size="large" color={theme.tint} />
-        <CenteredText style={{ color: theme.text }}>در حال محاسبه اوقات نماز...</CenteredText>
+        <CenteredText style={{ color: theme.text }}>{t('prayer.loading')}</CenteredText>
       </View>
     );
   }
@@ -241,8 +233,8 @@ export default function NamazScreen() {
         <ScreenHeader
           showBack={false}
           icon="schedule"
-          title="اوقات نماز"
-          subtitle={selectedCityData?.name || 'شهر نامشخص'}
+          title={t('prayer.title')}
+          subtitle={selectedCityLabel}
         />
 
         {/* Content with horizontal padding */}
@@ -251,7 +243,7 @@ export default function NamazScreen() {
           <View style={styles.cityInfo}>
             <MaterialIcons name="location-on" size={20} color={theme.tint} />
             <CenteredText style={[styles.selectedCityName, { color: theme.text }]}>
-              {selectedCityData?.name || 'شهر نامشخص'}
+              {selectedCityLabel}
             </CenteredText>
           </View>
           <Pressable
@@ -267,7 +259,7 @@ export default function NamazScreen() {
               numberOfLines={1}
               ellipsizeMode="clip"
             >
-              تغییر شهر
+              {t('prayer.changeCity')}
             </CenteredText>
           </Pressable>
         </View>
@@ -282,7 +274,7 @@ export default function NamazScreen() {
           ]}
         >
           <CenteredText style={[styles.quickCitiesTitle, { color: theme.textSecondary }]}>
-            شهرهای پرکاربرد
+            {t('onboarding.location.featuredCities')}
           </CenteredText>
           <MaterialIcons
             name={showQuickCities ? 'expand-less' : 'expand-more'}
@@ -319,7 +311,7 @@ export default function NamazScreen() {
                       ]}
                       numberOfLines={1}
                     >
-                      {city.name}
+                      {localizeCityName(city.name, language)}
                     </CenteredText>
                   </Pressable>
                 );
@@ -334,7 +326,7 @@ export default function NamazScreen() {
               ]}
             >
               <CenteredText style={[styles.moreCitiesText, { color: theme.tint }]}>
-                همه شهرها...
+                {t('prayer.allCities')}
               </CenteredText>
               <MaterialIcons name="chevron-left" size={20} color={theme.tint} />
             </Pressable>
@@ -362,7 +354,7 @@ export default function NamazScreen() {
             <View style={styles.dateContainer}>
               <View style={styles.decorativeLine}>
                 <View style={[styles.lineLeft, { backgroundColor: `${GOLD}60` }]} />
-                <Text style={[styles.lineCenter, { color: GOLD }]}>۞</Text>
+                <LocalizedText style={[styles.lineCenter, { color: GOLD }]}>۞</LocalizedText>
                 <View style={[styles.lineRight, { backgroundColor: `${GOLD}60` }]} />
               </View>
               <CenteredText style={[styles.date, { color: theme.tint }]}>
@@ -370,40 +362,35 @@ export default function NamazScreen() {
               </CenteredText>
               <View style={styles.decorativeLine}>
                 <View style={[styles.lineLeft, { backgroundColor: `${GOLD}60` }]} />
-                <Text style={[styles.lineCenter, { color: GOLD }]}>۞</Text>
+                <LocalizedText style={[styles.lineCenter, { color: GOLD }]}>۞</LocalizedText>
                 <View style={[styles.lineRight, { backgroundColor: `${GOLD}60` }]} />
               </View>
             </View>
 
             {/* Prayer Times */}
-            <PrayerTimeRow name="فجر" emoji={PRAYER_EMOJIS['فجر']} dariName={PRAYER_NAMES_DARI['فجر']} time={prayerTimes.fajr} theme={theme} />
+            <PrayerTimeRow name={prayerLabel('fajr', language)} emoji={PRAYER_EMOJIS['فجر']} time={prayerTimes.fajr} theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="طلوع" emoji={PRAYER_EMOJIS['طلوع']} dariName={PRAYER_NAMES_DARI['طلوع']} time={prayerTimes.sunrise} secondary theme={theme} />
+            <PrayerTimeRow name={t('prayer.prayerName.sunrise')} emoji={PRAYER_EMOJIS['طلوع']} time={prayerTimes.sunrise} secondary theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="ظهر" emoji={PRAYER_EMOJIS['ظهر']} dariName={PRAYER_NAMES_DARI['ظهر']} time={prayerTimes.dhuhr} theme={theme} />
+            <PrayerTimeRow name={prayerLabel('dhuhr', language)} emoji={PRAYER_EMOJIS['ظهر']} time={prayerTimes.dhuhr} theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="عصر" emoji={PRAYER_EMOJIS['عصر']} dariName={PRAYER_NAMES_DARI['عصر']} time={prayerTimes.asr} theme={theme} />
+            <PrayerTimeRow name={prayerLabel('asr', language)} emoji={PRAYER_EMOJIS['عصر']} time={prayerTimes.asr} theme={theme} />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
             <PrayerTimeRow
-              name="مغرب"
+              name={prayerLabel('maghrib', language)}
               emoji={PRAYER_EMOJIS['مغرب']}
-              dariName={displayPrayerLabel(
-                'maghrib',
-                PRAYER_NAMES_DARI['مغرب'],
-                selectedCity,
-              )}
               time={prayerTimes.maghrib}
               theme={theme}
             />
             <View style={[styles.prayerDivider, { backgroundColor: `${GOLD}20` }]} />
-            <PrayerTimeRow name="عشاء" emoji={PRAYER_EMOJIS['عشاء']} dariName={PRAYER_NAMES_DARI['عشاء']} time={prayerTimes.isha} theme={theme} />
+            <PrayerTimeRow name={prayerLabel('isha', language)} emoji={PRAYER_EMOJIS['عشاء']} time={prayerTimes.isha} theme={theme} />
           </View>
         </View>
 
         {/* Hanafi Note */}
         <View style={[styles.note, { backgroundColor: theme.backgroundSecondary }]}>
           <CenteredText style={[styles.noteText, { color: theme.textSecondary }]}>
-            نماز عصر طبق مذهب حنفی محاسبه شده است
+            {t('prayer.hanafiNote')}
           </CenteredText>
         </View>
 
@@ -418,18 +405,18 @@ export default function NamazScreen() {
         >
           <View style={styles.duaCardContent}>
             <View style={styles.duaIconContainer}>
-              <Text style={styles.duaEmoji}>🤲</Text>
+              <LocalizedText style={styles.duaEmoji}>🤲</LocalizedText>
               {unreadCount > 0 ? (
                 <View style={styles.duaUnreadBadge}>
-                  <Text style={styles.duaUnreadText}>{unreadCount > 9 ? '۹+' : String(unreadCount)}</Text>
+                  <LocalizedText style={styles.duaUnreadText}>{unreadCount > 9 ? `${n(9)}+` : n(unreadCount)}</LocalizedText>
                 </View>
               ) : null}
             </View>
             <View style={styles.duaCardInfo}>
-              <Text style={styles.duaCardTitle}>دعای خیر و مشورت شرعی</Text>
-              <Text style={styles.duaCardSubtitle}>
-                درخواست دعای خیر و راهنمایی شرعی؛ با مشورت علما و روحانیون متخصص پاسخ داده می‌شود.
-              </Text>
+              <LocalizedText style={[styles.duaCardTitle, { fontFamily }]}>{t('adhkar.dua.title')}</LocalizedText>
+              <LocalizedText style={[styles.duaCardSubtitle, { fontFamily }]}>
+                {t('adhkar.dua.body')}
+              </LocalizedText>
             </View>
           </View>
           <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
@@ -469,20 +456,20 @@ function PrayerTimeRow({
   return (
     <View style={[styles.timeRow, secondary && styles.timeRowSecondary]}>
       <View style={styles.emojiContainer}>
-        <Text style={styles.emojiText}>{emoji || ''}</Text>
+        <LocalizedText style={styles.emojiText}>{emoji || ''}</LocalizedText>
       </View>
       <View style={styles.prayerNameContainer}>
-        <Text style={[styles.prayerName, { color: theme.text }]} numberOfLines={1}>
+        <LocalizedText style={[styles.prayerName, { color: theme.text }]} numberOfLines={1}>
           {name}
           {dariName && (
-            <Text style={[styles.prayerNameDari, { color: theme.textSecondary }]}>
+            <LocalizedText style={[styles.prayerNameDari, { color: theme.textSecondary }]}>
               {' → '}{dariName}
-            </Text>
+            </LocalizedText>
           )}
-        </Text>
+        </LocalizedText>
       </View>
       <View style={styles.timeContainer}>
-        <Text style={[styles.prayerTime, { color: theme.tint }]}>{time}</Text>
+        <LocalizedText style={[styles.prayerTime, { color: theme.tint }]}>{time}</LocalizedText>
       </View>
     </View>
   );

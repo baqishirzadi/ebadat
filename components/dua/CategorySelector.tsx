@@ -10,6 +10,7 @@ import { DuaCategory, DUA_CATEGORIES } from '@/types/dua';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import { pickContent } from '@/utils/i18n/content';
 
 interface CategorySelectorProps {
   selectedCategory: DuaCategory | null;
@@ -17,7 +18,8 @@ interface CategorySelectorProps {
 }
 
 export function CategorySelector({ selectedCategory, onSelect }: CategorySelectorProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const language = state.preferences.appLanguage;
 
   return (
     <View style={styles.container}>
@@ -45,7 +47,7 @@ export function CategorySelector({ selectedCategory, onSelect }: CategorySelecto
               />
             </View>
             <CenteredText style={[styles.name, { color: isSelected ? theme.tint : theme.text }]}>
-              {category.nameDari}
+              {pickContent(category, 'name', language)}
             </CenteredText>
             {isSelected && (
               <View style={[styles.checkmark, { backgroundColor: theme.tint }]}>

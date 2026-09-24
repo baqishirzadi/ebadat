@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "قسم به شب چون روز را (با تاریکی) بپوشاند.",
-      "translation_pashto": "92-1 قسم دى په شپه كله چې دا (هر شى) پټ كړي"
+      "translation_pashto": "92-1 قسم دى په شپه كله چې دا (هر شى) پټ كړي",
+      "translation_english": "By the night when it covers,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به روز چون روشن شود.",
-      "translation_pashto": "92-2 او په ورځ باندې كله چې روښانه شي"
+      "translation_pashto": "92-2 او په ورځ باندې كله چې روښانه شي",
+      "translation_english": "and by the day when it appears,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و قسم به آن ذاتی که نر و ماده را آفریده است.",
-      "translation_pashto": "92-3 او په هغه ذات باندې چې نر او ښځه يې پیدا كړي دي"
+      "translation_pashto": "92-3 او په هغه ذات باندې چې نر او ښځه يې پیدا كړي دي",
+      "translation_english": "and by His creation of male and female,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "همانا کوشش‌های شما گوناگون و مختلف است.",
-      "translation_pashto": "92-4 چې بېشكه ستاسو سعي (او عمل) خامخا  بېل بېل دي"
+      "translation_pashto": "92-4 چې بېشكه ستاسو سعي (او عمل) خامخا  بېل بېل دي",
+      "translation_english": "surely your efforts are divergent."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس اما کسی که (در راه الله مال خود را) بخشید و پرهیزگاری کرد.",
-      "translation_pashto": "92-5 نو هر چې هغه څوك دى چې وركړه كوي او وېرېږي"
+      "translation_pashto": "92-5 نو هر چې هغه څوك دى چې وركړه كوي او وېرېږي",
+      "translation_english": "As for the one who gives in charity and fears Allah,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و شریعت نیک (و آسان) را تصدیق کرد.",
-      "translation_pashto": "92-6 او د ډېرې ښكلې كلمې تصدیق كوي"
+      "translation_pashto": "92-6 او د ډېرې ښكلې كلمې تصدیق كوي",
+      "translation_english": "and truly believes in the best reward,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس (راه رسیدن) به آسایش را برای او آسان می‌گردانیم.",
-      "translation_pashto": "92-7 نو مونږ به ضرور ده ته د اسانې لارې اسانتیا وركړو"
+      "translation_pashto": "92-7 نو مونږ به ضرور ده ته د اسانې لارې اسانتیا وركړو",
+      "translation_english": "We will make easy for him the way of salvation."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "ولی کسی که بخل ورزید، و (خود را) مستغنی شمرد.",
-      "translation_pashto": "92-8 او هر چې هغه څوك دى چې بخیلي كوي او بې  پروايي كوي"
+      "translation_pashto": "92-8 او هر چې هغه څوك دى چې بخیلي كوي او بې  پروايي كوي",
+      "translation_english": "But as for the one who is miserly and deems himself self-sufficient,"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و (شریعت) نیک (و آسان) را تکذیب کرد.",
-      "translation_pashto": "92-9 او د ډېرې ښكلې كلمې تكذیب كوي (دروغ يې ګڼي)"
+      "translation_pashto": "92-9 او د ډېرې ښكلې كلمې تكذیب كوي (دروغ يې ګڼي)",
+      "translation_english": "and denies the best reward,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس زودا که راه سختی (راه دوزخ) را به او آسان کنیم.",
-      "translation_pashto": "92-10 نو مونږ به ضرور ده ته د سختې لارې اسانتیا وركړو"
+      "translation_pashto": "92-10 نو مونږ به ضرور ده ته د سختې لارې اسانتیا وركړو",
+      "translation_english": "We will make easy for him the way of perdition."
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و وقتی (به گور) انداخته شود مال و دارایی‌اش به او سودی نخواهد کرد.",
-      "translation_pashto": "92-11 او كله چې دى په كنده كې غورځېږي (هلاكېږي، نو) د ده مال به د ده هېڅ په كار رانشي"
+      "translation_pashto": "92-11 او كله چې دى په كنده كې غورځېږي (هلاكېږي، نو) د ده مال به د ده هېڅ په كار رانشي",
+      "translation_english": "His wealth will be of no avail to him when he tumbles [into Hell]."
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "البته راهنمائی (انسان‌ها) بر عهدۀ ماست.",
-      "translation_pashto": "92-12 بېشكه خاص زمونږ په ذمه خامخا لاره ښوول دي"
+      "translation_pashto": "92-12 بېشكه خاص زمونږ په ذمه خامخا لاره ښوول دي",
+      "translation_english": "Indeed, it is upon Us to show the right way,"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و البته (کامیابی) دنیا و آخرت در اختیار ماست.",
-      "translation_pashto": "92-13 او بېشكه خاص زمونږ لپاره اخرت او دنیا ده (د دواړو اختيار دى)"
+      "translation_pashto": "92-13 او بېشكه خاص زمونږ لپاره اخرت او دنیا ده (د دواړو اختيار دى)",
+      "translation_english": "and surely to Us belong the Hereafter and the present life."
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس شما را از آتشی که شعله می‌زند ترسانیدم.",
-      "translation_pashto": "92-14 نوما تاسو له داسې اوره ووېرولئ چې لمبې وهي"
+      "translation_pashto": "92-14 نوما تاسو له داسې اوره ووېرولئ چې لمبې وهي",
+      "translation_english": "So I warn you of a raging Fire,"
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "جز بدبخت‌ترین انسان‌ها در آن درنیاید.",
-      "translation_pashto": "92-15 ده ته به نه ننوځي مګر ترټولو بدبخته"
+      "translation_pashto": "92-15 ده ته به نه ننوځي مګر ترټولو بدبخته",
+      "translation_english": "none will enter it except the most wretched,"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آن که تکذیب کرد و روی گشتاند.",
-      "translation_pashto": "92-16 هغه چې تكذیب يې كړى او مخ يې (له حقه) ګرځولى دى"
+      "translation_pashto": "92-16 هغه چې تكذیب يې كړى او مخ يې (له حقه) ګرځولى دى",
+      "translation_english": "who denied and turned away."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و پرهیزگارترین (انسان‌ها) از آن دور داشته خواهد شد.",
-      "translation_pashto": "92-17 او له ده نه به خامخا لرې ساتلى شي ښه وېرېدونكى"
+      "translation_pashto": "92-17 او له ده نه به خامخا لرې ساتلى شي ښه وېرېدونكى",
+      "translation_english": "But the most righteous will be saved from it,"
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آن که مال خود را می‌دهد تا پاک شود.",
-      "translation_pashto": "92-18 هغه چې خپل مال د دې لپاره وركوي چې پاك شي"
+      "translation_pashto": "92-18 هغه چې خپل مال د دې لپاره وركوي چې پاك شي",
+      "translation_english": "who spends his wealth to purify himself,"
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و هیچ کسی نزد او نعمتی ندارد که پاداش (آن را) ببیند.",
-      "translation_pashto": "92-19 او له ده سره (د ده په غاړه) د هیچا لپاره څه نعمت (او احسان) نشته چې بدله يې وركولى شي "
+      "translation_pashto": "92-19 او له ده سره (د ده په غاړه) د هیچا لپاره څه نعمت (او احسان) نشته چې بدله يې وركولى شي ",
+      "translation_english": "not in return for someone’s favors,"
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(انفاق نمی‌کند آن متقی) مگر برای کسب رضایت پروردگار والاترش.",
-      "translation_pashto": "92-20 مګر د خپل رب د مخ لټونې لپاره چې تر ټولو اوچت دى"
+      "translation_pashto": "92-20 مګر د خپل رب د مخ لټونې لپاره چې تر ټولو اوچت دى",
+      "translation_english": "but to seek the pleasure of his Lord, the Most High."
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و البته به زودی راضی شود.",
-      "translation_pashto": "92-21 او خامخا ژر به دى راضي شي`"
+      "translation_pashto": "92-21 او خامخا ژر به دى راضي شي`",
+      "translation_english": "He will surely be well pleased."
     }
   ]
 }

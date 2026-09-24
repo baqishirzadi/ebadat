@@ -1,0 +1,85 @@
+{
+  "adhanPermissions": {
+    "notifications": {
+      "title": "Notification permission",
+      "body": "Ebadat needs permission to send notifications so it can show prayer times and play the Adhan.",
+      "button": "Allow",
+      "skip": "Continue without notifications"
+    },
+    "exactAlarm": {
+      "title": "Exact alarms for the Adhan",
+      "body": "So the Adhan plays exactly at the prayer time — even while your phone is asleep — please grant Ebadat the “Alarms & reminders” permission.",
+      "button": "Enable",
+      "skip": "Not now",
+      "granted": "Enabled",
+      "denied": "Needs attention"
+    },
+    "battery": {
+      "title": "Turn off battery optimisation",
+      "body": "Some phones close background apps automatically. If Ebadat stays under battery optimisation, the Adhan may not play on time.",
+      "button": "Battery settings",
+      "skip": "Later"
+    },
+    "autostart": {
+      "title": "Enable “Autostart”",
+      "body": "Your phone controls this permission separately. Please follow the steps below:",
+      "button": "Open settings",
+      "skip": "Later",
+      "openAppSettings": "App settings"
+    },
+    "health": {
+      "title": "Adhan delivery status",
+      "exactAlarm": "Exact alarms",
+      "battery": "Battery optimisation",
+      "autostart": "Autostart",
+      "notifications": "Notifications",
+      "statusPass": "Enabled",
+      "statusWarn": "Needs attention",
+      "fix": "Fix",
+      "fullCheck": "Run a full health check"
+    },
+    "banner": {
+      "body": "For the Adhan to be exactly on time, please enable the “Exact alarms” permission.",
+      "button": "Enable now"
+    },
+    "oemSteps": {
+      "xiaomi": [
+        "Open your phone settings",
+        "Go to “Apps” or “Manage apps”",
+        "Find Ebadat and open “Autostart”",
+        "Turn it on"
+      ],
+      "huawei": [
+        "Open your phone settings",
+        "Go to “Apps” → “Launch” or “Protected apps”",
+        "Find Ebadat",
+        "Allow it to run in the background"
+      ],
+      "oppo": [
+        "Open your phone settings",
+        "Go to “App management” → “Startup Manager”",
+        "Find Ebadat",
+        "Enable autostart"
+      ],
+      "vivo": [
+        "Open your phone settings",
+        "Go to “Battery” → “High background battery usage”",
+        "Find Ebadat",
+        "Allow it to run in the background"
+      ],
+      "samsung": [
+        "Open your phone settings",
+        "Go to “Device care” → “Battery” → “Background usage limits”",
+        "Add Ebadat to “Never sleeping apps”",
+        "Turn off “Put app to sleep” for Ebadat"
+      ],
+      "default": [
+        "Open your phone settings",
+        "Open the Ebadat app settings",
+        "Review the battery and background restrictions",
+        "Allow it to run in the background"
+      ]
+    },
+    "continue": "Continue"
+  }
+}

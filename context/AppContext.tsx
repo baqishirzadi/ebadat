@@ -3,7 +3,7 @@
  * Handles: Theme, Font, Bookmarks, Reading Position, Preferences
  */
 
-import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef, useState, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts } from '@/constants/theme';
 import {
@@ -14,6 +14,8 @@ import {
   AppLanguage,
   TranslationLanguage,
 } from '@/types/quran';
+import { applyNativeLayoutDirection } from '@/utils/i18n/direction';
+import { DEFAULT_APP_LANGUAGE, isAppLanguage } from '@/utils/i18n/languages';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -25,6 +27,7 @@ const STORAGE_KEYS = {
 // Default preferences
 const DEFAULT_PREFERENCES: UserPreferences = {
   appLanguage: 'dari',
+  translationLanguageMode: 'follow_app',
   theme: 'light',
   quranFont: 'scheherazade',  // Uthmani Taha (عثمان طه) - default Quran font
   dariFont: 'vazirmatn',    // Modern Dari font
@@ -92,7 +95,13 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'SET_APP_LANGUAGE':
       return {
         ...state,
-        preferences: { ...state.preferences, appLanguage: action.payload },
+        preferences: {
+          ...state.preferences,
+          appLanguage: action.payload,
+          ...(state.preferences.translationLanguageMode === 'follow_app'
+            ? { showTranslation: action.payload }
+            : {}),
+        },
       };
     
     case 'SET_THEME':
@@ -140,7 +149,11 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case 'SET_TRANSLATION_LANGUAGE':
       return {
         ...state,
-        preferences: { ...state.preferences, showTranslation: action.payload },
+        preferences: {
+          ...state.preferences,
+          showTranslation: action.payload,
+          translationLanguageMode: 'manual',
+        },
       };
     
     case 'SET_AUTO_PLAY':
@@ -192,7 +205,7 @@ function isValidQuranFontFamily(value: unknown): value is QuranFontFamily {
 }
 
 function isValidAppLanguage(value: unknown): value is AppLanguage {
-  return value === 'dari' || value === 'pashto';
+  return isAppLanguage(value);
 }
 
 // Context type
@@ -200,6 +213,12 @@ interface AppContextType {
   state: AppState;
   theme: ThemeColors;
   themeMode: ThemeMode;
+  /**
+   * True when the language switch changed the layout direction. The React
+   * tree already renders in the new direction; platform widgets (alerts,
+   * pickers, caret placement) catch up on the next cold start.
+   */
+  layoutRestartPending: boolean;
   
   // Theme actions
   setTheme: (theme: ThemeMode) => void;
@@ -240,11 +259,23 @@ const AppLanguageContext = createContext<AppLanguage>('dari');
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const positionPersistTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [layoutRestartPending, setLayoutRestartPending] = useState(false);
 
   // Load persisted state on mount
   useEffect(() => {
     loadPersistedState();
   }, []);
+
+  // Keep the platform layout direction in step with the chosen language.
+  // React Native only reads I18nManager during startup, so writing it here
+  // takes effect on the next launch while the style layer handles the
+  // current session.
+  useEffect(() => {
+    if (!state.isInitialized) return;
+    if (applyNativeLayoutDirection(state.preferences.appLanguage)) {
+      setLayoutRestartPending(true);
+    }
+  }, [state.isInitialized, state.preferences.appLanguage]);
 
   // Persist preferences whenever they change
   useEffect(() => {
@@ -290,9 +321,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
         AsyncStorage.getItem(STORAGE_KEYS.LAST_POSITION),
       ]);
 
-      const rawPreferences = prefsJson ? { ...DEFAULT_PREFERENCES, ...JSON.parse(prefsJson) } : DEFAULT_PREFERENCES;
+      const storedPreferences = prefsJson ? JSON.parse(prefsJson) : null;
+      const rawPreferences = storedPreferences
+        ? { ...DEFAULT_PREFERENCES, ...storedPreferences }
+        : DEFAULT_PREFERENCES;
       let preferences = rawPreferences;
       let preferencesNormalized = false;
+
+      if (!storedPreferences) {
+        preferences = {
+          ...preferences,
+          showTranslation: preferences.appLanguage,
+          translationLanguageMode: 'follow_app',
+        };
+        preferencesNormalized = true;
+      } else if (
+        !storedPreferences ||
+        !['follow_app', 'manual'].includes(storedPreferences.translationLanguageMode)
+      ) {
+        const legacyTranslationWasFollowing =
+          preferences.showTranslation === preferences.appLanguage &&
+          isAppLanguage(preferences.showTranslation);
+        preferences = {
+          ...preferences,
+          translationLanguageMode: legacyTranslationWasFollowing ? 'follow_app' : 'manual',
+        };
+        preferencesNormalized = true;
+      }
 
       if (!isValidQuranFontFamily(rawPreferences.quranFont)) {
         preferences = {
@@ -305,7 +360,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!isValidAppLanguage(preferences.appLanguage)) {
         preferences = {
           ...preferences,
-          appLanguage: 'dari',
+          appLanguage: DEFAULT_APP_LANGUAGE,
+        };
+        preferencesNormalized = true;
+      }
+
+      if (preferences.showTranslation === 'both') {
+        preferences = {
+          ...preferences,
+          showTranslation: isAppLanguage(preferences.appLanguage) ? preferences.appLanguage : 'dari',
+          translationLanguageMode: 'follow_app',
         };
         preferencesNormalized = true;
       }
@@ -422,6 +486,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     state,
     theme,
     themeMode: state.preferences.theme,
+    layoutRestartPending,
     setTheme,
     setAppLanguage,
     setQuranFont,
@@ -458,6 +523,11 @@ export function useApp() {
 
 export function useAppLanguage(): AppLanguage {
   return useContext(AppLanguageContext);
+}
+
+export function useLocalizedFontPreferences(): Pick<UserPreferences, 'dariFont' | 'pashtoFont'> | null {
+  const context = useContext(AppContext);
+  return context?.state.preferences ?? null;
 }
 
 // Convenience hooks

@@ -5,7 +5,9 @@
  */
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+
+import { View, StyleSheet, Pressable, Alert } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -19,6 +21,7 @@ import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { Spacing } from '@/constants/theme';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const SURAH_TOP_BAR_HEIGHT = 56;
 const QURAN_AUDIO_PLAYER_RESERVED_HEIGHT = 170;
@@ -41,6 +44,7 @@ export default function QuranReaderScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { theme, state } = useApp();
+  const { t } = useI18n();
   const { getSurah } = useQuranData();
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
 
@@ -195,9 +199,9 @@ export default function QuranReaderScreen() {
         endAyah: surah.ayahs.length,
       })
       .catch((error) => {
-        Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
       });
-  }, [surah, currentlyPlaying]);
+  }, [surah, currentlyPlaying, t]);
 
   const handlePlayContinuous = useCallback(() => {
     if (!surah) return;
@@ -211,9 +215,9 @@ export default function QuranReaderScreen() {
         endAyah: surah.ayahs.length,
       })
       .catch((error) => {
-        Alert.alert('پخش آیه', getQuranPlaybackErrorMessage(error));
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
       });
-  }, [surah, currentlyPlaying?.ayah, initialAyah, surahNumber]);
+  }, [surah, currentlyPlaying?.ayah, initialAyah, surahNumber, t]);
 
   const handlePause = useCallback(() => {
     setIsPlaying(false);
@@ -302,9 +306,9 @@ export default function QuranReaderScreen() {
         >
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
-        <Text style={[styles.topBarTitle, { fontFamily: quranFontFamily }]} numberOfLines={1} ellipsizeMode="tail">
+        <LocalizedText style={[styles.topBarTitle, { fontFamily: quranFontFamily }]} numberOfLines={1} ellipsizeMode="tail">
           {surahName}
-        </Text>
+        </LocalizedText>
         <View style={styles.topBarNav}>
           <Pressable testID="quran-reader-settings" onPress={() => router.push('/settings?section=quran' as never)} hitSlop={8}>
             <MaterialIcons name="tune" size={22} color="#fff" />

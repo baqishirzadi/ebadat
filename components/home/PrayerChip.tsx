@@ -2,8 +2,9 @@ import React from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { RtlText } from '@/components/ui/RtlText';
-import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, Spacing } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface PrayerChipProps {
   label: string;
@@ -14,6 +15,7 @@ interface PrayerChipProps {
 
 export function PrayerChip({ label, time, active = false, style }: PrayerChipProps) {
   const { theme } = useApp();
+  const { isPashto } = useI18n();
 
   return (
     <View
@@ -35,10 +37,10 @@ export function PrayerChip({ label, time, active = false, style }: PrayerChipPro
         style,
       ]}
     >
-      <RtlText align="center" style={[styles.label, { color: active ? '#fff' : theme.text }]}>
+      <RtlText align="center" style={[styles.label, isPashto && styles.labelPashto, { color: active ? '#fff' : theme.text }]}>
         {label}
       </RtlText>
-      <RtlText align="center" style={[styles.time, { color: active ? '#fff' : theme.textSecondary }]}>
+      <RtlText align="center" style={[styles.time, isPashto && styles.timePashto, { color: active ? '#fff' : theme.textSecondary }]}>
         {time}
       </RtlText>
     </View>
@@ -59,9 +61,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 11,
   },
+  labelPashto: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
   time: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 13,
     fontVariant: ['tabular-nums'],
+  },
+  timePashto: {
+    fontSize: 14,
   },
 });

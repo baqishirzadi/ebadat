@@ -7,8 +7,8 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { formatGregorianDateCompact, formatShamsiSlash } from '@/utils/calendarDisplay';
 import { gregorianToAfghanSolarHijri } from '@/utils/afghanSolarHijri';
-import { gregorianToHijri } from '@/utils/islamicCalendar';
-import { toArabicNumerals } from '@/utils/numbers';
+import { gregorianToHijri, hijriMonthName } from '@/utils/islamicCalendar';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface DayDetailSheetProps {
   visible: boolean;
@@ -17,8 +17,8 @@ interface DayDetailSheetProps {
 }
 
 export function DayDetailSheet({ visible, date, onClose }: DayDetailSheetProps) {
-  const { theme, state } = useApp();
-  const isPashto = state.preferences.appLanguage === 'pashto';
+  const { theme } = useApp();
+  const { t, language, n } = useI18n();
 
   if (!date) return null;
 
@@ -30,23 +30,23 @@ export function DayDetailSheet({ visible, date, onClose }: DayDetailSheetProps) 
       <Pressable style={styles.backdrop} onPress={onClose}>
         <Pressable style={[styles.sheet, { backgroundColor: theme.card, borderColor: theme.cardBorder }]} onPress={() => {}}>
           <View style={[styles.handle, { backgroundColor: theme.divider }]} />
-          <RtlText align="center" style={[styles.title, { color: theme.text }]}>جزئیات روز</RtlText>
+          <RtlText align="center" style={[styles.title, { color: theme.text }]}>{t('calendar.detail.title')}</RtlText>
 
           <RtlView style={styles.dates}>
             <RtlView style={styles.dateRow}>
-              <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>شمسی</RtlText>
+              <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.shamsi')}</RtlText>
               <RtlText align="center" style={[styles.dateValue, { color: theme.tint }]}>
-                {formatShamsiSlash(shamsi)}
+                {formatShamsiSlash(shamsi, language)}
               </RtlText>
             </RtlView>
             <RtlView style={styles.dateRow}>
-              <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>قمری</RtlText>
+              <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.hijri')}</RtlText>
               <RtlText align="center" style={[styles.dateValue, { color: theme.text }]}>
-                {toArabicNumerals(hijri.day)} {isPashto ? hijri.monthNamePashto : hijri.monthNameDari} {toArabicNumerals(hijri.year)}
+                {n(hijri.day)} {hijriMonthName(hijri, language)} {n(hijri.year)}
               </RtlText>
             </RtlView>
             <RtlView style={styles.dateRow}>
-              <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>میلادی</RtlText>
+              <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.gregorian')}</RtlText>
               <RtlText align="center" style={[styles.dateValue, { color: theme.text }]}>
                 {formatGregorianDateCompact(date)}
               </RtlText>
@@ -54,7 +54,7 @@ export function DayDetailSheet({ visible, date, onClose }: DayDetailSheetProps) 
           </RtlView>
 
           <Pressable onPress={onClose} style={[styles.closeBtn, { backgroundColor: theme.tint }]}>
-            <RtlText align="center" style={styles.closeText}>بستن</RtlText>
+            <RtlText align="center" style={styles.closeText}>{t('common.close')}</RtlText>
           </Pressable>
         </Pressable>
       </Pressable>

@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "برای الفت‌دادن قریش.",
-      "translation_pashto": "106-1 د قریشو له یو بل سره د الفت له وجې نه"
+      "translation_pashto": "106-1 د قریشو له یو بل سره د الفت له وجې نه",
+      "translation_english": "For the accustomed security of the Quraysh,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "الفت‌دادن آن‌ها به سفر زمستان و تابستان.",
-      "translation_pashto": "106-2 د ژمي او اوړي په سفر كې د دوى د الفت په وجه"
+      "translation_pashto": "106-2 د ژمي او اوړي په سفر كې د دوى د الفت په وجه",
+      "translation_english": "secure in their winter and summer journeys."
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس باید صاحب این خانه را عبادت کنند.",
-      "translation_pashto": "106-3 نو لازم دي چې دوى د دې كور د رب عبادت وكړي"
+      "translation_pashto": "106-3 نو لازم دي چې دوى د دې كور د رب عبادت وكړي",
+      "translation_english": "Let them worship the Lord of this [Sacred] House,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "کسی که آن‌ها را در گرسنگی طعام داد و در وقت ترس، امن و امان بخشید.",
-      "translation_pashto": "106-4 هغه (رب) چې دوى ته يې له لوږې نه (د بچ كولو لپاره) طعام وركړى دى او دوى ته يې له وېرې نه (د ساتلو لپاره) امن (او بې خوفي) وركړې ده"
+      "translation_pashto": "106-4 هغه (رب) چې دوى ته يې له لوږې نه (د بچ كولو لپاره) طعام وركړى دى او دوى ته يې له وېرې نه (د ساتلو لپاره) امن (او بې خوفي) وركړې ده",
+      "translation_english": "Who fed them against hunger and made them secure against fear."
     }
   ]
 }

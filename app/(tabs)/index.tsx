@@ -29,9 +29,11 @@ import { RtlView } from '@/components/ui/RtlView';
 import { Spacing } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { CityKey, getCity } from '@/utils/cities';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 function HomeDashboardScreen() {
   const { state, setCustomLocation } = usePrayer();
+  const { t } = useI18n();
   const scrollRef = useRef<ScrollView>(null);
   const greenSectionRef = useRef<View>(null);
   const scrollOffsetRef = useRef(0);
@@ -148,12 +150,12 @@ function HomeDashboardScreen() {
                 onMuftiInputFocus={handleMuftiInputFocus}
               />
             </View>
-            <SectionHeader title="اوقات نماز" />
+            <SectionHeader title={t('home.section.prayerTimes')} />
             <PrayerTimesRow prayerTimes={state.prayerTimes} />
             <QiblaCard />
             <ContinueReadingCard />
             <AdhanStatusCard />
-            <SectionHeader title="دسترسی سریع" />
+            <SectionHeader title={t('home.section.quickAccess')} />
             <QuickActions />
           </RtlView>
         </ScrollView>

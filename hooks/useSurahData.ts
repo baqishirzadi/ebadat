@@ -21,6 +21,7 @@ export interface SurahAyah {
   sajda: boolean;
   translation_dari: string;
   translation_pashto: string;
+  translation_english: string;
 }
 
 export interface SurahData {

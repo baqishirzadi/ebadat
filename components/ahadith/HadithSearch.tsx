@@ -1,11 +1,15 @@
 import React from 'react';
-import { FlatList, Pressable, StyleSheet, TextInput, View } from 'react-native';
+
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
 import { formatSourceLabel } from '@/utils/ahadith/labels';
-import { getDariFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
+import { getHadithTranslation } from '@/utils/ahadith/translation';
+import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
+import { useI18n } from '@/utils/i18n/useI18n';
 import CenteredText from '@/components/CenteredText';
 
 interface HadithSearchProps {
@@ -17,22 +21,24 @@ interface HadithSearchProps {
 
 export function HadithSearch({ query, results, onChangeQuery, onOpenHadith }: HadithSearchProps) {
   const { theme, state } = useApp();
+  const { t, language } = useI18n();
+  const isPashto = language === 'pashto';
 
   return (
     <View style={styles.container}>
       <View style={[styles.searchBox, { backgroundColor: theme.surface, borderColor: alphaColor(theme.primary, 0.2) }]}> 
         <MaterialIcons name="search" size={20} color={theme.primary} />
-        <TextInput
+        <LocalizedTextInput
           value={query}
           onChangeText={onChangeQuery}
-          placeholder="جستجو در عربی، دری و پشتو"
+          placeholder={t('ahadith.search.placeholder')}
           placeholderTextColor={theme.textSecondary}
-          style={[styles.input, { color: theme.textPrimary, fontFamily: getDariFontFamily(state.preferences.dariFont) }]}
+          style={[styles.input, { color: theme.textPrimary, fontFamily: language === 'english' ? undefined : isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont) }]}
           textAlign="center"
-          accessibilityLabel="جستجوی حدیث"
+          accessibilityLabel={t('ahadith.search.label')}
         />
         {query.length > 0 ? (
-          <Pressable onPress={() => onChangeQuery('')} accessibilityLabel="پاک‌کردن جستجو">
+          <Pressable onPress={() => onChangeQuery('')} accessibilityLabel={t('ahadith.search.clear')}>
             <MaterialIcons name="close" size={20} color={theme.textSecondary} />
           </Pressable>
         ) : null}
@@ -73,22 +79,22 @@ export function HadithSearch({ query, results, onChangeQuery, onOpenHadith }: Ha
                 styles.translation,
                 {
                   color: theme.textSecondary,
-                  fontFamily: getDariFontFamily(state.preferences.dariFont),
+                  fontFamily: isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont),
                 },
               ]}
             >
-              {item.dari_translation}
+              {getHadithTranslation(item, language)}
             </CenteredText>
             <CenteredText style={[styles.meta, { color: theme.primary }]}>
-              {formatSourceLabel(item.source_book, item.source_number)}
+              {formatSourceLabel(item.source_book, item.source_number, language)}
             </CenteredText>
           </Pressable>
         )}
         ListEmptyComponent={
           query.trim().length >= 2 ? (
-            <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>نتیجه‌ای یافت نشد</CenteredText>
+            <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>{t('common.noResults')}</CenteredText>
           ) : (
-            <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>عبارت جستجو را وارد کنید</CenteredText>
+            <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>{t('ahadith.search.prompt')}</CenteredText>
           )
         }
       />

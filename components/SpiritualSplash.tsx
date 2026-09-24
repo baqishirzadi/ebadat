@@ -18,6 +18,9 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Spacing } from '@/constants/theme';
+import { LocalizedText } from '@/components/ui/LocalizedText';
+import type { AppLanguage } from '@/types/quran';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BRAND_MARK = require('@/assets/images/splash-icon.png');
@@ -28,30 +31,41 @@ const PHRASES = [
     arabic: 'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
     dari: 'به نام خداوند بخشنده مهربان',
     pashto: 'د بخښونکي مهربان الله په نوم',
+    english: 'In the name of Allah, the Most Gracious, the Most Merciful',
   },
   {
     arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
     dari: 'ستایش خدایی را که پروردگار جهانیان است',
     pashto: 'ستاینه د الله ده چې د ټولو جهانونو پالونکی دی',
+    english: 'All praise is due to Allah, Lord of all the worlds',
   },
   {
     arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ',
     dari: 'معبودی جز خدا نیست',
     pashto: 'هیڅ معبود نشته مګر الله',
+    english: 'There is no god but Allah',
   },
   {
     arabic: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
     dari: 'پاک است خدا و ستایش او را',
     pashto: 'الله پاک دی او ستاینه یې ده',
+    english: 'Glory be to Allah, and praise be to Him',
   },
   {
     arabic: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ وَأَصْحَابِ مُحَمَّدٍ',
     dari: 'ای خداوند بزرگ، بر محمد، خاندان پاکش و یاران گرامی او درود و رحمت بفرست.',
     pashto: 'ای لوی خدا، پر محمد، د هغه پاک کورنۍ او د هغه ګران ملګرو برکت او رحمت ولیږه.',
+    english: 'O Allah, send Your blessings upon Muhammad, upon his family, and upon his companions.',
   },
 ] as const;
 
 const SPLASH_PHRASE = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+
+const SPLASH_TEXT_STYLE = {
+  dari: 'dariText',
+  pashto: 'pashtoText',
+  english: 'englishText',
+} as const satisfies Record<AppLanguage, 'dariText' | 'pashtoText' | 'englishText'>;
 const SPLASH_VISIBLE_MS = 2400;
 const SPLASH_FADE_MS = 400;
 
@@ -70,6 +84,7 @@ export function SpiritualSplash({
   onGreetingComplete,
   dismiss = false,
 }: SpiritualSplashProps) {
+  const { language, t } = useI18n();
   const insets = useSafeAreaInsets();
   const [screenPhase, setScreenPhase] = useState<SplashScreenPhase>('greeting');
   const [isExiting, setIsExiting] = useState(false);
@@ -163,31 +178,51 @@ export function SpiritualSplash({
               resizeMode="contain"
               accessibilityIgnoresInvertColors
             />
-            <Text style={styles.appName}>عبادت</Text>
-            <Text style={styles.appSubtitle}>قرآن کریم و اوقات نماز</Text>
+            <LocalizedText style={styles.appName}>عبادت</LocalizedText>
+            <LocalizedText style={styles.appSubtitle}>{t('app.splash.subtitle')}</LocalizedText>
           </View>
 
           <View style={styles.frameContainer}>
             <View style={styles.frame}>
               <View style={styles.frameContent}>
-                <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
+                {language === 'dari' ? (
+                  <>
+                    <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
 
-                <View style={styles.decorativeLine}>
-                  <View style={styles.lineLeft} />
-                  <View style={styles.lineRight} />
-                </View>
+                    <View style={styles.decorativeLine}>
+                      <View style={styles.lineLeft} />
+                      <View style={styles.lineRight} />
+                    </View>
 
-                <View style={styles.translationContainer}>
-                  <CenteredText style={styles.dariText}>{SPLASH_PHRASE.dari}</CenteredText>
-                  <CenteredText style={styles.pashtoText}>{SPLASH_PHRASE.pashto}</CenteredText>
-                </View>
+                    <View style={styles.translationContainer}>
+                      <CenteredText style={styles[SPLASH_TEXT_STYLE[language]]}>
+                        {SPLASH_PHRASE[language]}
+                      </CenteredText>
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <View style={styles.translationContainer}>
+                      <CenteredText style={styles[SPLASH_TEXT_STYLE[language]]}>
+                        {SPLASH_PHRASE[language]}
+                      </CenteredText>
+                    </View>
+
+                    <View style={styles.decorativeLine}>
+                      <View style={styles.lineLeft} />
+                      <View style={styles.lineRight} />
+                    </View>
+
+                    <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
+                  </>
+                )}
               </View>
             </View>
           </View>
 
           <View style={styles.creditContainer}>
             <View style={styles.creditCard}>
-              <CenteredText style={styles.creditDeveloper}>سازنده شرکت نرم افزار</CenteredText>
+              <CenteredText style={styles.creditDeveloper}>{t('app.splash.creator')}</CenteredText>
               <Pressable
                 onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
                 style={styles.creditLinkButton}
@@ -205,9 +240,9 @@ export function SpiritualSplash({
             resizeMode="contain"
             accessibilityIgnoresInvertColors
           />
-          <Text style={styles.appName}>عبادت</Text>
+          <LocalizedText style={styles.appName}>عبادت</LocalizedText>
           <Animated.View style={[styles.loadingRing, ringStyle]} />
-          <CenteredText style={styles.loadingText}>در حال بارگذاری...</CenteredText>
+          <CenteredText style={styles.loadingText}>{t('common.loading')}</CenteredText>
         </View>
       )}
     </Animated.View>
@@ -310,6 +345,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Amiri',
     writingDirection: 'rtl',
   },
+  englishText: {
+    fontSize: 17,
+    color: GOLD_LIGHT,
+    textAlign: 'center',
+    lineHeight: 26,
+    writingDirection: 'ltr',
+  },
   pashtoText: {
     fontSize: 18,
     color: `${GOLD_LIGHT}90`,
@@ -371,11 +413,13 @@ const styles = StyleSheet.create({
   creditDeveloper: {
     fontSize: 14,
     color: GOLD_LIGHT,
-    lineHeight: 24,
+    lineHeight: 28,
     fontFamily: 'Amiri',
     fontWeight: '600',
     writingDirection: 'rtl',
     textAlign: 'center',
+    includeFontPadding: true,
+    paddingVertical: 2,
   },
   creditLinkButton: {
     marginTop: 2,

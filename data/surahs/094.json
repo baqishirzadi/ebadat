@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "آیا سینه‌ات را برایت نکشادیم؟",
-      "translation_pashto": "94-1 ایا مونږ تا لره ستا سینه نه ده فراخه كړې"
+      "translation_pashto": "94-1 ایا مونږ تا لره ستا سینه نه ده فراخه كړې",
+      "translation_english": "Have We not reassured your heart for you [O Prophet],"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و بار سنگین را از تو برنداشتیم؟",
-      "translation_pashto": "94-2 او له تا نه مو ستا دروند بار كوز كړى"
+      "translation_pashto": "94-2 او له تا نه مو ستا دروند بار كوز كړى",
+      "translation_english": "and relieved you of your burden"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "همان باری که پشت تو را سنگین کرده بود.",
-      "translation_pashto": "94-3 هغه (بار) چې ستا شا يې كږه (او) درنه كړې وه"
+      "translation_pashto": "94-3 هغه (بار) چې ستا شا يې كږه (او) درنه كړې وه",
+      "translation_english": "that weighed down your back,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و آوازه‌ات را برایت بلند گردانیدیم.",
-      "translation_pashto": "94-4 او تا لپاره مو ستا ذكر اوچت كړ"
+      "translation_pashto": "94-4 او تا لپاره مو ستا ذكر اوچت كړ",
+      "translation_english": "and raised high your fame for you?"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس یقیناً با هر سختی آسانی است.",
-      "translation_pashto": "94-5 نو بېشكه له سختۍ سره اساني شته"
+      "translation_pashto": "94-5 نو بېشكه له سختۍ سره اساني شته",
+      "translation_english": "For indeed, with hardship comes ease,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "یقیناً با (همان) سختی آسانی (دیگر) است.",
-      "translation_pashto": "94-6 بېشكه له سختۍ سره اساني شته"
+      "translation_pashto": "94-6 بېشكه له سختۍ سره اساني شته",
+      "translation_english": "indeed, with hardship comes ease."
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "پس هرگاه فارغ شدی (از دعوت و تبلیغ)، پس بکوش (برای عبادت پروردگارت).",
-      "translation_pashto": "94-7 نو كله چې ته فارغ شې، نو (په عبادت كې،) ځان ستړى كوه"
+      "translation_pashto": "94-7 نو كله چې ته فارغ شې، نو (په عبادت كې،) ځان ستړى كوه",
+      "translation_english": "So whenever you are free, strive in worship,"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و (با رغبت و اشتیاق) به‌سوی پروردگارت روی آور.",
-      "translation_pashto": "94-8 او خاص خپل رب ته رغبت (او زاري) كوه"
+      "translation_pashto": "94-8 او خاص خپل رب ته رغبت (او زاري) كوه",
+      "translation_english": "and turn to your Lord in devotion."
     }
   ]
 }

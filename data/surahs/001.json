@@ -14,7 +14,8 @@
       "hizb": 1,
       "sajda": false,
       "translation_dari": "بنام الله بخشندۀ مهربان.",
-      "translation_pashto": " 1-1 د الله په نامه سره (شروع كوم) چې ډېر زيات مهربان، بې حده رحم كوونكى دى"
+      "translation_pashto": " 1-1 د الله په نامه سره (شروع كوم) چې ډېر زيات مهربان، بې حده رحم كوونكى دى",
+      "translation_english": "In the name of Allah, the Most Compassionate, the Most Merciful."
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 1,
       "sajda": false,
       "translation_dari": "تمامی سپاس و ستایش‌ها مخصوص ذاتی است که پروردگار تمام جهانیان است.",
-      "translation_pashto": " 1-2 ټول (د كمال) صفتونه خاص د الله لپاره دي چې د ټولو عالَمونو ښه پالونكى دى"
+      "translation_pashto": " 1-2 ټول (د كمال) صفتونه خاص د الله لپاره دي چې د ټولو عالَمونو ښه پالونكى دى",
+      "translation_english": "All praise be to Allah, the Lord of the worlds,"
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 1,
       "sajda": false,
       "translation_dari": "بسیار بخشنده (و) بسیار مهربان است.",
-      "translation_pashto": " 1-3 ډېر زيات مهربان، بې حده رحم كوونكى دى"
+      "translation_pashto": " 1-3 ډېر زيات مهربان، بې حده رحم كوونكى دى",
+      "translation_english": "the Most Compassionate, the Most Merciful,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 1,
       "sajda": false,
       "translation_dari": "مالک (و اختیار دار) روز جزا (قیامت) است.",
-      "translation_pashto": " 1-4 د بَدلې د ورځې مالك دى"
+      "translation_pashto": " 1-4 د بَدلې د ورځې مالك دى",
+      "translation_english": "Master of the Day of Judgment."
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 1,
       "sajda": false,
       "translation_dari": "(پس ای الله! تنها) تو را عبادت می‌کنیم و (در کارهای خود) تنها از تو کمک می‌خواهیم.",
-      "translation_pashto": " 1-5  مونږ خاص ستا عبادت كوو او خاص له تا نه مدد غواړو"
+      "translation_pashto": " 1-5  مونږ خاص ستا عبادت كوو او خاص له تا نه مدد غواړو",
+      "translation_english": "You alone we worship, and You alone we ask for help."
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 1,
       "sajda": false,
       "translation_dari": "ما را به راهِ راست هدایت کن (و ثابت قدم دار).",
-      "translation_pashto": " 1-6 ته مونږ ته سَمَه (نېغه) لاره وښَيَه"
+      "translation_pashto": " 1-6 ته مونږ ته سَمَه (نېغه) لاره وښَيَه",
+      "translation_english": "Guide us to the straight path,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 1,
       "sajda": false,
       "translation_dari": "راه آنانِ که بر آنها نعمت‌ها بخشیده‌ای، نه (راه) آنانِ که بر آنها خشم گرفته‌ای، و نه راه گمراهان.",
-      "translation_pashto": " 1-7 د هغو خلقو لاره چې تا پر هغوى باندې انعام كړى دى؛ چې نه پر هغوى باندې غضب شوى او نه ګمراهان دي"
+      "translation_pashto": " 1-7 د هغو خلقو لاره چې تا پر هغوى باندې انعام كړى دى؛ چې نه پر هغوى باندې غضب شوى او نه ګمراهان دي",
+      "translation_english": "the path of those whom You have blessed; not of those who incurred Your Wrath, or of those who went astray."
     }
   ]
 }

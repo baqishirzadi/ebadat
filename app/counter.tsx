@@ -18,22 +18,23 @@ import { useApp } from '@/context/AppContext';
 import { useStats } from '@/context/StatsContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
-import { toArabicNumerals } from '@/utils/numbers';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const { width } = Dimensions.get('window');
 
 // Common dhikr options
 const DHIKR_OPTIONS = [
-  { arabic: 'سُبْحَانَ اللَّهِ', dari: 'پاک است خدا', target: 33 },
-  { arabic: 'الْحَمْدُ لِلَّهِ', dari: 'ستایش خداست', target: 33 },
-  { arabic: 'اللَّهُ أَكْبَرُ', dari: 'خدا بزرگ‌تر است', target: 34 },
-  { arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ', dari: 'معبودی جز خدا نیست', target: 100 },
-  { arabic: 'أَسْتَغْفِرُ اللَّهَ', dari: 'از خدا آمرزش می‌خواهم', target: 100 },
-  { arabic: 'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ', dari: 'صلوات', target: 100 },
+  { arabic: 'سُبْحَانَ اللَّهِ', dari: 'پاک است خدا', pashto: 'الله پاک دی', english: 'Glory be to Allah', target: 33 },
+  { arabic: 'الْحَمْدُ لِلَّهِ', dari: 'ستایش خداست', pashto: 'ټولې ستاینې الله لره دي', english: 'All praise is for Allah', target: 33 },
+  { arabic: 'اللَّهُ أَكْبَرُ', dari: 'خدا بزرگ‌تر است', pashto: 'الله تر ټولو لوی دی', english: 'Allah is the Greatest', target: 34 },
+  { arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ', dari: 'معبودی جز خدا نیست', pashto: 'له الله پرته بل معبود نشته', english: 'There is no god but Allah', target: 100 },
+  { arabic: 'أَسْتَغْفِرُ اللَّهَ', dari: 'از خدا آمرزش می‌خواهم', pashto: 'له الله بښنه غواړم', english: 'I seek Allah’s forgiveness', target: 100 },
+  { arabic: 'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ', dari: 'صلوات', pashto: 'درود شریف', english: 'Peace and blessings upon him', target: 100 },
 ];
 
 export default function CounterScreen() {
   const { theme } = useApp();
+  const { t, n, content } = useI18n();
   const { addDhikr } = useStats();
   const navigation = useNavigation();
   const router = useRouter();
@@ -96,7 +97,7 @@ export default function CounterScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen
         options={{
-          title: 'شمارنده ذکر',
+          title: t('adhkar.counter'),
           headerStyle: { backgroundColor: theme.surahHeader },
           headerTintColor: '#fff',
           presentation: 'modal',
@@ -117,7 +118,7 @@ export default function CounterScreen() {
           {selectedDhikr.arabic}
         </CenteredText>
         <CenteredText style={[styles.selectedDhikrDari, { color: theme.textSecondary }]}>
-          {selectedDhikr.dari}
+          {content(selectedDhikr, null)}
         </CenteredText>
         <MaterialIcons name="arrow-drop-down" size={24} color={theme.icon} />
       </Pressable>
@@ -141,7 +142,7 @@ export default function CounterScreen() {
             >
               <CenteredText style={[styles.optionArabic, { color: theme.text }]}>{dhikr.arabic}</CenteredText>
               <CenteredText style={[styles.optionTarget, { color: theme.textSecondary }]}>
-                هدف: {toArabicNumerals(dhikr.target)}
+                {t('tasbih.target')}: {n(dhikr.target)}
               </CenteredText>
             </Pressable>
           ))}
@@ -151,14 +152,14 @@ export default function CounterScreen() {
       {/* Counter Display */}
       <View style={styles.counterSection}>
         <Animated.Text style={[styles.counterText, { color: theme.text }, counterStyle]}>
-          {toArabicNumerals(count)}
+          {n(count)}
         </Animated.Text>
         <CenteredText style={[styles.targetText, { color: theme.textSecondary }]}>
-          / {toArabicNumerals(selectedDhikr.target)}
+          / {n(selectedDhikr.target)}
         </CenteredText>
         {rounds > 0 && (
           <CenteredText style={[styles.roundsText, { color: theme.tint }]}>
-            {toArabicNumerals(rounds)} دور کامل
+            {t('tasbih.rounds', { count: n(rounds) })}
           </CenteredText>
         )}
       </View>
@@ -189,7 +190,7 @@ export default function CounterScreen() {
           ]}
         >
           <MaterialIcons name="touch-app" size={64} color="#fff" />
-          <CenteredText style={styles.tapText}>لمس کنید</CenteredText>
+          <CenteredText style={styles.tapText}>{t('tasbih.tap')}</CenteredText>
         </Pressable>
       </Animated.View>
 
@@ -203,7 +204,7 @@ export default function CounterScreen() {
         ]}
       >
         <MaterialIcons name="refresh" size={24} color={theme.icon} />
-        <CenteredText style={[styles.resetText, { color: theme.text }]}>صفر کردن</CenteredText>
+        <CenteredText style={[styles.resetText, { color: theme.text }]}>{t('tasbih.reset')}</CenteredText>
       </Pressable>
     </View>
   );

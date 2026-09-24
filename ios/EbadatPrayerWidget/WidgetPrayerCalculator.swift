@@ -38,9 +38,13 @@ enum WidgetPrayerCalculator {
   private static let degToRad = Double.pi / 180
   private static let radToDeg = 180 / Double.pi
   private static let solarMonths = ["حمل", "ثور", "جوزا", "سرطان", "اسد", "سنبله", "میزان", "عقرب", "قوس", "جدی", "دلو", "حوت"]
+  private static let solarMonthsPashto = ["وری", "غویی", "غبرګولی", "چنګاښ", "زمری", "وږی", "تله", "لړم", "لینډۍ", "مرغومی", "سلواغه", "کب"]
   private static let hijriMonths = ["محرم", "صفر", "ربیع‌الاول", "ربیع‌الثانی", "جمادی‌الاول", "جمادی‌الثانی", "رجب", "شعبان", "رمضان", "شوال", "ذوالقعده", "ذوالحجه"]
+  private static let hijriMonthsPashto = ["محرم", "صفر", "ربیع الاول", "ربیع الثاني", "جمادي الاول", "جمادي الثاني", "رجب", "شعبان", "رمضان", "شوال", "ذوالقعده", "ذوالحجه"]
   private static let gregorianMonths = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
   private static let weekdays = ["یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه"]
+  private static let weekdaysPashto = ["یکشنبه", "دوشنبه", "سې‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه"]
+  private static let prayerLabelsPashto = ["fajr": "سهار", "dhuhr": "غرمه", "asr": "مازدیګر", "maghrib": "ماښام", "isha": "خفتن"]
   // Keep these verified periods aligned with utils/ahadith/officialAfghanistanCalendar.ts.
   private static let verifiedAfghanHijriPeriods = [
     VerifiedAfghanHijriPeriod(startDateKey: "2026-02-18", dayCount: 29, hijriYear: 1447, hijriMonth: 9, firstHijriDay: 1),
@@ -115,6 +119,7 @@ enum WidgetPrayerCalculator {
       WidgetPrayerEntry(
         key: key,
         labelDari: label,
+        labelPashto: prayerLabelsPashto[key],
         time12h: formatTime(value, timezone: timezone),
         atMs: value.timeIntervalSince1970 * 1000
       )
@@ -122,18 +127,25 @@ enum WidgetPrayerCalculator {
     return WidgetDaySnapshot(
       dateKey: dateKey,
       weekdayDari: labels.weekdayDari,
+      weekdayPashto: labels.weekdayPashto,
       shamsiDisplay: labels.shamsiDisplay,
+      shamsiDisplayPashto: labels.shamsiDisplayPashto,
       hijriDisplay: labels.hijriDisplay,
+      hijriDisplayPashto: labels.hijriDisplayPashto,
       gregorianDisplay: labels.gregorianDisplay,
       sunriseDisplay: "طلوع آفتاب \(formatTime(times.sunrise, timezone: timezone))",
+      sunriseDisplayPashto: "لمر ختل \(formatTime(times.sunrise, timezone: timezone))",
       prayers: prayers
     )
   }
 
   static func calendarLabels(date: Date, timezone: TimeZone) -> (
     weekdayDari: String,
+    weekdayPashto: String,
     shamsiDisplay: String,
+    shamsiDisplayPashto: String,
     hijriDisplay: String,
+    hijriDisplayPashto: String,
     gregorianDisplay: String
   ) {
     var calendar = Calendar(identifier: .gregorian)
@@ -141,8 +153,11 @@ enum WidgetPrayerCalculator {
     let parts = calendar.dateComponents([.year, .month, .day, .weekday], from: date)
     return (
       weekdayDari: weekdays[max(0, min(6, (parts.weekday ?? 1) - 1))],
+      weekdayPashto: weekdaysPashto[max(0, min(6, (parts.weekday ?? 1) - 1))],
       shamsiDisplay: solarDisplay(date: date, timezone: timezone),
+      shamsiDisplayPashto: solarDisplay(date: date, timezone: timezone, pashto: true),
       hijriDisplay: hijriDisplay(date: date, timezone: timezone),
+      hijriDisplayPashto: hijriDisplay(date: date, timezone: timezone, pashto: true),
       gregorianDisplay: gregorianDisplay(date: date, calendar: calendar)
     )
   }
@@ -232,15 +247,16 @@ enum WidgetPrayerCalculator {
     return "\(parts.day ?? 1) \(gregorianMonths[monthIndex]) \(parts.year ?? 0)"
   }
 
-  private static func solarDisplay(date: Date, timezone: TimeZone) -> String {
+  private static func solarDisplay(date: Date, timezone: TimeZone, pashto: Bool = false) -> String {
     var calendar = Calendar(identifier: .persian)
     calendar.timeZone = timezone
     let parts = calendar.dateComponents([.year, .month, .day], from: date)
     let month = max(1, min(12, parts.month ?? 1))
-    return "\(persianDigits(String(parts.day ?? 1))) \(solarMonths[month - 1]) \(persianDigits(String(parts.year ?? 0)))"
+    let monthName = pashto ? solarMonthsPashto[month - 1] : solarMonths[month - 1]
+    return "\(persianDigits(String(parts.day ?? 1))) \(monthName) \(persianDigits(String(parts.year ?? 0)))"
   }
 
-  private static func hijriDisplay(date: Date, timezone: TimeZone) -> String {
+  private static func hijriDisplay(date: Date, timezone: TimeZone, pashto: Bool = false) -> String {
     var calendar = Calendar(identifier: .islamicUmmAlQura)
     let kabulTimezone = TimeZone(identifier: "Asia/Kabul") ?? timezone
     calendar.timeZone = kabulTimezone
@@ -263,7 +279,8 @@ enum WidgetPrayerCalculator {
       )
     }
     let month = max(1, min(12, parts.month))
-    return "\(persianDigits(String(parts.day))) \(hijriMonths[month - 1]) \(persianDigits(String(parts.year)))"
+    let monthName = pashto ? hijriMonthsPashto[month - 1] : hijriMonths[month - 1]
+    return "\(persianDigits(String(parts.day))) \(monthName) \(persianDigits(String(parts.year)))"
   }
 
   private static func verifiedAfghanHijriDate(dateKey: String) -> HijriDateParts? {

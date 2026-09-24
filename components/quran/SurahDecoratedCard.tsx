@@ -1,5 +1,6 @@
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import { NumericText } from '@/components/ui/NumericText';
 import { useApp } from '@/context/AppContext';
 import { toArabicNumerals } from '@/data/surahNames';
 import { getUthmaniFont } from '@/hooks/useFonts';
@@ -73,7 +74,7 @@ export function SurahDecoratedCard({
         <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
         <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
         <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <CenteredText style={styles.numberText}>{toArabicNumerals(surahNumber)}</CenteredText>
+          <NumericText style={styles.numberText}>{toArabicNumerals(surahNumber)}</NumericText>
         </View>
         <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
         <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
@@ -112,7 +113,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row-reverse',
     alignItems: 'center',
-    height: 96,
+    minHeight: 108,
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
     borderRadius: BorderRadius.xl,
@@ -194,7 +195,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
-    fontFamily: 'Vazirmatn',
+    lineHeight: 22,
+    includeFontPadding: false,
   },
   cornerDeco: {
     position: 'absolute',

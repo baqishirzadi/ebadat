@@ -41,9 +41,14 @@ require.extensions['.ts'] = function compileTypeScript(module, filename) {
 const hadiths = require('../data/ahadith/hadiths.curated.v1.json');
 const { selectDailyHadith } = require('../utils/ahadith/selector.ts');
 const { resolveCanonicalDailyHadith } = require('../utils/ahadith/daily.ts');
-const { getWidgetHadithForDateKey } = require('../utils/widgetHadith.ts');
 const { getCalendarTruth } = require('../utils/calendarTruth.ts');
 const { getAhadithCalendarContext } = require('../utils/ahadith/calendarContext.ts');
+const notificationSource = fs.readFileSync(path.join(PROJECT_ROOT, 'utils/ahadith/notifications.ts'), 'utf8');
+
+assert(
+  /const selection = resolveCanonicalDailyHadith\(dateKey, language\)/.test(notificationSource),
+  'Daily Hadith notifications must keep using the canonical date selector',
+);
 
 const start = new Date('2026-01-01T12:00:00+04:30');
 const eventStart = new Date('2026-05-23T12:00:00+04:30');
@@ -88,17 +93,14 @@ assert(hadiths.length === 130, `expected 130 hadiths, got ${hadiths.length}`);
 
 // The reviewed collection is intentionally smaller than 365 distinct records,
 // but the calendar resolver must still deliver one stable, non-empty Hadith on
-// every Kabul day of a full year. The same resolver powers the screen,
-// notification scheduler, and widget, preventing source or timezone drift.
+// every Kabul day of a full year. The same resolver powers the screen and
+// notification scheduler; Hadith is intentionally no longer part of widgets.
 for (let offset = 0; offset < 365; offset += 1) {
   const date = addDays(start, offset);
   const dateKey = getCalendarTruth(date).dateKey;
   const canonical = resolveCanonicalDailyHadith(dateKey);
-  const widget = getWidgetHadithForDateKey(dateKey);
   assert(canonical.dateKey === dateKey, `${dateKey}: canonical Kabul date changed`);
   assert(canonical.text.length > 0, `${dateKey}: daily Hadith text is empty`);
-  assert(canonical.hadith.id === widget.id, `${dateKey}: widget and screen Hadith differ`);
-  assert(canonical.text === widget.text, `${dateKey}: widget and screen Hadith text differ`);
 }
 assertSpecial(3, 'arafah', 'Official Afghanistan Arafah 2026-05-26');
 assertSpecial(4, 'eid_al_adha', 'Official Afghanistan Eid al-Adha 2026-05-27');
@@ -114,4 +116,4 @@ assert(!reportedDate.hijriVerified, 'unannounced Afghanistan date should not be 
 const unverifiedSelection = selectDailyHadith(hadiths, new Date('2026-09-23T12:00:00+04:30'));
 assert(!unverifiedSelection.hadith.special_days?.length, 'unverified date must not select a special-occasion Hadith');
 
-console.log('[verify:ahadith-schedule] OK (365 Kabul days: screen, notification source, and widget agree)');
+console.log('[verify:ahadith-schedule] OK (365 Kabul days: screen and notification selector agree)');

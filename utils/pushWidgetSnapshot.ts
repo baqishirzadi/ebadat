@@ -45,6 +45,8 @@ export async function pushWidgetSnapshot(
     location?: { latitude: number; longitude: number; altitude?: number; timezone?: string };
     timezone?: string;
     appLanguage?: DailyHadithLanguage;
+    dariFont?: 'vazirmatn' | 'amiri';
+    pashtoFont?: 'amiri' | 'nastaliq';
     /** Days to prefetch into the widget snapshot. Default 30 for app-independent rollover. */
     horizonDays?: number;
   },
@@ -104,6 +106,8 @@ export async function pushWidgetSnapshot(
     maghribOffsetMinutes: policy.maghribOffsetMinutes,
     fixedDhuhrLocalTime: policy.fixedDhuhrLocalTime,
     appLanguage: options?.appLanguage,
+    dariFont: options?.dariFont,
+    pashtoFont: options?.pashtoFont,
     multiDay,
   });
   await writeWidgetSnapshot(snapshot);

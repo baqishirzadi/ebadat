@@ -4,6 +4,7 @@ export const DREAM_COPY = {
   dari: {
     title: 'تعبیر خواب اسلامی',
     subtitle: 'بر اساس قرآن، حدیث و کتب اهل سنت',
+    notConfigured: 'سرویس تعبیر خواب هنوز پیکربندی نشده است.',
     welcome: 'السلام علیکم. خواب خود را به زبان ساده برایم قصه کنید — چه دیدید و در خواب چه احساسی داشتید؟ ان‌شاءالله بر اساس قرآن، حدیث و کتب معتبر اهل سنت برای شما تعبیر می‌کنم.',
     placeholder: 'خواب خود را اینجا بنویسید…',
     newChat: 'گفتگوی جدید',
@@ -27,6 +28,7 @@ export const DREAM_COPY = {
   pashto: {
     title: 'اسلامي خوب تعبیر',
     subtitle: 'د قرآن، حدیث او د اهل سنت کتابونو له مخې',
+    notConfigured: 'د خوب تعبیر خدمت لا تر اوسه نه دی برابر شوی.',
     welcome: 'السلام علیکم. خپل خوب په ساده ژبه راته ووایاست — څه مو ولیدل او په خوب کې مو څه احساس درلود؟ ان‌شاءالله د قرآن، حدیث او د اهل سنت معتبرو کتابونو له مخې يې تعبیروم.',
     placeholder: 'خپل خوب دلته ولیکئ…',
     newChat: 'نوې خبرې اترې',
@@ -45,6 +47,31 @@ export const DREAM_COPY = {
       'د واده خوب مې ولید',
       'کعبه مې په خوب کې ولیده',
       'ډارونکی خوب مې ولید، څه وکړم؟',
+    ],
+  },
+  english: {
+    title: 'Islamic dream interpretation',
+    subtitle: 'Based on the Quran, hadith and Sunni scholarly works',
+    notConfigured: 'The dream interpretation service is not configured yet.',
+    welcome:
+      'As-salamu alaykum. Tell me your dream in plain words — what did you see, and how did you feel in the dream? In sha Allah I will interpret it based on the Quran, hadith and trusted Sunni works.',
+    placeholder: 'Write your dream here…',
+    newChat: 'New conversation',
+    chipsLabel: 'Common dreams:',
+    note: 'If the dream was frightening, do not worry; a disturbing dream is from Shaytan and carries no interpretation.',
+    disclaimer: 'Dream interpretation is speculative; certain knowledge belongs to Allah alone.',
+    retry: 'Try again',
+    chips: [
+      'I dreamt it was raining',
+      'I saw clear water',
+      'My tooth fell out',
+      'I saw someone who has passed away',
+      'I saw a snake',
+      'I was flying in my dream',
+      'I ate warm bread',
+      'I dreamt of a wedding',
+      'I saw the Kaaba in my dream',
+      'I had a frightening dream, what should I do?',
     ],
   },
 } as const;

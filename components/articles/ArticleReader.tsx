@@ -4,7 +4,9 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, Text, Linking } from 'react-native';
+
+import { View, StyleSheet, Linking } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '@/context/AppContext';
@@ -211,7 +213,7 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       }
 
       return (
-        <Text
+        <LocalizedText
           key={`${keyPrefix}-${index}`}
           onPress={part.href ? () => Linking.openURL(part.href as string).catch(() => {}) : undefined}
           style={[
@@ -222,7 +224,7 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
           ]}
         >
           {part.text}
-        </Text>
+        </LocalizedText>
       );
     });
 
@@ -258,9 +260,9 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
           type === 'blockquote' && { borderRightColor: categoryColor },
         ]}
       >
-        <Text style={[textStyle, { color: themeText }]}>
+        <LocalizedText style={[textStyle, { color: themeText }]}>
           {renderInlineParts(parseInlineParts(content), `inline-${key}`)}
-        </Text>
+        </LocalizedText>
       </View>
     );
   };
@@ -289,12 +291,12 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       <View key={key++} style={styles.listBlock}>
         {listItems.map((item, index) => (
           <View key={`${key}-item-${index}`} style={styles.listItemRow}>
-            <Text style={[styles.listBullet, { color: categoryColor }]}>
+            <LocalizedText style={[styles.listBullet, { color: categoryColor }]}>
               {ordered ? `${index + 1}.` : '•'}
-            </Text>
-            <Text style={[styles.listItemText, { color: themeText }]}>
+            </LocalizedText>
+            <LocalizedText style={[styles.listItemText, { color: themeText }]}>
               {renderInlineParts(parseInlineParts(item), `list-${key}-${index}`)}
-            </Text>
+            </LocalizedText>
           </View>
         ))}
       </View>
@@ -321,9 +323,9 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
       elements.push(
         <View key={key++} style={[styles.headingContainer, item.type === 'h3' && styles.subheadingContainer]}>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
-          <Text style={[item.type === 'h3' ? styles.subheading : styles.heading, { color: categoryColor }]}>
+          <LocalizedText style={[item.type === 'h3' ? styles.subheading : styles.heading, { color: categoryColor }]}>
             {htmlToPlainText(item.content)}
-          </Text>
+          </LocalizedText>
           <View style={[styles.headingLine, { backgroundColor: categoryColor }]} />
         </View>
       );
@@ -350,9 +352,9 @@ function parseHTML(html: string, categoryColor: string, themeText: string): Reac
     .filter((p) => p.length > 0);
 
   return [
-    <Text key={0} style={[styles.bodyText, { color: themeText }]}>
+    <LocalizedText key={0} style={[styles.bodyText, { color: themeText }]}>
       {fallbackParagraphs.join('\n\n')}
-    </Text>,
+    </LocalizedText>,
   ];
 }
 
@@ -414,7 +416,7 @@ export function ArticleReader({ article }: ArticleReaderProps) {
                   ]}
                 >
                   <MaterialIcons name={category.icon as any} size={16} color="#fff" />
-                  <Text style={styles.headerBadgeText}>{category.nameDari}</Text>
+                  <LocalizedText style={styles.headerBadgeText}>{category.nameDari}</LocalizedText>
                 </View>
                 <View style={[styles.ornamentLine, { backgroundColor: categoryColors.accent }]} />
               </View>
@@ -423,10 +425,10 @@ export function ArticleReader({ article }: ArticleReaderProps) {
               
               <View style={styles.meta}>
                 <View style={[styles.metaItem, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-                  <Text style={styles.metaText}>{article.authorName}</Text>
+                  <LocalizedText style={styles.metaText}>{article.authorName}</LocalizedText>
                 </View>
                 <View style={[styles.metaItem, { backgroundColor: 'rgba(255,255,255,0.2)' }]}>
-                  <Text style={styles.metaText}>{article.readingTimeEstimate} دقیقه</Text>
+                  <LocalizedText style={styles.metaText}>{article.readingTimeEstimate} دقیقه</LocalizedText>
                 </View>
               </View>
             </View>
@@ -451,9 +453,9 @@ export function ArticleReader({ article }: ArticleReaderProps) {
               bodyElements
             ) : (
               // Fallback: render as plain text if parsing fails
-              <Text style={[styles.bodyText, { color: theme.text }]}>
+              <LocalizedText style={[styles.bodyText, { color: theme.text }]}>
                 {bodyForRender.replace(/<[^>]*>/g, '').replace(/\n\n+/g, '\n\n')}
-              </Text>
+              </LocalizedText>
             )}
           </View>
         </View>
@@ -473,10 +475,10 @@ export function ArticleReader({ article }: ArticleReaderProps) {
         ]}
       >
         <View style={[styles.authorHeader, { borderBottomColor: categoryColors.primary + '30' }]}>
-          <Text style={[styles.authorTitle, { color: categoryColors.primary }]}>{authorSectionTitle}</Text>
+          <LocalizedText style={[styles.authorTitle, { color: categoryColors.primary }]}>{authorSectionTitle}</LocalizedText>
         </View>
-        <Text style={[styles.authorName, { color: theme.text }]}>{article.authorName}</Text>
-        <Text style={[styles.authorBio, { color: theme.textSecondary }]}>{category.nameDari}</Text>
+        <LocalizedText style={[styles.authorName, { color: theme.text }]}>{article.authorName}</LocalizedText>
+        <LocalizedText style={[styles.authorBio, { color: theme.textSecondary }]}>{category.nameDari}</LocalizedText>
       </View>
     </View>
   );

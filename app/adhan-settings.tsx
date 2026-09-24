@@ -5,18 +5,9 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-  Switch,
-  ActivityIndicator,
-  Alert,
-  Platform,
-  InteractionManager,
-} from 'react-native';
+
+import { View, StyleSheet, ScrollView, Pressable, Switch, ActivityIndicator, Alert, Platform, InteractionManager } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, useFocusEffect } from 'expo-router';
 import { usePrayer } from '@/context/PrayerContext';
@@ -31,12 +22,14 @@ import { AdhanNotificationHealthPanel } from '@/components/prayer/AdhanHealthUi'
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 // Prayer order for display
 const PRAYER_ORDER: PrayerName[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 
 export default function AdhanSettingsScreen() {
   const { theme } = useApp();
+  const { isPashto, t } = useI18n();
   const {
     state,
     updateAdhanPreferences,
@@ -53,16 +46,16 @@ export default function AdhanSettingsScreen() {
   const switchTrackColor = { false: theme.divider, true: theme.tint };
   const switchThumbColor = (enabled: boolean) => (enabled ? theme.accent : '#f4f3f4');
   const adhanTestStatusLabel = state.adhanTestStatus.error
-    ? `خطا: ${state.adhanTestStatus.error}`
+    ? t('adhanSettings.status.error', { error: state.adhanTestStatus.error })
     : state.adhanTestStatus.playbackOk === true
-      ? 'اعلان دریافت شد و پخش اذان آغاز شد.'
+      ? t('adhanSettings.status.started')
       : state.adhanTestStatus.playbackAttemptedAt
-        ? 'اعلان دریافت شد؛ پخش اذان بررسی شد.'
+        ? t('adhanSettings.status.checked')
         : state.adhanTestStatus.receivedAt
-          ? 'اعلان دریافت شد؛ در حال بررسی پخش صدا.'
+          ? t('adhanSettings.status.checking')
           : state.adhanTestStatus.expectedAt
-            ? 'تست زمان‌بندی شد؛ منتظر اعلان باشید.'
-            : 'هنوز تستی اجرا نشده است.';
+            ? t('adhanSettings.status.scheduled')
+            : t('adhanSettings.status.idle');
 
   useFocusEffect(
     useCallback(() => {
@@ -113,11 +106,11 @@ export default function AdhanSettingsScreen() {
   const handleSystemAdhanTest = useCallback(async () => {
     const ok = await scheduleAdhanSystemTest();
     if (ok) {
-      Alert.alert('تست برنامه‌ریزی شد', 'تا ۲۵ ثانیه دیگر اعلان تست اذان ارسال می‌شود.');
+      Alert.alert(t('adhanSettings.systemTestScheduledTitle'), t('adhanSettings.systemTestScheduledBody'));
       return;
     }
-    Alert.alert('خطا', 'فعلاً امکان زمان‌بندی تست سیستمی اذان وجود ندارد.');
-  }, [scheduleAdhanSystemTest]);
+    Alert.alert(isPashto ? 'تېروتنه' : 'خطا', t('adhanSettings.systemTestFailure'));
+  }, [scheduleAdhanSystemTest, isPashto, t]);
 
   const handleRecheckAndSchedule = useCallback(async () => {
     await requestPrayerSchedule('exact-recheck');
@@ -135,11 +128,11 @@ export default function AdhanSettingsScreen() {
     try {
       await testAdhanVoice(voice, prayer);
     } catch {
-      Alert.alert('خطا', 'امکان پخش صدا وجود ندارد');
+      Alert.alert(isPashto ? 'تېروتنه' : 'خطا', t('adhanSettings.voiceFailure'));
     } finally {
       setIsTestingVoice(null);
     }
-  }, [isTestingVoice]);
+  }, [isTestingVoice, isPashto, t]);
 
   // Render prayer card
   const renderPrayerCard = (prayer: PrayerName) => {
@@ -155,12 +148,12 @@ export default function AdhanSettingsScreen() {
           style={styles.prayerHeader}
         >
           <View style={styles.prayerInfo}>
-            <Text style={[styles.prayerName, { color: theme.text }]}>
-              {prayerInfo.dari}
-            </Text>
-            <Text style={[styles.prayerNameArabic, { color: theme.textSecondary }]}>
+            <LocalizedText style={[styles.prayerName, { color: theme.text }]}>
+              {isPashto ? prayerInfo.pashto : prayerInfo.dari}
+            </LocalizedText>
+            <LocalizedText style={[styles.prayerNameArabic, { color: theme.textSecondary }]}>
               {prayerInfo.arabic}
-            </Text>
+            </LocalizedText>
           </View>
           
           <View style={styles.prayerStatus}>
@@ -184,9 +177,9 @@ export default function AdhanSettingsScreen() {
           <View style={[styles.prayerSettings, { borderTopColor: theme.divider }]}>
             {/* Enable Notification */}
             <View style={styles.settingRow}>
-              <Text style={[styles.settingLabel, { color: theme.text }]}>
-                فعال‌سازی یادآوری
-              </Text>
+              <LocalizedText style={[styles.settingLabel, { color: theme.text }]}>
+                {t('adhanSettings.enablePrayer')}
+              </LocalizedText>
               <Switch
                 value={settings.enabled}
                 onValueChange={(v) => handlePrayerNotificationToggle(prayer, v)}
@@ -207,12 +200,12 @@ export default function AdhanSettingsScreen() {
                 {isTestingVoice === settings.selectedVoice ? (
                   <>
                     <ActivityIndicator size="small" color="#fff" />
-                    <Text style={styles.testButtonText}>در حال پخش...</Text>
+                    <LocalizedText style={styles.testButtonText}>{t('adhanSettings.playing')}</LocalizedText>
                   </>
                 ) : (
                   <>
                     <MaterialIcons name="play-arrow" size={20} color="#fff" />
-                    <Text style={styles.testButtonText}>آزمون صدا</Text>
+                    <LocalizedText style={styles.testButtonText}>{t('adhanSettings.testSound')}</LocalizedText>
                   </>
                 )}
               </Pressable>
@@ -230,8 +223,8 @@ export default function AdhanSettingsScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <ScreenHeader
           icon="notifications-active"
-          title="یادآوری نماز و اذان"
-          subtitle="تنظیمات صدا و یادآوری برای هر نماز"
+          title={t('adhanSettings.title')}
+          subtitle={t('adhanSettings.subtitle')}
         />
 
       <ScrollView
@@ -245,9 +238,9 @@ export default function AdhanSettingsScreen() {
         <View style={[styles.masterToggle, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
           <View style={styles.masterToggleInfo}>
             <MaterialIcons name="notifications" size={24} color={adhanPreferences.masterEnabled ? theme.accent : theme.icon} />
-            <Text style={[styles.masterToggleLabel, { color: theme.text }]}>
-              فعال‌سازی همه یادآوری‌ها
-            </Text>
+            <LocalizedText style={[styles.masterToggleLabel, { color: theme.text }]}>
+              {t('adhanSettings.master')}
+            </LocalizedText>
           </View>
           <Switch
             value={adhanPreferences.masterEnabled}
@@ -263,12 +256,14 @@ export default function AdhanSettingsScreen() {
             <View style={styles.globalVoiceContent}>
               <MaterialIcons name="record-voice-over" size={24} color={theme.accent} />
               <View style={styles.globalVoiceText}>
-                <Text style={[styles.globalVoiceLabel, { color: theme.textSecondary }]}>
-                  مؤذن پیش‌فرض
-                </Text>
-                <Text style={[styles.globalVoiceValue, { color: theme.text }]}>
-                  {ADHAN_VOICES[adhanPreferences.globalVoice]?.nameDari || 'برکت‌الله سلیم (رح)'}
-                </Text>
+                <LocalizedText style={[styles.globalVoiceLabel, { color: theme.textSecondary }]}>
+                  {t('adhanSettings.defaultVoice')}
+                </LocalizedText>
+                <LocalizedText style={[styles.globalVoiceValue, { color: theme.text }]}>
+                  {isPashto
+                    ? ADHAN_VOICES[adhanPreferences.globalVoice]?.namePashto || 'برکت‌الله سلیم (رح)'
+                    : ADHAN_VOICES[adhanPreferences.globalVoice]?.nameDari || 'برکت‌الله سلیم (رح)'}
+                </LocalizedText>
               </View>
             </View>
           </View>
@@ -279,12 +274,12 @@ export default function AdhanSettingsScreen() {
             <View style={styles.exactAlarmContent}>
               <MaterialIcons name="notifications-active" size={24} color={theme.accent} />
               <View style={styles.exactAlarmText}>
-                <Text style={[styles.exactAlarmLabel, { color: theme.text }]}>
-                  تست اعلان اذان
-                </Text>
-                <Text style={[styles.exactAlarmDesc, { color: theme.textSecondary }]}>
-                  برای شبیه‌ساز iOS، اعلان محلی و پخش اذان در حالت باز بودن اپ بررسی می‌شود.
-                </Text>
+                <LocalizedText style={[styles.exactAlarmLabel, { color: theme.text }]}>
+                  {t('adhanSettings.systemTest')}
+                </LocalizedText>
+                <LocalizedText style={[styles.exactAlarmDesc, { color: theme.textSecondary }]}>
+                  {t('adhanSettings.systemTestHelp')}
+                </LocalizedText>
               </View>
             </View>
             <Pressable
@@ -293,23 +288,23 @@ export default function AdhanSettingsScreen() {
               style={[styles.exactAlarmButton, { backgroundColor: theme.tint }]}
             >
               <MaterialIcons name="notifications-active" size={20} color="#fff" />
-              <Text style={styles.exactAlarmButtonText}>تست اذان سیستمی (۲۵ ثانیه)</Text>
+              <LocalizedText style={styles.exactAlarmButtonText}>{t('adhanSettings.systemTestButton')}</LocalizedText>
             </Pressable>
-            <Text
+            <LocalizedText
               testID="adhan-system-test-status"
               style={[styles.exactAlarmHint, { color: theme.textSecondary }]}
             >
               {adhanTestStatusLabel}
-            </Text>
+            </LocalizedText>
           </View>
         )}
 
         {/* Prayer Cards */}
         {adhanPreferences.masterEnabled && (
           <View style={styles.prayerCards}>
-            <Text style={[styles.sectionTitle, { color: theme.textSecondary }]}>
-              تنظیمات هر نماز
-            </Text>
+            <LocalizedText style={[styles.sectionTitle, { color: theme.textSecondary }]}>
+              {t('adhanSettings.perPrayer')}
+            </LocalizedText>
             {PRAYER_ORDER.map(renderPrayerCard)}
           </View>
         )}
@@ -331,12 +326,12 @@ export default function AdhanSettingsScreen() {
             <View style={styles.earlyReminderInfo}>
               <MaterialIcons name="alarm" size={24} color={theme.tint} />
               <View style={styles.earlyReminderText}>
-                <Text style={[styles.earlyReminderLabel, { color: theme.text }]}>
-                  یادآوری قبل از نماز
-                </Text>
-                <Text style={[styles.earlyReminderDesc, { color: theme.textSecondary }]}>
-                  ۱ دقیقه قبل از وقت نماز
-                </Text>
+                <LocalizedText style={[styles.earlyReminderLabel, { color: theme.text }]}>
+                  {t('adhanSettings.earlyReminder')}
+                </LocalizedText>
+                <LocalizedText style={[styles.earlyReminderDesc, { color: theme.textSecondary }]}>
+                  {t('adhanSettings.earlyReminderMinutes', { minutes: '۱' })}
+                </LocalizedText>
               </View>
             </View>
             <Switch
@@ -353,9 +348,9 @@ export default function AdhanSettingsScreen() {
           <View style={[styles.errorCard, { backgroundColor: '#ffebee', borderColor: '#f44336' }]}>
             <View style={styles.errorContent}>
               <MaterialIcons name="error-outline" size={24} color="#f44336" />
-              <Text style={[styles.errorText, { color: '#c62828' }]}>
+              <LocalizedText style={[styles.errorText, { color: '#c62828' }]}>
                 {state.error}
-              </Text>
+              </LocalizedText>
             </View>
             {(state.notificationPermission === 'blocked' || state.notificationPermission === 'denied') && (
               <Pressable
@@ -363,9 +358,9 @@ export default function AdhanSettingsScreen() {
                 style={[styles.openSettingsButton, { backgroundColor: theme.tint }]}
               >
                 <MaterialIcons name="settings" size={20} color="#fff" />
-                <Text style={styles.openSettingsButtonText}>
-                  باز کردن تنظیمات
-                </Text>
+                <LocalizedText style={styles.openSettingsButtonText}>
+                  {t('adhanSettings.openSettings')}
+                </LocalizedText>
               </Pressable>
             )}
           </View>
@@ -374,9 +369,9 @@ export default function AdhanSettingsScreen() {
         {/* Info Note */}
         <View style={[styles.infoNote, { backgroundColor: theme.backgroundSecondary }]}>
           <MaterialIcons name="info" size={20} color={theme.accent} />
-          <Text style={[styles.infoNoteText, { color: theme.textSecondary }]}>
-            برای نمازهای فعال، اعلان وقت نماز همیشه با صدای مؤذن پخش می‌شود.
-          </Text>
+          <LocalizedText style={[styles.infoNoteText, { color: theme.textSecondary }]}>
+            {t('adhanSettings.info')}
+          </LocalizedText>
         </View>
 
         <View style={styles.bottomPadding} />

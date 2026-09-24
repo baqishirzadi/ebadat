@@ -6,6 +6,10 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import type { AppLanguage } from '@/types/quran';
+import { translateUi } from '@/utils/i18n/catalog';
+import { pickContent } from '@/utils/i18n/content';
+import { formatNumber } from '@/utils/numbers';
 
 // Storage key
 export const ADHAN_STORAGE_KEY = '@ebadat/adhan_settings';
@@ -38,13 +42,14 @@ export type PrayerName = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 export const PRAYER_NAMES: Record<PrayerName, {
   dari: string;
   pashto: string;
+  english: string;
   arabic: string;
 }> = {
-  fajr: { dari: 'نماز صبح', pashto: 'د سهار لمونځ', arabic: 'صلاة الفجر' },
-  dhuhr: { dari: 'نماز ظهر', pashto: 'د غرمې لمونځ', arabic: 'صلاة الظهر' },
-  asr: { dari: 'نماز عصر', pashto: 'د مازدیګر لمونځ', arabic: 'صلاة العصر' },
-  maghrib: { dari: 'نماز شام', pashto: 'د ماښام لمونځ', arabic: 'صلاة المغرب' },
-  isha: { dari: 'نماز خفتن', pashto: 'د خفتن لمونځ', arabic: 'صلاة العشاء' },
+  fajr: { dari: 'نماز صبح', pashto: 'د سهار لمونځ', english: 'Fajr prayer', arabic: 'صلاة الفجر' },
+  dhuhr: { dari: 'نماز ظهر', pashto: 'د غرمې لمونځ', english: 'Dhuhr prayer', arabic: 'صلاة الظهر' },
+  asr: { dari: 'نماز عصر', pashto: 'د مازدیګر لمونځ', english: 'Asr prayer', arabic: 'صلاة العصر' },
+  maghrib: { dari: 'نماز شام', pashto: 'د ماښام لمونځ', english: 'Maghrib prayer', arabic: 'صلاة المغرب' },
+  isha: { dari: 'نماز خفتن', pashto: 'د خفتن لمونځ', english: 'Isha prayer', arabic: 'صلاة العشاء' },
 };
 
 // Settings for each prayer
@@ -230,26 +235,18 @@ export function getNotificationHeading(heading: string): { title: string; subtit
 /**
  * Get notification content for a prayer
  */
-export function getNotificationContent(prayer: PrayerName, playSound: boolean): {
+export function getNotificationContent(prayer: PrayerName, playSound: boolean, language: AppLanguage = 'dari'): {
   title: string;
   subtitle?: string;
   body: string;
   sound: boolean;
 } {
-  const prayerMessages: Record<PrayerName, string> = {
-    fajr: 'وقت نماز صبح است، همانا نماز صبح مشهود است.',
-    dhuhr: 'وقت نماز ظهر است، نماز را برای یاد خدا برپا دارید.',
-    asr: 'وقت نماز عصر است، نماز را پاس بدارید.',
-    maghrib: 'وقت نماز شام است، پروردگار خویش را تسبیح گویید.',
-    isha: 'وقت نماز خفتن است، دل را با یاد خدا آرام کنید.',
-  };
-
-  const heading = formatNotificationHeading('وقت نماز');
+  const heading = formatNotificationHeading(translateUi('adhan.title', language));
 
   return {
     title: heading.title,
     subtitle: heading.subtitle,
-    body: prayerMessages[prayer],
+    body: translateUi(`adhan.prayer.${prayer}`, language),
     sound: playSound,
   };
 }
@@ -257,34 +254,37 @@ export function getNotificationContent(prayer: PrayerName, playSound: boolean): 
 /**
  * Get early reminder content
  */
-export function getJummahNotificationContent(): {
+export function getJummahNotificationContent(language: AppLanguage = 'dari'): {
   title: string;
   subtitle?: string;
   body: string;
 } {
-  const heading = formatNotificationHeading('نماز جمعه');
+  const heading = formatNotificationHeading(translateUi('adhan.jummah.title', language));
 
   return {
     title: heading.title,
     subtitle: heading.subtitle,
-    body: 'وقت نماز جمعه است. به سوی ذکر و عبادت خدا بشتابید و داد و ستد را رها سازید',
+    body: translateUi('adhan.jummah.body', language),
   };
 }
 
 /**
  * Get early reminder content
  */
-export function getEarlyReminderContent(prayer: PrayerName, minutes: number): {
+export function getEarlyReminderContent(prayer: PrayerName, minutes: number, language: AppLanguage = 'dari'): {
   title: string;
   subtitle?: string;
   body: string;
 } {
-  const prayerInfo = PRAYER_NAMES[prayer];
-  const heading = formatNotificationHeading('یادآوری نماز');
+  const prayerInfo = pickContent(PRAYER_NAMES[prayer], null, language);
+  const heading = formatNotificationHeading(translateUi('adhan.reminder.title', language));
 
   return {
     title: heading.title,
     subtitle: heading.subtitle,
-    body: `${minutes} دقیقه تا ${prayerInfo.dari}`,
+    body: translateUi('adhan.reminder.minutes', language, {
+      minutes: formatNumber(minutes, language),
+      prayer: prayerInfo,
+    }),
   };
 }

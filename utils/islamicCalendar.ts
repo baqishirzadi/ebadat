@@ -1,3 +1,4 @@
+import type { AppLanguage } from '@/types/quran';
 import {
   KABUL_TIME_ZONE,
   addDaysToKabulDate,
@@ -56,6 +57,8 @@ export interface SpecialDay {
   nameArabic: string;
   nameDari: string;
   namePashto: string;
+  nameEnglish: string;
+  /** English description; `descriptionEnglish` is an alias used by content lookup. */
   description: string;
   descriptionDari: string;
   descriptionPashto: string;
@@ -74,6 +77,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'رأس السنة الهجرية',
     nameDari: 'سال نو هجری',
     namePashto: 'هجري نوی کال',
+    nameEnglish: 'Islamic New Year',
     description: 'Islamic New Year',
     descriptionDari: 'آغاز سال نو قمری هجری',
     descriptionPashto: 'د هجري قمري کال پيل',
@@ -87,6 +91,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'تاسوعاء',
     nameDari: 'تاسوعا',
     namePashto: 'تاسوعا',
+    nameEnglish: 'Tasu‘a',
     description: 'Day before Ashura',
     descriptionDari: 'روز قبل از عاشورا - مستحب است روزه گرفته شود',
     descriptionPashto: 'د عاشورا نه مخکې ورځ - روژه مستحب ده',
@@ -101,6 +106,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'عاشوراء',
     nameDari: 'عاشورا',
     namePashto: 'عاشورا',
+    nameEnglish: 'Ashura',
     description: 'Day of Ashura - Highly recommended to fast',
     descriptionDari: 'روز عاشورا - روزه در این روز بسیار مستحب است',
     descriptionPashto: 'د عاشورا ورځ - پدې ورځ روژه ډیره مستحبه ده',
@@ -116,6 +122,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'مولد النبي ﷺ',
     nameDari: 'میلاد النبی ﷺ',
     namePashto: 'د پیغمبر ﷺ زیږیدنه',
+    nameEnglish: 'Mawlid an-Nabi ﷺ',
     description: 'Birth of Prophet Muhammad ﷺ',
     descriptionDari: 'ولادت حضرت محمد مصطفی ﷺ',
     descriptionPashto: 'د حضرت محمد مصطفی ﷺ زیږیدنه',
@@ -130,6 +137,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'ليلة الإسراء والمعراج',
     nameDari: 'شب اسراء و معراج',
     namePashto: 'د اسراء او معراج شپه',
+    nameEnglish: 'Laylat al-Isra wal-Mi‘raj',
     description: 'Night Journey and Ascension',
     descriptionDari: 'شب سفر معجزه‌آمیز پیامبر ﷺ',
     descriptionPashto: 'د پیغمبر ﷺ معجزه سفر شپه',
@@ -144,6 +152,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'ليلة النصف من شعبان',
     nameDari: 'شب نیمه شعبان',
     namePashto: 'د شعبان نیمایي شپه',
+    nameEnglish: 'Laylat al-Bara’ah',
     description: 'Middle of Shaban - Night of forgiveness',
     descriptionDari: 'شب بخشش و رحمت الهی',
     descriptionPashto: 'د بخښنې او رحمت شپه',
@@ -159,6 +168,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'بداية رمضان',
     nameDari: 'آغاز رمضان',
     namePashto: 'د رمضان پیل',
+    nameEnglish: 'Start of Ramadan',
     description: 'Beginning of Ramadan',
     descriptionDari: 'آغاز ماه مبارک رمضان',
     descriptionPashto: 'د رمضان مبارک میاشت پیل',
@@ -173,6 +183,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'ليالي القدر',
     nameDari: 'شب‌های قدر (احتمالی)',
     namePashto: 'د قدر شپې (احتمالي)',
+    nameEnglish: 'Laylat al-Qadr (possible nights)',
     description: 'Possible Laylat al-Qadr (odd nights)',
     descriptionDari: 'شب‌های فرد آخر رمضان - احتمال شب قدر',
     descriptionPashto: 'د رمضان وروستۍ طاق شپې - د قدر شپې احتمال',
@@ -186,6 +197,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'ليلة القدر المحتملة',
     nameDari: 'شب قدر (احتمال بیشتر)',
     namePashto: 'د قدر شپه (ډیر احتمال)',
+    nameEnglish: 'Laylat al-Qadr (most likely)',
     description: 'Most likely Laylat al-Qadr',
     descriptionDari: 'شب قدر - شبی که از هزار ماه بهتر است',
     descriptionPashto: 'د قدر شپه - له زره میاشتو نه غوره',
@@ -200,6 +212,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'عيد الفطر',
     nameDari: 'عید فطر',
     namePashto: 'کوچنی اختر',
+    nameEnglish: 'Eid al-Fitr',
     description: 'Eid al-Fitr - Festival of Breaking Fast',
     descriptionDari: 'عید سعید فطر - جشن پایان رمضان',
     descriptionPashto: 'کوچنی اختر - د روژې د پای اختر',
@@ -215,6 +228,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'يوم عرفة',
     nameDari: 'روز عرفه',
     namePashto: 'د عرفې ورځ',
+    nameEnglish: 'Day of Arafah',
     description: 'Day of Arafah - Best day for fasting',
     descriptionDari: 'روز عرفه - بهترین روز برای روزه غیر از رمضان',
     descriptionPashto: 'د عرفې ورځ - تر رمضان وروسته د روژې غوره ورځ',
@@ -229,6 +243,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'عيد الأضحى',
     nameDari: 'عید قربان',
     namePashto: 'لوی اختر',
+    nameEnglish: 'Eid al-Adha',
     description: 'Eid al-Adha - Festival of Sacrifice',
     descriptionDari: 'عید سعید قربان',
     descriptionPashto: 'لوی اختر - د قربانۍ اختر',
@@ -243,6 +258,7 @@ export const SPECIAL_DAYS: SpecialDay[] = [
     nameArabic: 'أيام التشريق',
     nameDari: 'ایام تشریق',
     namePashto: 'د تشریق ورځې',
+    nameEnglish: 'Days of Tashreeq',
     description: 'Days of Tashreeq (11-13 Dhul Hijjah)',
     descriptionDari: 'ایام تشریق - روزه در این روزها حرام است',
     descriptionPashto: 'د تشریق ورځې - پدې ورځو روژه حرام ده',
@@ -658,12 +674,15 @@ export function isFastingDay(date: Date): { isFasting: boolean; reason?: string;
 }
 
 // Format Hijri date
-export function formatHijriDate(hijri: HijriDate, language: 'arabic' | 'dari' | 'pashto' = 'dari'): string {
-  const monthName = language === 'arabic' ? hijri.monthNameArabic :
-                    language === 'pashto' ? hijri.monthNamePashto :
-                    hijri.monthNameDari;
-  
-  return `${hijri.day} ${monthName} ${hijri.year}`;
+export function hijriMonthName(hijri: HijriDate, language: 'arabic' | AppLanguage): string {
+  if (language === 'arabic') return hijri.monthNameArabic;
+  if (language === 'pashto') return hijri.monthNamePashto;
+  if (language === 'english') return hijri.monthName;
+  return hijri.monthNameDari;
+}
+
+export function formatHijriDate(hijri: HijriDate, language: 'arabic' | AppLanguage = 'dari'): string {
+  return `${hijri.day} ${hijriMonthName(hijri, language)} ${hijri.year}`;
 }
 
 function getPreviousHijriExpectation(hijriYear: number, hijriMonth: number, hijriDay: number) {

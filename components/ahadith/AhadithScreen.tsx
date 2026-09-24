@@ -1,14 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Modal,
-  Pressable,
-  RefreshControl,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+
+import { ActivityIndicator, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
@@ -25,9 +18,11 @@ import { HadithNotificationTimePicker } from '@/components/ahadith/HadithNotific
 import { shareHadithCard } from '@/utils/ahadith/shareCard';
 import { alphaColor } from '@/utils/ahadith/theme';
 import { formatSourceLabel } from '@/utils/ahadith/labels';
+import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { verifyHadithAdminPin } from '@/utils/hadithAdminService';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 function buildFocusedSelection(hadith: Hadith): DailyHadithSelection {
   return {
@@ -48,6 +43,7 @@ export function AhadithScreen() {
   const params = useLocalSearchParams<{ section?: string }>();
   const router = useRouter();
   const { theme } = useApp();
+  const { t, language } = useI18n();
   const {
     hadiths,
     dailySelection,
@@ -104,7 +100,7 @@ export function AhadithScreen() {
 
     await shareHadithCard({
       captureRef: shareCanvasRef,
-      fallbackMessage: `${activeSelection.hadith.arabic_text}\n\n${activeSelection.hadith.dari_translation}\n\n${formatSourceLabel(activeSelection.hadith.source_book, activeSelection.hadith.source_number)}`,
+      fallbackMessage: `${activeSelection.hadith.arabic_text}\n\n${getHadithTranslation(activeSelection.hadith, language)}\n\n${formatSourceLabel(activeSelection.hadith.source_book, activeSelection.hadith.source_number, language)}`,
     });
   };
 
@@ -127,7 +123,7 @@ export function AhadithScreen() {
   const handleAdminPinSubmit = async () => {
     const normalizedPin = adminPin.trim();
     if (!normalizedPin) {
-      setAdminPinError('رمز را وارد کنید.');
+      setAdminPinError(t('ahadith.admin.pinRequired'));
       return;
     }
 
@@ -136,14 +132,14 @@ export function AhadithScreen() {
       setAdminPinError(null);
       const valid = await verifyHadithAdminPin(normalizedPin);
       if (!valid) {
-        setAdminPinError('رمز نادرست است.');
+        setAdminPinError(t('ahadith.admin.pinInvalid'));
         return;
       }
 
       closeAdminPinModal();
       router.push('/ahadith/admin' as any);
     } catch (error) {
-      setAdminPinError('بررسی رمز ممکن نشد. دوباره تلاش کنید.');
+      setAdminPinError(t('ahadith.admin.pinCheckFailed'));
       if (__DEV__) {
         console.warn('[AhadithAdmin] verify pin failed', error);
       }
@@ -155,7 +151,7 @@ export function AhadithScreen() {
   if (isLoading) {
     return (
       <View style={[styles.center, { backgroundColor: theme.background }]}> 
-        <CenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>در حال بارگذاری احادیث...</CenteredText>
+        <CenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>{t('hadith.loading')}</CenteredText>
       </View>
     );
   }
@@ -164,8 +160,8 @@ export function AhadithScreen() {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
         <ScreenHeader
-          title="احادیث"
-          subtitle="حدیث روز، متفق‌علیه، موضوعات و جستجو"
+          title={t('hadith.title')}
+          subtitle={t('hadith.subtitle')}
           icon="format-quote"
         />
       </Pressable>
@@ -199,7 +195,7 @@ export function AhadithScreen() {
 
           <View style={[styles.tipBox, { backgroundColor: theme.surface, borderColor: alphaColor(theme.primary, 0.2) }]}> 
             <CenteredText style={[styles.tipText, { color: theme.textSecondary }]}> 
-              با کشیدن کارت به چپ/راست، حدیث روز بعد و قبل را ببینید.
+              {t('hadith.swipeHint')}
             </CenteredText>
           </View>
         </ScrollView>
@@ -251,10 +247,9 @@ export function AhadithScreen() {
             {focusedHadith ? (
               <ScrollView>
                 <CenteredText style={[styles.modalArabic, { color: theme.textPrimary }]}>{focusedHadith.arabic_text}</CenteredText>
-                <CenteredText style={[styles.modalDari, { color: theme.textPrimary }]}>{focusedHadith.dari_translation}</CenteredText>
-                <CenteredText style={[styles.modalPashto, { color: theme.textSecondary }]}>{focusedHadith.pashto_translation}</CenteredText>
+                <CenteredText style={[styles.modalDari, { color: theme.textPrimary }]}>{getHadithTranslation(focusedHadith, language)}</CenteredText>
                 <CenteredText style={[styles.modalSource, { color: theme.primary }]}>
-                  {formatSourceLabel(focusedHadith.source_book, focusedHadith.source_number)}
+                  {formatSourceLabel(focusedHadith.source_book, focusedHadith.source_number, language)}
                 </CenteredText>
               </ScrollView>
             ) : null}
@@ -276,16 +271,16 @@ export function AhadithScreen() {
             ]}
           >
             <CenteredText style={[styles.pinModalTitle, { color: theme.textPrimary }]}>
-              ورود به مدیریت احادیث
+              {t('hadith.admin.title')}
             </CenteredText>
 
-            <TextInput
+            <LocalizedTextInput
               value={adminPin}
               onChangeText={(value) => {
                 setAdminPin(value);
                 if (adminPinError) setAdminPinError(null);
               }}
-              placeholder="رمز"
+              placeholder={t('hadith.pin')}
               placeholderTextColor={theme.textSecondary}
               secureTextEntry
               keyboardType="number-pad"
@@ -315,7 +310,7 @@ export function AhadithScreen() {
                   <ActivityIndicator size="small" color={theme.surface} />
                 ) : (
                   <CenteredText style={[styles.pinConfirmText, { color: theme.surface }]}>
-                    تأیید
+                    {t('hadith.confirm')}
                   </CenteredText>
                 )}
               </Pressable>
@@ -331,7 +326,7 @@ export function AhadithScreen() {
                 ]}
               >
                 <CenteredText style={[styles.pinCancelText, { color: theme.textPrimary }]}>
-                  انصراف
+                  {t('common.cancel')}
                 </CenteredText>
               </Pressable>
             </View>

@@ -1,87 +1,88 @@
 /**
  * PrayerTextBlock Component
- * Displays Arabic text with Dari/Pashto translations
+ * Arabic text with its translation in the reader's language.
+ *
+ * The block shows one translation, not a stack of every language it has. When
+ * the reader's language is missing for a passage it falls back down the chain
+ * and tags the block with the language actually shown, so a fallback is never
+ * mistaken for a translation in the chosen language.
  */
 
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import type { PashtoFontFamily } from '@/constants/theme';
 import { BorderRadius, PashtoFonts, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import type { AppLanguage } from '@/types/quran';
+import { resolveContent } from '@/utils/i18n/content';
+import { APP_LANGUAGES } from '@/utils/i18n/languages';
 
 interface PrayerTextBlockProps {
   arabic?: string;
-  translationDari?: string;
-  translationPashto?: string;
-  instructionDari?: string;
-  instructionPashto?: string;
-  showBothLanguages?: boolean;
+  /** Record holding `<field>_dari`, `<field>_pashto`, `<field>_english`. */
+  source?: object | null;
+  /** Field stem for the translation, e.g. `'translation'`, `'qunoot'`. */
+  translationField?: string;
+  /** Field stem for the optional instruction line. */
+  instructionField?: string;
 }
 
 export function PrayerTextBlock({
   arabic,
-  translationDari,
-  translationPashto,
-  instructionDari,
-  instructionPashto,
-  showBothLanguages = true,
+  source,
+  translationField = 'translation',
+  instructionField = 'instruction',
 }: PrayerTextBlockProps) {
   const { theme, state } = useApp();
+  const language = state.preferences.appLanguage;
   const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
+
+  const translation = resolveContent(source, translationField, language);
+  const instruction = resolveContent(source, instructionField, language);
+
+  const fontFor = (textLanguage: AppLanguage) =>
+    textLanguage === 'pashto' ? { fontFamily: pashtoFontFamily, lineHeight: 42 } : null;
 
   return (
     <View style={[styles.container, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-      {/* Arabic Text */}
       {arabic && (
         <View style={[styles.arabicContainer, { backgroundColor: `${theme.tint}10` }]}>
-          <Text style={[styles.arabicText, { color: theme.arabicText }]}>
+          <LocalizedText style={[styles.arabicText, { color: theme.arabicText }]}>
             {arabic}
-          </Text>
+          </LocalizedText>
         </View>
       )}
 
-      {/* Instructions */}
-      {(instructionDari || instructionPashto) && (
+      {instruction && (
         <View style={styles.instructionContainer}>
-          {instructionDari && (
-            <Text style={[styles.instructionText, { color: theme.textSecondary }]}>
-              📌 {instructionDari}
-            </Text>
-          )}
-          {showBothLanguages && instructionPashto && (
-            <Text style={[styles.instructionText, { color: theme.textSecondary, fontFamily: pashtoFontFamily, lineHeight: 42 }]}>
-              📌 {instructionPashto}
-            </Text>
-          )}
+          <LocalizedText
+            style={[styles.instructionText, { color: theme.textSecondary }, fontFor(instruction.language)]}
+          >
+            📌 {instruction.text}
+          </LocalizedText>
         </View>
       )}
 
-      {/* Translations */}
-      <View style={styles.translationsContainer}>
-        {/* Dari Translation */}
-        {translationDari && (
+      {translation && (
+        <View style={styles.translationsContainer}>
           <View style={styles.translationBlock}>
-            <View style={[styles.languageTag, { backgroundColor: theme.tint }]}>
-              <Text style={styles.languageTagText}>دری</Text>
-            </View>
-            <Text style={[styles.translationText, { color: theme.text }]}>
-              {translationDari}
-            </Text>
+            {translation.language !== language && (
+              <View style={[styles.languageTag, { backgroundColor: theme.tint }]}>
+                <LocalizedText style={styles.languageTagText}>
+                  {APP_LANGUAGES[translation.language].nativeLabel}
+                </LocalizedText>
+              </View>
+            )}
+            <LocalizedText
+              style={[styles.translationText, { color: theme.text }, fontFor(translation.language)]}
+            >
+              {translation.text}
+            </LocalizedText>
           </View>
-        )}
-
-        {/* Pashto Translation */}
-        {showBothLanguages && translationPashto && (
-          <View style={styles.translationBlock}>
-            <View style={[styles.languageTag, { backgroundColor: '#FF7043' }]}>
-              <Text style={styles.languageTagText}>پښتو</Text>
-            </View>
-            <Text style={[styles.translationText, { color: theme.text, fontFamily: pashtoFontFamily, lineHeight: 42 }]}>
-              {translationPashto}
-            </Text>
-          </View>
-        )}
-      </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -113,7 +114,6 @@ const styles = StyleSheet.create({
   instructionText: {
     fontSize: Typography.ui.body,
     textAlign: 'center',
-    writingDirection: 'rtl',
     marginBottom: Spacing.xs,
     fontStyle: 'italic',
     includeFontPadding: false,
@@ -140,7 +140,6 @@ const styles = StyleSheet.create({
   translationText: {
     fontSize: Typography.ui.body,
     textAlign: 'center',
-    writingDirection: 'rtl',
     lineHeight: 28,
     includeFontPadding: false,
   },

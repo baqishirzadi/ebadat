@@ -1,5 +1,7 @@
 import React from 'react';
-import { Pressable, StyleSheet, View, Text } from 'react-native';
+
+import { Pressable, StyleSheet, View } from 'react-native';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
@@ -30,12 +32,12 @@ export function NaatMiniPlayer({ naat, isPlaying, progress, onPlayPause, onOpen 
       </View>
       <View style={styles.content}>
         <View style={styles.info}>
-          <Text style={[styles.title, { color: theme.text }]} numberOfLines={1}>
+          <LocalizedText style={[styles.title, { color: theme.text }]} numberOfLines={1}>
             {naat.title_fa}
-          </Text>
-          <Text style={[styles.subtitle, { color: theme.textSecondary }]} numberOfLines={1}>
+          </LocalizedText>
+          <LocalizedText style={[styles.subtitle, { color: theme.textSecondary }]} numberOfLines={1}>
             {naat.reciter_name}
-          </Text>
+          </LocalizedText>
         </View>
         <Pressable
           onPress={(e) => {

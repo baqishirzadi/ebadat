@@ -6,20 +6,9 @@ import { MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { Stack } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  AccessibilityInfo,
-  Alert,
-  Dimensions,
-  FlatList,
-  Keyboard,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  ToastAndroid,
-  View,
-} from 'react-native';
+
+import { ActivityIndicator, AccessibilityInfo, Alert, Dimensions, FlatList, Keyboard, Platform, Pressable, StyleSheet, ToastAndroid, View } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
@@ -36,6 +25,7 @@ import { useApp } from '@/context/AppContext';
 import { useDreamInterpreter } from '@/hooks/useDreamInterpreter';
 import { stripDreamMarkdown } from '@/utils/dreamInterpreter';
 import type { StoredDreamInterpreterMessage } from '@/utils/dreamInterpreterStorage';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const RLM = '\u200F';
 
@@ -56,19 +46,20 @@ interface ChatBubbleProps {
 }
 
 function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
+  const { t } = useI18n();
   const displayText = isUser ? text : formatAssistantBubbleText(text);
   const handleCopy = useCallback(async () => {
     try {
       await Clipboard.setStringAsync(normalizeMarkdownForClipboard(stripDreamMarkdown(text)));
       if (Platform.OS === 'android') {
-        ToastAndroid.show('کپی شد', ToastAndroid.SHORT);
+        ToastAndroid.show(t('common.copy'), ToastAndroid.SHORT);
       } else {
-        void AccessibilityInfo.announceForAccessibility('متن پاسخ کپی شد');
+        void AccessibilityInfo.announceForAccessibility(t('common.copyReply'));
       }
     } catch {
-      Alert.alert('خطا', 'کپی پاسخ انجام نشد.');
+      Alert.alert(t('common.error'), t('common.copyFailed'));
     }
-  }, [text]);
+  }, [text, t]);
 
   return (
     <RtlView style={[styles.messageRow, isUser ? styles.userRow : styles.assistantRow]}>
@@ -143,10 +134,12 @@ function StarterChips({ theme, disabled, copy, onSelect }: StarterChipsProps) {
 
 export default function DreamChatScreen() {
   const { theme, state } = useApp();
+  const { isPashto, fontFamily } = useI18n();
+  const isNastaliq = isPashto && fontFamily === 'NotoNastaliqUrdu';
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<ChatRow>>(null);
   const [input, setInput] = useState('');
-  const copy = state.preferences.appLanguage === 'pashto' ? DREAM_COPY.pashto : DREAM_COPY.dari;
+  const copy = DREAM_COPY[state.preferences.appLanguage] ?? DREAM_COPY.dari;
 
   const {
     messages,
@@ -390,10 +383,19 @@ export default function DreamChatScreen() {
             <MaterialIcons name="send" size={22} color="#fff" />
           )}
         </Pressable>
-        <TextInput
+        <LocalizedTextInput
           testID="dream-chat-input"
           style={[
             styles.input,
+            {
+              fontFamily,
+              fontSize: isPashto ? 13 : Typography.ui.body,
+              lineHeight: isNastaliq ? 29 : isPashto ? 21 : 20,
+              minHeight: 48,
+              maxHeight: 96,
+              paddingVertical: isNastaliq ? 4 : 7,
+              includeFontPadding: isNastaliq,
+            },
             {
               color: theme.text,
               borderColor: theme.cardBorder,
@@ -571,12 +573,12 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    minHeight: 44,
-    maxHeight: 120,
+    minHeight: 48,
+    maxHeight: 96,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 10,
+    paddingVertical: 7,
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     textAlign: 'right',

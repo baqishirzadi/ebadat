@@ -14,7 +14,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "بریده (و شکسته) باد دست‌های ابولهب، و (ابولهب) هلاک شد.",
-      "translation_pashto": "111-1 د ابو لهب دواړه لاسونه دې هلاك شي او دى هلاك شو"
+      "translation_pashto": "111-1 د ابو لهب دواړه لاسونه دې هلاك شي او دى هلاك شو",
+      "translation_english": "May the hands of Abu Lahab perish, and may he perish!"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "(که) مال و آنچه به دست آورده است (از عزت و ریاست) به او سودی نکرد.",
-      "translation_pashto": "111-2 د ده هېڅ په كار رانغى د ده مال او (نه) هغه څه چې ده ګټلي وو"
+      "translation_pashto": "111-2 د ده هېڅ په كار رانغى د ده مال او (نه) هغه څه چې ده ګټلي وو",
+      "translation_english": "Neither his wealth nor his worldly gains will avail him."
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "به زودی در آتش شعله‌ور داخل شود (بعد از مرگ).",
-      "translation_pashto": "111-3 ژر ده چې دى به لمبې وهونكي اور ته داخل شي"
+      "translation_pashto": "111-3 ژر ده چې دى به لمبې وهونكي اور ته داخل شي",
+      "translation_english": "He will burn in a Flaming Fire,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و همسرِ او (نیز داخل شود با او) در حالی که هیزم‌کش است.",
-      "translation_pashto": "111-4 او د ده ښځه هم، (زه د دغې) د لرګو اوچتوونكې (مذمت كوم)"
+      "translation_pashto": "111-4 او د ده ښځه هم، (زه د دغې) د لرګو اوچتوونكې (مذمت كوم)",
+      "translation_english": "and so will his wife, the carrier of firewood,"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 60,
       "sajda": false,
       "translation_dari": "و در گردن او ریسمانی از لیف خرما است.",
-      "translation_pashto": "111-5 د دې په غاړه كې د كجورې د پټ مضبوطه رسۍ ده"
+      "translation_pashto": "111-5 د دې په غاړه كې د كجورې د پټ مضبوطه رسۍ ده",
+      "translation_english": "around her neck will be a rope of palm fiber."
     }
   ]
 }

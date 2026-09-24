@@ -14,7 +14,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "حم. (مفهوم این حروف به الله معلوم است).",
-      "translation_pashto": "46-1 حا، ميم"
+      "translation_pashto": "46-1 حا، ميم",
+      "translation_english": "Hā Mīm."
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "فرود آوردن این کتاب از جانب الله توانمند باحکمت است.",
-      "translation_pashto": "46-2 د كتاب نازلول د الله له جانبه دي چې ډېر غالب، ښه حكمت والا دى"
+      "translation_pashto": "46-2 د كتاب نازلول د الله له جانبه دي چې ډېر غالب، ښه حكمت والا دى",
+      "translation_english": "The revelation of this Book is from Allah, the All-Mighty, the All-Wise."
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "آسمان‌ها و زمین و آنچه را که در میان این دو است جز به حق و تا وقت معين نه آفریده‌ایم و کافران از آنچه که از آن بیم داده شده‌اند، روی گردانند.",
-      "translation_pashto": "46-3 مونږ اسمانونه او ځمكه او هغه څه چې د دواړو په مینځ كې دي، نه دي پیدا كړي مګر په حقه او په ټاكلې مودې سره او كافران شوي كسان له هغه (قرآن) نه چې دوى پرې وېرولى شي، مخ ګرځوونكي دي"
+      "translation_pashto": "46-3 مونږ اسمانونه او ځمكه او هغه څه چې د دواړو په مینځ كې دي، نه دي پیدا كړي مګر په حقه او په ټاكلې مودې سره او كافران شوي كسان له هغه (قرآن) نه چې دوى پرې وېرولى شي، مخ ګرځوونكي دي",
+      "translation_english": "We have not created the heavens and earth and all that is between them except for a true purpose and for a set term, yet those who disbelieve turn away from what they have been warned of."
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "بگو: آنچه را به جای الله (به دعا) می‌خوانید، دیده‌اید؟ به من نشان دهید چه چیزی از زمین را (معبودان باطل‌تان) آفریده‌اند؟ یا اینکه در آفرینش آسمان‌ها شراکت داشته‌اند؟ اگر راستگو هستید پس کتابی پیش از این یا نشانه‌ای از علم (گذشتگان) را برای من بیاورید.",
-      "translation_pashto": "46-4 ته (دوى ته) ووایه: تاسو ما ته  د هغو (معبودانو) خبر راكړئ چې تاسو يې له الله نه غیر بلئ، تاسو ما ته وښیئ دوى په ځمكه كې څه پیدا كړي دي؟ یا دوى لره په (پیدا كولو د) اسمانونو كې څه شراكت شته؟ تاسو ما ته له دغه (قرآن) نه مخكې كوم كتاب راوړئ، یا له علمه څه باقي علامه، كه تاسو رښتيني یئ"
+      "translation_pashto": "46-4 ته (دوى ته) ووایه: تاسو ما ته  د هغو (معبودانو) خبر راكړئ چې تاسو يې له الله نه غیر بلئ، تاسو ما ته وښیئ دوى په ځمكه كې څه پیدا كړي دي؟ یا دوى لره په (پیدا كولو د) اسمانونو كې څه شراكت شته؟ تاسو ما ته له دغه (قرآن) نه مخكې كوم كتاب راوړئ، یا له علمه څه باقي علامه، كه تاسو رښتيني یئ",
+      "translation_english": "Say, “Tell me about those whom you invoke besides Allah; show me what they have created on the earth, or do they have a share in the heavens? Bring me a scripture revealed before this, or some remnant of knowledge, if you are truthful.”"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و (وقتی دلیلی ندارید پس) کیست گمراه‌تر از آن که به جای الله کسی را (به دعا) می‌خواند که تا روز قیامت (دعای) او را اجابت کرده نتواند و آنان (معبودان باطل) از دعاهایشان غافل و بی‌خبر ‌اند؟!",
-      "translation_pashto": "46-5 او له هغه كس نه زيات ګمراه څوك دى چې له الله نه غیر هغه (معبودان) بلي چې د ده دعا (سوال) تر قیامته پورې نشي قبلولى،  په داسې حال كې چې دغه (معبودان) به د دوى له بلنې نه غافله (بې خبره) وي"
+      "translation_pashto": "46-5 او له هغه كس نه زيات ګمراه څوك دى چې له الله نه غیر هغه (معبودان) بلي چې د ده دعا (سوال) تر قیامته پورې نشي قبلولى،  په داسې حال كې چې دغه (معبودان) به د دوى له بلنې نه غافله (بې خبره) وي",
+      "translation_english": "Who is more astray than one who invokes besides Allah those who will not respond to him until the Day of Resurrection, and are in fact unaware of their invocations?"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و چون مردم جمع کرده شوند (آن معبودها) دشمن آنان خواهند بود و عبادتشان را انکار می‌کنند.",
-      "translation_pashto": "46-6 او كله چې (ټول) خلق (د حساب لپاره په محشر كې) راجمع كړى شي دغه (معبودان) به د دوى دښمنان وګرځي او د دغو (عبادت كوونكو) له عبادت نه به منكر شي"
+      "translation_pashto": "46-6 او كله چې (ټول) خلق (د حساب لپاره په محشر كې) راجمع كړى شي دغه (معبودان) به د دوى دښمنان وګرځي او د دغو (عبادت كوونكو) له عبادت نه به منكر شي",
+      "translation_english": "When such people are gathered, they will become their enemies and will reject their worship."
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و هنگامیکه آیت‌های واضح ما بر آنان تلاوت شود، کسانی که کفر ورزیده‌اند دربارۀ حقی که به آنان آمده، می‌گویند: این جادوی آشکار است.",
-      "translation_pashto": "46-7  او كله چې دوى ته زمونږ ایتونه لوستلى شي، په داسې حال كې چې ښه واضح دي (،نو) كافران شوي كسان د حق په باره كې وايي، كله چې دوى ته راغى: دا ښكاره جادو دى"
+      "translation_pashto": "46-7  او كله چې دوى ته زمونږ ایتونه لوستلى شي، په داسې حال كې چې ښه واضح دي (،نو) كافران شوي كسان د حق په باره كې وايي، كله چې دوى ته راغى: دا ښكاره جادو دى",
+      "translation_english": "When Our clear verses are recited to them, those who disbelieve say about the truth when it comes to them, “This is clear magic.”"
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "یا اینکه می‌گویند: (پیغمبر) آن را از خود ساخته و به الله نسبت داده است؟ بگو: اگر من آن را به دروغ به الله نسبت داده باشم شما نمی‌توانید در برابر قهر الله کاری برای دفاع از من بکنید. او از آنچه شما در بارۀ آن (قرآن) گفتگو می‌کنید، داناتر است. کافی است که او در میان من و شما گواه باشد و اوست آمرزگار مهربان.",
-      "translation_pashto": "46-8 بلكې ایا دوى وايي: ده دا له ځانه جوړ كړى دى، ته (دوى ته) ووایه: كه چېرې دا ما له ځانه جوړ كړى وي، نو تاسو زما لپاره له الله نه (د بچ كولو لپاره) د هېڅ شي اختیار نه لرئ، هغه په هغو خبرو ښه عالم دى چې تاسو په هغو كې لګیا يئ، هغه زما په مینځ كې او ستاسو په مینځ كې ښه كافي ګواه دى او همدغه ښه بخښونكى، بې حده رحم كوونكى دى"
+      "translation_pashto": "46-8 بلكې ایا دوى وايي: ده دا له ځانه جوړ كړى دى، ته (دوى ته) ووایه: كه چېرې دا ما له ځانه جوړ كړى وي، نو تاسو زما لپاره له الله نه (د بچ كولو لپاره) د هېڅ شي اختیار نه لرئ، هغه په هغو خبرو ښه عالم دى چې تاسو په هغو كې لګیا يئ، هغه زما په مینځ كې او ستاسو په مینځ كې ښه كافي ګواه دى او همدغه ښه بخښونكى، بې حده رحم كوونكى دى",
+      "translation_english": "Or do they say, “He has fabricated it”? Say, “If I did fabricate it, there is nothing you can do to protect me against Allah. He knows best that in which you indulge. He is Sufficient as a witness between me and you, and He is the All-Forgiving, the Most Merciful.”"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "بگو: من پیغمبر نو آمد و نخستین در میان پیغمبران نیستم و نمی‌دانم که با من و شما چگونه رفتار خواهد شد؟ من پیروی نمی‌کنم مگر آنچه را که به من وحی فرستاده می‌شود و من جز بیم دهندۀ آشکار نیستم.",
-      "translation_pashto": "46-9 ته (دوى ته) ووایه: زه  په رسولانو كې اول (او نوى رسول) نه یم (بلكې له ما نه مخكې هم رسولان تېر شوي) او زه بېخي نه پوهېږم چې زما سره او تاسو سره به څه كولى شي، زه خو يواځې د هغه څه پیروي كوم چې ما ته وحي كولى شي او زه خو يواځې ښكاره وېروونكى یم"
+      "translation_pashto": "46-9 ته (دوى ته) ووایه: زه  په رسولانو كې اول (او نوى رسول) نه یم (بلكې له ما نه مخكې هم رسولان تېر شوي) او زه بېخي نه پوهېږم چې زما سره او تاسو سره به څه كولى شي، زه خو يواځې د هغه څه پیروي كوم چې ما ته وحي كولى شي او زه خو يواځې ښكاره وېروونكى یم",
+      "translation_english": "Say, “I am not the first of the messengers, nor do I know what will happen to me or to you. I only follow what is revealed to me, and I am not but a clear warner.”"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "بگو: به من خبر دهید اگر این قرآن از سوى الله باشد و آن را انکار کنید، در حالیکه گواهی از بنی اسرائیل، بر مانند آن (تورات) گواهی داده و ایمان آورده، ولی شما همچنان تکبر می‌ورزید (پس آیا ظالم نیستید؟) حقا که الله قوم ظالم را هدایت نمی‌کند.",
-      "translation_pashto": "46-10 ته (دوى ته) ووايه: تاسو ما ته خبر راكړئ كه چېرې دا (قرآن) د الله له جانبه وي او تاسو په ده سره كافران شوي یئ او د بني اسرائیلو یو ګواه د دې په مثل سره ګواهي كړې ده، پس هغه ایمان راوړ او تاسو لويي وكړه، بېشكه الله ظالم قوم ته هدایت نه كوي"
+      "translation_pashto": "46-10 ته (دوى ته) ووايه: تاسو ما ته خبر راكړئ كه چېرې دا (قرآن) د الله له جانبه وي او تاسو په ده سره كافران شوي یئ او د بني اسرائیلو یو ګواه د دې په مثل سره ګواهي كړې ده، پس هغه ایمان راوړ او تاسو لويي وكړه، بېشكه الله ظالم قوم ته هدایت نه كوي",
+      "translation_english": "Say, “What do you think, if this [Qur’an] is really from Allah and yet you reject it, and a witness from the Children of Israel has testified in its favor and believed, whereas you persist in arrogance? Indeed, Allah does not guide the wrongdoing people.”"
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و کافران دربارۀ مؤمنان گفتند: اگر (دین اسلام) چیز خوبی بود آنها در پذیرفتن آن از ما سبقت نمی‌کردند و چون خود‌شان به وسیلۀ آن هدایت نشده‌اند، می‌گویند: این دروغی قدیم است.",
-      "translation_pashto": "46-11 او كافران شویو كسانو د هغو كسانو په هكله وویل چې ایمان يې راوړى دى: كه چېرې دا (ایمان، قرآن) خیر (او غوره كار) وى، نو دوى به ده ته زمونږ نه مخكې شوي نه وو او چونكه دغو (كافرانو) په دغه (قرآن) سره نېغه لاره ونه موندله، نو ځكه دوى به ضرور وايي: دا ډېر پخواني دروغ دي"
+      "translation_pashto": "46-11 او كافران شویو كسانو د هغو كسانو په هكله وویل چې ایمان يې راوړى دى: كه چېرې دا (ایمان، قرآن) خیر (او غوره كار) وى، نو دوى به ده ته زمونږ نه مخكې شوي نه وو او چونكه دغو (كافرانو) په دغه (قرآن) سره نېغه لاره ونه موندله، نو ځكه دوى به ضرور وايي: دا ډېر پخواني دروغ دي",
+      "translation_english": "The disbelievers say about the believers, “If this [faith] were something good, they would not have believed in it before us.” Now since they are not guided by it, they will say, “This is an old fabrication.”"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و پیش از آن (قرآن) کتاب موسی پیشوا و رحمت بود. و این کتابی است تصدیق کنندۀ (آن) که به زبان عربی (نازل شده) است، تا ظالمان را بترساند و برای نیکوکاران مژده باشد.",
-      "translation_pashto": "46-12 حال دا چې له ده نه مخكې د موسٰی كتاب و، چې لار ښوونكى او رحمت و او دا (قرآن) یو تصدیق كوونكى كتاب دى، په داسې حال كې چې په عربي ژبه دى، د دې لپاره چې هغه كسان ووېروي چې ظلم یې كړى دى او نېكي كوونكو لپاره زېرى دى"
+      "translation_pashto": "46-12 حال دا چې له ده نه مخكې د موسٰی كتاب و، چې لار ښوونكى او رحمت و او دا (قرآن) یو تصدیق كوونكى كتاب دى، په داسې حال كې چې په عربي ژبه دى، د دې لپاره چې هغه كسان ووېروي چې ظلم یې كړى دى او نېكي كوونكو لپاره زېرى دى",
+      "translation_english": "And before it was the Scripture of Moses a guide and a mercy. This Book is a confirmation of it, in the Arabic language, in order to warn those who do wrong and give glad tidings to those who do good."
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "البته آنان که گفتند: الله پروردگار ماست، باز استقامت ورزیدند، نه ترسی بر آنان است و نه غمگین می‌شوند.",
-      "translation_pashto": "46-13 بېشكه هغه كسان چې وايي: زمونږ رب الله دى، بیا ټینګ ودرېږي، نو په دوى به نه څه وېره وي او نه به دوى غمګین كېږي"
+      "translation_pashto": "46-13 بېشكه هغه كسان چې وايي: زمونږ رب الله دى، بیا ټینګ ودرېږي، نو په دوى به نه څه وېره وي او نه به دوى غمګین كېږي",
+      "translation_english": "Indeed, those who say, “Our Lord is Allah”, then remain steadfast, they will have no fear, nor will they grieve."
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "ایشان اهل بهشت‌اند که در آن همیشه‌اند، به خاطر آنچه (از اعمال نیک) می‌کردند.",
-      "translation_pashto": "46-14 دغه كسان د جنت ملګري دي، چې په ده كې به تل ترتله وي، (دوى ته به) بدله وركولى شي د هغو (نېكو) عملونو په سبب چې دوى به كول"
+      "translation_pashto": "46-14 دغه كسان د جنت ملګري دي، چې په ده كې به تل ترتله وي، (دوى ته به) بدله وركولى شي د هغو (نېكو) عملونو په سبب چې دوى به كول",
+      "translation_english": "They are the people of Paradise; abiding therein forever, as a reward for what they used to do."
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و انسان را دربارۀ پدر و مادرش به نیکوکاری سفارش کردیم، مادرش او را به سختی حمل کرد و به سختی به دنیا آورد، و دوران بارداری و از شیر جدا کردن او سی ماه را در بر می‌گیرد، تا آنکه به كمال جوانی برسد و چهل ساله شود، می‌گوید: ای پروردگارم! به من توفیق ده تا نعمتی را که بر من و بر پدر و مادرم بخشیده‌ای شکر گزارم و کار نیک انجام دهم که از آن راضی شوی. و فرزندانم را نیز برایم نیک بگردان. همانا من به‌سوی تو باز گشته‌ام و از جملۀ مسلمانانم.",
-      "translation_pashto": "46-15 او مونږ انسان ته له خپل مور و پلار سره د نېكۍ كولو كلك حكم كړى دى، د ده مور دى د سختۍ په حالت كې (په خېټه كې) پورته كړى او دى يې د سختۍ په حالت كې زېږولى دى او د ده حمل او له تي نه د ده، پرېكولو (غوڅولو، د دواړو) موده دېرش میاشتې ده، تر هغه پورې چې كله دى خپل قوت ته ورسېده او څلوېښتو كالو ته ورسېده، ده وویل: اى زما ربه! ته ما ته (الهام او) توفیق راكړه چې زه ستا د هغه نعمت شكر ادا كړم چې تا په ما او زما په مور و پلار انعام كړى دى او دا چې زه داسې نېك عمل وكړم چې ته يې خوښوې او ته زما په اولاد كې  صلاحیت (او نېكي) كېږده، بېشكه ما تا ته توبه كړې ده او بېشكه زه له مسلمانانو ځنې یم"
+      "translation_pashto": "46-15 او مونږ انسان ته له خپل مور و پلار سره د نېكۍ كولو كلك حكم كړى دى، د ده مور دى د سختۍ په حالت كې (په خېټه كې) پورته كړى او دى يې د سختۍ په حالت كې زېږولى دى او د ده حمل او له تي نه د ده، پرېكولو (غوڅولو، د دواړو) موده دېرش میاشتې ده، تر هغه پورې چې كله دى خپل قوت ته ورسېده او څلوېښتو كالو ته ورسېده، ده وویل: اى زما ربه! ته ما ته (الهام او) توفیق راكړه چې زه ستا د هغه نعمت شكر ادا كړم چې تا په ما او زما په مور و پلار انعام كړى دى او دا چې زه داسې نېك عمل وكړم چې ته يې خوښوې او ته زما په اولاد كې  صلاحیت (او نېكي) كېږده، بېشكه ما تا ته توبه كړې ده او بېشكه زه له مسلمانانو ځنې یم",
+      "translation_english": "We have enjoined upon man kindness to his parents. His mother bore him in hardship and gave birth to him in hardship, and his bearing and weaning take thirty months, until when he reaches full maturity and reaches forty years, he says, “My Lord, inspire me to be grateful to Your favors which You blessed me and my parents with, and to do righteous deeds that will make You pleased; and make my offspring righteous. Indeed, I repent to you, and I am one of the Muslims [submitting to You].”"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "آنان کسانی‌اند که بهترین کردارشان را از آنان می‌پذیریم و از بدی‌هایشان در می‌گذریم، در حالیکه در (میان) جنتیان خواهند بود، این همان وعدۀ راستی است که به آنان وعده داده می‌شد.",
-      "translation_pashto": "46-16 دغه كسان دي چې مونږ له دوى نه د دوى په عملونو كې تر ټولو ښه قبلوو او د دوى له ګناهونو نه تېرېږو، په داسې حال كې چې د جنت په ملګرو كې به وي (الله كړې ده) هغه رښتینې وعده چې له دوى سره یې وعده كولى شوه"
+      "translation_pashto": "46-16 دغه كسان دي چې مونږ له دوى نه د دوى په عملونو كې تر ټولو ښه قبلوو او د دوى له ګناهونو نه تېرېږو، په داسې حال كې چې د جنت په ملګرو كې به وي (الله كړې ده) هغه رښتینې وعده چې له دوى سره یې وعده كولى شوه",
+      "translation_english": "Such are those from whom We will accept their best deeds and overlook their misdeeds. They will be among the people of Paradise – a true promise that they were given."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و آنکه به پدر و مادرش گفت: اف بر شما! آیا به من وعده می‌دهید که من (از قبر) بیرون آورده خواهم شد، حال آنکه پیش از من اقوام و ملت‌هایی از جهان رفته‌اند (و زنده نشده‌اند) و آن دو (پدر و مادر) الله را می‌خوانند (و می‌گویند:) وای بر تو! ایمان بیاور، بی‌گمان وعدۀ الله حق است. اما او می‌گوید: این جز افسانه‌های مردمان گذشته نیست.",
-      "translation_pashto": "46-17 او هغه سړى چې خپل مور و پلار ته يې وویل: تاسو دواړو ته دې خرابي وي (زه له تاسو دواړو زړه تنګى یم) ایا تاسو ما ته دا وعده راكوئ چې زه به (ژوندى) راوېستلى كېږم، حال دا چې له ما نه مخكې ډېرې پېړۍ تېرې شوې دي او هغو دواړو الله ته فریاد كاوه (او ورته ویل يې:) تا لره هلاكت دى، ایمان راوړه! بېشكه د الله وعده حقه ده، نو دى (په جواب كې) وايي: دا نه دي مګر د ړومبنو خلقو باطلې قصې"
+      "translation_pashto": "46-17 او هغه سړى چې خپل مور و پلار ته يې وویل: تاسو دواړو ته دې خرابي وي (زه له تاسو دواړو زړه تنګى یم) ایا تاسو ما ته دا وعده راكوئ چې زه به (ژوندى) راوېستلى كېږم، حال دا چې له ما نه مخكې ډېرې پېړۍ تېرې شوې دي او هغو دواړو الله ته فریاد كاوه (او ورته ویل يې:) تا لره هلاكت دى، ایمان راوړه! بېشكه د الله وعده حقه ده، نو دى (په جواب كې) وايي: دا نه دي مګر د ړومبنو خلقو باطلې قصې",
+      "translation_english": "But some say to their parents, “Fie upon you both! Are you warning me that I will be resurrected, even though many generations have passed before me [yet none was resurrected]?” His parents cry seeking Allah’s help, “Woe to you! Believe! The promise of Allah is true.” But he says, “This is nothing but ancient fables.”"
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "اینها‌اند که وعدۀ عذاب بر آنان همراه با امت‌هایی از جن و انس که پیش از آنان گذشته‌اند محقق شده است. يقينا آنان زیان‌کار بودند.",
-      "translation_pashto": "46-18 دغه هغه كسان دي چې په دوى باندې (د عذاب) خبره ثابته شوې ده، په هغو امتونو كې چې له دوى نه مخكې تېر شوي دي له پېریانو او انسانانو ځنې، بېشكه دوى تاوانیان وو"
+      "translation_pashto": "46-18 دغه هغه كسان دي چې په دوى باندې (د عذاب) خبره ثابته شوې ده، په هغو امتونو كې چې له دوى نه مخكې تېر شوي دي له پېریانو او انسانانو ځنې، بېشكه دوى تاوانیان وو",
+      "translation_english": "Such are those upon whom the punishment has become binding, as happened to communities of Jinn and men before them, for they were truly losers."
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و برای هریک از آنچه عمل کرده‌اند، درجاتی است تا به این وسیله، الله سزای اعمالشان را به طور کامل به آنان بدهد و آنها مورد ظلم قرار نگیرند.",
-      "translation_pashto": "46-19 او د هرې یوې (ډلې) لپاره د دوى د كړو عملونو په سبب (بېلې بېلې) مرتبې دي، او د دې لپاره چې دوى ته د دوى عملونه پوره وركړي، په داسې حال كې چې په دوى به ظلم ونه كړى شي "
+      "translation_pashto": "46-19 او د هرې یوې (ډلې) لپاره د دوى د كړو عملونو په سبب (بېلې بېلې) مرتبې دي، او د دې لپاره چې دوى ته د دوى عملونه پوره وركړي، په داسې حال كې چې په دوى به ظلم ونه كړى شي ",
+      "translation_english": "Everyone will be ranked according to what they did, so that He may recompense them in full for their deeds, and none will be wronged."
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و یادآور شو، روزی که کافران بر آتش عرضه شوند (در این وقت به آنان گفته می‌شود) شما لذت‌ها و خوشی‌های خود را در زندگانی دنیای خویش از بین بردید و از آن برخوردار شدید، امروز شما به سبب آن که به ناحق در زمین تکبر می‌ورزیدید و به (سزای) آنکه مرتکب گناه می‌شدید، به عذاب خوار کننده و ذلت بار سزا داده می‌شوید.",
-      "translation_pashto": "46-20 او هغه ورځ (یاده كړه) چې كافران شوي كسان به اور ته پېش كولى شي (او ورته به وویل شي:) تاسو خپل خوندونه (او نعمتونه) په خپل دنيايي ژوند كې ختم كړي دي او تاسو له هغو نه فايده اخيستې ده، نو  نن ورځ به تاسو ته د ذلت د عذاب بدله دركولى شي، په سبب د دې چې تاسو به په ځمكه كې ناحقه تكبر كاوه او په سبب د دې چې تاسو به نافرماني كوله"
+      "translation_pashto": "46-20 او هغه ورځ (یاده كړه) چې كافران شوي كسان به اور ته پېش كولى شي (او ورته به وویل شي:) تاسو خپل خوندونه (او نعمتونه) په خپل دنيايي ژوند كې ختم كړي دي او تاسو له هغو نه فايده اخيستې ده، نو  نن ورځ به تاسو ته د ذلت د عذاب بدله دركولى شي، په سبب د دې چې تاسو به په ځمكه كې ناحقه تكبر كاوه او په سبب د دې چې تاسو به نافرماني كوله",
+      "translation_english": "On the Day when the disbelievers will be brought to the Fire, [they will be told], “You have exhausted your share of pleasures in the life of the world, and you have enjoyed them. Today you will be recompensed with a disgracing punishment for your arrogance in the land without any right and for your rebellion."
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و (هود) برادر (قوم) عاد را یاد کن وقتی که در منطقۀ ریگستان احقاف قوم خود را (از عذاب الله) بیم داد، و به راستی پیش از او و پس از او نیز بیم دهندگانی گذشته بودند (با این پیام) که جز الله را نپرستید. چون من از عذاب روز بزرگ بر شما می‌ترسم.",
-      "translation_pashto": "46-21 او ته د عادیانو ورور (هود) یاد كړه، كله چې ده خپل قوم ووېرولو، چې په احقاف (رېګستان) كې وو، او یقینًا له ده نه مخكې او له ده نه وروسته (نور) وېروونكي (پېغمبران) تېر شوي دي (په دې خبرې سره) چې تاسو عبادت مه كوئ غیر له الله نه، بېشكه زه په تاسو د ډېرې لويې ورځې د عذاب وېره  كوم"
+      "translation_pashto": "46-21 او ته د عادیانو ورور (هود) یاد كړه، كله چې ده خپل قوم ووېرولو، چې په احقاف (رېګستان) كې وو، او یقینًا له ده نه مخكې او له ده نه وروسته (نور) وېروونكي (پېغمبران) تېر شوي دي (په دې خبرې سره) چې تاسو عبادت مه كوئ غیر له الله نه، بېشكه زه په تاسو د ډېرې لويې ورځې د عذاب وېره  كوم",
+      "translation_english": "Remember [Hūd] the brother of ‘Ād, when he warned his people in the [land of] sand dunes – and indeed there came warners before him and after him – [saying], “Worship none but Allah. Indeed, I fear for you the punishment of a horrible day.”"
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "گفتند: آیا آمده‌ای تا ما را از معبودان ما برگردانی؟ اگر از راستگویان هستی پس آنچه را که به ما وعده میدهی، برای ما بیار.",
-      "translation_pashto": "46-22 دوى وویل: (اى هوده!) ایا ته مونږ ته د دې لپاره راغلى يې چې مونږ  له خپلو معبودانو نه واړوې، پس ته پر مونږ هغه (عذاب) راوله چې ته يې مونږ ته وعده راكوې، كه ته له رښتینو ځنې يې"
+      "translation_pashto": "46-22 دوى وویل: (اى هوده!) ایا ته مونږ ته د دې لپاره راغلى يې چې مونږ  له خپلو معبودانو نه واړوې، پس ته پر مونږ هغه (عذاب) راوله چې ته يې مونږ ته وعده راكوې، كه ته له رښتینو ځنې يې",
+      "translation_english": "They said, “Have you come to turn us away from our gods? Then bring us what you are threatening us with, if you are truthful.”"
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "گفت: علم (زمان رسیدن عذاب) تنها نزد الله است، من چیزی را به شما ابلاغ می‌کنم که به تبلیغ آن فرستاده شده ام، ولی شما را قومی جاهل می‌بینم.",
-      "translation_pashto": "46-23 ده وویل: بېشكه همدا خبره ده چې (د عذاب د راتلو) علم خو له الله سره دى او زه تاسو ته هغه څه  دررسوم چې په هغو سره زه رالېږل شوى یم او لېكن زه تاسو  داسې قوم وینم چې له جهالت نه كار اخلئ"
+      "translation_pashto": "46-23 ده وویل: بېشكه همدا خبره ده چې (د عذاب د راتلو) علم خو له الله سره دى او زه تاسو ته هغه څه  دررسوم چې په هغو سره زه رالېږل شوى یم او لېكن زه تاسو  داسې قوم وینم چې له جهالت نه كار اخلئ",
+      "translation_english": "He said, “The knowledge [of its coming] is with Allah alone. I only convey to you the message that I have been sent with, but I see that you are an ignorant people.”"
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "پس چون تودۀ ابر را دیدند که به‌سوی دره‌هایشان روی آورده است، گفتند: این ابری است که برای ما خواهد بارید، (نه)، بلکه آن چیزی است که آن را به شتاب می‌خواستید، بادی است که عذاب دردناک در آن نهفته است.",
-      "translation_pashto": "46-24 نو كله چې دوى هغه (عذاب) ولیده، چې د پلنې ورېځې په شكل كې د دوى میدانونو ته مخ كوونكى و، دوى وویل: دا پلنه ورېځ ده، پر مونږ باران وروونكې ده، (نو هود وویل) بلكې دا هغه (عذاب) دى چې تاسو د ده تلوار كاوه، باد دى چې په ده كې دردوونكى عذاب دى"
+      "translation_pashto": "46-24 نو كله چې دوى هغه (عذاب) ولیده، چې د پلنې ورېځې په شكل كې د دوى میدانونو ته مخ كوونكى و، دوى وویل: دا پلنه ورېځ ده، پر مونږ باران وروونكې ده، (نو هود وویل) بلكې دا هغه (عذاب) دى چې تاسو د ده تلوار كاوه، باد دى چې په ده كې دردوونكى عذاب دى",
+      "translation_english": "When they saw it as a cloud approaching their valleys, they said, “This is a cloud bringing us rain.” [Hūd said,] No, it is what you sought to hasten – a wind bearing a painful punishment."
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "همه چیز را به امر پروردگارش نابود می‌کند. پس چنان شدند که جز خانه‌هایشان چیزی دیده نمی‌شد، این چنین مجرمان را سزا می‌دهیم.",
-      "translation_pashto": "46-25 چې د خپل رب په حكم سره هر شى هلاكوي، نو دوى سبا ته داسې شول چې يواځې د دوى (خالي) كورونه لیدل كېدل، مونږ همداسې مجرم قوم ته بدله وركوو"
+      "translation_pashto": "46-25 چې د خپل رب په حكم سره هر شى هلاكوي، نو دوى سبا ته داسې شول چې يواځې د دوى (خالي) كورونه لیدل كېدل، مونږ همداسې مجرم قوم ته بدله وركوو",
+      "translation_english": "It will destroy everything by the command of its Lord. And they became such that there was nothing left visible except [ruins of] their dwellings. This is how We recompense the wicked people."
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و البته به آنان چنان امکانات داده بودیم که به شما ندادیم و برای آنها گوش و چشمان و دلها قرار داده بودیم، اما گوشها و چشم‌ها و دل‌هایشان به حال‌شان سودی نبخشید، چرا که آیات الله را انکار می‌کردند و آنچه که به آن تمسخر می‌کردند، آنان را احاطه کرد.",
-      "translation_pashto": "46-26 او یقینًا یقینًا مونږ هغوى ته په هغو څیزونو كې دومره قوت (او قدرت) وركړى و چې تاسو ته مو په هغو كې قدرت نه دى دركړى او د هغوى لپاره مونږ غوږونه او سترګې او زړونه پیدا كړي وو، نو له دوى نه د دوى  غوږونو او نه د دوى سترګو او نه د دوى زړونو هېڅ شى (عذاب) دفع نه كړى شو، ځكه چې دوى د الله له ایتونو نه انكار كاوه او دوى هغه (عذاب) راګېر كړل  چې دوى به په هغه پورې استهزا كولې"
+      "translation_pashto": "46-26 او یقینًا یقینًا مونږ هغوى ته په هغو څیزونو كې دومره قوت (او قدرت) وركړى و چې تاسو ته مو په هغو كې قدرت نه دى دركړى او د هغوى لپاره مونږ غوږونه او سترګې او زړونه پیدا كړي وو، نو له دوى نه د دوى  غوږونو او نه د دوى سترګو او نه د دوى زړونو هېڅ شى (عذاب) دفع نه كړى شو، ځكه چې دوى د الله له ایتونو نه انكار كاوه او دوى هغه (عذاب) راګېر كړل  چې دوى به په هغه پورې استهزا كولې",
+      "translation_english": "We had given them the power to an extent that We have not given you [O Makkans], and We gave them hearing, sight, and hearts. But neither their hearing, nor their sight, nor their hearts availed them in the least, for they used to reject the signs of Allah. And they were overwhelmed by what they used to ridicule."
     },
     {
       "number": 27,
@@ -274,7 +300,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و البته قریه‌های را که در اطراف شما قرار داشتند؛ هلاک کردیم و آیات خود را به صورت‌های مختلف بیان نمودیم، تا (از کفر خود) بازگردند.",
-      "translation_pashto": "46-27 او یقینًا یقینًا مونږ هغه كلي چې ستاسو چاپېره دي، هلاك كړل او مونږه ایتونه مكرر بیان كړي دي، د دې لپاره چې دوى (له كفر نه) راوګرځي"
+      "translation_pashto": "46-27 او یقینًا یقینًا مونږ هغه كلي چې ستاسو چاپېره دي، هلاك كړل او مونږه ایتونه مكرر بیان كړي دي، د دې لپاره چې دوى (له كفر نه) راوګرځي",
+      "translation_english": "We have certainly destroyed some towns around you and had given them numerous signs, so that they might return [from disbelief]."
     },
     {
       "number": 28,
@@ -284,7 +311,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "پس چرا کسانیکه (ایشان را) برای تقرب به الله معبود (خود) برگزیده بودند، آنها را یاری نکرد؟ بلکه از نزد آنان محو شدند و این بود (عاقبت) دروغ و افترای‌شان.",
-      "translation_pashto": "46-28  نو د دوى مرسته هغو (معبودانو) ولې ونه كړه چې دغو (خلقو دوى) د تقرب لپاره له الله نه غیر معبودان ګرځولي وو، بلكې دغه (معبودان په دغه وخت كې) له دوى  نه ورك شول او دغه د دوى  غټ دروغ دي او هغه څه دي چې دوى به له ځانه جوړول"
+      "translation_pashto": "46-28  نو د دوى مرسته هغو (معبودانو) ولې ونه كړه چې دغو (خلقو دوى) د تقرب لپاره له الله نه غیر معبودان ګرځولي وو، بلكې دغه (معبودان په دغه وخت كې) له دوى  نه ورك شول او دغه د دوى  غټ دروغ دي او هغه څه دي چې دوى به له ځانه جوړول",
+      "translation_english": "Why is it that they were not helped by those [idols] whom they took as gods besides Allah so that they might bring them closer to Him? Rather, they were lost from them. Such was [the outcome of] their falsehood and the lies they used to fabricate."
     },
     {
       "number": 29,
@@ -294,7 +322,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و یادآور شو وقتی که گروهی از جن را به‌سوی تو روان کردیم تا قرآن را بشنوند، پس وقتی حاضر شدند، گفتند: خاموش باشید پس چون (تلاوت قرآن) تمام شد به‌سوی قومشان بازگشتند تا آنها را بیم دهند.",
-      "translation_pashto": "46-29 او هغه وخت (یاد كړه) چې مونږ تا ته د پېریانو یوه ډله راوګرځوله، چې قرآن به اوري، نو كله چې دوى ده (قرآن) ته حاضر شول، نو ويې ويل:چوپ شئ! نو كله چې (د قرآن تلاوت) تمام كړى شو (نو) دوى خپل قوم ته بېرته وګرځېدل، په داسې حال كې چې وېروونكي وو"
+      "translation_pashto": "46-29 او هغه وخت (یاد كړه) چې مونږ تا ته د پېریانو یوه ډله راوګرځوله، چې قرآن به اوري، نو كله چې دوى ده (قرآن) ته حاضر شول، نو ويې ويل:چوپ شئ! نو كله چې (د قرآن تلاوت) تمام كړى شو (نو) دوى خپل قوم ته بېرته وګرځېدل، په داسې حال كې چې وېروونكي وو",
+      "translation_english": "And [remember] when We sent to you a group of jinn to listen to the Qur’an. When they heard it, they said [to one another], “Listen attentively.” Then when it was over, they returned to their people as warners."
     },
     {
       "number": 30,
@@ -304,7 +333,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "گفتند: ای قوم ما! ما کتابی را شنیدیم که پس از موسی نازل شده است و تصدیق کنندۀ کتاب‌های پیش از خود است، (و) به حق و به راه راست هدایت می‌کند.",
-      "translation_pashto": "46-30 دوى وویل: اى زمونږ قومه! بېشكه مونږ داسې كتاب واورېده چې له موسیٰ نه وروسته نازل كړى شوى دى، په داسې حال كې د هغو (كتابونو) تصدیق كوونكى دى چې له ده نه مخكې وو، حق ته او نېغې (سمې) لارې ته ښوونه كوي"
+      "translation_pashto": "46-30 دوى وویل: اى زمونږ قومه! بېشكه مونږ داسې كتاب واورېده چې له موسیٰ نه وروسته نازل كړى شوى دى، په داسې حال كې د هغو (كتابونو) تصدیق كوونكى دى چې له ده نه مخكې وو، حق ته او نېغې (سمې) لارې ته ښوونه كوي",
+      "translation_english": "They said, “O our people, we have heard a scripture that has been sent down after Moses, confirming what came before it; it guides to the truth and to a straight path."
     },
     {
       "number": 31,
@@ -314,7 +344,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "ای قوم ما! سخنان دعوتگر الهی را بپذیرید و به او ایمان آورید تا الله گناهانتان را بیامرزد و شما را از عذاب دردناک امان دهد.",
-      "translation_pashto": "46-31 اى زمونږ قومه! تاسو د الله د بلونكي وینا قبوله كړئ او په ده ایمان راوړئ، چې هغه (الله) تاسو ته ستاسو ځینې ګناهونه وبخښي او تاسو له ډېر دردوونكي عذاب نه خلاص (او بچ) كړي"
+      "translation_pashto": "46-31 اى زمونږ قومه! تاسو د الله د بلونكي وینا قبوله كړئ او په ده ایمان راوړئ، چې هغه (الله) تاسو ته ستاسو ځینې ګناهونه وبخښي او تاسو له ډېر دردوونكي عذاب نه خلاص (او بچ) كړي",
+      "translation_english": "O our people, respond to the one who is calling to Allah, and believe in him; He will forgive some of your sins and protect you from a painful punishment."
     },
     {
       "number": 32,
@@ -324,7 +355,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و کسیکه (دعوت) دعوت دهندۀ الله را نپذیرد، پس نمی‌تواند (اسباب غضب الله) در زمین را عاجز کند و برای او جز الله هیچ ولی و یاوری نیست، (بلکه) ایشان در گمراهی آشکارند.",
-      "translation_pashto": "46-32 او څوك چې د الله د بلونكي خبره قبوله نه كړي، نو دغه كس په ځمكه كې (الله لره) عاجزه كوونكى نه دى او د ده لپاره له دغه (الله) نه غیر هېڅ كارسازي (او مددګاران) نشته او دغه كسان په ښكاره ګمراهۍ كې دي"
+      "translation_pashto": "46-32 او څوك چې د الله د بلونكي خبره قبوله نه كړي، نو دغه كس په ځمكه كې (الله لره) عاجزه كوونكى نه دى او د ده لپاره له دغه (الله) نه غیر هېڅ كارسازي (او مددګاران) نشته او دغه كسان په ښكاره ګمراهۍ كې دي",
+      "translation_english": "And whoever does not respond to the one who is calling to Allah will have no escape on earth, nor will he have any protectors against Him; such people are clearly misguided.”"
     },
     {
       "number": 33,
@@ -334,7 +366,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "آیا ندیده‌اند که الله همان ذاتی است که آسمان‌ها و زمین را آفریده و در آفریدن آنها عاجر و خسته نشده است، قادر است بر آنکه مرده‌ها را زنده کند؟! بلی؛ او بر هر کاری قادر است.",
-      "translation_pashto": "46-33 او ایا دوى نه دي كتلي چې بېشكه هغه الله چې اسمانونه او  ځمكه يې پیدا كړي دي او د دغو په پیدا كولو سره نه دى ستړى شوى، یقینًا په دې قادر دى چې مړي ژوندي كړي؟ ولې نه! بېشكه هغه په هر شي باندې ښه قادر دى"
+      "translation_pashto": "46-33 او ایا دوى نه دي كتلي چې بېشكه هغه الله چې اسمانونه او  ځمكه يې پیدا كړي دي او د دغو په پیدا كولو سره نه دى ستړى شوى، یقینًا په دې قادر دى چې مړي ژوندي كړي؟ ولې نه! بېشكه هغه په هر شي باندې ښه قادر دى",
+      "translation_english": "Do they not see that Allah, Who created the heavens and earth, and was not wearied by creating them, is able to bring the dead to life? Yes indeed! He is the Most Capable of all things."
     },
     {
       "number": 34,
@@ -344,7 +377,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "و روزی که کافران بر دوزخ عرضه شوند (به آنان گفته می‌شود:) آیا این حق نیست؟ می‌گویند: بلی، قسم به پروردگارما. الله (به ایشان) می‌فرماید: پس به سبب آنکه کفر می‌ورزیدید عذاب را بچشید.",
-      "translation_pashto": "46-34 او هغه ورځ (یاده كړه) چې كافران شوي كسان به اور ته وړاندې كولى شي (او ورته وبه ویل شي:) ایا دا حق (اورښتیا) نه دى، دوى به ووايي: ولې نه! زمونږ دې په خپل رب قسم وي! الله به ووايي: نو تاسو عذاب وڅَكئ، په سبب د هغه كفر چې تاسو به كاوه"
+      "translation_pashto": "46-34 او هغه ورځ (یاده كړه) چې كافران شوي كسان به اور ته وړاندې كولى شي (او ورته وبه ویل شي:) ایا دا حق (اورښتیا) نه دى، دوى به ووايي: ولې نه! زمونږ دې په خپل رب قسم وي! الله به ووايي: نو تاسو عذاب وڅَكئ، په سبب د هغه كفر چې تاسو به كاوه",
+      "translation_english": "On the Day when the disbelievers are exposed to the Fire, [they will be asked], “Is this not the truth?” They will say, “Yes indeed, by our Lord.” He will say, “Then taste the punishment for your disbelief.”"
     },
     {
       "number": 35,
@@ -354,7 +388,8 @@
       "hizb": 51,
       "sajda": false,
       "translation_dari": "(وقتی سزای‌شان چنین باشد) پس صبر کن طوری که پیغمبران اولوالعزم صبر کردند، و برای (عذاب) آنها شتاب مكن. روزی که آنچه را وعده داده می‌شوند، ببینند، گویی (در دنیا) جز ساعتی از روز نمانده‌اند، این (قرآن) ابلاغی است. پس آیا (قومی) جز گروه فاسقان هلاک می‌شود؟",
-      "translation_pashto": "46-35 نو (اى نبي!) ته  صبر كوه، لكه چې د عزیمت والا رسولانو صبر كړى دى او د دوى په هكله (د عذاب) تلور مه كوه، ګویاكې دوى به هغه ورځ (كې) چې هغه (عذاب) وویني چې له دوى سره يې وعده كولى شوه، داسې وي چې دوى وخت نه دى تېر كړى مګر د ورځې یوه ګړۍ، (دا قرآن) پېغام دى، پس هلاك كولى نه شي مګر فاسقان خلق"
+      "translation_pashto": "46-35 نو (اى نبي!) ته  صبر كوه، لكه چې د عزیمت والا رسولانو صبر كړى دى او د دوى په هكله (د عذاب) تلور مه كوه، ګویاكې دوى به هغه ورځ (كې) چې هغه (عذاب) وویني چې له دوى سره يې وعده كولى شوه، داسې وي چې دوى وخت نه دى تېر كړى مګر د ورځې یوه ګړۍ، (دا قرآن) پېغام دى، پس هلاك كولى نه شي مګر فاسقان خلق",
+      "translation_english": "So be patient, as the Messengers of Firm Resolve were patient, and do not seek to hasten [punishment] for them. On the Day when they see what they were warned of, it will be as if they had only stayed [in this world] for an hour of a day. This is a warning. Will anyone be destroyed except the rebellious people?"
     }
   ]
 }

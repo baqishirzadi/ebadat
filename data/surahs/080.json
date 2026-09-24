@@ -14,7 +14,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "روی ترش کرد و اعراض نمود.",
-      "translation_pashto": "80-1 ده تندى تریو كړ او مخ يې وګرځاوه"
+      "translation_pashto": "80-1 ده تندى تریو كړ او مخ يې وګرځاوه",
+      "translation_english": "He frowned and turned away,"
     },
     {
       "number": 2,
@@ -24,7 +25,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "به این که نزد او نابینا آمد.",
-      "translation_pashto": "80-2 په دې وجه چې ده ته ړوند راغى"
+      "translation_pashto": "80-2 په دې وجه چې ده ته ړوند راغى",
+      "translation_english": "when the blind man came to him."
     },
     {
       "number": 3,
@@ -34,7 +36,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و تو چه دانی که او شاید در پی پاکی باشد.",
-      "translation_pashto": "80-3 او ته څه شي پوه كړى يې، ښايي چې دى پاك شي"
+      "translation_pashto": "80-3 او ته څه شي پوه كړى يې، ښايي چې دى پاك شي",
+      "translation_english": "How would you know? Perhaps he might be purified,"
     },
     {
       "number": 4,
@@ -44,7 +47,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "یا پند گیرد، پس آن پند به او سودی رساند.",
-      "translation_pashto": "80-4 یا به دى نصیحت (او پند) واخلي، نو ده ته به پند نفع ورسوي"
+      "translation_pashto": "80-4 یا به دى نصیحت (او پند) واخلي، نو ده ته به پند نفع ورسوي",
+      "translation_english": "or he might take heed and benefit from the reminder?"
     },
     {
       "number": 5,
@@ -54,7 +58,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "اما کسی که خود را بی‌نیاز می‌داند.",
-      "translation_pashto": "80-5 هر چې هغه څوك دى چې استغنا يې كړې ده"
+      "translation_pashto": "80-5 هر چې هغه څوك دى چې استغنا يې كړې ده",
+      "translation_english": "But he who was indifferent,"
     },
     {
       "number": 6,
@@ -64,7 +69,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس تو در پی او شدی؟",
-      "translation_pashto": "80-6 نو ته په هغه پسې كېږې"
+      "translation_pashto": "80-6 نو ته په هغه پسې كېږې",
+      "translation_english": "you give him your full attention,"
     },
     {
       "number": 7,
@@ -74,7 +80,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و اگر او (شخص بی‌نیاز) پاک هم نشود، گناهی بر تو نیست.",
-      "translation_pashto": "80-7 حال دا چې په تا هېڅ الزام نشته چې هغه پاك نشي"
+      "translation_pashto": "80-7 حال دا چې په تا هېڅ الزام نشته چې هغه پاك نشي",
+      "translation_english": "although you are not to be blamed if he does not purify himself."
     },
     {
       "number": 8,
@@ -84,7 +91,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و اما کسی که شتابان نزد او آمد.",
-      "translation_pashto": "80-8 او هر چې هغه څوك دى چې تا ته په منډو راځي"
+      "translation_pashto": "80-8 او هر چې هغه څوك دى چې تا ته په منډو راځي",
+      "translation_english": "But as for the one who came to you striving [for purification],"
     },
     {
       "number": 9,
@@ -94,7 +102,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "در حالی که (از الله) می‌ترسید.",
-      "translation_pashto": "80-9 په داسې حال كې چې دى (له الله نه) وېرېږي"
+      "translation_pashto": "80-9 په داسې حال كې چې دى (له الله نه) وېرېږي",
+      "translation_english": "and he fears Allah,"
     },
     {
       "number": 10,
@@ -104,7 +113,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس تو (به دیگران مشغول شده) از وی روی‌گردان می‌شوی.",
-      "translation_pashto": "80-10 نو ته له هغه نه مشغولېږې"
+      "translation_pashto": "80-10 نو ته له هغه نه مشغولېږې",
+      "translation_english": "you let yourself be distracted from him."
     },
     {
       "number": 11,
@@ -114,7 +124,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "چنین نیست (که آن‌ها می‌پندارند) یقیناً قرآن وسیله‌ای پند است.",
-      "translation_pashto": "80-11 داسې كله هم مه كوه، بېشكه دا (سورت) یو پند (او نصیحت) دى"
+      "translation_pashto": "80-11 داسې كله هم مه كوه، بېشكه دا (سورت) یو پند (او نصیحت) دى",
+      "translation_english": "No indeed; this is a reminder –"
     },
     {
       "number": 12,
@@ -124,7 +135,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس هرکس (پند) بخواهد باید آن را یاد کند.",
-      "translation_pashto": "80-12 نو هغه څوك چې غواړي (نو) دى دې ومني"
+      "translation_pashto": "80-12 نو هغه څوك چې غواړي (نو) دى دې ومني",
+      "translation_english": "so whoever wills may give heed to it –"
     },
     {
       "number": 13,
@@ -134,7 +146,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(همانا آیات قرآن) در صحیفه‌های قدرمند درج و محفوظ است.",
-      "translation_pashto": "80-13 (دغه) په عزتمنو پاڼو كې دى"
+      "translation_pashto": "80-13 (دغه) په عزتمنو پاڼو كې دى",
+      "translation_english": "on venerable pages,"
     },
     {
       "number": 14,
@@ -144,7 +157,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "که بلندمرتبه و پاکیزه است.",
-      "translation_pashto": "80-14 چې پورته كړى شوې، ښې پاكې كړى شوې دي"
+      "translation_pashto": "80-14 چې پورته كړى شوې، ښې پاكې كړى شوې دي",
+      "translation_english": "exalted and purified,"
     },
     {
       "number": 15,
@@ -154,7 +168,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "به دستِ نویسندگان.",
-      "translation_pashto": "80-15 د لیكونكو (ملايكو)  په لاسونو كې"
+      "translation_pashto": "80-15 د لیكونكو (ملايكو)  په لاسونو كې",
+      "translation_english": "[preserved] in the hands of angel-scribes,"
     },
     {
       "number": 16,
@@ -164,7 +179,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "بزرگوار و نیک‌کردار.",
-      "translation_pashto": "80-16 چې ډېر عزتمن، ډېر نېك دي"
+      "translation_pashto": "80-16 چې ډېر عزتمن، ډېر نېك دي",
+      "translation_english": "honorable and obedient."
     },
     {
       "number": 17,
@@ -174,7 +190,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "مرگ بر این انسان (کافر و سرکش)، چه ناشکر است!",
-      "translation_pashto": "80-17 انسان دې هلاك كړى شي، دى څومره ډېر ناشكره دى!"
+      "translation_pashto": "80-17 انسان دې هلاك كړى شي، دى څومره ډېر ناشكره دى!",
+      "translation_english": "Woe to man; how ungrateful he is!"
     },
     {
       "number": 18,
@@ -184,7 +201,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(دقت نکرده که) الله او را از چه چیز آفریده است؟",
-      "translation_pashto": "80-18 دى دغه (الله) له څه شي نه پیدا كړى دى؟"
+      "translation_pashto": "80-18 دى دغه (الله) له څه شي نه پیدا كړى دى؟",
+      "translation_english": "From what did He create him?"
     },
     {
       "number": 19,
@@ -194,7 +212,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "از نطفه (قطرۀ منی در رحم مادر) او را آفرید، پس (اندازۀ ماندن او در رحم مادر را) مقرر کرد.",
-      "translation_pashto": "80-19 له نطفې نه، دى يې پیدا كړى دى، پس دى يې اندازه كړى دى "
+      "translation_pashto": "80-19 له نطفې نه، دى يې پیدا كړى دى، پس دى يې اندازه كړى دى ",
+      "translation_english": "He created him from a drop of semen and proportioned him,"
     },
     {
       "number": 20,
@@ -204,7 +223,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "باز راه را برای او آسان گردانید.",
-      "translation_pashto": "80-20 بیا يې ده ته لاره ور اسانه كړې ده "
+      "translation_pashto": "80-20 بیا يې ده ته لاره ور اسانه كړې ده ",
+      "translation_english": "then He made the way easy for him;"
     },
     {
       "number": 21,
@@ -214,7 +234,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "باز (بعد از پایان‌یافتن عمر) او را می‌میراند و در قبر می‌نهد.",
-      "translation_pashto": "80-21 بیا يې دى مړ كړ، نو دى يې په قبر كې كېښود"
+      "translation_pashto": "80-21 بیا يې دى مړ كړ، نو دى يې په قبر كې كېښود",
+      "translation_english": "then He caused him to die and be buried;"
     },
     {
       "number": 22,
@@ -224,7 +245,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "باز هر وقتی که بخواهد او را زنده می‌کند.",
-      "translation_pashto": "80-22 بیا چې كله وغواړي دى به ژوندى كړي"
+      "translation_pashto": "80-22 بیا چې كله وغواړي دى به ژوندى كړي",
+      "translation_english": "then when He wills, He will resurrect him."
     },
     {
       "number": 23,
@@ -234,7 +256,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "نه! آنچه را که به او فرمان داده بود انجام نداد.",
-      "translation_pashto": "80-23 داسې نه ده، دغه (انسان) هغه كار نه دى كړى چې دغه (الله) ده ته حكم كړى دى"
+      "translation_pashto": "80-23 داسې نه ده، دغه (انسان) هغه كار نه دى كړى چې دغه (الله) ده ته حكم كړى دى",
+      "translation_english": "Yet he has not fulfilled what He commanded him."
     },
     {
       "number": 24,
@@ -244,7 +267,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس باید انسان به غذای خود بنگرد.",
-      "translation_pashto": "80-24 نو انسان دې خپل طعام ته وګوري"
+      "translation_pashto": "80-24 نو انسان دې خپل طعام ته وګوري",
+      "translation_english": "Let man consider the food he eats:"
     },
     {
       "number": 25,
@@ -254,7 +278,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(که) ما آب را به فراوانی فرو ریختیم.",
-      "translation_pashto": "80-25 چې بېشكه مونږ اوبه راتوى كړې دي، راتویول"
+      "translation_pashto": "80-25 چې بېشكه مونږ اوبه راتوى كړې دي، راتویول",
+      "translation_english": "How We pour down rainwater in torrents,"
     },
     {
       "number": 26,
@@ -264,7 +289,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "باز زمین را به خوبی شگافتیم.",
-      "translation_pashto": "80-26 بیا مونږ ځمكه څیرې كړې ده، څیرول"
+      "translation_pashto": "80-26 بیا مونږ ځمكه څیرې كړې ده، څیرول",
+      "translation_english": "and cause the soil to split open [for sprouts],"
     },
     {
       "number": 27,
@@ -274,7 +300,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس در زمین دانه‌ها را رویانیدیم.",
-      "translation_pashto": "80-27 نو مونږ په دې كې دانې را زرغونه كړي دي"
+      "translation_pashto": "80-27 نو مونږ په دې كې دانې را زرغونه كړي دي",
+      "translation_english": "and cause grains to grow in it,"
     },
     {
       "number": 28,
@@ -284,7 +311,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و (درخت‌های) انگور و سبزیجات را.",
-      "translation_pashto": "80-28 او انګور او تركاريانې"
+      "translation_pashto": "80-28 او انګور او تركاريانې",
+      "translation_english": "as well as grapes and fodder,"
     },
     {
       "number": 29,
@@ -294,7 +322,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و (درخت‌های) زیتون و خرما را.",
-      "translation_pashto": "80-29 او زیتون او كجورې"
+      "translation_pashto": "80-29 او زیتون او كجورې",
+      "translation_english": "and olive trees and date palms,"
     },
     {
       "number": 30,
@@ -304,7 +333,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و باغ‌های پر درخت را.",
-      "translation_pashto": "80-30 او ګڼ باغونه"
+      "translation_pashto": "80-30 او ګڼ باغونه",
+      "translation_english": "and dense orchards,"
     },
     {
       "number": 31,
@@ -314,7 +344,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و میوه‌ها و علف‌زارها (چراگاه‌ها) را.",
-      "translation_pashto": "80-31 او مېوې او ګياه (واښه)"
+      "translation_pashto": "80-31 او مېوې او ګياه (واښه)",
+      "translation_english": "and fruits and grass,"
     },
     {
       "number": 32,
@@ -324,7 +355,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(این همه را آفریدیم) برای نفع شما و حیواناتِ شما.",
-      "translation_pashto": "80-32 ستاسو او ستاسو د څارویو د فايدې لپاره"
+      "translation_pashto": "80-32 ستاسو او ستاسو د څارویو د فايدې لپاره",
+      "translation_english": "as provision for you and your livestock."
     },
     {
       "number": 33,
@@ -334,7 +366,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "پس چون آواز سخت و هولناک (قیامت) بیاید.",
-      "translation_pashto": "80-33 نو كله چې سخت اواز راشي"
+      "translation_pashto": "80-33 نو كله چې سخت اواز راشي",
+      "translation_english": "But when the Deafening Blast comes,"
     },
     {
       "number": 34,
@@ -344,7 +377,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "روزی که انسان از برادر خود می‌گریزد.",
-      "translation_pashto": "80-34 په هغه ورځ چې سړى به له خپل وروره تښتي"
+      "translation_pashto": "80-34 په هغه ورځ چې سړى به له خپل وروره تښتي",
+      "translation_english": "on that Day everyone will flee from his brother,"
     },
     {
       "number": 35,
@@ -354,7 +388,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و از مادر و پدر خود.",
-      "translation_pashto": "80-35 او له خپلې مور او خپل پلاره"
+      "translation_pashto": "80-35 او له خپلې مور او خپل پلاره",
+      "translation_english": "and from his mother and father,"
     },
     {
       "number": 36,
@@ -364,7 +399,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و از زن و فرزند خود.",
-      "translation_pashto": "80-36 او له خپلې ښځې او خپلو زامنو نه"
+      "translation_pashto": "80-36 او له خپلې ښځې او خپلو زامنو نه",
+      "translation_english": "and from his wife and children."
     },
     {
       "number": 37,
@@ -374,7 +410,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "(چون) هرکس از آنان در آن روز حالتی دارد که برایش کفایت می‌کند.",
-      "translation_pashto": "80-37 په دوى كې د هر سړي لپاره به په دغه ورځ كې یو حال وي چې دى به (له نورو نه) بې پروا (بې غوره) كوي"
+      "translation_pashto": "80-37 په دوى كې د هر سړي لپاره به په دغه ورځ كې یو حال وي چې دى به (له نورو نه) بې پروا (بې غوره) كوي",
+      "translation_english": "On that day, everyone will have enough concern of his own."
     },
     {
       "number": 38,
@@ -384,7 +421,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "در آن روز چهره‌هایی شاد و درخشانند.",
-      "translation_pashto": "80-38 څه مخونه به په دغې ورځ كې روښانه وي"
+      "translation_pashto": "80-38 څه مخونه به په دغې ورځ كې روښانه وي",
+      "translation_english": "On that Day, some faces will be bright,"
     },
     {
       "number": 39,
@@ -394,7 +432,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و خوش و خندانند.",
-      "translation_pashto": "80-39 خندېدونكي (او) خوشاله به وي"
+      "translation_pashto": "80-39 خندېدونكي (او) خوشاله به وي",
+      "translation_english": "cheerful and rejoicing;"
     },
     {
       "number": 40,
@@ -404,7 +443,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "و در آن روز چهره‌هایی است که بر آن‌ها غبار نشسته است.",
-      "translation_pashto": "80-40 او څه مخونه به په دغې ورځ كې پر هغو به ګرد پروت وي"
+      "translation_pashto": "80-40 او څه مخونه به په دغې ورځ كې پر هغو به ګرد پروت وي",
+      "translation_english": "while other faces will be dust-stained,"
     },
     {
       "number": 41,
@@ -414,7 +454,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "چهرۀ آن‌ها را سیاهی و تاریکی پوشانده است.",
-      "translation_pashto": "80-41 دغه (مخونه) به توروالي پټ كړي وي"
+      "translation_pashto": "80-41 دغه (مخونه) به توروالي پټ كړي وي",
+      "translation_english": "covered in darkness."
     },
     {
       "number": 42,
@@ -424,7 +465,8 @@
       "hizb": 59,
       "sajda": false,
       "translation_dari": "این‌ها همان گروه کافرِ بدکار‌اند.",
-      "translation_pashto": "80-42 دغه (تور مخي) خلق هم دوى كافران (او) فاجران (بدكاران) دي"
+      "translation_pashto": "80-42 دغه (تور مخي) خلق هم دوى كافران (او) فاجران (بدكاران) دي",
+      "translation_english": "Such are the disbelievers, the wicked."
     }
   ]
 }

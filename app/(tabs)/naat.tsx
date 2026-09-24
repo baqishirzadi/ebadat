@@ -4,7 +4,9 @@
  */
 
 import React, { useMemo, useState, useRef, useCallback } from 'react';
-import { View, StyleSheet, Pressable, ActivityIndicator, TextInput, FlatList, Modal, Alert, ScrollView } from 'react-native';
+
+import { View, StyleSheet, Pressable, ActivityIndicator, FlatList, Modal, Alert, ScrollView } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -237,7 +239,7 @@ export default function NaatScreen() {
 
                 <View style={[styles.searchBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
                   <MaterialIcons name="search" size={20} color={theme.textSecondary} />
-                  <TextInput
+                  <LocalizedTextInput
                     testID="naat-search-input"
                     style={[styles.searchInput, { color: theme.text }]}
                     placeholder={isPashto ? 'د نعت لټون...' : 'جستجوی نعت...'}
@@ -323,7 +325,7 @@ export default function NaatScreen() {
         <View style={styles.pinModalOverlay}>
           <View style={[styles.pinModalContent, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <RtlText style={[styles.pinModalTitle, { color: theme.text }]}>ورود به مدیریت نعت</RtlText>
-            <TextInput
+            <LocalizedTextInput
               style={[styles.pinModalInput, { color: theme.text, borderColor: theme.cardBorder }]}
               placeholder="PIN را وارد کنید"
               placeholderTextColor={theme.textSecondary}

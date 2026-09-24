@@ -7,7 +7,9 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useTodayCalendar } from '@/hooks/useTodayCalendar';
 import { getUpcomingEvents } from '@/utils/calendarEvents';
-import { toArabicNumerals } from '@/utils/numbers';
+import { pickContent } from '@/utils/i18n/content';
+import { useI18n } from '@/utils/i18n/useI18n';
+import { formatNumber } from '@/utils/numbers';
 
 function daysUntil(target: Date): number {
   const now = new Date();
@@ -23,6 +25,7 @@ type ChipRow = {
 
 export function CountdownChips() {
   const { theme } = useApp();
+  const { t, language } = useI18n();
   const truth = useTodayCalendar();
   const [chips, setChips] = useState<ChipRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,7 +35,7 @@ export function CountdownChips() {
     const task = InteractionManager.runAfterInteractions(() => {
       const rows = getUpcomingEvents(truth.gregorianDate, 3).map((event) => ({
         key: event.id,
-        label: event.titleDari,
+        label: pickContent(event, 'title', language),
         days: daysUntil(event.gregorianDate),
         icon: (event.isEid ? 'star' : event.isFasting ? 'nightlight-round' : 'event') as ChipRow['icon'],
       }));
@@ -45,7 +48,7 @@ export function CountdownChips() {
       cancelled = true;
       task.cancel();
     };
-  }, [truth.gregorianDate]);
+  }, [truth.gregorianDate, language]);
 
   if (loading) {
     return (
@@ -69,7 +72,7 @@ export function CountdownChips() {
           style={[styles.chip, { backgroundColor: theme.tint, borderColor: `${theme.tint}` }]}
         >
           <MaterialIcons name={chip.icon} size={20} color="#fff" />
-          <RtlText align="center" style={styles.days}>{toArabicNumerals(chip.days)} روز</RtlText>
+          <RtlText align="center" style={styles.days}>{formatNumber(chip.days, language)} {t('calendar.countdown.days')}</RtlText>
           <RtlText align="center" style={styles.label} numberOfLines={2}>
             {chip.label}
           </RtlText>

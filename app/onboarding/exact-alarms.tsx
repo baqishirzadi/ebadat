@@ -10,7 +10,7 @@ import { RtlView } from '@/components/ui/RtlView';
 import { Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { checkCanScheduleExactAlarms, openExactAlarmSettings } from '@/utils/adhanHealth';
-import { tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { adhanPermissionLocale, tAdhanPermission } from '@/utils/i18n/adhanPermissions';
 import {
   getAndroidPermissionStepCount,
   getNextPermissionStep,
@@ -18,7 +18,8 @@ import {
 } from '@/utils/prayerOnboarding';
 
 export default function OnboardingExactAlarmsScreen() {
-  const { theme } = useApp();
+  const { theme, state: appState } = useApp();
+  const locale = adhanPermissionLocale(appState.preferences.appLanguage);
   const [totalSteps, setTotalSteps] = useState(6);
   const [busy, setBusy] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
@@ -60,18 +61,18 @@ export default function OnboardingExactAlarmsScreen() {
       testID="android-onboarding-exact-alarms"
       step={5}
       totalSteps={totalSteps}
-      title={tAdhanPermission('adhanPermissions.exactAlarm.title', 'fa')}
-      subtitle={tAdhanPermission('adhanPermissions.exactAlarm.body', 'fa')}
+      title={tAdhanPermission('adhanPermissions.exactAlarm.title', locale)}
+      subtitle={tAdhanPermission('adhanPermissions.exactAlarm.body', locale)}
       primaryLabel={
         granted
-          ? tAdhanPermission('adhanPermissions.continue', 'fa')
+          ? tAdhanPermission('adhanPermissions.continue', locale)
           : busy
             ? '...'
-            : tAdhanPermission('adhanPermissions.exactAlarm.button', 'fa')
+            : tAdhanPermission('adhanPermissions.exactAlarm.button', locale)
       }
       onPrimary={granted ? goNext : handleEnable}
       primaryDisabled={busy}
-      secondaryLabel={granted ? undefined : tAdhanPermission('adhanPermissions.exactAlarm.skip', 'fa')}
+      secondaryLabel={granted ? undefined : tAdhanPermission('adhanPermissions.exactAlarm.skip', locale)}
       onSecondary={granted ? undefined : goNext}
       secondaryMuted
       showBack
@@ -83,12 +84,12 @@ export default function OnboardingExactAlarmsScreen() {
         </View>
         <RtlText align="center" style={[styles.status, { color: granted ? '#1b7f4d' : theme.warning }]}>
           {granted
-            ? `${tAdhanPermission('adhanPermissions.exactAlarm.granted', 'fa')} ✅`
-            : `${tAdhanPermission('adhanPermissions.exactAlarm.denied', 'fa')} ⚠️`}
+            ? `${tAdhanPermission('adhanPermissions.exactAlarm.granted', locale)} ✅`
+            : `${tAdhanPermission('adhanPermissions.exactAlarm.denied', locale)} ⚠️`}
         </RtlText>
         {!granted ? (
           <RtlText align="center" style={[styles.hint, { color: theme.textSecondary }]}>
-            پس از فعال‌سازی در تنظیمات، به برنامه برگردید و «ادامه» را بزنید.
+            {locale === 'ps' ? 'له فعالولو وروسته اپ ته راستانه شئ او «دوام» ووهئ.' : 'پس از فعال‌سازی در تنظیمات، به برنامه برگردید و «ادامه» را بزنید.'}
           </RtlText>
         ) : null}
       </RtlView>

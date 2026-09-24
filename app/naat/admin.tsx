@@ -4,7 +4,9 @@
  */
 
 import React, { useState } from 'react';
-import { View, StyleSheet, TextInput, Pressable, ScrollView, Text, Alert } from 'react-native';
+
+import { View, StyleSheet, Pressable, ScrollView, Alert } from 'react-native';
+import { LocalizedText, LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -107,15 +109,15 @@ export default function NaatAdminScreen() {
         <Pressable onPress={handleBack} style={styles.backButton}>
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
-        <Text style={styles.headerTitle}>مدیریت نعت‌ها</Text>
+        <LocalizedText style={styles.headerTitle}>مدیریت نعت‌ها</LocalizedText>
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-          <Text style={[styles.noteText, { color: theme.textSecondary }]}>
+          <LocalizedText style={[styles.noteText, { color: theme.textSecondary }]}>
             فقط لینک مستقیم فایل صوتی از Supabase Storage را وارد کنید
-          </Text>
-          <TextInput
+          </LocalizedText>
+          <LocalizedTextInput
             style={[styles.input, { color: theme.text, borderColor: theme.cardBorder }]}
             placeholder="عنوان نعت (دری)"
             placeholderTextColor={theme.textSecondary}
@@ -123,7 +125,7 @@ export default function NaatAdminScreen() {
             onChangeText={setTitleFa}
             textAlign="right"
           />
-          <TextInput
+          <LocalizedTextInput
             style={[styles.input, { color: theme.text, borderColor: theme.cardBorder }]}
             placeholder="عنوان نعت (پښتو)"
             placeholderTextColor={theme.textSecondary}
@@ -131,7 +133,7 @@ export default function NaatAdminScreen() {
             onChangeText={setTitlePs}
             textAlign="right"
           />
-          <TextInput
+          <LocalizedTextInput
             style={[styles.input, { color: theme.text, borderColor: theme.cardBorder }]}
             placeholder="نام قاری/منشد"
             placeholderTextColor={theme.textSecondary}
@@ -139,7 +141,7 @@ export default function NaatAdminScreen() {
             onChangeText={setReciterName}
             textAlign="right"
           />
-          <TextInput
+          <LocalizedTextInput
             style={[styles.input, { color: theme.text, borderColor: theme.cardBorder }]}
             placeholder="توضیحات (اختیاری)"
             placeholderTextColor={theme.textSecondary}
@@ -147,7 +149,7 @@ export default function NaatAdminScreen() {
             onChangeText={setDescription}
             textAlign="right"
           />
-          <TextInput
+          <LocalizedTextInput
             style={[styles.input, { color: theme.text, borderColor: theme.cardBorder }]}
             placeholder="لینک صوتی مستقیم (Supabase Storage)"
             placeholderTextColor={theme.textSecondary}
@@ -165,12 +167,12 @@ export default function NaatAdminScreen() {
             ]}
           >
             <MaterialIcons name="link" size={18} color={theme.textSecondary} />
-            <Text style={[styles.testButtonText, { color: theme.textSecondary }]}>
+            <LocalizedText style={[styles.testButtonText, { color: theme.textSecondary }]}>
               {testingUrl ? 'در حال بررسی...' : 'تست لینک'}
-            </Text>
+            </LocalizedText>
           </Pressable>
           <View style={styles.metaRow}>
-            <TextInput
+            <LocalizedTextInput
               style={[styles.metaInput, { color: theme.text, borderColor: theme.cardBorder }]}
               placeholder="مدت (ثانیه)"
               placeholderTextColor={theme.textSecondary}
@@ -179,7 +181,7 @@ export default function NaatAdminScreen() {
               keyboardType="numeric"
               textAlign="center"
             />
-            <TextInput
+            <LocalizedTextInput
               style={[styles.metaInput, { color: theme.text, borderColor: theme.cardBorder }]}
               placeholder="حجم (MB)"
               placeholderTextColor={theme.textSecondary}
@@ -192,7 +194,7 @@ export default function NaatAdminScreen() {
 
           <Pressable onPress={handleAdd} style={[styles.addButton, { backgroundColor: theme.tint }]}>
             <MaterialIcons name={editingId ? 'save' : 'add'} size={20} color="#fff" />
-            <Text style={styles.addButtonText}>{editingId ? 'ذخیره تغییرات' : 'افزودن نعت'}</Text>
+            <LocalizedText style={styles.addButtonText}>{editingId ? 'ذخیره تغییرات' : 'افزودن نعت'}</LocalizedText>
           </Pressable>
           {editingId && (
             <Pressable
@@ -208,13 +210,13 @@ export default function NaatAdminScreen() {
               }}
               style={[styles.cancelButton, { borderColor: theme.cardBorder }]}
             >
-              <Text style={[styles.cancelText, { color: theme.textSecondary }]}>لغو</Text>
+              <LocalizedText style={[styles.cancelText, { color: theme.textSecondary }]}>لغو</LocalizedText>
             </Pressable>
           )}
         </View>
 
         <View style={styles.listHeader}>
-          <Text style={[styles.listTitle, { color: theme.text }]}>همه نعت‌ها</Text>
+          <LocalizedText style={[styles.listTitle, { color: theme.text }]}>همه نعت‌ها</LocalizedText>
         </View>
 
         {naats.map((naat) => (
@@ -232,9 +234,9 @@ export default function NaatAdminScreen() {
             }}
             style={[styles.row, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
-            <Text style={[styles.rowTitle, { color: theme.text }]} numberOfLines={1}>
+            <LocalizedText style={[styles.rowTitle, { color: theme.text }]} numberOfLines={1}>
               {naat.title_fa}
-            </Text>
+            </LocalizedText>
             <Pressable
               onPress={(e) => {
                 e.stopPropagation();

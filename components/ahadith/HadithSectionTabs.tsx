@@ -2,6 +2,7 @@ import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { AhadithSection } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
+import { useI18n } from '@/utils/i18n/useI18n';
 import CenteredText from '@/components/CenteredText';
 import { alphaColor } from '@/utils/ahadith/theme';
 
@@ -10,17 +11,17 @@ interface HadithSectionTabsProps {
   onChange: (section: AhadithSection) => void;
 }
 
-const SECTION_LABELS: Record<AhadithSection, string> = {
-  daily: 'حدیث روز',
-  muttafaq: 'متفق‌علیه',
-  topics: 'موضوعات',
-  search: 'جستجو',
-};
-
 const SECTIONS: AhadithSection[] = ['daily', 'muttafaq', 'topics', 'search'];
 
 export function HadithSectionTabs({ activeSection, onChange }: HadithSectionTabsProps) {
   const { theme } = useApp();
+  const { t } = useI18n();
+  const labels: Record<AhadithSection, string> = {
+    daily: t('hadith.daily'),
+    muttafaq: t('hadith.muttafaq'),
+    topics: t('hadith.topics'),
+    search: t('hadith.search'),
+  };
 
   return (
     <View
@@ -48,7 +49,7 @@ export function HadithSectionTabs({ activeSection, onChange }: HadithSectionTabs
               pressed && { opacity: 0.85 },
             ]}
             accessibilityRole="button"
-            accessibilityLabel={SECTION_LABELS[section]}
+            accessibilityLabel={labels[section]}
           >
             <CenteredText
               numberOfLines={1}
@@ -60,7 +61,7 @@ export function HadithSectionTabs({ activeSection, onChange }: HadithSectionTabs
                 },
               ]}
             >
-              {SECTION_LABELS[section]}
+              {labels[section]}
             </CenteredText>
           </Pressable>
         );

@@ -4,15 +4,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Pressable,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+
+import { View, StyleSheet, ScrollView, Pressable, ActivityIndicator, Alert } from 'react-native';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
@@ -261,7 +255,7 @@ export default function EditArticleScreen() {
         {/* Title */}
         <View style={styles.section}>
           <CenteredText style={[styles.label, { color: theme.text }]}>عنوان</CenteredText>
-          <TextInput
+          <LocalizedTextInput
             style={[
               styles.titleInput,
               { backgroundColor: theme.card, borderColor: theme.cardBorder, color: theme.text },
@@ -278,7 +272,7 @@ export default function EditArticleScreen() {
         {/* Body */}
         <View style={styles.section}>
           <CenteredText style={[styles.label, { color: theme.text }]}>متن مقاله</CenteredText>
-          <TextInput
+          <LocalizedTextInput
             style={[
               styles.bodyInput,
               { backgroundColor: theme.card, borderColor: theme.cardBorder, color: theme.text },

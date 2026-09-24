@@ -8,6 +8,7 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const ACTIONS = [
   { icon: 'auto-awesome' as const, label: 'اذکار', route: '/(tabs)/adhkar', badgeKey: null },
@@ -18,6 +19,7 @@ const ACTIONS = [
 
 export function QuickActions() {
   const { theme } = useApp();
+  const { t } = useI18n();
   const { unreadCount } = useDua();
 
   return (
@@ -40,7 +42,9 @@ export function QuickActions() {
               </View>
             ) : null}
           </View>
-          <RtlText align="center" style={[styles.label, { color: theme.text }]} numberOfLines={2}>{action.label}</RtlText>
+          <RtlText align="center" style={[styles.label, { color: theme.text }]} numberOfLines={2}>
+            {action.route === '/dua-request' ? t('home.dua.title') : action.label}
+          </RtlText>
         </Pressable>
       ))}
     </RtlView>

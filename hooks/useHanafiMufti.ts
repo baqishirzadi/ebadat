@@ -3,6 +3,11 @@
  */
 
 import { useCallback, useEffect, useRef, useSyncExternalStore } from 'react';
+import { useAppLanguage } from '@/context/AppContext';
+import type { AppLanguage } from '@/types/quran';
+import { translateUi } from '@/utils/i18n/catalog';
+import type { HanafiMuftiErrorCode, HanafiMuftiLanguage } from '@/utils/hanafiMufti';
+import { detectMuftiMessageLanguage } from '@/utils/i18n/languageDetection';
 
 import { askHanafiMufti, isHanafiMuftiConfigured } from '@/utils/hanafiMufti';
 import {
@@ -27,6 +32,21 @@ const INITIAL_STORE: HanafiMuftiStore = {
   error: null,
   streamingContent: '',
 };
+
+function resolveMuftiError(code: HanafiMuftiErrorCode, language: AppLanguage): string {
+  const keys: Record<HanafiMuftiErrorCode, Parameters<typeof translateUi>[0]> = {
+    not_configured: 'mufti.error.notConfigured',
+    offline: 'mufti.error.offline',
+    invalid_request: 'mufti.error.invalid',
+    unavailable: 'mufti.error.server',
+    rate_limited: 'mufti.error.rateLimited',
+    server_error: 'mufti.error.server',
+    connection_error: 'mufti.error.connection',
+    empty_response: 'mufti.error.empty',
+    aborted: 'mufti.error.aborted',
+  };
+  return translateUi(keys[code], language);
+}
 
 let store: HanafiMuftiStore = { ...INITIAL_STORE };
 const listeners = new Set<() => void>();
@@ -65,6 +85,7 @@ async function persistMessages(messages: StoredHanafiMuftiMessage[]): Promise<vo
 }
 
 export function useHanafiMufti() {
+  const appLanguage = useAppLanguage();
   const snapshot = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -81,7 +102,7 @@ export function useHanafiMufti() {
     if (!trimmed || store.isStreaming) return false;
 
     if (!isHanafiMuftiConfigured()) {
-      setStore({ error: 'سرویس مفتی پیکربندی نشده است.' });
+      setStore({ error: translateUi('mufti.error.notConfigured', appLanguage) });
       return false;
     }
 
@@ -112,9 +133,11 @@ export function useHanafiMufti() {
     }));
 
     let assistantText = '';
+    const preferredLanguage = detectMuftiMessageLanguage(trimmed, appLanguage);
 
     await askHanafiMufti(apiMessages, {
       signal: controller.signal,
+      preferredLanguage,
       onDelta: (chunk) => {
         assistantText += chunk;
         setStore({ streamingContent: assistantText });
@@ -124,7 +147,7 @@ export function useHanafiMufti() {
 
         const assistantMessage: StoredHanafiMuftiMessage = {
           role: 'assistant',
-          content: assistantText.trim() || 'پاسخی دریافت نشد.',
+          content: assistantText.trim() || translateUi('mufti.error.empty', preferredLanguage),
           createdAt: Date.now(),
         };
 
@@ -137,18 +160,18 @@ export function useHanafiMufti() {
         });
         void persistMessages(finalMessages);
       },
-      onError: (message) => {
+      onError: (code) => {
         if (controller.signal.aborted) return;
         setStore({
           isStreaming: false,
           streamingContent: '',
-          error: message,
+          error: resolveMuftiError(code, preferredLanguage),
         });
       },
     });
 
     return true;
-  }, []);
+  }, [appLanguage]);
 
   const clearConversation = useCallback(async () => {
     abortRef.current?.abort();

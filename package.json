@@ -49,6 +49,7 @@
     "verify:prayer-policy": "node scripts/verify-prayer-policy.js",
     "verify:afghanistan-adhan-policy": "node scripts/verify-afghanistan-adhan-policy.js",
     "verify:qibla-math": "node scripts/verify-qibla-math.js",
+    "verify:pashto-localization": "node scripts/verify-pashto-localization.js",
     "verify:qibla-heading-lifecycle": "node scripts/verify-qibla-heading-lifecycle.js",
     "verify:ios-widget": "node scripts/verify-ios-widget.js",
     "verify:ios-app-icon": "node scripts/verify-ios-app-icon.js",

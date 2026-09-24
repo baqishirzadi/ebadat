@@ -8,18 +8,21 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 export default function OnboardingWelcomeScreen() {
   const { theme } = useApp();
+  const { t } = useI18n();
 
   return (
     <OnboardingShell
-      step={1}
+      step={2}
       totalSteps={5}
-      title="به عبادت خوش آمدید"
-      subtitle="قرآن، اوقات نماز، اذان، قبله‌نما و تقویم اسلامی — همه در یک برنامه ساده و زیبا."
-      primaryLabel="شروع"
-      onPrimary={() => router.push('/onboarding/language' as never)}
+      title={t('onboarding.welcome.title')}
+      subtitle={t('onboarding.welcome.subtitle')}
+      primaryLabel={t('onboarding.welcome.start')}
+      onPrimary={() => router.push('/onboarding/location' as never)}
+      showBack
     >
       <RtlView style={styles.hero}>
         <LinearGradient
@@ -33,7 +36,7 @@ export default function OnboardingWelcomeScreen() {
           </RtlView>
         </LinearGradient>
         <RtlText align="center" style={[styles.tagline, { color: theme.textSecondary }]}>
-          برای مسلمانان افغان در سراسر جهان
+          {t('onboarding.welcome.tagline')}
         </RtlText>
       </RtlView>
     </OnboardingShell>

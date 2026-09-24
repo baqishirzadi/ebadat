@@ -4,8 +4,14 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { deriveDailyCardGradient, alphaColor } from '@/utils/ahadith/theme';
-import { formatSourceLabel, getAuthenticityGradeLabelFa } from '@/utils/ahadith/labels';
+import {
+  formatSourceLabel,
+  getAuthenticityGradeLabel,
+  getMuttafaqBadgeLabel,
+} from '@/utils/ahadith/labels';
+import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
+import { useI18n } from '@/utils/i18n/useI18n';
 import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 
 interface HadithShareCanvasProps {
@@ -14,6 +20,8 @@ interface HadithShareCanvasProps {
 
 export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ hadith }, ref) => {
   const { theme, themeMode, state } = useApp();
+  const { language } = useI18n();
+  const isPashto = language === 'pashto';
   const gradient = deriveDailyCardGradient(theme, themeMode);
 
   return (
@@ -38,11 +46,11 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
             styles.translation,
             {
               color: theme.textPrimary,
-              fontFamily: getDariFontFamily(state.preferences.dariFont),
+              fontFamily: isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont),
             },
           ]}
         >
-          {hadith.dari_translation}
+          {getHadithTranslation(hadith, language)}
         </CenteredText>
 
         <CenteredText
@@ -54,9 +62,11 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
             },
           ]}
         >
-          {formatSourceLabel(hadith.source_book, hadith.source_number)}
+          {formatSourceLabel(hadith.source_book, hadith.source_number, language)}
           {' · '}
-          {hadith.is_muttafaq ? 'متفق‌علیه' : getAuthenticityGradeLabelFa(hadith.authenticity_grade)}
+          {hadith.is_muttafaq
+            ? getMuttafaqBadgeLabel(language)
+            : getAuthenticityGradeLabel(hadith.authenticity_grade, language)}
         </CenteredText>
       </LinearGradient>
     </View>
