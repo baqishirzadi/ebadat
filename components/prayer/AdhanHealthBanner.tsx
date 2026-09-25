@@ -15,6 +15,7 @@ import {
   openExactAlarmSettings,
 } from '@/utils/adhanHealth';
 import { adhanPermissionLocale, tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { rowStyle } from '@/utils/i18n/direction';
 
 interface AdhanHealthBannerProps {
   onSelectCity?: () => void;
@@ -23,6 +24,7 @@ interface AdhanHealthBannerProps {
 export function AdhanHealthBanner({ onSelectCity: _onSelectCity }: AdhanHealthBannerProps) {
   const { theme, state } = useApp();
   const locale = adhanPermissionLocale(state.preferences.appLanguage);
+  const directionalRow = rowStyle(state.preferences.appLanguage);
   const router = useRouter();
   const [health, setHealth] = useState<AdhanHealthState | null>(null);
 
@@ -50,7 +52,7 @@ export function AdhanHealthBanner({ onSelectCity: _onSelectCity }: AdhanHealthBa
   return (
     <View style={styles.stack}>
       <Card style={{ ...styles.card, backgroundColor: theme.warningSurface, borderColor: theme.warning }}>
-        <View style={styles.row}>
+        <View style={[styles.row, directionalRow]}>
           <MaterialIcons name="alarm" size={22} color={theme.warning} />
           <View style={styles.textBlock}>
             <LocalizedText style={[styles.body, { color: theme.text }]}>
@@ -85,7 +87,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   row: {
-    flexDirection: 'row-reverse',
     alignItems: 'flex-start',
     gap: Spacing.sm,
   },
@@ -96,8 +97,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
     lineHeight: 22,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    textAlign: 'center',
   },
   secondaryButton: {
     borderWidth: 1,
@@ -110,6 +110,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
 });

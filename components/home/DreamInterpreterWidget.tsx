@@ -23,7 +23,8 @@ interface DreamInterpreterWidgetProps {
 function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetProps) {
   const { state } = useApp();
   const { isStreaming, error, isConfigured, sendMessage, dismissError } = useDreamInterpreter();
-  const { t, fontFamily, isPashto } = useI18n();
+  const { t, fontFamily, isPashto, language } = useI18n();
+  const isEnglish = language === 'english';
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
   const [input, setInput] = useState('');
   const copy = useMemo(
@@ -46,21 +47,37 @@ function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetPro
   return (
     <RtlView style={[styles.container, isPashto && styles.containerPashto]}>
       <View style={styles.titlePress}>
-        <View style={styles.titleRow}>
-          <RtlText
-            align="center"
-            wrap={false}
-            numberOfLines={1}
-            style={[styles.title, {
-              fontFamily,
-              fontSize: Typography.ui.subtitle,
-              lineHeight: isPashto ? (isNastaliq ? 34 : 22) : undefined,
-              includeFontPadding: isPashto && isNastaliq,
-            }]}
-          >
-            {copy.title}
-          </RtlText>
-          <MaterialIcons name="nights-stay" size={18} color="rgba(255,255,255,0.9)" />
+        <View style={[styles.titleRow, isEnglish && styles.titleRowEnglish]}>
+          {isEnglish ? (
+            <>
+              <MaterialIcons name="nights-stay" size={18} color="rgba(255,255,255,0.9)" />
+              <RtlText
+                align="center"
+                wrap={false}
+                numberOfLines={1}
+                style={[styles.title, styles.titleEnglish]}
+              >
+                {copy.title}
+              </RtlText>
+            </>
+          ) : (
+            <>
+              <RtlText
+                align="center"
+                wrap={false}
+                numberOfLines={1}
+                style={[styles.title, {
+                  fontFamily,
+                  fontSize: Typography.ui.subtitle,
+                  lineHeight: isPashto ? (isNastaliq ? 34 : 22) : undefined,
+                  includeFontPadding: isPashto && isNastaliq,
+                }]}
+              >
+                {copy.title}
+              </RtlText>
+              <MaterialIcons name="nights-stay" size={18} color="rgba(255,255,255,0.9)" />
+            </>
+          )}
         </View>
         <Pressable
           onPress={openFullChat}
@@ -76,9 +93,10 @@ function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetPro
             style={[
               styles.viewConversationText,
               isPashto && styles.viewConversationTextPashto,
+              isEnglish && styles.viewConversationTextEnglish,
               {
-                fontFamily,
-                lineHeight: isPashto ? (isNastaliq ? 28 : 26) : 17,
+                fontFamily: isEnglish ? undefined : fontFamily,
+                lineHeight: isPashto ? (isNastaliq ? 28 : 26) : isEnglish ? 20 : 17,
                 includeFontPadding: isPashto,
                 paddingTop: isPashto ? 2 : undefined,
               },
@@ -106,7 +124,13 @@ function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetPro
         onSend={handleSend}
         onFocus={onInputFocus}
         placeholder={copy.placeholder}
-        placeholderTextColor={isPashto ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.45)'}
+        placeholderTextColor={
+          isEnglish
+            ? 'rgba(255,255,255,0.7)'
+            : isPashto
+              ? 'rgba(255,255,255,0.65)'
+              : 'rgba(255,255,255,0.45)'
+        }
         accessibilityLabel={copy.placeholder}
         sendLabel={t('common.send')}
         maxLength={DREAM_INPUT_MAX_LENGTH}
@@ -146,10 +170,18 @@ const styles = StyleSheet.create({
     gap: 6,
     alignSelf: 'center',
   },
+  titleRowEnglish: {
+    flexDirection: 'row',
+  },
   title: {
     ...persianCenterSubtitleText,
     fontFamily: 'Vazirmatn-Bold',
     color: '#fff',
+  },
+  titleEnglish: {
+    fontFamily: undefined,
+    fontWeight: '700',
+    fontSize: Typography.ui.subtitle,
   },
   viewConversationButton: {
     minHeight: 44,
@@ -169,6 +201,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'rgba(255,255,255,0.9)',
     textDecorationLine: 'underline',
+  },
+  viewConversationTextEnglish: {
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.9)',
   },
   errorBox: {
     backgroundColor: 'rgba(0,0,0,0.25)',

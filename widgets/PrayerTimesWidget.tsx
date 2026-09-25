@@ -2,7 +2,7 @@ import React from 'react';
 import { FlexWidget, TextWidget } from 'react-native-android-widget';
 
 import type { WidgetSnapshot } from '@/utils/widgetSnapshot';
-import { toArabicNumeralsString } from '@/utils/numbers';
+import { toArabicNumeralsString, toLatinNumeralsString } from '@/utils/numbers';
 
 const TINT = '#1a4d3e';
 const ACTIVE_BG = '#ffffff';
@@ -10,6 +10,47 @@ const INACTIVE_BG = '#ffffff1f';
 const TEXT_PRIMARY = '#ffffff';
 const TEXT_SECONDARY = '#ffffffd9';
 const ACCENT = '#8bd9b8';
+
+const WEEKDAY_SHORT_EN: Record<string, string> = {
+  Sunday: 'Sun',
+  Monday: 'Mon',
+  Tuesday: 'Tue',
+  Wednesday: 'Wed',
+  Thursday: 'Thu',
+  Friday: 'Fri',
+  Saturday: 'Sat',
+};
+
+const HIJRI_MONTH_SHORT_EN: Record<string, string> = {
+  'Rabi al-Awwal': 'Rabi I',
+  'Rabi al-Thani': 'Rabi II',
+  'Jumada al-Awwal': 'Jumada I',
+  'Jumada al-Thani': 'Jumada II',
+};
+
+/** English Hijri: "4 Jumada I" (day + short month, no year/prefix). */
+function englishHijriCell(hijriDisplay: string): string {
+  const parts = hijriDisplay.trim().split(/\s+/).filter(Boolean);
+  if (parts.length < 2) return hijriDisplay.trim();
+  const day = parts[0];
+  const yearMaybe = parts[parts.length - 1];
+  const monthTokens = /^\d+$/.test(yearMaybe) ? parts.slice(1, -1) : parts.slice(1);
+  const monthFull = monthTokens.join(' ');
+  const monthShort = HIJRI_MONTH_SHORT_EN[monthFull] || monthFull;
+  return `${day} ${monthShort}`.trim();
+}
+
+/** English hero: "Fri · 12 Rabi II" — Qamari first (day + short month, no year). */
+function englishHeaderTitle(weekday: string, hijriDisplay: string): string {
+  const shortDay = WEEKDAY_SHORT_EN[weekday] || weekday.slice(0, 3);
+  return [shortDay, englishHijriCell(hijriDisplay)].filter(Boolean).join(' · ');
+}
+
+/** English solar cell: "3 Mizan" (drop year). */
+function englishSolarShort(shamsi: string): string {
+  const parts = shamsi.trim().split(/\s+/).filter(Boolean);
+  return parts.length >= 2 ? `${parts[0]} ${parts[1]}` : shamsi.trim();
+}
 
 interface PrayerTimesWidgetProps {
   snapshot: WidgetSnapshot | null;
@@ -19,44 +60,40 @@ interface PrayerTimesWidgetProps {
 }
 
 export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: PrayerTimesWidgetProps) {
-  const isPashto = snapshot?.appLanguage === 'pashto';
+  const language = snapshot?.appLanguage || 'dari';
+  const isPashto = language === 'pashto';
+  const isEnglish = language === 'english';
   const selectedFont = isPashto ? snapshot?.pashtoFont : snapshot?.dariFont;
-  const regularFontFamily = selectedFont === 'nastaliq'
-    ? 'NotoNastaliqUrdu'
-    : selectedFont === 'amiri'
-      ? 'Amiri'
-      : 'Vazirmatn';
-  const boldFontFamily = regularFontFamily === 'Vazirmatn'
+  // English uses Vazirmatn (Latin + Arabic already registered for the app).
+  const regularFontFamily = isEnglish
+    ? 'Vazirmatn'
+    : selectedFont === 'nastaliq'
+      ? 'NotoNastaliqUrdu'
+      : selectedFont === 'amiri'
+        ? 'Amiri'
+        : 'Vazirmatn';
+  const boldFontFamily = isEnglish
     ? 'Vazirmatn-Bold'
-    : regularFontFamily === 'Amiri'
-      ? 'Amiri-Bold'
-      : 'NotoNastaliqUrdu';
-  const weekdayLabel = isPashto ? snapshot?.weekdayPashto : snapshot?.weekdayDari;
-  const hijriLabel = isPashto ? snapshot?.hijriDisplayPashto : snapshot?.hijriDisplay;
-  const shamsiLabel = isPashto ? snapshot?.shamsiDisplayPashto : snapshot?.shamsiDisplay;
-  const sunriseLabel = isPashto ? snapshot?.sunriseDisplayPashto : snapshot?.sunriseDisplay;
+    : regularFontFamily === 'Vazirmatn'
+      ? 'Vazirmatn-Bold'
+      : regularFontFamily === 'Amiri'
+        ? 'Amiri-Bold'
+        : 'NotoNastaliqUrdu';
+
   // Xiaomi/MIUI and some launchers honor a shorter minimum height than the
   // Pixel launcher. Keep a deliberately compact composition for those bounds
   // instead of allowing the lower prayer row to be clipped.
   const compact = height < 145 || width < 300;
-  const rootPaddingVertical = compact ? 5 : 7;
+  const rootPaddingVertical = isEnglish ? (compact ? 7 : 9) : compact ? 5 : 7;
   const rootPaddingHorizontal = compact ? 6 : 8;
-  const prayerLabelSize = isPashto
-    ? (compact ? 14 : 15)
-    : (compact ? 9 : 10);
-  const prayerTimeSize = isPashto
-    ? (compact ? 20 : 22)
-    : (compact ? 13 : 15);
-  const prayerChipPaddingVertical = isPashto ? 4 : (compact ? 3 : 4);
-  const prayerTimeMarginTop = isPashto ? -10 : 1;
-  const compactDateSize = isPashto ? 12 : 13;
-  const fullDateSize = isPashto ? 11 : 12;
-  const solarDateSize = isPashto ? 16 : 18;
-  const hijriDateSize = isPashto ? 12 : 13;
-  const sunriseDateSize = isPashto ? 10 : 11;
-  const pashtoHeaderSize = compact ? 17 : 18;
-  const pashtoGregHijriSize = 15;
-  const pashtoSunriseLineSize = 14;
+  // Nastaliq needs tight negative margin; Latin chips need breathing room.
+  const prayerLabelSize = isEnglish ? 11 : compact ? 14 : 15;
+  const prayerTimeSize = isEnglish ? 18 : compact ? 20 : 22;
+  const prayerChipPaddingVertical = isEnglish ? 5 : 4;
+  const prayerTimeMarginTop = isEnglish ? 1 : -10;
+  const headerTitleSize = isEnglish ? 20 : compact ? 17 : 18;
+  const gregHijriSize = isEnglish ? 16 : 15;
+  const sunriseLineSize = isEnglish ? 16 : 14;
 
   if (!snapshot) {
     return (
@@ -72,32 +109,79 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         clickAction="OPEN_APP"
       >
         <TextWidget
-          text="عبادت"
-          style={{ fontSize: compact ? 16 : 18, fontFamily: 'Vazirmatn-Bold', color: TEXT_PRIMARY }}
+          text={isEnglish ? 'Ebadat' : 'عبادت'}
+          style={{ fontSize: compact ? 16 : 18, fontFamily: boldFontFamily, color: TEXT_PRIMARY }}
         />
         <TextWidget
-          text="اپ پرانیزئ"
-          style={{ fontSize: compact ? 11 : 12, fontFamily: 'Vazirmatn', color: TEXT_SECONDARY, marginTop: 4 }}
+          text={isEnglish ? 'Open the app' : 'اپ پرانیزئ'}
+          style={{ fontSize: compact ? 11 : 12, fontFamily: regularFontFamily, color: TEXT_SECONDARY, marginTop: 4 }}
         />
       </FlexWidget>
     );
   }
 
-  const prayers = snapshot.prayers ?? [];
-  const prayersRtl = [...prayers].reverse();
-  const sunriseParts = (sunriseLabel || '').trim().split(/\s+/).filter(Boolean);
-  const sunriseTimeOnly = sunriseParts.slice(-1)[0] || '';
-  const sunriseCaption =
-    sunriseParts.length > 1 ? sunriseParts.slice(0, -1).join(' ') : (isPashto ? 'لمر ختل' : '');
-  const solarDisplay = shamsiLabel || snapshot.shamsiDisplay || '';
-  const pashtoHeaderText = [weekdayLabel, solarDisplay].filter(Boolean).join('، ');
-  // Day/year in Eastern Arabic numerals; month abbreviation stays Latin.
-  const pashtoGregorianDisplay = toArabicNumeralsString(snapshot.gregorianDisplay || '');
+  const weekdayLabel = isEnglish
+    ? snapshot.weekdayEnglish || snapshot.weekdayDari
+    : isPashto
+      ? snapshot.weekdayPashto
+      : snapshot.weekdayDari;
+  const hijriLabel = isEnglish
+    ? snapshot.hijriDisplayEnglish || snapshot.hijriDisplay
+    : isPashto
+      ? snapshot.hijriDisplayPashto
+      : snapshot.hijriDisplay;
+  const shamsiLabel = isEnglish
+    ? snapshot.shamsiDisplayEnglish || snapshot.shamsiDisplay
+    : isPashto
+      ? snapshot.shamsiDisplayPashto
+      : snapshot.shamsiDisplay;
+  const sunriseLabel = isEnglish
+    ? snapshot.sunriseDisplayEnglish || snapshot.sunriseDisplay
+    : isPashto
+      ? snapshot.sunriseDisplayPashto
+      : snapshot.sunriseDisplay;
 
-  // Title + one horizontal date row (gregorian / sunrise / hijri).
+  const localizeDigits = (value: string) =>
+    isEnglish ? toLatinNumeralsString(value) : toArabicNumeralsString(toLatinNumeralsString(value));
+
+  const prayers = snapshot.prayers ?? [];
+  // English is LTR: Fajr on the left. Dari/Pashto stay RTL on the chips.
+  const prayersOrdered = isEnglish ? prayers : [...prayers].reverse();
+  const sunriseParts = (sunriseLabel || '').trim().split(/\s+/).filter(Boolean);
+  const sunriseTimeOnly = sunriseParts.length ? localizeDigits(sunriseParts.slice(-1)[0] || '') : '';
+  const sunriseCaption = isEnglish
+    ? 'Sun'
+    : sunriseParts.length > 1
+      ? sunriseParts.slice(0, -1).join(' ')
+      : isPashto
+        ? 'لمر ختل'
+        : 'طلوع';
+
+  const solarDisplay = shamsiLabel || snapshot.shamsiDisplay || '';
+  const headerTitleText = isEnglish
+    ? englishHeaderTitle(weekdayLabel || '', hijriLabel || '')
+    : [weekdayLabel, solarDisplay].filter(Boolean).join('، ');
+  const gregorianDisplay = isEnglish
+    ? toLatinNumeralsString(snapshot.gregorianDisplay || '')
+    : toArabicNumeralsString(snapshot.gregorianDisplay || '');
+  // English row: solar · sunrise · Gregorian (Qamari is the accent title).
+  // Dari/Pashto keep Gregorian · sunrise · Hijri with calendar labels.
+  const leftDateCell = isEnglish
+    ? englishSolarShort(solarDisplay)
+    : isPashto
+      ? `${gregorianDisplay} میلادي`.trim()
+      : `${gregorianDisplay} میلادی`.trim();
+  const rightDateCell = isEnglish
+    ? gregorianDisplay.trim()
+    : isPashto
+      ? `قمري ${hijriLabel || ''}`.trim()
+      : `قمری ${hijriLabel || ''}`.trim();
+  const sunriseCell = `${sunriseCaption}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim();
+
+  // Title + one horizontal date row.
   // Keep each cell as FlexWidget > TextWidget — no LTR isolates and
   // no flex on TextWidget itself (those produced Null RemoteViews on One UI).
-  const pashtoHeader = isPashto ? (
+  const sharedHeader = (
     <FlexWidget
       style={{
         width: 'match_parent',
@@ -105,11 +189,11 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       }}
     >
       <TextWidget
-        text={pashtoHeaderText}
+        text={headerTitleText}
         maxLines={1}
         allowFontScaling={false}
         style={{
-          fontSize: pashtoHeaderSize,
+          fontSize: headerTitleSize,
           fontFamily: boldFontFamily,
           color: ACCENT,
           adjustsFontSizeToFit: true,
@@ -125,11 +209,11 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       >
         <FlexWidget style={{ flex: 1.15, alignItems: 'center' }}>
           <TextWidget
-            text={`${pashtoGregorianDisplay} میلادي`.trim()}
+            text={leftDateCell}
             maxLines={1}
             allowFontScaling={false}
             style={{
-              fontSize: pashtoGregHijriSize,
+              fontSize: gregHijriSize,
               fontFamily: boldFontFamily,
               color: TEXT_SECONDARY,
               adjustsFontSizeToFit: true,
@@ -138,11 +222,11 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         </FlexWidget>
         <FlexWidget style={{ flex: 0.85, alignItems: 'center' }}>
           <TextWidget
-            text={`${sunriseCaption || 'لمر ختل'}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim()}
+            text={sunriseCell}
             maxLines={1}
             allowFontScaling={false}
             style={{
-              fontSize: pashtoSunriseLineSize,
+              fontSize: sunriseLineSize,
               fontFamily: boldFontFamily,
               color: ACCENT,
               adjustsFontSizeToFit: true,
@@ -151,11 +235,11 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         </FlexWidget>
         <FlexWidget style={{ flex: 1.4, alignItems: 'center' }}>
           <TextWidget
-            text={`قمري ${hijriLabel || ''}`.trim()}
+            text={rightDateCell}
             maxLines={1}
             allowFontScaling={false}
             style={{
-              fontSize: pashtoGregHijriSize,
+              fontSize: gregHijriSize,
               fontFamily: boldFontFamily,
               color: TEXT_PRIMARY,
               adjustsFontSizeToFit: true,
@@ -164,7 +248,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         </FlexWidget>
       </FlexWidget>
     </FlexWidget>
-  ) : null;
+  );
 
   return (
     <FlexWidget
@@ -193,71 +277,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           paddingHorizontal: rootPaddingHorizontal,
         }}
       >
-        {isPashto ? (
-          pashtoHeader
-        ) : compact ? (
-          <FlexWidget
-            style={{
-              width: 'match_parent',
-              alignItems: 'center',
-            }}
-          >
-            <TextWidget
-              text={`${weekdayLabel || ''} • ${shamsiLabel || snapshot.shamsiDisplay}`}
-              maxLines={1}
-              allowFontScaling={false}
-              style={{ fontSize: compactDateSize, fontFamily: boldFontFamily, color: TEXT_SECONDARY, adjustsFontSizeToFit: true }}
-            />
-            <TextWidget
-              text={`${hijriLabel || ''} • ${snapshot.gregorianDisplay || ''}`}
-              maxLines={1}
-              allowFontScaling={false}
-              style={{ fontSize: compactDateSize, fontFamily: boldFontFamily, color: TEXT_PRIMARY, marginTop: 1, adjustsFontSizeToFit: true }}
-            />
-            {sunriseLabel ? (
-              <TextWidget
-                text={sunriseLabel}
-                maxLines={1}
-                allowFontScaling={false}
-                style={{ fontSize: sunriseDateSize, fontFamily: boldFontFamily, color: ACCENT, marginTop: 1, adjustsFontSizeToFit: true }}
-              />
-            ) : null}
-          </FlexWidget>
-        ) : (
-          <FlexWidget
-            style={{
-              width: 'match_parent',
-              alignItems: 'center',
-            }}
-          >
-            <TextWidget
-              text={`${weekdayLabel || ''}${snapshot.gregorianDisplay ? ` • ${snapshot.gregorianDisplay}` : ''}`}
-              allowFontScaling={false}
-              maxLines={1}
-              style={{ fontSize: fullDateSize, fontFamily: boldFontFamily, color: TEXT_SECONDARY, adjustsFontSizeToFit: true }}
-            />
-            <TextWidget
-              text={shamsiLabel || snapshot.shamsiDisplay}
-              allowFontScaling={false}
-              maxLines={1}
-              style={{ fontSize: solarDateSize, fontFamily: boldFontFamily, color: ACCENT, marginTop: 1, adjustsFontSizeToFit: true }}
-            />
-            <TextWidget
-              text={hijriLabel || ''}
-              allowFontScaling={false}
-              maxLines={1}
-              style={{ fontSize: hijriDateSize, fontFamily: regularFontFamily, color: TEXT_PRIMARY, marginTop: 1, adjustsFontSizeToFit: true }}
-            />
-            {sunriseLabel ? (
-              <TextWidget
-                text={sunriseLabel}
-                allowFontScaling={false}
-                maxLines={1}
-                style={{ fontSize: sunriseDateSize, fontFamily: regularFontFamily, color: TEXT_SECONDARY, marginTop: 1, adjustsFontSizeToFit: true }}
-              />
-            ) : null}
-          </FlexWidget>
-        )}
+        {sharedHeader}
         <FlexWidget
           style={{
             flexDirection: 'row',
@@ -266,46 +286,51 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             marginTop: compact ? 5 : 7,
           }}
         >
-        {prayersRtl.map((prayer) => {
-          const active = snapshot.currentPrayer === prayer.key;
-          return (
-            <FlexWidget
-              key={prayer.key}
-              style={{
-                flex: 1,
-                marginHorizontal: compact ? 1 : 2,
-                backgroundColor: active ? ACTIVE_BG : INACTIVE_BG,
-                borderRadius: 8,
-                paddingVertical: prayerChipPaddingVertical,
-                alignItems: 'center',
-              }}
-            >
-              <TextWidget
-                text={isPashto ? prayer.labelPashto || prayer.labelDari : prayer.labelDari}
-                maxLines={1}
-                allowFontScaling={false}
+          {prayersOrdered.map((prayer) => {
+            const active = snapshot.currentPrayer === prayer.key;
+            const prayerName = isEnglish
+              ? prayer.labelEnglish || prayer.labelDari
+              : isPashto
+                ? prayer.labelPashto || prayer.labelDari
+                : prayer.labelDari;
+            return (
+              <FlexWidget
+                key={prayer.key}
                 style={{
-                  fontSize: prayerLabelSize,
-                  fontFamily: boldFontFamily,
-                  color: active ? TINT : TEXT_PRIMARY,
-                  adjustsFontSizeToFit: true,
+                  flex: 1,
+                  marginHorizontal: compact ? 1 : 2,
+                  backgroundColor: active ? ACTIVE_BG : INACTIVE_BG,
+                  borderRadius: 8,
+                  paddingVertical: prayerChipPaddingVertical,
+                  alignItems: 'center',
                 }}
-              />
-              <TextWidget
-                text={prayer.time12h}
-                maxLines={1}
-                allowFontScaling={false}
-                style={{
-                  fontSize: prayerTimeSize,
-                  fontFamily: boldFontFamily,
-                  color: active ? TINT : TEXT_SECONDARY,
-                  marginTop: prayerTimeMarginTop,
-                  adjustsFontSizeToFit: true,
-                }}
-              />
-            </FlexWidget>
-          );
-        })}
+              >
+                <TextWidget
+                  text={prayerName}
+                  maxLines={1}
+                  allowFontScaling={false}
+                  style={{
+                    fontSize: prayerLabelSize,
+                    fontFamily: boldFontFamily,
+                    color: active ? TINT : TEXT_PRIMARY,
+                    adjustsFontSizeToFit: true,
+                  }}
+                />
+                <TextWidget
+                  text={localizeDigits(prayer.time12h)}
+                  maxLines={1}
+                  allowFontScaling={false}
+                  style={{
+                    fontSize: prayerTimeSize,
+                    fontFamily: boldFontFamily,
+                    color: active ? TINT : TEXT_SECONDARY,
+                    marginTop: prayerTimeMarginTop,
+                    adjustsFontSizeToFit: true,
+                  }}
+                />
+              </FlexWidget>
+            );
+          })}
         </FlexWidget>
       </FlexWidget>
     </FlexWidget>

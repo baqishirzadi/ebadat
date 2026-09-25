@@ -33,6 +33,7 @@ import {
   getUpcomingEvents,
 } from '@/utils/calendarEvents';
 import { pickContent } from '@/utils/i18n/content';
+import { rowStyle } from '@/utils/i18n/direction';
 import { formatHijriDate } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
 
@@ -58,6 +59,7 @@ function formatGregorianDate(date: Date): string {
 export default function MoreScreen() {
   const { theme, themeMode, state } = useApp();
   const language = state.preferences.appLanguage;
+  const directionalRow = rowStyle(language);
   const { dashboardSnapshot } = useStats();
   const { state: prayer } = usePrayer();
   const { unreadCount } = useDua();
@@ -207,7 +209,7 @@ export default function MoreScreen() {
           style={styles.header}
           pointerEvents="none"
         >
-          <View style={styles.headerBadge}>
+          <View style={[styles.headerBadge, directionalRow]}>
             <MaterialIcons name="dashboard" size={16} color="#fff" />
             <CenteredText style={styles.headerBadgeText}>مرکز امکانات</CenteredText>
           </View>
@@ -217,11 +219,11 @@ export default function MoreScreen() {
 
         <View style={[styles.heroCard, { backgroundColor: theme.card, borderColor: theme.cardBorder, shadowColor: theme.tint }]}>
           <View style={styles.heroChipRow}>
-            <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <View style={[styles.heroChip, directionalRow, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
               <MaterialIcons name="today" size={16} color={theme.tint} />
               <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{weekdayLabel}</CenteredText>
             </View>
-            <View style={[styles.heroChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <View style={[styles.heroChip, directionalRow, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
               <MaterialIcons name="place" size={16} color={theme.tint} />
               <CenteredText style={[styles.heroChipText, { color: theme.text }]}>{locationLabel}</CenteredText>
             </View>
@@ -231,6 +233,7 @@ export default function MoreScreen() {
               onPress={() => router.push('/adhan-settings')}
               style={({ pressed }) => [
                 styles.heroChip,
+                directionalRow,
                 { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder },
                 pressed && styles.pressedChip,
               ]}
@@ -299,6 +302,7 @@ export default function MoreScreen() {
       truth.gregorianDate,
       quickActions,
       language,
+      directionalRow,
       router,
     ],
   );
@@ -472,7 +476,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   headerBadge: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     gap: Spacing.xs,
     paddingHorizontal: Spacing.md,
@@ -514,7 +517,6 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   heroChip: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     gap: 6,
     paddingHorizontal: Spacing.md,

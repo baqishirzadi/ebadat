@@ -11,6 +11,7 @@ import { Article } from '@/types/articles';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { CenteredText } from '@/components/CenteredText';
 import { CategoryBadge } from './CategoryBadge';
+import { rowStyle } from '@/utils/i18n/direction';
 
 interface ArticleCardProps {
   article: Article;
@@ -19,7 +20,8 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, isBookmarked, onPress }: ArticleCardProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const directionalRow = rowStyle(state.preferences.appLanguage);
 
   return (
     <View
@@ -50,7 +52,7 @@ export function ArticleCard({ article, isBookmarked, onPress }: ArticleCardProps
           ]}
         >
           {/* Header */}
-          <View style={styles.header}>
+          <View style={[styles.header, directionalRow]}>
             <CategoryBadge category={article.category} />
             {isBookmarked && (
               <MaterialIcons name="bookmark" size={20} color={theme.tint} />
@@ -63,14 +65,14 @@ export function ArticleCard({ article, isBookmarked, onPress }: ArticleCardProps
           </CenteredText>
 
           {/* Meta Info */}
-          <View style={styles.meta}>
-            <View style={styles.metaRow}>
+          <View style={[styles.meta, directionalRow]}>
+            <View style={[styles.metaRow, directionalRow]}>
               <MaterialIcons name="person" size={14} color={theme.textSecondary} />
               <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
                 {article.authorName}
               </CenteredText>
             </View>
-            <View style={styles.metaRow}>
+            <View style={[styles.metaRow, directionalRow]}>
               <MaterialIcons name="access-time" size={14} color={theme.textSecondary} />
               <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
                 {article.readingTimeEstimate} دقیقه
@@ -108,7 +110,6 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
   header: {
-    flexDirection: 'row-reverse',
     justifyContent: 'center',
     alignSelf: 'stretch',
     alignItems: 'center',
@@ -121,17 +122,14 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
   meta: {
-    flexDirection: 'row-reverse',
     justifyContent: 'center',
     alignSelf: 'stretch',
     gap: Spacing.md,
     marginBottom: 0,
   },
   metaRow: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     gap: 4,
   },
@@ -139,6 +137,5 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
 });

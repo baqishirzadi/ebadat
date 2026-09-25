@@ -30,6 +30,7 @@ import React, { useCallback, useMemo, useState } from 'react';
 
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { LocalizedText } from '@/components/ui/LocalizedText';
+import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 
 export default function SettingsScreen() {
   const {
@@ -47,6 +48,8 @@ export default function SettingsScreen() {
   } = useApp();
   const { updateSettings, state: prayerState } = usePrayer();
   const uiLanguage = state.preferences.appLanguage;
+  const directionalRow = rowStyle(uiLanguage);
+  const forwardChevron = forwardChevronName(uiLanguage);
   const calculationMethod = prayerState.settings.calculationMethod;
   const router = useRouter();
   const { section } = useLocalSearchParams<{ section?: string | string[] }>();
@@ -148,7 +151,7 @@ export default function SettingsScreen() {
           {/* Theme Settings */}
           <Pressable
             onPress={() => toggleSection('theme')}
-            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="palette" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
@@ -171,6 +174,7 @@ export default function SettingsScreen() {
                   onPress={() => setTheme(t.id)}
                   style={[
                     styles.optionItem,
+                    directionalRow,
                     { borderBottomColor: theme.divider },
                     state.preferences.theme === t.id && { backgroundColor: theme.backgroundSecondary },
                   ]}
@@ -199,7 +203,7 @@ export default function SettingsScreen() {
           {/* App Language Settings */}
           <Pressable
             onPress={() => toggleSection('appLanguage')}
-            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="language" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
@@ -224,6 +228,8 @@ export default function SettingsScreen() {
                     onPress={() => setAppLanguage(languageCode)}
                     style={[
                       styles.optionItem,
+                     directionalRow,
+                      directionalRow,
                       { borderBottomColor: theme.divider },
                       active && { backgroundColor: theme.backgroundSecondary },
                     ]}
@@ -240,7 +246,7 @@ export default function SettingsScreen() {
             </View>
           )}
           {layoutRestartPending && (
-            <View style={[styles.restartNotice, { backgroundColor: `${theme.tint}14`, borderColor: `${theme.tint}55` }]}>
+            <View style={[styles.restartNotice, directionalRow, { backgroundColor: `${theme.tint}14`, borderColor: `${theme.tint}55` }]}>
               <MaterialIcons name="restart-alt" size={20} color={theme.tint} />
               <View style={styles.restartNoticeText}>
                 <LocalizedText style={[styles.restartNoticeTitle, { color: theme.text }]}>
@@ -258,7 +264,7 @@ export default function SettingsScreen() {
             testID="settings-quran-font"
             accessibilityLabel="خط قرآن"
             onPress={() => toggleSection('quranFont')}
-            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="font-download" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
@@ -283,6 +289,7 @@ export default function SettingsScreen() {
                   onPress={() => setQuranFont(f.id)}
                   style={[
                     styles.optionItem,
+                    directionalRow,
                     styles.fontPreviewOption,
                     { borderBottomColor: theme.divider },
                     state.preferences.quranFont === f.id && { backgroundColor: theme.backgroundSecondary },
@@ -311,7 +318,7 @@ export default function SettingsScreen() {
           {/* Dari Font Settings */}
           <Pressable
             onPress={() => toggleSection('dariFont')}
-            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="translate" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
@@ -334,6 +341,7 @@ export default function SettingsScreen() {
                   onPress={() => setDariFont(f.id)}
                   style={[
                     styles.optionItem,
+                    directionalRow,
                     styles.fontPreviewOption,
                     { borderBottomColor: theme.divider },
                     state.preferences.dariFont === f.id && { backgroundColor: theme.backgroundSecondary },
@@ -363,7 +371,7 @@ export default function SettingsScreen() {
           <Pressable
             testID="settings-pashto-font"
             onPress={() => toggleSection('pashtoFont')}
-            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="text-format" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
@@ -387,6 +395,7 @@ export default function SettingsScreen() {
                   onPress={() => setPashtoFont(f.id)}
                   style={[
                     styles.optionItem,
+                    directionalRow,
                     styles.fontPreviewOption,
                     { borderBottomColor: theme.divider },
                     state.preferences.pashtoFont === f.id && { backgroundColor: theme.backgroundSecondary },
@@ -421,7 +430,7 @@ export default function SettingsScreen() {
           {/* Arabic font size */}
           <Pressable
             onPress={() => toggleSection('arabicSize')}
-            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="format-size" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
@@ -444,6 +453,7 @@ export default function SettingsScreen() {
                   onPress={() => setArabicFontSize(s.id)}
                   style={[
                     styles.optionItem,
+                    directionalRow,
                     { borderBottomColor: theme.divider },
                     state.preferences.arabicFontSize === s.id && {
                       backgroundColor: theme.backgroundSecondary,
@@ -469,7 +479,7 @@ export default function SettingsScreen() {
           {/* Translation font size */}
           <Pressable
             onPress={() => toggleSection('translationSize')}
-            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="text-fields" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
@@ -492,6 +502,7 @@ export default function SettingsScreen() {
                   onPress={() => setTranslationFontSize(s.id)}
                   style={[
                     styles.optionItem,
+                    directionalRow,
                     { borderBottomColor: theme.divider },
                     state.preferences.translationFontSize === s.id && {
                       backgroundColor: theme.backgroundSecondary,
@@ -520,7 +531,7 @@ export default function SettingsScreen() {
           {/* Translation Settings */}
           <Pressable
             onPress={() => toggleSection('translation')}
-            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="subtitles" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
@@ -556,6 +567,7 @@ export default function SettingsScreen() {
                   onPress={() => setTranslationLanguage(t.id as 'dari' | 'pashto' | 'english' | 'none')}
                   style={[
                     styles.optionItem,
+                    directionalRow,
                     { borderBottomColor: theme.divider },
                     state.preferences.showTranslation === t.id && {
                       backgroundColor: theme.backgroundSecondary,
@@ -581,7 +593,7 @@ export default function SettingsScreen() {
           {/* Prayer Calculation Method */}
           <Pressable
             onPress={() => toggleSection('prayerMethod')}
-            style={[styles.sectionHeader, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <MaterialIcons name="schedule" size={24} color={theme.tint} />
             <View style={styles.sectionInfo}>
@@ -604,6 +616,7 @@ export default function SettingsScreen() {
                   onPress={() => updateSettings({ calculationMethod: m.id as keyof typeof CalculationMethods })}
                   style={[
                     styles.optionItem,
+                    directionalRow,
                     { borderBottomColor: theme.divider },
                     calculationMethod === m.id && { backgroundColor: theme.backgroundSecondary },
                   ]}
@@ -627,9 +640,9 @@ export default function SettingsScreen() {
           {/* Adhan Settings Link */}
           <Pressable
             onPress={() => router.push('/adhan-settings')}
-            style={[styles.adhanSettingsLink, { backgroundColor: theme.card, borderColor: theme.tint }]}
+            style={[styles.adhanSettingsLink, directionalRow, { backgroundColor: theme.card, borderColor: theme.tint }]}
           >
-            <View style={styles.adhanSettingsContent}>
+            <View style={[styles.adhanSettingsContent, directionalRow]}>
               <MaterialIcons name="notifications-active" size={28} color={theme.tint} />
               <View style={styles.adhanSettingsText}>
                 <LocalizedText style={[styles.adhanSettingsTitle, { color: theme.text }]}>{tUi('تنظیمات اذان', uiLanguage)}</LocalizedText>
@@ -638,13 +651,14 @@ export default function SettingsScreen() {
                 </LocalizedText>
               </View>
             </View>
-            <MaterialIcons name="chevron-left" size={24} color={theme.tint} />
+            <MaterialIcons name={forwardChevron} size={24} color={theme.tint} />
           </Pressable>
 
           {/* Hanafi Asr Notice */}
           <View
             style={[
               styles.noticeCard,
+              directionalRow,
               { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder },
             ]}
           >
@@ -693,7 +707,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   sectionHeader: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     height: 84,
     paddingHorizontal: Spacing.md,
@@ -732,7 +745,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   optionItem: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     height: 56,
     paddingHorizontal: Spacing.md,
@@ -772,7 +784,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   noticeCard: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     padding: Spacing.md,
     marginHorizontal: Spacing.md,
@@ -788,7 +799,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   adhanSettingsLink: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginHorizontal: Spacing.md,
@@ -798,7 +808,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   adhanSettingsContent: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     gap: Spacing.md,
     flex: 1,

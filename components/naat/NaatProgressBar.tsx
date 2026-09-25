@@ -2,7 +2,9 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 import { PanResponder, StyleSheet, View } from 'react-native';
 import { LocalizedText } from '@/components/ui/LocalizedText';
+import { useI18n } from '@/utils/i18n/useI18n';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { rowStyle } from '@/utils/i18n/direction';
 
 type Props = {
   positionMillis: number;
@@ -35,6 +37,7 @@ export function NaatProgressBar({
   large = false,
   showTimeLabels = true,
 }: Props) {
+  const { language } = useI18n();
   const [seekingRatio, setSeekingRatio] = useState<number | null>(null);
   const [trackWidth, setTrackWidth] = useState(0);
   const seekRatioRef = useRef<number | null>(null);
@@ -143,7 +146,7 @@ export function NaatProgressBar({
         </View>
       </View>
       {showTimeLabels && (
-        <View style={styles.timeRow}>
+        <View style={[styles.timeRow, rowStyle(language)]}>
           <LocalizedText style={[styles.timeText, large && styles.timeTextLarge, { color: textColor }]}>
             {formatNaatTime(seekingRatio !== null ? seekingRatio * durationMillis : positionMillis)}
           </LocalizedText>
@@ -191,7 +194,6 @@ const styles = StyleSheet.create({
   },
   timeRow: {
     marginTop: Spacing.sm,
-    flexDirection: 'row-reverse',
     justifyContent: 'space-between',
   },
   timeText: {

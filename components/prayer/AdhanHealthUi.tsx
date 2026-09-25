@@ -13,6 +13,7 @@ import {
   buildAdhanHealthReport,
 } from '@/utils/adhanHealth';
 import { adhanPermissionLocale, tAdhanPermission, type AdhanPermissionLocale } from '@/utils/i18n/adhanPermissions';
+import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 export type HealthVisualStatus = 'healthy' | 'warning' | 'critical';
@@ -108,7 +109,8 @@ export function AdhanHealthActionRow({
   disabled = false,
   testID,
 }: AdhanHealthActionRowProps) {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const language = state.preferences.appLanguage;
   const isPrimary = variant === 'primary';
 
   return (
@@ -118,6 +120,7 @@ export function AdhanHealthActionRow({
       disabled={disabled}
       style={[
         styles.actionRow,
+        rowStyle(language),
         {
           backgroundColor: isPrimary ? theme.tint : theme.backgroundSecondary,
           borderColor: isPrimary ? theme.tint : theme.cardBorder,
@@ -133,7 +136,7 @@ export function AdhanHealthActionRow({
         {label}
       </RtlText>
       <MaterialIcons
-        name="chevron-left"
+        name={forwardChevronName(language)}
         size={22}
         color={isPrimary ? '#fff' : theme.textSecondary}
       />
@@ -256,7 +259,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
   },
   actionRow: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: Spacing.sm,

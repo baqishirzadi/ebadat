@@ -19,6 +19,7 @@ import { LocalizedText } from '@/components/ui/LocalizedText';
 
 // Import prayer learning data
 import prayerData from '@/data/prayerLearning.json';
+import { backIconName, forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 // Type definitions for prayer data
@@ -67,6 +68,9 @@ export default function PrayerLearningScreen() {
   const { theme, state } = useApp();
   const { t, content, contentList, fontFamily, language } = useI18n();
   const router = useRouter();
+  const chevron = forwardChevronName(language);
+  const backIcon = backIconName(language);
+  const directionalRow = rowStyle(language);
   const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
   const bodyFont = language === 'pashto' ? pashtoFontFamily : fontFamily || 'Vazirmatn';
   const titleFont = language === 'pashto' ? pashtoFontFamily : 'Vazirmatn-Bold';
@@ -181,7 +185,7 @@ export default function PrayerLearningScreen() {
         {/* Category Header */}
         <View style={[styles.categoryHeader, { backgroundColor: currentCategory.color }]}>
           <Pressable onPress={handleBack} style={styles.backButton}>
-            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+            <MaterialIcons name={backIcon} size={24} color="#fff" />
           </Pressable>
           <MaterialIcons
             name={iconMap[currentCategory.icon] || 'book'}
@@ -199,6 +203,7 @@ export default function PrayerLearningScreen() {
               onPress={() => handleSectionPress(section.id)}
               style={({ pressed }) => [
                 styles.sectionCard,
+                directionalRow,
                 { backgroundColor: theme.card, borderColor: theme.cardBorder },
                 pressed && styles.cardPressed,
               ]}
@@ -211,7 +216,7 @@ export default function PrayerLearningScreen() {
                   {content(section, 'title')}
                 </LocalizedText>
               </View>
-              <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
+              <MaterialIcons name={chevron} size={24} color={theme.icon} />
             </Pressable>
           ))}
         </View>
@@ -228,7 +233,7 @@ export default function PrayerLearningScreen() {
         {/* Section Header */}
         <View style={[styles.sectionDetailHeader, { backgroundColor: currentCategory.color }]}>
           <Pressable onPress={handleBack} style={styles.backButton}>
-            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+            <MaterialIcons name={backIcon} size={24} color="#fff" />
           </Pressable>
           <CenteredText style={[styles.headerTitle, { fontFamily: titleFont }]}>{content(currentSection, 'title')}</CenteredText>
         </View>
@@ -247,7 +252,7 @@ export default function PrayerLearningScreen() {
           {currentSection.items && (
             <View style={[styles.itemsBlock, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
               {currentSection.items.map((item: any, index: number) => (
-                <View key={index} style={[styles.itemRow, index > 0 && { borderTopWidth: 1, borderTopColor: theme.cardBorder }]}>
+                <View key={index} style={[styles.itemRow, directionalRow, index > 0 && { borderTopWidth: 1, borderTopColor: theme.cardBorder }]}>
                   {item.number && (
                     <View style={[styles.itemNumber, { backgroundColor: currentCategory.color }]}>
                       <LocalizedText style={styles.itemNumberText}>{item.number}</LocalizedText>
@@ -277,6 +282,7 @@ export default function PrayerLearningScreen() {
               onPress={() => setSelectedSection('janazah_dua')}
               style={({ pressed }) => [
                 styles.janazahJumpCard,
+                directionalRow,
                 { backgroundColor: theme.card, borderColor: theme.cardBorder },
                 pressed && styles.cardPressed,
               ]}
@@ -294,7 +300,7 @@ export default function PrayerLearningScreen() {
                   {t('prayerLearning.janazahDua')}
                 </LocalizedText>
               </View>
-              <MaterialIcons name="arrow-back" size={22} color={theme.tint} />
+              <MaterialIcons name={chevron} size={22} color={theme.tint} />
             </Pressable>
           )}
 
@@ -303,7 +309,7 @@ export default function PrayerLearningScreen() {
             <View style={[styles.stepsBlock, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
               <View style={styles.stepsSection}>
                 {contentList(currentSection, 'steps').map((step: string, index: number) => (
-                  <View key={index} style={styles.stepItem}>
+                  <View key={index} style={[styles.stepItem, directionalRow]}>
                     <View style={[styles.stepBullet, { backgroundColor: currentCategory?.color || theme.tint }]}>
                       <LocalizedText style={styles.stepBulletText}>{index + 1}</LocalizedText>
                     </View>
@@ -571,7 +577,6 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
   sectionCard: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
@@ -652,7 +657,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   itemRow: {
-    flexDirection: 'row-reverse',
     padding: Spacing.md,
     alignItems: 'center',
   },
@@ -805,7 +809,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   stepItem: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     marginBottom: Spacing.md,
     paddingHorizontal: Spacing.sm,
@@ -837,7 +840,6 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     padding: Spacing.md,
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'space-between',
   },

@@ -6,6 +6,7 @@ import Animated, { useAnimatedStyle } from 'react-native-reanimated';
 
 import { useApp } from '@/context/AppContext';
 import type { QiblaAccuracyLevel } from '@/hooks/useQiblaHeading';
+import { rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 interface QiblaStatusPillProps {
@@ -17,13 +18,13 @@ interface QiblaStatusPillProps {
 
 export function QiblaStatusPill({ accuracyLevel, isDegraded, headingLabel, qiblaLabel }: QiblaStatusPillProps) {
   const { theme } = useApp();
-  const { t, fontFamily } = useI18n();
+  const { t, fontFamily, language } = useI18n();
 
   const accuracyText =
     accuracyLevel === 'high' ? t('qibla.accuracy.high') : accuracyLevel === 'medium' ? t('qibla.accuracy.medium') : t('qibla.accuracy.low');
 
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, rowStyle(language)]}>
       <View style={[styles.pill, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
           <LocalizedText style={[styles.text, { color: theme.text, fontFamily }]}>{t('qibla.direction')}: {headingLabel}°</LocalizedText>
       </View>
@@ -86,7 +87,6 @@ export function QiblaNeedle({ size, needleRotation, isAligned }: QiblaNeedleProp
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row-reverse',
     flexWrap: 'wrap',
     justifyContent: 'center',
     gap: 8,
@@ -102,6 +102,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 12,
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
 });

@@ -33,6 +33,12 @@ const HEADER_DESCRIPTION_PASHTO =
   'دا برخه د نعت، ذکر او خدمت له مجلسونو الهام اخیستې ده؛\n'
   + 'هغه ځای چې د خلیفه صاحب سید عبدالباقي جان (رح) په برکت کلونه زړونه د رسول الله ﷺ په نوم ژوندي شوي دي.\n'
   + 'دا غږونه د هماغې لارې دوام دی — د زړونو د آرام او د الله د یاد لپاره.';
+const HEADER_TITLE_ENGLISH = 'Naat & Munajat — in memory of Langar Shirzad';
+const HEADER_DESCRIPTION_ENGLISH =
+  'This section is inspired by gatherings of naat, dhikr and service at Langar Shirzad;\n'
+  + 'where, by the blessing of Khalifa Sahib Sayyid Abdul Baqi Jan (rah), hearts have lived for years with the name of the Messenger of Allah ﷺ.\n'
+  + 'These voices continue that path — for hearts at peace and the remembrance of Allah.';
+const ALL_RECITER_FILTER = 'همه';
 const TAB_BAR_CLEARANCE = 82;
 
 function normalizeText(input: string) {
@@ -56,6 +62,14 @@ export default function NaatScreen() {
   const { theme, state } = useApp();
   const themeMode = state.preferences.theme;
   const isPashto = state.preferences.appLanguage === 'pashto';
+  const isEnglish = state.preferences.appLanguage === 'english';
+  const language = state.preferences.appLanguage;
+  const headerTitle = isEnglish ? HEADER_TITLE_ENGLISH : isPashto ? HEADER_TITLE_PASHTO : HEADER_TITLE;
+  const headerDescription = isEnglish
+    ? HEADER_DESCRIPTION_ENGLISH
+    : isPashto
+      ? HEADER_DESCRIPTION_PASHTO
+      : HEADER_DESCRIPTION;
   const headerGradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -72,7 +86,7 @@ export default function NaatScreen() {
     }, [refresh]),
   );
 
-  const [selectedReciter, setSelectedReciter] = useState('همه');
+  const [selectedReciter, setSelectedReciter] = useState(ALL_RECITER_FILTER);
   const [showNaatAdminPinModal, setShowNaatAdminPinModal] = useState(false);
   const [naatAdminPin, setNaatAdminPin] = useState('');
   const [queueVisible, setQueueVisible] = useState(false);
@@ -80,13 +94,13 @@ export default function NaatScreen() {
 
   const reciters = useMemo(() => {
     const names = Array.from(new Set(naats.map((item) => item.reciter_name).filter(Boolean)));
-    return ['همه', ...names];
+    return [ALL_RECITER_FILTER, ...names];
   }, [naats]);
 
   const filtered = useMemo(() => {
     const q = normalizeText(query);
     return naats.filter((item) => {
-      const matchesReciter = selectedReciter === 'همه' || item.reciter_name === selectedReciter;
+      const matchesReciter = selectedReciter === ALL_RECITER_FILTER || item.reciter_name === selectedReciter;
       if (!q) return matchesReciter;
       const hay = normalizeText(`${item.title_fa} ${item.title_ps} ${item.reciter_name}`);
       return matchesReciter && hay.includes(q);
@@ -100,10 +114,12 @@ export default function NaatScreen() {
 
   const queueLabel =
     player.current && session.totalCount > 0 && session.currentIndex >= 0
-      ? isPashto
-        ? `${session.currentIndex + 1} له ${session.totalCount}`
-        : `${session.currentIndex + 1} از ${session.totalCount}`
-      : tUi('صف پخش', state.preferences.appLanguage);
+      ? isEnglish
+        ? `${session.currentIndex + 1} of ${session.totalCount}`
+        : isPashto
+          ? `${session.currentIndex + 1} له ${session.totalCount}`
+          : `${session.currentIndex + 1} از ${session.totalCount}`
+      : tUi('صف پخش', language);
   const listBottomPadding = player.current
     ? playerDockHeight + insets.bottom + TAB_BAR_CLEARANCE + Spacing.lg
     : Spacing.xxl;
@@ -126,7 +142,7 @@ export default function NaatScreen() {
       setNaatAdminPin('');
       router.push('/naat/admin');
     } else {
-      Alert.alert('خطا', 'PIN اشتباه است');
+      Alert.alert(tUi('خطا', language), tUi('PIN اشتباه است', language));
     }
   };
 
@@ -168,7 +184,9 @@ export default function NaatScreen() {
       {loading ? (
       <View testID="naat-loading" style={styles.loading}>
           <ActivityIndicator size="large" color={theme.tint} />
-          <RtlText align="center" style={[styles.loadingText, { color: theme.textSecondary }]}>در حال بارگذاری...</RtlText>
+          <RtlText align="center" style={[styles.loadingText, { color: theme.textSecondary }]}>
+            {tUi('در حال بارگذاری...', language)}
+          </RtlText>
         </View>
       ) : (
         <FlatList
@@ -201,10 +219,10 @@ export default function NaatScreen() {
                     style={styles.headerBody}
                   >
                     <RtlText testID="naat-header-title" align="center" style={[styles.headerTitle, { color: theme.surahHeaderText }]}>
-                      {isPashto ? HEADER_TITLE_PASHTO : HEADER_TITLE}
+                      {headerTitle}
                     </RtlText>
                     <RtlText testID="naat-header-description" align="center" style={[styles.headerDescription, { color: theme.surahHeaderText }]}>
-                      {isPashto ? HEADER_DESCRIPTION_PASHTO : HEADER_DESCRIPTION}
+                      {headerDescription}
                     </RtlText>
                     <View style={styles.motifRow}>
                       <View style={[styles.motifDot, { backgroundColor: theme.bookmark }]} />
@@ -242,7 +260,7 @@ export default function NaatScreen() {
                   <LocalizedTextInput
                     testID="naat-search-input"
                     style={[styles.searchInput, { color: theme.text }]}
-                    placeholder={isPashto ? 'د نعت لټون...' : 'جستجوی نعت...'}
+                    placeholder={tUi('جستجوی نعت...', language)}
                     placeholderTextColor={theme.textSecondary}
                     value={query}
                     onChangeText={setQuery}
@@ -269,7 +287,7 @@ export default function NaatScreen() {
                       ]}
                     >
                       <RtlText align="center" wrap={false} style={[styles.reciterText, { color: selectedReciter === reciter ? '#fff' : theme.text }]}>
-                        {reciter === 'همه' ? tUi('همه', state.preferences.appLanguage) : reciter}
+                        {reciter === ALL_RECITER_FILTER ? tUi('همه', language) : reciter}
                       </RtlText>
                     </Pressable>
                   ))}
@@ -295,6 +313,7 @@ export default function NaatScreen() {
         player={player}
         session={session}
         isPashto={isPashto}
+        language={language}
         queueLabel={queueLabel}
         bottomInset={insets.bottom}
         onHeightChange={handlePlayerDockLayout}
@@ -324,10 +343,10 @@ export default function NaatScreen() {
       >
         <View style={styles.pinModalOverlay}>
           <View style={[styles.pinModalContent, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-            <RtlText style={[styles.pinModalTitle, { color: theme.text }]}>ورود به مدیریت نعت</RtlText>
+            <RtlText style={[styles.pinModalTitle, { color: theme.text }]}>{tUi('ورود به مدیریت نعت', language)}</RtlText>
             <LocalizedTextInput
               style={[styles.pinModalInput, { color: theme.text, borderColor: theme.cardBorder }]}
-              placeholder="PIN را وارد کنید"
+              placeholder={tUi('PIN را وارد کنید', language)}
               placeholderTextColor={theme.textSecondary}
               value={naatAdminPin}
               onChangeText={setNaatAdminPin}
@@ -341,13 +360,13 @@ export default function NaatScreen() {
                 onPress={handleNaatAdminPinSubmit}
                 style={[styles.pinModalButton, styles.pinModalButtonPrimary, { backgroundColor: theme.tint }]}
               >
-                <RtlText style={styles.pinModalButtonText}>تأیید</RtlText>
+                <RtlText style={styles.pinModalButtonText}>{tUi('تأیید', language)}</RtlText>
               </Pressable>
               <Pressable
                 onPress={closeNaatAdminPinModal}
                 style={[styles.pinModalButton, styles.pinModalButtonSecondary, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
               >
-                <RtlText style={[styles.pinModalButtonTextSecondary, { color: theme.text }]}>انصراف</RtlText>
+                <RtlText style={[styles.pinModalButtonTextSecondary, { color: theme.text }]}>{tUi('انصراف', language)}</RtlText>
               </Pressable>
             </View>
           </View>
@@ -361,6 +380,7 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
   player,
   session,
   isPashto,
+  language,
   queueLabel,
   bottomInset,
   onHeightChange,
@@ -375,6 +395,7 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
   player: ReturnType<typeof useNaatPlayer>['player'];
   session: ReturnType<typeof useNaatPlayer>['session'];
   isPashto: boolean;
+  language: 'dari' | 'pashto' | 'english';
   queueLabel: string;
   bottomInset: number;
   onHeightChange: (height: number) => void;
@@ -413,7 +434,7 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
       <View style={styles.playerHeaderRow}>
         <Pressable
           testID="naat-player-queue-button"
-          accessibilityLabel="صف پخش نعت"
+          accessibilityLabel={tUi('صف پخش نعت', language)}
           onPress={() => setQueueVisible(true)}
           style={[styles.playerIconButton, { backgroundColor: theme.backgroundSecondary }]}
         >
@@ -429,7 +450,7 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
         </View>
         <Pressable
           testID="naat-player-stop-button"
-          accessibilityLabel="بستن پلیر نعت"
+          accessibilityLabel={tUi('بستن پلیر نعت', language)}
           onPress={() => {
             stop().catch(() => {});
           }}

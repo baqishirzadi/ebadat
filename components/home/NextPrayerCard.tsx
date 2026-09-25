@@ -48,17 +48,15 @@ const pashtoCompactMetrics = {
   },
 } as const;
 
-function formatCountdown(ms: number): string {
+function formatCountdown(ms: number, useLatinDigits = false): string {
   const totalSec = Math.max(0, Math.floor(ms / 1000));
   const hours = Math.floor(totalSec / 3600);
   const minutes = Math.floor((totalSec % 3600) / 60);
   const seconds = totalSec % 60;
-  if (hours > 0) {
-    return toArabicNumeralsString(
-      `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`,
-    );
-  }
-  return toArabicNumeralsString(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+  const raw = hours > 0
+    ? `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+    : `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  return useLatinDigits ? raw : toArabicNumeralsString(raw);
 }
 
 function ProgressRingWithCountdown({
@@ -116,7 +114,7 @@ const CountdownBlock = memo(function CountdownBlock({
   compact?: boolean;
 }) {
   const [now, setNow] = useState(() => new Date());
-  const { isPashto, fontFamily } = useI18n();
+  const { isPashto, fontFamily, language } = useI18n();
   const compactMetrics = isPashto
     ? fontFamily === 'NotoNastaliqUrdu'
       ? pashtoCompactMetrics.nastaliq
@@ -133,7 +131,7 @@ const CountdownBlock = memo(function CountdownBlock({
   const next = getNextPrayer(prayerTimes, now);
   const remaining = next.time.getTime() - now.getTime();
   const progress = getPrayerProgress(prayerTimes, now);
-  const countdown = formatCountdown(remaining);
+  const countdown = formatCountdown(remaining, language === 'english');
 
   if (compact) {
     return (

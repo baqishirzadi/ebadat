@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   stepRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'flex-start',
     gap: Spacing.sm,
   },

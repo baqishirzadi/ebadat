@@ -21,7 +21,9 @@ import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { Spacing } from '@/constants/theme';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
+import { backIconName, forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { isRtlLanguage } from '@/utils/i18n/languages';
 
 const SURAH_TOP_BAR_HEIGHT = 56;
 const QURAN_AUDIO_PLAYER_RESERVED_HEIGHT = 170;
@@ -44,9 +46,13 @@ export default function QuranReaderScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { theme, state } = useApp();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const { getSurah } = useQuranData();
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
+  const directionalRow = rowStyle(language);
+  const backIcon = backIconName(language);
+  const nextSurahIcon = forwardChevronName(language);
+  const prevSurahIcon = isRtlLanguage(language) ? 'chevron-right' : 'chevron-left';
 
   const normalizedSurahParam = Array.isArray(surahParam) ? surahParam[0] : surahParam;
   const normalizedAyahParam = Array.isArray(ayahParam) ? ayahParam[0] : ayahParam;
@@ -286,6 +292,7 @@ export default function QuranReaderScreen() {
       <View
         style={[
           styles.topBar,
+          directionalRow,
           {
             paddingTop: insets.top,
             height: insets.top + SURAH_TOP_BAR_HEIGHT,
@@ -304,25 +311,25 @@ export default function QuranReaderScreen() {
           hitSlop={8}
           style={styles.topBarBackButton}
         >
-          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+          <MaterialIcons name={backIcon} size={24} color="#fff" />
         </Pressable>
         <LocalizedText style={[styles.topBarTitle, { fontFamily: quranFontFamily }]} numberOfLines={1} ellipsizeMode="tail">
           {surahName}
         </LocalizedText>
-        <View style={styles.topBarNav}>
+        <View style={[styles.topBarNav, directionalRow]}>
           <Pressable testID="quran-reader-settings" onPress={() => router.push('/settings?section=quran' as never)} hitSlop={8}>
             <MaterialIcons name="tune" size={22} color="#fff" />
           </Pressable>
           {surahNumber > 1 ? (
             <Pressable onPress={goToPrevSurah} hitSlop={8}>
-              <MaterialIcons name="chevron-right" size={28} color="#fff" />
+              <MaterialIcons name={prevSurahIcon} size={28} color="#fff" />
             </Pressable>
           ) : (
             <View style={styles.navPlaceholder} />
           )}
           {surahNumber < 114 ? (
             <Pressable onPress={goToNextSurah} hitSlop={8}>
-              <MaterialIcons name="chevron-left" size={28} color="#fff" />
+              <MaterialIcons name={nextSurahIcon} size={28} color="#fff" />
             </Pressable>
           ) : (
             <View style={styles.navPlaceholder} />
@@ -376,7 +383,6 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 80,
     elevation: 80,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
@@ -399,7 +405,6 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
   },
   topBarNav: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
   },

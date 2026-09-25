@@ -20,6 +20,7 @@ import { formatGregorianDateCompact } from '@/utils/calendarDisplay';
 import { hijriMonthName } from '@/utils/islamicCalendar';
 import { formatNumber } from '@/utils/numbers';
 import { prayerLabel } from '@/utils/prayerTimes';
+import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 import type { AppLanguage } from '@/types/quran';
 
@@ -85,6 +86,8 @@ export default function NamazScreen() {
   const { theme, state: appState } = useApp();
   const appLanguage = appState.preferences.appLanguage;
   const { t, n, language, fontFamily } = useI18n();
+  const chevron = forwardChevronName(language);
+  const directionalRow = rowStyle(language);
   const { unreadCount } = useDua();
   const router = useRouter();
   const { setCity, setCustomLocation } = usePrayer();
@@ -321,6 +324,7 @@ export default function NamazScreen() {
               onPress={() => setShowCityModal(true)}
               style={({ pressed }) => [
                 styles.moreCitiesButton,
+                directionalRow,
                 { backgroundColor: theme.card, borderColor: theme.cardBorder },
                 pressed && styles.buttonPressed,
               ]}
@@ -328,7 +332,7 @@ export default function NamazScreen() {
               <CenteredText style={[styles.moreCitiesText, { color: theme.tint }]}>
                 {t('prayer.allCities')}
               </CenteredText>
-              <MaterialIcons name="chevron-left" size={20} color={theme.tint} />
+              <MaterialIcons name={chevron} size={20} color={theme.tint} />
             </Pressable>
           </View>
         )}
@@ -399,11 +403,12 @@ export default function NamazScreen() {
           onPress={() => router.push('/dua-request')}
           style={({ pressed }) => [
             styles.duaCard,
+            directionalRow,
             { backgroundColor: theme.tint, shadowColor: theme.tint },
             pressed && styles.duaCardPressed,
           ]}
         >
-          <View style={styles.duaCardContent}>
+          <View style={[styles.duaCardContent, directionalRow]}>
             <View style={styles.duaIconContainer}>
               <LocalizedText style={styles.duaEmoji}>🤲</LocalizedText>
               {unreadCount > 0 ? (
@@ -419,7 +424,7 @@ export default function NamazScreen() {
               </LocalizedText>
             </View>
           </View>
-          <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
+          <MaterialIcons name={chevron} size={24} color="rgba(255,255,255,0.85)" />
         </Pressable>
         </View>
       </ScrollView>
@@ -620,7 +625,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   moreCitiesButton: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.xs,
@@ -836,7 +840,6 @@ const styles = StyleSheet.create({
     marginTop: Spacing.lg,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     shadowOffset: { width: 0, height: 6 },
@@ -849,7 +852,6 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.99 }],
   },
   duaCardContent: {
-    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
     flex: 1,

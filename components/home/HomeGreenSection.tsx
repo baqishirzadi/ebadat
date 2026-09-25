@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { DreamInterpreterWidget } from '@/components/home/DreamInterpreterWidget';
 import { HanafiMuftiWidget } from '@/components/home/HanafiMuftiWidget';
 import { NextPrayerCard } from '@/components/home/NextPrayerCard';
-import { BorderRadius, NAAT_GRADIENT, RTL_CONTAINER, Spacing } from '@/constants/theme';
+import { BorderRadius, NAAT_GRADIENT, Spacing } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { PrayerTimes } from '@/utils/prayerTimes';
 import { useI18n } from '@/utils/i18n/useI18n';
@@ -26,7 +26,7 @@ function HomeGreenSectionInner({ prayerTimes, onMuftiInputFocus }: HomeGreenSect
         colors={gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={[styles.card, RTL_CONTAINER]}
+        style={styles.card}
       >
         <NextPrayerCard prayerTimes={prayerTimes} variant="compact" embedded />
         <View style={[styles.divider, isPashto && styles.dividerPashto]} />

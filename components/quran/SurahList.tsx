@@ -14,7 +14,7 @@ import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { Pressable, StyleSheet, View, I18nManager, Platform } from 'react-native';
+import { Pressable, StyleSheet, View, Platform } from 'react-native';
 import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,6 +25,7 @@ import { RtlView } from '@/components/ui/RtlView';
 import { normalizeArabicForSearch, normalizeDariForSearch, normalizePashtoForSearch } from '@/utils/quranSearchNormalize';
 import { SearchButton } from './SearchButton';
 import { JuzList } from './JuzList';
+import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 const ITEM_HEIGHT = 108;
@@ -43,13 +44,15 @@ const SurahItem = React.memo(function SurahItem({
   onPress,
 }: SurahItemProps) {
   const { theme } = useApp();
-  const { t, n, content } = useI18n();
+  const { t, n, content, language } = useI18n();
+  const directionalRow = rowStyle(language);
 
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
         styles.surahItem,
+        directionalRow,
         {
           backgroundColor: theme.card,
           borderColor: isLastRead ? theme.playing : theme.cardBorder,
@@ -60,41 +63,9 @@ const SurahItem = React.memo(function SurahItem({
         },
       ]}
     >
-      {/* Chevron - right */}
-      <View style={{ flexShrink: 0 }}>
-        <MaterialIcons name={I18nManager.isRTL ? 'chevron-left' : 'chevron-right'} size={24} color={theme.icon} />
-      </View>
-
-      {/* Surah name - center (flex: 1, text centered) */}
-      <View style={styles.infoContainer}>
-        <CenteredText style={[styles.arabicName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
-          {t('quran.mode.surah')} {surah.arabic}
-        </CenteredText>
-        <CenteredText
-          style={[styles.dariName, { color: theme.textSecondary }]}
-          numberOfLines={2}
-          ellipsizeMode="tail"
-        >
-          {content(surah, null)} ({content(surah, 'meaning')})
-        </CenteredText>
-      </View>
-
-      {/* Number badge - left */}
-      <View style={[styles.islamicBadgeContainer, { flexShrink: 0 }]}>
-        <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
-        <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <NumericText style={styles.numberText}>{toArabicNumerals(surah.number)}</NumericText>
-        </View>
-        <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerBottomLeft, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
-      </View>
-
-      {/* Meta - far left (مکی/مدنی + آیات) */}
+      {/* Meta + badge sit on the reading-start side; chevron on the end. */}
       <View style={[styles.metaContainer, { flexShrink: 0 }]}>
-        <View style={styles.metaRow}>
+        <View style={[styles.metaRow, directionalRow]}>
           <MaterialIcons
             name={surah.revelation === 'meccan' ? 'brightness-5' : 'brightness-2'}
             size={12}
@@ -109,6 +80,35 @@ const SurahItem = React.memo(function SurahItem({
         </CenteredText>
       </View>
 
+      <View style={[styles.islamicBadgeContainer, { flexShrink: 0 }]}>
+        <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
+        <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
+          <NumericText style={styles.numberText}>{toArabicNumerals(surah.number)}</NumericText>
+        </View>
+        <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerBottomLeft, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
+      </View>
+
+      <View style={styles.infoContainer}>
+        <CenteredText style={[styles.arabicName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
+          {t('quran.mode.surah')} {surah.arabic}
+        </CenteredText>
+        <CenteredText
+          style={[styles.dariName, { color: theme.textSecondary }]}
+          numberOfLines={2}
+          ellipsizeMode="tail"
+        >
+          {content(surah, null)} ({content(surah, 'meaning')})
+        </CenteredText>
+      </View>
+
+      <View style={{ flexShrink: 0 }}>
+        <MaterialIcons name={forwardChevronName(language)} size={24} color={theme.icon} />
+      </View>
+
       {/* Continue Reading Badge - absolute */}
       {isLastRead && (
         <View style={[styles.continueReading, { backgroundColor: theme.playing }]}>
@@ -121,7 +121,8 @@ const SurahItem = React.memo(function SurahItem({
 
 export function SurahList() {
   const { theme, themeMode } = useApp();
-  const { t, n } = useI18n();
+  const { t, n, language } = useI18n();
+  const directionalRow = rowStyle(language);
   const { position } = useReadingPosition();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -248,6 +249,7 @@ export function SurahList() {
           accessibilityRole="button"
           style={({ pressed }) => [
             styles.continueCard,
+            directionalRow,
             { backgroundColor: theme.card, borderColor: theme.playing },
             pressed && styles.continueCardPressed,
           ]}
@@ -278,7 +280,7 @@ export function SurahList() {
         </Pressable>
       )}
 
-      <View style={[styles.modeToggle, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+      <View style={[styles.modeToggle, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
         <Pressable
           onPress={() => handleBrowseModeChange('surah')}
           style={[
@@ -303,7 +305,7 @@ export function SurahList() {
         </Pressable>
       </View>
 
-      <View style={[styles.searchContainer, { backgroundColor: theme.backgroundSecondary }]}>
+      <View style={[styles.searchContainer, directionalRow, { backgroundColor: theme.backgroundSecondary }]}>
         <MaterialIcons name="search" size={20} color={theme.icon} />
         <LocalizedTextInput
           style={[styles.searchInput, { color: theme.text }]}
@@ -414,7 +416,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   continueCard: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'center',
     marginHorizontal: Spacing.md,
@@ -466,7 +467,6 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   searchContainer: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
@@ -483,7 +483,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   modeToggle: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
@@ -519,7 +518,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
   },
   surahItem: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     height: ITEM_HEIGHT,
     paddingVertical: Spacing.sm,
@@ -651,7 +649,6 @@ const styles = StyleSheet.create({
     minWidth: 70,
   },
   metaRow: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     gap: 4,
   },

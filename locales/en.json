@@ -33,7 +33,7 @@
       "battery": "Battery optimisation",
       "autostart": "Autostart",
       "notifications": "Notifications",
-      "statusPass": "Enabled",
+      "statusPass": "Ready",
       "statusWarn": "Needs attention",
       "fix": "Fix",
       "fullCheck": "Run a full health check"

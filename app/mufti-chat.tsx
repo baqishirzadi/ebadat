@@ -15,10 +15,6 @@ import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { MarkdownText, normalizeMarkdownForClipboard } from '@/components/MarkdownText';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
-import {
-  HANAFI_MUFTI_STARTER_QUESTIONS_DARI,
-  HANAFI_MUFTI_STARTER_QUESTIONS_PASHTO,
-} from '@/constants/hanafiMuftiStarterQuestions';
 import { BorderRadius, RTL_CONTAINER, Spacing, ThemeColors, Typography } from '@/constants/theme';
 import {
   persianCaptionText,
@@ -48,8 +44,8 @@ interface ChatBubbleProps {
   theme: ThemeColors;
 }
 
-function ChatBubble({ isUser, text, theme, copiedLabel, copyFailedLabel, errorLabel }: ChatBubbleProps & {
-  copiedLabel: string; copyFailedLabel: string; errorLabel: string;
+function ChatBubble({ isUser, text, theme, copiedLabel, copyFailedLabel, errorLabel, isEnglish }: ChatBubbleProps & {
+  copiedLabel: string; copyFailedLabel: string; errorLabel: string; isEnglish: boolean;
 }) {
   const displayText = isUser ? text : formatAssistantBubbleText(text);
   const handleCopy = useCallback(async () => {
@@ -66,7 +62,18 @@ function ChatBubble({ isUser, text, theme, copiedLabel, copyFailedLabel, errorLa
   }, [text, copiedLabel, errorLabel, copyFailedLabel]);
 
   return (
-    <RtlView style={[styles.messageRow, isUser ? styles.userRow : styles.assistantRow]}>
+    <RtlView
+      style={[
+        styles.messageRow,
+        isEnglish
+          ? isUser
+            ? styles.userRowLtr
+            : styles.assistantRowLtr
+          : isUser
+            ? styles.userRow
+            : styles.assistantRow,
+      ]}
+    >
       {/*
         Isolate bubble text from app-wide forceRTL mirroring. Nested direction:'rtl'
         + textAlign:'right' was resolving to the visual LEFT on Android OEMs, so
@@ -84,6 +91,7 @@ function ChatBubble({ isUser, text, theme, copiedLabel, copyFailedLabel, errorLa
       <MarkdownText
         style={[
           styles.bubbleText,
+          isEnglish ? styles.bubbleTextLtr : null,
           { color: isUser ? '#fff' : theme.text },
           Platform.OS === 'android' ? { includeFontPadding: false } : null,
         ]}
@@ -97,39 +105,51 @@ function ChatBubble({ isUser, text, theme, copiedLabel, copyFailedLabel, errorLa
   );
 }
 
+const MUFTI_STARTER_KEYS = [
+  'chat.mufti.starter.dhuhrRakats',
+  'chat.mufti.starter.goldZakat',
+  'chat.mufti.starter.parentsRights',
+  'chat.mufti.starter.supporters',
+  'chat.mufti.starter.creator',
+  'chat.mufti.starter.travellerPrayer',
+] as const;
+
 interface StarterChipsProps {
   theme: ThemeColors;
   disabled: boolean;
   onSelect: (question: string) => void;
 }
 
-function StarterChips({ theme, disabled, onSelect, isPashto, t }: StarterChipsProps & {
-  isPashto: boolean; t: (key: 'mufti.disclaimer' | 'mufti.duaHint') => string;
+function StarterChips({ theme, disabled, onSelect, t }: StarterChipsProps & {
+  t: (key: (typeof MUFTI_STARTER_KEYS)[number] | 'mufti.disclaimer' | 'mufti.duaHint') => string;
 }) {
   const router = useRouter();
 
   return (
     <RtlView style={styles.emptyWrap}>
       <RtlView style={styles.chipsWrap}>
-        {(isPashto ? HANAFI_MUFTI_STARTER_QUESTIONS_PASHTO : HANAFI_MUFTI_STARTER_QUESTIONS_DARI).map((question) => (
-          <Pressable
-            key={question}
-            disabled={disabled}
-            onPress={() => onSelect(question)}
-            style={[
-              styles.chip,
-              {
-                backgroundColor: theme.card,
-                borderColor: theme.cardBorder,
-                opacity: disabled ? 0.5 : 1,
-              },
-            ]}
-          >
-            <RtlText align="center" style={[styles.chipText, { color: theme.text }]}>
-              {question}
-            </RtlText>
-          </Pressable>
-        ))}
+        {MUFTI_STARTER_KEYS.map((key) => {
+          const question = t(key);
+          return (
+            <Pressable
+              key={key}
+              disabled={disabled}
+              onPress={() => onSelect(question)}
+              style={[
+                styles.chip,
+                {
+                  backgroundColor: theme.card,
+                  borderColor: theme.cardBorder,
+                  opacity: disabled ? 0.5 : 1,
+                },
+              ]}
+            >
+              <RtlText align="center" style={[styles.chipText, { color: theme.text }]}>
+                {question}
+              </RtlText>
+            </Pressable>
+          );
+        })}
       </RtlView>
       <RtlText align="center" style={[styles.emptyDisclaimer, { color: theme.textSecondary }]}>
         {t('mufti.disclaimer')}
@@ -148,7 +168,8 @@ function StarterChips({ theme, disabled, onSelect, isPashto, t }: StarterChipsPr
 
 export default function MuftiChatScreen() {
   const { theme } = useApp();
-  const { t, fontFamily, isPashto } = useI18n();
+  const { t, fontFamily, language } = useI18n();
+  const isEnglish = language === 'english';
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<ChatRow>>(null);
   const [input, setInput] = useState('');
@@ -278,7 +299,7 @@ export default function MuftiChatScreen() {
     ({ item }: { item: ChatRow }) => {
       if (item.type === 'streaming') {
         return (
-          <RtlView style={[styles.messageRow, styles.assistantRow]}>
+          <RtlView style={[styles.messageRow, isEnglish ? styles.assistantRowLtr : styles.assistantRow]}>
             <View
               style={[
                 styles.bubble,
@@ -290,6 +311,7 @@ export default function MuftiChatScreen() {
               <MarkdownText
                 style={[
                   styles.bubbleText,
+                  isEnglish ? styles.bubbleTextLtr : null,
                   { color: theme.text },
                   Platform.OS === 'android' ? { includeFontPadding: false } : null,
                 ]}
@@ -306,13 +328,14 @@ export default function MuftiChatScreen() {
           isUser={item.message.role === 'user'}
           text={item.message.content}
           theme={theme}
+          isEnglish={isEnglish}
           copiedLabel={t('common.copyReply')}
           copyFailedLabel={t('common.copyFailed')}
           errorLabel={t('common.error')}
         />
       );
     },
-    [theme, t],
+    [theme, t, isEnglish],
   );
 
   const chatBody = (
@@ -341,7 +364,6 @@ export default function MuftiChatScreen() {
                 theme={theme}
                 disabled={isStreaming || !isConfigured}
                 onSelect={handleStarterSelect}
-                isPashto={isPashto}
                 t={t}
               />
             }
@@ -362,9 +384,10 @@ export default function MuftiChatScreen() {
         </Pressable>
       ) : null}
 
-      <RtlView
+      <View
         style={[
           styles.composer,
+          isEnglish ? styles.composerLtr : null,
           {
             backgroundColor: theme.card,
             borderTopColor: theme.divider,
@@ -372,6 +395,36 @@ export default function MuftiChatScreen() {
           },
         ]}
       >
+        {isEnglish ? (
+          <LocalizedTextInput
+            testID="mufti-chat-input"
+            accessibilityLabel={t('mufti.placeholder')}
+            style={[
+              styles.input,
+              styles.inputLtr,
+              {
+                color: theme.text,
+                borderColor: theme.cardBorder,
+                backgroundColor: theme.card,
+                opacity: 1,
+                fontFamily,
+              },
+            ]}
+            value={input}
+            onChangeText={setInput}
+            onFocus={() => scrollToBottom(false)}
+            placeholder={t('mufti.placeholder')}
+            placeholderTextColor={theme.textSecondary}
+            multiline
+            maxLength={4000}
+            editable={!isStreaming && isConfigured}
+            underlineColorAndroid="transparent"
+            selectionColor={theme.tint}
+            cursorColor={theme.tint}
+            textAlign="left"
+            {...(Platform.OS === 'android' ? { textAlignVertical: 'center' as const } : null)}
+          />
+        ) : null}
         <Pressable
           onPress={() => void handleSend()}
           disabled={!input.trim() || isStreaming || !isConfigured}
@@ -390,34 +443,36 @@ export default function MuftiChatScreen() {
             <MaterialIcons name="send" size={22} color="#fff" />
           )}
         </Pressable>
-        <LocalizedTextInput
-          testID="mufti-chat-input"
-          accessibilityLabel={t('mufti.placeholder')}
-          style={[
-            styles.input,
-            {
-              color: theme.text,
-              borderColor: theme.cardBorder,
-              backgroundColor: theme.card,
-              opacity: 1,
-              fontFamily,
-            },
-          ]}
-          value={input}
-          onChangeText={setInput}
-          onFocus={() => scrollToBottom(false)}
-          placeholder={t('mufti.placeholder')}
-          placeholderTextColor={theme.textSecondary}
-          multiline
-          maxLength={4000}
-          editable={!isStreaming && isConfigured}
-          underlineColorAndroid="transparent"
-          selectionColor={theme.tint}
-          cursorColor={theme.tint}
-          {...persianTextInputAlignProps}
-          {...(Platform.OS === 'android' ? { textAlignVertical: 'center' as const } : null)}
-        />
-      </RtlView>
+        {isEnglish ? null : (
+          <LocalizedTextInput
+            testID="mufti-chat-input"
+            accessibilityLabel={t('mufti.placeholder')}
+            style={[
+              styles.input,
+              {
+                color: theme.text,
+                borderColor: theme.cardBorder,
+                backgroundColor: theme.card,
+                opacity: 1,
+                fontFamily,
+              },
+            ]}
+            value={input}
+            onChangeText={setInput}
+            onFocus={() => scrollToBottom(false)}
+            placeholder={t('mufti.placeholder')}
+            placeholderTextColor={theme.textSecondary}
+            multiline
+            maxLength={4000}
+            editable={!isStreaming && isConfigured}
+            underlineColorAndroid="transparent"
+            selectionColor={theme.tint}
+            cursorColor={theme.tint}
+            {...persianTextInputAlignProps}
+            {...(Platform.OS === 'android' ? { textAlignVertical: 'center' as const } : null)}
+          />
+        )}
+      </View>
     </>
   );
 
@@ -516,6 +571,12 @@ const styles = StyleSheet.create({
   assistantRow: {
     justifyContent: 'flex-end',
   },
+  userRowLtr: {
+    justifyContent: 'flex-end',
+  },
+  assistantRowLtr: {
+    justifyContent: 'flex-start',
+  },
   bubble: {
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.md,
@@ -541,6 +602,10 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     writingDirection: 'rtl',
   },
+  bubbleTextLtr: {
+    textAlign: 'left',
+    writingDirection: 'ltr',
+  },
   typing: {
     ...persianCaptionText,
     paddingHorizontal: Spacing.md,
@@ -561,6 +626,9 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
   },
+  composerLtr: {
+    direction: 'ltr',
+  },
   input: {
     flex: 1,
     minWidth: 0,
@@ -575,6 +643,10 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     // Avoid writingDirection:'rtl' on Android TextInput — it can hide typed glyphs under forceRTL.
     textAlign: 'right',
+  },
+  inputLtr: {
+    textAlign: 'left',
+    writingDirection: 'ltr',
   },
   sendButton: {
     width: 44,

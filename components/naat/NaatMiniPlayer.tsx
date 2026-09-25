@@ -4,8 +4,10 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { LocalizedText } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
+import { useI18n } from '@/utils/i18n/useI18n';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { Naat } from '@/types/naat';
+import { rowStyle, textStartStyle } from '@/utils/i18n/direction';
 
 type Props = {
   naat: Naat;
@@ -17,7 +19,9 @@ type Props = {
 
 export function NaatMiniPlayer({ naat, isPlaying, progress, onPlayPause, onOpen }: Props) {
   const { theme } = useApp();
+  const { language } = useI18n();
   const clampedProgress = Math.max(0, Math.min(progress, 1));
+  const startAlign = textStartStyle(language);
   return (
     <Pressable onPress={onOpen} style={[styles.container, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
       <View style={{ direction: 'ltr', width: '100%' }}>
@@ -30,12 +34,12 @@ export function NaatMiniPlayer({ naat, isPlaying, progress, onPlayPause, onOpen 
           />
         </View>
       </View>
-      <View style={styles.content}>
+      <View style={[styles.content, rowStyle(language)]}>
         <View style={styles.info}>
-          <LocalizedText style={[styles.title, { color: theme.text }]} numberOfLines={1}>
+          <LocalizedText style={[styles.title, startAlign, { color: theme.text }]} numberOfLines={1}>
             {naat.title_fa}
           </LocalizedText>
-          <LocalizedText style={[styles.subtitle, { color: theme.textSecondary }]} numberOfLines={1}>
+          <LocalizedText style={[styles.subtitle, startAlign, { color: theme.textSecondary }]} numberOfLines={1}>
             {naat.reciter_name}
           </LocalizedText>
         </View>
@@ -73,25 +77,22 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   content: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
+    gap: Spacing.md,
   },
   info: {
     flex: 1,
-    marginLeft: Spacing.md,
   },
   title: {
     fontSize: Typography.ui.subtitle,
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
   },
   subtitle: {
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
-    textAlign: 'right',
   },
   playButton: {
     width: 44,

@@ -11,6 +11,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { LocalizedText } from '@/components/ui/LocalizedText';
 import { pickContent } from '@/utils/i18n/content';
+import { rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 interface Step {
@@ -53,7 +54,7 @@ export function PrayerStepGuide({
         return (
           <View
             key={stepNumber}
-            style={[styles.stepCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+            style={[styles.stepCard, rowStyle(language), { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
           >
             <View style={[styles.stepNumber, { backgroundColor: color }]}>
               <LocalizedText style={styles.stepNumberText}>{stepNumber}</LocalizedText>
@@ -85,7 +86,6 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
   stepCard: {
-    flexDirection: 'row-reverse',
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     marginBottom: Spacing.md,

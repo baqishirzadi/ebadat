@@ -32,6 +32,7 @@ interface HomeHeaderProps {
 export function HomeHeader({ onCityPress }: HomeHeaderProps) {
   const { theme } = useApp();
   const { t, language, fontFamily } = useI18n();
+  const isEnglish = language === 'english';
   const { state } = usePrayer();
   const insets = useSafeAreaInsets();
   const [clock, setClock] = useState(() => formatLiveClock(new Date()));
@@ -53,7 +54,16 @@ export function HomeHeader({ onCityPress }: HomeHeaderProps) {
           <RtlText align="center" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={[styles.greeting, { color: theme.textSecondary }]}>
             {getGreeting(new Date().getHours(), t)} • {clock}
           </RtlText>
-          <RtlText align="center" style={[styles.title, { color: theme.text, fontFamily }]}>عبادت</RtlText>
+          <RtlText
+            align="center"
+            style={[
+              styles.title,
+              { color: theme.text },
+              isEnglish ? styles.titleEnglish : { fontFamily },
+            ]}
+          >
+            {isEnglish ? 'Ebadat' : 'عبادت'}
+          </RtlText>
         </RtlView>
         <Pressable
           onPress={onCityPress}
@@ -90,6 +100,10 @@ const styles = StyleSheet.create({
   title: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.subtitle,
+  },
+  titleEnglish: {
+    fontFamily: undefined,
+    fontWeight: '700',
   },
   cityChip: {
     flexDirection: 'row',

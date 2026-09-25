@@ -5,6 +5,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { useI18n } from '@/utils/i18n/useI18n';
+import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 
 interface MoreHubRowProps {
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -17,6 +19,7 @@ interface MoreHubRowProps {
 
 export function MoreHubRow({ icon, label, subtitle, testID, badgeCount = 0, onPress }: MoreHubRowProps) {
   const { theme } = useApp();
+  const { language } = useI18n();
 
   return (
     <Pressable
@@ -24,15 +27,11 @@ export function MoreHubRow({ icon, label, subtitle, testID, badgeCount = 0, onPr
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
+        rowStyle(language),
         { backgroundColor: theme.card, borderColor: theme.cardBorder },
         pressed && styles.pressed,
       ]}
     >
-      <MaterialIcons name="chevron-left" size={22} color={theme.icon} />
-      <View style={styles.textWrap}>
-        <CenteredText style={[styles.label, { color: theme.text }]}>{label}</CenteredText>
-        <CenteredText style={[styles.subtitle, { color: theme.textSecondary }]}>{subtitle}</CenteredText>
-      </View>
       <View style={[styles.iconWrap, { backgroundColor: `${theme.tint}18`, borderColor: `${theme.tint}30` }]}>
         <MaterialIcons name={icon} size={22} color={theme.tint} />
         {badgeCount > 0 ? (
@@ -43,13 +42,17 @@ export function MoreHubRow({ icon, label, subtitle, testID, badgeCount = 0, onPr
           </View>
         ) : null}
       </View>
+      <View style={styles.textWrap}>
+        <CenteredText style={[styles.label, { color: theme.text }]}>{label}</CenteredText>
+        <CenteredText style={[styles.subtitle, { color: theme.textSecondary }]}>{subtitle}</CenteredText>
+      </View>
+      <MaterialIcons name={forwardChevronName(language)} size={22} color={theme.icon} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   row: {
-    flexDirection: 'row',
     alignItems: 'center',
     borderRadius: BorderRadius.lg,
     borderWidth: 1,

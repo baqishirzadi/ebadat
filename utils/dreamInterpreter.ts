@@ -5,6 +5,9 @@
 import NetInfo from '@react-native-community/netinfo';
 import Constants from 'expo-constants';
 
+import { DREAM_COPY } from '@/constants/dreamInterpreterCopy';
+import type { AppLanguage } from '@/types/quran';
+
 export type DreamInterpreterRole = 'user' | 'assistant';
 export type DreamSessionState = 'new' | 'continuing';
 
@@ -19,6 +22,8 @@ export interface AskDreamInterpreterOptions {
   onError: (message: string) => void;
   signal?: AbortSignal;
   sessionState: DreamSessionState;
+  /** UI language for client-side error copy. */
+  language?: AppLanguage;
 }
 
 const DEFAULT_DREAM_URL =
@@ -41,7 +46,10 @@ const DREAM_ANON_KEY =
 const MAX_MESSAGES = 24;
 const MAX_CONTENT_LENGTH = 4000;
 const READ_TIMEOUT_MS = 90_000;
-const GENERIC_UNAVAILABLE = 'سرویس موقتاً در دسترس نیست. لطفاً بعداً تلاش کنید.';
+
+function dreamCopy(language: AppLanguage = 'dari') {
+  return DREAM_COPY[language] ?? DREAM_COPY.dari;
+}
 
 export function isDreamInterpreterConfigured(): boolean {
   return DREAM_URL.length > 0 && DREAM_ANON_KEY.length > 0;
@@ -65,8 +73,9 @@ async function hasNetwork(): Promise<boolean> {
   return true;
 }
 
-function mapHttpError(status: number, bodyText: string): string {
-  if (status === 402) return GENERIC_UNAVAILABLE;
+function mapHttpError(status: number, bodyText: string, language: AppLanguage = 'dari'): string {
+  const copy = dreamCopy(language);
+  if (status === 402) return copy.unavailable;
 
   let parsedError = '';
   try {
@@ -81,12 +90,24 @@ function mapHttpError(status: number, bodyText: string): string {
 
   switch (status) {
     case 400:
-      return 'درخواست نامعتبر است.';
+      return language === 'english'
+        ? 'The request is not valid.'
+        : language === 'pashto'
+          ? 'غوښتنه ناسمه ده.'
+          : 'درخواست نامعتبر است.';
     case 429:
-      return 'لطفاً چند لحظه صبر کنید و دوباره تلاش کنید.';
+      return language === 'english'
+        ? 'Please wait a moment and try again.'
+        : language === 'pashto'
+          ? 'لږه شېبه صبر وکړئ او بیا هڅه وکړئ.'
+          : 'لطفاً چند لحظه صبر کنید و دوباره تلاش کنید.';
     case 500:
     default:
-      return 'خطای سرور. لطفاً دوباره تلاش کنید.';
+      return language === 'english'
+        ? 'Server error. Please try again.'
+        : language === 'pashto'
+          ? 'د سرور تېروتنه ده. بیا هڅه وکړئ.'
+          : 'خطای سرور. لطفاً دوباره تلاش کنید.';
   }
 }
 
@@ -221,14 +242,16 @@ export async function askDreamInterpreter(
   options: AskDreamInterpreterOptions,
 ): Promise<void> {
   const { onError, sessionState } = options;
+  const language = options.language ?? 'dari';
+  const copy = dreamCopy(language);
 
   if (!isDreamInterpreterConfigured()) {
-    onError('سرویس تعبیر خواب هنوز پیکربندی نشده است.');
+    onError(copy.notConfigured);
     return;
   }
 
   if (!(await hasNetwork())) {
-    onError('اتصال اینترنت برقرار نیست.');
+    onError(copy.offline);
     return;
   }
 
@@ -237,7 +260,7 @@ export async function askDreamInterpreter(
     sessionState,
   };
   if (payload.messages.length === 0) {
-    onError('پیامی برای ارسال وجود ندارد.');
+    onError(copy.noMessage);
     return;
   }
 
@@ -259,15 +282,15 @@ export async function askDreamInterpreter(
     cleanup();
     if (options.signal?.aborted || signal.aborted) {
       if (options.signal?.aborted) return;
-      onError(GENERIC_UNAVAILABLE);
+      onError(copy.unavailable);
       return;
     }
     const message = error instanceof Error ? error.message : String(error);
     if (/network request failed|failed to fetch|aborted/i.test(message)) {
-      onError('اتصال اینترنت برقرار نیست.');
+      onError(copy.offline);
       return;
     }
-    onError('خطا در ارتباط با سرور.');
+    onError(copy.connectionError);
     return;
   }
 
@@ -275,7 +298,7 @@ export async function askDreamInterpreter(
     const bodyText = await response.text().catch(() => '');
     cleanup();
     if (options.signal?.aborted) return;
-    onError(mapHttpError(response.status, bodyText));
+    onError(mapHttpError(response.status, bodyText, language));
     return;
   }
 
@@ -284,7 +307,7 @@ export async function askDreamInterpreter(
   } catch (error) {
     if (options.signal?.aborted) return;
     const message = error instanceof Error ? error.message : String(error);
-    onError(message || 'خطا در دریافت پاسخ.');
+    onError(message || copy.receiveError);
   } finally {
     cleanup();
   }

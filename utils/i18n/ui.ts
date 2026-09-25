@@ -191,6 +191,10 @@ const PASHTO: Record<string, string> = {
   'حجم ذخیره‌شده': 'ساتل شوې اندازه',
   'دانلود شده': 'ښکته شوي',
   'هنوز چیزی دانلود نشده است': 'لا څه نه دي ښکته شوي',
+  'جستجوی نعت...': 'د نعت لټون...',
+  'PIN اشتباه است': 'PIN ناسم دی',
+  'مگابایت': 'مېګابایټ',
+  'صف پخش نعت': 'د نعت د غږولو کتار',
 };
 
 const ENGLISH: Record<string, string> = {
@@ -374,6 +378,10 @@ const ENGLISH: Record<string, string> = {
   'حجم ذخیره‌شده': 'Stored size',
   'دانلود شده': 'Downloaded',
   'هنوز چیزی دانلود نشده است': 'Nothing has been downloaded yet',
+  'جستجوی نعت...': 'Search naat…',
+  'PIN اشتباه است': 'Incorrect PIN',
+  'مگابایت': 'MB',
+  'صف پخش نعت': 'Naat play queue',
 };
 
 /**

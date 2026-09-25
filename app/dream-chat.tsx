@@ -45,7 +45,7 @@ interface ChatBubbleProps {
   theme: ThemeColors;
 }
 
-function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
+function ChatBubble({ isUser, text, theme, isEnglish }: ChatBubbleProps & { isEnglish: boolean }) {
   const { t } = useI18n();
   const displayText = isUser ? text : formatAssistantBubbleText(text);
   const handleCopy = useCallback(async () => {
@@ -62,7 +62,18 @@ function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
   }, [text, t]);
 
   return (
-    <RtlView style={[styles.messageRow, isUser ? styles.userRow : styles.assistantRow]}>
+    <RtlView
+      style={[
+        styles.messageRow,
+        isEnglish
+          ? isUser
+            ? styles.userRowLtr
+            : styles.assistantRowLtr
+          : isUser
+            ? styles.userRow
+            : styles.assistantRow,
+      ]}
+    >
       <View
         style={[
           styles.bubble,
@@ -75,6 +86,7 @@ function ChatBubble({ isUser, text, theme }: ChatBubbleProps) {
       <MarkdownText
         style={[
           styles.bubbleText,
+          isEnglish ? styles.bubbleTextLtr : null,
           { color: isUser ? '#fff' : theme.text },
           Platform.OS === 'android' ? { includeFontPadding: false } : null,
         ]}
@@ -134,7 +146,8 @@ function StarterChips({ theme, disabled, copy, onSelect }: StarterChipsProps) {
 
 export default function DreamChatScreen() {
   const { theme, state } = useApp();
-  const { isPashto, fontFamily } = useI18n();
+  const { isPashto, fontFamily, language } = useI18n();
+  const isEnglish = language === 'english';
   const isNastaliq = isPashto && fontFamily === 'NotoNastaliqUrdu';
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<ChatRow>>(null);
@@ -156,7 +169,13 @@ export default function DreamChatScreen() {
   } = useDreamInterpreter();
 
   useEffect(() => {
-    setLang(state.preferences.appLanguage === 'pashto' ? 'ps' : 'fa');
+    const lang =
+      state.preferences.appLanguage === 'pashto'
+        ? 'ps'
+        : state.preferences.appLanguage === 'english'
+          ? 'en'
+          : 'fa';
+    setLang(lang);
   }, [setLang, state.preferences.appLanguage]);
 
   const rows = useMemo<ChatRow[]>(() => {
@@ -250,17 +269,21 @@ export default function DreamChatScreen() {
   const handleClear = useCallback(() => {
     if (messages.length === 0) return;
 
-    Alert.alert(copy.newChat, 'آیا مطمئن هستید؟', [
-      { text: 'انصراف', style: 'cancel' },
-      {
-        text: copy.newChat,
-        style: 'destructive',
-        onPress: () => {
-          void clearConversation();
+    Alert.alert(
+      copy.newChat,
+      isEnglish ? 'Are you sure?' : isPashto ? 'ډاډه یاست؟' : 'آیا مطمئن هستید؟',
+      [
+        { text: isEnglish ? 'Cancel' : isPashto ? 'پرېښودل' : 'انصراف', style: 'cancel' },
+        {
+          text: copy.newChat,
+          style: 'destructive',
+          onPress: () => {
+            void clearConversation();
+          },
         },
-      },
-    ]);
-  }, [clearConversation, copy.newChat, messages.length]);
+      ],
+    );
+  }, [clearConversation, copy.newChat, messages.length, isEnglish, isPashto]);
 
   const handleErrorPress = useCallback(() => {
     const last = messages[messages.length - 1];
@@ -275,7 +298,7 @@ export default function DreamChatScreen() {
     ({ item }: { item: ChatRow }) => {
       if (item.type === 'streaming') {
         return (
-          <RtlView style={[styles.messageRow, styles.assistantRow]}>
+          <RtlView style={[styles.messageRow, isEnglish ? styles.assistantRowLtr : styles.assistantRow]}>
             <View
               style={[
                 styles.bubble,
@@ -287,6 +310,7 @@ export default function DreamChatScreen() {
               <MarkdownText
                 style={[
                   styles.bubbleText,
+                  isEnglish ? styles.bubbleTextLtr : null,
                   { color: theme.text },
                   Platform.OS === 'android' ? { includeFontPadding: false } : null,
                 ]}
@@ -303,10 +327,11 @@ export default function DreamChatScreen() {
           isUser={item.message.role === 'user'}
           text={item.message.content}
           theme={theme}
+          isEnglish={isEnglish}
         />
       );
     },
-    [theme],
+    [theme, isEnglish],
   );
 
   const chatBody = (
@@ -358,9 +383,10 @@ export default function DreamChatScreen() {
         {copy.disclaimer}
       </RtlText>
 
-      <RtlView
+      <View
         style={[
           styles.composer,
+          isEnglish ? styles.composerLtr : null,
           {
             backgroundColor: theme.card,
             borderTopColor: theme.divider,
@@ -368,6 +394,42 @@ export default function DreamChatScreen() {
           },
         ]}
       >
+        {isEnglish ? (
+          <LocalizedTextInput
+            testID="dream-chat-input"
+            style={[
+              styles.input,
+              styles.inputLtr,
+              {
+                fontFamily,
+                fontSize: Typography.ui.body,
+                lineHeight: 20,
+                minHeight: 48,
+                maxHeight: 96,
+                paddingVertical: 7,
+              },
+              {
+                color: theme.text,
+                borderColor: theme.cardBorder,
+                backgroundColor: theme.card,
+                opacity: 1,
+              },
+            ]}
+            value={input}
+            onChangeText={setInput}
+            onFocus={() => scrollToBottom(false)}
+            placeholder={copy.placeholder}
+            placeholderTextColor={theme.textSecondary}
+            multiline
+            maxLength={DREAM_INPUT_MAX_LENGTH}
+            editable={!isStreaming && isConfigured}
+            underlineColorAndroid="transparent"
+            selectionColor={theme.tint}
+            cursorColor={theme.tint}
+            textAlign="left"
+            {...(Platform.OS === 'android' ? { textAlignVertical: 'center' as const } : null)}
+          />
+        ) : null}
         <Pressable
           onPress={() => void handleSend()}
           disabled={!input.trim() || isStreaming || !isConfigured}
@@ -383,41 +445,43 @@ export default function DreamChatScreen() {
             <MaterialIcons name="send" size={22} color="#fff" />
           )}
         </Pressable>
-        <LocalizedTextInput
-          testID="dream-chat-input"
-          style={[
-            styles.input,
-            {
-              fontFamily,
-              fontSize: isPashto ? 13 : Typography.ui.body,
-              lineHeight: isNastaliq ? 29 : isPashto ? 21 : 20,
-              minHeight: 48,
-              maxHeight: 96,
-              paddingVertical: isNastaliq ? 4 : 7,
-              includeFontPadding: isNastaliq,
-            },
-            {
-              color: theme.text,
-              borderColor: theme.cardBorder,
-              backgroundColor: theme.card,
-              opacity: 1,
-            },
-          ]}
-          value={input}
-          onChangeText={setInput}
-          onFocus={() => scrollToBottom(false)}
-          placeholder={copy.placeholder}
-          placeholderTextColor={theme.textSecondary}
-          multiline
-          maxLength={DREAM_INPUT_MAX_LENGTH}
-          editable={!isStreaming && isConfigured}
-          underlineColorAndroid="transparent"
-          selectionColor={theme.tint}
-          cursorColor={theme.tint}
-          {...persianTextInputAlignProps}
-          {...(Platform.OS === 'android' ? { textAlignVertical: 'center' as const } : null)}
-        />
-      </RtlView>
+        {isEnglish ? null : (
+          <LocalizedTextInput
+            testID="dream-chat-input"
+            style={[
+              styles.input,
+              {
+                fontFamily,
+                fontSize: isPashto ? 13 : Typography.ui.body,
+                lineHeight: isNastaliq ? 29 : isPashto ? 21 : 20,
+                minHeight: 48,
+                maxHeight: 96,
+                paddingVertical: isNastaliq ? 4 : 7,
+                includeFontPadding: isNastaliq,
+              },
+              {
+                color: theme.text,
+                borderColor: theme.cardBorder,
+                backgroundColor: theme.card,
+                opacity: 1,
+              },
+            ]}
+            value={input}
+            onChangeText={setInput}
+            onFocus={() => scrollToBottom(false)}
+            placeholder={copy.placeholder}
+            placeholderTextColor={theme.textSecondary}
+            multiline
+            maxLength={DREAM_INPUT_MAX_LENGTH}
+            editable={!isStreaming && isConfigured}
+            underlineColorAndroid="transparent"
+            selectionColor={theme.tint}
+            cursorColor={theme.tint}
+            {...persianTextInputAlignProps}
+            {...(Platform.OS === 'android' ? { textAlignVertical: 'center' as const } : null)}
+          />
+        )}
+      </View>
     </>
   );
 
@@ -515,6 +579,12 @@ const styles = StyleSheet.create({
   assistantRow: {
     justifyContent: 'flex-end',
   },
+  userRowLtr: {
+    justifyContent: 'flex-end',
+  },
+  assistantRowLtr: {
+    justifyContent: 'flex-start',
+  },
   bubble: {
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.md,
@@ -538,6 +608,10 @@ const styles = StyleSheet.create({
     width: '100%',
     textAlign: 'right',
     writingDirection: 'rtl',
+  },
+  bubbleTextLtr: {
+    textAlign: 'left',
+    writingDirection: 'ltr',
   },
   typing: {
     ...persianCaptionText,
@@ -571,6 +645,9 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
   },
+  composerLtr: {
+    direction: 'ltr',
+  },
   input: {
     flex: 1,
     minHeight: 48,
@@ -582,6 +659,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     textAlign: 'right',
+  },
+  inputLtr: {
+    textAlign: 'left',
+    writingDirection: 'ltr',
   },
   sendButton: {
     width: 44,

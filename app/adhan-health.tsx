@@ -70,14 +70,16 @@ function statusColor(status: AdhanHealthCheckItem['status'], theme: ReturnType<t
   }
 }
 
-function overallLabel(status: AdhanHealthReport['overallStatus'], pashto = false): string {
+function overallLabelKey(
+  status: AdhanHealthReport['overallStatus'],
+): 'adhanHealth.overall.healthy' | 'adhanHealth.overall.warning' | 'adhanHealth.overall.critical' {
   switch (status) {
     case 'healthy':
-      return pashto ? 'اذان چمتو دی' : 'اذان آماده است';
+      return 'adhanHealth.overall.healthy';
     case 'warning':
-      return pashto ? 'کتنې ته اړتیا ده' : 'نیاز به بررسی';
+      return 'adhanHealth.overall.warning';
     default:
-      return pashto ? 'جدي ستونزه' : 'مشکل جدی';
+      return 'adhanHealth.overall.critical';
   }
 }
 
@@ -89,8 +91,7 @@ function checkChipLabel(status: AdhanHealthCheckItem['status'], locale: AdhanPer
 
 export default function AdhanHealthScreen() {
   const { theme, state } = useApp();
-  const { t } = useI18n();
-  const pashto = state.preferences.appLanguage === 'pashto';
+  const { t, language } = useI18n();
   const locale = adhanPermissionLocale(state.preferences.appLanguage);
   const { requestPrayerSchedule } = usePrayer();
   const [report, setReport] = useState<AdhanHealthReport | null>(null);
@@ -99,17 +100,31 @@ export default function AdhanHealthScreen() {
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<string | null>(null);
 
+  const formatAlarmTime = useCallback(
+    (ms: number) => {
+      const date = new Date(ms);
+      if (language === 'english') {
+        return formatGregorianDateTimeCompact(date, String, 'en-US');
+      }
+      if (language === 'pashto') {
+        return formatGregorianDateTimeCompact(date, toArabicNumerals, 'ps-AF');
+      }
+      return formatGregorianDateTimeCompact(date, toArabicNumerals, 'fa-AF');
+    },
+    [language],
+  );
+
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
       const next = await buildAdhanHealthReport(locale);
       setReport(next);
     } catch {
-      Alert.alert(pashto ? 'تېروتنه' : 'خطا', pashto ? 'د اذان د حالت کتنه ترسره نه شوه.' : 'بررسی سلامت اذان انجام نشد.');
+      Alert.alert(t('adhanHealth.error'), t('adhanHealth.refreshFailed'));
     } finally {
       setLoading(false);
     }
-  }, [locale, pashto]);
+  }, [locale, t]);
 
   useFocusEffect(
     useCallback(() => {
@@ -123,31 +138,31 @@ export default function AdhanHealthScreen() {
       await repairAdhanScheduling();
       await requestPrayerSchedule('health-repair');
       await refresh();
-      Alert.alert(pashto ? 'بیا رغول بشپړ شو' : 'بازیابی انجام شد', pashto ? 'اذانونه له سیسټم سره بیا همغږي شول.' : 'اذان‌ها دوباره با سیستم همگام شدند.');
+      Alert.alert(t('adhanHealth.repairDoneTitle'), t('adhanHealth.repairDoneBody'));
     } catch {
-      Alert.alert(pashto ? 'تېروتنه' : 'خطا', pashto ? 'د اذان بیا رغول ترسره نه شول.' : 'بازیابی اذان انجام نشد.');
+      Alert.alert(t('adhanHealth.error'), t('adhanHealth.repairFailed'));
     } finally {
       setRepairing(false);
     }
-  }, [refresh, requestPrayerSchedule, pashto]);
+  }, [refresh, requestPrayerSchedule, t]);
 
   const handleLiveTest = useCallback(async () => {
     setTesting(true);
-    setTestResult(pashto ? 'د ازموینې خبرتیا ته انتظار...' : 'در حال انتظار برای اعلان تست...');
+    setTestResult(t('adhanHealth.testWaiting'));
     try {
       const result = await runVerifiedAdhanSystemTest();
       if (result.passed) {
-        setTestResult(pashto ? 'ازموینه بریالۍ وه: خبرتیا له غږ سره ترلاسه شوه.' : 'تست موفق: اعلان با صدا دریافت شد.');
+        setTestResult(t('adhanHealth.testPassed'));
       } else {
-        setTestResult(pashto ? 'ازموینه ناکامه شوه: خبرتیا پر ټاکلي وخت ترلاسه نه شوه.' : 'تست ناموفق: اعلان در زمان مقرر دریافت نشد.');
+        setTestResult(t('adhanHealth.testFailed'));
       }
       await refresh();
     } catch {
-      setTestResult(pashto ? 'د ژوندۍ ازموینې په اجرا کې تېروتنه.' : 'خطا در اجرای تست زنده.');
+      setTestResult(t('adhanHealth.testError'));
     } finally {
       setTesting(false);
     }
-  }, [refresh, pashto]);
+  }, [refresh, t]);
 
   const handleFix = useCallback(
     async (check: AdhanHealthCheckItem) => {
@@ -189,7 +204,7 @@ export default function AdhanHealthScreen() {
         <ScreenHeader title={tAdhanPermission('adhanPermissions.health.title', locale)} />
         <View style={[styles.centered, styles.rtlRoot, { backgroundColor: theme.background }]}>
           <RtlText align="center" style={[styles.unsupported, { color: theme.textSecondary }]}>
-            {pashto ? 'د اذان د حالت کتنه یوازې په اندروید کې شته.' : 'بررسی سلامت اذان فقط در اندروید در دسترس است.'}
+            {t('adhanHealth.androidOnly')}
           </RtlText>
         </View>
       </>
@@ -212,12 +227,12 @@ export default function AdhanHealthScreen() {
             <RtlView style={styles.summaryInner}>
               <AdhanHealthStatusChip status={healthStatusFromReport(report)} />
               <RtlText align="center" style={[styles.summaryTitle, { color: theme.text }]}>
-                {overallLabel(report.overallStatus, pashto)}
+                {t(overallLabelKey(report.overallStatus))}
               </RtlText>
               <RtlText align="center" style={[styles.summaryBody, { color: theme.textSecondary }]}>
                 {report.health.scheduledAlarmCount > 0 && report.health.nextAlarmAtMs
-                  ? (pashto ? `راتلونکی اذان: ${formatGregorianDateTimeCompact(new Date(report.health.nextAlarmAtMs), toArabicNumerals, 'ps-AF')}` : `اذان بعدی: ${formatGregorianDateTimeCompact(new Date(report.health.nextAlarmAtMs), toArabicNumerals, 'fa-AF')}`)
-                  : (pashto ? 'د مهالوېش حالت لاندې وګورئ.' : 'وضعیت زمان‌بندی را در زیر بررسی کنید.')}
+                  ? t('adhanHealth.nextAdhan', { time: formatAlarmTime(report.health.nextAlarmAtMs) })
+                  : t('adhanHealth.scheduleHint')}
               </RtlText>
               <Button label={t('adhanHealth.refresh')} onPress={() => refresh().catch(() => {})} variant="secondary" />
             </RtlView>
@@ -267,19 +282,19 @@ export default function AdhanHealthScreen() {
         {report && report.firedEvents.length > 0 ? (
           <View style={[styles.historyCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <RtlText align="center" style={[styles.historyTitle, { color: theme.text }]}>
-              {pashto ? 'وروستي پېښې' : 'آخرین رویدادها'}
+              {t('adhanHealth.recentEvents')}
             </RtlText>
             {report.firedEvents.slice(0, 5).map((event) => (
               <RtlView key={`${event.id}-${event.actualFireAtMs}`} style={styles.historyRow}>
                 <RtlText align="center" style={[styles.historyMeta, { color: theme.textSecondary }]}>
                   {event.type === 'system_test'
-                    ? (pashto ? 'سیسټمي ازموینه' : 'تست سیستمی')
+                    ? t('adhanHealth.event.systemTest')
                     : event.type === 'maintenance'
-                      ? (pashto ? 'ساتنه' : 'نگهداری')
-                      : event.prayer || (pashto ? 'اذان' : 'اذان')}
+                      ? t('adhanHealth.event.maintenance')
+                      : event.prayer || t('adhanHealth.event.adhan')}
                 </RtlText>
                 <RtlText align="center" style={[styles.historyTime, { color: theme.text }]}>
-                  {formatGregorianDateTimeCompact(new Date(event.actualFireAtMs), toArabicNumerals, pashto ? 'ps-AF' : 'fa-AF')}
+                  {formatAlarmTime(event.actualFireAtMs)}
                   {event.delaySeconds > 0 ? ` (+${event.delaySeconds}s)` : ''}
                 </RtlText>
               </RtlView>

@@ -15,11 +15,15 @@ import {
   saveDreamInterpreterState,
   type StoredDreamInterpreterMessage,
 } from '@/utils/dreamInterpreterStorage';
+import { DREAM_COPY } from '@/constants/dreamInterpreterCopy';
+import type { AppLanguage } from '@/types/quran';
+
+type DreamStoreLang = 'fa' | 'ps' | 'en';
 
 interface DreamInterpreterStore {
   messages: StoredDreamInterpreterMessage[];
   lastMessageAt: number | null;
-  lang: 'fa' | 'ps';
+  lang: DreamStoreLang;
   isStreaming: boolean;
   isLoading: boolean;
   error: string | null;
@@ -35,6 +39,16 @@ const INITIAL_STORE: DreamInterpreterStore = {
   error: null,
   streamingContent: '',
 };
+
+function storeLangToAppLanguage(lang: DreamStoreLang): AppLanguage {
+  if (lang === 'ps') return 'pashto';
+  if (lang === 'en') return 'english';
+  return 'dari';
+}
+
+function dreamUiCopy(lang: DreamStoreLang = store.lang) {
+  return DREAM_COPY[storeLangToAppLanguage(lang)] ?? DREAM_COPY.dari;
+}
 
 let store: DreamInterpreterStore = { ...INITIAL_STORE };
 const listeners = new Set<() => void>();
@@ -75,10 +89,11 @@ async function ensureLoaded(): Promise<void> {
 }
 
 async function persistState(patch: Partial<Pick<DreamInterpreterStore, 'messages' | 'lastMessageAt' | 'lang'>>): Promise<void> {
+  const nextLang = patch.lang ?? store.lang;
   await saveDreamInterpreterState({
     messages: patch.messages ?? store.messages,
     lastMessageAt: patch.lastMessageAt === undefined ? store.lastMessageAt : patch.lastMessageAt,
-    lang: patch.lang ?? store.lang,
+    lang: nextLang === 'ps' ? 'ps' : 'fa',
   });
 }
 
@@ -97,6 +112,7 @@ async function streamForMessages(history: StoredDreamInterpreterMessage[]): Prom
 
   await askDreamInterpreter(apiMessages, {
     sessionState,
+    language: storeLangToAppLanguage(store.lang),
     signal: controller.signal,
     onDelta: (chunk) => {
       assistantText += chunk;
@@ -108,7 +124,7 @@ async function streamForMessages(history: StoredDreamInterpreterMessage[]): Prom
       const now = Date.now();
       const assistantMessage: StoredDreamInterpreterMessage = {
         role: 'assistant',
-        content: assistantText.trim() || 'پاسخی دریافت نشد.',
+        content: assistantText.trim() || dreamUiCopy().emptyReply,
         createdAt: now,
       };
 
@@ -145,7 +161,7 @@ export function useDreamInterpreter() {
     if (!trimmed || store.isStreaming) return false;
 
     if (!isDreamInterpreterConfigured()) {
-      setStore({ error: 'سرویس تعبیر خواب هنوز پیکربندی نشده است.' });
+      setStore({ error: dreamUiCopy().notConfigured });
       return false;
     }
 
@@ -175,7 +191,7 @@ export function useDreamInterpreter() {
     const last = store.messages[store.messages.length - 1];
     if (!last || last.role !== 'user') return false;
     if (!isDreamInterpreterConfigured()) {
-      setStore({ error: 'سرویس تعبیر خواب هنوز پیکربندی نشده است.' });
+      setStore({ error: dreamUiCopy().notConfigured });
       return false;
     }
 
@@ -201,9 +217,12 @@ export function useDreamInterpreter() {
     });
   }, []);
 
-  const setLang = useCallback((lang: 'fa' | 'ps') => {
+  const setLang = useCallback((lang: DreamStoreLang) => {
     setStore({ lang });
-    void persistState({ lang });
+    // Persistence only stores fa/ps historically; english stays in memory from app language.
+    if (lang === 'fa' || lang === 'ps') {
+      void persistState({ lang });
+    }
   }, []);
 
   const dismissError = useCallback(() => {

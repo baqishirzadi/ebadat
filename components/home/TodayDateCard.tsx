@@ -44,6 +44,7 @@ function TodayDateCardInner() {
   const { state } = usePrayer();
   const truth = useTodayCalendar();
   const { width } = useWindowDimensions();
+  const isEnglish = language === 'english';
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
   const narrowPashto = isPashto && width < 360;
   const pashtoFontMetrics = isPashto
@@ -53,6 +54,12 @@ function TodayDateCardInner() {
   const sunriseDisplay = sunrise
     ? formatPrayerTime12h(sunrise, state.location?.timezone)
     : '--:--';
+  const hijriDisplay = `${n(truth.hijri.day)} ${hijriMonthName(truth.hijri, language)} ${n(truth.hijri.year)}`;
+  const shamsiDisplay = formatShamsiSlash(truth.shamsi, language);
+  const primaryDate = isEnglish ? hijriDisplay : shamsiDisplay;
+  const primaryTestId = isEnglish ? 'home-today-hijri-date' : 'home-today-shamsi-date';
+  const secondaryLeftLabel = isEnglish ? t('calendar.label.shamsi') : t('calendar.label.hijri');
+  const secondaryLeftValue = isEnglish ? shamsiDisplay : hijriDisplay;
 
   return (
     <Pressable
@@ -72,15 +79,15 @@ function TodayDateCardInner() {
         {weekdayName(truth.weekday, language)}
       </RtlText>
 
-      <RtlText testID="home-today-shamsi-date" align="center" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={[styles.shamsiDate, pashtoFontMetrics?.shamsiDate, { color: theme.tint }]}>
-        {formatShamsiSlash(truth.shamsi, language)}
+      <RtlText testID={primaryTestId} align="center" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={[styles.shamsiDate, pashtoFontMetrics?.shamsiDate, { color: theme.tint }]}>
+        {primaryDate}
       </RtlText>
 
       <RtlView style={[styles.secondaryRow, isPashto && styles.secondaryRowPashto, { borderTopColor: theme.divider }]}>
         <View style={[styles.secondaryItem, isPashto && styles.hijriItemPashto]}>
-          <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{t('calendar.label.hijri')}</RtlText>
+          <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{secondaryLeftLabel}</RtlText>
           <RtlText align="center" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.qamariValue, pashtoFontMetrics?.secondaryValue, { color: theme.tint }]}>
-            {n(truth.hijri.day)} {hijriMonthName(truth.hijri, language)} {n(truth.hijri.year)}
+            {secondaryLeftValue}
           </RtlText>
         </View>
         <View style={[styles.secondaryDivider, isPashto && styles.secondaryDividerPashto, { backgroundColor: theme.divider }]} />

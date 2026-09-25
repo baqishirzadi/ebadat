@@ -17,6 +17,7 @@ import {
   openNotificationSettings,
 } from '@/utils/adhanHealth';
 import { adhanPermissionLocale } from '@/utils/i18n/adhanPermissions';
+import { forwardChevronName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 const PASS_COLOR = '#1b7f4d';
@@ -57,7 +58,7 @@ function summaryKeyForStatus(status: HealthVisualStatus) {
 
 export function AdhanStatusCard() {
   const { theme, state } = useApp();
-  const { t, isPashto, fontFamily } = useI18n();
+  const { t, isPashto, fontFamily, language } = useI18n();
   const locale = adhanPermissionLocale(state.preferences.appLanguage);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<HealthVisualStatus>('warning');
@@ -131,7 +132,7 @@ export function AdhanStatusCard() {
             </>
           )}
         </RtlView>
-        <MaterialIcons name="chevron-left" size={24} color={theme.textSecondary} />
+        <MaterialIcons name={forwardChevronName(language)} size={24} color={theme.textSecondary} />
       </RtlView>
     </Pressable>
   );
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
   },
   inner: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.md,
   },

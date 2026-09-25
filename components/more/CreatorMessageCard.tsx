@@ -8,6 +8,10 @@ import {
   CREATOR_MESSAGE_DARI_BODY,
   CREATOR_MESSAGE_DARI_SIGNATURE,
   CREATOR_MESSAGE_DARI_TITLE,
+  CREATOR_MESSAGE_ENGLISH_BODY,
+  CREATOR_MESSAGE_ENGLISH_HANAFI_NOTE,
+  CREATOR_MESSAGE_ENGLISH_SIGNATURE,
+  CREATOR_MESSAGE_ENGLISH_TITLE,
   CREATOR_MESSAGE_PASHTO_BODY,
   CREATOR_MESSAGE_PASHTO_SIGNATURE,
   CREATOR_MESSAGE_PASHTO_TITLE,
@@ -16,7 +20,8 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 
 export function CreatorMessageCard() {
-  const { theme } = useApp();
+  const { theme, state } = useApp();
+  const isEnglish = state.preferences.appLanguage === 'english';
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -30,41 +35,60 @@ export function CreatorMessageCard() {
           <MaterialIcons name="format-quote" size={20} color={theme.tint} />
         </View>
         <CenteredText style={[styles.headerHint, { color: theme.textSecondary }]}>
-          پیام سازنده
+          {isEnglish ? 'From the maker' : 'پیام سازنده'}
         </CenteredText>
       </LinearGradient>
 
-      <View style={styles.block}>
-        <CenteredText style={[styles.blockTitle, { color: theme.tint }]}>
-          {CREATOR_MESSAGE_DARI_TITLE}
-        </CenteredText>
-        <CenteredText style={[styles.bodyDari, { color: theme.text }]}>
-          {CREATOR_MESSAGE_DARI_BODY}
-        </CenteredText>
-        <CenteredText style={[styles.signatureDari, { color: theme.bookmark }]}>
-          {CREATOR_MESSAGE_DARI_SIGNATURE}
-        </CenteredText>
-      </View>
+      {isEnglish ? (
+        <View style={styles.block}>
+          <CenteredText style={[styles.blockTitle, { color: theme.tint }]}>
+            {CREATOR_MESSAGE_ENGLISH_TITLE}
+          </CenteredText>
+          <CenteredText style={[styles.bodyEnglish, { color: theme.text }]}>
+            {CREATOR_MESSAGE_ENGLISH_BODY}
+          </CenteredText>
+          <CenteredText style={[styles.bodyEnglish, styles.hanafiNote, { color: theme.text }]}>
+            {CREATOR_MESSAGE_ENGLISH_HANAFI_NOTE}
+          </CenteredText>
+          <CenteredText style={[styles.signatureEnglish, { color: theme.bookmark }]}>
+            {CREATOR_MESSAGE_ENGLISH_SIGNATURE}
+          </CenteredText>
+        </View>
+      ) : (
+        <>
+          <View style={styles.block}>
+            <CenteredText style={[styles.blockTitle, { color: theme.tint }]}>
+              {CREATOR_MESSAGE_DARI_TITLE}
+            </CenteredText>
+            <CenteredText style={[styles.bodyDari, { color: theme.text }]}>
+              {CREATOR_MESSAGE_DARI_BODY}
+            </CenteredText>
+            <CenteredText style={[styles.signatureDari, { color: theme.bookmark }]}>
+              {CREATOR_MESSAGE_DARI_SIGNATURE}
+            </CenteredText>
+          </View>
 
-      <View style={[styles.divider, { backgroundColor: theme.divider }]} />
+          <View style={[styles.divider, { backgroundColor: theme.divider }]} />
 
-      <View style={[styles.block, styles.pashtoBlock]}>
-        <CenteredText style={[styles.blockTitlePashto, { color: theme.tint }]}>
-          {CREATOR_MESSAGE_PASHTO_TITLE}
-        </CenteredText>
-        <CenteredText
-          style={[styles.bodyPashto, { color: theme.text }]}
-          {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
-        >
-          {CREATOR_MESSAGE_PASHTO_BODY}
-        </CenteredText>
-        <CenteredText
-          style={[styles.signaturePashto, { color: theme.bookmark }]}
-          {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
-        >
-          {CREATOR_MESSAGE_PASHTO_SIGNATURE}
-        </CenteredText>
-      </View>
+          <View style={[styles.block, styles.pashtoBlock]}>
+            <CenteredText style={[styles.blockTitlePashto, { color: theme.tint }]}>
+              {CREATOR_MESSAGE_PASHTO_TITLE}
+            </CenteredText>
+            <CenteredText
+              style={[styles.bodyPashto, { color: theme.text }]}
+              {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
+            >
+              {CREATOR_MESSAGE_PASHTO_BODY}
+            </CenteredText>
+            <CenteredText
+              style={[styles.signaturePashto, { color: theme.bookmark }]}
+              {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
+            >
+              {CREATOR_MESSAGE_PASHTO_SIGNATURE}
+            </CenteredText>
+          </View>
+        </>
+      )}
     </View>
   );
 }
@@ -111,6 +135,16 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
   },
+  bodyEnglish: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
+    lineHeight: 26,
+    textAlign: 'center',
+    writingDirection: 'ltr',
+  },
+  hanafiNote: {
+    marginTop: Spacing.md,
+  },
   signatureDari: {
     marginTop: Spacing.md,
     fontSize: Typography.ui.body,
@@ -119,6 +153,15 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     textAlign: 'center',
     writingDirection: 'rtl',
+  },
+  signatureEnglish: {
+    marginTop: Spacing.md,
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn-Bold',
+    fontWeight: '700',
+    lineHeight: 26,
+    textAlign: 'center',
+    writingDirection: 'ltr',
   },
   divider: {
     height: 1,

@@ -4,9 +4,10 @@ import { NumericText } from '@/components/ui/NumericText';
 import { useApp } from '@/context/AppContext';
 import { toArabicNumerals } from '@/data/surahNames';
 import { getUthmaniFont } from '@/hooks/useFonts';
+import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { I18nManager, Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
 type MaterialIconName = React.ComponentProps<typeof MaterialIcons>['name'];
 
@@ -37,14 +38,17 @@ export function SurahDecoratedCard({
   subtitleNumberOfLines = 2,
   style,
 }: SurahDecoratedCardProps) {
-  const { theme } = useApp();
-  const actionIconName = actionIcon || (I18nManager.isRTL ? 'chevron-left' : 'chevron-right');
+  const { theme, state } = useApp();
+  const language = state.preferences.appLanguage;
+  const directionalRow = rowStyle(language);
+  const actionIconName = actionIcon || forwardChevronName(language);
 
   return (
     <Pressable
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
+        directionalRow,
         {
           backgroundColor: theme.card,
           borderColor: isHighlighted ? theme.playing : theme.cardBorder,
@@ -53,8 +57,16 @@ export function SurahDecoratedCard({
         pressed && styles.cardPressed,
       ]}
     >
-      <View style={styles.actionContainer}>
-        <MaterialIcons name={actionIconName} size={24} color={theme.icon} />
+      <View style={styles.badgeContainer}>
+        <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
+        <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
+          <NumericText style={styles.numberText}>{toArabicNumerals(surahNumber)}</NumericText>
+        </View>
+        <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerBottomLeft, { borderColor: theme.surahHeader }]} />
+        <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
       </View>
 
       <View style={styles.infoContainer}>
@@ -70,22 +82,14 @@ export function SurahDecoratedCard({
         </CenteredText>
       </View>
 
-      <View style={styles.badgeContainer}>
-        <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
-        <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <NumericText style={styles.numberText}>{toArabicNumerals(surahNumber)}</NumericText>
-        </View>
-        <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerBottomLeft, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
+      <View style={styles.actionContainer}>
+        <MaterialIcons name={actionIconName} size={24} color={theme.icon} />
       </View>
 
       {(metaTop || metaBottom) && (
         <View style={styles.metaContainer}>
           {!!metaTop && (
-            <View style={styles.metaRow}>
+            <View style={[styles.metaRow, directionalRow]}>
               {!!metaIcon && <MaterialIcons name={metaIcon} size={12} color={theme.textSecondary} />}
               <CenteredText style={[styles.metaText, { color: theme.textSecondary }]} numberOfLines={1}>
                 {metaTop}
@@ -111,7 +115,6 @@ export function SurahDecoratedCard({
 
 const styles = StyleSheet.create({
   card: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     minHeight: 108,
     paddingVertical: Spacing.sm,
@@ -248,7 +251,6 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   metaRow: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     gap: 4,
   },

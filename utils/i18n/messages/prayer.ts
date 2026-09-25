@@ -140,6 +140,102 @@ export const prayerMessages = {
     english: 'Recheck and schedule',
   },
 
+  'adhanHealth.overall.healthy': {
+    dari: 'اذان آماده است',
+    pashto: 'اذان چمتو دی',
+    english: 'Adhan is ready',
+  },
+  'adhanHealth.overall.warning': {
+    dari: 'نیاز به بررسی',
+    pashto: 'کتنې ته اړتیا ده',
+    english: 'Needs a check',
+  },
+  'adhanHealth.overall.critical': {
+    dari: 'مشکل جدی',
+    pashto: 'جدي ستونزه',
+    english: 'Serious problem',
+  },
+  'adhanHealth.nextAdhan': {
+    dari: 'اذان بعدی: {time}',
+    pashto: 'راتلونکی اذان: {time}',
+    english: 'Next adhan: {time}',
+  },
+  'adhanHealth.scheduleHint': {
+    dari: 'وضعیت زمان‌بندی را در زیر بررسی کنید.',
+    pashto: 'د مهالوېش حالت لاندې وګورئ.',
+    english: 'Check the schedule status below.',
+  },
+  'adhanHealth.recentEvents': {
+    dari: 'آخرین رویدادها',
+    pashto: 'وروستي پېښې',
+    english: 'Recent events',
+  },
+  'adhanHealth.event.systemTest': {
+    dari: 'تست سیستمی',
+    pashto: 'سیسټمي ازموینه',
+    english: 'System test',
+  },
+  'adhanHealth.event.maintenance': {
+    dari: 'نگهداری',
+    pashto: 'ساتنه',
+    english: 'Maintenance',
+  },
+  'adhanHealth.event.adhan': {
+    dari: 'اذان',
+    pashto: 'اذان',
+    english: 'Adhan',
+  },
+  'adhanHealth.error': {
+    dari: 'خطا',
+    pashto: 'تېروتنه',
+    english: 'Error',
+  },
+  'adhanHealth.refreshFailed': {
+    dari: 'بررسی سلامت اذان انجام نشد.',
+    pashto: 'د اذان د حالت کتنه ترسره نه شوه.',
+    english: 'Could not check Adhan health.',
+  },
+  'adhanHealth.repairDoneTitle': {
+    dari: 'بازیابی انجام شد',
+    pashto: 'بیا رغول بشپړ شو',
+    english: 'Repair complete',
+  },
+  'adhanHealth.repairDoneBody': {
+    dari: 'اذان‌ها دوباره با سیستم همگام شدند.',
+    pashto: 'اذانونه له سیسټم سره بیا همغږي شول.',
+    english: 'Adhan alarms were resynced with the system.',
+  },
+  'adhanHealth.repairFailed': {
+    dari: 'بازیابی اذان انجام نشد.',
+    pashto: 'د اذان بیا رغول ترسره نه شول.',
+    english: 'Could not repair Adhan scheduling.',
+  },
+  'adhanHealth.testWaiting': {
+    dari: 'در حال انتظار برای اعلان تست...',
+    pashto: 'د ازموینې خبرتیا ته انتظار...',
+    english: 'Waiting for the test notification…',
+  },
+  'adhanHealth.testPassed': {
+    dari: 'تست موفق: اعلان با صدا دریافت شد.',
+    pashto: 'ازموینه بریالۍ وه: خبرتیا له غږ سره ترلاسه شوه.',
+    english: 'Test passed: notification received with sound.',
+  },
+  'adhanHealth.testFailed': {
+    dari: 'تست ناموفق: اعلان در زمان مقرر دریافت نشد.',
+    pashto: 'ازموینه ناکامه شوه: خبرتیا پر ټاکلي وخت ترلاسه نه شوه.',
+    english: 'Test failed: notification was not received on time.',
+  },
+  'adhanHealth.testError': {
+    dari: 'خطا در اجرای تست زنده.',
+    pashto: 'د ژوندۍ ازموینې په اجرا کې تېروتنه.',
+    english: 'Error running the live test.',
+  },
+  'adhanHealth.androidOnly': {
+    dari: 'بررسی سلامت اذان فقط در اندروید در دسترس است.',
+    pashto: 'د اذان د حالت کتنه یوازې په اندروید کې شته.',
+    english: 'Adhan health checks are only available on Android.',
+  },
+
   'prayer.notifications.moduleUnavailable': {
     dari: 'ماژول اعلان در دسترس نیست',
     pashto: 'د خبرتیا ماډول شتون نه لري',

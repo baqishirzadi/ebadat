@@ -16,6 +16,7 @@ import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
 import { stripQuranicMarks } from '@/utils/quranText';
+import { rowStyle } from '@/utils/i18n/direction';
 import { QuranText } from './QuranText';
 import { toArabicNumerals } from '@/utils/numbers';
 
@@ -63,6 +64,7 @@ export const AyahRow = memo(function AyahRow({
   onPlayPress,
 }: AyahRowProps) {
   const { theme, state } = useApp();
+  const language = state.preferences.appLanguage;
   const { isBookmarked, addBookmark, removeBookmark, getBookmark } = useBookmarks();
 
   const { dariFont, pashtoFont, arabicFontSize, translationFontSize, showTranslation } = state.preferences;
@@ -166,7 +168,7 @@ export const AyahRow = memo(function AyahRow({
         </View>
       )}
 
-      <View style={[styles.actionBar, { borderTopColor: theme.divider }]}>
+      <View style={[styles.actionBar, rowStyle(language), { borderTopColor: theme.divider }]}>
         <Pressable
           onPress={onPlayPress}
           style={({ pressed }) => [
@@ -274,7 +276,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   actionBar: {
-    flexDirection: 'row-reverse',
     alignItems: 'center',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,

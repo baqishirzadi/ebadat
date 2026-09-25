@@ -16,6 +16,7 @@ import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import adhkarData from '@/data/adhkar.json';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { RtlText } from '@/components/ui/RtlText';
+import { forwardChevronName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 // Category type
@@ -30,10 +31,11 @@ interface AdhkarCategory {
 
 export default function AdhkarScreen() {
   const { theme } = useApp();
-  const { t, n, content, fontFamily } = useI18n();
+  const { t, n, content, fontFamily, language } = useI18n();
   const { unreadCount } = useDua();
   const router = useRouter();
   const categories = adhkarData.categories as AdhkarCategory[];
+  const chevron = forwardChevronName(language);
 
   const handleCategoryPress = (categoryId: string) => {
     router.push(`/adhkar/${categoryId}`);
@@ -114,7 +116,7 @@ export default function AdhkarScreen() {
                   </LocalizedText>
                 </View>
                 <View style={styles.categoryActionSlot}>
-                  <MaterialIcons name="chevron-left" size={24} color={theme.icon} />
+                  <MaterialIcons name={chevron} size={24} color={theme.icon} />
                 </View>
               </RtlView>
             </Pressable>
@@ -147,7 +149,7 @@ export default function AdhkarScreen() {
             </RtlText>
           </View>
           <View style={styles.counterSideSlot}>
-            <MaterialIcons name="chevron-left" size={28} color={theme.tint} />
+            <MaterialIcons name={chevron} size={28} color={theme.tint} />
           </View>
         </RtlView>
       </Pressable>
@@ -177,7 +179,7 @@ export default function AdhkarScreen() {
             </RtlText>
           </View>
           <View style={styles.duaActionSlot}>
-            <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.85)" />
+            <MaterialIcons name={chevron} size={24} color="rgba(255,255,255,0.85)" />
           </View>
         </RtlView>
       </Pressable>

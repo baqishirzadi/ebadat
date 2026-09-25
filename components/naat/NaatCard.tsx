@@ -28,10 +28,10 @@ function formatDuration(seconds?: number | string | null) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-function formatSize(size?: number | string | null) {
+function formatSize(size?: number | string | null, language: 'dari' | 'pashto' | 'english' = 'dari') {
   const value = typeof size === 'string' ? Number(size) : size;
   if (!value || value <= 0) return '—';
-  return `${value.toFixed(1)} مگابایت`;
+  return `${value.toFixed(1)} ${tUi('مگابایت', language)}`;
 }
 
 export function NaatCard({
@@ -93,7 +93,7 @@ export function NaatCard({
               {formatDuration(naat.duration_seconds)}
             </RtlText>
           </View>
-          <RtlText align="center" style={[styles.sizeText, { color: theme.textSecondary }]}>{formatSize(naat.file_size_mb)}</RtlText>
+          <RtlText align="center" style={[styles.sizeText, { color: theme.textSecondary }]}>{formatSize(naat.file_size_mb, language)}</RtlText>
           <RtlText
             testID="naat-card-download-status"
             align="center"

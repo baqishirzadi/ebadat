@@ -22,7 +22,7 @@ interface HomeComposerRowProps {
   isConfigured: boolean;
 }
 
-/** Shared Home input geometry keeps the Mufti and Dream prompts aligned in both RTL languages. */
+/** Shared Home input geometry keeps the Mufti and Dream prompts aligned. */
 export function HomeComposerRow({
   testIDPrefix,
   value,
@@ -37,7 +37,8 @@ export function HomeComposerRow({
   isStreaming,
   isConfigured,
 }: HomeComposerRowProps) {
-  const { isPashto, fontFamily } = useI18n();
+  const { isPashto, fontFamily, language } = useI18n();
+  const isEnglish = language === 'english';
   const disabled = !value.trim() || isStreaming || !isConfigured;
   const pashtoInputStyle = isPashto
     ? fontFamily === 'NotoNastaliqUrdu'
@@ -45,38 +46,59 @@ export function HomeComposerRow({
       : styles.pashtoInput
     : null;
 
+  const sendButton = (
+    <Pressable
+      onPress={onSend}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityLabel={sendLabel}
+      testID={`${testIDPrefix}-send`}
+      style={[styles.sendButton, isPashto && styles.sendButtonPashto, disabled && styles.sendButtonDisabled]}
+    >
+      {isStreaming ? (
+        <ActivityIndicator color="#1a4d3e" size="small" />
+      ) : (
+        <MaterialIcons name="send" size={20} color="#1a4d3e" />
+      )}
+    </Pressable>
+  );
+
+  const input = (
+    <LocalizedTextInput
+      testID={`${testIDPrefix}-input`}
+      accessibilityLabel={accessibilityLabel}
+      style={[
+        styles.input,
+        pashtoInputStyle,
+        isEnglish && styles.inputEnglish,
+      ]}
+      value={value}
+      onChangeText={onChangeText}
+      onFocus={onFocus}
+      placeholder={placeholder}
+      placeholderTextColor={placeholderTextColor}
+      multiline
+      maxLength={maxLength}
+      editable={!isStreaming && isConfigured}
+      underlineColorAndroid="transparent"
+      textAlign={isEnglish ? 'left' : 'right'}
+      textAlignVertical="center"
+    />
+  );
+
   return (
     <RtlView style={styles.row}>
-      <Pressable
-        onPress={onSend}
-        disabled={disabled}
-        accessibilityRole="button"
-        accessibilityLabel={sendLabel}
-        testID={`${testIDPrefix}-send`}
-        style={[styles.sendButton, isPashto && styles.sendButtonPashto, disabled && styles.sendButtonDisabled]}
-      >
-        {isStreaming ? (
-          <ActivityIndicator color="#1a4d3e" size="small" />
-        ) : (
-          <MaterialIcons name="send" size={20} color="#1a4d3e" />
-        )}
-      </Pressable>
-      <LocalizedTextInput
-        testID={`${testIDPrefix}-input`}
-        accessibilityLabel={accessibilityLabel}
-        style={[styles.input, pashtoInputStyle]}
-        value={value}
-        onChangeText={onChangeText}
-        onFocus={onFocus}
-        placeholder={placeholder}
-        placeholderTextColor={placeholderTextColor}
-        multiline
-        maxLength={maxLength}
-        editable={!isStreaming && isConfigured}
-        underlineColorAndroid="transparent"
-        textAlign="right"
-        textAlignVertical="center"
-      />
+      {isEnglish ? (
+        <>
+          {input}
+          {sendButton}
+        </>
+      ) : (
+        <>
+          {sendButton}
+          {input}
+        </>
+      )}
     </RtlView>
   );
 }
@@ -105,6 +127,11 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     textAlign: 'right',
     lineHeight: 21,
+  },
+  inputEnglish: {
+    fontFamily: undefined,
+    textAlign: 'left',
+    writingDirection: 'ltr',
   },
   pashtoInput: {
     fontSize: 15,
