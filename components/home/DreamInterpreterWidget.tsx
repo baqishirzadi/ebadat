@@ -23,8 +23,9 @@ interface DreamInterpreterWidgetProps {
 function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetProps) {
   const { state } = useApp();
   const { isStreaming, error, isConfigured, sendMessage, dismissError } = useDreamInterpreter();
-  const { t, fontFamily, isPashto, language } = useI18n();
+  const { t, fontFamily, language } = useI18n();
   const isEnglish = language === 'english';
+  const isRtlHome = !isEnglish;
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
   const [input, setInput] = useState('');
   const copy = useMemo(
@@ -45,7 +46,7 @@ function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetPro
   }, []);
 
   return (
-    <RtlView style={[styles.container, isPashto && styles.containerPashto]}>
+    <RtlView style={[styles.container, isRtlHome && styles.containerPashto]}>
       <View style={styles.titlePress}>
         <View style={[styles.titleRow, isEnglish && styles.titleRowEnglish]}>
           {isEnglish ? (
@@ -69,8 +70,8 @@ function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetPro
                 style={[styles.title, {
                   fontFamily,
                   fontSize: Typography.ui.subtitle,
-                  lineHeight: isPashto ? (isNastaliq ? 34 : 22) : undefined,
-                  includeFontPadding: isPashto && isNastaliq,
+                  lineHeight: isRtlHome ? (isNastaliq ? 34 : 22) : undefined,
+                  includeFontPadding: isRtlHome && isNastaliq,
                 }]}
               >
                 {copy.title}
@@ -85,20 +86,20 @@ function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetPro
           accessibilityRole="button"
           accessibilityLabel={t('home.viewConversation')}
           testID="home-dream-view-conversation"
-          style={[styles.viewConversationButton, isPashto && styles.viewConversationButtonPashto]}
+          style={[styles.viewConversationButton, isRtlHome && styles.viewConversationButtonPashto]}
         >
           <RtlText
             align="center"
             wrap={false}
             style={[
               styles.viewConversationText,
-              isPashto && styles.viewConversationTextPashto,
+              isRtlHome && styles.viewConversationTextPashto,
               isEnglish && styles.viewConversationTextEnglish,
               {
                 fontFamily: isEnglish ? undefined : fontFamily,
-                lineHeight: isPashto ? (isNastaliq ? 28 : 26) : isEnglish ? 20 : 17,
-                includeFontPadding: isPashto,
-                paddingTop: isPashto ? 2 : undefined,
+                lineHeight: isRtlHome ? (isNastaliq ? 28 : 26) : isEnglish ? 20 : 17,
+                includeFontPadding: isRtlHome,
+                paddingTop: isRtlHome ? 2 : undefined,
               },
             ]}
           >
@@ -109,12 +110,12 @@ function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetPro
 
       {error ? (
         <Pressable onPress={dismissError} style={styles.errorBox}>
-          <RtlText align="center" style={[styles.errorText, isPashto && { fontSize: 12, lineHeight: isNastaliq ? 26 : 18, includeFontPadding: isNastaliq }]}>{error}</RtlText>
+          <RtlText align="center" style={[styles.errorText, isRtlHome && { fontSize: 12, lineHeight: isNastaliq ? 26 : 18, includeFontPadding: isNastaliq }]}>{error}</RtlText>
         </Pressable>
       ) : null}
 
       {!isConfigured ? (
-        <RtlText align="center" style={[styles.configWarning, isPashto && { fontSize: 12, lineHeight: isNastaliq ? 26 : 18, includeFontPadding: isNastaliq }]}>{copy.notConfigured}</RtlText>
+        <RtlText align="center" style={[styles.configWarning, isRtlHome && { fontSize: 12, lineHeight: isNastaliq ? 26 : 18, includeFontPadding: isNastaliq }]}>{copy.notConfigured}</RtlText>
       ) : null}
 
       <HomeComposerRow
@@ -127,9 +128,7 @@ function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetPro
         placeholderTextColor={
           isEnglish
             ? 'rgba(255,255,255,0.7)'
-            : isPashto
-              ? 'rgba(255,255,255,0.65)'
-              : 'rgba(255,255,255,0.45)'
+            : 'rgba(255,255,255,0.65)'
         }
         accessibilityLabel={copy.placeholder}
         sendLabel={t('common.send')}

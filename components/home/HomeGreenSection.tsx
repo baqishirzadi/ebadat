@@ -17,7 +17,7 @@ interface HomeGreenSectionProps {
 
 function HomeGreenSectionInner({ prayerTimes, onMuftiInputFocus }: HomeGreenSectionProps) {
   const { themeMode } = useApp();
-  const { isPashto } = useI18n();
+  const { language } = useI18n();
   const gradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
 
   return (
@@ -29,9 +29,9 @@ function HomeGreenSectionInner({ prayerTimes, onMuftiInputFocus }: HomeGreenSect
         style={styles.card}
       >
         <NextPrayerCard prayerTimes={prayerTimes} variant="compact" embedded />
-        <View style={[styles.divider, isPashto && styles.dividerPashto]} />
+        <View style={[styles.divider, language !== 'english' && styles.dividerPashto]} />
         <HanafiMuftiWidget onInputFocus={onMuftiInputFocus} />
-        <View style={[styles.divider, isPashto && styles.dividerPashto]} />
+        <View style={[styles.divider, language !== 'english' && styles.dividerPashto]} />
         <DreamInterpreterWidget onInputFocus={onMuftiInputFocus} />
       </LinearGradient>
     </View>

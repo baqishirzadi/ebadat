@@ -12,11 +12,11 @@ interface SectionHeaderProps {
 
 export function SectionHeader({ title }: SectionHeaderProps) {
   const { theme } = useApp();
-  const { isPashto } = useI18n();
+  const { language } = useI18n();
   return (
     <RtlText
       align="center"
-      style={[styles.title, isPashto && styles.titlePashto, { color: theme.textSecondary }]}
+      style={[styles.title, language !== 'english' && styles.titlePashto, { color: theme.textSecondary }]}
     >
       {title}
     </RtlText>

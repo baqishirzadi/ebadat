@@ -10,25 +10,44 @@ interface PrayerChipProps {
   label: string;
   time: string;
   active?: boolean;
+  /** Widget strip: white current-prayer chip on green. Card: tint fill on a light surface. */
+  tone?: 'card' | 'widget';
   style?: ViewStyle;
 }
 
-export function PrayerChip({ label, time, active = false, style }: PrayerChipProps) {
+export function PrayerChip({ label, time, active = false, tone = 'card', style }: PrayerChipProps) {
   const { theme } = useApp();
-  const { isPashto } = useI18n();
+  const { language } = useI18n();
+  const isRtlHome = language !== 'english';
+  const tint = theme.tint;
+  const onWidget = tone === 'widget';
+
+  const backgroundColor = onWidget
+    ? active ? '#ffffff' : '#ffffff1f'
+    : active ? tint : theme.card;
+  const borderColor = onWidget
+    ? 'transparent'
+    : active ? tint : theme.cardBorder;
+  const labelColor = onWidget
+    ? active ? tint : '#ffffff'
+    : active ? '#fff' : theme.text;
+  const timeColor = onWidget
+    ? active ? tint : '#ffffffd9'
+    : active ? '#fff' : theme.textSecondary;
 
   return (
     <View
       style={[
         styles.chip,
+        onWidget && styles.chipOnWidget,
         {
-          backgroundColor: active ? theme.tint : theme.card,
-          borderColor: active ? theme.tint : theme.cardBorder,
+          backgroundColor,
+          borderColor,
           ...(active
             ? {
-                shadowColor: theme.tint,
+                shadowColor: onWidget ? '#000' : tint,
                 shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
+                shadowOpacity: onWidget ? 0.18 : 0.25,
                 shadowRadius: 4,
                 elevation: 3,
               }
@@ -37,10 +56,10 @@ export function PrayerChip({ label, time, active = false, style }: PrayerChipPro
         style,
       ]}
     >
-      <RtlText align="center" style={[styles.label, isPashto && styles.labelPashto, { color: active ? '#fff' : theme.text }]}>
+      <RtlText align="center" style={[styles.label, isRtlHome && styles.labelPashto, { color: labelColor }]}>
         {label}
       </RtlText>
-      <RtlText align="center" style={[styles.time, isPashto && styles.timePashto, { color: active ? '#fff' : theme.textSecondary }]}>
+      <RtlText align="center" style={[styles.time, isRtlHome && styles.timePashto, { color: timeColor }]}>
         {time}
       </RtlText>
     </View>
@@ -56,6 +75,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     alignItems: 'center',
     gap: 2,
+  },
+  chipOnWidget: {
+    borderWidth: 0,
+    borderRadius: 8,
   },
   label: {
     fontFamily: 'Vazirmatn-Bold',

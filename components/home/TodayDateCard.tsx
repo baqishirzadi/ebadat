@@ -40,14 +40,15 @@ const pashtoDateMetrics = {
 
 function TodayDateCardInner() {
   const { theme } = useApp();
-  const { language, isPashto, fontFamily, t, n } = useI18n();
+  const { language, fontFamily, t, n } = useI18n();
   const { state } = usePrayer();
   const truth = useTodayCalendar();
   const { width } = useWindowDimensions();
   const isEnglish = language === 'english';
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
-  const narrowPashto = isPashto && width < 360;
-  const pashtoFontMetrics = isPashto
+  const isRtlHome = !isEnglish;
+  const narrowPashto = isRtlHome && width < 360;
+  const pashtoFontMetrics = isRtlHome
     ? isNastaliq ? pashtoDateMetrics.nastaliq : pashtoDateMetrics.amiri
     : null;
   const sunrise = state.prayerTimes?.sunrise;
@@ -67,9 +68,9 @@ function TodayDateCardInner() {
       onPress={() => router.push('/(tabs)/jantari' as never)}
       style={[
         styles.container,
-        isPashto && styles.containerPashto,
+        isRtlHome && styles.containerPashto,
         narrowPashto && styles.containerPashtoNarrow,
-        isPashto && isNastaliq && styles.containerPashtoNastaliq,
+        isRtlHome && isNastaliq && styles.containerPashtoNastaliq,
         { backgroundColor: theme.card, borderColor: theme.cardBorder },
       ]}
     >
@@ -83,22 +84,22 @@ function TodayDateCardInner() {
         {primaryDate}
       </RtlText>
 
-      <RtlView style={[styles.secondaryRow, isPashto && styles.secondaryRowPashto, { borderTopColor: theme.divider }]}>
-        <View style={[styles.secondaryItem, isPashto && styles.hijriItemPashto]}>
+      <RtlView style={[styles.secondaryRow, isRtlHome && styles.secondaryRowPashto, { borderTopColor: theme.divider }]}>
+        <View style={[styles.secondaryItem, isRtlHome && styles.hijriItemPashto]}>
           <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{secondaryLeftLabel}</RtlText>
           <RtlText align="center" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.qamariValue, pashtoFontMetrics?.secondaryValue, { color: theme.tint }]}>
             {secondaryLeftValue}
           </RtlText>
         </View>
-        <View style={[styles.secondaryDivider, isPashto && styles.secondaryDividerPashto, { backgroundColor: theme.divider }]} />
-        <View style={[styles.secondaryItem, isPashto && styles.sunriseItemPashto]}>
+        <View style={[styles.secondaryDivider, isRtlHome && styles.secondaryDividerPashto, { backgroundColor: theme.divider }]} />
+        <View style={[styles.secondaryItem, isRtlHome && styles.sunriseItemPashto]}>
           <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{t('prayer.prayerName.sunrise')}</RtlText>
           <RtlText align="center" numberOfLines={1} style={[styles.sunriseValue, pashtoFontMetrics?.sunriseValue ?? pashtoFontMetrics?.secondaryValue, { color: theme.tint }]}>
             {sunriseDisplay}
           </RtlText>
         </View>
-        <View style={[styles.secondaryDivider, isPashto && styles.secondaryDividerPashto, { backgroundColor: theme.divider }]} />
-        <View style={[styles.secondaryItem, isPashto && styles.gregItemPashto]}>
+        <View style={[styles.secondaryDivider, isRtlHome && styles.secondaryDividerPashto, { backgroundColor: theme.divider }]} />
+        <View style={[styles.secondaryItem, isRtlHome && styles.gregItemPashto]}>
           <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{t('calendar.label.gregorian')}</RtlText>
           <RtlText testID="home-today-gregorian-date" align="center" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.gregValue, pashtoFontMetrics?.gregorianValue, { color: theme.text }]}>
             {formatGregorianDateCompact(truth.gregorianDate, isEnglish ? String : n, language)}

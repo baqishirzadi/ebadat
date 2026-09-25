@@ -12,7 +12,7 @@ import { useI18n } from '@/utils/i18n/useI18n';
 
 export function ContinueReadingCard() {
   const { theme } = useApp();
-  const { isPashto, t } = useI18n();
+  const { isPashto, language, t } = useI18n();
   const { position } = useReadingPosition();
 
   if (position.surahNumber <= 0) return null;
@@ -33,7 +33,7 @@ export function ContinueReadingCard() {
           <RtlText align="center" style={[styles.title, { color: theme.text }]}>{t('home.reading.continue')}</RtlText>
           <RtlText
             align="center"
-            style={[styles.subtitle, isPashto && styles.subtitlePashto, { color: theme.textSecondary }]}
+            style={[styles.subtitle, language !== 'english' && styles.subtitlePashto, { color: theme.textSecondary }]}
           >
             {isPashto ? 'سورت' : 'سوره'} {toArabicNumerals(position.surahNumber)} • {isPashto ? 'آیت' : 'آیه'} {toArabicNumerals(position.ayahNumber)}
           </RtlText>

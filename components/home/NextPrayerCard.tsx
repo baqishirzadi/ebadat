@@ -114,8 +114,8 @@ const CountdownBlock = memo(function CountdownBlock({
   compact?: boolean;
 }) {
   const [now, setNow] = useState(() => new Date());
-  const { isPashto, fontFamily, language } = useI18n();
-  const compactMetrics = isPashto
+  const { fontFamily, language } = useI18n();
+  const compactMetrics = language !== 'english'
     ? fontFamily === 'NotoNastaliqUrdu'
       ? pashtoCompactMetrics.nastaliq
       : pashtoCompactMetrics.amiri
@@ -136,7 +136,7 @@ const CountdownBlock = memo(function CountdownBlock({
   if (compact) {
     return (
       <View style={styles.compactCountdownWrap}>
-        <View style={[styles.compactProgressTrack, isPashto && styles.compactProgressTrackPashto]}>
+        <View style={[styles.compactProgressTrack, language !== 'english' && styles.compactProgressTrackPashto]}>
           <View style={[styles.compactProgressFill, { width: `${Math.round(progress * 100)}%`, backgroundColor: ringColor }]} />
         </View>
         <RtlText align="center" wrap={false} style={[styles.compactCountdown, compactMetrics?.countdown]}>{countdown}</RtlText>
@@ -161,11 +161,11 @@ interface NextPrayerCardProps {
 
 function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }: NextPrayerCardProps) {
   const { theme, themeMode } = useApp();
-  const { isPashto, language, t, fontFamily } = useI18n();
+  const { language, t, fontFamily } = useI18n();
   const { state } = usePrayer();
   const gradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const isCompact = variant === 'compact';
-  const compactMetrics = isPashto
+  const compactMetrics = language !== 'english'
     ? fontFamily === 'NotoNastaliqUrdu'
       ? pashtoCompactMetrics.nastaliq
       : pashtoCompactMetrics.amiri
@@ -201,7 +201,7 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
 
   const compactContent = (
     <RtlView style={[styles.compactContainer, compactMetrics?.container]}>
-      {isPashto ? (
+      {language !== 'english' ? (
         <View style={styles.pashtoCompactLabelWrap}>
           <LocalizedText style={[styles.pashtoCompactLabel, { fontFamily }]}>
             {t('home.nextPrayer')}
@@ -217,7 +217,7 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
         </RtlText>
       </RtlView>
       <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} compact />
-      <RtlText align="center" style={[styles.compactHint, compactMetrics?.hint, isPashto && styles.compactHintPashto]}>
+      <RtlText align="center" style={[styles.compactHint, compactMetrics?.hint, language !== 'english' && styles.compactHintPashto]}>
         {t(adhanOn ? 'home.adhan.enabled' : 'home.adhan.disabled')}
       </RtlText>
     </RtlView>

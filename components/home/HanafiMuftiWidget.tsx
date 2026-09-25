@@ -20,8 +20,9 @@ interface HanafiMuftiWidgetProps {
 
 function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
   const { isStreaming, error, isConfigured, sendMessage, dismissError } = useHanafiMufti();
-  const { t, fontFamily, isPashto, language } = useI18n();
+  const { t, fontFamily, language } = useI18n();
   const isEnglish = language === 'english';
+  const isRtlHome = !isEnglish;
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
   const [input, setInput] = useState('');
 
@@ -38,7 +39,7 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
   }, []);
 
   return (
-    <RtlView style={[styles.container, isPashto && styles.containerPashto]}>
+    <RtlView style={[styles.container, isRtlHome && styles.containerPashto]}>
       <View style={styles.titlePress}>
         <View style={[styles.titleRow, isEnglish && styles.titleRowEnglish]}>
           {isEnglish ? (
@@ -62,9 +63,9 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
                 style={[styles.title, {
                   fontFamily,
                   fontSize: Typography.ui.subtitle,
-                  lineHeight: isPashto ? (isNastaliq ? 34 : 26) : undefined,
-                  includeFontPadding: isPashto,
-                  paddingBottom: isPashto && !isNastaliq ? 2 : undefined,
+                  lineHeight: isRtlHome ? (isNastaliq ? 34 : 26) : undefined,
+                  includeFontPadding: isRtlHome,
+                  paddingBottom: isRtlHome && !isNastaliq ? 2 : undefined,
                 }]}
               >
                 {t('home.mufti.title')}
@@ -79,20 +80,20 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
           accessibilityRole="button"
           accessibilityLabel={t('home.viewConversation')}
           testID="home-mufti-view-conversation"
-          style={[styles.viewConversationButton, isPashto && styles.viewConversationButtonPashto]}
+          style={[styles.viewConversationButton, isRtlHome && styles.viewConversationButtonPashto]}
         >
           <RtlText
             align="center"
             wrap={false}
             style={[
               styles.viewConversationText,
-              isPashto && styles.viewConversationTextPashto,
+              isRtlHome && styles.viewConversationTextPashto,
               isEnglish && styles.viewConversationTextEnglish,
               {
                 fontFamily: isEnglish ? undefined : fontFamily,
-                lineHeight: isPashto ? (isNastaliq ? 28 : 26) : isEnglish ? 20 : 17,
-                includeFontPadding: isPashto,
-                paddingTop: isPashto ? 2 : undefined,
+                lineHeight: isRtlHome ? (isNastaliq ? 28 : 26) : isEnglish ? 20 : 17,
+                includeFontPadding: isRtlHome,
+                paddingTop: isRtlHome ? 2 : undefined,
               },
             ]}
           >
@@ -103,12 +104,12 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
 
       {error ? (
         <Pressable onPress={dismissError} style={styles.errorBox}>
-          <RtlText align="center" style={[styles.errorText, isPashto && { fontSize: 12, lineHeight: isNastaliq ? 26 : 18, includeFontPadding: isNastaliq }]}>{error}</RtlText>
+          <RtlText align="center" style={[styles.errorText, isRtlHome && { fontSize: 12, lineHeight: isNastaliq ? 26 : 18, includeFontPadding: isNastaliq }]}>{error}</RtlText>
         </Pressable>
       ) : null}
 
       {!isConfigured ? (
-        <RtlText align="center" style={[styles.configWarning, isPashto && { fontSize: 12, lineHeight: isNastaliq ? 26 : 18, includeFontPadding: isNastaliq }]}>{t('home.mufti.notConfigured')}</RtlText>
+        <RtlText align="center" style={[styles.configWarning, isRtlHome && { fontSize: 12, lineHeight: isNastaliq ? 26 : 18, includeFontPadding: isNastaliq }]}>{t('home.mufti.notConfigured')}</RtlText>
       ) : null}
 
       <HomeComposerRow
@@ -121,9 +122,7 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
         placeholderTextColor={
           isEnglish
             ? 'rgba(255,255,255,0.7)'
-            : isPashto
-              ? 'rgba(255,255,255,0.65)'
-              : 'rgba(255,255,255,0.45)'
+            : 'rgba(255,255,255,0.65)'
         }
         accessibilityLabel={t('home.mufti.placeholder')}
         sendLabel={t('common.send')}

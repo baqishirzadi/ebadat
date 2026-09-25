@@ -1,10 +1,11 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { PrayerChip } from '@/components/home/PrayerChip';
 import { RtlView } from '@/components/ui/RtlView';
-import { Spacing } from '@/constants/theme';
+import { BorderRadius, Spacing } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
@@ -25,15 +26,23 @@ interface PrayerTimesRowProps {
 }
 
 export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
-  const { state: appState } = useApp();
+  const { theme, state: appState } = useApp();
   const { state } = usePrayer();
-  const now = new Date();
+  const [now, setNow] = useState(() => new Date());
   const current = prayerTimes ? getCurrentPrayerKey(prayerTimes, now) : null;
   const timeZone = state.location?.timezone;
 
+  useFocusEffect(
+    useCallback(() => {
+      setNow(new Date());
+      const timer = setInterval(() => setNow(new Date()), 1000);
+      return () => clearInterval(timer);
+    }, []),
+  );
+
   return (
     <Pressable onPress={() => router.push('/(tabs)/jantari' as never)}>
-      <RtlView style={styles.row}>
+      <RtlView style={[styles.strip, { backgroundColor: theme.tint }]}>
         {PRAYERS.map((prayer) => {
           const time = prayerTimes?.[prayer.key];
           const active = current === prayer.key;
@@ -48,6 +57,7 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
               )}
               time={time ? formatPrayerTime12h(time, timeZone) : '--:--'}
               active={active}
+              tone="widget"
             />
           );
         })}
@@ -57,10 +67,14 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
 }
 
 const styles = StyleSheet.create({
-  row: {
+  strip: {
     flexDirection: 'row',
-    paddingHorizontal: Spacing.md,
-    gap: 4,
+    marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    paddingHorizontal: 6,
+    paddingVertical: 8,
+    gap: 4,
+    alignItems: 'center',
   },
 });

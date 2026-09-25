@@ -37,10 +37,11 @@ export function HomeComposerRow({
   isStreaming,
   isConfigured,
 }: HomeComposerRowProps) {
-  const { isPashto, fontFamily, language } = useI18n();
+  const { fontFamily, language } = useI18n();
   const isEnglish = language === 'english';
+  const isRtlHome = !isEnglish;
   const disabled = !value.trim() || isStreaming || !isConfigured;
-  const pashtoInputStyle = isPashto
+  const compactInputStyle = isRtlHome
     ? fontFamily === 'NotoNastaliqUrdu'
       ? styles.pashtoNastaliqInput
       : styles.pashtoInput
@@ -53,7 +54,7 @@ export function HomeComposerRow({
       accessibilityRole="button"
       accessibilityLabel={sendLabel}
       testID={`${testIDPrefix}-send`}
-      style={[styles.sendButton, isPashto && styles.sendButtonPashto, disabled && styles.sendButtonDisabled]}
+      style={[styles.sendButton, isRtlHome && styles.sendButtonPashto, disabled && styles.sendButtonDisabled]}
     >
       {isStreaming ? (
         <ActivityIndicator color="#1a4d3e" size="small" />
@@ -69,7 +70,7 @@ export function HomeComposerRow({
       accessibilityLabel={accessibilityLabel}
       style={[
         styles.input,
-        pashtoInputStyle,
+        compactInputStyle,
         isEnglish && styles.inputEnglish,
       ]}
       value={value}

@@ -8,7 +8,8 @@ export function getCurrentPrayerKey(times: PrayerTimes, now: Date = new Date()):
   for (const key of PRAYER_ORDER) {
     if (times[key] <= now) current = key;
   }
-  return current;
+  // Before Fajr the active period is still Isha, matching the home-screen widget.
+  return current ?? 'isha';
 }
 
 export function getPrayerGradientColors(prayerTimes: PrayerTimes | null): [string, string, string] {

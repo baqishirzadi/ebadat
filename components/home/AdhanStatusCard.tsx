@@ -58,13 +58,13 @@ function summaryKeyForStatus(status: HealthVisualStatus) {
 
 export function AdhanStatusCard() {
   const { theme, state } = useApp();
-  const { t, isPashto, fontFamily, language } = useI18n();
+  const { t, fontFamily, language } = useI18n();
   const locale = adhanPermissionLocale(state.preferences.appLanguage);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<HealthVisualStatus>('warning');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
-  const subtitleLineHeight = isPashto ? (isNastaliq ? 28 : 24) : 20;
+  const subtitleLineHeight = language !== 'english' ? (isNastaliq ? 28 : 24) : 20;
 
   const refresh = useCallback(async () => {
     setLoading(true);

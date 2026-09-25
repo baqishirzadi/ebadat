@@ -70,7 +70,12 @@ export function HomeHeader({ onCityPress }: HomeHeaderProps) {
           style={[styles.cityChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
         >
           <MaterialIcons name="location-on" size={16} color={theme.tint} />
-          <RtlText align="center" style={[styles.cityText, { color: theme.text }]} numberOfLines={1}>
+          <RtlText
+            wrap={false}
+            align="center"
+            numberOfLines={1}
+            style={[styles.cityText, !isEnglish && styles.cityTextRtl, { color: theme.text }]}
+          >
             {localizeCityName(state.locationName, language) || t('home.city.choose')}
           </RtlText>
         </Pressable>
@@ -108,17 +113,23 @@ const styles = StyleSheet.create({
   cityChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    maxWidth: 128,
-    minHeight: 38,
+    justifyContent: 'center',
+    gap: 3,
+    maxWidth: 136,
+    height: 34,
     borderWidth: 1,
     borderRadius: BorderRadius.full,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 6,
+    paddingHorizontal: 10,
   },
   cityText: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.caption,
+    fontSize: 13,
+    lineHeight: 18,
     flexShrink: 1,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+  },
+  cityTextRtl: {
+    marginTop: 1,
   },
 });
