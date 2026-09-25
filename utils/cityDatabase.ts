@@ -107,8 +107,15 @@ function worldCityToLegacy(city: WorldCity, category: string): City & { category
 
 export function getCitySubtitle(city: WorldCity): string {
   const parts: string[] = [];
-  if (city.tier === 'major' && city.admin1Name) {
-    parts.push(city.admin1Name);
+  const provinceLabel = city.admin1Name || city.admin1NameEn;
+  const cityLabel = city.name || city.nameEn;
+  const showProvince =
+    Boolean(provinceLabel) &&
+    (city.tier === 'major' ||
+      (Boolean(cityLabel) &&
+        normalizeAdminName(provinceLabel!) !== normalizeAdminName(cityLabel!)));
+  if (showProvince && provinceLabel) {
+    parts.push(provinceLabel);
   }
   if (city.countryName) parts.push(city.countryName);
   return parts.join(' • ');

@@ -40,18 +40,15 @@ export const CREATOR_MESSAGE_PASHTO_BODY = CREATOR_MESSAGE_PASHTO_BODY_PARAGRAPH
 
 export const CREATOR_MESSAGE_PASHTO_SIGNATURE = 'سید عبدالباقی د سید عبدالاله شیرزادی زوي';
 
-export const CREATOR_MESSAGE_ENGLISH_TITLE = 'A note from the maker';
+export const CREATOR_MESSAGE_ENGLISH_TITLE = 'A note from the creator';
 
 export const CREATOR_MESSAGE_ENGLISH_BODY =
-  'I built this app to give Muslims a simple, trustworthy companion for worship. I dedicate it to the soul of my grandfather, Khalifa Sahib Sayed Muhammad Yatim Shirzadi (may Allah have mercy on him), and I ask Allah to grant me the strength to continue his path.';
-
-export const CREATOR_MESSAGE_ENGLISH_HANAFI_NOTE =
-  'Prayer times, the calendar, and the rulings in this app follow Afghanistan. Afghanistan is a Hanafi country in both its people and its state, so the dates and the fiqh here are arranged on that basis.';
+  'I built this app as a simple, trustworthy companion for Muslim worship. I dedicate it to the soul of my grandfather, Khalifa Sahib Sayed Muhammad Yatim Shirzadi (may Allah have mercy on him), and I ask Allah for the strength to continue his path.';
 
 export const CREATOR_MESSAGE_ENGLISH_SIGNATURE =
   'Sayed Abdul Baqi, son of Sayed Abdul Ellah Shirzadi';
 
 export const CREATOR_COMPANY_LABEL = 'سازنده شرکت نرم افزار';
-export const CREATOR_COMPANY_LABEL_ENGLISH = 'Built by the software studio';
+export const CREATOR_COMPANY_LABEL_ENGLISH = 'Software studio';
 export const CREATOR_COMPANY_LINK = 'WWW.AFGHAN.DEV';
 export const CREATOR_COMPANY_URL = 'https://www.afghan.dev';

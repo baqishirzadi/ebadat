@@ -41,7 +41,7 @@ const { formatPrayerTime12h } = require('../utils/formatPrayerTime.ts');
 const policySource = fs.readFileSync(path.join(root, 'utils/prayerCalculationPolicy.ts'), 'utf8');
 const scheduleSource = fs.readFileSync(path.join(root, 'utils/adhanSchedulePolicy.ts'), 'utf8');
 
-assert.match(policySource, /PRAYER_POLICY_VERSION\s*=\s*6/);
+assert.match(policySource, /PRAYER_POLICY_VERSION\s*=\s*9/);
 assert.match(policySource, /maghribOffsetMinutes:\s*MAGHRIB_OFFSET_MINUTES/);
 assert.match(scheduleSource, /ANDROID_ADHAN_ROLLING_DAYS\s*=\s*7/);
 assert.match(scheduleSource, /ADHAN_SCHEDULE_POLICY_VERSION\s*=\s*3/);

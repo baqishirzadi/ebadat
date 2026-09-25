@@ -1,9 +1,9 @@
 /**
  * Search Screen
- * Disk-backed Quran search: Arabic, Dari, Pashto
+ * Disk-backed Quran search: Arabic, Dari, Pashto, English
  */
 
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { View, StyleSheet, FlatList, Pressable, ActivityIndicator, Keyboard } from 'react-native';
 import { LocalizedText, LocalizedTextInput } from '@/components/ui/LocalizedText';
@@ -14,38 +14,38 @@ import { useQuranData } from '@/hooks/useQuranData';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { SearchResult } from '@/types/quran';
 import CenteredText from '@/components/CenteredText';
-import { toArabicNumerals } from '@/utils/numbers';
 import { stripQuranicMarks } from '@/utils/quranText';
 import type { QuranSearchMode } from '@/utils/quranSearchEngine';
+import { useI18n } from '@/utils/i18n/useI18n';
+import { forwardChevronName } from '@/utils/i18n/direction';
+import type { UiMessageKey } from '@/utils/i18n/catalog';
 
 const PAGE_SIZE = 25;
 
-const MODE_OPTIONS: Array<{ id: QuranSearchMode; label: string }> = [
-  { id: 'arabic', label: 'عربی' },
-  { id: 'dari', label: 'دری' },
-  { id: 'pashto', label: 'پښتو' },
-  { id: 'all', label: 'همه' },
-];
+const MODE_IDS: QuranSearchMode[] = ['arabic', 'dari', 'pashto', 'english', 'all'];
+
+const MODE_LABEL_KEYS: Record<QuranSearchMode, UiMessageKey> = {
+  arabic: 'quran.search.mode.arabic',
+  dari: 'quran.search.mode.dari',
+  pashto: 'quran.search.mode.pashto',
+  english: 'quran.search.mode.english',
+  all: 'quran.search.mode.all',
+};
+
+const PLACEHOLDER_KEYS: Record<QuranSearchMode, UiMessageKey> = {
+  arabic: 'quran.search.placeholder.arabic',
+  dari: 'quran.search.placeholder.dari',
+  pashto: 'quran.search.placeholder.pashto',
+  english: 'quran.search.placeholder.english',
+  all: 'quran.search.placeholder.all',
+};
 
 function parseMode(value?: string | string[]): QuranSearchMode | null {
   const raw = Array.isArray(value) ? value[0] : value;
-  if (raw === 'arabic' || raw === 'dari' || raw === 'pashto' || raw === 'all') {
+  if (raw === 'arabic' || raw === 'dari' || raw === 'pashto' || raw === 'english' || raw === 'all') {
     return raw;
   }
   return null;
-}
-
-function languageLabel(language?: SearchResult['matchedLanguage']): string {
-  switch (language) {
-    case 'arabic':
-      return 'عربی';
-    case 'dari':
-      return 'دری';
-    case 'pashto':
-      return 'پښتو';
-    default:
-      return '';
-  }
 }
 
 function HighlightedText({
@@ -70,7 +70,7 @@ function HighlightedText({
 
   // Best-effort visual highlight: wrap first occurrence ignoring diacritics loosely via plain includes.
   const lowerText = text;
-  const idx = lowerText.indexOf(needle);
+  const idx = lowerText.toLowerCase().indexOf(needle.toLowerCase());
   if (idx < 0) {
     return (
       <CenteredText style={style} numberOfLines={numberOfLines}>
@@ -95,10 +95,12 @@ function HighlightedText({
 export default function SearchScreen() {
   const { theme } = useApp();
   const { searchQuran } = useQuranData();
+  const { t, language, n } = useI18n();
+  const isEnglishUi = language === 'english';
   const router = useRouter();
   const params = useLocalSearchParams<{ q?: string | string[]; mode?: string | string[] }>();
   const initialQuery = Array.isArray(params.q) ? params.q[0] : params.q;
-  const initialMode = parseMode(params.mode) || 'arabic';
+  const initialMode = parseMode(params.mode) || (isEnglishUi ? 'english' : 'arabic');
 
   const [query, setQuery] = useState(initialQuery || '');
   const [searchMode, setSearchMode] = useState<QuranSearchMode>(initialMode);
@@ -113,6 +115,38 @@ export default function SearchScreen() {
   const navigationGuardTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestSearchRequestIdRef = useRef(0);
   const isNavigatingRef = useRef(false);
+
+  const modeOptions = useMemo(
+    () =>
+      MODE_IDS.map((id) => ({
+        id,
+        label: t(MODE_LABEL_KEYS[id]),
+      })),
+    [t],
+  );
+
+  const languageLabel = useCallback(
+    (matched?: SearchResult['matchedLanguage']): string => {
+      switch (matched) {
+        case 'arabic':
+          return t('quran.search.mode.arabic');
+        case 'dari':
+          return t('quran.search.mode.dari');
+        case 'pashto':
+          return t('quran.search.mode.pashto');
+        case 'english':
+          return t('quran.search.mode.english');
+        default:
+          return '';
+      }
+    },
+    [t],
+  );
+
+  const placeholder = useMemo(
+    () => t(PLACEHOLDER_KEYS[searchMode]),
+    [searchMode, t],
+  );
 
   useEffect(() => {
     const nextQuery = Array.isArray(params.q) ? params.q[0] : params.q;
@@ -162,7 +196,7 @@ export default function SearchScreen() {
           if (requestId !== latestSearchRequestIdRef.current) {
             return;
           }
-          setError('جستجو انجام نشد. دوباره تلاش کنید.');
+          setError(t('quran.search.failed'));
           if (!append) {
             setResults([]);
             setTotal(0);
@@ -177,7 +211,7 @@ export default function SearchScreen() {
         }
       })();
     },
-    [searchMode, searchQuran],
+    [searchMode, searchQuran, t],
   );
 
   useEffect(() => {
@@ -264,7 +298,10 @@ export default function SearchScreen() {
           ? item.translation?.dari || item.snippet || ''
           : item.matchedLanguage === 'pashto'
             ? item.translation?.pashto || item.snippet || ''
-            : stripQuranicMarks(item.text);
+            : item.matchedLanguage === 'english'
+              ? item.translation?.english || item.snippet || ''
+              : stripQuranicMarks(item.text);
+      const isEnglishMatch = item.matchedLanguage === 'english';
 
       return (
         <Pressable
@@ -290,18 +327,14 @@ export default function SearchScreen() {
               )}
               <View style={[styles.ayahBadge, { backgroundColor: theme.ayahNumber }]}>
                 <CenteredText style={styles.ayahBadgeText}>
-                  {toArabicNumerals(item.ayahNumber)}
+                  {n(item.ayahNumber)}
                 </CenteredText>
               </View>
             </View>
           </View>
 
           <HighlightedText
-            text={
-              item.matchedLanguage === 'arabic'
-                ? stripQuranicMarks(item.text)
-                : stripQuranicMarks(item.text)
-            }
+            text={stripQuranicMarks(item.text)}
             query={item.matchedLanguage === 'arabic' ? query : ''}
             style={[styles.arabicText, { color: theme.arabicText }]}
             numberOfLines={2}
@@ -312,7 +345,11 @@ export default function SearchScreen() {
               <HighlightedText
                 text={matchedSnippet}
                 query={query}
-                style={[styles.translationText, { color: theme.translationText }]}
+                style={[
+                  styles.translationText,
+                  isEnglishMatch && styles.translationTextEnglish,
+                  { color: theme.translationText },
+                ]}
                 numberOfLines={3}
               />
             </View>
@@ -320,21 +357,21 @@ export default function SearchScreen() {
 
           <View style={styles.resultFooter}>
             <CenteredText style={[styles.surahNumber, { color: theme.textSecondary }]}>
-              سوره {toArabicNumerals(item.surahNumber)}
+              {t('quran.search.surahLabel', { number: n(item.surahNumber) })}
             </CenteredText>
-            <MaterialIcons name="chevron-left" size={20} color={theme.icon} />
+            <MaterialIcons name={forwardChevronName(language)} size={20} color={theme.icon} />
           </View>
         </Pressable>
       );
     },
-    [theme, handleResultPress, query],
+    [theme, handleResultPress, query, languageLabel, n, t, language],
   );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Stack.Screen
         options={{
-          title: 'جستجو',
+          title: t('quran.search.title'),
           headerStyle: { backgroundColor: theme.surahHeader },
           headerTintColor: '#fff',
           headerTitleStyle: {
@@ -352,22 +389,14 @@ export default function SearchScreen() {
         >
           <MaterialIcons name="search" size={22} color={theme.icon} />
           <LocalizedTextInput
-            style={[styles.searchInput, { color: theme.text }]}
-            placeholder={
-              searchMode === 'arabic'
-                ? 'جستجو در متن عربی...'
-                : searchMode === 'dari'
-                  ? 'جستجو در ترجمه دری...'
-                  : searchMode === 'pashto'
-                    ? 'د پښتو ژباړې لټون...'
-                    : 'جستجو در عربی و ترجمه‌ها...'
-            }
+            style={[styles.searchInput, { color: theme.text }, isEnglishUi && styles.searchInputEnglish]}
+            placeholder={placeholder}
             placeholderTextColor={theme.textSecondary}
             value={query}
             onChangeText={setQuery}
             onSubmitEditing={handleSearch}
             returnKeyType="search"
-            textAlign="right"
+            textAlign={isEnglishUi || searchMode === 'english' ? 'left' : 'right'}
             autoFocus
           />
           {query.length > 0 && (
@@ -378,7 +407,7 @@ export default function SearchScreen() {
         </View>
 
         <View style={styles.modeToggle}>
-          {MODE_OPTIONS.map((option) => {
+          {modeOptions.map((option) => {
             const active = searchMode === option.id;
             return (
               <Pressable
@@ -411,14 +440,14 @@ export default function SearchScreen() {
             onPress={() => runSearch(query, 0, false)}
             style={[styles.retryButton, { backgroundColor: theme.tint }]}
           >
-            <CenteredText style={styles.retryButtonText}>تلاش دوباره</CenteredText>
+            <CenteredText style={styles.retryButtonText}>{t('common.retry')}</CenteredText>
           </Pressable>
         </View>
       ) : isSearching && results.length === 0 ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.tint} />
           <CenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>
-            در حال جستجو...
+            {t('quran.search.searching')}
           </CenteredText>
         </View>
       ) : results.length > 0 ? (
@@ -437,7 +466,7 @@ export default function SearchScreen() {
           onEndReachedThreshold={0.4}
           ListHeaderComponent={
             <CenteredText style={[styles.resultsCount, { color: theme.textSecondary }]}>
-              {toArabicNumerals(total)} نتیجه یافت شد
+              {t('quran.search.resultsCount', { count: n(total) })}
             </CenteredText>
           }
           ListFooterComponent={
@@ -451,20 +480,20 @@ export default function SearchScreen() {
         <View style={styles.emptyContainer}>
           <MaterialIcons name="search-off" size={64} color={theme.textSecondary} />
           <CenteredText style={[styles.emptyTitle, { color: theme.text }]}>
-            نتیجه‌ای یافت نشد
+            {t('common.noResults')}
           </CenteredText>
           <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-            عبارت دیگری را امتحان کنید
+            {t('quran.search.placeholder.all')}
           </CenteredText>
         </View>
       ) : (
         <View style={styles.emptyContainer}>
           <MaterialIcons name="search" size={64} color={theme.textSecondary} />
           <CenteredText style={[styles.emptyTitle, { color: theme.text }]}>
-            جستجو در قرآن
+            {t('quran.search.title')}
           </CenteredText>
           <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-            عربی، دری یا پښتو — حداقل ۲ حرف وارد کنید
+            {t('quran.search.placeholder.all')}
           </CenteredText>
         </View>
       )}
@@ -494,12 +523,19 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     paddingVertical: Spacing.xs,
   },
+  searchInputEnglish: {
+    textAlign: 'left',
+    writingDirection: 'ltr',
+  },
   modeToggle: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.xs,
   },
   modeButton: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: '18%',
+    minWidth: 56,
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.xs,
     borderRadius: BorderRadius.md,
@@ -593,6 +629,10 @@ const styles = StyleSheet.create({
   translationText: {
     fontSize: Typography.translation.medium,
     lineHeight: 24,
+  },
+  translationTextEnglish: {
+    textAlign: 'left',
+    writingDirection: 'ltr',
   },
   resultFooter: {
     flexDirection: 'row',

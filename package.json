@@ -36,6 +36,7 @@
     "verify:quran-text": "node scripts/verify-quran-text-integrity.js",
     "verify:quran-render-clean": "node scripts/verify-quran-display-normalization.js",
     "build:quran-search": "node scripts/build-quran-search-db.js",
+    "build:hifz16": "node scripts/build-hifz16-pages.js",
     "verify:quran-search": "node scripts/verify-quran-search.js",
     "test:android:quran-search": "MAESTRO_CLI_NO_ANALYTICS=1 MAESTRO_CLI_ANALYSIS_NOTIFICATION_DISABLED=true /opt/homebrew/opt/maestro/libexec/bin/maestro test .maestro/android-quran-search.yaml",
     "import:ahadith-data": "node scripts/import-ahadith-dataset.js",

@@ -33,11 +33,10 @@ const HEADER_DESCRIPTION_PASHTO =
   'دا برخه د نعت، ذکر او خدمت له مجلسونو الهام اخیستې ده؛\n'
   + 'هغه ځای چې د خلیفه صاحب سید عبدالباقي جان (رح) په برکت کلونه زړونه د رسول الله ﷺ په نوم ژوندي شوي دي.\n'
   + 'دا غږونه د هماغې لارې دوام دی — د زړونو د آرام او د الله د یاد لپاره.';
-const HEADER_TITLE_ENGLISH = 'Naat & Munajat — in memory of Langar Shirzad';
+const HEADER_TITLE_ENGLISH = 'Naat & Munajat';
+const HEADER_SUBTITLE_ENGLISH = 'In memory of Langar Shirzad';
 const HEADER_DESCRIPTION_ENGLISH =
-  'This section is inspired by gatherings of naat, dhikr and service at Langar Shirzad;\n'
-  + 'where, by the blessing of Khalifa Sahib Sayyid Abdul Baqi Jan (rah), hearts have lived for years with the name of the Messenger of Allah ﷺ.\n'
-  + 'These voices continue that path — for hearts at peace and the remembrance of Allah.';
+  'Inspired by gatherings of naat and dhikr at Langar Shirzad, blessed by Khalifa Sahib Sayyid Abdul Baqi Jan (may Allah have mercy on him). These voices offer peace of heart and remembrance of Allah.';
 const ALL_RECITER_FILTER = 'همه';
 const TAB_BAR_CLEARANCE = 82;
 
@@ -65,6 +64,7 @@ export default function NaatScreen() {
   const isEnglish = state.preferences.appLanguage === 'english';
   const language = state.preferences.appLanguage;
   const headerTitle = isEnglish ? HEADER_TITLE_ENGLISH : isPashto ? HEADER_TITLE_PASHTO : HEADER_TITLE;
+  const headerSubtitle = isEnglish ? HEADER_SUBTITLE_ENGLISH : null;
   const headerDescription = isEnglish
     ? HEADER_DESCRIPTION_ENGLISH
     : isPashto
@@ -202,14 +202,14 @@ export default function NaatScreen() {
                 style={[styles.header, { paddingTop: Spacing.xl + insets.top }]}
               >
                 <View style={styles.headerContent}>
-                  <View style={styles.headerTopRow}>
+                  <View style={[styles.headerTopRow, isEnglish && styles.headerTopRowEnglish]}>
                     <Pressable
                       testID="naat-downloads-button"
                       onPress={() => router.push('/naat/downloads')}
                       style={[styles.downloadsButton, { borderColor: `${theme.surahHeaderText}55` }]}
                     >
                       <MaterialIcons name="library-music" size={20} color={theme.surahHeaderText} />
-                      <RtlText align="center" wrap={false} style={[styles.downloadsText, { color: theme.surahHeaderText }]}>{tUi('دانلودها', state.preferences.appLanguage)}</RtlText>
+                      <RtlText align="center" wrap={false} style={[styles.downloadsText, isEnglish && styles.downloadsTextEnglish, { color: theme.surahHeaderText }]}>{tUi('دانلودها', state.preferences.appLanguage)}</RtlText>
                     </Pressable>
                   </View>
                   <Pressable
@@ -218,10 +218,35 @@ export default function NaatScreen() {
                     delayLongPress={600}
                     style={styles.headerBody}
                   >
-                    <RtlText testID="naat-header-title" align="center" style={[styles.headerTitle, { color: theme.surahHeaderText }]}>
+                    <RtlText
+                      testID="naat-header-title"
+                      align="center"
+                      style={[
+                        styles.headerTitle,
+                        isEnglish && styles.headerTitleEnglish,
+                        { color: theme.surahHeaderText },
+                      ]}
+                    >
                       {headerTitle}
                     </RtlText>
-                    <RtlText testID="naat-header-description" align="center" style={[styles.headerDescription, { color: theme.surahHeaderText }]}>
+                    {headerSubtitle ? (
+                      <RtlText
+                        testID="naat-header-subtitle"
+                        align="center"
+                        style={[styles.headerSubtitleEnglish, { color: theme.surahHeaderText }]}
+                      >
+                        {headerSubtitle}
+                      </RtlText>
+                    ) : null}
+                    <RtlText
+                      testID="naat-header-description"
+                      align="center"
+                      style={[
+                        styles.headerDescription,
+                        isEnglish && styles.headerDescriptionEnglish,
+                        { color: theme.surahHeaderText },
+                      ]}
+                    >
                       {headerDescription}
                     </RtlText>
                     <View style={styles.motifRow}>
@@ -259,12 +284,16 @@ export default function NaatScreen() {
                   <MaterialIcons name="search" size={20} color={theme.textSecondary} />
                   <LocalizedTextInput
                     testID="naat-search-input"
-                    style={[styles.searchInput, { color: theme.text }]}
+                    style={[
+                      styles.searchInput,
+                      isEnglish && styles.searchInputEnglish,
+                      { color: theme.text },
+                    ]}
                     placeholder={tUi('جستجوی نعت...', language)}
                     placeholderTextColor={theme.textSecondary}
                     value={query}
                     onChangeText={setQuery}
-                    textAlign="center"
+                    textAlign={isEnglish ? 'left' : 'center'}
                   />
                 </View>
 
@@ -528,6 +557,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.xs,
   },
+  headerTopRowEnglish: {
+    justifyContent: 'flex-end',
+  },
   downloadsButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -542,12 +574,36 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
   },
+  downloadsTextEnglish: {
+    fontFamily: undefined,
+    letterSpacing: 0.2,
+  },
   headerTitle: {
     marginTop: Spacing.md,
     fontSize: Typography.ui.title,
     fontFamily: 'Amiri',
     textAlign: 'center',
     lineHeight: 40,
+  },
+  headerTitleEnglish: {
+    marginTop: Spacing.sm,
+    fontFamily: undefined,
+    fontWeight: '700',
+    fontSize: 28,
+    lineHeight: 34,
+    letterSpacing: 0.2,
+    writingDirection: 'ltr',
+  },
+  headerSubtitleEnglish: {
+    marginTop: Spacing.xs,
+    fontFamily: undefined,
+    fontSize: Typography.ui.body,
+    fontWeight: '600',
+    lineHeight: 22,
+    letterSpacing: 0.3,
+    textAlign: 'center',
+    writingDirection: 'ltr',
+    opacity: 0.92,
   },
   headerDescription: {
     marginTop: Spacing.xs,
@@ -556,6 +612,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
     paddingHorizontal: Spacing.sm,
+  },
+  headerDescriptionEnglish: {
+    marginTop: Spacing.sm,
+    fontFamily: undefined,
+    fontSize: 14,
+    lineHeight: 21,
+    letterSpacing: 0.15,
+    paddingHorizontal: Spacing.md,
+    writingDirection: 'ltr',
+    opacity: 0.9,
   },
   motifRow: {
     marginTop: Spacing.sm,
@@ -630,6 +696,11 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: 'Vazirmatn',
     textAlign: 'right',
+  },
+  searchInputEnglish: {
+    fontFamily: undefined,
+    textAlign: 'left',
+    writingDirection: 'ltr',
   },
   reciterRow: {
     flexDirection: 'row',

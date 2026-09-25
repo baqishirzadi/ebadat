@@ -40,6 +40,7 @@ export function PrayerChip({ label, time, active = false, tone = 'card', style }
       style={[
         styles.chip,
         onWidget && styles.chipOnWidget,
+        isRtlHome && styles.chipRtl,
         {
           backgroundColor,
           borderColor,
@@ -56,10 +57,18 @@ export function PrayerChip({ label, time, active = false, tone = 'card', style }
         style,
       ]}
     >
-      <RtlText align="center" style={[styles.label, isRtlHome && styles.labelPashto, { color: labelColor }]}>
+      <RtlText
+        align="center"
+        numberOfLines={1}
+        style={[styles.label, isRtlHome && styles.labelPashto, { color: labelColor }]}
+      >
         {label}
       </RtlText>
-      <RtlText align="center" style={[styles.time, isRtlHome && styles.timePashto, { color: timeColor }]}>
+      <RtlText
+        align="center"
+        numberOfLines={1}
+        style={[styles.time, isRtlHome && styles.timePashto, { color: timeColor }]}
+      >
         {time}
       </RtlText>
     </View>
@@ -75,10 +84,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     alignItems: 'center',
     gap: 2,
+    overflow: 'hidden',
   },
   chipOnWidget: {
     borderWidth: 0,
     borderRadius: 8,
+  },
+  /** Keep Amiri/Nastaliq glyphs inside the white active chip. */
+  chipRtl: {
+    minHeight: 48,
+    justifyContent: 'center',
   },
   label: {
     fontFamily: 'Vazirmatn-Bold',

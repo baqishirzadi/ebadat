@@ -9,7 +9,6 @@ import {
   CREATOR_MESSAGE_DARI_SIGNATURE,
   CREATOR_MESSAGE_DARI_TITLE,
   CREATOR_MESSAGE_ENGLISH_BODY,
-  CREATOR_MESSAGE_ENGLISH_HANAFI_NOTE,
   CREATOR_MESSAGE_ENGLISH_SIGNATURE,
   CREATOR_MESSAGE_ENGLISH_TITLE,
   CREATOR_MESSAGE_PASHTO_BODY,
@@ -34,21 +33,18 @@ export function CreatorMessageCard() {
         <View style={[styles.headerIconWrap, { backgroundColor: `${theme.tint}22`, borderColor: `${theme.tint}40` }]}>
           <MaterialIcons name="format-quote" size={20} color={theme.tint} />
         </View>
-        <CenteredText style={[styles.headerHint, { color: theme.textSecondary }]}>
-          {isEnglish ? 'From the maker' : 'پیام سازنده'}
+        <CenteredText style={[styles.headerHint, isEnglish && styles.headerHintEnglish, { color: theme.textSecondary }]}>
+          {isEnglish ? 'From the creator' : 'پیام سازنده'}
         </CenteredText>
       </LinearGradient>
 
       {isEnglish ? (
         <View style={styles.block}>
-          <CenteredText style={[styles.blockTitle, { color: theme.tint }]}>
+          <CenteredText style={[styles.blockTitle, styles.blockTitleEnglish, { color: theme.tint }]}>
             {CREATOR_MESSAGE_ENGLISH_TITLE}
           </CenteredText>
           <CenteredText style={[styles.bodyEnglish, { color: theme.text }]}>
             {CREATOR_MESSAGE_ENGLISH_BODY}
-          </CenteredText>
-          <CenteredText style={[styles.bodyEnglish, styles.hanafiNote, { color: theme.text }]}>
-            {CREATOR_MESSAGE_ENGLISH_HANAFI_NOTE}
           </CenteredText>
           <CenteredText style={[styles.signatureEnglish, { color: theme.bookmark }]}>
             {CREATOR_MESSAGE_ENGLISH_SIGNATURE}
@@ -117,6 +113,10 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
   },
+  headerHintEnglish: {
+    fontFamily: undefined,
+    letterSpacing: 0.2,
+  },
   block: {
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
@@ -128,6 +128,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     marginBottom: Spacing.sm,
   },
+  blockTitleEnglish: {
+    fontFamily: undefined,
+    fontWeight: '700',
+    letterSpacing: 0.15,
+  },
   bodyDari: {
     fontSize: Typography.ui.body,
     fontFamily: 'Vazirmatn',
@@ -137,13 +142,10 @@ const styles = StyleSheet.create({
   },
   bodyEnglish: {
     fontSize: Typography.ui.body,
-    fontFamily: 'Vazirmatn',
-    lineHeight: 26,
+    fontFamily: undefined,
+    lineHeight: 24,
     textAlign: 'center',
     writingDirection: 'ltr',
-  },
-  hanafiNote: {
-    marginTop: Spacing.md,
   },
   signatureDari: {
     marginTop: Spacing.md,
@@ -157,9 +159,9 @@ const styles = StyleSheet.create({
   signatureEnglish: {
     marginTop: Spacing.md,
     fontSize: Typography.ui.body,
-    fontFamily: 'Vazirmatn-Bold',
+    fontFamily: undefined,
     fontWeight: '700',
-    lineHeight: 26,
+    lineHeight: 24,
     textAlign: 'center',
     writingDirection: 'ltr',
   },

@@ -79,6 +79,8 @@ export interface UserPreferences {
   arabicFontSize: 'small' | 'medium' | 'large' | 'xlarge';
   translationFontSize: 'small' | 'medium' | 'large' | 'xlarge';
   viewMode: ViewMode;
+  /** Indo-Pak 16-line hifz mushaf (no translation). */
+  hifz16Line: boolean;
   showTranslation: TranslationLanguage;
   autoPlayAudio: boolean;
   repeatAyah: boolean;

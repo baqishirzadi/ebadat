@@ -16,7 +16,9 @@ class WidgetDataModule(private val reactContext: ReactApplicationContext) :
   @ReactMethod
   fun setSnapshot(json: String, promise: Promise) {
     try {
-      WidgetDataStore.save(reactContext.applicationContext, json)
+      val context = reactContext.applicationContext
+      WidgetDataStore.save(context, json)
+      WidgetRefreshScheduler.scheduleFromSnapshotJson(context, json)
       promise.resolve(true)
     } catch (error: Exception) {
       promise.reject("widget_snapshot_save_failed", error)

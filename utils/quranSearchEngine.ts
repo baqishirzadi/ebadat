@@ -14,12 +14,13 @@ import {
   compactArabicForSearch,
   normalizeArabicForSearch,
   normalizeDariForSearch,
+  normalizeEnglishForSearch,
   normalizePashtoForSearch,
   scoreMatch,
   type SearchLanguage,
 } from '@/utils/quranSearchNormalize';
 
-export type QuranSearchMode = 'arabic' | 'dari' | 'pashto' | 'all';
+export type QuranSearchMode = 'arabic' | 'dari' | 'pashto' | 'english' | 'all';
 
 export type QuranSearchOptions = {
   mode?: QuranSearchMode;
@@ -43,14 +44,16 @@ type DbAyahRow = {
   arabic_text: string;
   dari_text: string;
   pashto_text: string;
+  english_text: string;
   arabic_norm: string;
   arabic_compact: string;
   dari_norm: string;
   pashto_norm: string;
+  english_norm: string;
 };
 
 const DB_ASSET_NAME = 'quran-search.db';
-const DB_RUNTIME_NAME = 'quran-search-v1.db';
+const DB_RUNTIME_NAME = 'quran-search-v2.db';
 const DEFAULT_LIMIT = 25;
 const MAX_CANDIDATES = 400;
 
@@ -133,12 +136,24 @@ function buildResult(
         ? row.arabic_text
         : matchedLanguage === 'dari'
           ? row.dari_text
-          : row.pashto_text,
+          : matchedLanguage === 'pashto'
+            ? row.pashto_text
+            : row.english_text,
     translation: {
       dari: row.dari_text,
       pashto: row.pashto_text,
+      english: row.english_text,
     },
-    highlightRanges: [{ start: 0, end: matchedLanguage === 'arabic' ? row.arabic_text.length : matchedLanguage === 'dari' ? row.dari_text.length : row.pashto_text.length }],
+    highlightRanges: [{
+      start: 0,
+      end: matchedLanguage === 'arabic'
+        ? row.arabic_text.length
+        : matchedLanguage === 'dari'
+          ? row.dari_text.length
+          : matchedLanguage === 'pashto'
+            ? row.pashto_text.length
+            : row.english_text.length,
+    }],
   };
 }
 
@@ -150,6 +165,7 @@ function scoreRow(
     arabicCompact: string;
     dari: string;
     pashto: string;
+    english: string;
   },
 ): { language: SearchLanguage; score: number; matchedText: string } | null {
   const candidates: Array<{ language: SearchLanguage; score: number; matchedText: string }> = [];
@@ -178,6 +194,13 @@ function scoreRow(
     }
   }
 
+  if (mode === 'english' || mode === 'all') {
+    const score = scoreMatch(row.english_norm, norms.english);
+    if (score > 0) {
+      candidates.push({ language: 'english', score, matchedText: norms.english });
+    }
+  }
+
   if (candidates.length === 0) return null;
   candidates.sort((a, b) => b.score - a.score);
   return candidates[0];
@@ -191,6 +214,7 @@ async function queryCandidates(
     arabicCompact: string;
     dari: string;
     pashto: string;
+    english: string;
   },
 ): Promise<DbAyahRow[]> {
   const clauses: string[] = [];
@@ -213,6 +237,11 @@ async function queryCandidates(
   if ((mode === 'pashto' || mode === 'all') && norms.pashto.length >= 2) {
     clauses.push('pashto_norm LIKE ? ESCAPE \'\\\'');
     params.push(`%${escapeLike(norms.pashto)}%`);
+  }
+
+  if ((mode === 'english' || mode === 'all') && norms.english.length >= 2) {
+    clauses.push('english_norm LIKE ? ESCAPE \'\\\'');
+    params.push(`%${escapeLike(norms.english)}%`);
   }
 
   if (clauses.length === 0) return [];
@@ -259,16 +288,25 @@ export async function searchQuranPaged(
   const arabicCompact = compactArabicForSearch(query);
   const dari = normalizeDariForSearch(query);
   const pashto = normalizePashtoForSearch(query);
+  const english = normalizeEnglishForSearch(query);
 
   const activeNorm =
-    mode === 'arabic' ? arabic : mode === 'dari' ? dari : mode === 'pashto' ? pashto : arabic || dari || pashto;
+    mode === 'arabic'
+      ? arabic
+      : mode === 'dari'
+        ? dari
+        : mode === 'pashto'
+          ? pashto
+          : mode === 'english'
+            ? english
+            : arabic || dari || pashto || english;
 
   if (!activeNorm || activeNorm.length < 2) {
     return { results: [], total: 0, offset, limit, hasMore: false };
   }
 
   const db = await openSearchDatabase();
-  const norms = { arabic, arabicCompact, dari, pashto };
+  const norms = { arabic, arabicCompact, dari, pashto, english };
   const candidates = await queryCandidates(db, mode, norms);
 
   const scored: SearchResult[] = [];
@@ -345,5 +383,6 @@ export {
   compactArabicForSearch,
   normalizeArabicForSearch,
   normalizeDariForSearch,
+  normalizeEnglishForSearch,
   normalizePashtoForSearch,
 };

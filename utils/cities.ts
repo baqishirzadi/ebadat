@@ -143,6 +143,7 @@ export const LEGACY_CITY_KEY_ALIASES: Record<string, string> = {
   iran_isfahan: 'iran_province_isfahan',
   iran_shiraz: 'iran_province_fars',
   iran_tabriz: 'iran_province_east_azerbaijan',
+  iran_kashan_2: 'iran_kashan',
   turkey_istanbul: 'turkey_province_istanbul',
   turkey_ankara: 'turkey_province_ankara',
   turkey_izmir: 'turkey_province_izmir',

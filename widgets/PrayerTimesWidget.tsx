@@ -211,6 +211,18 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       : `قمري ${hijriLabel || ''}`.trim();
   const sunriseCell = `${sunriseCaption}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim();
 
+  // Prefer the snapshot field; if a stale push left it null (seen after
+  // Pashto ↔ Dari flips before SharedPreferences.commit), derive the active
+  // chip from atMs so the white highlight still shows.
+  const nowMs = Date.now();
+  const activePrayerKey =
+    snapshot.currentPrayer ??
+    [...prayers]
+      .filter((entry) => entry.atMs <= nowMs)
+      .map((entry) => entry.key)
+      .pop() ??
+    null;
+
   // Title + one horizontal date row.
   // Keep each cell as FlexWidget > TextWidget — no LTR isolates and
   // no flex on TextWidget itself (those produced Null RemoteViews on One UI).
@@ -324,7 +336,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           }}
         >
           {prayersOrdered.map((prayer) => {
-            const active = snapshot.currentPrayer === prayer.key;
+            const active = activePrayerKey === prayer.key;
             const prayerName = isEnglish
               ? prayer.labelEnglish || prayer.labelDari
               : isPashto

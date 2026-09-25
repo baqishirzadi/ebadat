@@ -35,6 +35,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   arabicFontSize: 'small',
   translationFontSize: 'small',
   viewMode: 'scroll',
+  hifz16Line: false,
   showTranslation: 'dari',
   autoPlayAudio: true,
   repeatAyah: false,
@@ -69,6 +70,7 @@ type AppAction =
   | { type: 'SET_ARABIC_FONT_SIZE'; payload: 'small' | 'medium' | 'large' | 'xlarge' }
   | { type: 'SET_TRANSLATION_FONT_SIZE'; payload: 'small' | 'medium' | 'large' | 'xlarge' }
   | { type: 'SET_VIEW_MODE'; payload: ViewMode }
+  | { type: 'SET_HIFZ16_LINE'; payload: boolean }
   | { type: 'SET_TRANSLATION_LANGUAGE'; payload: TranslationLanguage }
   | { type: 'SET_AUTO_PLAY'; payload: boolean }
   | { type: 'SET_REPEAT_AYAH'; payload: boolean }
@@ -144,6 +146,12 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         preferences: { ...state.preferences, viewMode: action.payload },
+      };
+
+    case 'SET_HIFZ16_LINE':
+      return {
+        ...state,
+        preferences: { ...state.preferences, hifz16Line: action.payload },
       };
     
     case 'SET_TRANSLATION_LANGUAGE':
@@ -233,6 +241,7 @@ interface AppContextType {
   
   // View actions
   setViewMode: (mode: ViewMode) => void;
+  setHifz16Line: (enabled: boolean) => void;
   setTranslationLanguage: (lang: TranslationLanguage) => void;
   
   // Audio actions
@@ -374,6 +383,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         preferencesNormalized = true;
       }
 
+      if (typeof preferences.hifz16Line !== 'boolean') {
+        preferences = {
+          ...preferences,
+          hifz16Line: false,
+        };
+        preferencesNormalized = true;
+      }
+
       const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
       const lastPosition = positionJson ? JSON.parse(positionJson) : DEFAULT_POSITION;
 
@@ -428,6 +445,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const setViewMode = (mode: ViewMode) => {
     dispatch({ type: 'SET_VIEW_MODE', payload: mode });
+  };
+
+  const setHifz16Line = (enabled: boolean) => {
+    dispatch({ type: 'SET_HIFZ16_LINE', payload: enabled });
   };
 
   const setTranslationLanguage = (lang: TranslationLanguage) => {
@@ -495,6 +516,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setArabicFontSize,
     setTranslationFontSize,
     setViewMode,
+    setHifz16Line,
     setTranslationLanguage,
     setAutoPlay,
     setRepeatAyah,

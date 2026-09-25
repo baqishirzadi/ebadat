@@ -120,8 +120,9 @@ const SurahItem = React.memo(function SurahItem({
 });
 
 export function SurahList() {
-  const { theme, themeMode } = useApp();
+  const { theme, themeMode, state, setHifz16Line } = useApp();
   const { t, n, language } = useI18n();
+  const hifz16Line = state.preferences.hifz16Line;
   const directionalRow = rowStyle(language);
   const { position } = useReadingPosition();
   const router = useRouter();
@@ -301,6 +302,19 @@ export function SurahList() {
         >
           <CenteredText style={[styles.modeButtonText, { color: browseMode === 'juz' ? '#fff' : theme.textSecondary }]}>
             {t('quran.mode.juz')}
+          </CenteredText>
+        </Pressable>
+        <Pressable
+          testID="quran-list-hifz16-toggle"
+          accessibilityLabel={t('quran.hifz16.hint')}
+          onPress={() => setHifz16Line(!hifz16Line)}
+          style={[
+            styles.modeButton,
+            { backgroundColor: hifz16Line ? theme.tint : 'transparent' },
+          ]}
+        >
+          <CenteredText style={[styles.modeButtonText, { color: hifz16Line ? '#fff' : theme.textSecondary }]}>
+            {t('quran.hifz16.label')}
           </CenteredText>
         </Pressable>
       </View>

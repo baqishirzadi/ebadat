@@ -154,7 +154,7 @@ export const SurahHeader = memo(function SurahHeader({
               color={surahDownloaded ? theme.surahHeaderText : theme.surahHeader}
             />
             <CenteredText style={[styles.metaText, { color: surahDownloaded ? theme.surahHeaderText : theme.surahHeader }]}>
-              {surahDownloaded ? t('quran.downloaded') : t('quran.wholeSurah')}
+              {surahDownloaded ? t('quran.downloaded') : t('quran.download.action')}
             </CenteredText>
           </Pressable>
         </View>
@@ -177,7 +177,7 @@ export const SurahHeader = memo(function SurahHeader({
         scope={getSurahDownloadScope(number, ayahCount)}
         theme={theme}
         title={t('quran.downloadAll')}
-        primaryLabel={t('quran.wholeSurah')}
+        primaryLabel={t('quran.download.action')}
         onClose={() => setShowDownloadSheet(false)}
         onCompleted={(nextReciter) => {
           setDownloadReciter(nextReciter);

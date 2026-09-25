@@ -49,7 +49,8 @@ object PrayerTimeEngine {
     val madhabEnum = if (madhab.equals("Shafi", ignoreCase = true)) Madhab.SHAFI else Madhab.HANAFI
     var parameters = method.parameters.copy(madhab = madhabEnum)
     // University of Tehran angles (adhan2 has no TEHRAN enum).
-    if (calculationMethod.equals("Tehran", ignoreCase = true) || countryCode.equals("IR", ignoreCase = true)) {
+    // Only apply when the caller explicitly requests Tehran — Iran now uses MWL.
+    if (calculationMethod.equals("Tehran", ignoreCase = true)) {
       parameters = parameters.copy(fajrAngle = 17.7, ishaAngle = 14.0, madhab = madhabEnum)
     }
     val prayerTimes = PrayerTimes(coordinates, dateComponents, parameters)
@@ -199,8 +200,8 @@ object PrayerTimeEngine {
   }
 
   private fun resolveCalculationMethod(name: String): CalculationMethod {
-    // adhan2 0.0.6 has no TEHRAN enum; IR canonical times come from JS scheduleJson.
-    // OTHER is used as the local fallback for Tehran-style requests.
+    // adhan2 0.0.6 has no TEHRAN enum; Tehran-method requests use OTHER + custom angles.
+    // Iran (IR) now uses Muslim World League via calculationMethod from JS policy.
     return when (name.trim().lowercase()) {
       "muslimworldleague", "mwl" -> CalculationMethod.MUSLIM_WORLD_LEAGUE
       "egyptian" -> CalculationMethod.EGYPTIAN

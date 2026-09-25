@@ -734,7 +734,7 @@ export default function JuzReaderScreen() {
         scope={juzDownloadScope}
         theme={theme}
         title={`دانلود جزء ${toArabicNumerals(juzNumber)}`}
-        primaryLabel="کل جزء"
+        primaryLabel={t('quran.download.action')}
         onClose={() => setShowDownloadSheet(false)}
         onCompleted={(nextReciter) => {
           setDownloadReciter(nextReciter);

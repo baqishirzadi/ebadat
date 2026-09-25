@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
   ayahBadge: {
     position: 'absolute',
     top: Spacing.sm,
-    right: Spacing.sm,
+    start: Spacing.sm,
     width: 40,
     height: 40,
     borderRadius: 20,

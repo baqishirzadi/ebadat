@@ -16,12 +16,12 @@ import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
 import { pinSurahInCache } from '@/hooks/useSurahData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
-import { MushafView, AudioPlayer } from '@/components/quran';
+import { MushafView, AudioPlayer, Hifz16View } from '@/components/quran';
 import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { Spacing } from '@/constants/theme';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
-import { backIconName, forwardChevronName, rowStyle } from '@/utils/i18n/direction';
+import { backIconName, forwardChevronName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { isRtlLanguage } from '@/utils/i18n/languages';
 
@@ -45,11 +45,11 @@ export default function QuranReaderScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const { theme, state } = useApp();
+  const { theme, state, setHifz16Line } = useApp();
   const { t, language } = useI18n();
   const { getSurah } = useQuranData();
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
-  const directionalRow = rowStyle(language);
+  const hifz16Line = state.preferences.hifz16Line;
   const backIcon = backIconName(language);
   const nextSurahIcon = forwardChevronName(language);
   const prevSurahIcon = isRtlLanguage(language) ? 'chevron-right' : 'chevron-left';
@@ -78,7 +78,13 @@ export default function QuranReaderScreen() {
           ? 'search_exact'
           : 'default';
   const surah = useMemo(() => getSurah(surahNumber), [getSurah, surahNumber]);
-  const surahNameData = getSurahName(surahNumber);
+  const [hifzVisibleSurah, setHifzVisibleSurah] = useState(surahNumber);
+  const headerSurahNumber = hifz16Line ? hifzVisibleSurah : surahNumber;
+  const surahNameData = getSurahName(headerSurahNumber);
+
+  useEffect(() => {
+    setHifzVisibleSurah(surahNumber);
+  }, [surahNumber]);
 
   useEffect(() => {
     pinSurahInCache(surahNumber);
@@ -97,23 +103,28 @@ export default function QuranReaderScreen() {
 
   const syncFromAudioSnapshot = useCallback(() => {
     const snapshot = audioManager.getPlaybackSnapshot();
-    const isMatchingSurah = snapshot.isActive && snapshot.scopeType === 'surah' && snapshot.surah === surahNumber;
+    const hifzFollows =
+      hifz16Line && snapshot.isActive && snapshot.scopeType === 'surah' && snapshot.surah != null;
+    const isMatchingSurah =
+      snapshot.isActive && snapshot.scopeType === 'surah' && snapshot.surah === surahNumber;
 
-    if (!isMatchingSurah) {
+    if (!hifzFollows && !isMatchingSurah) {
       setIsPlaying(false);
       setCurrentlyPlaying(null);
       setShowAudioPlayer(false);
       return;
     }
 
+    const surah = snapshot.surah as number;
+    const ayah = snapshot.ayah;
     setCurrentlyPlaying((previous) => (
-      previous?.surah === snapshot.surah && previous.ayah === snapshot.ayah
+      previous?.surah === surah && previous.ayah === ayah
         ? previous
-        : { surah: snapshot.surah, ayah: snapshot.ayah }
+        : { surah, ayah }
     ));
     setShowAudioPlayer(true);
     setIsPlaying(snapshot.isPlaying);
-  }, [surahNumber]);
+  }, [hifz16Line, surahNumber]);
 
   useEffect(() => {
     if (!surah && !shouldGoBack) {
@@ -139,7 +150,7 @@ export default function QuranReaderScreen() {
   useFocusEffect(
     useCallback(() => {
       audioManager.setOnAyahChange((s, a) => {
-        if (s !== surahNumber) return;
+        if (!hifz16Line && s !== surahNumber) return;
         setCurrentlyPlaying((previous) => (
           previous?.surah === s && previous.ayah === a
             ? previous
@@ -166,7 +177,7 @@ export default function QuranReaderScreen() {
         audioManager.setOnAyahChange(null);
         audioManager.setOnPlaybackEnd(null);
       };
-    }, [surahNumber, syncFromAudioSnapshot])
+    }, [hifz16Line, surahNumber, syncFromAudioSnapshot])
   );
 
   const handlePlayAyah = useCallback((surahNum: number, ayahNum: number) => {
@@ -209,21 +220,55 @@ export default function QuranReaderScreen() {
       });
   }, [surah, currentlyPlaying, t]);
 
-  const handlePlayContinuous = useCallback(() => {
-    if (!surah) return;
+  const handleHifzPlayAyah = useCallback((surahNum: number, ayahNum: number) => {
+    const meta = getSurahName(surahNum);
+    const ayahCount = meta?.ayahCount ?? surah?.ayahs.length;
+    if (!ayahCount) return;
 
-    const currentAyah = currentlyPlaying?.ayah ?? initialAyah;
+    const isSameAyah =
+      currentlyPlaying?.surah === surahNum && currentlyPlaying?.ayah === ayahNum;
+
+    if (isSameAyah && audioManager.getIsPlaying()) {
+      setIsPlaying(false);
+      setCurrentlyPlaying(null);
+      setShowAudioPlayer(false);
+      void audioManager.stop();
+      return;
+    }
+
+    setCurrentlyPlaying({ surah: surahNum, ayah: ayahNum });
+    setShowAudioPlayer(true);
     setIsPlaying(true);
     void audioManager
-      .playAyah(surahNumber, currentAyah, surah.ayahs.length, true, true, {
+      .playAyah(surahNum, ayahNum, ayahCount, true, true, {
         type: 'surah',
         startAyah: 1,
-        endAyah: surah.ayahs.length,
+        endAyah: ayahCount,
       })
       .catch((error) => {
         Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
       });
-  }, [surah, currentlyPlaying?.ayah, initialAyah, surahNumber, t]);
+  }, [currentlyPlaying, surah?.ayahs.length, t]);
+
+  const handlePlayContinuous = useCallback(() => {
+    const playSurah = hifz16Line && currentlyPlaying ? currentlyPlaying.surah : surahNumber;
+    const playAyah = currentlyPlaying?.surah === playSurah ? currentlyPlaying.ayah : initialAyah;
+    const ayahCount = getSurahName(playSurah)?.ayahCount ?? surah?.ayahs.length;
+    if (!ayahCount) return;
+
+    setCurrentlyPlaying({ surah: playSurah, ayah: playAyah });
+    setShowAudioPlayer(true);
+    setIsPlaying(true);
+    void audioManager
+      .playAyah(playSurah, playAyah, ayahCount, true, true, {
+        type: 'surah',
+        startAyah: 1,
+        endAyah: ayahCount,
+      })
+      .catch((error) => {
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
+      });
+  }, [currentlyPlaying, hifz16Line, initialAyah, surah?.ayahs.length, surahNumber, t]);
 
   const handlePause = useCallback(() => {
     setIsPlaying(false);
@@ -270,10 +315,19 @@ export default function QuranReaderScreen() {
 
   const surahName = surahNameData
     ? `سورة ${surahNameData.arabic}`
-    : `سوره ${toArabicNumerals(surahNumber)}`;
+    : `سوره ${toArabicNumerals(headerSurahNumber)}`;
 
   const contentPaddingTop = insets.top + SURAH_TOP_BAR_HEIGHT + Spacing.sm;
-  const contentPaddingBottom = showAudioPlayer ? insets.bottom + QURAN_AUDIO_PLAYER_RESERVED_HEIGHT : Spacing.xxl;
+  // Hifz: always leave room for the slim floral bottom edge; when audio is open,
+  // also clear the compact player dock so the border is not covered.
+  const HIFZ_COMPACT_PLAYER_CLEARANCE = 58;
+  const contentPaddingBottom = hifz16Line
+    ? showAudioPlayer
+      ? HIFZ_COMPACT_PLAYER_CLEARANCE
+      : Spacing.xxl + 8
+    : showAudioPlayer
+      ? insets.bottom + QURAN_AUDIO_PLAYER_RESERVED_HEIGHT
+      : Spacing.xxl;
 
   if (!surah || shouldGoBack) {
     return (
@@ -292,7 +346,6 @@ export default function QuranReaderScreen() {
       <View
         style={[
           styles.topBar,
-          directionalRow,
           {
             paddingTop: insets.top,
             height: insets.top + SURAH_TOP_BAR_HEIGHT,
@@ -316,7 +369,16 @@ export default function QuranReaderScreen() {
         <LocalizedText style={[styles.topBarTitle, { fontFamily: quranFontFamily }]} numberOfLines={1} ellipsizeMode="tail">
           {surahName}
         </LocalizedText>
-        <View style={[styles.topBarNav, directionalRow]}>
+        <View style={styles.topBarNav}>
+          <Pressable
+            testID="quran-hifz16-toggle"
+            accessibilityLabel={t('quran.hifz16.hint')}
+            onPress={() => setHifz16Line(!hifz16Line)}
+            hitSlop={8}
+            style={[styles.hifzToggle, hifz16Line && styles.hifzToggleActive]}
+          >
+            <LocalizedText style={styles.hifzToggleText}>{t('quran.hifz16.label')}</LocalizedText>
+          </Pressable>
           <Pressable testID="quran-reader-settings" onPress={() => router.push('/settings?section=quran' as never)} hitSlop={8}>
             <MaterialIcons name="tune" size={22} color="#fff" />
           </Pressable>
@@ -337,29 +399,44 @@ export default function QuranReaderScreen() {
         </View>
       </View>
 
-      <MushafView
-        key={`mushaf-${surahNumber}-${normalizedJumpToken ?? 'default'}`}
-        surahNumber={surahNumber}
-        initialAyah={initialAyah}
-        jumpMode={jumpMode}
-        jumpToken={normalizedJumpToken}
-        resumeSource={normalizedResumeSource === 'notification' ? 'notification' : undefined}
-        onPlayAyah={handlePlayAyah}
-        onSettingsPress={() => router.push('/settings?section=quran' as never)}
-        activePlayingAyah={activeAyahNumber}
-        contentPaddingTop={contentPaddingTop}
-        contentPaddingBottom={contentPaddingBottom}
-      />
+      {hifz16Line ? (
+        <Hifz16View
+          key={`hifz16-${surahNumber}-${initialAyah}`}
+          surahNumber={surahNumber}
+          initialAyah={initialAyah}
+          contentPaddingTop={contentPaddingTop}
+          contentPaddingBottom={contentPaddingBottom}
+          activePlayingSurah={currentlyPlaying?.surah ?? null}
+          activePlayingAyah={currentlyPlaying?.ayah ?? null}
+          onPlayAyah={handleHifzPlayAyah}
+          onVisibleSurahChange={setHifzVisibleSurah}
+        />
+      ) : (
+        <MushafView
+          key={`mushaf-${surahNumber}-${normalizedJumpToken ?? 'default'}`}
+          surahNumber={surahNumber}
+          initialAyah={initialAyah}
+          jumpMode={jumpMode}
+          jumpToken={normalizedJumpToken}
+          resumeSource={normalizedResumeSource === 'notification' ? 'notification' : undefined}
+          onPlayAyah={handlePlayAyah}
+          onSettingsPress={() => router.push('/settings?section=quran' as never)}
+          activePlayingAyah={activeAyahNumber}
+          contentPaddingTop={contentPaddingTop}
+          contentPaddingBottom={contentPaddingBottom}
+        />
+      )}
 
       {showAudioPlayer && currentlyPlaying && (
         <AudioPlayer
           surahNumber={currentlyPlaying.surah}
           ayahNumber={currentlyPlaying.ayah}
-          totalAyahs={surah.ayahs.length}
+          totalAyahs={getSurahName(currentlyPlaying.surah)?.ayahCount ?? surah.ayahs.length}
           scopeType="surah"
           scopeStartAyah={1}
-          scopeEndAyah={surah.ayahs.length}
+          scopeEndAyah={getSurahName(currentlyPlaying.surah)?.ayahCount ?? surah.ayahs.length}
           isVisible={showAudioPlayer}
+          compact={hifz16Line}
           isPlaying={isPlaying}
           onPlayContinuous={handlePlayContinuous}
           onPause={handlePause}
@@ -383,6 +460,7 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 80,
     elevation: 80,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
@@ -405,8 +483,28 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
   },
   topBarNav: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
+  },
+  hifzToggle: {
+    minWidth: 36,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.55)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hifzToggleActive: {
+    backgroundColor: 'rgba(255,255,255,0.22)',
+    borderColor: '#fff',
+  },
+  hifzToggleText: {
+    color: '#fff',
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 13,
   },
   navPlaceholder: {
     width: 28,

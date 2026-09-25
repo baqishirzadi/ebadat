@@ -3,7 +3,7 @@
  * Shared by the runtime search engine and build/verify scripts.
  */
 
-export type SearchLanguage = 'arabic' | 'dari' | 'pashto';
+export type SearchLanguage = 'arabic' | 'dari' | 'pashto' | 'english';
 
 const FORMAT_CONTROLS = /[\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]/g;
 const ARABIC_DIACRITICS = /[\u064B-\u065F\u06D6-\u06ED]/g;
@@ -117,6 +117,19 @@ export function cleanPashtoDisplay(text: string): string {
   return stripPashtoPrefix(text).replace(WHITESPACE, ' ').trim();
 }
 
+/**
+ * Normalize English translation text (lowercase, strip punctuation, collapse spaces).
+ * Does not alter Arabic/Dari/Pashto folding rules.
+ */
+export function normalizeEnglishForSearch(text: string): string {
+  if (!text) return '';
+  let value = text.normalize('NFC');
+  value = value.replace(FORMAT_CONTROLS, ' ');
+  value = value.replace(PUNCTUATION, ' ');
+  value = value.replace(WHITESPACE, ' ');
+  return value.trim().toLowerCase();
+}
+
 export function normalizeForLanguage(text: string, language: SearchLanguage): string {
   switch (language) {
     case 'arabic':
@@ -125,6 +138,8 @@ export function normalizeForLanguage(text: string, language: SearchLanguage): st
       return normalizeDariForSearch(text);
     case 'pashto':
       return normalizePashtoForSearch(text);
+    case 'english':
+      return normalizeEnglishForSearch(text);
     default:
       return normalizeArabicForSearch(text);
   }

@@ -23,10 +23,10 @@ function policyFor(country) {
   const map = {
     AF: { source: 'aladhan', method: 1, school: 1, maghrib: 3, fixedDhuhr: '12:30', label: 'Karachi+AF' },
     TR: { source: 'diyanet', method: 13, school: 1, maghrib: 3, fixedDhuhr: null, label: 'Diyanet' },
-    IR: { source: 'aladhan', method: 7, school: 0, maghrib: 3, fixedDhuhr: null, label: 'Tehran' },
-    SA: { source: 'aladhan', method: 4, school: 0, maghrib: 3, fixedDhuhr: null, label: 'UmmAlQura' },
-    EG: { source: 'aladhan', method: 5, school: 0, maghrib: 3, fixedDhuhr: null, label: 'Egyptian' },
-    XX: { source: 'aladhan', method: 3, school: 0, maghrib: 3, fixedDhuhr: null, label: 'MWL' },
+    IR: { source: 'aladhan', method: 3, school: 1, maghrib: 3, fixedDhuhr: null, label: 'MWL' },
+    SA: { source: 'aladhan', method: 3, school: 1, maghrib: 3, fixedDhuhr: null, label: 'MWL' },
+    EG: { source: 'aladhan', method: 3, school: 1, maghrib: 3, fixedDhuhr: null, label: 'MWL' },
+    XX: { source: 'aladhan', method: 3, school: 1, maghrib: 3, fixedDhuhr: null, label: 'MWL' },
   };
   return map[country] || map.XX;
 }
@@ -113,7 +113,9 @@ assert.strictEqual(resolveCountryCode('iran_province_tehran'), 'IR');
 assert.strictEqual(policyFor('AF').fixedDhuhr, '12:30');
 assert.strictEqual(policyFor('AF').maghrib, 3);
 assert.strictEqual(policyFor('TR').source, 'diyanet');
-assert.strictEqual(policyFor('IR').method, 7);
+assert.strictEqual(policyFor('IR').method, 3);
+assert.strictEqual(policyFor('IR').school, 1);
+assert.strictEqual(policyFor('IR').label, 'MWL');
 assert.strictEqual(policyFor('TR').maghrib, 3);
 assert.strictEqual(policyFor('IR').maghrib, 3);
 

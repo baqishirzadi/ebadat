@@ -1,4 +1,3 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import React, { memo } from 'react';
 import { Pressable, StyleSheet, Switch, View } from 'react-native';
 
@@ -9,11 +8,9 @@ import { useApp } from '@/context/AppContext';
 import type { TranslationLanguage } from '@/types/quran';
 import { useI18n } from '@/utils/i18n/useI18n';
 
-const LANG_OPTIONS: { key: Exclude<TranslationLanguage, 'none' | 'both'>; icon: keyof typeof MaterialIcons.glyphMap }[] = [
-  { key: 'dari', icon: 'translate' },
-  { key: 'pashto', icon: 'language' },
-  { key: 'english', icon: 'public' },
-];
+type LangKey = Exclude<TranslationLanguage, 'none' | 'both'>;
+
+const LANG_OPTIONS: LangKey[] = ['dari', 'pashto', 'english'];
 
 export const TranslationToggle = memo(function TranslationToggle() {
   const { theme, state, setTranslationLanguage } = useApp();
@@ -21,10 +18,10 @@ export const TranslationToggle = memo(function TranslationToggle() {
   const stored = state.preferences.showTranslation;
   const current = stored === 'both' ? state.preferences.appLanguage : stored;
   const showTranslation = current !== 'none';
-  const activeLang: Exclude<TranslationLanguage, 'none' | 'both'> =
+  const activeLang: LangKey =
     current === 'pashto' || current === 'english' || current === 'dari' ? current : 'dari';
 
-  const handleLangSelect = (key: Exclude<TranslationLanguage, 'none' | 'both'>) => {
+  const handleLangSelect = (key: LangKey) => {
     setTranslationLanguage(key);
   };
 
@@ -36,6 +33,13 @@ export const TranslationToggle = memo(function TranslationToggle() {
     }
   };
 
+  const labelFor = (key: LangKey) =>
+    key === 'dari'
+      ? t('quran.translation.dari')
+      : key === 'pashto'
+        ? t('quran.translation.pashto')
+        : t('quran.translation.english');
+
   return (
     <RtlView
       style={[
@@ -43,38 +47,28 @@ export const TranslationToggle = memo(function TranslationToggle() {
         { backgroundColor: theme.card, borderColor: theme.cardBorder },
       ]}
     >
-      <CenteredText style={[styles.label, { color: theme.textSecondary }]}>
-        {t('quran.translation.label')}
-      </CenteredText>
-
       <View style={[styles.segmented, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
-        {LANG_OPTIONS.map((option) => {
-          const active = showTranslation && activeLang === option.key;
+        {LANG_OPTIONS.map((key) => {
+          const active = showTranslation && activeLang === key;
           return (
             <Pressable
-              key={option.key}
-              onPress={() => handleLangSelect(option.key)}
+              key={key}
+              onPress={() => handleLangSelect(key)}
               style={[
                 styles.segment,
                 active && { backgroundColor: theme.tint },
               ]}
             >
-              <MaterialIcons
-                name={option.icon}
-                size={16}
-                color={active ? '#fff' : theme.textSecondary}
-              />
               <CenteredText
                 style={[
                   styles.segmentText,
                   { color: active ? '#fff' : theme.text },
                 ]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.8}
               >
-                {option.key === 'dari'
-                  ? t('quran.translation.dari')
-                  : option.key === 'pashto'
-                    ? t('quran.translation.pashto')
-                    : t('quran.translation.english')}
+                {labelFor(key)}
               </CenteredText>
             </Pressable>
           );
@@ -100,15 +94,12 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: Spacing.md,
     marginTop: Spacing.sm,
-    padding: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     overflow: 'hidden',
     gap: Spacing.sm,
-  },
-  label: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: Typography.ui.caption,
   },
   segmented: {
     flexDirection: 'row',
@@ -119,11 +110,11 @@ const styles = StyleSheet.create({
   },
   segment: {
     flex: 1,
-    flexDirection: 'row',
+    minWidth: 0,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 4,
     paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
     borderRadius: BorderRadius.sm,
   },
   segmentText: {
@@ -135,7 +126,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.md,
-    paddingTop: Spacing.xs,
   },
   toggleLabel: {
     fontFamily: 'Vazirmatn',

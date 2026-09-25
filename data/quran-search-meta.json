@@ -1,14 +1,16 @@
 {
-  "version": 1,
+  "version": 2,
   "totalAyahs": 6236,
   "totalSurahs": 114,
-  "generatedAt": "2026-07-19T17:19:29.148Z",
+  "generatedAt": "2026-09-25T11:27:24.523Z",
   "dbPath": "assets/quran-search.db",
-  "sha256": "04cc0b33f1653f6503e5e788ef89a13a19ca194615b60be4e00744b7cd3c22ca",
+  "sha256": "b5b9dbc051b432f5d13d36099631addce6649b042fe042647a2203a570157810",
   "sample": {
     "fatiha1ArabicNorm": "بسم الله الرحمان الرحیم",
     "fatiha2ArabicNorm": "الحمد لله رب العالمین",
     "fatiha4ArabicNorm": "مالک یوم الدین",
-    "fatiha6ArabicNorm": "اهدنا الصراط المستقیم"
+    "fatiha6ArabicNorm": "اهدنا الصراط المستقیم",
+    "fatiha1EnglishNorm": "in the name of allah the most compassionate the most merciful",
+    "fatiha6EnglishNorm": "guide us to the straight path"
   }
 }

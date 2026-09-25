@@ -76,8 +76,9 @@ enum WidgetPrayerCalculator {
     let latitude = snapshot.latitude
     let altitude = max(0, snapshot.altitude)
     let method = snapshot.calculationMethod.lowercased()
-    let fajrAngle: Double = method == "mwl" ? 18.0 : 18.0
-    let ishaAngle: Double = method == "makkah" ? 0.0 : 18.0
+    let fajrAngle = 18.0
+    // Muslim World League is Fajr 18 / Isha 17. Karachi (Afghanistan) stays 18 / 18.
+    let ishaAngle: Double = (method == "muslimworldleague" || method == "mwl") ? 17.0 : (method == "makkah" ? 0.0 : 18.0)
     let sunriseAngle = 0.833 + 0.0347 * sqrt(altitude)
     let fajrHour = computeTime(angle: fajrAngle, time: noonHour, clockwise: false, latitude: latitude, declination: sun.declination)
     let sunriseHour = computeTime(angle: sunriseAngle, time: noonHour, clockwise: false, latitude: latitude, declination: sun.declination)

@@ -4,6 +4,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography, type ThemeColors } from '@/constants/theme';
+import { useI18n } from '@/utils/i18n/useI18n';
+import { formatNumber } from '@/utils/numbers';
 import audioManager, { RECITERS, type ReciterKey } from '@/utils/quranAudio';
 import {
   downloadQuranScope,
@@ -35,8 +37,8 @@ export function QuranDownloadCard({
   onClose,
   onCompleted,
 }: Props) {
+  const { t, language } = useI18n();
   const [reciter, setReciter] = useState<ReciterKey>(() => audioManager.getReciter());
-  const [hasSavedReciter, setHasSavedReciter] = useState(false);
   const [showReciters, setShowReciters] = useState(true);
   const [progress, setProgress] = useState<QuranDownloadProgress | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +60,6 @@ export function QuranDownloadCard({
     ]).then(([preferred, saved, entries]) => {
       if (!mounted) return;
       setReciter(preferred);
-      setHasSavedReciter(Boolean(saved));
       setShowReciters(!saved);
       setCompletedKeys(
         entries
@@ -82,7 +83,6 @@ export function QuranDownloadCard({
     setProgress(null);
     try {
       await setPreferredDownloadReciter(nextReciter);
-      setHasSavedReciter(true);
       setShowReciters(false);
       setReciter(nextReciter);
       const result = await downloadQuranScope(scope, nextReciter, setProgress, nextController.signal);
@@ -94,7 +94,7 @@ export function QuranDownloadCard({
       onCompleted?.(nextReciter);
     } catch (downloadError) {
       if (!(downloadError instanceof Error && downloadError.message === 'download_cancelled')) {
-        setError('دانلود کامل نشد. اینترنت و فضای ذخیره‌سازی را بررسی کنید.');
+        setError(t('quran.download.failed'));
       }
     } finally {
       setController(null);
@@ -103,12 +103,13 @@ export function QuranDownloadCard({
 
   const selectedName = RECITERS[reciter].name;
   const progressLabel = isComplete
-    ? 'دانلود شد'
+    ? t('quran.downloaded')
     : progress
-      ? `${progress.completed} / ${progress.total}`
-      : hasSavedReciter
-        ? 'آماده دانلود'
-        : 'قاری را انتخاب کنید';
+      ? t('quran.download.progress', {
+          done: formatNumber(progress.completed, language),
+          total: formatNumber(progress.total, language),
+        })
+      : t('quran.download.ready');
 
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -129,67 +130,79 @@ export function QuranDownloadCard({
 
           {showReciters ? (
             <ScrollView style={styles.reciterList} contentContainerStyle={styles.reciterListContent}>
-              {Object.values(RECITERS).map((item) => (
-                <Pressable
-                  key={item.key}
-                  testID={`quran-download-reciter-${item.key}`}
-                  onPress={() => void startDownload(item.key)}
-                  disabled={isDownloading}
-                  style={[
-                    styles.reciterOption,
-                    { borderColor: theme.divider, backgroundColor: item.key === reciter ? theme.backgroundSecondary : theme.card },
-                  ]}
-                >
-                  <CenteredText style={[styles.reciterOptionName, { color: item.key === reciter ? theme.tint : theme.text }]}>
-                    {item.name}
-                  </CenteredText>
-                  <CenteredText style={[styles.reciterQuality, { color: theme.textSecondary }]}>
-                    {item.quality}
-                  </CenteredText>
-                </Pressable>
-              ))}
+              {Object.values(RECITERS).map((item) => {
+                const selected = item.key === reciter;
+                return (
+                  <Pressable
+                    key={item.key}
+                    testID={`quran-download-reciter-${item.key}`}
+                    onPress={() => {
+                      setReciter(item.key);
+                      setProgress(null);
+                      setError(null);
+                    }}
+                    disabled={isDownloading}
+                    style={[
+                      styles.reciterOption,
+                      {
+                        borderColor: selected ? theme.tint : theme.divider,
+                        backgroundColor: selected ? theme.backgroundSecondary : theme.card,
+                      },
+                    ]}
+                  >
+                    {selected ? <MaterialIcons name="check" size={20} color={theme.tint} /> : <View style={styles.checkSpacer} />}
+                    <View style={styles.reciterCopy}>
+                      <CenteredText style={[styles.reciterOptionName, { color: selected ? theme.tint : theme.text }]}>
+                        {item.name}
+                      </CenteredText>
+                      <CenteredText style={[styles.reciterQuality, { color: theme.textSecondary }]}>
+                        {item.quality}
+                      </CenteredText>
+                    </View>
+                    <View style={styles.checkSpacer} />
+                  </Pressable>
+                );
+              })}
             </ScrollView>
-          ) : (
-            <>
-              <Pressable
-                testID={`quran-download-${scope.type}`}
-                disabled={!canDownload}
-                onPress={() => void startDownload()}
-                style={[
-                  styles.primaryButton,
-                  {
-                    backgroundColor: isComplete ? `${theme.tint}24` : theme.tint,
-                    opacity: isDownloading ? 0.82 : 1,
-                  },
-                ]}
-              >
-                {isDownloading ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  <MaterialIcons name={isComplete ? 'check-circle' : 'download'} size={19} color={isComplete ? theme.tint : '#fff'} />
-                )}
-                <CenteredText style={[styles.primaryButtonText, { color: isComplete ? theme.tint : '#fff' }]}>
-                  {isComplete ? 'دانلود شد' : primaryLabel}
-                </CenteredText>
-              </Pressable>
+          ) : null}
 
-              <View style={styles.statusRow}>
-                <CenteredText style={[styles.statusText, { color: theme.textSecondary }]}>
-                  {progressLabel}
-                </CenteredText>
-                {isDownloading ? (
-                  <Pressable testID="quran-download-cancel" onPress={() => controller?.abort()} hitSlop={8}>
-                    <CenteredText style={[styles.linkText, { color: theme.tint }]}>لغو</CenteredText>
-                  </Pressable>
-                ) : (
-                  <Pressable testID="quran-download-change-reciter" onPress={() => setShowReciters(true)} hitSlop={8}>
-                    <CenteredText style={[styles.linkText, { color: theme.tint }]}>تغییر قاری</CenteredText>
-                  </Pressable>
-                )}
-              </View>
-              {error ? <CenteredText style={[styles.error, { color: '#DC2626' }]}>{error}</CenteredText> : null}
-            </>
-          )}
+          <Pressable
+            testID={`quran-download-${scope.type}`}
+            disabled={!canDownload}
+            onPress={() => void startDownload()}
+            style={[
+              styles.primaryButton,
+              {
+                backgroundColor: isComplete ? `${theme.tint}24` : theme.tint,
+                opacity: isDownloading ? 0.82 : 1,
+              },
+            ]}
+          >
+            {isDownloading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <MaterialIcons name={isComplete ? 'check-circle' : 'download'} size={19} color={isComplete ? theme.tint : '#fff'} />
+            )}
+            <CenteredText style={[styles.primaryButtonText, { color: isComplete ? theme.tint : '#fff' }]}>
+              {isComplete ? t('quran.downloaded') : primaryLabel}
+            </CenteredText>
+          </Pressable>
+
+          <View style={styles.statusRow}>
+            <CenteredText style={[styles.statusText, { color: theme.textSecondary }]}>
+              {progressLabel}
+            </CenteredText>
+            {isDownloading ? (
+              <Pressable testID="quran-download-cancel" onPress={() => controller?.abort()} hitSlop={8}>
+                <CenteredText style={[styles.linkText, { color: theme.tint }]}>{t('quran.download.cancel')}</CenteredText>
+              </Pressable>
+            ) : showReciters ? null : (
+              <Pressable testID="quran-download-change-reciter" onPress={() => setShowReciters(true)} hitSlop={8}>
+                <CenteredText style={[styles.linkText, { color: theme.tint }]}>{t('quran.download.changeReciter')}</CenteredText>
+              </Pressable>
+            )}
+          </View>
+          {error ? <CenteredText style={[styles.error, { color: '#DC2626' }]}>{error}</CenteredText> : null}
         </Pressable>
       </Pressable>
     </Modal>
@@ -247,10 +260,20 @@ const styles = StyleSheet.create({
     minHeight: 54,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: BorderRadius.md,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
+    gap: Spacing.sm,
+  },
+  reciterCopy: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  checkSpacer: {
+    width: 20,
+    height: 20,
   },
   reciterOptionName: {
     fontFamily: 'Vazirmatn',

@@ -1,5 +1,6 @@
+import { useFocusEffect } from '@react-navigation/native';
 import { router } from 'expo-router';
-import React, { memo } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { PrayerChip } from '@/components/home/PrayerChip';
@@ -11,18 +12,26 @@ import { usePrayer } from '@/context/PrayerContext';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
 import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
-import { PRAYER_LABELS_DARI, prayerLabel } from '@/utils/prayerTimes';
+import { prayerLabel } from '@/utils/prayerTimes';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
 function TodayPrayerTimesCardInner() {
   const { theme } = useApp();
-  const { isPashto, language, t } = useI18n();
+  const { language, t } = useI18n();
   const { state } = usePrayer();
   const prayerTimes = state.prayerTimes;
-  const now = new Date();
+  const [now, setNow] = useState(() => new Date());
   const current = prayerTimes ? getCurrentPrayerKey(prayerTimes, now) : null;
+
+  useFocusEffect(
+    useCallback(() => {
+      setNow(new Date());
+      const timer = setInterval(() => setNow(new Date()), 1000);
+      return () => clearInterval(timer);
+    }, []),
+  );
 
   if (!prayerTimes) return null;
 

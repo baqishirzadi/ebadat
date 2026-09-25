@@ -15,3 +15,4 @@ export { SurahList } from './SurahList';
 export { JuzList } from './JuzList';
 export { SearchButton } from './SearchButton';
 export { SurahDecoratedCard } from './SurahDecoratedCard';
+export { Hifz16View } from './Hifz16View';

@@ -86,6 +86,10 @@ object AdhanScheduleManager {
     )
 
     WidgetReloadHelper.reloadPrayerWidget(appContext)
+    val snapshot = WidgetDataStore.read(appContext)
+    if (snapshot != null) {
+      WidgetRefreshScheduler.scheduleFromSnapshotJson(appContext, snapshot)
+    }
 
     return AdhanScheduleResult(
       reason = reason,

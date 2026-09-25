@@ -53,6 +53,8 @@ docs/perf/smoke-*.png
 supabase/.temp/*
 !supabase/.temp/.gitkeep
 
+data/.cache/
+
 # TypeScript cache
 *.tsbuildinfo
 

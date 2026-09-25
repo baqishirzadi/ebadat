@@ -20,9 +20,14 @@ assert(mufti.includes('ToastAndroid') && mufti.includes('AccessibilityInfo'), 'M
 assert(!mufti.includes('mufti-copy-response'), 'Mufti still renders a persistent copy control');
 
 const widgetProvider = read('android/app/src/main/java/com/afghandev/ebadat/widget/PrayerTimesWidget.java');
-for (const marker of ['ACTION_DATE_CHANGED', 'ACTION_TIME_CHANGED', 'ACTION_TIMEZONE_CHANGED', 'onUpdate(context, manager, ids)']) {
+for (const marker of ['ACTION_DATE_CHANGED', 'ACTION_TIME_CHANGED', 'ACTION_TIMEZONE_CHANGED', 'onUpdate(context, manager, ids)', 'WidgetRefreshScheduler']) {
   assert(widgetProvider.includes(marker), `Android widget is missing ${marker} refresh handling`);
 }
+const widgetRefresh = read('android/app/src/main/java/com/afghandev/ebadat/WidgetRefreshScheduler.kt');
+assert(widgetRefresh.includes('WIDGET_PRAYER_ROLLOVER'), 'Widget prayer-boundary alarm action is missing');
+assert(widgetRefresh.includes('nextBoundaryMs'), 'Widget refresh scheduler does not derive the next prayer boundary');
+const widgetStore = read('android/app/src/main/java/com/afghandev/ebadat/WidgetDataStore.kt');
+assert(widgetStore.includes('.commit()'), 'Widget snapshot save must commit synchronously so reloads see currentPrayer');
 const widgetTask = read('widgets/widgetTaskHandler.tsx');
 assert(widgetTask.includes('refreshWidgetSnapshot(stored)'), 'Widget task does not refresh the stored snapshot');
 const widgetSnapshot = read('utils/widgetSnapshot.ts');
@@ -31,6 +36,7 @@ assert(!widgetSnapshot.includes('getWidgetHadithForDateKey'), 'Prayer widget sna
 const androidWidgetUi = read('widgets/PrayerTimesWidget.tsx');
 assert(!androidWidgetUi.includes('snapshot.hadithText') && !androidWidgetUi.includes('حدیث روز'), 'Android widget still renders daily Hadith');
 assert(widgetSnapshot.includes('currentPrayer: getCurrentPrayerFromEntries'), 'Widget prayer rollover refresh is missing');
+assert(androidWidgetUi.includes('activePrayerKey'), 'Android widget must keep a current-prayer highlight fallback');
 
 const cities = read('utils/cities.ts');
 const featuredMatch = cities.match(/AFGHANISTAN_FEATURED_CITY_KEYS\s*=\s*\[([\s\S]*?)\]\s*as const/);

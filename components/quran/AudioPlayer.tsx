@@ -31,6 +31,8 @@ interface AudioPlayerProps {
   scopeEndAyah?: number;
   juzNumber?: number | null;
   isVisible?: boolean;
+  /** Compact docked bar under the mushaf (hifz) — does not reserve page height. */
+  compact?: boolean;
   isPlaying: boolean;
   onPlayContinuous: () => void;
   onPause: () => void;
@@ -44,6 +46,7 @@ export function AudioPlayer({
   ayahNumber,
   totalAyahs,
   isVisible = true,
+  compact = false,
   scopeType = 'surah',
   scopeStartAyah = 1,
   scopeEndAyah,
@@ -133,46 +136,45 @@ export function AudioPlayer({
     <View
       style={[
         styles.container,
+        compact && styles.containerCompact,
         {
           backgroundColor: theme.card,
           borderTopColor: theme.divider,
-          paddingBottom: Math.max(insets.bottom, 8),
+          paddingBottom: Math.max(insets.bottom, compact ? 4 : 8),
         },
       ]}
+      pointerEvents="box-none"
     >
-      <View style={styles.content}>
-        <Pressable
-          onPress={() => setShowReciterModal(true)}
-          style={[styles.reciterButton, { backgroundColor: theme.backgroundSecondary }]}
-        >
-          <MaterialIcons name="person" size={15} color={theme.tint} />
-          <View style={styles.reciterTextWrap}>
+      <View style={[styles.content, compact && styles.contentCompact]} pointerEvents="auto">
+        {compact ? (
+          <View style={styles.compactRow}>
+            <Pressable
+              onPress={() => setShowReciterModal(true)}
+              style={[styles.reciterButtonCompact, { backgroundColor: theme.backgroundSecondary }]}
+            >
+              <MaterialIcons name="person" size={14} color={theme.tint} />
+              <CenteredText
+                style={[styles.reciterNameCompact, { color: theme.text }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {RECITERS[currentReciter].name}
+              </CenteredText>
+            </Pressable>
+
             <CenteredText
-              style={[styles.reciterName, { color: theme.text }]}
+              style={[styles.ayahInfoCompact, { color: theme.textSecondary }]}
               numberOfLines={1}
               ellipsizeMode="tail"
             >
-              {RECITERS[currentReciter].name}
+              {toArabicNumerals(surahNumber)}:{toArabicNumerals(ayahNumber)}
             </CenteredText>
-          </View>
-          <MaterialIcons name="arrow-drop-down" size={16} color={theme.icon} />
-        </Pressable>
 
-        <View style={styles.bottomRow}>
-          <CenteredText
-            style={[styles.ayahInfo, { color: theme.textSecondary }]}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-          >
-            سوره {toArabicNumerals(surahNumber)} · آیه {toArabicNumerals(ayahNumber)}
-          </CenteredText>
-
-          <View style={styles.controlsSection}>
             <Pressable
               testID="quran-playback-speed"
               onPress={() => setShowSpeedModal(true)}
               style={({ pressed }) => [
-                styles.speedButton,
+                styles.speedButtonCompact,
                 { borderColor: theme.divider, backgroundColor: theme.backgroundSecondary },
                 pressed && styles.controlButtonPressed,
               ]}
@@ -186,7 +188,7 @@ export function AudioPlayer({
               onPress={handlePlayPause}
               disabled={playback.status === 'preparing'}
               style={({ pressed }) => [
-                styles.playButton,
+                styles.playButtonCompact,
                 { backgroundColor: theme.playing, opacity: playback.status === 'preparing' ? 0.75 : 1 },
                 pressed && styles.playButtonPressed,
               ]}
@@ -194,34 +196,112 @@ export function AudioPlayer({
               {isPreparing ? (
                 <ActivityIndicator size="small" color="#fff" />
               ) : (
-                <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={26} color="#fff" />
+                <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={22} color="#fff" />
               )}
             </Pressable>
 
             <Pressable
               onPress={onStop}
-              style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
+              style={({ pressed }) => [styles.controlButtonCompact, pressed && styles.controlButtonPressed]}
             >
-              <MaterialIcons name="stop" size={24} color={theme.icon} />
+              <MaterialIcons name="stop" size={22} color={theme.icon} />
             </Pressable>
 
             <Pressable
               onPress={handleClose}
-              style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
+              style={({ pressed }) => [styles.controlButtonCompact, pressed && styles.controlButtonPressed]}
             >
-              <MaterialIcons name="close" size={24} color={theme.icon} />
+              <MaterialIcons name="close" size={22} color={theme.icon} />
             </Pressable>
           </View>
-        </View>
-        <CenteredText
-          style={[
-            styles.statusText,
-            { color: playback.status === 'error' ? '#DC2626' : theme.textSecondary },
-          ]}
-          numberOfLines={1}
-        >
-          {statusText}
-        </CenteredText>
+        ) : (
+          <>
+            <Pressable
+              onPress={() => setShowReciterModal(true)}
+              style={[styles.reciterButton, { backgroundColor: theme.backgroundSecondary }]}
+            >
+              <MaterialIcons name="person" size={15} color={theme.tint} />
+              <View style={styles.reciterTextWrap}>
+                <CenteredText
+                  style={[styles.reciterName, { color: theme.text }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {RECITERS[currentReciter].name}
+                </CenteredText>
+              </View>
+              <MaterialIcons name="arrow-drop-down" size={16} color={theme.icon} />
+            </Pressable>
+
+            <View style={styles.bottomRow}>
+              <CenteredText
+                style={[styles.ayahInfo, { color: theme.textSecondary }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                سوره {toArabicNumerals(surahNumber)} · آیه {toArabicNumerals(ayahNumber)}
+              </CenteredText>
+
+              <View style={styles.controlsSection}>
+                <Pressable
+                  testID="quran-playback-speed"
+                  onPress={() => setShowSpeedModal(true)}
+                  style={({ pressed }) => [
+                    styles.speedButton,
+                    { borderColor: theme.divider, backgroundColor: theme.backgroundSecondary },
+                    pressed && styles.controlButtonPressed,
+                  ]}
+                >
+                  <CenteredText style={[styles.speedButtonText, { color: theme.text }]}>
+                    {playbackRate === 1 ? '1x' : `${playbackRate}x`}
+                  </CenteredText>
+                </Pressable>
+
+                <Pressable
+                  onPress={handlePlayPause}
+                  disabled={playback.status === 'preparing'}
+                  style={({ pressed }) => [
+                    styles.playButton,
+                    {
+                      backgroundColor: theme.playing,
+                      opacity: playback.status === 'preparing' ? 0.75 : 1,
+                    },
+                    pressed && styles.playButtonPressed,
+                  ]}
+                >
+                  {isPreparing ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={26} color="#fff" />
+                  )}
+                </Pressable>
+
+                <Pressable
+                  onPress={onStop}
+                  style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
+                >
+                  <MaterialIcons name="stop" size={24} color={theme.icon} />
+                </Pressable>
+
+                <Pressable
+                  onPress={handleClose}
+                  style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
+                >
+                  <MaterialIcons name="close" size={24} color={theme.icon} />
+                </Pressable>
+              </View>
+            </View>
+            <CenteredText
+              style={[
+                styles.statusText,
+                { color: playback.status === 'error' ? '#DC2626' : theme.textSecondary },
+              ]}
+              numberOfLines={1}
+            >
+              {statusText}
+            </CenteredText>
+          </>
+        )}
       </View>
 
       <Modal
@@ -303,6 +383,10 @@ const styles = StyleSheet.create({
     right: 0,
     borderTopWidth: 1,
   },
+  containerCompact: {
+    elevation: 24,
+    zIndex: 200,
+  },
   content: {
     flexDirection: 'column',
     paddingHorizontal: Spacing.md,
@@ -310,6 +394,61 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xs,
     minHeight: 122,
     gap: 5,
+  },
+  contentCompact: {
+    minHeight: 52,
+    paddingTop: 6,
+    paddingBottom: 4,
+    gap: 0,
+  },
+  compactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  reciterButtonCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexShrink: 1,
+    maxWidth: 110,
+    minHeight: 32,
+    paddingHorizontal: 8,
+    borderRadius: BorderRadius.sm,
+    gap: 4,
+  },
+  reciterNameCompact: {
+    flexShrink: 1,
+    fontSize: 11,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '600',
+  },
+  ayahInfoCompact: {
+    flexShrink: 0,
+    fontSize: 12,
+    fontFamily: 'Vazirmatn',
+    fontWeight: '700',
+    minWidth: 44,
+    textAlign: 'center',
+  },
+  speedButtonCompact: {
+    minWidth: 36,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: StyleSheet.hairlineWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  playButtonCompact: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  controlButtonCompact: {
+    padding: 6,
+    borderRadius: BorderRadius.full,
   },
   reciterButton: {
     flexDirection: 'row',

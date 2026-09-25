@@ -58,6 +58,15 @@ function normalizePashtoForSearch(text) {
   return normalizeDariForSearch(value);
 }
 
+function normalizeEnglishForSearch(text) {
+  if (!text) return '';
+  let value = text.normalize('NFC');
+  value = value.replace(FORMAT_CONTROLS, ' ');
+  value = value.replace(PUNCTUATION, ' ');
+  value = value.replace(WHITESPACE, ' ');
+  return value.trim().toLowerCase();
+}
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
@@ -84,11 +93,16 @@ function main() {
   const empty = db
     .prepare(
       `SELECT COUNT(*) AS c FROM ayahs
-       WHERE arabic_text = '' OR dari_text = '' OR pashto_text = ''
-          OR arabic_norm = '' OR dari_norm = '' OR pashto_norm = ''`,
+       WHERE arabic_text = '' OR dari_text = '' OR pashto_text = '' OR english_text = ''
+          OR arabic_norm = '' OR dari_norm = '' OR pashto_norm = '' OR english_norm = ''`,
     )
     .get().c;
   assert(empty === 0, `Found ${empty} empty indexed fields`);
+
+  const columns = db.prepare('PRAGMA table_info(ayahs)').all().map((row) => row.name);
+  assert(columns.includes('english_text'), 'ayahs table missing english_text');
+  assert(columns.includes('english_norm'), 'ayahs table missing english_norm');
+  assert(meta.version === 2, `Expected meta.version 2, got ${meta.version}`);
 
   const prefixedPashto = db
     .prepare(`SELECT COUNT(*) AS c FROM ayahs WHERE pashto_text GLOB '[0-9]*-[0-9]* *'`)
@@ -135,9 +149,21 @@ function main() {
     'Basmalah first result should be 1:1',
   );
 
+  const englishMerciful = searchField(db, 'english_norm', normalizeEnglishForSearch('Most Merciful'), 5);
+  assert(
+    englishMerciful.some((row) => row.surah_number === 1 && row.ayah_number === 1),
+    'English "Most Merciful" should match 1:1',
+  );
+
+  const englishStraight = searchField(db, 'english_norm', normalizeEnglishForSearch('straight path'), 5);
+  assert(
+    englishStraight.some((row) => row.surah_number === 1 && row.ayah_number === 6),
+    'English "straight path" should match 1:6',
+  );
+
   db.close();
   console.log('verify-quran-search: PASS');
-  console.log(`ayahs=${count} arabic_goldens=${arabicCases.length} dari_ok pashto_ok`);
+  console.log(`ayahs=${count} arabic_goldens=${arabicCases.length} dari_ok pashto_ok english_ok`);
 }
 
 try {
