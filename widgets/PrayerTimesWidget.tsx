@@ -52,6 +52,34 @@ function englishSolarShort(shamsi: string): string {
   return parts.length >= 2 ? `${parts[0]} ${parts[1]}` : shamsi.trim();
 }
 
+const GREG_MONTH_EN_TO_DARI: Record<string, string> = {
+  JAN: 'جنوری',
+  FEB: 'فبروری',
+  MAR: 'مارچ',
+  APR: 'اپریل',
+  MAY: 'می',
+  JUN: 'جون',
+  JUL: 'جولای',
+  AUG: 'اگست',
+  SEP: 'سپتمبر',
+  OCT: 'اکتوبر',
+  NOV: 'نومبر',
+  DEC: 'دسمبر',
+};
+
+/** Dari Gregorian: "۲۵ سپتمبر ۲۰۲۶" from snapshot "25 SEP 2026". */
+function dariGregorianShort(gregorianDisplay: string): string {
+  const parts = gregorianDisplay.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    const day = toArabicNumeralsString(parts[0]);
+    const monthKey = parts[1].toUpperCase();
+    const month = GREG_MONTH_EN_TO_DARI[monthKey] || parts[1];
+    const year = parts.length >= 3 ? toArabicNumeralsString(parts[2]) : '';
+    return `${day} ${month}${year ? ` ${year}` : ''}`.trim();
+  }
+  return toArabicNumeralsString(gregorianDisplay.trim());
+}
+
 interface PrayerTimesWidgetProps {
   snapshot: WidgetSnapshot | null;
   /** Android supplies the actual widget bounds (dp) for every update/resize. */
@@ -64,10 +92,10 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
   const isPashto = language === 'pashto';
   const isEnglish = language === 'english';
   const selectedFont = isPashto ? snapshot?.pashtoFont : snapshot?.dariFont;
-  // English uses Vazirmatn (Latin + Arabic already registered for the app).
+  // English uses Vazirmatn. Dari widget is always Nastaliq.
   const regularFontFamily = isEnglish
     ? 'Vazirmatn'
-    : selectedFont === 'nastaliq'
+    : language === 'dari' || selectedFont === 'nastaliq'
       ? 'NotoNastaliqUrdu'
       : selectedFont === 'amiri'
         ? 'Amiri'
@@ -80,20 +108,23 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         ? 'Amiri-Bold'
         : 'NotoNastaliqUrdu';
 
-  // Xiaomi/MIUI and some launchers honor a shorter minimum height than the
-  // Pixel launcher. Keep a deliberately compact composition for those bounds
-  // instead of allowing the lower prayer row to be clipped.
-  const compact = height < 145 || width < 300;
-  const rootPaddingVertical = isEnglish ? (compact ? 7 : 9) : compact ? 5 : 7;
-  const rootPaddingHorizontal = compact ? 6 : 8;
-  // Nastaliq needs tight negative margin; Latin chips need breathing room.
-  const prayerLabelSize = isEnglish ? 11 : compact ? 14 : 15;
-  const prayerTimeSize = isEnglish ? 18 : compact ? 20 : 22;
-  const prayerChipPaddingVertical = isEnglish ? 5 : 4;
-  const prayerTimeMarginTop = isEnglish ? 1 : -10;
-  const headerTitleSize = isEnglish ? 20 : compact ? 17 : 18;
-  const gregHijriSize = isEnglish ? 16 : 15;
-  const sunriseLineSize = isEnglish ? 16 : 14;
+  // One frame for Dari, Pashto, and English. Type matches the polished
+  // Pashto card, a step larger so the copy reads heavier on a 1-row cell.
+  const oneRow = height < 140;
+  const short = height < 125;
+  const rootPaddingVertical = oneRow ? 4 : 5;
+  const rootPaddingHorizontal = 6;
+  const isDari = !isEnglish && !isPashto;
+  const nastaliq = !isEnglish && regularFontFamily === 'NotoNastaliqUrdu';
+  const prayerLabelSize = short ? 15 : 16;
+  const prayerTimeSize = short ? 20 : 22;
+  const prayerChipPaddingVertical = 3;
+  const prayerTimeMarginTop = nastaliq ? -8 : 1;
+  const headerTitleSize = short ? 18 : 20;
+  const gregHijriSize = short ? 15 : 16;
+  const sunriseLineSize = short ? 14 : 15;
+  const dateRowMarginTop = oneRow ? 2 : 3;
+  const prayerRowMarginTop = oneRow ? 3 : 4;
 
   if (!snapshot) {
     return (
@@ -104,17 +135,17 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           backgroundColor: TINT,
           justifyContent: 'center',
           alignItems: 'center',
-          padding: compact ? 10 : 16,
+          padding: 10,
         }}
         clickAction="OPEN_APP"
       >
         <TextWidget
           text={isEnglish ? 'Ebadat' : 'عبادت'}
-          style={{ fontSize: compact ? 16 : 18, fontFamily: boldFontFamily, color: TEXT_PRIMARY }}
+          style={{ fontSize: short ? 15 : 18, fontFamily: boldFontFamily, color: TEXT_PRIMARY }}
         />
         <TextWidget
           text={isEnglish ? 'Open the app' : 'اپ پرانیزئ'}
-          style={{ fontSize: compact ? 11 : 12, fontFamily: regularFontFamily, color: TEXT_SECONDARY, marginTop: 4 }}
+          style={{ fontSize: short ? 11 : 12, fontFamily: regularFontFamily, color: TEXT_SECONDARY, marginTop: 4 }}
         />
       </FlexWidget>
     );
@@ -149,13 +180,14 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
   const prayersOrdered = isEnglish ? prayers : [...prayers].reverse();
   const sunriseParts = (sunriseLabel || '').trim().split(/\s+/).filter(Boolean);
   const sunriseTimeOnly = sunriseParts.length ? localizeDigits(sunriseParts.slice(-1)[0] || '') : '';
+  // Dari always uses the short طلوع caption so the middle cell stays one size.
   const sunriseCaption = isEnglish
     ? 'Sun'
-    : sunriseParts.length > 1
-      ? sunriseParts.slice(0, -1).join(' ')
-      : isPashto
-        ? 'لمر ختل'
-        : 'طلوع';
+    : isDari
+      ? 'طلوع'
+      : sunriseParts.length > 1
+        ? sunriseParts.slice(0, -1).join(' ')
+        : 'لمر ختل';
 
   const solarDisplay = shamsiLabel || snapshot.shamsiDisplay || '';
   const headerTitleText = isEnglish
@@ -165,17 +197,18 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
     ? toLatinNumeralsString(snapshot.gregorianDisplay || '')
     : toArabicNumeralsString(snapshot.gregorianDisplay || '');
   // English row: solar · sunrise · Gregorian (Qamari is the accent title).
-  // Dari/Pashto keep Gregorian · sunrise · Hijri with calendar labels.
+  // Pashto keeps Gregorian · sunrise · Hijri with calendar labels.
+  // Dari shortens those cells so they stay one type size.
   const leftDateCell = isEnglish
     ? englishSolarShort(solarDisplay)
-    : isPashto
-      ? `${gregorianDisplay} میلادي`.trim()
-      : `${gregorianDisplay} میلادی`.trim();
+    : isDari
+      ? dariGregorianShort(snapshot.gregorianDisplay || '')
+      : `${gregorianDisplay} میلادي`.trim();
   const rightDateCell = isEnglish
     ? gregorianDisplay.trim()
-    : isPashto
-      ? `قمري ${hijriLabel || ''}`.trim()
-      : `قمری ${hijriLabel || ''}`.trim();
+    : isDari
+      ? (hijriLabel || '').trim()
+      : `قمري ${hijriLabel || ''}`.trim();
   const sunriseCell = `${sunriseCaption}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim();
 
   // Title + one horizontal date row.
@@ -204,10 +237,10 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           width: 'match_parent',
           flexDirection: 'row',
           alignItems: 'center',
-          marginTop: 3,
+          marginTop: dateRowMarginTop,
         }}
       >
-        <FlexWidget style={{ flex: 1.15, alignItems: 'center' }}>
+        <FlexWidget style={{ flex: 1, alignItems: 'center' }}>
           <TextWidget
             text={leftDateCell}
             maxLines={1}
@@ -220,7 +253,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             }}
           />
         </FlexWidget>
-        <FlexWidget style={{ flex: 0.85, alignItems: 'center' }}>
+        <FlexWidget style={{ flex: 1, alignItems: 'center' }}>
           <TextWidget
             text={sunriseCell}
             maxLines={1}
@@ -233,7 +266,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             }}
           />
         </FlexWidget>
-        <FlexWidget style={{ flex: 1.4, alignItems: 'center' }}>
+        <FlexWidget style={{ flex: 1, alignItems: 'center' }}>
           <TextWidget
             text={rightDateCell}
             maxLines={1}
@@ -267,11 +300,14 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
     >
       <FlexWidget
         style={{
-          height: 'wrap_content',
+          // Fill the 1-row launcher cell. Legacy 2-row placements stay
+          // wrap_content so a short card is not stretched into empty green.
+          height: oneRow ? 'match_parent' : 'wrap_content',
           width: 'match_parent',
           backgroundColor: TINT,
-          borderRadius: 20,
+          borderRadius: 16,
           flexDirection: 'column',
+          justifyContent: oneRow ? 'space-between' : 'flex-start',
           alignItems: 'center',
           paddingVertical: rootPaddingVertical,
           paddingHorizontal: rootPaddingHorizontal,
@@ -283,7 +319,8 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
             flexDirection: 'row',
             width: 'match_parent',
             justifyContent: 'flex-start',
-            marginTop: compact ? 5 : 7,
+            alignItems: 'center',
+            marginTop: prayerRowMarginTop,
           }}
         >
           {prayersOrdered.map((prayer) => {
@@ -298,7 +335,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                 key={prayer.key}
                 style={{
                   flex: 1,
-                  marginHorizontal: compact ? 1 : 2,
+                  marginHorizontal: 1,
                   backgroundColor: active ? ACTIVE_BG : INACTIVE_BG,
                   borderRadius: 8,
                   paddingVertical: prayerChipPaddingVertical,

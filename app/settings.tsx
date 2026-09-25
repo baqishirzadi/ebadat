@@ -246,16 +246,14 @@ export default function SettingsScreen() {
             </View>
           )}
           {layoutRestartPending && (
-            <View style={[styles.restartNotice, directionalRow, { backgroundColor: `${theme.tint}14`, borderColor: `${theme.tint}55` }]}>
-              <MaterialIcons name="restart-alt" size={20} color={theme.tint} />
-              <View style={styles.restartNoticeText}>
-                <LocalizedText style={[styles.restartNoticeTitle, { color: theme.text }]}>
-                  {translateUi('language.restart.title', uiLanguage)}
-                </LocalizedText>
-                <LocalizedText style={[styles.restartNoticeBody, { color: theme.textSecondary }]}>
-                  {translateUi('language.restart.body', uiLanguage)}
-                </LocalizedText>
-              </View>
+            <View style={[styles.restartNotice, { backgroundColor: `${theme.tint}14`, borderColor: `${theme.tint}55` }]}>
+              <MaterialIcons name="restart-alt" size={22} color={theme.tint} />
+              <LocalizedText style={[styles.restartNoticeTitle, { color: theme.text }]}>
+                {translateUi('language.restart.title', uiLanguage)}
+              </LocalizedText>
+              <LocalizedText style={[styles.restartNoticeBody, { color: theme.textSecondary }]}>
+                {translateUi('language.restart.body', uiLanguage)}
+              </LocalizedText>
             </View>
           )}
 
@@ -647,7 +645,7 @@ export default function SettingsScreen() {
               <View style={styles.adhanSettingsText}>
                 <LocalizedText style={[styles.adhanSettingsTitle, { color: theme.text }]}>{tUi('تنظیمات اذان', uiLanguage)}</LocalizedText>
                 <LocalizedText style={[styles.adhanSettingsSubtitle, { color: theme.textSecondary }]}>
-                  صدای اذان و یادآوری برای هر نماز
+                  {translateUi('settings.adhan.subtitle', uiLanguage)}
                 </LocalizedText>
               </View>
             </View>
@@ -669,7 +667,9 @@ export default function SettingsScreen() {
           </View>
 
           {/* App Version */}
-          <LocalizedText style={[styles.versionText, { color: theme.textSecondary }]}>{tUi('نسخه ۱.۰.۰', uiLanguage)}</LocalizedText>
+          <LocalizedText style={[styles.versionText, { color: theme.textSecondary }]}>
+            {uiLanguage === 'english' ? 'Version 2.0.0' : 'نسخه ۲.۰.۰'}
+          </LocalizedText>
 
           <View style={styles.spacer} />
         </ScrollView>
@@ -686,25 +686,26 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xl,
   },
   restartNotice: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
+    alignItems: 'center',
+    gap: Spacing.xs,
     marginHorizontal: Spacing.md,
     marginTop: Spacing.sm,
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
   },
-  restartNoticeText: {
-    flex: 1,
-    gap: 2,
-  },
   restartNoticeTitle: {
+    width: '100%',
     fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn-Bold',
+    textAlign: 'center',
   },
   restartNoticeBody: {
+    width: '100%',
     fontSize: Typography.ui.caption,
     lineHeight: 22,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
   },
   sectionHeader: {
     alignItems: 'center',
@@ -780,7 +781,7 @@ const styles = StyleSheet.create({
   fontNoticeText: {
     fontSize: Typography.ui.caption,
     lineHeight: 20,
-    textAlign: 'right',
+    textAlign: 'center',
     fontFamily: 'Vazirmatn',
   },
   noticeCard: {
@@ -819,13 +820,13 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.subtitle,
     fontWeight: 'bold',
     fontFamily: 'Vazirmatn-Bold',
-    textAlign: 'right',
+    textAlign: 'center',
   },
   adhanSettingsSubtitle: {
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
     marginTop: 2,
-    textAlign: 'right',
+    textAlign: 'center',
   },
   versionText: {
     fontSize: Typography.ui.caption,

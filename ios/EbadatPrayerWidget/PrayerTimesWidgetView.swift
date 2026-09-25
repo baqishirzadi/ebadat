@@ -7,7 +7,12 @@ struct PrayerTimesWidgetView: View {
 
   private var snapshot: WidgetSnapshot? { entry.snapshot }
   private var isPashto: Bool { snapshot?.appLanguage == "pashto" }
+  private var isEnglish: Bool { snapshot?.appLanguage == "english" }
+  private var isDari: Bool { !isEnglish && !isPashto }
+  private var dariNastaliq: Bool { isDari }
   private var uiFontRegular: String {
+    if isEnglish { return "Vazirmatn" }
+    if isDari { return "NotoNastaliqUrdu" }
     if isPashto {
       return snapshot?.pashtoFont == "nastaliq" ? "NotoNastaliqUrdu" : "Amiri"
     }
@@ -23,6 +28,61 @@ struct PrayerTimesWidgetView: View {
   private func solar(_ value: WidgetSnapshot) -> String { isPashto ? (value.shamsiDisplayPashto ?? value.shamsiDisplay) : value.shamsiDisplay }
   private func sunrise(_ value: WidgetSnapshot) -> String { isPashto ? (value.sunriseDisplayPashto ?? value.sunriseDisplay) : value.sunriseDisplay }
   private func label(_ value: WidgetPrayerEntry) -> String { isPashto ? (value.labelPashto ?? value.labelDari) : value.labelDari }
+
+  private static let gregMonthEnToDari: [String: String] = [
+    "JAN": "جنوری", "FEB": "فبروری", "MAR": "مارچ", "APR": "اپریل",
+    "MAY": "می", "JUN": "جون", "JUL": "جولای", "AUG": "اگست",
+    "SEP": "سپتمبر", "OCT": "اکتوبر", "NOV": "نومبر", "DEC": "دسمبر",
+  ]
+
+  private func easternDigits(_ value: String) -> String {
+    let map: [Character: Character] = [
+      "0": "٠", "1": "١", "2": "٢", "3": "٣", "4": "٤",
+      "5": "٥", "6": "٦", "7": "٧", "8": "٨", "9": "٩",
+    ]
+    return String(value.map { map[$0] ?? $0 })
+  }
+
+  private func dariGregorianShort(_ gregorianDisplay: String) -> String {
+    let parts = gregorianDisplay.trimmingCharacters(in: .whitespacesAndNewlines)
+      .split(whereSeparator: { $0.isWhitespace })
+      .map(String.init)
+    guard parts.count >= 2 else { return easternDigits(gregorianDisplay.trimmingCharacters(in: .whitespacesAndNewlines)) }
+    let day = easternDigits(parts[0])
+    let month = Self.gregMonthEnToDari[parts[1].uppercased()] ?? parts[1]
+    let year = parts.count >= 3 ? easternDigits(parts[2]) : ""
+    return year.isEmpty ? "\(day) \(month)" : "\(day) \(month) \(year)"
+  }
+
+  /// Dari/Pashto accent title + three date cells (Dari shortens copy).
+  private func rtlHeaderTitle(from value: WidgetSnapshot) -> String {
+    [weekday(value), solar(value)].filter { !$0.isEmpty }.joined(separator: "، ")
+  }
+
+  private func gregorianCell(from value: WidgetSnapshot) -> String {
+    if isDari { return dariGregorianShort(value.gregorianDisplay) }
+    return "\(value.gregorianDisplay) میلادي"
+  }
+
+  private func hijriCell(from value: WidgetSnapshot) -> String {
+    let h = hijri(value)
+    return isDari ? h : "قمري \(h)"
+  }
+
+  private func sunriseCell(from value: WidgetSnapshot) -> String {
+    let raw = sunrise(value).trimmingCharacters(in: .whitespacesAndNewlines)
+    let parts = raw.split(whereSeparator: { $0.isWhitespace }).map(String.init)
+    let time = parts.last ?? ""
+    let caption: String
+    if isDari {
+      caption = "طلوع"
+    } else if parts.count > 1 {
+      caption = parts.dropLast().joined(separator: " ")
+    } else {
+      caption = "لمر ختل"
+    }
+    return time.isEmpty ? caption : "\(caption) \(time)"
+  }
   private var widgetBackground: LinearGradient {
     LinearGradient(
       colors: [Color(red: 0.06, green: 0.12, blue: 0.08), Color(red: 0.10, green: 0.30, blue: 0.24)],
@@ -53,66 +113,58 @@ struct PrayerTimesWidgetView: View {
   @ViewBuilder
   private var homeMedium: some View {
     if let snapshot {
-      VStack(alignment: .center, spacing: 5) {
-        HStack(spacing: 6) {
-          Text(weekday(snapshot))
-            .font(.custom(uiFontBold, size: 12))
-            .foregroundColor(.white.opacity(0.9))
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .allowsTightening(true)
-          Spacer(minLength: 4)
-          Text(snapshot.gregorianDisplay)
-            .font(.custom(uiFontRegular, size: 10))
-            .foregroundColor(.white.opacity(0.75))
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .allowsTightening(true)
-        }
-        .frame(maxWidth: .infinity)
-
-        Text(solar(snapshot))
-          .font(.custom(uiFontBold, size: 18))
+      VStack(alignment: .center, spacing: 4) {
+        // Dari and Pashto share the polished Pashto card. English stays LTR.
+        Text(isEnglish ? solar(snapshot) : rtlHeaderTitle(from: snapshot))
+          .font(.custom(uiFontBold, size: 20))
           .foregroundColor(accent)
           .lineLimit(1)
           .minimumScaleFactor(0.7)
           .allowsTightening(true)
 
-        HStack(spacing: 6) {
-          Text(isPashto ? "قمري: \(hijri(snapshot))" : "قمری: \(hijri(snapshot))")
-            .font(.custom(uiFontRegular, size: 10))
+        HStack(spacing: 4) {
+          Text(isEnglish ? snapshot.gregorianDisplay : gregorianCell(from: snapshot))
+            .font(.custom(uiFontBold, size: 15))
             .foregroundColor(.white.opacity(0.85))
             .lineLimit(1)
-            .minimumScaleFactor(0.7)
+            .minimumScaleFactor(0.65)
             .allowsTightening(true)
-          if !sunrise(snapshot).isEmpty {
-            Spacer(minLength: 4)
-            Text(sunrise(snapshot))
-              .font(.custom(uiFontBold, size: 10))
-              .foregroundColor(accent)
-              .lineLimit(1)
-              .minimumScaleFactor(0.7)
-              .allowsTightening(true)
-          }
+            .frame(maxWidth: .infinity)
+
+          Text(isEnglish ? sunrise(snapshot) : sunriseCell(from: snapshot))
+            .font(.custom(uiFontBold, size: 15))
+            .foregroundColor(accent)
+            .lineLimit(1)
+            .minimumScaleFactor(0.65)
+            .allowsTightening(true)
+            .frame(maxWidth: .infinity)
+
+          Text(isEnglish ? hijri(snapshot) : hijriCell(from: snapshot))
+            .font(.custom(uiFontBold, size: 15))
+            .foregroundColor(.white)
+            .lineLimit(1)
+            .minimumScaleFactor(0.65)
+            .allowsTightening(true)
+            .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity)
 
-        HStack(spacing: 4) {
+        HStack(spacing: 2) {
           ForEach(snapshot.prayers, id: \.key) { prayer in
             PrayerChipView(
               label: label(prayer),
               time: prayer.time12h,
               active: snapshot.currentPrayer == prayer.key,
               boldFont: uiFontBold,
-              isPashto: isPashto
+              tightSpacing: isPashto || dariNastaliq
             )
           }
         }
       }
-      .padding(.horizontal, 8)
-      .padding(.vertical, 6)
-      .frame(maxHeight: .infinity, alignment: .center)
-      .environment(\.layoutDirection, .rightToLeft)
+      .padding(.horizontal, 6)
+      .padding(.vertical, 4)
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+      .environment(\.layoutDirection, isEnglish ? .leftToRight : .rightToLeft)
     } else {
       emptyState
     }
@@ -195,27 +247,29 @@ private struct PrayerChipView: View {
   let time: String
   let active: Bool
   let boldFont: String
-  let isPashto: Bool
+  /// Pashto / Dari Nastaliq pull the time up; Dari Vazirmatn keeps a clear gap.
+  var tightSpacing: Bool = true
 
   var body: some View {
-    VStack(spacing: 2) {
+    VStack(spacing: tightSpacing ? 0 : 1) {
       Text(label)
-        .font(.custom(boldFont, size: isPashto ? 9 : 10))
+        .font(.custom(boldFont, size: 13))
         .foregroundColor(active ? Color(red: 0.10, green: 0.30, blue: 0.24) : .white)
         .lineLimit(1)
         .minimumScaleFactor(0.62)
         .allowsTightening(true)
       Text(time)
-        .font(.custom(boldFont, size: 11))
+        .font(.custom(boldFont, size: 15))
         .foregroundColor(active ? Color(red: 0.10, green: 0.30, blue: 0.24).opacity(0.85) : .white.opacity(0.85))
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .allowsTightening(true)
+        .padding(.top, tightSpacing ? -2 : 0)
     }
     .frame(maxWidth: .infinity)
-    .padding(.vertical, isPashto ? 5 : 6)
+    .padding(.vertical, 3)
     .background(active ? Color.white : Color.white.opacity(0.12))
-    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
   }
 }
 

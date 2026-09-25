@@ -68,7 +68,6 @@ const styles = StyleSheet.create({
   time: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 13,
-    fontVariant: ['tabular-nums'],
   },
   timePashto: {
     fontSize: 14,

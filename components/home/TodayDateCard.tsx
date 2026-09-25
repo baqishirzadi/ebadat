@@ -101,7 +101,7 @@ function TodayDateCardInner() {
         <View style={[styles.secondaryItem, isPashto && styles.gregItemPashto]}>
           <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{t('calendar.label.gregorian')}</RtlText>
           <RtlText testID="home-today-gregorian-date" align="center" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.gregValue, pashtoFontMetrics?.gregorianValue, { color: theme.text }]}>
-            {formatGregorianDateCompact(truth.gregorianDate)}
+            {formatGregorianDateCompact(truth.gregorianDate, isEnglish ? String : n, language)}
           </RtlText>
         </View>
       </RtlView>

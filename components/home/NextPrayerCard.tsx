@@ -385,7 +385,6 @@ const styles = StyleSheet.create({
     ...persianCenterText,
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.subtitle,
-    fontVariant: ['tabular-nums'],
     flexShrink: 0,
   },
   compactCountdownWrap: {
