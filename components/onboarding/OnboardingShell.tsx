@@ -8,6 +8,7 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface OnboardingShellProps {
   testID?: string;
@@ -49,10 +50,28 @@ export function OnboardingShell({
   compactHeader = false,
 }: OnboardingShellProps) {
   const { theme } = useApp();
+  const { isPashto, fontFamily } = useI18n();
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
   const footerPaddingBottom = Math.max(insets.bottom, Spacing.lg);
+  const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
+  const titleStyle = isPashto
+    ? {
+        fontFamily: fontFamily === 'Amiri' ? 'Amiri-Bold' : (fontFamily ?? 'Vazirmatn-Bold'),
+        lineHeight: isNastaliq ? 42 : 36,
+        includeFontPadding: true as const,
+        paddingBottom: 2,
+      }
+    : null;
+  const subtitleStyle = isPashto
+    ? {
+        fontFamily: fontFamily ?? 'Vazirmatn',
+        lineHeight: isNastaliq ? 34 : 28,
+        includeFontPadding: true as const,
+        paddingBottom: 2,
+      }
+    : null;
 
   return (
     <RtlView
@@ -96,10 +115,16 @@ export function OnboardingShell({
         <RtlView style={styles.backPlaceholder} />
       </RtlView>
 
-      <RtlView style={[styles.header, compactHeader && styles.headerCompact]}>
-        <RtlText align="center" style={[styles.title, { color: theme.text }]}>{title}</RtlText>
+      <RtlView
+        style={[
+          styles.header,
+          compactHeader && styles.headerCompact,
+          isPashto && styles.headerPashto,
+        ]}
+      >
+        <RtlText align="center" style={[styles.title, { color: theme.text }, titleStyle]}>{title}</RtlText>
         {subtitle ? (
-          <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
+          <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }, subtitleStyle]}>
             {subtitle}
           </RtlText>
         ) : null}
@@ -187,6 +212,10 @@ const styles = StyleSheet.create({
   },
   headerCompact: {
     marginBottom: Spacing.md,
+  },
+  headerPashto: {
+    gap: Spacing.md,
+    marginBottom: Spacing.xl,
   },
   title: {
     fontFamily: 'Vazirmatn-Bold',

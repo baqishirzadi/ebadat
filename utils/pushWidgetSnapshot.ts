@@ -15,22 +15,32 @@ async function refreshAndroidWidget(snapshot: ReturnType<typeof buildWidgetSnaps
   if (Platform.OS !== 'android') return;
 
   try {
-    const { requestWidgetUpdate } = await import('react-native-android-widget');
+    const { getWidgetInfo, requestWidgetUpdateById } = await import('react-native-android-widget');
     const React = await import('react');
     const { PrayerTimesWidget } = await import('@/widgets/PrayerTimesWidget');
     const { refreshWidgetSnapshot } = await import('@/utils/widgetSnapshot');
 
     const freshSnapshot = refreshWidgetSnapshot(snapshot);
+    const infos = await getWidgetInfo('PrayerTimesWidget');
+    if (!infos.length) {
+      console.warn('[pushWidgetSnapshot] no PrayerTimesWidget on launcher');
+      return;
+    }
 
-    await requestWidgetUpdate({
-      widgetName: 'PrayerTimesWidget',
-      renderWidget: (widgetInfo) =>
-        React.createElement(PrayerTimesWidget, {
-          snapshot: freshSnapshot,
-          width: widgetInfo.width,
-          height: widgetInfo.height,
+    await Promise.all(
+      infos.map((info) =>
+        requestWidgetUpdateById({
+          widgetName: 'PrayerTimesWidget',
+          widgetId: info.widgetId,
+          renderWidget: (widgetInfo) =>
+            React.createElement(PrayerTimesWidget, {
+              snapshot: freshSnapshot,
+              width: widgetInfo.width,
+              height: widgetInfo.height,
+            }),
         }),
-    });
+      ),
+    );
   } catch (error) {
     console.warn('[pushWidgetSnapshot] Android widget refresh failed:', error);
   }

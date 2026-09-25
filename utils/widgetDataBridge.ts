@@ -25,9 +25,10 @@ export async function writeWidgetSnapshot(snapshot: WidgetSnapshot): Promise<voi
 
   try {
     await module.setSnapshot(JSON.stringify(snapshot));
-    if (Platform.OS === 'ios') {
-      await module.reloadWidget();
-    }
+    // Always ask the provider to redraw. iOS WidgetKit and Android launchers
+    // (especially MIUI) otherwise keep a stale RemoteViews frame even after
+    // the snapshot JSON has already been updated.
+    await module.reloadWidget();
   } catch (error) {
     console.warn('[WidgetDataBridge] Failed to write snapshot:', error);
   }

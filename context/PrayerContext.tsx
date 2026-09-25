@@ -1433,8 +1433,10 @@ async function configureAndroidNotificationChannels(
 
   useEffect(() => {
     if (!isInteractiveReady || !state.prayerTimes) return;
-    // Single-day snapshot first (cheap).
+    // Force so language/font flips are not dropped by the 15s throttle
+    // when the user switches Pashto ↔ Dari quickly.
     void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
+      force: true,
       cityKey: toCityKey(state.settings.selectedCity),
       location: state.location,
       timezone: state.location.timezone,

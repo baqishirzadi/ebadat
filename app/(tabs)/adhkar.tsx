@@ -108,7 +108,9 @@ export default function AdhkarScreen() {
                     {category.nameArabic}
                   </LocalizedText>
                   <LocalizedText style={[styles.categoryCount, { color: theme.textSecondary }]}>
-                    {n((adhkarData.adhkar as Record<string, unknown[]>)[category.id]?.length || 0)}
+                    {t('adhkar.count', {
+                      count: n((adhkarData.adhkar as Record<string, unknown[]>)[category.id]?.length || 0),
+                    })}
                   </LocalizedText>
                 </View>
                 <View style={styles.categoryActionSlot}>
@@ -120,31 +122,42 @@ export default function AdhkarScreen() {
         </View>
       </View>
 
-      {/* Dhikr Counter */}
+      {/* Dhikr Counter — outlined card, distinct from dua CTA */}
       <Pressable
         onPress={() => router.push('/counter')}
-        style={[styles.counterCard, { backgroundColor: theme.tint }]}
+        style={({ pressed }) => [
+          styles.counterCard,
+          {
+            backgroundColor: theme.card,
+            borderColor: theme.tint,
+          },
+          pressed && styles.cardPressed,
+        ]}
       >
         <RtlView style={styles.counterRow}>
-          <View style={styles.counterSideSlot}>
-            <MaterialIcons name="touch-app" size={32} color="#fff" />
+          <View style={[styles.counterSideSlot, styles.counterIconWrap, { backgroundColor: `${theme.tint}18` }]}>
+            <MaterialIcons name="touch-app" size={28} color={theme.tint} />
           </View>
           <View style={styles.counterInfo}>
-            <RtlText align="center" style={[styles.counterTitle, { fontFamily }]}>{t('adhkar.counter')}</RtlText>
-            <RtlText align="center" style={[styles.counterSubtitle, { fontFamily }]}>{t('adhkar.counter.subtitle')}</RtlText>
+            <RtlText align="center" style={[styles.counterTitle, { color: theme.text, fontFamily }]}>
+              {t('adhkar.counter')}
+            </RtlText>
+            <RtlText align="center" style={[styles.counterSubtitle, { color: theme.textSecondary, fontFamily }]}>
+              {t('adhkar.counter.subtitle')}
+            </RtlText>
           </View>
           <View style={styles.counterSideSlot}>
-            <MaterialIcons name="chevron-left" size={28} color="rgba(255,255,255,0.8)" />
+            <MaterialIcons name="chevron-left" size={28} color={theme.tint} />
           </View>
         </RtlView>
       </Pressable>
 
-      {/* Dua Request Section - below counter */}
+      {/* Dua Request Section - filled accent CTA */}
       <Pressable
         onPress={() => router.push('/dua-request')}
         style={({ pressed }) => [
           styles.duaCard,
-          { backgroundColor: theme.tint, shadowColor: theme.tint, marginTop: Spacing.lg },
+          { backgroundColor: theme.tint, shadowColor: theme.tint, marginTop: Spacing.md },
           pressed && styles.duaCardPressed,
         ]}
       >
@@ -211,30 +224,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
   },
   sectionTitle: {
-    fontSize: Typography.ui.caption,
+    fontSize: Typography.ui.body,
     fontWeight: '600',
     marginBottom: Spacing.md,
     alignSelf: 'stretch',
     textAlign: 'center',
     paddingHorizontal: Spacing.sm,
-    textTransform: 'uppercase',
   },
   featuredGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.sm,
   },
   featuredCard: {
-    flex: 1,
-    flexBasis: 0,
-    minWidth: 0,
-    minHeight: 88,
-    padding: Spacing.md,
+    width: '48%',
+    flexGrow: 1,
+    minWidth: '46%',
+    minHeight: 100,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
     borderRadius: BorderRadius.xl,
     alignItems: 'center',
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   featuredTitle: {
-    fontSize: 12,
+    fontSize: Typography.ui.body,
     fontWeight: '600',
     color: '#fff',
     textAlign: 'center',
@@ -308,6 +322,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xl,
     padding: Spacing.lg,
     borderRadius: BorderRadius.xl,
+    borderWidth: 1.5,
   },
   counterRow: {
     width: '100%',
@@ -316,9 +331,13 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   counterSideSlot: {
-    width: 40,
+    width: 44,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  counterIconWrap: {
+    height: 44,
+    borderRadius: 22,
   },
   counterInfo: {
     flex: 1,
@@ -329,11 +348,9 @@ const styles = StyleSheet.create({
   counterTitle: {
     fontSize: Typography.ui.subtitle,
     fontWeight: '700',
-    color: '#fff',
   },
   counterSubtitle: {
     fontSize: Typography.ui.caption,
-    color: 'rgba(255,255,255,0.8)',
   },
   duaCard: {
     marginHorizontal: Spacing.md,

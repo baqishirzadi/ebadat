@@ -2,6 +2,7 @@ import React from 'react';
 import { FlexWidget, TextWidget } from 'react-native-android-widget';
 
 import type { WidgetSnapshot } from '@/utils/widgetSnapshot';
+import { toArabicNumeralsString } from '@/utils/numbers';
 
 const TINT = '#1a4d3e';
 const ACTIVE_BG = '#ffffff';
@@ -41,13 +42,13 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
   const rootPaddingVertical = compact ? 5 : 7;
   const rootPaddingHorizontal = compact ? 6 : 8;
   const prayerLabelSize = isPashto
-    ? (compact ? 13 : 14)
+    ? (compact ? 14 : 15)
     : (compact ? 9 : 10);
   const prayerTimeSize = isPashto
-    ? (compact ? 16 : 18)
+    ? (compact ? 20 : 22)
     : (compact ? 13 : 15);
-  const prayerChipPaddingVertical = isPashto ? 1 : (compact ? 3 : 4);
-  const prayerTimeMarginTop = isPashto ? -2 : 1;
+  const prayerChipPaddingVertical = isPashto ? 4 : (compact ? 3 : 4);
+  const prayerTimeMarginTop = isPashto ? -10 : 1;
   const compactDateSize = isPashto ? 12 : 13;
   const fullDateSize = isPashto ? 11 : 12;
   const solarDateSize = isPashto ? 16 : 18;
@@ -90,69 +91,12 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
     sunriseParts.length > 1 ? sunriseParts.slice(0, -1).join(' ') : (isPashto ? 'لمر ختل' : '');
   const solarDisplay = shamsiLabel || snapshot.shamsiDisplay || '';
   const pashtoHeaderText = [weekdayLabel, solarDisplay].filter(Boolean).join('، ');
+  // Day/year in Eastern Arabic numerals; month abbreviation stays Latin.
+  const pashtoGregorianDisplay = toArabicNumeralsString(snapshot.gregorianDisplay || '');
 
-  const pashtoDateRow = isPashto ? (
-    <FlexWidget
-      style={{
-        width: 'match_parent',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 3,
-      }}
-    >
-      <FlexWidget style={{ flex: 1.2, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
-        <TextWidget
-          text={`\u2066${snapshot.gregorianDisplay || ''}\u2069`}
-          maxLines={1}
-          allowFontScaling={false}
-          style={{
-            fontSize: pashtoGregHijriSize,
-            fontFamily: boldFontFamily,
-            color: TEXT_SECONDARY,
-            adjustsFontSizeToFit: true,
-          }}
-        />
-        <TextWidget
-          text=" میلادي"
-          maxLines={1}
-          allowFontScaling={false}
-          style={{
-            fontSize: pashtoGregHijriSize,
-            fontFamily: boldFontFamily,
-            color: TEXT_SECONDARY,
-            adjustsFontSizeToFit: true,
-          }}
-        />
-      </FlexWidget>
-      <FlexWidget style={{ flex: 0.9, alignItems: 'center' }}>
-        <TextWidget
-          text={`${sunriseCaption || 'لمر ختل'}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim()}
-          maxLines={1}
-          allowFontScaling={false}
-          style={{
-            fontSize: pashtoSunriseLineSize,
-            fontFamily: boldFontFamily,
-            color: ACCENT,
-            adjustsFontSizeToFit: true,
-          }}
-        />
-      </FlexWidget>
-      <FlexWidget style={{ flex: 1.35, alignItems: 'center' }}>
-        <TextWidget
-          text={`قمري ${hijriLabel || ''}`.trim()}
-          maxLines={1}
-          allowFontScaling={false}
-          style={{
-            fontSize: pashtoGregHijriSize,
-            fontFamily: boldFontFamily,
-            color: TEXT_PRIMARY,
-            adjustsFontSizeToFit: true,
-          }}
-        />
-      </FlexWidget>
-    </FlexWidget>
-  ) : null;
-
+  // Title + one horizontal date row (gregorian / sunrise / hijri).
+  // Keep each cell as FlexWidget > TextWidget — no LTR isolates and
+  // no flex on TextWidget itself (those produced Null RemoteViews on One UI).
   const pashtoHeader = isPashto ? (
     <FlexWidget
       style={{
@@ -171,7 +115,54 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           adjustsFontSizeToFit: true,
         }}
       />
-      {pashtoDateRow}
+      <FlexWidget
+        style={{
+          width: 'match_parent',
+          flexDirection: 'row',
+          alignItems: 'center',
+          marginTop: 3,
+        }}
+      >
+        <FlexWidget style={{ flex: 1.15, alignItems: 'center' }}>
+          <TextWidget
+            text={`${pashtoGregorianDisplay} میلادي`.trim()}
+            maxLines={1}
+            allowFontScaling={false}
+            style={{
+              fontSize: pashtoGregHijriSize,
+              fontFamily: boldFontFamily,
+              color: TEXT_SECONDARY,
+              adjustsFontSizeToFit: true,
+            }}
+          />
+        </FlexWidget>
+        <FlexWidget style={{ flex: 0.85, alignItems: 'center' }}>
+          <TextWidget
+            text={`${sunriseCaption || 'لمر ختل'}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim()}
+            maxLines={1}
+            allowFontScaling={false}
+            style={{
+              fontSize: pashtoSunriseLineSize,
+              fontFamily: boldFontFamily,
+              color: ACCENT,
+              adjustsFontSizeToFit: true,
+            }}
+          />
+        </FlexWidget>
+        <FlexWidget style={{ flex: 1.4, alignItems: 'center' }}>
+          <TextWidget
+            text={`قمري ${hijriLabel || ''}`.trim()}
+            maxLines={1}
+            allowFontScaling={false}
+            style={{
+              fontSize: pashtoGregHijriSize,
+              fontFamily: boldFontFamily,
+              color: TEXT_PRIMARY,
+              adjustsFontSizeToFit: true,
+            }}
+          />
+        </FlexWidget>
+      </FlexWidget>
     </FlexWidget>
   ) : null;
 

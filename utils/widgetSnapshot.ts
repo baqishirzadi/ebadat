@@ -1,5 +1,5 @@
 import { addDaysToDateKey, getDateKeyInTimezone, nextLocalMidnightMs } from '@/utils/prayerTimezone';
-import { formatGregorianDateCompact, formatShamsiSlash, weekdayName, WEEKDAYS_DARI, WEEKDAYS_PASHTO } from '@/utils/calendarDisplay';
+import { formatGregorianDateCompact, formatShamsiSlash, WEEKDAYS_DARI, WEEKDAYS_ENGLISH, WEEKDAYS_PASHTO } from '@/utils/calendarDisplay';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { formatHijriDate } from '@/utils/islamicCalendar';
@@ -94,7 +94,7 @@ function refreshDayCalendarDisplays(day: WidgetDaySnapshot): WidgetDaySnapshot {
     ...day,
     weekdayDari: WEEKDAYS_DARI[truth.weekday],
     weekdayPashto: WEEKDAYS_PASHTO[truth.weekday],
-    weekdayEnglish: weekdayName(truth.weekday, 'english'),
+    weekdayEnglish: WEEKDAYS_ENGLISH[truth.weekday],
     shamsiDisplay: formatShamsiSlash(truth.shamsi),
     shamsiDisplayPashto: formatShamsiSlash(truth.shamsi, 'pashto'),
     shamsiDisplayEnglish: formatShamsiSlash(truth.shamsi, 'english'),
@@ -131,7 +131,7 @@ function buildDaySnapshot(
     dateKey,
     weekdayDari: WEEKDAYS_DARI[truth.weekday],
     weekdayPashto: WEEKDAYS_PASHTO[truth.weekday],
-    weekdayEnglish: weekdayName(truth.weekday, 'english'),
+    weekdayEnglish: WEEKDAYS_ENGLISH[truth.weekday],
     shamsiDisplay: formatShamsiSlash(truth.shamsi),
     shamsiDisplayPashto: formatShamsiSlash(truth.shamsi, 'pashto'),
     shamsiDisplayEnglish: formatShamsiSlash(truth.shamsi, 'english'),

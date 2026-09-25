@@ -38,18 +38,18 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
 
   return (
     <RtlView style={[styles.container, isPashto && styles.containerPashto]}>
-      <View style={[styles.titlePress, isPashto && styles.titlePressPashto]}>
+      <View style={styles.titlePress}>
         <View style={styles.titleRow}>
           <RtlText
             align="center"
             wrap={false}
-            numberOfLines={isPashto ? 2 : 1}
+            numberOfLines={1}
             style={[styles.title, {
               fontFamily,
               fontSize: Typography.ui.subtitle,
-              lineHeight: isPashto ? (isNastaliq ? 36 : 30) : undefined,
+              lineHeight: isPashto ? (isNastaliq ? 34 : 26) : undefined,
               includeFontPadding: isPashto,
-              paddingBottom: isPashto && !isNastaliq ? 6 : undefined,
+              paddingBottom: isPashto && !isNastaliq ? 2 : undefined,
             }]}
           >
             {t('home.mufti.title')}
@@ -132,9 +132,6 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     alignItems: 'center',
     gap: 0,
-  },
-  titlePressPashto: {
-    gap: 6,
   },
   titleRow: {
     flexDirection: 'row-reverse',
