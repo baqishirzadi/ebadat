@@ -10,13 +10,15 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
 import { getResponder } from '@/constants/responders';
-import { DUA_CATEGORIES, DuaRequest, GENDER_INFO, STATUS_INFO } from '@/types/dua';
+import { DUA_CATEGORIES, DuaRequest, STATUS_INFO } from '@/types/dua';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { formatGregorianDateTimeCompact } from '@/utils/calendarDisplay';
 import { toArabicNumerals } from '@/utils/numbers';
+import { pickContent } from '@/utils/i18n/content';
+import { backIconName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 import {
   ActivityIndicator,
@@ -29,9 +31,10 @@ import {
 } from 'react-native';
 
 export default function DuaRequestDetailScreen() {
-  const { theme, state: appState } = useApp();
-  const { t } = useI18n();
-  const isPashto = appState.preferences.appLanguage === 'pashto';
+  const { theme } = useApp();
+  const { t, language } = useI18n();
+  const isEnglish = language === 'english';
+  const isPashto = language === 'pashto';
   const { getRequestById, refreshRequests, markRequestSeen } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
@@ -93,7 +96,11 @@ export default function DuaRequestDetailScreen() {
   );
 
   const formatDate = (date: Date): string => {
-    return formatGregorianDateTimeCompact(date, toArabicNumerals, isPashto ? 'ps-AF' : 'fa-AF');
+    return formatGregorianDateTimeCompact(
+      date,
+      isEnglish ? String : toArabicNumerals,
+      isEnglish ? 'en-US' : isPashto ? 'ps-AF' : 'fa-AF',
+    );
   };
 
   if (loading) {
@@ -101,7 +108,7 @@ export default function DuaRequestDetailScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
           <Pressable onPress={handleBack} style={styles.backButton}>
-            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+            <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
           </Pressable>
           <CenteredText style={styles.headerTitle}>{t('dua.detail.title')}</CenteredText>
           <View style={styles.headerRight} />
@@ -121,7 +128,7 @@ export default function DuaRequestDetailScreen() {
       <View style={[styles.container, { backgroundColor: theme.background }]}>
         <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
           <Pressable onPress={handleBack} style={styles.backButton}>
-            <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+            <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
           </Pressable>
           <CenteredText style={styles.headerTitle}>{t('dua.detail.title')}</CenteredText>
           <View style={styles.headerRight} />
@@ -139,15 +146,19 @@ export default function DuaRequestDetailScreen() {
   const category = DUA_CATEGORIES.find((c) => c.id === request.category);
   const statusInfo = STATUS_INFO[request.status];
   const genderLabel = request.gender
-    ? (isPashto ? GENDER_INFO[request.gender].namePashto : GENDER_INFO[request.gender].nameDari)
-    : isPashto ? 'نامعلوم' : 'نامشخص';
+    ? t(request.gender === 'male' ? 'dua.gender.male' : request.gender === 'female' ? 'dua.gender.female' : 'dua.gender.unknown')
+    : t('dua.gender.unknown');
+  const responder = request.responderId ? getResponder(request.responderId) : null;
+  const responderName = responder
+    ? pickContent(responder, 'name', language)
+    : request.responderName || '';
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
       <View style={[styles.header, { backgroundColor: theme.surahHeader }]}>
         <Pressable onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+          <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
         </Pressable>
         <CenteredText style={styles.headerTitle}>{t('dua.detail.title')}</CenteredText>
         <View style={styles.headerRight} />
@@ -176,7 +187,7 @@ export default function DuaRequestDetailScreen() {
               color={theme.tint}
             />
             <CenteredText style={[styles.categoryText, { color: theme.tint }]}>
-              {isPashto ? category?.namePashto || 'نامعلوم' : category?.nameDari || 'نامشخص'}
+              {category ? pickContent(category, 'name', language) : t('dua.gender.unknown')}
             </CenteredText>
           </View>
         </View>
@@ -185,7 +196,7 @@ export default function DuaRequestDetailScreen() {
             <View style={[styles.metaChip, { backgroundColor: theme.backgroundSecondary }]}>
               <MaterialIcons name="person-outline" size={14} color={theme.textSecondary} />
               <CenteredText style={[styles.metaText, { color: theme.textSecondary }]}>
-                {t('dua.detail.responder', { name: request.responderName || (isPashto ? getResponder(request.responderId)?.namePashto : getResponder(request.responderId)?.nameDari) || '' })}
+                {t('dua.detail.responder', { name: responderName })}
               </CenteredText>
             </View>
           </View>

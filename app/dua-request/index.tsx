@@ -18,7 +18,8 @@ import { useI18n } from '@/utils/i18n/useI18n';
 
 export default function DuaRequestsScreen() {
   const { theme } = useApp();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const isEnglish = language === 'english';
   const { state, refreshRequests, syncPending, isRequestUnread } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
@@ -136,6 +137,7 @@ export default function DuaRequestsScreen() {
           onPress={() => router.push('/dua-request/new')}
           style={({ pressed }) => [
             styles.fab,
+            isEnglish && styles.fabEnglish,
             { 
               backgroundColor: theme.tint,
               bottom: Spacing.xl + insets.bottom,
@@ -265,6 +267,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
+  },
+  fabEnglish: {
+    left: undefined,
+    right: Spacing.xl,
   },
   fabPressed: {
     opacity: 0.8,

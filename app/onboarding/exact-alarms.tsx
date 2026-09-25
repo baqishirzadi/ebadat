@@ -11,16 +11,19 @@ import { Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { checkCanScheduleExactAlarms, openExactAlarmSettings } from '@/utils/adhanHealth';
 import { adhanPermissionLocale, tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { useI18n } from '@/utils/i18n/useI18n';
 import {
-  getAndroidPermissionStepCount,
   getNextPermissionStep,
+  getOnboardingStepIndex,
+  getOnboardingTotalSteps,
   setPermissionOnboardingProgress,
 } from '@/utils/prayerOnboarding';
 
 export default function OnboardingExactAlarmsScreen() {
   const { theme, state: appState } = useApp();
   const locale = adhanPermissionLocale(appState.preferences.appLanguage);
-  const [totalSteps, setTotalSteps] = useState(6);
+  const { t } = useI18n();
+  const [totalSteps, setTotalSteps] = useState(4);
   const [busy, setBusy] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
   const { status: granted, refresh } = usePermissionStepResume(checkCanScheduleExactAlarms, false);
@@ -31,8 +34,8 @@ export default function OnboardingExactAlarmsScreen() {
       return;
     }
     setShouldRender(true);
-    getAndroidPermissionStepCount()
-      .then((count) => setTotalSteps(3 + count))
+    getOnboardingTotalSteps()
+      .then(setTotalSteps)
       .catch(() => {});
     setPermissionOnboardingProgress('exact-alarms').catch(() => {});
   }, []);
@@ -59,7 +62,7 @@ export default function OnboardingExactAlarmsScreen() {
   return (
     <OnboardingShell
       testID="android-onboarding-exact-alarms"
-      step={5}
+      step={getOnboardingStepIndex('exact-alarms')}
       totalSteps={totalSteps}
       title={tAdhanPermission('adhanPermissions.exactAlarm.title', locale)}
       subtitle={tAdhanPermission('adhanPermissions.exactAlarm.body', locale)}
@@ -89,7 +92,7 @@ export default function OnboardingExactAlarmsScreen() {
         </RtlText>
         {!granted ? (
           <RtlText align="center" style={[styles.hint, { color: theme.textSecondary }]}>
-            {locale === 'ps' ? 'له فعالولو وروسته اپ ته راستانه شئ او «دوام» ووهئ.' : 'پس از فعال‌سازی در تنظیمات، به برنامه برگردید و «ادامه» را بزنید.'}
+            {t('onboarding.exactAlarm.returnHint')}
           </RtlText>
         ) : null}
       </RtlView>

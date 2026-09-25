@@ -23,6 +23,7 @@ import { NumericText } from '@/components/ui/NumericText';
 import { getUthmaniFont } from '@/hooks/useFonts';
 import { RtlView } from '@/components/ui/RtlView';
 import { normalizeArabicForSearch, normalizeDariForSearch, normalizePashtoForSearch } from '@/utils/quranSearchNormalize';
+import { findHifzJuzStartAyah } from '@/utils/hifz16';
 import { SearchButton } from './SearchButton';
 import { JuzList } from './JuzList';
 import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
@@ -193,8 +194,15 @@ export function SurahList() {
   }, [router]);
 
   const handleJuzPress = useCallback((juzNumber: number) => {
+    if (hifz16Line) {
+      const start = findHifzJuzStartAyah(juzNumber);
+      if (start) {
+        router.push(`/quran/${start.surah}?ayah=${start.ayah}`);
+        return;
+      }
+    }
     router.push(`/quran/juz/${juzNumber}`);
-  }, [router]);
+  }, [hifz16Line, router]);
 
   const handleContinueReading = useCallback(() => {
     if (position.surahNumber <= 0 || position.ayahNumber <= 0) {
@@ -239,7 +247,7 @@ export function SurahList() {
       <View style={[styles.header, { paddingTop: headerPaddingTop }]}>
         <CenteredText style={styles.headerTitle}>القرآن الکریم</CenteredText>
         <CenteredText style={styles.headerSubtitle}>
-          {t('quran.surahs', { count: n(114) })} • {t('quran.ayahs', { count: n(6236) })}
+          {hifz16Line ? t('quran.reading.subtitle.hifz16') : t('quran.reading.subtitle.translation')}
         </CenteredText>
       </View>
 
@@ -283,6 +291,35 @@ export function SurahList() {
 
       <View style={[styles.modeToggle, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
         <Pressable
+          testID="quran-reading-translation"
+          accessibilityLabel={t('quran.reading.translation')}
+          onPress={() => setHifz16Line(false)}
+          style={[
+            styles.modeButton,
+            { backgroundColor: !hifz16Line ? theme.tint : 'transparent' },
+          ]}
+        >
+          <CenteredText style={[styles.modeButtonText, { color: !hifz16Line ? '#fff' : theme.textSecondary }]}>
+            {t('quran.reading.translation')}
+          </CenteredText>
+        </Pressable>
+        <Pressable
+          testID="quran-reading-hifz16"
+          accessibilityLabel={t('quran.hifz16.hint')}
+          onPress={() => setHifz16Line(true)}
+          style={[
+            styles.modeButton,
+            { backgroundColor: hifz16Line ? theme.tint : 'transparent' },
+          ]}
+        >
+          <CenteredText style={[styles.modeButtonText, { color: hifz16Line ? '#fff' : theme.textSecondary }]}>
+            {t('quran.reading.hifz16')}
+          </CenteredText>
+        </Pressable>
+      </View>
+
+      <View style={[styles.modeToggle, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+        <Pressable
           onPress={() => handleBrowseModeChange('surah')}
           style={[
             styles.modeButton,
@@ -302,19 +339,6 @@ export function SurahList() {
         >
           <CenteredText style={[styles.modeButtonText, { color: browseMode === 'juz' ? '#fff' : theme.textSecondary }]}>
             {t('quran.mode.juz')}
-          </CenteredText>
-        </Pressable>
-        <Pressable
-          testID="quran-list-hifz16-toggle"
-          accessibilityLabel={t('quran.hifz16.hint')}
-          onPress={() => setHifz16Line(!hifz16Line)}
-          style={[
-            styles.modeButton,
-            { backgroundColor: hifz16Line ? theme.tint : 'transparent' },
-          ]}
-        >
-          <CenteredText style={[styles.modeButtonText, { color: hifz16Line ? '#fff' : theme.textSecondary }]}>
-            {t('quran.hifz16.label')}
           </CenteredText>
         </Pressable>
       </View>
@@ -499,7 +523,7 @@ const styles = StyleSheet.create({
   modeToggle: {
     alignItems: 'center',
     marginHorizontal: Spacing.md,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
     padding: 4,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,

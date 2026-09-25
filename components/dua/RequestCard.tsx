@@ -16,6 +16,7 @@ import { formatGregorianDateCompact } from '@/utils/calendarDisplay';
 import { toArabicNumerals } from '@/utils/numbers';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { pickContent } from '@/utils/i18n/content';
+import { forwardChevronName } from '@/utils/i18n/direction';
 
 interface RequestCardProps {
   request: DuaRequest;
@@ -32,7 +33,7 @@ export function RequestCard({
   showArrow = true,
   unread = false,
 }: RequestCardProps) {
-  const { theme, state } = useApp();
+  const { theme } = useApp();
   const { t, language } = useI18n();
   const router = useRouter();
 
@@ -43,7 +44,11 @@ export function RequestCard({
 
   // Format date
   const formatDate = (date: Date): string => {
-    return formatGregorianDateCompact(date, toArabicNumerals);
+    return formatGregorianDateCompact(
+      date,
+      language === 'english' ? String : toArabicNumerals,
+      language === 'dari' ? 'dari' : 'english',
+    );
   };
 
   const handlePress =
@@ -107,10 +112,10 @@ export function RequestCard({
       {/* Arrow */}
       {showArrow && (
         <MaterialIcons
-          name="chevron-left"
+          name={forwardChevronName(language)}
           size={20}
           color={theme.icon}
-          style={styles.arrow}
+          style={[styles.arrow, language === 'english' && styles.arrowEnglish]}
         />
       )}
     </Pressable>
@@ -179,5 +184,9 @@ const styles = StyleSheet.create({
     left: Spacing.md,
     top: '50%',
     marginTop: -10,
+  },
+  arrowEnglish: {
+    left: undefined,
+    right: Spacing.md,
   },
 });

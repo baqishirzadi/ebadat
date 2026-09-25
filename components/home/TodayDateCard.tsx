@@ -34,7 +34,7 @@ const pashtoDateMetrics = {
     secondaryLabel: { fontSize: 12, lineHeight: 30, includeFontPadding: true },
     secondaryValue: { fontSize: 13, lineHeight: 32, includeFontPadding: true },
     sunriseValue: { fontSize: 12, lineHeight: 28, includeFontPadding: true },
-    gregorianValue: { fontSize: 13, lineHeight: 30, includeFontPadding: true },
+    gregorianValue: { fontSize: 13, lineHeight: 32, includeFontPadding: true },
   },
 } as const;
 
@@ -87,14 +87,14 @@ function TodayDateCardInner() {
       <RtlView style={[styles.secondaryRow, isRtlHome && styles.secondaryRowPashto, { borderTopColor: theme.divider }]}>
         <View style={[styles.secondaryItem, isRtlHome && styles.hijriItemPashto]}>
           <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{secondaryLeftLabel}</RtlText>
-          <RtlText align="center" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.qamariValue, pashtoFontMetrics?.secondaryValue, { color: theme.tint }]}>
+          <RtlText align="center" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.qamariValue, pashtoFontMetrics?.secondaryValue, { color: theme.text }]}>
             {secondaryLeftValue}
           </RtlText>
         </View>
         <View style={[styles.secondaryDivider, isRtlHome && styles.secondaryDividerPashto, { backgroundColor: theme.divider }]} />
         <View style={[styles.secondaryItem, isRtlHome && styles.sunriseItemPashto]}>
           <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{t('prayer.prayerName.sunrise')}</RtlText>
-          <RtlText align="center" numberOfLines={1} style={[styles.sunriseValue, pashtoFontMetrics?.sunriseValue ?? pashtoFontMetrics?.secondaryValue, { color: theme.tint }]}>
+          <RtlText align="center" numberOfLines={1} style={[styles.sunriseValue, pashtoFontMetrics?.sunriseValue ?? pashtoFontMetrics?.secondaryValue, { color: theme.text }]}>
             {sunriseDisplay}
           </RtlText>
         </View>
@@ -183,9 +183,8 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
   },
   gregValue: {
-    fontFamily: 'Vazirmatn',
-    fontSize: Typography.ui.caption,
-    lineHeight: 20,
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.body,
   },
   secondaryRowPashto: {
     paddingTop: 6,

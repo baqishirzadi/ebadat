@@ -39,6 +39,10 @@ export type QuranPlaybackSnapshot = {
   totalAyahs: number;
   juzNumber: number | null;
   playbackRate: QuranPlaybackRate;
+  /** Seconds into the current ayah track. */
+  position: number;
+  /** Duration of the current ayah track, in seconds. */
+  duration: number;
 };
 
 export type PersistedQuranResumeContext = {
@@ -257,6 +261,8 @@ function createDefaultSnapshot(reciter: ReciterKey): QuranPlaybackSnapshot {
     totalAyahs: 0,
     juzNumber: null,
     playbackRate: 1,
+    position: 0,
+    duration: 0,
   };
 }
 
@@ -433,6 +439,20 @@ class QuranAudioManager {
       }
     });
 
+    TrackPlayer.addEventListener(Event.PlaybackProgressUpdated, (event) => {
+      if (!this.snapshot.isActive) return;
+      const position = event.position;
+      const duration = event.duration;
+      if (
+        Math.abs(position - this.snapshot.position) < 0.05 &&
+        Math.abs(duration - this.snapshot.duration) < 0.05
+      ) {
+        return;
+      }
+      this.snapshot = { ...this.snapshot, position, duration };
+      this.emitSnapshot();
+    });
+
     TrackPlayer.addEventListener(Event.PlaybackQueueEnded, async () => {
       if (!this.snapshot.isActive) return;
       const snapshot = this.getPlaybackSnapshot();
@@ -486,6 +506,8 @@ class QuranAudioManager {
           totalAyahs: activeTrack.totalAyahs,
           juzNumber: activeTrack.juzNumber ?? null,
           playbackRate: this.playbackRate,
+          position: trackChanged ? 0 : this.snapshot.position,
+          duration: trackChanged ? 0 : this.snapshot.duration,
         };
 
         await AsyncStorage.setItem(
@@ -865,6 +887,8 @@ class QuranAudioManager {
       ),
       totalAyahs: totalAyahsInSurah,
       juzNumber: resolvedScope.juzNumber,
+      position: 0,
+      duration: 0,
     };
     this.emitSnapshot();
 
@@ -908,6 +932,8 @@ class QuranAudioManager {
         totalAyahs: totalAyahsInSurah,
         juzNumber: resolvedScope.juzNumber,
         playbackRate: this.playbackRate,
+        position: 0,
+        duration: 0,
       };
       this.emitSnapshot();
       this.onAyahChangeCb?.(surah, ayah);

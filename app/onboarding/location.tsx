@@ -29,9 +29,15 @@ import {
   loadCityRegion,
 } from '@/utils/cityDatabase';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
-import { SELECTED_CITY_STORAGE_KEY } from '@/utils/prayerOnboarding';
+import {
+  SELECTED_CITY_STORAGE_KEY,
+  getOnboardingStepIndex,
+  getOnboardingTotalSteps,
+  setPermissionOnboardingProgress,
+} from '@/utils/prayerOnboarding';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { forwardChevronName } from '@/utils/i18n/direction';
 
 const FEATURED_CATEGORIES = [
   'afghanistan',
@@ -67,6 +73,7 @@ export default function OnboardingLocationScreen() {
   const [selectedCategory, setSelectedCategory] = useState<string>('afghanistan');
   const [pendingCityKey, setPendingCityKey] = useState<CityKey | null>(null);
   const [gpsDetected, setGpsDetected] = useState<{ key: CityKey; name: string; warning?: string } | null>(null);
+  const [totalSteps, setTotalSteps] = useState(4);
   const { width } = useWindowDimensions();
   const isCompact = width < 380;
 
@@ -74,6 +81,13 @@ export default function OnboardingLocationScreen() {
     () => getAllCategories().filter((c) => FEATURED_CATEGORIES.includes(c.id as typeof FEATURED_CATEGORIES[number])),
     [],
   );
+
+  useEffect(() => {
+    setPermissionOnboardingProgress('location').catch(() => {});
+    getOnboardingTotalSteps()
+      .then(setTotalSteps)
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (selectedCategory === 'afghanistan') return;
@@ -169,19 +183,21 @@ export default function OnboardingLocationScreen() {
 
   return (
     <OnboardingShell
-      step={3}
-      totalSteps={5}
+      step={getOnboardingStepIndex('location')}
+      totalSteps={totalSteps}
       title={t('onboarding.location.title')}
       subtitle={t('onboarding.location.subtitle')}
-      primaryLabel={selectedPreview ? t('onboarding.location.continueWith', { city: selectedPreview.name }) : t('onboarding.location.searchAll')}
+      primaryLabel={
+        selectedPreview
+          ? t('onboarding.location.continueWith', { city: selectedPreview.name })
+          : t('onboarding.continue')
+      }
       onPrimary={() => {
         if (pendingCityKey) {
           finalizeCity(pendingCityKey);
-          return;
         }
-        setPickerVisible(true);
       }}
-      primaryDisabled={saving}
+      primaryDisabled={saving || !pendingCityKey}
       showBack
       scrollable={false}
     >
@@ -202,7 +218,7 @@ export default function OnboardingLocationScreen() {
               {t('onboarding.location.gpsSubtitle')}
             </RtlText>
           </RtlView>
-          <MaterialIcons name="chevron-left" size={24} color="rgba(255,255,255,0.8)" />
+          <MaterialIcons name={forwardChevronName(language)} size={24} color="rgba(255,255,255,0.8)" />
         </Pressable>
 
         {gpsDetected ? (
@@ -222,7 +238,7 @@ export default function OnboardingLocationScreen() {
               onPress={() => finalizeCity(gpsDetected.key)}
               style={[styles.gpsConfirmBtn, { backgroundColor: theme.tint }]}
             >
-              <RtlText align="center" style={styles.gpsConfirmBtnText}>ادامه</RtlText>
+              <RtlText align="center" style={styles.gpsConfirmBtnText}>{t('onboarding.continue')}</RtlText>
             </Pressable>
           </RtlView>
         ) : null}
@@ -343,7 +359,7 @@ export default function OnboardingLocationScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { gap: Spacing.sm, paddingBottom: Spacing.lg, alignItems: 'center' },
+  scroll: { gap: Spacing.md, paddingBottom: Spacing.lg, alignItems: 'center' },
   gpsCard: {
     width: '100%',
     flexDirection: 'row',
@@ -352,7 +368,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: BorderRadius.xl,
     padding: Spacing.md,
-    marginBottom: Spacing.xs,
   },
   gpsTextWrap: { flex: 1, gap: 2 },
   gpsTitle: { fontFamily: 'Vazirmatn-Bold', fontSize: Typography.ui.body, color: '#fff' },
@@ -371,11 +386,22 @@ const styles = StyleSheet.create({
   gpsWarning: { fontFamily: 'Vazirmatn', fontSize: Typography.ui.caption, lineHeight: 18 },
   gpsConfirmBtn: { borderRadius: BorderRadius.md, paddingVertical: Spacing.sm, paddingHorizontal: Spacing.md },
   gpsConfirmBtnText: { fontFamily: 'Vazirmatn-Bold', fontSize: Typography.ui.caption, color: '#fff' },
-  sectionBlock: { width: '100%', gap: Spacing.xs },
-  sectionTitle: { fontFamily: 'Vazirmatn-Bold', fontSize: Typography.ui.caption, width: '100%', marginTop: Spacing.xs },
-  countryGrid: { width: '100%', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: Spacing.xs },
+  sectionBlock: { width: '100%', gap: Spacing.sm },
+  sectionTitle: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.caption,
+    width: '100%',
+    marginTop: Spacing.xs,
+  },
+  countryGrid: {
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: Spacing.sm,
+  },
   countryChip: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderRadius: BorderRadius.full,
     paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.md,
@@ -396,15 +422,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.sm,
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
-    marginVertical: Spacing.xs,
   },
   selectedText: { fontFamily: 'Vazirmatn-Bold', fontSize: Typography.ui.body, textAlign: 'center' },
   cityGrid: { width: '100%', flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, justifyContent: 'center' },
   cityChip: {
-    borderWidth: 1,
+    borderWidth: 1.5,
     borderRadius: BorderRadius.lg,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.sm,

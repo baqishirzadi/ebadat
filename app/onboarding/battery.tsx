@@ -12,10 +12,12 @@ import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { checkBatteryOptimizationExempt, openBatteryOptimizationSettings } from '@/utils/adhanHealth';
 import { adhanPermissionLocale, tAdhanPermission } from '@/utils/i18n/adhanPermissions';
+import { useI18n } from '@/utils/i18n/useI18n';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 import {
-  getAndroidPermissionStepCount,
   getNextPermissionStep,
+  getOnboardingStepIndex,
+  getOnboardingTotalSteps,
   markFirstOpenAdhanSetupDone,
   setPermissionOnboardingProgress,
 } from '@/utils/prayerOnboarding';
@@ -23,8 +25,9 @@ import {
 export default function OnboardingBatteryScreen() {
   const { theme, state: appState } = useApp();
   const locale = adhanPermissionLocale(appState.preferences.appLanguage);
+  const { t } = useI18n();
   const { requestPrayerSchedule } = usePrayer();
-  const [totalSteps, setTotalSteps] = useState(6);
+  const [totalSteps, setTotalSteps] = useState(4);
   const [busy, setBusy] = useState(false);
   const { status: exempt, refresh } = usePermissionStepResume(checkBatteryOptimizationExempt, false);
 
@@ -33,8 +36,8 @@ export default function OnboardingBatteryScreen() {
       router.replace('/(tabs)');
       return;
     }
-    getAndroidPermissionStepCount()
-      .then((count) => setTotalSteps(3 + count))
+    getOnboardingTotalSteps()
+      .then(setTotalSteps)
       .catch(() => {});
     setPermissionOnboardingProgress('battery').catch(() => {});
   }, []);
@@ -68,12 +71,10 @@ export default function OnboardingBatteryScreen() {
     return null;
   }
 
-  const permissionStepIndex = Number(Platform.Version) >= 31 ? 6 : 5;
-
   return (
     <OnboardingShell
       testID="android-onboarding-battery"
-      step={permissionStepIndex}
+      step={getOnboardingStepIndex('battery')}
       totalSteps={totalSteps}
       title={tAdhanPermission('adhanPermissions.battery.title', locale)}
       subtitle={tAdhanPermission('adhanPermissions.battery.body', locale)}
@@ -96,9 +97,7 @@ export default function OnboardingBatteryScreen() {
           <MaterialIcons name="battery-alert" size={48} color={theme.warning} />
         </View>
         <RtlText align="center" style={[styles.status, { color: exempt ? '#1b7f4d' : theme.textSecondary }]}>
-          {exempt
-            ? (locale === 'ps' ? 'د بیټرۍ محدودیت نشته.' : 'محدودیت باتری اعمال نشده است')
-            : (locale === 'ps' ? 'دا ګام اختیاري دی؛ وروسته یې د اذان د حالت له برخې هم برابرولای شئ.' : 'این مرحله اختیاری است؛ بعداً از بخش سلامت اذان هم می‌توانید تنظیم کنید.')}
+          {exempt ? t('onboarding.battery.exempt') : t('onboarding.battery.optional')}
         </RtlText>
       </RtlView>
     </OnboardingShell>

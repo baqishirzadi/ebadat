@@ -8,6 +8,7 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { backIconName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 interface OnboardingShellProps {
@@ -50,7 +51,8 @@ export function OnboardingShell({
   compactHeader = false,
 }: OnboardingShellProps) {
   const { theme } = useApp();
-  const { isPashto, fontFamily } = useI18n();
+  const { language, isPashto, fontFamily, t } = useI18n();
+  const isEnglish = language === 'english';
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 
@@ -63,7 +65,9 @@ export function OnboardingShell({
         includeFontPadding: true as const,
         paddingBottom: 2,
       }
-    : null;
+    : isEnglish
+      ? { fontFamily: undefined as undefined, fontWeight: '700' as const }
+      : null;
   const subtitleStyle = isPashto
     ? {
         fontFamily: fontFamily ?? 'Vazirmatn',
@@ -71,7 +75,14 @@ export function OnboardingShell({
         includeFontPadding: true as const,
         paddingBottom: 2,
       }
-    : null;
+    : isEnglish
+      ? { fontFamily: undefined as undefined }
+      : null;
+
+  const stepLabel = t('onboarding.stepOf', {
+    current: String(step),
+    total: String(totalSteps),
+  });
 
   return (
     <RtlView
@@ -92,25 +103,35 @@ export function OnboardingShell({
             }}
             style={styles.backButton}
             hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.close')}
           >
-            <MaterialIcons name="arrow-forward" size={24} color={theme.text} />
+            <MaterialIcons name={backIconName(language)} size={24} color={theme.text} />
           </Pressable>
         ) : (
           <RtlView style={styles.backPlaceholder} />
         )}
-        <RtlView style={styles.dots}>
-          {Array.from({ length: totalSteps }).map((_, index) => (
-            <RtlView
-              key={index}
-              style={[
-                styles.dot,
-                {
-                  backgroundColor: index <= step - 1 ? theme.tint : theme.divider,
-                  width: index === step - 1 ? 20 : 8,
-                },
-              ]}
-            />
-          ))}
+        <RtlView style={styles.progressWrap}>
+          <RtlView style={styles.dots}>
+            {Array.from({ length: totalSteps }).map((_, index) => (
+              <RtlView
+                key={index}
+                style={[
+                  styles.dot,
+                  {
+                    backgroundColor: index <= step - 1 ? theme.tint : theme.divider,
+                    width: index === step - 1 ? 20 : 8,
+                  },
+                ]}
+              />
+            ))}
+          </RtlView>
+          <RtlText
+            align="center"
+            style={[styles.stepLabel, { color: theme.textSecondary }, isEnglish && styles.stepLabelEnglish]}
+          >
+            {stepLabel}
+          </RtlText>
         </RtlView>
         <RtlView style={styles.backPlaceholder} />
       </RtlView>
@@ -157,7 +178,12 @@ export function OnboardingShell({
             { backgroundColor: theme.tint, opacity: primaryDisabled ? 0.5 : 1 },
           ]}
         >
-          <RtlText align="center" style={styles.primaryLabel}>{primaryLabel}</RtlText>
+          <RtlText
+            align="center"
+            style={[styles.primaryLabel, isEnglish && styles.primaryLabelEnglish]}
+          >
+            {primaryLabel}
+          </RtlText>
         </Pressable>
         {secondaryLabel && onSecondary ? (
           <Pressable onPress={onSecondary} style={styles.secondaryButton}>
@@ -165,6 +191,7 @@ export function OnboardingShell({
               align="center"
               style={[
                 secondaryMuted ? styles.secondaryMuted : styles.secondaryLabel,
+                isEnglish && styles.secondaryLabelEnglish,
                 { color: theme.textSecondary },
               ]}
             >
@@ -197,6 +224,11 @@ const styles = StyleSheet.create({
   backPlaceholder: {
     width: 32,
   },
+  progressWrap: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 6,
+  },
   dots: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -205,6 +237,13 @@ const styles = StyleSheet.create({
   dot: {
     height: 8,
     borderRadius: BorderRadius.full,
+  },
+  stepLabel: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption - 1,
+  },
+  stepLabelEnglish: {
+    fontFamily: undefined,
   },
   header: {
     gap: Spacing.sm,
@@ -249,6 +288,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
   },
+  primaryLabelEnglish: {
+    fontFamily: undefined,
+    fontWeight: '700',
+  },
   secondaryButton: {
     paddingVertical: Spacing.sm,
     alignItems: 'center',
@@ -256,6 +299,9 @@ const styles = StyleSheet.create({
   secondaryLabel: {
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
+  },
+  secondaryLabelEnglish: {
+    fontFamily: undefined,
   },
   secondaryMuted: {
     fontFamily: 'Vazirmatn',

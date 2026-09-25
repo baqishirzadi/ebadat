@@ -140,7 +140,7 @@ export function AudioPlayer({
         {
           backgroundColor: theme.card,
           borderTopColor: theme.divider,
-          paddingBottom: Math.max(insets.bottom, compact ? 4 : 8),
+          paddingBottom: compact ? insets.bottom : Math.max(insets.bottom, 8),
         },
       ]}
       pointerEvents="box-none"
@@ -149,23 +149,38 @@ export function AudioPlayer({
         {compact ? (
           <View style={styles.compactRow}>
             <Pressable
+              onPress={handlePlayPause}
+              disabled={playback.status === 'preparing'}
+              style={({ pressed }) => [
+                styles.playButtonCompact,
+                { backgroundColor: theme.playing, opacity: playback.status === 'preparing' ? 0.75 : 1 },
+                pressed && styles.playButtonPressed,
+              ]}
+            >
+              {isPreparing ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={22} color="#fff" />
+              )}
+            </Pressable>
+
+            <Pressable
               onPress={() => setShowReciterModal(true)}
               style={[styles.reciterButtonCompact, { backgroundColor: theme.backgroundSecondary }]}
             >
-              <MaterialIcons name="person" size={14} color={theme.tint} />
+              <MaterialIcons name="person" size={15} color={theme.tint} />
               <CenteredText
                 style={[styles.reciterNameCompact, { color: theme.text }]}
                 numberOfLines={1}
-                ellipsizeMode="tail"
               >
                 {RECITERS[currentReciter].name}
               </CenteredText>
+              <MaterialIcons name="arrow-drop-down" size={16} color={theme.icon} />
             </Pressable>
 
             <CenteredText
               style={[styles.ayahInfoCompact, { color: theme.textSecondary }]}
               numberOfLines={1}
-              ellipsizeMode="tail"
             >
               {toArabicNumerals(surahNumber)}:{toArabicNumerals(ayahNumber)}
             </CenteredText>
@@ -185,33 +200,17 @@ export function AudioPlayer({
             </Pressable>
 
             <Pressable
-              onPress={handlePlayPause}
-              disabled={playback.status === 'preparing'}
-              style={({ pressed }) => [
-                styles.playButtonCompact,
-                { backgroundColor: theme.playing, opacity: playback.status === 'preparing' ? 0.75 : 1 },
-                pressed && styles.playButtonPressed,
-              ]}
-            >
-              {isPreparing ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={22} color="#fff" />
-              )}
-            </Pressable>
-
-            <Pressable
               onPress={onStop}
               style={({ pressed }) => [styles.controlButtonCompact, pressed && styles.controlButtonPressed]}
             >
-              <MaterialIcons name="stop" size={22} color={theme.icon} />
+              <MaterialIcons name="stop" size={20} color={theme.icon} />
             </Pressable>
 
             <Pressable
               onPress={handleClose}
               style={({ pressed }) => [styles.controlButtonCompact, pressed && styles.controlButtonPressed]}
             >
-              <MaterialIcons name="close" size={22} color={theme.icon} />
+              <MaterialIcons name="close" size={20} color={theme.icon} />
             </Pressable>
           </View>
         ) : (
@@ -396,8 +395,8 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   contentCompact: {
-    minHeight: 52,
-    paddingTop: 6,
+    minHeight: 48,
+    paddingTop: 4,
     paddingBottom: 4,
     gap: 0,
   },
@@ -405,33 +404,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    minHeight: 40,
   },
   reciterButtonCompact: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    flexShrink: 1,
-    maxWidth: 110,
-    minHeight: 32,
+    minWidth: 0,
+    minHeight: 36,
     paddingHorizontal: 8,
     borderRadius: BorderRadius.sm,
     gap: 4,
   },
   reciterNameCompact: {
-    flexShrink: 1,
-    fontSize: 11,
+    flex: 1,
+    minWidth: 0,
+    fontSize: 14,
+    lineHeight: 20,
     fontFamily: 'Vazirmatn',
-    fontWeight: '600',
+    fontWeight: '700',
+    textAlign: 'center',
   },
   ayahInfoCompact: {
     flexShrink: 0,
     fontSize: 12,
     fontFamily: 'Vazirmatn',
     fontWeight: '700',
-    minWidth: 44,
+    minWidth: 40,
     textAlign: 'center',
   },
   speedButtonCompact: {
-    minWidth: 36,
+    minWidth: 34,
     height: 32,
     borderRadius: 16,
     borderWidth: StyleSheet.hairlineWidth,
@@ -447,7 +450,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   controlButtonCompact: {
-    padding: 6,
+    padding: 4,
     borderRadius: BorderRadius.full,
   },
   reciterButton: {

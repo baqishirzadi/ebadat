@@ -1,11 +1,5 @@
 /**
- * PrayerTextBlock Component
- * Arabic text with its translation in the reader's language.
- *
- * The block shows one translation, not a stack of every language it has. When
- * the reader's language is missing for a passage it falls back down the chain
- * and tags the block with the language actually shown, so a fallback is never
- * mistaken for a translation in the chosen language.
+ * PrayerTextBlock — manuscript-style Arabic + one translation.
  */
 
 import React from 'react';
@@ -37,6 +31,7 @@ export function PrayerTextBlock({
 }: PrayerTextBlockProps) {
   const { theme, state } = useApp();
   const language = state.preferences.appLanguage;
+  const isRtl = language !== 'english';
   const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
 
   const translation = resolveContent(source, translationField, language);
@@ -46,101 +41,122 @@ export function PrayerTextBlock({
     textLanguage === 'pashto' ? { fontFamily: pashtoFontFamily, lineHeight: 42 } : null;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-      {arabic && (
-        <View style={[styles.arabicContainer, { backgroundColor: `${theme.tint}10` }]}>
-          <LocalizedText style={[styles.arabicText, { color: theme.arabicText }]}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.backgroundSecondary,
+          borderColor: theme.accent,
+        },
+      ]}
+    >
+      {arabic ? (
+        <View style={styles.arabicContainer}>
+          <LocalizedText
+            preserveFontFamily
+            style={[styles.arabicText, { color: theme.arabicText, fontFamily: 'AmiriQuran' }]}
+          >
             {arabic}
           </LocalizedText>
         </View>
-      )}
+      ) : null}
 
-      {instruction && (
-        <View style={styles.instructionContainer}>
+      {translation ? (
+        <View style={[styles.translationsContainer, { borderTopColor: `${theme.accent}44` }]}>
+          {translation.language !== language ? (
+            <View style={[styles.languageTag, { borderColor: theme.accent }]}>
+              <LocalizedText style={[styles.languageTagText, { color: theme.accent }]}>
+                {APP_LANGUAGES[translation.language].nativeLabel}
+              </LocalizedText>
+            </View>
+          ) : null}
           <LocalizedText
-            style={[styles.instructionText, { color: theme.textSecondary }, fontFor(instruction.language)]}
+            style={[
+              styles.translationText,
+              {
+                color: theme.text,
+                textAlign: isRtl ? 'right' : 'left',
+                writingDirection: isRtl ? 'rtl' : 'ltr',
+              },
+              fontFor(translation.language),
+            ]}
           >
-            📌 {instruction.text}
+            {translation.text}
           </LocalizedText>
         </View>
-      )}
+      ) : null}
 
-      {translation && (
-        <View style={styles.translationsContainer}>
-          <View style={styles.translationBlock}>
-            {translation.language !== language && (
-              <View style={[styles.languageTag, { backgroundColor: theme.tint }]}>
-                <LocalizedText style={styles.languageTagText}>
-                  {APP_LANGUAGES[translation.language].nativeLabel}
-                </LocalizedText>
-              </View>
-            )}
-            <LocalizedText
-              style={[styles.translationText, { color: theme.text }, fontFor(translation.language)]}
-            >
-              {translation.text}
-            </LocalizedText>
-          </View>
+      {instruction ? (
+        <View style={[styles.instructionContainer, { borderTopColor: theme.divider }]}>
+          <LocalizedText
+            style={[
+              styles.instructionText,
+              {
+                color: theme.textSecondary,
+                textAlign: isRtl ? 'right' : 'left',
+                writingDirection: isRtl ? 'rtl' : 'ltr',
+              },
+              fontFor(instruction.language),
+            ]}
+          >
+            {instruction.text}
+          </LocalizedText>
         </View>
-      )}
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.md,
     borderWidth: 1,
     overflow: 'hidden',
     marginBottom: Spacing.md,
   },
   arabicContainer: {
-    padding: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.lg,
     alignItems: 'center',
   },
   arabicText: {
     fontSize: Typography.arabic.large,
-    fontFamily: 'AmiriQuran',
     textAlign: 'center',
-    lineHeight: 50,
+    lineHeight: 52,
     writingDirection: 'rtl',
     includeFontPadding: false,
   },
-  instructionContainer: {
-    padding: Spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.1)',
-  },
-  instructionText: {
-    fontSize: Typography.ui.body,
-    textAlign: 'center',
-    marginBottom: Spacing.xs,
-    fontStyle: 'italic',
-    includeFontPadding: false,
-  },
   translationsContainer: {
-    padding: Spacing.md,
-  },
-  translationBlock: {
-    marginBottom: Spacing.sm,
-    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   languageTag: {
     alignSelf: 'center',
     paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
     borderRadius: BorderRadius.sm,
+    borderWidth: 1,
     marginBottom: Spacing.xs,
   },
   languageTagText: {
-    color: '#fff',
     fontSize: Typography.ui.caption,
     fontWeight: '600',
   },
   translationText: {
     fontSize: Typography.ui.body,
-    textAlign: 'center',
     lineHeight: 28,
+    includeFontPadding: false,
+  },
+  instructionContainer: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+  },
+  instructionText: {
+    fontSize: Typography.ui.caption,
+    fontStyle: 'italic',
+    lineHeight: 22,
     includeFontPadding: false,
   },
 });

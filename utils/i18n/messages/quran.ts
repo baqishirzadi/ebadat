@@ -39,4 +39,31 @@ export const quranMessages = {
     pashto: 'د حفظ لپاره ۱۶ کرښیز مصحف — بې ژباړې',
     english: '16-line hifz mushaf — no translation',
   },
+  'quran.reading.translation': { dari: 'با ترجمه', pashto: 'له ژباړې', english: 'Translation' },
+  'quran.reading.hifz16': { dari: '۱۶ خطه', pashto: '۱۶ کرښه', english: '16-line' },
+  'quran.reading.subtitle.translation': {
+    dari: 'مصحف با ترجمه — برای مطالعه',
+    pashto: 'مصحف له ژباړې — د لوستلو لپاره',
+    english: 'Mushaf with translation — for reading',
+  },
+  'quran.reading.subtitle.hifz16': {
+    dari: 'مصحف ۱۶ خطه — فقط متن قرآن برای حفظ',
+    pashto: '۱۶ کرښیز مصحف — یوازې د قرآن متن د حفظ لپاره',
+    english: '16-line mushaf — Arabic text for memorization',
+  },
+  'quran.hifz.dock.play': {
+    dari: 'شروع تلاوت',
+    pashto: 'تلاوت پیل',
+    english: 'Start recitation',
+  },
+  'quran.hifz.dock.bookmark': {
+    dari: 'نشانه‌گذاری آیه',
+    pashto: 'آیت نښه کول',
+    english: 'Bookmark ayah',
+  },
+  'quran.hifz.dock.unbookmark': {
+    dari: 'حذف نشانه',
+    pashto: 'نښه لرې کول',
+    english: 'Remove bookmark',
+  },
 } as const satisfies Record<string, UiMessage>;

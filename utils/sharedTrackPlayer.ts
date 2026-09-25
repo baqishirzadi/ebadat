@@ -168,7 +168,7 @@ export async function ensureSharedTrackPlayerReady(_reason: string = 'unknown'):
         Capability.Pause,
         Capability.SkipToNext,
       ],
-      progressUpdateEventInterval: 1,
+      progressUpdateEventInterval: 0.25,
       android: {
         appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
       },

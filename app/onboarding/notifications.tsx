@@ -16,17 +16,18 @@ import { useI18n } from '@/utils/i18n/useI18n';
 import { prayerLabel } from '@/utils/prayerTimes';
 import { getNextPrayer, type PrayerTimes } from '@/utils/prayerTimes';
 import {
-  getAndroidPermissionStepCount,
+  getOnboardingStepIndex,
+  getOnboardingTotalSteps,
   requestAdhanNotificationPermission,
   setPermissionOnboardingProgress,
 } from '@/utils/prayerOnboarding';
 
 const PRAYER_PREVIEW = [
-  { key: 'fajr', label: 'سهار', labelDari: 'صبح', icon: 'wb-twilight' as const },
-  { key: 'dhuhr', label: 'غرمه', labelDari: 'ظهر', icon: 'wb-sunny' as const },
-  { key: 'asr', label: 'مازدیګر', labelDari: 'عصر', icon: 'wb-cloudy' as const },
-  { key: 'maghrib', label: 'ماښام', labelDari: 'شام', icon: 'nights-stay' as const },
-  { key: 'isha', label: 'ماخوستن', labelDari: 'خفتن', icon: 'bedtime' as const },
+  { key: 'fajr', icon: 'wb-twilight' as const },
+  { key: 'dhuhr', icon: 'wb-sunny' as const },
+  { key: 'asr', icon: 'wb-cloudy' as const },
+  { key: 'maghrib', icon: 'nights-stay' as const },
+  { key: 'isha', icon: 'bedtime' as const },
 ];
 
 const THEME_GRADIENT: [string, string, string] = ['#0F1F14', '#1a4d3e', '#2d6a4f'];
@@ -37,21 +38,19 @@ export default function OnboardingNotificationsScreen() {
   const { t } = useI18n();
   const { state } = usePrayer();
   const [busy, setBusy] = useState(false);
-  const [totalSteps, setTotalSteps] = useState(6);
+  const [totalSteps, setTotalSteps] = useState(4);
 
   useEffect(() => {
     setPermissionOnboardingProgress('notifications').catch(() => {});
-    if (Platform.OS === 'android') {
-      getAndroidPermissionStepCount()
-        .then((count) => setTotalSteps(3 + count))
-        .catch(() => {});
-    }
+    getOnboardingTotalSteps()
+      .then(setTotalSteps)
+      .catch(() => {});
   }, []);
 
   const prayerTimes = state.prayerTimes;
   const nextKey = useMemo(() => {
     if (!prayerTimes) return 'fajr';
-    return getNextPrayer(prayerTimes).name;
+    return getNextPrayer(prayerTimes).key;
   }, [prayerTimes]);
 
   const goNext = async () => {
@@ -103,11 +102,11 @@ export default function OnboardingNotificationsScreen() {
   return (
     <OnboardingShell
       testID="android-onboarding-notifications"
-      step={4}
+      step={getOnboardingStepIndex('notifications')}
       totalSteps={totalSteps}
       title={tAdhanPermission('adhanPermissions.notifications.title', locale)}
       subtitle={tAdhanPermission('adhanPermissions.notifications.body', locale)}
-      primaryLabel={busy ? (locale === 'ps' ? 'چمتو کېږي...' : 'در حال آماده‌سازی...') : tAdhanPermission('adhanPermissions.notifications.button', locale)}
+      primaryLabel={busy ? t('onboarding.preparing') : tAdhanPermission('adhanPermissions.notifications.button', locale)}
       onPrimary={handleEnable}
       primaryDisabled={busy}
       secondaryLabel={tAdhanPermission('adhanPermissions.notifications.skip', locale)}
@@ -126,7 +125,7 @@ export default function OnboardingNotificationsScreen() {
           <LinearGradient colors={THEME_GRADIENT} style={styles.previewHeader}>
             <MaterialIcons name="schedule" size={18} color="rgba(255,255,255,0.9)" />
             <RtlText align="center" style={styles.previewHeaderText}>
-              {locale === 'ps' ? 'د نن ورځې د لمانځه وختونه' : 'اوقات نماز امروز'}
+              {t('onboarding.notifications.todayPrayers')}
             </RtlText>
           </LinearGradient>
 

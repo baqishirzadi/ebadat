@@ -18,12 +18,13 @@ import CenteredText from '@/components/CenteredText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import NetInfo from '@react-native-community/netinfo';
 import { RESPONDERS, type ResponderId } from '@/constants/responders';
+import { pickContent } from '@/utils/i18n/content';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 export default function NewDuaRequestScreen() {
-  const { theme, state } = useApp();
-  const { t } = useI18n();
-  const isPashto = state.preferences.appLanguage === 'pashto';
+  const { theme } = useApp();
+  const { t, language } = useI18n();
+  const isEnglish = language === 'english';
   const { submitRequest } = useDua();
   const router = useRouter();
   const navigation = useNavigation();
@@ -141,14 +142,18 @@ export default function NewDuaRequestScreen() {
             <View style={[styles.inputPattern, { borderColor: `${theme.tint}15` }]} />
             <LocalizedTextInput
               testID="dua-message-input"
-              style={[styles.textInput, { color: theme.text, height: messageHeight }]}
+              style={[
+                styles.textInput,
+                isEnglish && styles.textInputEnglish,
+                { color: theme.text, height: messageHeight },
+              ]}
               placeholder={t('dua.new.messagePlaceholder')}
               placeholderTextColor={theme.textSecondary}
               value={message}
               onChangeText={setMessage}
               multiline
               textAlignVertical="top"
-              textAlign="right"
+              textAlign={isEnglish ? 'left' : 'right'}
               maxLength={maxLength}
               onContentSizeChange={(event) => {
                 const nextHeight = Math.min(220, Math.max(120, Math.ceil(event.nativeEvent.contentSize.height)));
@@ -184,7 +189,7 @@ export default function NewDuaRequestScreen() {
                   ]}
                 >
                   <CenteredText style={[styles.responderText, { color: selected ? theme.tint : theme.text }]}>
-                    {isPashto ? responder.namePashto : responder.nameDari}
+                    {pickContent(responder, 'name', language)}
                   </CenteredText>
                 </Pressable>
               );
@@ -387,6 +392,11 @@ const styles = StyleSheet.create({
     minHeight: 120,
     textAlign: 'right',
     writingDirection: 'rtl',
+  },
+  textInputEnglish: {
+    fontFamily: undefined,
+    textAlign: 'left',
+    writingDirection: 'ltr',
   },
   composerFooter: {
     flexDirection: 'row',

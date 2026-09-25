@@ -16,7 +16,7 @@ import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
 import { pinSurahInCache } from '@/hooks/useSurahData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
-import { MushafView, AudioPlayer, Hifz16View } from '@/components/quran';
+import { MushafView, AudioPlayer, Hifz16View, HifzIdleDock } from '@/components/quran';
 import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { Spacing } from '@/constants/theme';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
@@ -27,6 +27,7 @@ import { isRtlLanguage } from '@/utils/i18n/languages';
 
 const SURAH_TOP_BAR_HEIGHT = 56;
 const QURAN_AUDIO_PLAYER_RESERVED_HEIGHT = 170;
+const HIFZ_DOCK_HEIGHT = 48;
 
 export default function QuranReaderScreen() {
   const {
@@ -79,12 +80,19 @@ export default function QuranReaderScreen() {
           : 'default';
   const surah = useMemo(() => getSurah(surahNumber), [getSurah, surahNumber]);
   const [hifzVisibleSurah, setHifzVisibleSurah] = useState(surahNumber);
+  const [hifzVisibleAyah, setHifzVisibleAyah] = useState(initialAyah);
   const headerSurahNumber = hifz16Line ? hifzVisibleSurah : surahNumber;
   const surahNameData = getSurahName(headerSurahNumber);
 
+  const onHifzVisiblePosition = useCallback((surah: number, ayah: number, _page?: number) => {
+    setHifzVisibleSurah(surah);
+    setHifzVisibleAyah(ayah);
+  }, []);
+
   useEffect(() => {
     setHifzVisibleSurah(surahNumber);
-  }, [surahNumber]);
+    setHifzVisibleAyah(initialAyah);
+  }, [initialAyah, surahNumber]);
 
   useEffect(() => {
     pinSurahInCache(surahNumber);
@@ -318,13 +326,8 @@ export default function QuranReaderScreen() {
     : `سوره ${toArabicNumerals(headerSurahNumber)}`;
 
   const contentPaddingTop = insets.top + SURAH_TOP_BAR_HEIGHT + Spacing.sm;
-  // Hifz: always leave room for the slim floral bottom edge; when audio is open,
-  // also clear the compact player dock so the border is not covered.
-  const HIFZ_COMPACT_PLAYER_CLEARANCE = 58;
   const contentPaddingBottom = hifz16Line
-    ? showAudioPlayer
-      ? HIFZ_COMPACT_PLAYER_CLEARANCE
-      : Spacing.xxl + 8
+    ? HIFZ_DOCK_HEIGHT + insets.bottom + 8
     : showAudioPlayer
       ? insets.bottom + QURAN_AUDIO_PLAYER_RESERVED_HEIGHT
       : Spacing.xxl;
@@ -370,15 +373,44 @@ export default function QuranReaderScreen() {
           {surahName}
         </LocalizedText>
         <View style={styles.topBarNav}>
-          <Pressable
-            testID="quran-hifz16-toggle"
-            accessibilityLabel={t('quran.hifz16.hint')}
-            onPress={() => setHifz16Line(!hifz16Line)}
-            hitSlop={8}
-            style={[styles.hifzToggle, hifz16Line && styles.hifzToggleActive]}
-          >
-            <LocalizedText style={styles.hifzToggleText}>{t('quran.hifz16.label')}</LocalizedText>
-          </Pressable>
+          <View style={styles.modeSwitch}>
+            <Pressable
+              testID="quran-reader-translation"
+              accessibilityLabel={t('quran.reading.translation')}
+              accessibilityState={{ selected: !hifz16Line }}
+              onPress={() => {
+                if (!hifz16Line) return;
+                setHifz16Line(false);
+              }}
+              hitSlop={4}
+              style={[styles.modeSegment, !hifz16Line && styles.modeSegmentActive]}
+            >
+              <LocalizedText
+                style={[styles.modeSegmentText, !hifz16Line && styles.modeSegmentTextActive]}
+                numberOfLines={1}
+              >
+                {t('quran.reading.translation')}
+              </LocalizedText>
+            </Pressable>
+            <Pressable
+              testID="quran-reader-hifz16"
+              accessibilityLabel={t('quran.reading.hifz16')}
+              accessibilityState={{ selected: hifz16Line }}
+              onPress={() => {
+                if (hifz16Line) return;
+                setHifz16Line(true);
+              }}
+              hitSlop={4}
+              style={[styles.modeSegment, hifz16Line && styles.modeSegmentActive]}
+            >
+              <LocalizedText
+                style={[styles.modeSegmentText, hifz16Line && styles.modeSegmentTextActive]}
+                numberOfLines={1}
+              >
+                {t('quran.reading.hifz16')}
+              </LocalizedText>
+            </Pressable>
+          </View>
           <Pressable testID="quran-reader-settings" onPress={() => router.push('/settings?section=quran' as never)} hitSlop={8}>
             <MaterialIcons name="tune" size={22} color="#fff" />
           </Pressable>
@@ -409,7 +441,7 @@ export default function QuranReaderScreen() {
           activePlayingSurah={currentlyPlaying?.surah ?? null}
           activePlayingAyah={currentlyPlaying?.ayah ?? null}
           onPlayAyah={handleHifzPlayAyah}
-          onVisibleSurahChange={setHifzVisibleSurah}
+          onVisiblePositionChange={onHifzVisiblePosition}
         />
       ) : (
         <MushafView
@@ -426,6 +458,14 @@ export default function QuranReaderScreen() {
           contentPaddingBottom={contentPaddingBottom}
         />
       )}
+
+      {hifz16Line && !(showAudioPlayer && currentlyPlaying) ? (
+        <HifzIdleDock
+          surahNumber={hifzVisibleSurah}
+          ayahNumber={hifzVisibleAyah}
+          onPlay={handleHifzPlayAyah}
+        />
+      ) : null}
 
       {showAudioPlayer && currentlyPlaying && (
         <AudioPlayer
@@ -487,24 +527,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
   },
-  hifzToggle: {
-    minWidth: 36,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+  modeSwitch: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 14,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(255,255,255,0.55)',
+    padding: 2,
+    gap: 2,
+  },
+  modeSegment: {
+    minHeight: 28,
+    paddingHorizontal: 8,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  hifzToggleActive: {
-    backgroundColor: 'rgba(255,255,255,0.22)',
-    borderColor: '#fff',
+  modeSegmentActive: {
+    backgroundColor: '#fff',
   },
-  hifzToggleText: {
-    color: '#fff',
+  modeSegmentText: {
+    color: 'rgba(255,255,255,0.92)',
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: 13,
+    fontSize: 12,
+  },
+  modeSegmentTextActive: {
+    color: '#0E6B4F',
   },
   navPlaceholder: {
     width: 28,

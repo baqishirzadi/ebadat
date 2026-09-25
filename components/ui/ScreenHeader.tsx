@@ -8,6 +8,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RtlText } from '@/components/ui/RtlText';
 import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { backIconName } from '@/utils/i18n/direction';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 type ScreenHeaderVariant = 'standard' | 'toolbar' | 'hero';
 
@@ -35,6 +37,8 @@ export function ScreenHeader({
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { themeMode } = useApp();
+  const { language } = useI18n();
+  const isEnglish = language === 'english';
 
   const shouldShowBack = showBack ?? variant !== 'hero';
 
@@ -63,11 +67,11 @@ export function ScreenHeader({
       testID={testID}
     >
       {variant === 'toolbar' ? (
-        <View style={styles.toolbarRow}>
+        <View style={[styles.toolbarRow, isEnglish && styles.toolbarRowEnglish]}>
           <View style={styles.toolbarSide}>
             {shouldShowBack ? (
               <Pressable onPress={handleBack} hitSlop={10} style={styles.backButton}>
-                <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+                <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
               </Pressable>
             ) : (
               <View style={styles.backPlaceholder} />
@@ -91,9 +95,13 @@ export function ScreenHeader({
             <Pressable
               onPress={handleBack}
               hitSlop={10}
-              style={[styles.backButtonAbsolute, { top: insets.top + Spacing.sm }]}
+              style={[
+                styles.backButtonAbsolute,
+                isEnglish && styles.backButtonAbsoluteEnglish,
+                { top: insets.top + Spacing.sm },
+              ]}
             >
-              <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+              <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
             </Pressable>
           ) : null}
           {icon ? (
@@ -140,6 +148,9 @@ const styles = StyleSheet.create({
     width: '100%',
     minHeight: 44,
   },
+  toolbarRowEnglish: {
+    flexDirection: 'row',
+  },
   toolbarSide: {
     width: 44,
     alignItems: 'center',
@@ -158,6 +169,10 @@ const styles = StyleSheet.create({
     right: Spacing.md,
     zIndex: 2,
     padding: Spacing.xs,
+  },
+  backButtonAbsoluteEnglish: {
+    right: undefined,
+    left: Spacing.md,
   },
   backPlaceholder: {
     width: 24,

@@ -12,10 +12,18 @@ interface MoreHubTileProps {
   label: string;
   subtitle: string;
   testID?: string;
+  badgeCount?: number;
   onPress: () => void;
 }
 
-export function MoreHubTile({ icon, label, subtitle, testID, onPress }: MoreHubTileProps) {
+export function MoreHubTile({
+  icon,
+  label,
+  subtitle,
+  testID,
+  badgeCount = 0,
+  onPress,
+}: MoreHubTileProps) {
   const { theme } = useApp();
   const { isPashto, fontFamily } = useI18n();
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
@@ -33,6 +41,13 @@ export function MoreHubTile({ icon, label, subtitle, testID, onPress }: MoreHubT
     >
       <View style={[styles.iconWrap, { backgroundColor: `${theme.tint}18`, borderColor: `${theme.tint}30` }]}>
         <MaterialIcons name={icon} size={24} color={theme.tint} />
+        {badgeCount > 0 ? (
+          <View style={styles.badge}>
+            <CenteredText style={styles.badgeText}>
+              {badgeCount > 9 ? '۹+' : String(badgeCount)}
+            </CenteredText>
+          </View>
+        ) : null}
       </View>
       <CenteredText style={[styles.label, { color: theme.text }]}>{label}</CenteredText>
       <CenteredText style={[styles.subtitle, { color: theme.textSecondary, lineHeight: subtitleLineHeight }]}>
@@ -59,6 +74,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,
+  },
+  badge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#E11D48',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '700',
+    lineHeight: 12,
   },
   label: {
     fontSize: Typography.ui.body,

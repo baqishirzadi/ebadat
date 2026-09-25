@@ -87,6 +87,42 @@ export async function getAndroidPermissionStepCount(): Promise<number> {
   return Number(Platform.Version) >= 31 ? 3 : 2;
 }
 
+/** Language + city before any permission screens. */
+export const ONBOARDING_BASE_STEPS = 2;
+
+/** Total dots for the current platform (language, city, then permissions). */
+export async function getOnboardingTotalSteps(): Promise<number> {
+  if (Platform.OS === 'android') {
+    return ONBOARDING_BASE_STEPS + (await getAndroidPermissionStepCount());
+  }
+  // iOS: language → city → notifications, then home.
+  return ONBOARDING_BASE_STEPS + 1;
+}
+
+export type OnboardingUiStep =
+  | 'language'
+  | 'location'
+  | 'notifications'
+  | 'exact-alarms'
+  | 'battery';
+
+export function getOnboardingStepIndex(step: OnboardingUiStep): number {
+  switch (step) {
+    case 'language':
+      return 1;
+    case 'location':
+      return 2;
+    case 'notifications':
+      return 3;
+    case 'exact-alarms':
+      return 4;
+    case 'battery':
+      return Number(Platform.Version) >= 31 ? 5 : 4;
+    default:
+      return 1;
+  }
+}
+
 export async function getOnboardingResumeRoute(): Promise<string> {
   const progress = await getPermissionOnboardingProgress();
   if (!progress || progress === 'language' || progress === 'location') {

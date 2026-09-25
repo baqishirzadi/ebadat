@@ -21,7 +21,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { getSurah } from '@/data/surahNames';
-import { useApp } from '@/context/AppContext';
+import { useApp, useBookmarks, useReadingPosition } from '@/context/AppContext';
+import audioManager from '@/utils/quranAudio';
 import {
   applyKashida,
   kashidaCountForWidth,
@@ -33,11 +34,14 @@ import {
   getHifzLinePlayTarget,
   getHifzPage,
   getHifzSurahStartPage,
-  findHifzPageForAyah,
+  hifzAyahVisibleLengthOnPage,
+  listHifzPagesForAyah,
+  resolveHifzPageTarget,
   HIFZ16_PAGE_COUNT,
   type HifzLine,
   type HifzPage,
 } from '@/utils/hifz16';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const HIFZ_FONT = Platform.OS === 'ios' ? 'Scheherazade New' : 'ScheherazadeNew';
 const PAGE_WIDTH = Dimensions.get('window').width;
@@ -47,6 +51,9 @@ const MAX_FONT = 22;
 const OPENING_FONT = 26;
 /** Tall enough for Scheherazade harakat and letter tails. */
 const LINE_HEIGHT_RATIO = 1.9;
+/** Extra tall for Bismillah so ی / م descenders are not clipped. */
+const BASMALLAH_LINE_HEIGHT_RATIO = 2.35;
+const BISMILLAH = 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ';
 const AYAH_HIGHLIGHT = 'rgba(14, 107, 79, 0.12)';
 const KASHIDA_SLOT_CAP = 14;
 
@@ -74,11 +81,20 @@ type Props = {
   activePlayingSurah?: number | null;
   activePlayingAyah?: number | null;
   onPlayAyah?: (surah: number, ayah: number) => void;
-  onVisibleSurahChange?: (surahNumber: number) => void;
+  /** Visible page's play target (for dock play/bookmark). */
+  onVisiblePositionChange?: (surahNumber: number, ayahNumber: number, pageNumber: number) => void;
 };
 
 function isOpeningPage(page: number) {
   return page === 1 || page === 2;
+}
+
+/** Bismillah under surah name except Fatiha (ayah 1) and Tawbah (none). */
+function shouldInjectBasmallah(line: HifzLine, next: HifzLine | undefined): boolean {
+  if (line.type !== 'surah_name') return false;
+  const surah = line.surahNumber;
+  if (surah == null || surah === 1 || surah === 9) return false;
+  return next?.type !== 'basmallah';
 }
 
 function estimatePageFontSize(page: HifzPage, contentWidth: number, opening: boolean): number {
@@ -473,6 +489,123 @@ const SurahCartouche = memo(function SurahCartouche({ title }: { title?: string 
   );
 });
 
+/** Tiny side flower for compact surah / Bismillah ornaments. */
+const MiniFloral = memo(function MiniFloral({ size = 22 }: { size?: number }) {
+  const mid = size / 2;
+  return (
+    <Svg width={size} height={size}>
+      <FloralUnit x={mid} y={mid} scale={size / 28} />
+    </Svg>
+  );
+});
+
+/**
+ * Compact floral gold header: surah name in a slim cartouche with side flowers,
+ * optional Bismillah with gold rules and end blooms.
+ */
+const SurahFloralHeader = memo(function SurahFloralHeader({
+  title,
+  basmallahText,
+  fontSize,
+}: {
+  title?: string;
+  basmallahText?: string | null;
+  fontSize: number;
+  lineHeight: number;
+}) {
+  const titleSize = Math.max(13, fontSize - 1);
+  const titleText = title ? applyKashida(title, 4, 2) : '';
+  return (
+    <View style={styles.floralHeader}>
+      {title ? (
+        <View style={styles.surahBannerRow}>
+          <MiniFloral size={14} />
+          <View style={styles.surahBanner}>
+            <View style={styles.surahBannerInner} />
+            <Text
+              numberOfLines={1}
+              style={[
+                styles.surahBannerText,
+                {
+                  fontFamily: HIFZ_FONT,
+                  fontSize: titleSize,
+                  lineHeight: Math.round(titleSize * 1.5),
+                },
+                androidFontPad,
+              ]}
+            >
+              {titleText}
+            </Text>
+          </View>
+          <MiniFloral size={14} />
+        </View>
+      ) : null}
+      {basmallahText != null ? (
+        <BasmallahText
+          text={basmallahText || BISMILLAH}
+          fontSize={fontSize}
+          ornate
+          compact
+        />
+      ) : null}
+    </View>
+  );
+});
+
+/** Full Bismillah line with room for Scheherazade descenders. */
+const BasmallahText = memo(function BasmallahText({
+  text,
+  fontSize,
+  ornate = false,
+  compact = false,
+}: {
+  text?: string;
+  fontSize: number;
+  ornate?: boolean;
+  /** Mid-page header: smaller type so it fits the two-line slot. */
+  compact?: boolean;
+}) {
+  const size = compact ? Math.max(13, fontSize - 2) : fontSize + 1;
+  const ratio = compact ? 2 : BASMALLAH_LINE_HEIGHT_RATIO;
+  const body = (
+    <Text
+      style={[
+        styles.basmallahText,
+        ornate && styles.basmallahTextOrnate,
+        {
+          color: ILLUM.greenDark,
+          fontFamily: HIFZ_FONT,
+          fontSize: size,
+          lineHeight: Math.round(size * ratio),
+        },
+        androidFontPad,
+      ]}
+    >
+      {text || BISMILLAH}
+    </Text>
+  );
+
+  if (!ornate) {
+    return <View style={styles.basmallahRow}>{body}</View>;
+  }
+
+  return (
+    <View style={[styles.basmallahOrnateRow, compact && styles.basmallahOrnateRowCompact]}>
+      <View style={styles.basmallahRuleSide}>
+        <MiniFloral size={compact ? 12 : 14} />
+        <View style={styles.basmallahRule} />
+      </View>
+      <View style={[styles.basmallahOrnateTextWrap, compact && styles.basmallahOrnateTextWrapCompact]}>
+        {body}
+      </View>
+      <View style={[styles.basmallahRuleSide, styles.basmallahRuleSideEnd]}>
+        <View style={styles.basmallahRule} />
+        <MiniFloral size={compact ? 12 : 14} />
+      </View>
+    </View>
+  );
+});
+
 const MAX_KASHIDA_TOTAL = 12 * KASHIDA_SLOT_CAP;
 
 type MeasurePhase = 'natural' | 'stretched' | 'done';
@@ -674,9 +807,11 @@ export const Hifz16View = memo(function Hifz16View({
   activePlayingSurah,
   activePlayingAyah,
   onPlayAyah,
-  onVisibleSurahChange,
+  onVisiblePositionChange,
 }: Props) {
   const { theme } = useApp();
+  const { position, updatePosition } = useReadingPosition();
+  const { isBookmarked } = useBookmarks();
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<number>>(null);
 
@@ -707,23 +842,98 @@ export const Hifz16View = memo(function Hifz16View({
   }, [initialAyah, surahNumber]);
 
   const startIndex = Math.max(0, startPage - 1);
+  const visiblePageRef = useRef(startPage);
+  const userInterruptedFollowRef = useRef(false);
+  const followProgrammaticRef = useRef(false);
 
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      listRef.current?.scrollToIndex({ index: startIndex, animated: false });
-    });
-  }, [startIndex, surahNumber]);
-
-  // Follow the playing ayah across pages (physical mushaf turn).
-  useEffect(() => {
-    if (activePlayingSurah == null || activePlayingAyah == null) return;
-    const page = findHifzPageForAyah(activePlayingSurah, activePlayingAyah);
-    if (page == null) return;
+  const scrollToPage = useCallback((page: number, animated: boolean) => {
     const index = Math.max(0, page - 1);
+    visiblePageRef.current = page;
+    followProgrammaticRef.current = true;
     requestAnimationFrame(() => {
-      listRef.current?.scrollToIndex({ index, animated: true });
+      listRef.current?.scrollToIndex({ index, animated });
+      // FlatList settle; clear flag after animation window.
+      setTimeout(() => {
+        followProgrammaticRef.current = false;
+      }, animated ? 450 : 80);
     });
-  }, [activePlayingSurah, activePlayingAyah]);
+  }, []);
+
+  useEffect(() => {
+    visiblePageRef.current = startPage;
+    userInterruptedFollowRef.current = false;
+    scrollToPage(startPage, false);
+  }, [scrollToPage, startPage, surahNumber]);
+
+  // Follow the playing ayah in both directions. Mid-ayah multi-page turns
+  // follow audio progress. Manual paging pauses follow until audio catches up.
+  useEffect(() => {
+    if (activePlayingSurah == null || activePlayingAyah == null) {
+      userInterruptedFollowRef.current = false;
+      return;
+    }
+
+    const surah = activePlayingSurah;
+    const ayah = activePlayingAyah;
+    const pages = listHifzPagesForAyah(surah, ayah);
+    if (pages.length === 0) return;
+
+    const firstPage = pages[0];
+    const lastPage = pages[pages.length - 1];
+    userInterruptedFollowRef.current = false;
+
+    const jumpToNearestContainingPage = () => {
+      const visible = visiblePageRef.current;
+      if (pages.includes(visible)) return;
+      const target =
+        visible < firstPage ? firstPage : visible > lastPage ? lastPage : firstPage;
+      scrollToPage(target, true);
+    };
+
+    jumpToNearestContainingPage();
+
+    const lengths = pages.map((page) => hifzAyahVisibleLengthOnPage(page, surah, ayah));
+    const total = Math.max(1, lengths.reduce((sum, n) => sum + n, 0));
+
+    const pageForProgress = (position: number, duration: number): number => {
+      if (pages.length < 2 || duration <= 0.25) {
+        return pages.includes(visiblePageRef.current) ? visiblePageRef.current : firstPage;
+      }
+      const ratio = Math.min(1, Math.max(0, position / duration));
+      let acc = 0;
+      let target = lastPage;
+      for (let i = 0; i < pages.length; i += 1) {
+        acc += lengths[i] / total;
+        if (ratio < acc || i === pages.length - 1) {
+          target = pages[i];
+          break;
+        }
+      }
+      return target;
+    };
+
+    const followProgress = (position: number, duration: number) => {
+      const target = pageForProgress(position, duration);
+      if (userInterruptedFollowRef.current) {
+        if (target === visiblePageRef.current) {
+          userInterruptedFollowRef.current = false;
+        }
+        return;
+      }
+      if (target !== visiblePageRef.current) {
+        scrollToPage(target, true);
+      }
+    };
+
+    const snap = audioManager.getPlaybackSnapshot();
+    if (snap.surah === surah && snap.ayah === ayah) {
+      followProgress(snap.position, snap.duration);
+    }
+    return audioManager.subscribe((next) => {
+      if (next.surah !== surah || next.ayah !== ayah) return;
+      followProgress(next.position, next.duration);
+    });
+  }, [activePlayingAyah, activePlayingSurah, scrollToPage]);
 
   const handleLinePress = useCallback(
     (line: HifzLine) => {
@@ -734,35 +944,77 @@ export const Hifz16View = memo(function Hifz16View({
     [onPlayAyah]
   );
 
-  const onVisibleSurahChangeRef = useRef(onVisibleSurahChange);
-  onVisibleSurahChangeRef.current = onVisibleSurahChange;
-  const surahNumberRef = useRef(surahNumber);
-  surahNumberRef.current = surahNumber;
+  const onVisiblePositionChangeRef = useRef(onVisiblePositionChange);
+  onVisiblePositionChangeRef.current = onVisiblePositionChange;
+  const updatePositionRef = useRef(updatePosition);
+  updatePositionRef.current = updatePosition;
+  const positionRef = useRef(position);
+  positionRef.current = position;
+  const playingRef = useRef({ surah: activePlayingSurah, ayah: activePlayingAyah });
+  playingRef.current = { surah: activePlayingSurah, ayah: activePlayingAyah };
 
-  const reportVisibleSurah = useCallback((pageNumber: number) => {
-    const cb = onVisibleSurahChangeRef.current;
-    if (!cb) return;
-    const page = getHifzPage(pageNumber);
-    if (!page) return;
-    const surahLine = page.lines.find((line) => line.surahNumber != null);
-    cb(surahLine?.surahNumber ?? surahNumberRef.current);
+  const reportVisiblePosition = useCallback((pageNumber: number) => {
+    const playing = playingRef.current;
+    const saved = positionRef.current;
+    const resolved = resolveHifzPageTarget(pageNumber, {
+      playingSurah: playing.surah,
+      playingAyah: playing.ayah,
+      savedSurah: saved.surahNumber > 0 ? saved.surahNumber : null,
+      savedAyah: saved.ayahNumber > 0 ? saved.ayahNumber : null,
+    });
+    if (!resolved) return;
+
+    updatePositionRef.current({
+      surahNumber: resolved.surah,
+      ayahNumber: resolved.ayah,
+      page: resolved.page,
+    });
+    onVisiblePositionChangeRef.current?.(resolved.surah, resolved.ayah, resolved.page);
   }, []);
 
   useEffect(() => {
-    reportVisibleSurah(startPage);
-  }, [reportVisibleSurah, startPage]);
+    reportVisiblePosition(startPage);
+  }, [reportVisiblePosition, startPage]);
 
-  const reportVisibleSurahLive = useRef(reportVisibleSurah);
-  reportVisibleSurahLive.current = reportVisibleSurah;
+  // Re-resolve dock target when playback moves onto the visible page.
+  useEffect(() => {
+    reportVisiblePosition(visiblePageRef.current);
+  }, [activePlayingAyah, activePlayingSurah, reportVisiblePosition]);
+
+  const reportVisiblePositionLive = useRef(reportVisiblePosition);
+  reportVisiblePositionLive.current = reportVisiblePosition;
 
   const onViewableItemsChanged = useRef(
     ({ viewableItems }: { viewableItems: Array<{ item: number }> }) => {
       const first = viewableItems[0]?.item;
-      if (typeof first === 'number') reportVisibleSurahLive.current(first);
+      if (typeof first !== 'number') return;
+      visiblePageRef.current = first;
+      reportVisiblePositionLive.current(first);
     }
   ).current;
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
+
+  const handleScrollBeginDrag = useCallback(() => {
+    if (followProgrammaticRef.current) return;
+    if (playingRef.current.surah != null && playingRef.current.ayah != null) {
+      userInterruptedFollowRef.current = true;
+    }
+  }, []);
+
+  const lineHasBookmark = useCallback(
+    (line: HifzLine) => {
+      if (line.type !== 'ayah' || line.surahNumber == null || line.ayahStart == null) {
+        return false;
+      }
+      const end = line.ayahEnd ?? line.ayahStart;
+      for (let ayah = line.ayahStart; ayah <= end; ayah += 1) {
+        if (isBookmarked(line.surahNumber, ayah)) return true;
+      }
+      return false;
+    },
+    [isBookmarked]
+  );
 
   const renderPage = useCallback(
     ({ item: pageNumber }: ListRenderItemInfo<number>) => {
@@ -777,6 +1029,7 @@ export const Hifz16View = memo(function Hifz16View({
           activePlayingSurah={activePlayingSurah}
           activePlayingAyah={activePlayingAyah}
           onLinePress={handleLinePress}
+          lineHasBookmark={lineHasBookmark}
         />
       );
     },
@@ -787,6 +1040,7 @@ export const Hifz16View = memo(function Hifz16View({
       contentPaddingTop,
       handleLinePress,
       insets.bottom,
+      lineHasBookmark,
       theme.background,
     ]
   );
@@ -814,6 +1068,7 @@ export const Hifz16View = memo(function Hifz16View({
       renderItem={renderPage}
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
+      onScrollBeginDrag={handleScrollBeginDrag}
       windowSize={3}
       initialNumToRender={2}
       maxToRenderPerBatch={2}
@@ -830,6 +1085,7 @@ const HifzPageCard = memo(function HifzPageCard({
   activePlayingSurah,
   activePlayingAyah,
   onLinePress,
+  lineHasBookmark,
 }: {
   page: HifzPage;
   background: string;
@@ -838,6 +1094,7 @@ const HifzPageCard = memo(function HifzPageCard({
   activePlayingSurah?: number | null;
   activePlayingAyah?: number | null;
   onLinePress: (line: HifzLine) => void;
+  lineHasBookmark: (line: HifzLine) => boolean;
 }) {
   const opening = isOpeningPage(page.page);
   const [contentWidth, setContentWidth] = useState(0);
@@ -906,35 +1163,25 @@ const HifzPageCard = memo(function HifzPageCard({
 
               <View style={styles.openingTextArea} onLayout={onTextColumnLayout}>
                 {basmallahLine ? (
-                  <View style={styles.basmallahRow}>
-                    <Text
-                      numberOfLines={1}
-                      style={[
-                        styles.basmallahText,
-                        {
-                          color: ILLUM.greenDark,
-                          fontFamily: HIFZ_FONT,
-                          fontSize: fontSize + 1,
-                          lineHeight: lineHeight + 2,
-                        },
-                        androidFontPad,
-                      ]}
-                    >
-                      {basmallahLine.text || 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ'}
-                    </Text>
-                  </View>
+                  <BasmallahText text={basmallahLine.text} fontSize={fontSize} ornate />
                 ) : null}
 
                 <View style={styles.openingAyahBlock}>
                   {openingAyahLines.map((line) => {
                     const highlightAyah =
                       line.surahNumber === activePlayingSurah ? activePlayingAyah : null;
+                    const bookmarked = lineHasBookmark(line);
                     return (
                       <Pressable
                         key={`${page.page}-${line.line}`}
                         onPress={() => onLinePress(line)}
                         style={styles.openingLineRow}
                       >
+                        {bookmarked ? (
+                          <View style={styles.bookmarkMark} pointerEvents="none">
+                            <MaterialIcons name="bookmark" size={12} color={ILLUM.gold} />
+                          </View>
+                        ) : null}
                         <JustifiedAyahText
                           text={line.text}
                           fontSize={fontSize}
@@ -967,7 +1214,14 @@ const HifzPageCard = memo(function HifzPageCard({
                 </Text>
               </View>
               <View style={styles.slimTextColumn} onLayout={onTextColumnLayout}>
-                {regularLines.map((line) => {
+                {regularLines.map((line, index) => {
+                  const prev = regularLines[index - 1];
+                  const next = regularLines[index + 1];
+                  // Basmallah already drawn inside the preceding surah floral header.
+                  if (line.type === 'basmallah' && prev?.type === 'surah_name') {
+                    return null;
+                  }
+
                   const playable = line.type === 'ayah';
                   const centered =
                     line.type === 'surah_name' ||
@@ -978,14 +1232,36 @@ const HifzPageCard = memo(function HifzPageCard({
                     playable && line.surahNumber === activePlayingSurah
                       ? activePlayingAyah
                       : null;
+                  const bookmarked = playable && lineHasBookmark(line);
+                  const injectBasmallah = shouldInjectBasmallah(line, next);
+                  const headerBasmallah =
+                    line.type === 'surah_name'
+                      ? injectBasmallah
+                        ? BISMILLAH
+                        : next?.type === 'basmallah'
+                          ? next.text || BISMILLAH
+                          : null
+                      : null;
+                  const hasHeaderBasmallah = headerBasmallah != null;
 
                   return (
                     <Pressable
                       key={`${page.page}-${line.line}`}
                       disabled={!playable}
                       onPress={() => onLinePress(line)}
-                      style={[styles.lineRow, isSpacer && styles.spacerRow]}
+                      style={[
+                        styles.lineRow,
+                        isSpacer && styles.spacerRow,
+                        line.type === 'surah_name' && styles.surahBlockRow,
+                        hasHeaderBasmallah && styles.surahWithBasmallahRow,
+                        line.type === 'basmallah' && styles.surahBlockRow,
+                      ]}
                     >
+                      {bookmarked ? (
+                        <View style={styles.bookmarkMark} pointerEvents="none">
+                          <MaterialIcons name="bookmark" size={12} color={ILLUM.gold} />
+                        </View>
+                      ) : null}
                       {isSpacer ? (
                         <View style={styles.spacer} />
                       ) : line.type === 'ayah' ? (
@@ -1001,18 +1277,25 @@ const HifzPageCard = memo(function HifzPageCard({
                           ayahEnd={line.ayahEnd}
                           highlightAyah={highlightAyah}
                         />
+                      ) : line.type === 'basmallah' ? (
+                        <BasmallahText text={line.text} fontSize={fontSize} ornate />
+                      ) : line.type === 'surah_name' ? (
+                        <SurahFloralHeader
+                          title={line.text}
+                          basmallahText={headerBasmallah}
+                          fontSize={fontSize}
+                          lineHeight={lineHeight}
+                        />
                       ) : (
                         <Text
                           numberOfLines={1}
                           style={[
                             styles.lineText,
                             styles.lineCentered,
-                            line.type === 'surah_name' && styles.surahName,
                             {
                               color: ILLUM.greenDark,
-                              fontSize: line.type === 'surah_name' ? fontSize + 2 : fontSize,
-                              lineHeight:
-                                line.type === 'surah_name' ? lineHeight + 2 : lineHeight,
+                              fontSize,
+                              lineHeight,
                             },
                             androidFontPad,
                           ]}
@@ -1207,13 +1490,126 @@ const styles = StyleSheet.create({
   basmallahRow: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 6,
-    marginBottom: 2,
+    width: '100%',
+    paddingTop: 1,
+    paddingBottom: 6,
+    overflow: 'visible',
+  },
+  basmallahOrnateRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    paddingTop: 1,
+    paddingBottom: 4,
+    overflow: 'visible',
+    gap: 3,
+  },
+  basmallahRuleSide: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    minWidth: 22,
+  },
+  basmallahRuleSideEnd: {
+    justifyContent: 'flex-end',
+  },
+  basmallahRule: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth * 2,
+    backgroundColor: ILLUM.gold,
+    opacity: 0.85,
+  },
+  basmallahOrnateTextWrap: {
+    flexShrink: 1,
+    maxWidth: '70%',
+    overflow: 'visible',
   },
   basmallahText: {
     textAlign: 'center',
     writingDirection: 'rtl',
     width: '100%',
+    overflow: 'visible',
+  },
+  basmallahTextOrnate: {
+    paddingHorizontal: 2,
+  },
+  floralHeader: {
+    width: '100%',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    overflow: 'hidden',
+    paddingTop: 4,
+    paddingBottom: 2,
+  },
+  surahBannerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'stretch',
+    gap: 6,
+    paddingHorizontal: 2,
+  },
+  surahBanner: {
+    flex: 1,
+    paddingTop: 2,
+    paddingBottom: 2,
+    paddingHorizontal: 16,
+    borderRadius: 3,
+    borderWidth: 1.5,
+    borderColor: ILLUM.greenDark,
+    backgroundColor: '#F3FAF7',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  surahBannerInner: {
+    ...StyleSheet.absoluteFillObject,
+    top: 3,
+    right: 5,
+    bottom: 3,
+    left: 5,
+    borderRadius: 2,
+    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderColor: ILLUM.gold,
+  },
+  surahBannerText: {
+    color: ILLUM.greenDark,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    fontWeight: '600',
+    paddingHorizontal: 12,
+  },
+  basmallahOrnateRowCompact: {
+    paddingTop: 0,
+    paddingBottom: 5,
+    gap: 2,
+  },
+  basmallahOrnateTextWrapCompact: {
+    maxWidth: '78%',
+  },
+  surahNameBlock: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  /** One line slot for a standalone surah name / orphan basmallah. */
+  surahBlockRow: {
+    flexGrow: 1,
+    flexShrink: 0,
+    overflow: 'hidden',
+  },
+  /**
+   * Name + Bismillah share one header while the data basmallah line is omitted;
+   * take two line slots so the block stays below the previous ayah.
+   */
+  surahWithBasmallahRow: {
+    flex: 2,
+    flexGrow: 2,
+    flexShrink: 0,
+    overflow: 'hidden',
   },
   openingLineRow: {
     width: '100%',
@@ -1225,6 +1621,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
     borderRadius: 0,
     borderWidth: 0,
+    position: 'relative',
+  },
+  bookmarkMark: {
+    position: 'absolute',
+    top: 2,
+    left: 2,
+    zIndex: 2,
   },
   openingAyahBlock: {
     flexGrow: 0,
@@ -1234,8 +1637,6 @@ const styles = StyleSheet.create({
   // Soft wash + hairline gold frame on the playing ayah span only.
   ayahHighlight: {
     backgroundColor: AYAH_HIGHLIGHT,
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: ILLUM.gold,
   },
   lineRow: {
     flex: 1,
@@ -1246,6 +1647,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     borderRadius: 0,
     borderWidth: 0,
+    position: 'relative',
   },
   activeLine: {
     // colors applied inline from themePlaying

@@ -140,12 +140,12 @@ export default function MoreScreen() {
     { icon: 'calendar-today' as const, label: 'جنتری', subtitle: 'تقویم اسلامی', route: '/(tabs)/jantari' },
     { icon: 'explore' as const, label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla' },
     { icon: 'school' as const, label: 'آموزش نماز', subtitle: 'فقه و راهنما', route: '/(tabs)/prayer-learning' },
+    { icon: 'favorite' as const, label: 'دعای خیر', subtitle: 'ارسال درخواست دعا', route: '/dua-request' },
     { icon: 'bookmark' as const, label: 'نشانه‌های من', subtitle: 'موارد ذخیره‌شده', route: '/(tabs)/bookmarks' },
   ], []);
 
   const secondaryActions = useMemo(() => [
     { icon: 'access-alarm' as const, label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings' },
-    { icon: 'favorite' as const, label: 'دعای خیر و مشورت شرعی', subtitle: 'ارسال درخواست دعا', route: '/dua-request' },
     { icon: 'admin-panel-settings' as const, label: 'پنل مدیریت', subtitle: 'بخش مدیریتی', route: '/admin/login' },
     { icon: 'settings' as const, label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/settings' },
   ], []);
@@ -278,6 +278,7 @@ export default function MoreScreen() {
                 icon={item.icon}
                 label={item.label}
                 subtitle={item.subtitle}
+                badgeCount={item.route === '/dua-request' ? unreadCount : 0}
                 testID={
                   item.route === '/(tabs)/ahadith'
                     ? 'ios-open-ahadith'
@@ -304,6 +305,7 @@ export default function MoreScreen() {
       language,
       directionalRow,
       router,
+      unreadCount,
     ],
   );
 
@@ -407,7 +409,6 @@ export default function MoreScreen() {
                 icon={action.icon}
                 label={action.label}
                 subtitle={action.subtitle}
-                badgeCount={action.route === '/dua-request' ? unreadCount : 0}
                 testID={action.route === '/adhan-settings' ? 'ios-open-adhan-settings-secondary' : undefined}
                 onPress={() => router.push(action.route as any)}
               />
