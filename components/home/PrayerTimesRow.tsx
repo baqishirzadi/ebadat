@@ -42,7 +42,12 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
 
   return (
     <Pressable onPress={() => router.push('/(tabs)/jantari' as never)}>
-      <RtlView style={[styles.strip, { backgroundColor: theme.tint }]}>
+      <RtlView
+        style={[
+          styles.card,
+          { backgroundColor: theme.card, borderColor: theme.cardBorder },
+        ]}
+      >
         {PRAYERS.map((prayer) => {
           const time = prayerTimes?.[prayer.key];
           const active = current === prayer.key;
@@ -57,7 +62,6 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
               )}
               time={time ? formatPrayerTime12h(time, timeZone) : '--:--'}
               active={active}
-              tone="widget"
             />
           );
         })}
@@ -67,13 +71,13 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
 }
 
 const styles = StyleSheet.create({
-  strip: {
+  card: {
     flexDirection: 'row',
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.md,
+    borderWidth: 1,
     borderRadius: BorderRadius.xl,
-    paddingHorizontal: 6,
-    paddingVertical: 8,
+    padding: Spacing.md,
     gap: 4,
     alignItems: 'center',
   },

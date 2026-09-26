@@ -21,7 +21,7 @@ import {
 import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
 import { useI18n } from '@/utils/i18n/useI18n';
-import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 
 interface DailyHadithCardProps {
   selection: DailyHadithSelection;
@@ -41,12 +41,13 @@ export function DailyHadithCard({
   onSwipePrevious,
 }: DailyHadithCardProps) {
   const { theme, themeMode, state } = useApp();
-  const { t, language } = useI18n();
+  const { t, language, fontFamily, isRtl } = useI18n();
   const opacity = useRef(new Animated.Value(1)).current;
   const translateX = useRef(new Animated.Value(0)).current;
   const swipeDirectionRef = useRef<0 | 1 | -1>(0);
 
   const gradient = useMemo(() => deriveDailyCardGradient(theme, themeMode), [theme, themeMode]);
+  const translation = getHadithTranslation(selection.hadith, language);
 
   useEffect(() => {
     const direction = swipeDirectionRef.current;
@@ -94,6 +95,9 @@ export function DailyHadithCard({
   );
 
   const hadith = selection.hadith;
+  const gradeLabel = hadith.is_muttafaq
+    ? getMuttafaqBadgeLabel(language)
+    : getAuthenticityGradeLabel(hadith.authenticity_grade, language);
 
   return (
     <Animated.View style={{ opacity, transform: [{ translateX }] }} {...panResponder.panHandlers}>
@@ -142,21 +146,27 @@ export function DailyHadithCard({
             </View>
 
             <View style={styles.tagRow}>
-              <View style={[styles.reasonChip, { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) }]}> 
+              <View style={[styles.reasonChip, { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) }]}>
                 <CenteredText style={[styles.reasonText, { color: theme.surface }]}>{getReasonLabel(selection.reason, language)}</CenteredText>
               </View>
 
-              {hadith.is_muttafaq ? (
-                <View style={[styles.badge, { backgroundColor: alphaColor(theme.accent, 0.24), borderColor: alphaColor(theme.accent, 0.45) }]}> 
-                  <CenteredText style={[styles.badgeText, { color: theme.accent }]}>{getMuttafaqBadgeLabel(language)}</CenteredText>
-                </View>
-              ) : (
-                <View style={[styles.badge, { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) }]}>
-                  <CenteredText style={[styles.badgeText, { color: theme.surface }]}>
-                    {getAuthenticityGradeLabel(hadith.authenticity_grade, language)}
-                  </CenteredText>
-                </View>
-              )}
+              <View
+                style={[
+                  styles.badge,
+                  hadith.is_muttafaq
+                    ? { backgroundColor: alphaColor(theme.accent, 0.24), borderColor: alphaColor(theme.accent, 0.45) }
+                    : { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) },
+                ]}
+              >
+                <CenteredText
+                  style={[
+                    styles.badgeText,
+                    { color: hadith.is_muttafaq ? theme.accent : theme.surface },
+                  ]}
+                >
+                  {gradeLabel}
+                </CenteredText>
+              </View>
             </View>
 
             <CenteredText
@@ -175,23 +185,23 @@ export function DailyHadithCard({
           <View style={styles.bottomPanel}>
             <CenteredText
               style={[
-                styles.dari,
+                language === 'english' ? styles.translationEnglish : styles.translation,
                 {
                   color: theme.textPrimary,
-                  fontFamily: getDariFontFamily(state.preferences.dariFont),
+                  fontFamily,
+                  writingDirection: isRtl ? 'rtl' : 'ltr',
                 },
               ]}
             >
-              {getHadithTranslation(hadith, language)}
+              {translation || t('ahadith.translation.unavailable')}
             </CenteredText>
 
-            <View style={[styles.divider, { backgroundColor: alphaColor(theme.textSecondary, 0.22) }]} />
-
-            <View style={[styles.footer, { borderTopColor: alphaColor(theme.textSecondary, 0.2) }]}> 
+            <View style={[styles.footer, { borderTopColor: alphaColor(theme.textSecondary, 0.2) }]}>
               <CenteredText style={[styles.source, { color: theme.textSecondary }]}>
                 {formatSourceLabel(hadith.source_book, hadith.source_number, language)}
+                {' · '}
+                {gradeLabel}
               </CenteredText>
-              <CenteredText style={[styles.hint, { color: theme.textSecondary }]}>{t('ahadith.card.holdToBookmark')}</CenteredText>
             </View>
           </View>
         </View>
@@ -271,36 +281,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 14,
     paddingBottom: 14,
-    gap: 10,
+    gap: 12,
   },
-  divider: {
-    height: 1,
-  },
-  dari: {
+  translation: {
     fontSize: 22,
     lineHeight: 36,
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
-  pashto: {
-    fontSize: 19,
-    lineHeight: 31,
+  translationEnglish: {
+    fontSize: 18,
+    lineHeight: 28,
     textAlign: 'center',
-    writingDirection: 'rtl',
+    fontWeight: '500',
   },
   footer: {
     borderTopWidth: 1,
     paddingTop: 12,
-    gap: 4,
   },
   source: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 13,
-    textAlign: 'center',
-  },
-  hint: {
-    fontFamily: 'Vazirmatn',
-    fontSize: 11,
     textAlign: 'center',
   },
 });

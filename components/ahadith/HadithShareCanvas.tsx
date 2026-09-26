@@ -12,7 +12,7 @@ import {
 import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
 import { useI18n } from '@/utils/i18n/useI18n';
-import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 
 interface HadithShareCanvasProps {
   hadith: Hadith;
@@ -20,13 +20,13 @@ interface HadithShareCanvasProps {
 
 export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ hadith }, ref) => {
   const { theme, themeMode, state } = useApp();
-  const { language } = useI18n();
-  const isPashto = language === 'pashto';
+  const { t, language, fontFamily, isRtl } = useI18n();
   const gradient = deriveDailyCardGradient(theme, themeMode);
+  const translation = getHadithTranslation(hadith, language);
 
   return (
-    <View ref={ref} style={[styles.root, { backgroundColor: theme.background }]}> 
-      <LinearGradient colors={gradient} style={[styles.card, { borderColor: alphaColor(theme.primary, 0.4) }]}> 
+    <View ref={ref} style={[styles.root, { backgroundColor: theme.background }]}>
+      <LinearGradient colors={gradient} style={[styles.card, { borderColor: alphaColor(theme.primary, 0.4) }]}>
         <CenteredText
           style={[
             styles.arabic,
@@ -46,11 +46,12 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
             styles.translation,
             {
               color: theme.textPrimary,
-              fontFamily: isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont),
+              fontFamily,
+              writingDirection: isRtl ? 'rtl' : 'ltr',
             },
           ]}
         >
-          {getHadithTranslation(hadith, language)}
+          {translation || t('ahadith.translation.unavailable')}
         </CenteredText>
 
         <CenteredText
@@ -58,7 +59,6 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
             styles.footer,
             {
               color: theme.textSecondary,
-              fontFamily: getPashtoFontFamily(state.preferences.pashtoFont),
             },
           ]}
         >
@@ -81,30 +81,29 @@ const styles = StyleSheet.create({
     padding: 48,
   },
   card: {
-    borderRadius: 36,
-    borderWidth: 1,
-    paddingHorizontal: 42,
-    paddingVertical: 40,
+    borderRadius: 48,
+    borderWidth: 4,
+    paddingHorizontal: 56,
+    paddingVertical: 64,
+    gap: 36,
   },
   arabic: {
-    fontSize: 56,
-    lineHeight: 92,
+    fontSize: 64,
+    lineHeight: 110,
     textAlign: 'center',
     writingDirection: 'rtl',
   },
   divider: {
-    height: 1,
-    marginVertical: 26,
+    height: 2,
   },
   translation: {
-    fontSize: 34,
-    lineHeight: 56,
+    fontSize: 42,
+    lineHeight: 68,
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
   footer: {
-    marginTop: 30,
-    textAlign: 'center',
+    fontFamily: 'Vazirmatn-Bold',
     fontSize: 28,
+    textAlign: 'center',
   },
 });

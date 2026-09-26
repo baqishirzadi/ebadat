@@ -135,9 +135,10 @@ for (const raw of input) {
   const arabicText = normalizeString(raw.arabic_text);
   const dari = normalizeString(raw.dari_translation);
   const pashto = normalizeString(raw.pashto_translation);
+  const english = normalizeString(raw.english_translation) || dari;
 
-  if (!arabicText || !dari || !pashto) {
-    fail(`Hadith ${sourceId}: arabic_text, dari_translation, and pashto_translation are required`);
+  if (!arabicText || !dari || !pashto || !english) {
+    fail(`Hadith ${sourceId}: arabic_text, dari_translation, pashto_translation, and english_translation are required`);
   }
 
   const sourceNumber = normalizeString(raw.source_number);
@@ -173,6 +174,7 @@ for (const raw of input) {
     arabic_text: arabicText,
     dari_translation: dari,
     pashto_translation: pashto,
+    english_translation: english,
     source_book: sourceBook,
     source_number: sourceNumber,
     is_muttafaq: isMuttafaq,

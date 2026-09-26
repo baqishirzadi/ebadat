@@ -48,7 +48,7 @@ export const CREATOR_MESSAGE_ENGLISH_BODY =
 export const CREATOR_MESSAGE_ENGLISH_SIGNATURE =
   'Sayed Abdul Baqi, son of Sayed Abdul Ellah Shirzadi';
 
-export const CREATOR_COMPANY_LABEL = 'سازنده شرکت نرم افزار';
+export const CREATOR_COMPANY_LABEL = 'سازنده: شرکت نرم‌افزار';
 export const CREATOR_COMPANY_LABEL_ENGLISH = 'Software studio';
 export const CREATOR_COMPANY_LINK = 'WWW.AFGHAN.DEV';
 export const CREATOR_COMPANY_URL = 'https://www.afghan.dev';

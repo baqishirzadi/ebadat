@@ -7,7 +7,7 @@ import { getTopicLabel } from '@/utils/ahadith/labels';
 import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
 import { useI18n } from '@/utils/i18n/useI18n';
-import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 
 interface TopicBrowserProps {
   allHadiths: Hadith[];
@@ -27,8 +27,7 @@ export function TopicBrowser({
   onOpenHadith,
 }: TopicBrowserProps) {
   const { theme, state } = useApp();
-  const { t, language } = useI18n();
-  const isPashto = language === 'pashto';
+  const { t, language, fontFamily, isRtl } = useI18n();
 
   const title = useMemo(
     () => (selectedTopic
@@ -120,11 +119,12 @@ export function TopicBrowser({
                 styles.translation,
                 {
                   color: theme.textSecondary,
-                  fontFamily: isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont),
+                  fontFamily,
+                  writingDirection: isRtl ? 'rtl' : 'ltr',
                 },
               ]}
             >
-              {getHadithTranslation(item, language)}
+              {getHadithTranslation(item, language) || t('ahadith.translation.unavailable')}
             </CenteredText>
           </Pressable>
         )}

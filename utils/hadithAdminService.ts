@@ -56,6 +56,7 @@ function rowToHadith(row: Partial<HadithEntryDTO>): Hadith | null {
   const arabicText = normalizeString(row.arabic_text);
   const dariTranslation = normalizeString(row.dari_translation);
   const pashtoTranslation = normalizeString(row.pashto_translation);
+  const englishTranslation = normalizeString(row.english_translation);
   const sourceNumber = normalizeString(row.source_number);
   if (!arabicText || !dariTranslation || !pashtoTranslation || !sourceNumber) return null;
 
@@ -73,6 +74,7 @@ function rowToHadith(row: Partial<HadithEntryDTO>): Hadith | null {
     arabic_text: arabicText,
     dari_translation: dariTranslation,
     pashto_translation: pashtoTranslation,
+    english_translation: englishTranslation,
     source_book: row.source_book as HadithSourceBook,
     source_number: sourceNumber,
     is_muttafaq: isMuttafaq,
@@ -214,6 +216,7 @@ function normalizePayload(payload: HadithAdminPayload): HadithAdminPayload {
     arabic_text: normalizeString(payload.arabic_text),
     dari_translation: normalizeString(payload.dari_translation),
     pashto_translation: normalizeString(payload.pashto_translation),
+    english_translation: normalizeString(payload.english_translation),
     source_number: normalizeString(payload.source_number),
     topics: payload.topics.map((topic) => normalizeString(topic).toLowerCase()).filter(Boolean),
   };

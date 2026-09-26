@@ -47,6 +47,8 @@ export interface Hadith {
   arabic_text: string;
   dari_translation: string;
   pashto_translation: string;
+  /** English rendering for daily notifications, Jantari, and English UI. */
+  english_translation: string;
   source_book: HadithSourceBook;
   source_number: string;
   is_muttafaq: boolean;
@@ -102,6 +104,7 @@ export interface HadithAdminPayload {
   arabic_text: string;
   dari_translation: string;
   pashto_translation: string;
+  english_translation: string;
   source_book: HadithSourceBook;
   source_number: string;
   is_muttafaq: boolean;

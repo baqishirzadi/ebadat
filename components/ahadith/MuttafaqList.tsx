@@ -7,7 +7,7 @@ import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
 import { alphaColor } from '@/utils/ahadith/theme';
 import { useI18n } from '@/utils/i18n/useI18n';
-import { getQuranFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 
 interface MuttafaqListProps {
   items: Hadith[];
@@ -16,8 +16,7 @@ interface MuttafaqListProps {
 
 export function MuttafaqList({ items, onOpen }: MuttafaqListProps) {
   const { theme, state } = useApp();
-  const { t, language } = useI18n();
-  const isPashto = language === 'pashto';
+  const { t, language, fontFamily, isRtl } = useI18n();
 
   return (
     <FlatList
@@ -56,11 +55,12 @@ export function MuttafaqList({ items, onOpen }: MuttafaqListProps) {
               styles.translation,
               {
                 color: theme.textSecondary,
-                fontFamily: isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont),
+                fontFamily,
+                writingDirection: isRtl ? 'rtl' : 'ltr',
               },
             ]}
           >
-            {getHadithTranslation(item, language)}
+            {getHadithTranslation(item, language) || t('ahadith.translation.unavailable')}
           </CenteredText>
 
           <CenteredText style={[styles.source, { color: theme.primary }]}>
@@ -95,13 +95,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 26,
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
   source: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 12,
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
   empty: {
     fontFamily: 'Vazirmatn',

@@ -21,7 +21,7 @@ import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { Spacing } from '@/constants/theme';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
-import { backIconName, forwardChevronName } from '@/utils/i18n/direction';
+import { backIconName, directionStyle, forwardChevronName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { isRtlLanguage } from '@/utils/i18n/languages';
 
@@ -81,10 +81,16 @@ export default function QuranReaderScreen() {
   const surah = useMemo(() => getSurah(surahNumber), [getSurah, surahNumber]);
   const [hifzVisibleSurah, setHifzVisibleSurah] = useState(surahNumber);
   const [hifzVisibleAyah, setHifzVisibleAyah] = useState(initialAyah);
+  const [hifzOnDedication, setHifzOnDedication] = useState(false);
   const headerSurahNumber = hifz16Line ? hifzVisibleSurah : surahNumber;
   const surahNameData = getSurahName(headerSurahNumber);
 
-  const onHifzVisiblePosition = useCallback((surah: number, ayah: number, _page?: number) => {
+  const onHifzVisiblePosition = useCallback((surah: number, ayah: number, page?: number) => {
+    if (page === 0) {
+      setHifzOnDedication(true);
+      return;
+    }
+    setHifzOnDedication(false);
     setHifzVisibleSurah(surah);
     setHifzVisibleAyah(ayah);
   }, []);
@@ -92,7 +98,12 @@ export default function QuranReaderScreen() {
   useEffect(() => {
     setHifzVisibleSurah(surahNumber);
     setHifzVisibleAyah(initialAyah);
+    setHifzOnDedication(false);
   }, [initialAyah, surahNumber]);
+
+  useEffect(() => {
+    if (!hifz16Line) setHifzOnDedication(false);
+  }, [hifz16Line]);
 
   useEffect(() => {
     pinSurahInCache(surahNumber);
@@ -321,9 +332,11 @@ export default function QuranReaderScreen() {
     }
   }, [surahNumber, router]);
 
-  const surahName = surahNameData
-    ? `سورة ${surahNameData.arabic}`
-    : `سوره ${toArabicNumerals(headerSurahNumber)}`;
+  const surahName = hifz16Line && hifzOnDedication
+    ? t('quran.hifz.dedicationTitle')
+    : surahNameData
+      ? `سورة ${surahNameData.arabic}`
+      : `سوره ${toArabicNumerals(headerSurahNumber)}`;
 
   const contentPaddingTop = insets.top + SURAH_TOP_BAR_HEIGHT + Spacing.sm;
   const contentPaddingBottom = hifz16Line
@@ -349,6 +362,7 @@ export default function QuranReaderScreen() {
       <View
         style={[
           styles.topBar,
+          directionStyle(language),
           {
             paddingTop: insets.top,
             height: insets.top + SURAH_TOP_BAR_HEIGHT,
@@ -367,7 +381,9 @@ export default function QuranReaderScreen() {
           hitSlop={8}
           style={styles.topBarBackButton}
         >
-          <MaterialIcons name={backIcon} size={24} color="#fff" />
+          <View style={styles.iconLtr}>
+            <MaterialIcons name={backIcon} size={24} color="#fff" />
+          </View>
         </Pressable>
         <LocalizedText style={[styles.topBarTitle, { fontFamily: quranFontFamily }]} numberOfLines={1} ellipsizeMode="tail">
           {surahName}
@@ -416,14 +432,18 @@ export default function QuranReaderScreen() {
           </Pressable>
           {surahNumber > 1 ? (
             <Pressable onPress={goToPrevSurah} hitSlop={8}>
-              <MaterialIcons name={prevSurahIcon} size={28} color="#fff" />
+              <View style={styles.iconLtr}>
+                <MaterialIcons name={prevSurahIcon} size={28} color="#fff" />
+              </View>
             </Pressable>
           ) : (
             <View style={styles.navPlaceholder} />
           )}
           {surahNumber < 114 ? (
             <Pressable onPress={goToNextSurah} hitSlop={8}>
-              <MaterialIcons name={nextSurahIcon} size={28} color="#fff" />
+              <View style={styles.iconLtr}>
+                <MaterialIcons name={nextSurahIcon} size={28} color="#fff" />
+              </View>
             </Pressable>
           ) : (
             <View style={styles.navPlaceholder} />
@@ -514,32 +534,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  iconLtr: {
+    direction: 'ltr',
+  },
   topBarTitle: {
     flex: 1,
-    marginHorizontal: Spacing.sm,
+    marginHorizontal: Spacing.xs,
     color: '#fff',
-    fontSize: 18,
+    fontSize: 17,
     textAlign: 'center',
     writingDirection: 'rtl',
   },
   topBarNav: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
+    gap: 4,
   },
   modeSwitch: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 14,
+    borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'rgba(255,255,255,0.55)',
-    padding: 2,
-    gap: 2,
+    padding: 1,
+    gap: 1,
   },
   modeSegment: {
-    minHeight: 28,
-    paddingHorizontal: 8,
-    borderRadius: 12,
+    minHeight: 26,
+    paddingHorizontal: 7,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -549,7 +572,7 @@ const styles = StyleSheet.create({
   modeSegmentText: {
     color: 'rgba(255,255,255,0.92)',
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: 12,
+    fontSize: 11,
   },
   modeSegmentTextActive: {
     color: '#0E6B4F',

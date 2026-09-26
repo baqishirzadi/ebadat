@@ -12,7 +12,8 @@
       "sincerity"
     ],
     "daily_index": 1,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Actions are judged only by intentions, and every person will have what they intended."
   },
   {
     "id": 2,
@@ -27,7 +28,8 @@
       "faith"
     ],
     "daily_index": 2,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The religion is sincere counsel and goodwill."
   },
   {
     "id": 3,
@@ -50,7 +52,8 @@
       "day_end": 30
     },
     "daily_index": 3,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever fasts Ramadan out of faith and hoping for reward will have their past sins forgiven."
   },
   {
     "id": 4,
@@ -69,7 +72,8 @@
       "ramadan"
     ],
     "daily_index": 4,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever spends the Night of Decree in worship out of faith and hoping for reward will have their past sins forgiven."
   },
   {
     "id": 5,
@@ -85,7 +89,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 5,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Prayer is light."
   },
   {
     "id": 6,
@@ -100,7 +105,8 @@
       "speech"
     ],
     "daily_index": 6,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever believes in Allah and the Last Day should speak good or remain silent."
   },
   {
     "id": 7,
@@ -116,7 +122,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 7,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The best among you are those who learn the Quran and teach it."
   },
   {
     "id": 8,
@@ -131,7 +138,8 @@
       "community"
     ],
     "daily_index": 8,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "A Muslim is one from whose tongue and hand other Muslims are safe."
   },
   {
     "id": 9,
@@ -146,7 +154,8 @@
       "faith"
     ],
     "daily_index": 9,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "None of you truly believes until they love for their brother what they love for themselves."
   },
   {
     "id": 10,
@@ -169,7 +178,8 @@
       "day_end": 10
     },
     "daily_index": 10,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Allah has prescribed excellence in everything."
   },
   {
     "id": 11,
@@ -193,7 +203,8 @@
       "day_end": 10
     },
     "daily_index": 11,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The first thing we begin with on Eid al-Adha is the Eid prayer; then we return and offer the sacrifice."
   },
   {
     "id": 12,
@@ -216,7 +227,8 @@
       "day_end": 10
     },
     "daily_index": 12,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "There are no days in which righteous deeds are more beloved to Allah than the first ten days of Dhul-Hijjah."
   },
   {
     "id": 13,
@@ -240,7 +252,8 @@
       "day_end": 1
     },
     "daily_index": 13,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The best fasting after Ramadan is fasting in the month of Muharram."
   },
   {
     "id": 14,
@@ -258,7 +271,8 @@
       "ashura"
     ],
     "daily_index": 14,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "I hope that fasting on Ashura will cleanse the sins of the past year."
   },
   {
     "id": 15,
@@ -274,7 +288,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 15,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The Friday bath is stressed upon every adult."
   },
   {
     "id": 16,
@@ -290,7 +305,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 16,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "If during the Friday sermon you tell your companion to be quiet, you have spoken idle talk."
   },
   {
     "id": 17,
@@ -305,7 +321,8 @@
       "manners"
     ],
     "daily_index": 17,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Make things easy and do not make them hard; give glad tidings and do not drive people away."
   },
   {
     "id": 18,
@@ -320,7 +337,8 @@
       "character"
     ],
     "daily_index": 18,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The Merciful shows mercy to those who are merciful."
   },
   {
     "id": 19,
@@ -336,7 +354,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 19,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Purity is half of faith."
   },
   {
     "id": 20,
@@ -351,7 +370,8 @@
       "character"
     ],
     "daily_index": 20,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever does not show mercy will not be shown mercy."
   },
   {
     "id": 21,
@@ -366,7 +386,8 @@
       "social_justice"
     ],
     "daily_index": 21,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The one who works for the widow and the needy is like a fighter in the path of Allah."
   },
   {
     "id": 22,
@@ -381,7 +402,8 @@
       "worship"
     ],
     "daily_index": 22,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The deeds most beloved to Allah are those done consistently, even if they are few."
   },
   {
     "id": 23,
@@ -397,7 +419,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 23,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever travels a path seeking knowledge, Allah makes the path to Paradise easy for them."
   },
   {
     "id": 24,
@@ -412,7 +435,8 @@
       "sincerity"
     ],
     "daily_index": 24,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Allah does not look at your appearance or wealth, but at your hearts and deeds."
   },
   {
     "id": 25,
@@ -427,7 +451,8 @@
       "character"
     ],
     "daily_index": 25,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Righteousness is good character."
   },
   {
     "id": 26,
@@ -442,7 +467,8 @@
       "ethics"
     ],
     "daily_index": 26,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Allah is beautiful and loves beauty."
   },
   {
     "id": 27,
@@ -457,7 +483,8 @@
       "business"
     ],
     "daily_index": 27,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever cheats us is not one of us."
   },
   {
     "id": 28,
@@ -472,7 +499,8 @@
       "generosity"
     ],
     "daily_index": 28,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The upper hand (the giving hand) is better than the lower hand (the receiving hand)."
   },
   {
     "id": 29,
@@ -487,7 +515,8 @@
       "community"
     ],
     "daily_index": 29,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever relieves a Muslim of a hardship, Allah will relieve them of a hardship on the Day of Resurrection."
   },
   {
     "id": 30,
@@ -502,7 +531,8 @@
       "character"
     ],
     "daily_index": 30,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever conceals a Muslim’s fault, Allah will conceal their fault in this world and the Next."
   },
   {
     "id": 31,
@@ -517,7 +547,8 @@
       "legacy"
     ],
     "daily_index": 31,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "When a person dies, their deeds end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for them."
   },
   {
     "id": 32,
@@ -532,7 +563,8 @@
       "mindset"
     ],
     "daily_index": 32,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The strong believer is better and more beloved to Allah than the weak believer."
   },
   {
     "id": 33,
@@ -547,7 +579,8 @@
       "tawakkul"
     ],
     "daily_index": 33,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Be eager for what benefits you, seek help from Allah, and do not feel helpless."
   },
   {
     "id": 34,
@@ -562,7 +595,8 @@
       "community"
     ],
     "daily_index": 34,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Do not belittle any good deed, even meeting your brother with a cheerful face."
   },
   {
     "id": 35,
@@ -577,7 +611,8 @@
       "character"
     ],
     "daily_index": 35,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Allah shows mercy only to His merciful servants."
   },
   {
     "id": 36,
@@ -592,7 +627,8 @@
       "faith"
     ],
     "daily_index": 36,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "A person will be with those they love."
   },
   {
     "id": 37,
@@ -607,7 +643,8 @@
       "mindset"
     ],
     "daily_index": 37,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Two blessings many people waste: health and free time."
   },
   {
     "id": 38,
@@ -622,7 +659,8 @@
       "charity"
     ],
     "daily_index": 38,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Protect yourselves from the Fire, even with half a date in charity."
   },
   {
     "id": 39,
@@ -637,7 +675,8 @@
       "speech"
     ],
     "daily_index": 39,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "A kind word is charity."
   },
   {
     "id": 40,
@@ -652,7 +691,8 @@
       "character"
     ],
     "daily_index": 40,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Do not envy one another or hate one another; be servants of Allah and brothers."
   },
   {
     "id": 41,
@@ -667,7 +707,8 @@
       "brotherhood"
     ],
     "daily_index": 41,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever helps their brother in need, Allah will help them in their need."
   },
   {
     "id": 42,
@@ -682,7 +723,8 @@
       "manners"
     ],
     "daily_index": 42,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "It is not lawful for a Muslim to forsake their brother for more than three days."
   },
   {
     "id": 43,
@@ -698,7 +740,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 43,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "When Allah wants good for someone, He grants them understanding of the religion."
   },
   {
     "id": 44,
@@ -713,7 +756,8 @@
       "faith"
     ],
     "daily_index": 44,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Modesty is a branch of faith."
   },
   {
     "id": 45,
@@ -729,7 +773,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 45,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever builds a mosque for Allah, Allah builds a house for them in Paradise."
   },
   {
     "id": 46,
@@ -744,7 +789,8 @@
       "akhlaq"
     ],
     "daily_index": 46,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Among the best of you are those with the finest character."
   },
   {
     "id": 47,
@@ -767,7 +813,8 @@
       "day_end": 30
     },
     "daily_index": 47,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "When night comes from this side and day goes from that side, the fasting person has broken the fast."
   },
   {
     "id": 48,
@@ -785,7 +832,8 @@
       "ramadan"
     ],
     "daily_index": 48,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The Prophet was the most generous of people, and he was even more generous in Ramadan."
   },
   {
     "id": 49,
@@ -803,7 +851,8 @@
       "ramadan"
     ],
     "daily_index": 49,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Eat the pre-dawn meal, for there is blessing in the suhoor."
   },
   {
     "id": 50,
@@ -826,7 +875,8 @@
       "day_end": 9
     },
     "daily_index": 50,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "I hope that fasting on the Day of Arafah will cleanse the sins of the past year and the coming year."
   },
   {
     "id": 51,
@@ -849,7 +899,8 @@
       "day_end": 9
     },
     "daily_index": 51,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "There is no day on which Allah frees more servants from the Fire than the Day of Arafah."
   },
   {
     "id": 52,
@@ -872,7 +923,8 @@
       "day_end": 13
     },
     "daily_index": 52,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The days of Tashreeq are days of eating, drinking, and remembering Allah."
   },
   {
     "id": 53,
@@ -895,7 +947,8 @@
       "day_end": 13
     },
     "daily_index": 53,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The words most beloved to Allah are four: SubhanAllah, Alhamdulillah, La ilaha illallah, and Allahu Akbar."
   },
   {
     "id": 54,
@@ -911,7 +964,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 54,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The places in a town most beloved to Allah are its mosques."
   },
   {
     "id": 55,
@@ -934,7 +988,8 @@
       "day_end": 10
     },
     "daily_index": 55,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever guides to a good deed has a reward like the one who does it."
   },
   {
     "id": 56,
@@ -949,7 +1004,8 @@
       "character"
     ],
     "daily_index": 56,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Allah is gentle and loves gentleness."
   },
   {
     "id": 57,
@@ -964,7 +1020,8 @@
       "relationships"
     ],
     "daily_index": 57,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "The one who severs family ties will not enter Paradise."
   },
   {
     "id": 58,
@@ -979,7 +1036,8 @@
       "barakah"
     ],
     "daily_index": 58,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Whoever wants their provision expanded and their life blessed should keep family ties."
   },
   {
     "id": 59,
@@ -994,7 +1052,8 @@
       "tawakkul"
     ],
     "daily_index": 59,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Allah says: I am as My servant thinks of Me."
   },
   {
     "id": 60,
@@ -1017,7 +1076,8 @@
       "day_end": 13
     },
     "daily_index": 60,
-    "authenticity_grade": "sahih"
+    "authenticity_grade": "sahih",
+    "english_translation": "Two words are light on the tongue, heavy on the scale, and beloved to the Most Merciful."
   },
   {
     "id": 61,
@@ -1033,7 +1093,8 @@
       "worship",
       "good_deeds"
     ],
-    "daily_index": 61
+    "daily_index": 61,
+    "english_translation": "Which deed is most beloved to Allah? He said: Prayer on time. Then what? He said: Kindness to parents."
   },
   {
     "id": 62,
@@ -1049,7 +1110,8 @@
       "family",
       "mercy"
     ],
-    "daily_index": 62
+    "daily_index": 62,
+    "english_translation": "Paradise lies at the feet of mothers."
   },
   {
     "id": 63,
@@ -1065,7 +1127,8 @@
       "brotherhood",
       "faith"
     ],
-    "daily_index": 63
+    "daily_index": 63,
+    "english_translation": "By Him in Whose hand is my soul, a servant does not truly believe until they wish for their brother the good they wish for themselves."
   },
   {
     "id": 64,
@@ -1081,7 +1144,8 @@
       "manners",
       "community"
     ],
-    "daily_index": 64
+    "daily_index": 64,
+    "english_translation": "Whoever believes in Allah and the Last Day should honour their neighbour."
   },
   {
     "id": 65,
@@ -1097,7 +1161,8 @@
       "guests",
       "manners"
     ],
-    "daily_index": 65
+    "daily_index": 65,
+    "english_translation": "Whoever believes in Allah and the Last Day should honour their guest."
   },
   {
     "id": 66,
@@ -1113,7 +1178,8 @@
       "charity",
       "mercy"
     ],
-    "daily_index": 66
+    "daily_index": 66,
+    "english_translation": "I and the guardian of an orphan will be like this in Paradise (and he held two fingers together)."
   },
   {
     "id": 67,
@@ -1129,7 +1195,8 @@
       "business",
       "social_justice"
     ],
-    "daily_index": 67
+    "daily_index": 67,
+    "english_translation": "Delaying payment by one who is able is oppression."
   },
   {
     "id": 68,
@@ -1145,7 +1212,8 @@
       "honesty",
       "character"
     ],
-    "daily_index": 68
+    "daily_index": 68,
+    "english_translation": "The honest, trustworthy merchant is with the prophets, the truthful, and the martyrs."
   },
   {
     "id": 69,
@@ -1161,7 +1229,8 @@
       "ethics",
       "end_times"
     ],
-    "daily_index": 69
+    "daily_index": 69,
+    "english_translation": "Injustice will be darknesses on the Day of Resurrection."
   },
   {
     "id": 70,
@@ -1177,7 +1246,8 @@
       "faith",
       "mindset"
     ],
-    "daily_index": 70
+    "daily_index": 70,
+    "english_translation": "The world is a prison for the believer and a paradise for the disbeliever."
   },
   {
     "id": 71,
@@ -1193,7 +1263,8 @@
       "charity",
       "good_deeds"
     ],
-    "daily_index": 71
+    "daily_index": 71,
+    "english_translation": "Whoever builds a mosque for Allah, Allah builds a house for them in Paradise."
   },
   {
     "id": 72,
@@ -1209,7 +1280,8 @@
       "community",
       "faith"
     ],
-    "daily_index": 72
+    "daily_index": 72,
+    "english_translation": "You will not enter Paradise until you believe, and you will not believe until you love one another."
   },
   {
     "id": 73,
@@ -1225,7 +1297,8 @@
       "manners",
       "character"
     ],
-    "daily_index": 73
+    "daily_index": 73,
+    "english_translation": "Fear Allah wherever you are, follow a bad deed with a good one to erase it, and treat people with good character."
   },
   {
     "id": 74,
@@ -1241,7 +1314,8 @@
       "manners",
       "community"
     ],
-    "daily_index": 74
+    "daily_index": 74,
+    "english_translation": "Whoever does not show mercy to our young and honour to our elders is not one of us."
   },
   {
     "id": 75,
@@ -1257,7 +1331,8 @@
       "social_justice",
       "community"
     ],
-    "daily_index": 75
+    "daily_index": 75,
+    "english_translation": "A Muslim is the brother of a Muslim; he does not wrong him or hand him over to an enemy."
   },
   {
     "id": 76,
@@ -1273,7 +1348,8 @@
       "mercy",
       "community"
     ],
-    "daily_index": 76
+    "daily_index": 76,
+    "english_translation": "Whoever relieves a believer of a worldly distress, Allah will relieve them of a distress on the Day of Resurrection."
   },
   {
     "id": 77,
@@ -1289,7 +1365,8 @@
       "taqwa",
       "generosity"
     ],
-    "daily_index": 77
+    "daily_index": 77,
+    "english_translation": "Guard yourselves from the Fire, even with half a date given in charity."
   },
   {
     "id": 78,
@@ -1305,7 +1382,8 @@
       "guests",
       "generosity"
     ],
-    "daily_index": 78
+    "daily_index": 78,
+    "english_translation": "The food of one is enough for two, and the food of two is enough for four."
   },
   {
     "id": 79,
@@ -1321,7 +1399,8 @@
       "faith",
       "mindset"
     ],
-    "daily_index": 79
+    "daily_index": 79,
+    "english_translation": "Deeds are judged by their endings."
   },
   {
     "id": 80,
@@ -1337,7 +1416,8 @@
       "knowledge",
       "guidance"
     ],
-    "daily_index": 80
+    "daily_index": 80,
+    "english_translation": "Whoever travels a path seeking knowledge, Allah makes a path to Paradise easy for them."
   },
   {
     "id": 81,
@@ -1353,7 +1433,8 @@
       "honesty",
       "prophet"
     ],
-    "daily_index": 81
+    "daily_index": 81,
+    "english_translation": "Whoever deliberately lies about me, let them take their seat in the Fire."
   },
   {
     "id": 82,
@@ -1369,7 +1450,8 @@
       "community",
       "character"
     ],
-    "daily_index": 82
+    "daily_index": 82,
+    "english_translation": "Allah does not show mercy to those who do not show mercy to people."
   },
   {
     "id": 83,
@@ -1385,7 +1467,8 @@
       "character",
       "good_deeds"
     ],
-    "daily_index": 83
+    "daily_index": 83,
+    "english_translation": "Righteousness is good character."
   },
   {
     "id": 84,
@@ -1401,7 +1484,8 @@
       "honesty",
       "charity"
     ],
-    "daily_index": 84
+    "daily_index": 84,
+    "english_translation": "Allah is Pure and accepts only what is pure."
   },
   {
     "id": 85,
@@ -1417,7 +1501,8 @@
       "brotherhood",
       "service"
     ],
-    "daily_index": 85
+    "daily_index": 85,
+    "english_translation": "Whoever has land should cultivate it or give it to their brother to cultivate."
   },
   {
     "id": 86,
@@ -1433,7 +1518,8 @@
       "community",
       "strength"
     ],
-    "daily_index": 86
+    "daily_index": 86,
+    "english_translation": "A believer to another believer is like a building; each part strengthens the other."
   },
   {
     "id": 87,
@@ -1449,7 +1535,8 @@
       "honesty",
       "ethics"
     ],
-    "daily_index": 87
+    "daily_index": 87,
+    "english_translation": "Whoever cheats is not one of us."
   },
   {
     "id": 88,
@@ -1465,7 +1552,8 @@
       "helping_others",
       "community"
     ],
-    "daily_index": 88
+    "daily_index": 88,
+    "english_translation": "The best of people are those most beneficial to people."
   },
   {
     "id": 89,
@@ -1481,7 +1569,8 @@
       "signs_of_hour",
       "prophet"
     ],
-    "daily_index": 89
+    "daily_index": 89,
+    "english_translation": "I and the Hour have been sent like these two (and he held two fingers close together)."
   },
   {
     "id": 90,
@@ -1497,7 +1586,8 @@
       "fitan",
       "signs_of_hour"
     ],
-    "daily_index": 90
+    "daily_index": 90,
+    "english_translation": "Before the Hour there will be years of deception."
   },
   {
     "id": 91,
@@ -1513,7 +1603,8 @@
       "knowledge",
       "signs_of_hour"
     ],
-    "daily_index": 91
+    "daily_index": 91,
+    "english_translation": "The Hour will not come until knowledge is taken away."
   },
   {
     "id": 92,
@@ -1529,7 +1620,8 @@
       "fitan",
       "signs_of_hour"
     ],
-    "daily_index": 92
+    "daily_index": 92,
+    "english_translation": "The Hour will not come until a trial appears that confuses the wise."
   },
   {
     "id": 93,
@@ -1545,7 +1637,8 @@
       "fitan",
       "faith"
     ],
-    "daily_index": 93
+    "daily_index": 93,
+    "english_translation": "A time will come upon people when nothing of Islam remains except its name."
   },
   {
     "id": 94,
@@ -1561,7 +1654,8 @@
       "signs_of_hour",
       "honesty"
     ],
-    "daily_index": 94
+    "daily_index": 94,
+    "english_translation": "When necks are stretched out and trust is scarce, expect the Hour."
   },
   {
     "id": 95,
@@ -1577,7 +1671,8 @@
       "signs_of_hour",
       "travel"
     ],
-    "daily_index": 95
+    "daily_index": 95,
+    "english_translation": "A time is near when the best wealth of a Muslim will be sheep with which they follow distant rainy mountains."
   },
   {
     "id": 96,
@@ -1593,7 +1688,8 @@
       "fitan",
       "strength"
     ],
-    "daily_index": 96
+    "daily_index": 96,
+    "english_translation": "A time will come when the believer holding to their religion will be like one holding a burning coal."
   },
   {
     "id": 97,
@@ -1609,7 +1705,8 @@
       "faith",
       "strength"
     ],
-    "daily_index": 97
+    "daily_index": 97,
+    "english_translation": "A group of my ummah will always remain upon the truth; those who abandon them will not harm them."
   },
   {
     "id": 98,
@@ -1625,7 +1722,8 @@
       "guidance",
       "faith"
     ],
-    "daily_index": 98
+    "daily_index": 98,
+    "english_translation": "At the start of every century Allah sends for this ummah someone who renews its religion."
   },
   {
     "id": 99,
@@ -1641,7 +1739,8 @@
       "business",
       "family"
     ],
-    "daily_index": 99
+    "daily_index": 99,
+    "english_translation": "When people short-measure, take usury, and cut family ties, expect the punishment of Allah."
   },
   {
     "id": 100,
@@ -1657,7 +1756,8 @@
       "end_times",
       "fitan"
     ],
-    "daily_index": 100
+    "daily_index": 100,
+    "english_translation": "If only one day remained of the world, Allah would still raise a man from a valley in Khurasan calling people to good. (A weak report; some versions mention black banners.)"
   },
   {
     "id": 101,
@@ -1673,7 +1773,8 @@
       "end_times",
       "signs_of_hour"
     ],
-    "daily_index": 101
+    "daily_index": 101,
+    "english_translation": "Black banners will come from the east toward the centre of the earth. (A weak report discussed among scholars of hadith.)"
   },
   {
     "id": 102,
@@ -1689,7 +1790,8 @@
       "faith",
       "knowledge"
     ],
-    "daily_index": 102
+    "daily_index": 102,
+    "english_translation": "If faith were at the Pleiades, men from among the Persians would still reach it."
   },
   {
     "id": 103,
@@ -1705,7 +1807,8 @@
       "brotherhood",
       "faith"
     ],
-    "daily_index": 103
+    "daily_index": 103,
+    "english_translation": "Among Allah’s servants are people who are neither prophets nor martyrs, yet prophets and martyrs envy their rank with Allah: a people who befriended one another for the sake of Allah’s spirit, without kinship."
   },
   {
     "id": 104,
@@ -1729,7 +1832,8 @@
       "day_start": 1,
       "day_end": 1
     },
-    "daily_index": 104
+    "daily_index": 104,
+    "english_translation": "Allah has ended the fast for you, and He has ended it for us as well. (A dua related to Eid al-Fitr.)"
   },
   {
     "id": 105,
@@ -1753,7 +1857,8 @@
       "day_start": 1,
       "day_end": 1
     },
-    "daily_index": 105
+    "daily_index": 105,
+    "english_translation": "Zakat al-Fitr is due from every Muslim, free or enslaved, male or female: one sa‘ of dates or one sa‘ of barley."
   },
   {
     "id": 106,
@@ -1777,7 +1882,8 @@
       "day_start": 1,
       "day_end": 1
     },
-    "daily_index": 106
+    "daily_index": 106,
+    "english_translation": "Among the things not to be done is fasting on the day of Eid al-Fitr."
   },
   {
     "id": 107,
@@ -1801,7 +1907,8 @@
       "day_start": 1,
       "day_end": 30
     },
-    "daily_index": 107
+    "daily_index": 107,
+    "english_translation": "Take the pre-dawn meal, for there is blessing in suhoor."
   },
   {
     "id": 108,
@@ -1826,7 +1933,8 @@
       "day_start": 21,
       "day_end": 30
     },
-    "daily_index": 108
+    "daily_index": 108,
+    "english_translation": "When the last ten nights of Ramadan begin, tighten the belt of worship, stay up at night, and wake your household."
   },
   {
     "id": 109,
@@ -1851,7 +1959,8 @@
       "day_start": 21,
       "day_end": 30
     },
-    "daily_index": 109
+    "daily_index": 109,
+    "english_translation": "Seek the Night of Decree among the odd nights of the last ten of Ramadan."
   },
   {
     "id": 110,
@@ -1867,7 +1976,8 @@
       "worship"
     ],
     "weekday_only": "friday",
-    "daily_index": 110
+    "daily_index": 110,
+    "english_translation": "The best day on which the sun has risen is Friday."
   },
   {
     "id": 111,
@@ -1884,7 +1994,8 @@
       "purity"
     ],
     "weekday_only": "friday",
-    "daily_index": 111
+    "daily_index": 111,
+    "english_translation": "Whoever performs purification at home and comes to the Friday prayer is like one who offers a sacrificial camel to Allah."
   },
   {
     "id": 112,
@@ -1908,7 +2019,8 @@
       "day_start": 9,
       "day_end": 9
     },
-    "daily_index": 112
+    "daily_index": 112,
+    "english_translation": "I hope that fasting on Arafah will cover the sins of the year before and the year after."
   },
   {
     "id": 113,
@@ -1932,7 +2044,8 @@
       "day_start": 11,
       "day_end": 13
     },
-    "daily_index": 113
+    "daily_index": 113,
+    "english_translation": "The days of Tashreeq are days of eating, drinking, and remembering Allah."
   },
   {
     "id": 114,
@@ -1956,7 +2069,8 @@
       "day_start": 10,
       "day_end": 10
     },
-    "daily_index": 114
+    "daily_index": 114,
+    "english_translation": "Fast on Ashura and differ from the Jews in how you observe it."
   },
   {
     "id": 115,
@@ -1980,7 +2094,8 @@
       "day_start": 1,
       "day_end": 1
     },
-    "daily_index": 115
+    "daily_index": 115,
+    "english_translation": "The best fasting after the month of Ramadan is the month of Allah, Muharram."
   },
   {
     "id": 116,
@@ -1996,7 +2111,8 @@
       "jamaah",
       "worship"
     ],
-    "daily_index": 116
+    "daily_index": 116,
+    "english_translation": "Whoever prays Isha in congregation is as if they spent half the night in prayer."
   },
   {
     "id": 117,
@@ -2012,7 +2128,8 @@
       "good_deeds",
       "taqwa"
     ],
-    "daily_index": 117
+    "daily_index": 117,
+    "english_translation": "Whoever fasts one day in the path of Allah, Allah keeps their face seventy autumns away from the Fire."
   },
   {
     "id": 118,
@@ -2028,7 +2145,8 @@
       "faith",
       "worship"
     ],
-    "daily_index": 118
+    "daily_index": 118,
+    "english_translation": "Prayer is the pillar of the religion."
   },
   {
     "id": 119,
@@ -2044,7 +2162,8 @@
       "parents",
       "mercy"
     ],
-    "daily_index": 119
+    "daily_index": 119,
+    "english_translation": "Whoever does not show mercy to their child, Allah will not show mercy to them."
   },
   {
     "id": 120,
@@ -2060,7 +2179,8 @@
       "faith",
       "akhlaq"
     ],
-    "daily_index": 120
+    "daily_index": 120,
+    "english_translation": "Modesty is from faith."
   },
   {
     "id": 121,
@@ -2076,7 +2196,8 @@
       "sincerity",
       "worship"
     ],
-    "daily_index": 121
+    "daily_index": 121,
+    "english_translation": "Actions are only by intentions, and every person will have only what they intended."
   },
   {
     "id": 122,
@@ -2092,7 +2213,8 @@
       "faith",
       "akhlaq"
     ],
-    "daily_index": 122
+    "daily_index": 122,
+    "english_translation": "None of you is a complete believer until they love for their brother what they love for themselves."
   },
   {
     "id": 123,
@@ -2108,7 +2230,8 @@
       "mercy",
       "akhlaq"
     ],
-    "daily_index": 123
+    "daily_index": 123,
+    "english_translation": "Allah is gentle and loves gentleness in all matters."
   },
   {
     "id": 124,
@@ -2124,7 +2247,8 @@
       "faith",
       "manners"
     ],
-    "daily_index": 124
+    "daily_index": 124,
+    "english_translation": "Whoever believes in Allah and the Last Day should say what is good or keep silent."
   },
   {
     "id": 125,
@@ -2140,7 +2264,8 @@
       "education",
       "guidance"
     ],
-    "daily_index": 125
+    "daily_index": 125,
+    "english_translation": "Whoever takes a path seeking knowledge, Allah makes a path to Paradise easy for them thereby."
   },
   {
     "id": 126,
@@ -2156,7 +2281,8 @@
       "advice",
       "faith"
     ],
-    "daily_index": 126
+    "daily_index": 126,
+    "english_translation": "The religion is sincere advice and goodwill."
   },
   {
     "id": 127,
@@ -2172,7 +2298,8 @@
       "worship",
       "good_deeds"
     ],
-    "daily_index": 127
+    "daily_index": 127,
+    "english_translation": "The deeds most beloved to Allah are the most consistent ones, even if they are small."
   },
   {
     "id": 128,
@@ -2188,7 +2315,8 @@
       "manners",
       "faith"
     ],
-    "daily_index": 128
+    "daily_index": 128,
+    "english_translation": "Whoever believes in Allah and the Last Day should honour their guest."
   },
   {
     "id": 129,
@@ -2204,7 +2332,8 @@
       "faith",
       "good_deeds"
     ],
-    "daily_index": 129
+    "daily_index": 129,
+    "english_translation": "The strong believer is better and more beloved to Allah than the weak believer, and there is good in both."
   },
   {
     "id": 130,
@@ -2220,6 +2349,7 @@
       "community",
       "speech"
     ],
-    "daily_index": 130
+    "daily_index": 130,
+    "english_translation": "A Muslim is one from whose tongue and hand other Muslims are safe."
   }
 ]

@@ -67,6 +67,7 @@ for (const item of hadiths) {
   assert(isNonEmptyString(item.arabic_text), `Hadith ${item.id}: arabic_text is required`);
   assert(isNonEmptyString(item.dari_translation), `Hadith ${item.id}: dari_translation is required`);
   assert(isNonEmptyString(item.pashto_translation), `Hadith ${item.id}: pashto_translation is required`);
+  assert(isNonEmptyString(item.english_translation), `Hadith ${item.id}: english_translation is required`);
 
   assert(
     ALLOWED_BOOKS.has(item.source_book),

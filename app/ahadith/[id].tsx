@@ -9,10 +9,10 @@ import { useApp } from '@/context/AppContext';
 import { useAhadith } from '@/context/AhadithContext';
 import { Hadith } from '@/types/hadith';
 import { alphaColor } from '@/utils/ahadith/theme';
-import { formatSourceLabel, getAuthenticityGradeLabelFa } from '@/utils/ahadith/labels';
+import { formatSourceLabel, getAuthenticityGradeLabel, getMuttafaqBadgeLabel } from '@/utils/ahadith/labels';
 import { NAAT_GRADIENT } from '@/constants/theme';
 import { getPublishedHadithById } from '@/utils/ahadithRemoteService';
-import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 import { getHadithTranslation } from '@/utils/ahadith/translation';
 import { useI18n } from '@/utils/i18n/useI18n';
 
@@ -21,7 +21,7 @@ export default function HadithDetailScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { theme, themeMode, state } = useApp();
-  const { t, language, fontFamily } = useI18n();
+  const { t, language, fontFamily, isRtl } = useI18n();
   const { hadiths, syncRemoteHadiths } = useAhadith();
 
   const [hadith, setHadith] = useState<Hadith | null>(null);
@@ -149,22 +149,23 @@ export default function HadithDetailScreen() {
 
             <CText
               style={[
-                language === 'pashto' ? styles.pashto : styles.dari,
+                language === 'english' ? styles.translationEnglish : styles.translation,
                 {
                   color: theme.textPrimary,
-                  fontFamily: fontFamily ?? (language === 'pashto'
-                    ? getPashtoFontFamily(state.preferences.pashtoFont)
-                    : getDariFontFamily(state.preferences.dariFont)),
+                  fontFamily,
+                  writingDirection: isRtl ? 'rtl' : 'ltr',
                 },
               ]}
             >
-              {getHadithTranslation(hadith, language)}
+              {getHadithTranslation(hadith, language) || t('ahadith.translation.unavailable')}
             </CText>
 
             <CText style={[styles.source, { color: theme.primary }]}>
-              {formatSourceLabel(hadith.source_book, hadith.source_number)}
+              {formatSourceLabel(hadith.source_book, hadith.source_number, language)}
               {' · '}
-              {hadith.is_muttafaq ? 'متفق‌علیه' : getAuthenticityGradeLabelFa(hadith.authenticity_grade)}
+              {hadith.is_muttafaq
+                ? getMuttafaqBadgeLabel(language)
+                : getAuthenticityGradeLabel(hadith.authenticity_grade, language)}
             </CText>
           </View>
         </ScrollView>
@@ -231,23 +232,21 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
   },
-  dari: {
+  translation: {
     fontSize: 20,
     lineHeight: 34,
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
-  pashto: {
-    fontSize: 18,
-    lineHeight: 32,
+  translationEnglish: {
+    fontSize: 17,
+    lineHeight: 28,
     textAlign: 'center',
-    writingDirection: 'rtl',
+    fontWeight: '500',
   },
   source: {
     marginTop: 4,
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 14,
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
 });

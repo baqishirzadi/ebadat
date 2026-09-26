@@ -1,8 +1,7 @@
 /**
- * Book cover: title, Hanafi attribution, and single-column table of contents.
+ * Book cover — centered vertical blocks, no chevrons or icons.
  */
 
-import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -12,7 +11,6 @@ import { LocalizedText } from '@/components/ui/LocalizedText';
 import type { PashtoFontFamily } from '@/constants/theme';
 import { PashtoFonts, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 export interface BookCategory {
@@ -31,9 +29,6 @@ interface BookCoverProps {
 export function BookCover({ categories, onSelectCategory }: BookCoverProps) {
   const { theme, state } = useApp();
   const { t, content, language, fontFamily } = useI18n();
-  const chevron = forwardChevronName(language);
-  const directionalRow = rowStyle(language);
-  const isRtl = language !== 'english';
   const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
   const titleFont = language === 'pashto' ? pashtoFontFamily : 'Vazirmatn-Bold';
   const bodyFont = language === 'pashto' ? pashtoFontFamily : fontFamily || 'Vazirmatn';
@@ -47,28 +42,15 @@ export function BookCover({ categories, onSelectCategory }: BookCoverProps) {
         >
           {t('prayerLearning.title')}
         </LocalizedText>
-        <BookOrnament />
+        <BookOrnament width={140} />
         <LocalizedText
-          style={[
-            styles.subtitle,
-            {
-              color: theme.textSecondary,
-              fontFamily: bodyFont,
-              textAlign: isRtl ? 'right' : 'left',
-              writingDirection: isRtl ? 'rtl' : 'ltr',
-            },
-          ]}
+          style={[styles.subtitle, { color: theme.textSecondary, fontFamily: bodyFont }]}
         >
           {t('prayerLearning.subtitle')}
         </LocalizedText>
       </View>
 
-      <LocalizedText
-        style={[
-          styles.tocHeading,
-          { color: theme.accent, fontFamily: titleFont, textAlign: isRtl ? 'right' : 'left' },
-        ]}
-      >
+      <LocalizedText style={[styles.tocHeading, { color: theme.accent, fontFamily: titleFont }]}>
         {t('prayerLearning.contents')}
       </LocalizedText>
 
@@ -78,44 +60,22 @@ export function BookCover({ categories, onSelectCategory }: BookCoverProps) {
             key={category.id}
             onPress={() => onSelectCategory(category.id)}
             style={({ pressed }) => [
-              styles.tocRow,
-              directionalRow,
+              styles.tocBlock,
               { borderBottomColor: theme.divider },
               pressed && styles.pressed,
             ]}
           >
-            <View style={[styles.tocNumber, { borderColor: theme.accent }]}>
-              <LocalizedText style={[styles.tocNumberText, { color: theme.accent }]}>
-                {index + 1}
-              </LocalizedText>
-            </View>
-            <View style={styles.tocInfo}>
-              <LocalizedText
-                style={[
-                  styles.tocTitle,
-                  {
-                    color: theme.text,
-                    fontFamily: titleFont,
-                    textAlign: isRtl ? 'right' : 'left',
-                    writingDirection: isRtl ? 'rtl' : 'ltr',
-                  },
-                ]}
-              >
-                {content(category, 'title')}
-              </LocalizedText>
-              <LocalizedText
-                style={[
-                  styles.tocMeta,
-                  {
-                    color: theme.textSecondary,
-                    textAlign: isRtl ? 'right' : 'left',
-                  },
-                ]}
-              >
-                {t('prayerLearning.sectionsCount', { n: category.sections.length })}
-              </LocalizedText>
-            </View>
-            <MaterialIcons name={chevron} size={20} color={theme.icon} />
+            <LocalizedText style={[styles.tocNumber, { color: theme.accent }]}>
+              {index + 1}
+            </LocalizedText>
+            <LocalizedText
+              style={[styles.tocTitle, { color: theme.text, fontFamily: titleFont }]}
+            >
+              {content(category, 'title')}
+            </LocalizedText>
+            <LocalizedText style={[styles.tocMeta, { color: theme.textSecondary }]}>
+              {t('prayerLearning.sectionsCount', { n: category.sections.length })}
+            </LocalizedText>
           </Pressable>
         ))}
       </View>
@@ -135,68 +95,60 @@ export function BookCover({ categories, onSelectCategory }: BookCoverProps) {
 const styles = StyleSheet.create({
   masthead: {
     alignItems: 'center',
-    paddingTop: Spacing.sm,
-    paddingBottom: Spacing.md,
+    marginBottom: Spacing.md,
   },
   bookTitle: {
-    fontSize: Typography.ui.heading,
+    fontSize: Typography.ui.display,
     fontWeight: '700',
     textAlign: 'center',
+    marginBottom: Spacing.xs,
   },
   subtitle: {
     fontSize: Typography.ui.body,
-    lineHeight: 24,
-    marginTop: Spacing.xs,
-    paddingHorizontal: Spacing.sm,
+    lineHeight: 28,
+    marginTop: Spacing.sm,
+    textAlign: 'center',
   },
   tocHeading: {
     fontSize: Typography.ui.subtitle,
-    fontWeight: '600',
-    marginBottom: Spacing.sm,
-    writingDirection: 'rtl',
+    fontWeight: '700',
+    marginBottom: Spacing.md,
+    textAlign: 'center',
   },
   toc: {
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.sm,
   },
-  tocRow: {
+  tocBlock: {
     alignItems: 'center',
-    paddingVertical: Spacing.md,
+    paddingVertical: Spacing.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   pressed: {
     opacity: 0.75,
   },
   tocNumber: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tocNumberText: {
-    fontSize: Typography.ui.body,
+    fontSize: Typography.ui.title,
     fontWeight: '700',
-  },
-  tocInfo: {
-    flex: 1,
+    textAlign: 'center',
   },
   tocTitle: {
     fontSize: Typography.ui.subtitle,
     fontWeight: '600',
+    textAlign: 'center',
   },
   tocMeta: {
     fontSize: Typography.ui.caption,
-    marginTop: 2,
+    textAlign: 'center',
   },
   footer: {
     alignItems: 'center',
-    paddingTop: Spacing.md,
-    gap: 4,
+    paddingTop: Spacing.lg,
+    gap: 6,
   },
   footerText: {
     fontSize: Typography.ui.caption,
+    lineHeight: 20,
     textAlign: 'center',
   },
 });

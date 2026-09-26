@@ -59,6 +59,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
   const [arabicText, setArabicText] = useState('');
   const [dariTranslation, setDariTranslation] = useState('');
   const [pashtoTranslation, setPashtoTranslation] = useState('');
+  const [englishTranslation, setEnglishTranslation] = useState('');
   const [sourceBook, setSourceBook] = useState<HadithSourceBook>('Bukhari');
   const [sourceNumber, setSourceNumber] = useState('');
   const [isMuttafaq, setIsMuttafaq] = useState(false);
@@ -83,6 +84,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
     setArabicText('');
     setDariTranslation('');
     setPashtoTranslation('');
+    setEnglishTranslation('');
     setSourceBook('Bukhari');
     setSourceNumber('');
     setIsMuttafaq(false);
@@ -100,10 +102,11 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
     const normalizedArabic = arabicText.trim();
     const normalizedDari = dariTranslation.trim();
     const normalizedPashto = pashtoTranslation.trim();
+    const normalizedEnglish = englishTranslation.trim();
     const normalizedSourceNumber = sourceNumber.trim();
 
-    if (!normalizedArabic || !normalizedDari || !normalizedPashto || !normalizedSourceNumber) {
-      Alert.alert('نقص معلومات', 'متن عربی، ترجمه دری، ترجمه پشتو و شماره منبع الزامی است.');
+    if (!normalizedArabic || !normalizedDari || !normalizedPashto || !normalizedEnglish || !normalizedSourceNumber) {
+      Alert.alert('نقص معلومات', 'متن عربی، ترجمه دری، پشتو، انگلیسی و شماره منبع الزامی است.');
       return;
     }
 
@@ -124,6 +127,7 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
       arabic_text: normalizedArabic,
       dari_translation: normalizedDari,
       pashto_translation: normalizedPashto,
+      english_translation: normalizedEnglish,
       source_book: sourceBook,
       source_number: normalizedSourceNumber,
       is_muttafaq: isMuttafaq,
@@ -198,6 +202,24 @@ export function HadithComposer({ isSubmitting, onPublish }: HadithComposerProps)
           onChangeText={setPashtoTranslation}
           multiline
           textAlign="center"
+          style={[
+            styles.multilineInput,
+            {
+              color: theme.textPrimary,
+              borderColor: alphaColor(theme.primary, 0.24),
+              backgroundColor: inputBackground,
+            },
+          ]}
+        />
+      </View>
+
+      <View style={styles.group}>
+        <CText style={[styles.label, { color: theme.textSecondary }]}>English translation</CText>
+        <LocalizedTextInput
+          value={englishTranslation}
+          onChangeText={setEnglishTranslation}
+          multiline
+          textAlign="left"
           style={[
             styles.multilineInput,
             {

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 import { AhadithNotificationPreferences } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
@@ -42,6 +43,7 @@ export function HadithNotificationTimePicker({
   const [minute, setMinute] = useState(prefs.minute);
   const [meridiem, setMeridiem] = useState<Meridiem>(initial.meridiem);
   const [isBusy, setIsBusy] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   React.useEffect(() => {
     const converted = to12Hour(prefs.hour);
@@ -57,7 +59,7 @@ export function HadithNotificationTimePicker({
         hour: digits(pad(hour12)),
         minute: digits(pad(minute)),
       }),
-    [digits, getMeridiemLabel, hour12, meridiem, minute, t],
+    [digits, hour12, meridiem, minute, t],
   );
 
   const changeHour = (delta: number) => {
@@ -146,10 +148,22 @@ export function HadithNotificationTimePicker({
         { backgroundColor: theme.surface, borderColor: alphaColor(theme.primary, 0.24) },
       ]}
     >
-      <View style={styles.headerRow}>
-        <CenteredText style={[styles.title, { color: theme.textPrimary }]}>{t('ahadith.notification.title')}</CenteredText>
+      <View style={styles.summaryRow}>
         <Pressable
-          onPress={handleToggle}
+          onPress={() => setExpanded((prev) => !prev)}
+          style={styles.summaryTextWrap}
+          accessibilityRole="button"
+        >
+          <CenteredText style={[styles.title, { color: theme.textPrimary }]}>
+            {t('ahadith.notification.title')}
+          </CenteredText>
+          <CenteredText style={[styles.summaryMeta, { color: theme.textSecondary }]}>
+            {prefs.enabled ? displayTime : t('ahadith.notification.disabled')}
+          </CenteredText>
+        </Pressable>
+
+        <Pressable
+          onPress={() => void handleToggle()}
           disabled={isBusy}
           style={({ pressed }) => [
             styles.toggle,
@@ -173,67 +187,78 @@ export function HadithNotificationTimePicker({
             {prefs.enabled ? t('ahadith.notification.enabled') : t('ahadith.notification.disabled')}
           </CenteredText>
         </Pressable>
+
+        <Pressable onPress={() => setExpanded((prev) => !prev)} hitSlop={8}>
+          <MaterialIcons
+            name={expanded ? 'expand-less' : 'expand-more'}
+            size={22}
+            color={theme.textSecondary}
+          />
+        </Pressable>
       </View>
 
-      <CenteredText style={[styles.description, { color: theme.textSecondary }]}>
-        {t('ahadith.notification.description')}
-      </CenteredText>
+      {expanded ? (
+        <View style={styles.expandedBody}>
+          <CenteredText style={[styles.description, { color: theme.textSecondary }]}>
+            {t('ahadith.notification.description')}
+          </CenteredText>
 
-      <View style={styles.timeControlRow}>
-        {/* Keep physical order stable: in RTL we invert JSX so hour stays on left and minute on right. */}
-        {I18nManager.isRTL ? minuteColumn : hourColumn}
-        <CenteredText style={[styles.separator, { color: theme.textSecondary }]}>:</CenteredText>
-        {I18nManager.isRTL ? hourColumn : minuteColumn}
-      </View>
+          <View style={styles.timeControlRow}>
+            {I18nManager.isRTL ? minuteColumn : hourColumn}
+            <CenteredText style={[styles.separator, { color: theme.textSecondary }]}>:</CenteredText>
+            {I18nManager.isRTL ? hourColumn : minuteColumn}
+          </View>
 
-      <View style={styles.meridiemRow}>
-        {(['am', 'pm'] as const).map((value) => {
-          const selected = meridiem === value;
-          return (
-            <Pressable
-              key={value}
-              onPress={() => setMeridiem(value)}
-              style={[
-                styles.meridiemButton,
-                {
-                  backgroundColor: selected
-                    ? alphaColor(theme.primary, 0.18)
-                    : alphaColor(theme.textSecondary, 0.12),
-                  borderColor: selected
-                    ? alphaColor(theme.primary, 0.4)
-                    : alphaColor(theme.textSecondary, 0.28),
-                },
-              ]}
-            >
-              <CenteredText
-                style={[
-                  styles.meridiemText,
-                  { color: selected ? theme.primary : theme.textSecondary },
-                ]}
-              >
-                {getMeridiemLabel(value)}
-              </CenteredText>
-            </Pressable>
-          );
-        })}
-      </View>
+          <View style={styles.meridiemRow}>
+            {(['am', 'pm'] as const).map((value) => {
+              const selected = meridiem === value;
+              return (
+                <Pressable
+                  key={value}
+                  onPress={() => setMeridiem(value)}
+                  style={[
+                    styles.meridiemButton,
+                    {
+                      backgroundColor: selected
+                        ? alphaColor(theme.primary, 0.18)
+                        : alphaColor(theme.textSecondary, 0.12),
+                      borderColor: selected
+                        ? alphaColor(theme.primary, 0.4)
+                        : alphaColor(theme.textSecondary, 0.28),
+                    },
+                  ]}
+                >
+                  <CenteredText
+                    style={[
+                      styles.meridiemText,
+                      { color: selected ? theme.primary : theme.textSecondary },
+                    ]}
+                  >
+                    {getMeridiemLabel(value)}
+                  </CenteredText>
+                </Pressable>
+              );
+            })}
+          </View>
 
-      <CenteredText style={[styles.preview, { color: theme.textSecondary }]}>{displayTime}</CenteredText>
-
-      <Pressable
-        onPress={handleSaveTime}
-        disabled={isBusy}
-        style={({ pressed }) => [
-          styles.saveButton,
-          {
-            backgroundColor: alphaColor(theme.primary, 0.18),
-            borderColor: alphaColor(theme.primary, 0.4),
-          },
-          pressed && { opacity: 0.8 },
-        ]}
-      >
-        <CenteredText style={[styles.saveText, { color: theme.primary }]}>{t('ahadith.notification.save')}</CenteredText>
-      </Pressable>
+          <Pressable
+            onPress={handleSaveTime}
+            disabled={isBusy}
+            style={({ pressed }) => [
+              styles.saveButton,
+              {
+                backgroundColor: alphaColor(theme.primary, 0.18),
+                borderColor: alphaColor(theme.primary, 0.4),
+              },
+              pressed && { opacity: 0.8 },
+            ]}
+          >
+            <CenteredText style={[styles.saveText, { color: theme.primary }]}>
+              {t('ahadith.notification.save')}
+            </CenteredText>
+          </Pressable>
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -242,27 +267,37 @@ const styles = StyleSheet.create({
   container: {
     borderWidth: 1,
     borderRadius: 18,
-    padding: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     gap: 10,
   },
-  headerRow: {
-    flexDirection: 'column',
+  summaryRow: {
+    flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
+  summaryTextWrap: {
+    flex: 1,
+    gap: 2,
+  },
   title: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: 14,
+    fontSize: 13,
+    textAlign: 'left',
+  },
+  summaryMeta: {
+    fontFamily: 'Vazirmatn',
+    fontSize: 11,
+    textAlign: 'left',
   },
   description: {
     fontFamily: 'Vazirmatn',
     fontSize: 12,
     textAlign: 'center',
-    writingDirection: 'rtl',
   },
   toggle: {
-    minWidth: 76,
-    minHeight: 34,
+    minWidth: 64,
+    minHeight: 32,
     borderRadius: 12,
     borderWidth: 1,
     alignItems: 'center',
@@ -272,6 +307,10 @@ const styles = StyleSheet.create({
   toggleText: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 12,
+  },
+  expandedBody: {
+    gap: 10,
+    paddingTop: 2,
   },
   timeControlRow: {
     flexDirection: 'row',
@@ -330,11 +369,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 12,
     textAlign: 'center',
-  },
-  preview: {
-    textAlign: 'center',
-    fontFamily: 'Vazirmatn',
-    fontSize: 12,
   },
   saveButton: {
     borderWidth: 1,

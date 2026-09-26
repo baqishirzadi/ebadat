@@ -45,6 +45,7 @@ function TodayDateCardInner() {
   const truth = useTodayCalendar();
   const { width } = useWindowDimensions();
   const isEnglish = language === 'english';
+  const isDari = language === 'dari';
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
   const isRtlHome = !isEnglish;
   const narrowPashto = isRtlHome && width < 360;
@@ -61,6 +62,7 @@ function TodayDateCardInner() {
   const primaryTestId = isEnglish ? 'home-today-hijri-date' : 'home-today-shamsi-date';
   const secondaryLeftLabel = isEnglish ? t('calendar.label.shamsi') : t('calendar.label.hijri');
   const secondaryLeftValue = isEnglish ? shamsiDisplay : hijriDisplay;
+  const weekday = weekdayName(truth.weekday, language);
 
   return (
     <Pressable
@@ -74,11 +76,47 @@ function TodayDateCardInner() {
         { backgroundColor: theme.card, borderColor: theme.cardBorder },
       ]}
     >
-      <RtlText testID="home-today-date-heading" align="center" style={[styles.heading, pashtoFontMetrics?.heading, { color: theme.textSecondary }]}>{t('home.date.today')}</RtlText>
-
-      <RtlText align="center" style={[styles.weekday, pashtoFontMetrics?.weekday, { color: theme.text }]}>
-        {weekdayName(truth.weekday, language)}
-      </RtlText>
+      {isDari ? (
+        <RtlView style={[styles.dariTitleRow, isNastaliq && styles.dariTitleRowNastaliq]}>
+          <RtlText
+            testID="home-today-date-heading"
+            align="center"
+            style={[styles.heading, pashtoFontMetrics?.heading, { color: theme.textSecondary }]}
+          >
+            {t('home.date.today')}
+          </RtlText>
+          <RtlText
+            align="center"
+            style={[styles.dariTitleDot, pashtoFontMetrics?.heading, { color: theme.textSecondary }]}
+          >
+            ·
+          </RtlText>
+          <RtlText
+            align="center"
+            style={[
+              styles.weekday,
+              pashtoFontMetrics?.weekday,
+              styles.dariWeekdayInline,
+              { color: theme.text },
+            ]}
+          >
+            {weekday}
+          </RtlText>
+        </RtlView>
+      ) : (
+        <>
+          <RtlText
+            testID="home-today-date-heading"
+            align="center"
+            style={[styles.heading, pashtoFontMetrics?.heading, { color: theme.textSecondary }]}
+          >
+            {t('home.date.today')}
+          </RtlText>
+          <RtlText align="center" style={[styles.weekday, pashtoFontMetrics?.weekday, { color: theme.text }]}>
+            {weekday}
+          </RtlText>
+        </>
+      )}
 
       <RtlText testID={primaryTestId} align="center" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.85} style={[styles.shamsiDate, pashtoFontMetrics?.shamsiDate, { color: theme.tint }]}>
         {primaryDate}
@@ -130,6 +168,23 @@ const styles = StyleSheet.create({
   },
   containerPashtoNastaliq: {
     paddingBottom: Spacing.md,
+  },
+  dariTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'nowrap',
+    gap: 6,
+  },
+  dariTitleRowNastaliq: {
+    minHeight: 38,
+  },
+  dariTitleDot: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+  },
+  dariWeekdayInline: {
+    marginTop: 0,
   },
   heading: {
     fontFamily: 'Vazirmatn',

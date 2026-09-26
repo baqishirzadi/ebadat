@@ -79,6 +79,7 @@ function normalizeHadithEntry(input: Hadith): Hadith | null {
   const arabicText = normalizeString(input.arabic_text);
   const dariTranslation = normalizeString(input.dari_translation);
   const pashtoTranslation = normalizeString(input.pashto_translation);
+  const englishTranslation = normalizeString(input.english_translation);
   const sourceNumber = normalizeString(input.source_number);
   const topics = normalizeTopics(input.topics);
   const isMuttafaq = !!input.is_muttafaq;
@@ -103,6 +104,7 @@ function normalizeHadithEntry(input: Hadith): Hadith | null {
     arabic_text: arabicText,
     dari_translation: dariTranslation,
     pashto_translation: pashtoTranslation,
+    english_translation: englishTranslation,
     source_book: input.source_book,
     source_number: sourceNumber,
     is_muttafaq: isMuttafaq,

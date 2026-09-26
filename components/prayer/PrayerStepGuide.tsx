@@ -1,19 +1,15 @@
 /**
- * Step-by-step reader for wudu / ghusl / sajda sahw.
- * Shows one step at a time with optional PrayerIllustration.
+ * Step-by-step reader — centered text only, no illustrations or icon buttons.
  */
 
-import { MaterialIcons } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { PrayerIllustration } from '@/components/prayer/PrayerIllustration';
 import { LocalizedText } from '@/components/ui/LocalizedText';
 import type { PashtoFontFamily } from '@/constants/theme';
 import { BorderRadius, PashtoFonts, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { pickContent } from '@/utils/i18n/content';
-import { backIconName, forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 interface Step {
@@ -41,14 +37,10 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
   const { theme, state } = useApp();
   const { t, language, fontFamily } = useI18n();
   const [index, setIndex] = useState(0);
-  const chevron = forwardChevronName(language);
-  const backIcon = backIconName(language);
-  const directionalRow = rowStyle(language);
-  const isRtl = language !== 'english';
   const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
   const bodyFont = language === 'pashto' ? pashtoFontFamily : fontFamily;
   const titleFont = language === 'pashto' ? pashtoFontFamily : 'Vazirmatn-Bold';
-  const bodyLineHeight = language === 'pashto' ? 42 : 28;
+  const bodyLineHeight = language === 'pashto' ? 42 : 30;
 
   useEffect(() => {
     setIndex(0);
@@ -62,8 +54,6 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
     ? pickContent(step, 'title', language) || pickContent(step, null, language)
     : '';
   const description = step ? pickContent(step, 'description', language) : '';
-  const illustration = step?.illustration;
-  const hasIllustration = Boolean(illustration);
 
   const goPrev = useCallback(() => {
     setIndex((current) => Math.max(0, current - 1));
@@ -82,45 +72,30 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
 
   return (
     <View style={styles.container}>
-      <LocalizedText style={[styles.progressLabel, { color: theme.accent }]}>
-        {progressLabel}
-      </LocalizedText>
+      <View style={[styles.card, { borderColor: `${theme.accent}66`, backgroundColor: theme.card }]}>
+        <LocalizedText style={[styles.stepNumber, { color: theme.accent }]}>
+          {stepNumber}
+        </LocalizedText>
+        <LocalizedText style={[styles.progressLabel, { color: theme.textSecondary }]}>
+          {progressLabel}
+        </LocalizedText>
 
-      <View style={[styles.progressTrack, { backgroundColor: theme.divider }]}>
-        <View
-          style={[
-            styles.progressFill,
-            {
-              backgroundColor: theme.accent,
-              width: `${((safeIndex + 1) / total) * 100}%`,
-            },
-          ]}
-        />
-      </View>
-
-      <View style={[styles.card, { borderColor: theme.accent }]}>
-        <View style={[styles.stepBadge, { backgroundColor: theme.tint }]}>
-          <LocalizedText style={styles.stepBadgeText}>{stepNumber}</LocalizedText>
+        <View style={[styles.progressTrack, { backgroundColor: theme.divider }]}>
+          <View
+            style={[
+              styles.progressFill,
+              {
+                backgroundColor: theme.accent,
+                width: `${((safeIndex + 1) / total) * 100}%`,
+              },
+            ]}
+          />
         </View>
-
-        {hasIllustration ? (
-          <View style={[styles.illustrationWrap, { backgroundColor: `${theme.tint}12` }]}>
-            <PrayerIllustration type={illustration!} size={140} color={theme.tint} />
-          </View>
-        ) : null}
 
         {title ? (
           <LocalizedText
             preserveFontFamily
-            style={[
-              styles.stepTitle,
-              {
-                color: theme.text,
-                fontFamily: titleFont,
-                textAlign: isRtl ? 'right' : 'left',
-                writingDirection: isRtl ? 'rtl' : 'ltr',
-              },
-            ]}
+            style={[styles.stepTitle, { color: theme.text, fontFamily: titleFont }]}
           >
             {title}
           </LocalizedText>
@@ -134,8 +109,6 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
                 color: theme.text,
                 fontFamily: bodyFont,
                 lineHeight: bodyLineHeight,
-                textAlign: isRtl ? 'right' : 'left',
-                writingDirection: isRtl ? 'rtl' : 'ltr',
               },
             ]}
           >
@@ -144,20 +117,18 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
         ) : null}
       </View>
 
-      <View style={[styles.navRow, directionalRow]}>
+      <View style={styles.navRow}>
         <Pressable
           onPress={goPrev}
           disabled={safeIndex === 0}
           style={({ pressed }) => [
             styles.navButton,
-            directionalRow,
             {
               borderColor: theme.cardBorder,
               opacity: safeIndex === 0 ? 0.35 : pressed ? 0.7 : 1,
             },
           ]}
         >
-          <MaterialIcons name={backIcon} size={18} color={theme.tint} />
           <LocalizedText style={[styles.navLabel, { color: theme.tint }]}>
             {t('prayerLearning.previous')}
           </LocalizedText>
@@ -168,7 +139,6 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
           disabled={safeIndex >= total - 1}
           style={({ pressed }) => [
             styles.navButton,
-            directionalRow,
             {
               borderColor: theme.cardBorder,
               opacity: safeIndex >= total - 1 ? 0.35 : pressed ? 0.7 : 1,
@@ -178,7 +148,6 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
           <LocalizedText style={[styles.navLabel, { color: theme.tint }]}>
             {t('prayerLearning.next')}
           </LocalizedText>
-          <MaterialIcons name={chevron} size={18} color={theme.tint} />
         </Pressable>
       </View>
     </View>
@@ -189,14 +158,28 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: Spacing.md,
   },
+  card: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
+    alignItems: 'center',
+  },
+  stepNumber: {
+    fontSize: Typography.ui.heading,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: Spacing.xs,
+  },
   progressLabel: {
     fontSize: Typography.ui.caption,
     fontWeight: '600',
     textAlign: 'center',
-    marginBottom: Spacing.xs,
+    marginBottom: Spacing.sm,
   },
   progressTrack: {
-    height: 3,
+    alignSelf: 'stretch',
+    height: 4,
     borderRadius: 2,
     overflow: 'hidden',
     marginBottom: Spacing.md,
@@ -205,46 +188,19 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 2,
   },
-  card: {
-    borderWidth: 1,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.lg,
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  stepBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.md,
-  },
-  stepBadgeText: {
-    color: '#fff',
-    fontSize: Typography.ui.subtitle,
-    fontWeight: '700',
-  },
-  illustrationWrap: {
-    width: 160,
-    height: 160,
-    borderRadius: BorderRadius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: Spacing.md,
-  },
   stepTitle: {
-    fontSize: Typography.ui.subtitle,
+    fontSize: Typography.ui.title,
     fontWeight: '700',
     marginBottom: Spacing.sm,
-    alignSelf: 'stretch',
+    textAlign: 'center',
   },
   stepBody: {
     fontSize: Typography.ui.body,
-    alignSelf: 'stretch',
+    textAlign: 'center',
     includeFontPadding: false,
   },
   navRow: {
+    flexDirection: 'row',
     justifyContent: 'space-between',
     gap: Spacing.sm,
   },
@@ -252,7 +208,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.xs,
     paddingVertical: Spacing.sm,
     borderWidth: 1,
     borderRadius: BorderRadius.md,
@@ -260,6 +215,7 @@ const styles = StyleSheet.create({
   navLabel: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
+    textAlign: 'center',
   },
 });
 

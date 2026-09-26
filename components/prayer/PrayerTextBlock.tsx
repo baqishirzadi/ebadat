@@ -1,5 +1,5 @@
 /**
- * PrayerTextBlock — manuscript-style Arabic + one translation.
+ * PrayerTextBlock — centered Arabic and centered translation under a gold rule.
  */
 
 import React from 'react';
@@ -31,7 +31,6 @@ export function PrayerTextBlock({
 }: PrayerTextBlockProps) {
   const { theme, state } = useApp();
   const language = state.preferences.appLanguage;
-  const isRtl = language !== 'english';
   const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
 
   const translation = resolveContent(source, translationField, language);
@@ -45,8 +44,8 @@ export function PrayerTextBlock({
       style={[
         styles.container,
         {
-          backgroundColor: theme.backgroundSecondary,
-          borderColor: theme.accent,
+          backgroundColor: theme.card,
+          borderColor: `${theme.accent}55`,
         },
       ]}
     >
@@ -61,8 +60,12 @@ export function PrayerTextBlock({
         </View>
       ) : null}
 
+      {(translation || instruction) && arabic ? (
+        <View style={[styles.goldRule, { backgroundColor: theme.accent }]} />
+      ) : null}
+
       {translation ? (
-        <View style={[styles.translationsContainer, { borderTopColor: `${theme.accent}44` }]}>
+        <View style={styles.translationsContainer}>
           {translation.language !== language ? (
             <View style={[styles.languageTag, { borderColor: theme.accent }]}>
               <LocalizedText style={[styles.languageTagText, { color: theme.accent }]}>
@@ -73,11 +76,7 @@ export function PrayerTextBlock({
           <LocalizedText
             style={[
               styles.translationText,
-              {
-                color: theme.text,
-                textAlign: isRtl ? 'right' : 'left',
-                writingDirection: isRtl ? 'rtl' : 'ltr',
-              },
+              { color: theme.text },
               fontFor(translation.language),
             ]}
           >
@@ -91,11 +90,7 @@ export function PrayerTextBlock({
           <LocalizedText
             style={[
               styles.instructionText,
-              {
-                color: theme.textSecondary,
-                textAlign: isRtl ? 'right' : 'left',
-                writingDirection: isRtl ? 'rtl' : 'ltr',
-              },
+              { color: theme.textSecondary },
               fontFor(instruction.language),
             ]}
           >
@@ -109,27 +104,34 @@ export function PrayerTextBlock({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
     overflow: 'hidden',
     marginBottom: Spacing.md,
   },
   arabicContainer: {
     paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.lg,
+    paddingVertical: Spacing.xl,
     alignItems: 'center',
   },
   arabicText: {
-    fontSize: Typography.arabic.large,
+    fontSize: Typography.arabic.xlarge,
     textAlign: 'center',
-    lineHeight: 52,
+    lineHeight: 56,
     writingDirection: 'rtl',
     includeFontPadding: false,
   },
+  goldRule: {
+    height: 1.5,
+    width: '36%',
+    alignSelf: 'center',
+    marginBottom: Spacing.md,
+    opacity: 0.8,
+  },
   translationsContainer: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.md,
+    alignItems: 'center',
   },
   languageTag: {
     alignSelf: 'center',
@@ -142,21 +144,25 @@ const styles = StyleSheet.create({
   languageTagText: {
     fontSize: Typography.ui.caption,
     fontWeight: '600',
+    textAlign: 'center',
   },
   translationText: {
     fontSize: Typography.ui.body,
-    lineHeight: 28,
+    lineHeight: 30,
+    textAlign: 'center',
     includeFontPadding: false,
   },
   instructionContainer: {
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.sm,
     borderTopWidth: StyleSheet.hairlineWidth,
+    alignItems: 'center',
   },
   instructionText: {
     fontSize: Typography.ui.caption,
     fontStyle: 'italic',
     lineHeight: 22,
+    textAlign: 'center',
     includeFontPadding: false,
   },
 });

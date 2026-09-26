@@ -1,8 +1,7 @@
 /**
- * Book leaf — one section of prayer-learning content in manuscript layout.
+ * Book leaf — centered lesson page, text-only navigation, no icons.
  */
 
-import { MaterialIcons } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -14,7 +13,6 @@ import { LocalizedText } from '@/components/ui/LocalizedText';
 import type { PashtoFontFamily } from '@/constants/theme';
 import { BorderRadius, PashtoFonts, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { backIconName, forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 export interface PrayerSection {
@@ -97,17 +95,11 @@ export function BookLeaf({
 }: BookLeafProps) {
   const { theme, state } = useApp();
   const { t, content, contentList, language, fontFamily } = useI18n();
-  const chevron = forwardChevronName(language);
-  const backIcon = backIconName(language);
-  const directionalRow = rowStyle(language);
-  const isRtl = language !== 'english';
   const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
   const titleFont = language === 'pashto' ? pashtoFontFamily : 'Vazirmatn-Bold';
   const bodyFont = language === 'pashto' ? pashtoFontFamily : fontFamily || 'Vazirmatn';
-  const bodyLineHeight = language === 'pashto' ? 42 : 30;
-  const itemLineHeight = language === 'pashto' ? 38 : 26;
-  const textAlign = isRtl ? 'right' : 'left';
-  const writingDirection = isRtl ? 'rtl' : 'ltr';
+  const bodyLineHeight = language === 'pashto' ? 42 : 32;
+  const itemLineHeight = language === 'pashto' ? 38 : 28;
 
   const bodyText = content(section, 'content');
   const stringSteps = contentList(section, 'steps');
@@ -127,10 +119,36 @@ export function BookLeaf({
   const hasPrev = sectionIndex > 0;
   const hasNext = sectionIndex < sectionCount - 1;
 
+  const renderStatChip = (label: string, value: number | undefined) => {
+    if (value == null || value <= 0) return null;
+    return (
+      <View style={[styles.statChip, { borderColor: theme.accent, backgroundColor: `${theme.accent}12` }]}>
+        <LocalizedText style={[styles.statValue, { color: theme.tint }]}>{value}</LocalizedText>
+        <LocalizedText style={[styles.statLabel, { color: theme.textSecondary }]}>{label}</LocalizedText>
+      </View>
+    );
+  };
+
+  const renderNumberedList = (lines: string[]) =>
+    lines.map((line, index) => (
+      <View key={index} style={[styles.listBlock, { borderBottomColor: theme.divider }]}>
+        <LocalizedText style={[styles.listNumber, { color: theme.accent }]}>
+          {index + 1}
+        </LocalizedText>
+        <LocalizedText
+          style={[
+            styles.listText,
+            { color: theme.text, fontFamily: bodyFont, lineHeight: itemLineHeight },
+          ]}
+        >
+          {line}
+        </LocalizedText>
+      </View>
+    ));
+
   return (
     <BookFrame>
-      <Pressable onPress={onBack} hitSlop={10} style={[styles.backRow, directionalRow]}>
-        <MaterialIcons name={backIcon} size={22} color={theme.tint} />
+      <Pressable onPress={onBack} hitSlop={10} style={styles.backRow}>
         <LocalizedText style={[styles.backLabel, { color: theme.tint, fontFamily: bodyFont }]}>
           {t('prayerLearning.backToChapter')}
         </LocalizedText>
@@ -143,20 +161,14 @@ export function BookLeaf({
         >
           {content(section, 'title')}
         </LocalizedText>
-        <BookOrnament />
+        <BookOrnament width={120} />
       </View>
 
       {bodyText ? (
         <LocalizedText
           style={[
             styles.body,
-            {
-              color: theme.text,
-              fontFamily: bodyFont,
-              lineHeight: bodyLineHeight,
-              textAlign,
-              writingDirection,
-            },
+            { color: theme.text, fontFamily: bodyFont, lineHeight: bodyLineHeight },
           ]}
         >
           {bodyText}
@@ -164,27 +176,16 @@ export function BookLeaf({
       ) : null}
 
       {section.items && section.items.length > 0 ? (
-        <View style={styles.listBlock}>
+        <View style={styles.listSection}>
           {section.items.map((item, index) => (
-            <View
-              key={index}
-              style={[styles.listRow, directionalRow, { borderBottomColor: theme.divider }]}
-            >
-              <View style={[styles.listNumber, { borderColor: theme.accent }]}>
-                <LocalizedText style={[styles.listNumberText, { color: theme.accent }]}>
-                  {item.number ?? index + 1}
-                </LocalizedText>
-              </View>
+            <View key={index} style={[styles.listBlock, { borderBottomColor: theme.divider }]}>
+              <LocalizedText style={[styles.listNumber, { color: theme.accent }]}>
+                {item.number ?? index + 1}
+              </LocalizedText>
               <LocalizedText
                 style={[
                   styles.listText,
-                  {
-                    color: theme.text,
-                    fontFamily: bodyFont,
-                    lineHeight: itemLineHeight,
-                    textAlign,
-                    writingDirection,
-                  },
+                  { color: theme.text, fontFamily: bodyFont, lineHeight: itemLineHeight },
                 ]}
               >
                 {content(item, null)}
@@ -195,70 +196,16 @@ export function BookLeaf({
       ) : null}
 
       {conditions.length > 0 ? (
-        <View style={styles.listBlock}>
-          <LocalizedText
-            style={[styles.subheading, { color: theme.accent, fontFamily: titleFont, textAlign }]}
-          >
+        <View style={styles.listSection}>
+          <LocalizedText style={[styles.subheading, { color: theme.accent, fontFamily: titleFont }]}>
             {t('prayerLearning.conditions')}
           </LocalizedText>
-          {conditions.map((line, index) => (
-            <View
-              key={index}
-              style={[styles.listRow, directionalRow, { borderBottomColor: theme.divider }]}
-            >
-              <View style={[styles.listNumber, { borderColor: theme.accent }]}>
-                <LocalizedText style={[styles.listNumberText, { color: theme.accent }]}>
-                  {index + 1}
-                </LocalizedText>
-              </View>
-              <LocalizedText
-                style={[
-                  styles.listText,
-                  {
-                    color: theme.text,
-                    fontFamily: bodyFont,
-                    lineHeight: itemLineHeight,
-                    textAlign,
-                    writingDirection,
-                  },
-                ]}
-              >
-                {line}
-              </LocalizedText>
-            </View>
-          ))}
+          {renderNumberedList(conditions)}
         </View>
       ) : null}
 
       {examples.length > 0 ? (
-        <View style={styles.listBlock}>
-          {examples.map((line, index) => (
-            <View
-              key={index}
-              style={[styles.listRow, directionalRow, { borderBottomColor: theme.divider }]}
-            >
-              <View style={[styles.listNumber, { borderColor: theme.accent }]}>
-                <LocalizedText style={[styles.listNumberText, { color: theme.accent }]}>
-                  {index + 1}
-                </LocalizedText>
-              </View>
-              <LocalizedText
-                style={[
-                  styles.listText,
-                  {
-                    color: theme.text,
-                    fontFamily: bodyFont,
-                    lineHeight: itemLineHeight,
-                    textAlign,
-                    writingDirection,
-                  },
-                ]}
-              >
-                {line}
-              </LocalizedText>
-            </View>
-          ))}
-        </View>
+        <View style={styles.listSection}>{renderNumberedList(examples)}</View>
       ) : null}
 
       {structuredSteps.length > 0 ? (
@@ -270,7 +217,6 @@ export function BookLeaf({
           onPress={() => onJumpSection('janazah_dua')}
           style={({ pressed }) => [
             styles.refLink,
-            directionalRow,
             { borderColor: theme.accent },
             pressed && styles.pressed,
           ]}
@@ -278,82 +224,38 @@ export function BookLeaf({
           <LocalizedText style={[styles.refLinkText, { color: theme.tint, fontFamily: bodyFont }]}>
             {t('prayerLearning.janazahDua')}
           </LocalizedText>
-          <MaterialIcons name={chevron} size={18} color={theme.tint} />
         </Pressable>
       ) : null}
 
       {section.arabic ? <PrayerTextBlock arabic={section.arabic} source={section} /> : null}
 
       {section.prayers && section.prayers.length > 0 ? (
-        <View style={[styles.table, { borderColor: theme.accent }]}>
-          <View style={[styles.tableHeader, directionalRow, { backgroundColor: `${theme.accent}18` }]}>
-            <LocalizedText style={[styles.tableCellName, styles.tableHead, { color: theme.text }]}>
-              {' '}
-            </LocalizedText>
-            <LocalizedText style={[styles.tableCell, styles.tableHead, { color: theme.accent }]}>
-              {t('prayerLearning.fardhShort')}
-            </LocalizedText>
-            <LocalizedText style={[styles.tableCell, styles.tableHead, { color: theme.accent }]}>
-              {t('prayerLearning.sunnahBeforeShort')}
-            </LocalizedText>
-            <LocalizedText style={[styles.tableCell, styles.tableHead, { color: theme.accent }]}>
-              {t('prayerLearning.sunnahAfterShort')}
-            </LocalizedText>
-            <LocalizedText style={[styles.tableCell, styles.tableHead, { color: theme.accent }]}>
-              {t('prayerLearning.witrShort')}
-            </LocalizedText>
-            <LocalizedText style={[styles.tableCell, styles.tableHead, { color: theme.accent }]}>
-              {t('prayerLearning.totalShort')}
-            </LocalizedText>
-          </View>
+        <View style={styles.prayerList}>
           {section.prayers.map((prayer, index) => (
-            <View key={index}>
-              <View
-                style={[
-                  styles.tableRow,
-                  directionalRow,
-                  { borderTopColor: theme.divider },
-                ]}
+            <View
+              key={index}
+              style={[
+                styles.prayerCard,
+                { borderColor: `${theme.accent}66`, backgroundColor: theme.card },
+              ]}
+            >
+              <LocalizedText
+                style={[styles.prayerName, { color: theme.text, fontFamily: titleFont }]}
               >
-                <LocalizedText
-                  style={[
-                    styles.tableCellName,
-                    {
-                      color: theme.text,
-                      fontFamily: bodyFont,
-                      textAlign,
-                      writingDirection,
-                    },
-                  ]}
-                >
-                  {content(prayer, 'name')}
-                </LocalizedText>
-                <LocalizedText style={[styles.tableCell, { color: theme.text }]}>
-                  {prayer.fardh ?? '—'}
-                </LocalizedText>
-                <LocalizedText style={[styles.tableCell, { color: theme.text }]}>
-                  {prayer.sunnah_before ? prayer.sunnah_before : '—'}
-                </LocalizedText>
-                <LocalizedText style={[styles.tableCell, { color: theme.text }]}>
-                  {prayer.sunnah_after ? prayer.sunnah_after : '—'}
-                </LocalizedText>
-                <LocalizedText style={[styles.tableCell, { color: theme.text }]}>
-                  {prayer.witr ? prayer.witr : '—'}
-                </LocalizedText>
-                <LocalizedText style={[styles.tableCell, styles.tableTotal, { color: theme.tint }]}>
-                  {prayer.total ?? '—'}
-                </LocalizedText>
+                {content(prayer, 'name')}
+              </LocalizedText>
+              <View style={styles.statRow}>
+                {renderStatChip(t('prayerLearning.fardhShort'), prayer.fardh)}
+                {renderStatChip(t('prayerLearning.sunnahBeforeShort'), prayer.sunnah_before)}
+                {renderStatChip(t('prayerLearning.sunnahAfterShort'), prayer.sunnah_after)}
+                {renderStatChip(t('prayerLearning.witrShort'), prayer.witr)}
+                {renderStatChip(t('prayerLearning.totalShort'), prayer.total)}
               </View>
               {content(prayer, 'notes') ? (
                 <LocalizedText
                   style={[
-                    styles.tableNotes,
-                    {
-                      color: theme.textSecondary,
-                      fontFamily: bodyFont,
-                      textAlign,
-                      writingDirection,
-                    },
+                    styles.prayerNotes,
+                    { color: theme.textSecondary, fontFamily: bodyFont },
                   ]}
                 >
                   {content(prayer, 'notes')}
@@ -366,9 +268,7 @@ export function BookLeaf({
 
       {section.qunoot_arabic ? (
         <View style={styles.block}>
-          <LocalizedText
-            style={[styles.subheading, { color: theme.accent, fontFamily: titleFont, textAlign: 'center' }]}
-          >
+          <LocalizedText style={[styles.subheading, { color: theme.accent, fontFamily: titleFont }]}>
             {t('prayerLearning.qunootDua')}
           </LocalizedText>
           <PrayerTextBlock
@@ -381,9 +281,7 @@ export function BookLeaf({
 
       {section.for_adult ? (
         <View style={styles.block}>
-          <LocalizedText
-            style={[styles.subheading, { color: theme.accent, fontFamily: titleFont, textAlign: 'center' }]}
-          >
+          <LocalizedText style={[styles.subheading, { color: theme.accent, fontFamily: titleFont }]}>
             {t('prayerLearning.adultDua')}
           </LocalizedText>
           <PrayerTextBlock arabic={section.for_adult.arabic} source={section.for_adult} />
@@ -393,12 +291,7 @@ export function BookLeaf({
               <LocalizedText
                 style={[
                   styles.subheading,
-                  {
-                    color: theme.accent,
-                    fontFamily: titleFont,
-                    textAlign: 'center',
-                    marginTop: Spacing.md,
-                  },
+                  { color: theme.accent, fontFamily: titleFont, marginTop: Spacing.md },
                 ]}
               >
                 {t('prayerLearning.childDua')}
@@ -412,14 +305,7 @@ export function BookLeaf({
       {section.response_arabic ? (
         <View style={styles.block}>
           <LocalizedText
-            style={[
-              styles.subheading,
-              {
-                color: theme.textSecondary,
-                fontFamily: bodyFont,
-                textAlign: 'center',
-              },
-            ]}
+            style={[styles.subheading, { color: theme.textSecondary, fontFamily: bodyFont }]}
           >
             {t('prayerLearning.respondent')}
           </LocalizedText>
@@ -431,20 +317,18 @@ export function BookLeaf({
         </View>
       ) : null}
 
-      <View style={[styles.leafNav, directionalRow]}>
+      <View style={styles.leafNav}>
         <Pressable
           onPress={onPrevious}
           disabled={!hasPrev}
           style={({ pressed }) => [
             styles.navButton,
-            directionalRow,
             {
               borderColor: theme.cardBorder,
               opacity: !hasPrev ? 0.35 : pressed ? 0.7 : 1,
             },
           ]}
         >
-          <MaterialIcons name={backIcon} size={18} color={theme.tint} />
           <LocalizedText style={[styles.navLabel, { color: theme.tint }]}>
             {t('prayerLearning.previous')}
           </LocalizedText>
@@ -459,7 +343,6 @@ export function BookLeaf({
           disabled={!hasNext}
           style={({ pressed }) => [
             styles.navButton,
-            directionalRow,
             {
               borderColor: theme.cardBorder,
               opacity: !hasNext ? 0.35 : pressed ? 0.7 : 1,
@@ -469,7 +352,6 @@ export function BookLeaf({
           <LocalizedText style={[styles.navLabel, { color: theme.tint }]}>
             {t('prayerLearning.next')}
           </LocalizedText>
-          <MaterialIcons name={chevron} size={18} color={theme.tint} />
         </Pressable>
       </View>
     </BookFrame>
@@ -479,132 +361,132 @@ export function BookLeaf({
 const styles = StyleSheet.create({
   backRow: {
     alignItems: 'center',
-    gap: Spacing.xs,
     marginBottom: Spacing.md,
   },
   backLabel: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
+    textAlign: 'center',
   },
   header: {
     alignItems: 'center',
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
   },
   leafTitle: {
-    fontSize: Typography.ui.title,
+    fontSize: Typography.ui.heading,
     fontWeight: '700',
     textAlign: 'center',
+    marginBottom: Spacing.xs,
   },
   body: {
     fontSize: Typography.ui.body,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
+    textAlign: 'center',
     includeFontPadding: false,
   },
-  listBlock: {
-    marginBottom: Spacing.md,
+  listSection: {
+    marginBottom: Spacing.lg,
   },
-  listRow: {
-    alignItems: 'flex-start',
-    paddingVertical: Spacing.sm,
+  listBlock: {
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   listNumber: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 1.5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 2,
-  },
-  listNumberText: {
-    fontSize: Typography.ui.caption,
+    fontSize: Typography.ui.subtitle,
     fontWeight: '700',
+    textAlign: 'center',
   },
   listText: {
-    flex: 1,
     fontSize: Typography.ui.body,
+    textAlign: 'center',
     includeFontPadding: false,
   },
   subheading: {
     fontSize: Typography.ui.subtitle,
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: Spacing.sm,
+    textAlign: 'center',
   },
   refLink: {
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: Spacing.sm,
+    paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
     borderWidth: 1,
     borderRadius: BorderRadius.md,
     borderStyle: 'dashed',
     marginBottom: Spacing.md,
-    gap: Spacing.sm,
   },
   refLinkText: {
-    flex: 1,
     fontSize: Typography.ui.body,
     fontWeight: '600',
+    textAlign: 'center',
   },
   pressed: {
     opacity: 0.75,
   },
-  table: {
-    borderWidth: 1,
-    borderRadius: BorderRadius.md,
-    overflow: 'hidden',
+  prayerList: {
+    gap: Spacing.md,
     marginBottom: Spacing.md,
   },
-  tableHeader: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.xs,
-  },
-  tableRow: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.xs,
-    borderTopWidth: StyleSheet.hairlineWidth,
+  prayerCard: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
     alignItems: 'center',
   },
-  tableHead: {
+  prayerName: {
+    fontSize: Typography.ui.subtitle,
     fontWeight: '700',
-    fontSize: 10,
+    marginBottom: Spacing.sm,
+    textAlign: 'center',
   },
-  tableCellName: {
-    flex: 1.4,
-    fontSize: Typography.ui.caption,
-    fontWeight: '600',
-    paddingHorizontal: 2,
+  statRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: Spacing.sm,
   },
-  tableCell: {
-    flex: 0.7,
+  statChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 6,
+  },
+  statValue: {
+    fontSize: Typography.ui.subtitle,
+    fontWeight: '700',
+  },
+  statLabel: {
     fontSize: Typography.ui.caption,
     textAlign: 'center',
   },
-  tableTotal: {
-    fontWeight: '700',
-  },
-  tableNotes: {
+  prayerNotes: {
     fontSize: Typography.ui.caption,
     fontStyle: 'italic',
-    paddingHorizontal: Spacing.sm,
-    paddingBottom: Spacing.sm,
+    marginTop: Spacing.sm,
+    lineHeight: 22,
+    textAlign: 'center',
   },
   block: {
     marginBottom: Spacing.sm,
+    alignItems: 'stretch',
   },
   leafNav: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: Spacing.md,
+    marginTop: Spacing.lg,
     gap: Spacing.sm,
   },
   navButton: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: Spacing.xs,
     paddingVertical: Spacing.sm,
     borderWidth: 1,
     borderRadius: BorderRadius.md,
@@ -612,6 +494,7 @@ const styles = StyleSheet.create({
   navLabel: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
+    textAlign: 'center',
   },
   pageIndicator: {
     fontSize: Typography.ui.caption,

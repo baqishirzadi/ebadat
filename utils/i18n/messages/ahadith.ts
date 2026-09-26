@@ -12,8 +12,13 @@ export const ahadithMessages = {
   'ahadith.card.removeBookmark': { dari: 'حذف نشانه', pashto: 'نښه لرې کول', english: 'Remove bookmark' },
   'ahadith.card.bookmarkHint': { dari: 'برای نشانه‌گذاری حدیث، نگه دارید', pashto: 'د حدیث د نښه کولو لپاره یې ونیسئ', english: 'Press and hold to bookmark this hadith' },
   'ahadith.card.holdToBookmark': { dari: 'برای نشانه‌گذاری، نگه‌دارید', pashto: 'د نښه کولو لپاره یې ونیسئ', english: 'Press and hold to bookmark' },
+  'ahadith.translation.unavailable': {
+    dari: 'ترجمهٔ این زبان هنوز موجود نیست.',
+    pashto: 'د دې ژبې ژباړه لا نشته.',
+    english: 'A translation in this language is not available yet.',
+  },
 
-  'ahadith.search.placeholder': { dari: 'جستجو در عربی، دری و پشتو', pashto: 'په عربي، دري او پښتو کې لټون', english: 'Search in Arabic, Dari, Pashto or English' },
+  'ahadith.search.placeholder': { dari: 'جستجو در عربی، دری، پشتو و انگلیسی', pashto: 'په عربي، دري، پښتو او انګلیسي کې لټون', english: 'Search in Arabic, Dari, Pashto or English' },
   'ahadith.search.label': { dari: 'جستجوی حدیث', pashto: 'د حدیث لټون', english: 'Search hadith' },
   'ahadith.search.clear': { dari: 'پاک‌کردن جستجو', pashto: 'لټون پاکول', english: 'Clear the search' },
   'ahadith.search.prompt': { dari: 'عبارت جستجو را وارد کنید', pashto: 'د لټون عبارت ولیکئ', english: 'Type a word to search' },
@@ -52,6 +57,7 @@ export const ahadithMessages = {
   'ahadith.composer.arabicText': { dari: 'متن عربی', pashto: 'عربي متن', english: 'Arabic text' },
   'ahadith.composer.dariTranslation': { dari: 'ترجمه دری', pashto: 'دري ژباړه', english: 'Dari translation' },
   'ahadith.composer.pashtoTranslation': { dari: 'ترجمه پشتو', pashto: 'پښتو ژباړه', english: 'Pashto translation' },
+  'ahadith.composer.englishTranslation': { dari: 'ترجمه انگلیسی', pashto: 'انګلیسي ژباړه', english: 'English translation' },
   'ahadith.composer.sourceBook': { dari: 'کتاب منبع', pashto: 'د سرچینې کتاب', english: 'Source book' },
   'ahadith.composer.grade': { dari: 'درجه صحت', pashto: 'د صحت درجه', english: 'Authenticity grade' },
   'ahadith.composer.sourceNumber': { dari: 'شماره منبع', pashto: 'د سرچینې شمېره', english: 'Source number' },
@@ -66,9 +72,9 @@ export const ahadithMessages = {
   'ahadith.composer.publish': { dari: 'انتشار فوری حدیث', pashto: 'حدیث سمدستي خپرول', english: 'Publish the hadith now' },
   'ahadith.composer.missingTitle': { dari: 'نقص معلومات', pashto: 'ناقص معلومات', english: 'Missing information' },
   'ahadith.composer.missingRequired': {
-    dari: 'متن عربی، ترجمه دری، ترجمه پشتو و شماره منبع الزامی است.',
-    pashto: 'عربي متن، دري ژباړه، پښتو ژباړه او د سرچینې شمېره اړین دي.',
-    english: 'The Arabic text, Dari translation, Pashto translation and source number are required.',
+    dari: 'متن عربی، ترجمه دری، پشتو، انگلیسی و شماره منبع الزامی است.',
+    pashto: 'عربي متن، دري، پښتو او انګلیسي ژباړه او د سرچینې شمېره اړین دي.',
+    english: 'Arabic text, Dari, Pashto and English translations, and the source number are required.',
   },
   'ahadith.composer.missingHijriRange': {
     dari: 'برای بازه هجری باید هر سه مقدار ماه، شروع و پایان روز را وارد کنید.',

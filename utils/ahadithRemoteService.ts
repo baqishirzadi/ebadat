@@ -52,6 +52,7 @@ function normalizeRemoteHadith(input: Partial<HadithEntryDTO>): Hadith | null {
   const arabicText = normalizeString(input.arabic_text);
   const dariTranslation = normalizeString(input.dari_translation);
   const pashtoTranslation = normalizeString(input.pashto_translation);
+  const englishTranslation = normalizeString(input.english_translation);
   const sourceNumber = normalizeString(input.source_number);
   if (!arabicText || !dariTranslation || !pashtoTranslation || !sourceNumber) return null;
 
@@ -74,6 +75,7 @@ function normalizeRemoteHadith(input: Partial<HadithEntryDTO>): Hadith | null {
     arabic_text: arabicText,
     dari_translation: dariTranslation,
     pashto_translation: pashtoTranslation,
+    english_translation: englishTranslation,
     source_book: sourceBook,
     source_number: sourceNumber,
     is_muttafaq: isMuttafaq,

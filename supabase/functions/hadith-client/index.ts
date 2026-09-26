@@ -52,6 +52,8 @@ function normalizeHadithRow(row: Record<string, unknown>) {
     arabic_text: typeof row.arabic_text === "string" ? row.arabic_text : "",
     dari_translation: typeof row.dari_translation === "string" ? row.dari_translation : "",
     pashto_translation: typeof row.pashto_translation === "string" ? row.pashto_translation : "",
+    english_translation:
+      typeof row.english_translation === "string" ? row.english_translation : "",
     source_book: row.source_book,
     source_number: typeof row.source_number === "string" ? row.source_number : "",
     is_muttafaq: !!row.is_muttafaq,

@@ -24,6 +24,7 @@ function toRow(item) {
     arabic_text: item.arabic_text,
     dari_translation: item.dari_translation,
     pashto_translation: item.pashto_translation,
+    english_translation: item.english_translation || item.dari_translation,
     source_book: item.source_book,
     source_number: item.source_number,
     is_muttafaq: !!item.is_muttafaq,

@@ -8,7 +8,7 @@ import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
 import { formatSourceLabel } from '@/utils/ahadith/labels';
 import { getHadithTranslation } from '@/utils/ahadith/translation';
-import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
+import { getQuranFontFamily } from '@/hooks/useFonts';
 import { useI18n } from '@/utils/i18n/useI18n';
 import CenteredText from '@/components/CenteredText';
 
@@ -21,8 +21,7 @@ interface HadithSearchProps {
 
 export function HadithSearch({ query, results, onChangeQuery, onOpenHadith }: HadithSearchProps) {
   const { theme, state } = useApp();
-  const { t, language } = useI18n();
-  const isPashto = language === 'pashto';
+  const { t, language, fontFamily, isRtl } = useI18n();
 
   return (
     <View style={styles.container}>
@@ -33,7 +32,7 @@ export function HadithSearch({ query, results, onChangeQuery, onOpenHadith }: Ha
           onChangeText={onChangeQuery}
           placeholder={t('ahadith.search.placeholder')}
           placeholderTextColor={theme.textSecondary}
-          style={[styles.input, { color: theme.textPrimary, fontFamily: language === 'english' ? undefined : isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont) }]}
+          style={[styles.input, { color: theme.textPrimary, fontFamily: language === 'english' ? undefined : fontFamily }]}
           textAlign="center"
           accessibilityLabel={t('ahadith.search.label')}
         />
@@ -79,11 +78,12 @@ export function HadithSearch({ query, results, onChangeQuery, onOpenHadith }: Ha
                 styles.translation,
                 {
                   color: theme.textSecondary,
-                  fontFamily: isPashto ? getPashtoFontFamily(state.preferences.pashtoFont) : getDariFontFamily(state.preferences.dariFont),
+                  fontFamily,
+                  writingDirection: isRtl ? 'rtl' : 'ltr',
                 },
               ]}
             >
-              {getHadithTranslation(item, language)}
+              {getHadithTranslation(item, language) || t('ahadith.translation.unavailable')}
             </CenteredText>
             <CenteredText style={[styles.meta, { color: theme.primary }]}>
               {formatSourceLabel(item.source_book, item.source_number, language)}

@@ -1,10 +1,17 @@
 /**
  * Adhkar Detail Screen
- * Shows all adhkar in a category with counter functionality
+ * Shows all adhkar in a category with tap-to-count on each card.
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
-import { View, StyleSheet, FlatList, Pressable, I18nManager } from 'react-native';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  Pressable,
+  I18nManager,
+  Animated,
+} from 'react-native';
 import { useLocalSearchParams, Stack, useNavigation, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -15,6 +22,7 @@ import { getQuranFontFamily } from '@/hooks/useFonts';
 import adhkarData from '@/data/adhkar.json';
 import CenteredText from '@/components/CenteredText';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { backIconName } from '@/utils/i18n/direction';
 
 interface Dhikr {
   id: string;
@@ -37,10 +45,56 @@ interface Category {
   color: string;
 }
 
+function CountBadge({
+  label,
+  color,
+  borderColor,
+  backgroundColor,
+  pulseKey,
+}: {
+  label: string;
+  color: string;
+  borderColor: string;
+  backgroundColor: string;
+  pulseKey: number;
+}) {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (pulseKey <= 0) return;
+    scale.setValue(1);
+    Animated.sequence([
+      Animated.spring(scale, {
+        toValue: 1.12,
+        friction: 5,
+        tension: 220,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 6,
+        tension: 180,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [pulseKey, scale]);
+
+  return (
+    <Animated.View
+      style={[
+        styles.counterBadge,
+        { backgroundColor, borderColor, transform: [{ scale }] },
+      ]}
+    >
+      <CenteredText style={[styles.counterText, { color }]}>{label}</CenteredText>
+    </Animated.View>
+  );
+}
+
 export default function AdhkarDetailScreen() {
   const { category } = useLocalSearchParams<{ category: string }>();
   const { theme, state } = useApp();
-  const { t, n, content } = useI18n();
+  const { t, n, content, language } = useI18n();
   const { addDhikr } = useStats();
   const navigation = useNavigation();
   const router = useRouter();
@@ -64,52 +118,39 @@ export default function AdhkarDetailScreen() {
     });
     return initial;
   });
-
-  const hasAnyCount = useMemo(
-    () => Object.values(counters).some(c => c > 0),
-    [counters]
-  );
+  const [pulseKeys, setPulseKeys] = useState<Record<string, number>>({});
 
   const handleCount = useCallback((dhikrId: string, targetCount: number) => {
     setCounters(prev => {
-      const current = prev[dhikrId];
-      if (current < targetCount) {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        addDhikr(1);
-        return { ...prev, [dhikrId]: current + 1 };
-      }
+      const current = prev[dhikrId] ?? 0;
+      const next = current >= targetCount ? 1 : current + 1;
+      return { ...prev, [dhikrId]: next };
+    });
+    setPulseKeys(prev => ({ ...prev, [dhikrId]: (prev[dhikrId] ?? 0) + 1 }));
+
+    const current = counters[dhikrId] ?? 0;
+    const next = current >= targetCount ? 1 : current + 1;
+    if (next >= targetCount || current >= targetCount) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      return prev;
-    });
-  }, [addDhikr]);
-
-  const resetCounter = useCallback((dhikrId: string) => {
-    setCounters(prev => ({ ...prev, [dhikrId]: 0 }));
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-  }, []);
-
-  const resetAll = useCallback(() => {
-    if (!hasAnyCount) return;
-    setCounters(prev => {
-      const next: Record<string, number> = {};
-      Object.keys(prev).forEach(id => {
-        next[id] = 0;
-      });
-      return next;
-    });
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-  }, [hasAnyCount]);
+    } else {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+    addDhikr(1);
+  }, [addDhikr, counters]);
 
   const renderDhikr = useCallback(({ item }: { item: Dhikr }) => {
-    const count = counters[item.id];
+    const count = counters[item.id] ?? 0;
     const isComplete = count >= item.count;
-    const progress = (count / item.count) * 100;
+    const progress = item.count > 0 ? (count / item.count) * 100 : 0;
     const accent = categoryInfo?.color ?? theme.tint;
+    const countLabel = t('adhkar.countProgress', {
+      current: n(count),
+      target: n(item.count),
+    });
 
     return (
       <Pressable
         onPress={() => handleCount(item.id, item.count)}
-        onLongPress={() => resetCounter(item.id)}
         style={({ pressed }) => [
           styles.dhikrCard,
           {
@@ -161,31 +202,20 @@ export default function AdhkarDetailScreen() {
         ) : null}
 
         <View style={styles.counterRow}>
-          <View
-            style={[
-              styles.counterBadge,
-              {
-                backgroundColor: isComplete ? `${accent}18` : theme.backgroundSecondary,
-                borderColor: isComplete ? accent : theme.cardBorder,
-              },
-            ]}
-          >
-            <CenteredText
-              style={[
-                styles.counterText,
-                { color: isComplete ? accent : theme.text },
-              ]}
-            >
-              {n(count)} / {n(item.count)}
-            </CenteredText>
-          </View>
+          <CountBadge
+            label={countLabel}
+            color={isComplete ? accent : theme.text}
+            borderColor={isComplete ? accent : theme.cardBorder}
+            backgroundColor={isComplete ? `${accent}18` : theme.backgroundSecondary}
+            pulseKey={pulseKeys[item.id] ?? 0}
+          />
           {isComplete ? (
             <MaterialIcons name="check-circle" size={22} color={accent} />
           ) : null}
         </View>
       </Pressable>
     );
-  }, [counters, theme, fontFamily, categoryInfo, handleCount, resetCounter, content, n]);
+  }, [counters, pulseKeys, theme, fontFamily, categoryInfo, handleCount, content, n, t]);
 
   if (!categoryInfo) {
     return (
@@ -208,7 +238,7 @@ export default function AdhkarDetailScreen() {
           headerTintColor: '#fff',
           headerLeft: () => (
             <Pressable onPress={handleBack} hitSlop={10} style={styles.headerBackButton}>
-              <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+              <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
             </Pressable>
           ),
         }}
@@ -227,39 +257,6 @@ export default function AdhkarDetailScreen() {
             ]}
           />
         </View>
-      </View>
-
-      <View style={[styles.toolbar, { backgroundColor: theme.card, borderBottomColor: theme.cardBorder }]}>
-        <CenteredText style={[styles.toolbarHint, { color: theme.textSecondary }]}>
-          {t('adhkar.tapHint')}
-        </CenteredText>
-        <Pressable
-          onPress={resetAll}
-          disabled={!hasAnyCount}
-          hitSlop={8}
-          style={({ pressed }) => [
-            styles.resetButton,
-            {
-              backgroundColor: hasAnyCount ? `${categoryInfo.color}18` : theme.backgroundSecondary,
-              borderColor: hasAnyCount ? categoryInfo.color : theme.cardBorder,
-              opacity: hasAnyCount ? (pressed ? 0.85 : 1) : 0.45,
-            },
-          ]}
-        >
-          <MaterialIcons
-            name="refresh"
-            size={16}
-            color={hasAnyCount ? categoryInfo.color : theme.textSecondary}
-          />
-          <CenteredText
-            style={[
-              styles.resetLabel,
-              { color: hasAnyCount ? categoryInfo.color : theme.textSecondary },
-            ]}
-          >
-            {t('adhkar.resetAll')}
-          </CenteredText>
-        </Pressable>
       </View>
 
       <FlatList
@@ -312,33 +309,6 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 4,
   },
-  toolbar: {
-    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  toolbarHint: {
-    flex: 1,
-    fontSize: Typography.ui.caption,
-    textAlign: 'center',
-  },
-  resetButton: {
-    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 6,
-    borderRadius: BorderRadius.full,
-    borderWidth: 1,
-  },
-  resetLabel: {
-    fontSize: Typography.ui.caption,
-    fontWeight: '600',
-  },
   listContent: {
     padding: Spacing.md,
     paddingBottom: Spacing.xxl,
@@ -354,7 +324,7 @@ const styles = StyleSheet.create({
   },
   dhikrCardPressed: {
     opacity: 0.95,
-    transform: [{ scale: 0.99 }],
+    transform: [{ scale: 0.985 }],
   },
   progressBar: {
     position: 'absolute',
@@ -408,14 +378,14 @@ const styles = StyleSheet.create({
   },
   counterBadge: {
     paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
+    paddingVertical: Spacing.sm,
     borderRadius: 999,
     borderWidth: 1,
-    minWidth: 88,
+    minWidth: 120,
     alignItems: 'center',
   },
   counterText: {
-    fontSize: Typography.ui.subtitle,
+    fontSize: Typography.ui.body,
     fontWeight: '700',
   },
 });

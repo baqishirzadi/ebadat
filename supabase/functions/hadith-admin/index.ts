@@ -81,6 +81,8 @@ function normalizeHadithRow(row: Record<string, unknown>) {
     arabic_text: typeof row.arabic_text === "string" ? row.arabic_text : "",
     dari_translation: typeof row.dari_translation === "string" ? row.dari_translation : "",
     pashto_translation: typeof row.pashto_translation === "string" ? row.pashto_translation : "",
+    english_translation:
+      typeof row.english_translation === "string" ? row.english_translation : "",
     source_book: row.source_book,
     source_number: typeof row.source_number === "string" ? row.source_number : "",
     is_muttafaq: !!row.is_muttafaq,
@@ -248,6 +250,7 @@ function validateAndBuildInsertPayload(body: Record<string, unknown>) {
   const arabicText = normalizeString(body.arabic_text);
   const dariTranslation = normalizeString(body.dari_translation);
   const pashtoTranslation = normalizeString(body.pashto_translation);
+  const englishTranslation = normalizeString(body.english_translation);
   const sourceBook = normalizeString(body.source_book);
   const sourceNumber = normalizeString(body.source_number);
 
@@ -321,6 +324,7 @@ function validateAndBuildInsertPayload(body: Record<string, unknown>) {
       arabic_text: arabicText,
       dari_translation: dariTranslation,
       pashto_translation: pashtoTranslation,
+      english_translation: englishTranslation,
       source_book: sourceBook,
       source_number: sourceNumber,
       is_muttafaq: isMuttafaq,

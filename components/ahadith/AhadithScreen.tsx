@@ -17,7 +17,7 @@ import { HadithShareCanvas } from '@/components/ahadith/HadithShareCanvas';
 import { HadithNotificationTimePicker } from '@/components/ahadith/HadithNotificationTimePicker';
 import { shareHadithCard } from '@/utils/ahadith/shareCard';
 import { alphaColor } from '@/utils/ahadith/theme';
-import { formatSourceLabel } from '@/utils/ahadith/labels';
+import { formatSourceLabel, getAuthenticityGradeLabel, getMuttafaqBadgeLabel } from '@/utils/ahadith/labels';
 import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
@@ -43,7 +43,7 @@ export function AhadithScreen() {
   const params = useLocalSearchParams<{ section?: string }>();
   const router = useRouter();
   const { theme } = useApp();
-  const { t, language } = useI18n();
+  const { t, language, fontFamily, isRtl } = useI18n();
   const {
     hadiths,
     dailySelection,
@@ -100,7 +100,7 @@ export function AhadithScreen() {
 
     await shareHadithCard({
       captureRef: shareCanvasRef,
-      fallbackMessage: `${activeSelection.hadith.arabic_text}\n\n${getHadithTranslation(activeSelection.hadith, language)}\n\n${formatSourceLabel(activeSelection.hadith.source_book, activeSelection.hadith.source_number, language)}`,
+      fallbackMessage: `${activeSelection.hadith.arabic_text}\n\n${getHadithTranslation(activeSelection.hadith, language) || t('ahadith.translation.unavailable')}\n\n${formatSourceLabel(activeSelection.hadith.source_book, activeSelection.hadith.source_number, language)}`,
     });
   };
 
@@ -192,12 +192,6 @@ export function AhadithScreen() {
             onSaveTime={setNotificationTime}
             onToggleEnabled={setNotificationsEnabled}
           />
-
-          <View style={[styles.tipBox, { backgroundColor: theme.surface, borderColor: alphaColor(theme.primary, 0.2) }]}> 
-            <CenteredText style={[styles.tipText, { color: theme.textSecondary }]}> 
-              {t('hadith.swipeHint')}
-            </CenteredText>
-          </View>
         </ScrollView>
       ) : null}
 
@@ -247,9 +241,24 @@ export function AhadithScreen() {
             {focusedHadith ? (
               <ScrollView>
                 <CenteredText style={[styles.modalArabic, { color: theme.textPrimary }]}>{focusedHadith.arabic_text}</CenteredText>
-                <CenteredText style={[styles.modalDari, { color: theme.textPrimary }]}>{getHadithTranslation(focusedHadith, language)}</CenteredText>
+                <CenteredText
+                  style={[
+                    styles.modalTranslation,
+                    {
+                      color: theme.textPrimary,
+                      fontFamily,
+                      writingDirection: isRtl ? 'rtl' : 'ltr',
+                    },
+                  ]}
+                >
+                  {getHadithTranslation(focusedHadith, language) || t('ahadith.translation.unavailable')}
+                </CenteredText>
                 <CenteredText style={[styles.modalSource, { color: theme.primary }]}>
                   {formatSourceLabel(focusedHadith.source_book, focusedHadith.source_number, language)}
+                  {' · '}
+                  {focusedHadith.is_muttafaq
+                    ? getMuttafaqBadgeLabel(language)
+                    : getAuthenticityGradeLabel(focusedHadith.authenticity_grade, language)}
                 </CenteredText>
               </ScrollView>
             ) : null}
@@ -442,21 +451,11 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
     fontFamily: 'ScheherazadeNew',
   },
-  modalDari: {
+  modalTranslation: {
     marginTop: 14,
     fontSize: 18,
     lineHeight: 30,
     textAlign: 'center',
-    writingDirection: 'rtl',
-    fontFamily: 'Vazirmatn',
-  },
-  modalPashto: {
-    marginTop: 12,
-    fontSize: 16,
-    lineHeight: 28,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-    fontFamily: 'Amiri',
   },
   modalSource: {
     marginTop: 14,

@@ -18,7 +18,7 @@ function normalizeText(value: string): string {
 
 function buildSearchBlob(hadith: Hadith): string {
   return normalizeText(
-    `${hadith.arabic_text} ${hadith.dari_translation} ${hadith.pashto_translation} ${hadith.topics.join(' ')}`
+    `${hadith.arabic_text} ${hadith.dari_translation} ${hadith.pashto_translation} ${hadith.english_translation} ${hadith.topics.join(' ')}`
   );
 }
 
@@ -49,6 +49,7 @@ export function searchHadiths(hadiths: Hadith[], query: string, limit = 100): Ha
     if (normalizeText(hadith.arabic_text).includes(term)) score += 5;
     if (normalizeText(hadith.dari_translation).includes(term)) score += 3;
     if (normalizeText(hadith.pashto_translation).includes(term)) score += 3;
+    if (normalizeText(hadith.english_translation).includes(term)) score += 3;
     if (hadith.topics.some((topic) => normalizeText(topic).includes(term))) score += 2;
 
     results.push({ hadith, score });

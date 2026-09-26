@@ -1,10 +1,11 @@
 /**
- * Prayer Learning Screen — Hanafi fiqh presented as a readable book.
+ * Prayer Learning Screen — Hanafi fiqh presented as a readable RTL book.
  */
 
 import { BookChapter } from '@/components/prayer/BookChapter';
 import { BookCover } from '@/components/prayer/BookCover';
 import { BookLeaf, type PrayerSection } from '@/components/prayer/BookLeaf';
+import { RtlView } from '@/components/ui/RtlView';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { Spacing } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
@@ -12,7 +13,7 @@ import prayerData from '@/data/prayerLearning.json';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BackHandler, ScrollView, StyleSheet, View } from 'react-native';
+import { BackHandler, ScrollView, StyleSheet } from 'react-native';
 
 export default function PrayerLearningScreen() {
   const { theme } = useApp();
@@ -96,9 +97,8 @@ export default function PrayerLearningScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <RtlView style={[styles.container, { backgroundColor: theme.background }]}>
       <ScreenHeader
-        icon="school"
         title={t('prayerLearning.title')}
         subtitle={
           selectedSection
@@ -148,7 +148,7 @@ export default function PrayerLearningScreen() {
           />
         )}
       </ScrollView>
-    </View>
+    </RtlView>
   );
 }
 

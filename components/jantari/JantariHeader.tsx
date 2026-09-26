@@ -9,7 +9,6 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
 import { useAhadith } from '@/context/AhadithContext';
 import { useApp } from '@/context/AppContext';
-import { getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { getHadithTranslation } from '@/utils/ahadith/translation';
 import { useI18n } from '@/utils/i18n/useI18n';
 
@@ -17,7 +16,7 @@ export function JantariHeader() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { dailySelection } = useAhadith();
-  const { state, themeMode } = useApp();
+  const { themeMode } = useApp();
 
   const { t, language, fontFamily } = useI18n();
 
@@ -26,13 +25,8 @@ export function JantariHeader() {
   const hadithText = useMemo(() => {
     const hadith = dailySelection?.hadith;
     if (!hadith) return '…';
-    return getHadithTranslation(hadith, language);
-  }, [dailySelection?.hadith, language]);
-
-  const hadithFontFamily = fontFamily
-    ?? (language === 'pashto'
-      ? getPashtoFontFamily(state.preferences.pashtoFont)
-      : getDariFontFamily(state.preferences.dariFont));
+    return getHadithTranslation(hadith, language) || t('ahadith.translation.unavailable');
+  }, [dailySelection?.hadith, language, t]);
 
   return (
     <RtlView style={[styles.wrapper, { paddingTop: insets.top + Spacing.sm }]}>
@@ -58,7 +52,7 @@ export function JantariHeader() {
               align="center"
               numberOfLines={3}
               ellipsizeMode="tail"
-              style={[styles.hadithText, { fontFamily: hadithFontFamily }]}
+              style={[styles.hadithText, { fontFamily }]}
             >
               {hadithText}
             </RtlText>

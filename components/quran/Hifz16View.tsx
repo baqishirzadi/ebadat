@@ -8,30 +8,32 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from '
 import {
   Dimensions,
   FlatList,
+  I18nManager,
   type ListRenderItemInfo,
   Platform,
-  Pressable,
   StyleSheet,
   Text,
   View,
   type LayoutChangeEvent,
 } from 'react-native';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { getSurah } from '@/data/surahNames';
-import { useApp, useBookmarks, useReadingPosition } from '@/context/AppContext';
+import { useApp, useAppLanguage, useBookmarks, useReadingPosition } from '@/context/AppContext';
+import type { AppLanguage } from '@/types/quran';
 import audioManager from '@/utils/quranAudio';
 import {
   applyKashida,
   kashidaCountForWidth,
+  kashidaSlots,
+  MAX_STRETCH_LETTERS,
   splitAyahSpans,
+  splitLineBodyAndMarkers,
   visibleLength,
 } from '@/utils/hifzKashida';
 import { toArabicNumerals } from '@/utils/numbers';
 import {
-  getHifzLinePlayTarget,
   getHifzPage,
   getHifzSurahStartPage,
   hifzAyahVisibleLengthOnPage,
@@ -45,17 +47,80 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 const HIFZ_FONT = Platform.OS === 'ios' ? 'Scheherazade New' : 'ScheherazadeNew';
 const PAGE_WIDTH = Dimensions.get('window').width;
-const BASE_FONT = 19;
-const MIN_FONT = 16;
-const MAX_FONT = 22;
-const OPENING_FONT = 26;
+const WINDOW_HEIGHT = Dimensions.get('window').height;
+/** Sentinel past Fatiha in the swipe list; not a mushaf page number. */
+const HIFZ_DEDICATION_PAGE = 0;
+/** Android mirrors horizontal FlatLists under RTL; undo that for physical LTR paging. */
+const UNMIRROR_RTL = I18nManager.isRTL ? ({ transform: [{ scaleX: -1 }] } as const) : null;
+/** One body size for every mushaf page (stable across a surah). */
+const BASE_FONT = 17;
 /** Tall enough for Scheherazade harakat and letter tails. */
 const LINE_HEIGHT_RATIO = 1.9;
 /** Extra tall for Bismillah so ی / م descenders are not clipped. */
 const BASMALLAH_LINE_HEIGHT_RATIO = 2.35;
 const BISMILLAH = 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ';
 const AYAH_HIGHLIGHT = 'rgba(14, 107, 79, 0.12)';
-const KASHIDA_SLOT_CAP = 14;
+/** Short stroke per join — matches MAX_TATWEEL_PER_LETTER in hifzKashida. */
+const KASHIDA_SLOT_CAP = 5;
+/** Matches `slimInner` horizontal inset (all pages). */
+const SLIM_COLUMN_MARGIN = 18;
+/**
+ * Horizontal pads on `ayahLineBody`. After RTL unmirror cancels out, physical
+ * right is the on-screen right (RTL line start). Keep first-letter ink inside.
+ */
+const AYAH_PAD_START = 16; // physical right → on-screen right (line start)
+const AYAH_PAD_END = 4; // physical left → toward markers
+const AYAH_PAD_TOTAL = AYAH_PAD_START + AYAH_PAD_END;
+/** Keep the seed when the refined count is this close. */
+const KASHIDA_COMMIT_EPSILON = 1;
+/** Rough Scheherazade char advance as a fraction of font size (seed estimate). */
+const CHAR_WIDTH_RATIO = 0.52;
+
+/** Final measured tatweel counts survive FlatList remounts. */
+const kashidaCache = new Map<string, number>();
+
+function predictContentWidth(): number {
+  return Math.max(0, Math.floor(PAGE_WIDTH - SLIM_COLUMN_MARGIN * 2));
+}
+
+/** Content box inside `ayahLineBody` (onLayout width includes padding). */
+function bodyContentWidth(slotWidth: number): number {
+  return Math.max(0, slotWidth - AYAH_PAD_TOTAL);
+}
+
+function kashidaCacheKey(
+  pageNumber: number,
+  lineNumber: number,
+  contentWidth: number,
+  fontSize: number,
+  markerWidth = 0,
+  bodySlot = 0,
+): string {
+  // v26: start inset on physical right; stretch targets content box only.
+  return `v26:${pageNumber}:${lineNumber}:${contentWidth}:${fontSize}:${markerWidth}:${bodySlot}`;
+}
+
+/**
+ * Seed tatweels from the stretchable body's slack against the fill target.
+ * `longestChars` is the longest body on the page (markers already excluded).
+ */
+function estimateSeedKashida(
+  text: string,
+  longestChars: number,
+  fillTarget: number,
+  fontSize: number,
+): number {
+  if (fillTarget <= 0 || longestChars <= 0 || fontSize <= 0) return 0;
+  const chars = visibleLength(text);
+  if (chars <= 0) return 0;
+  const sizedCharWidth = fontSize * CHAR_WIDTH_RATIO;
+  const longestNatural = longestChars * sizedCharWidth;
+  const charWidth =
+    longestNatural >= fillTarget - 4 ? fillTarget / longestChars : sizedCharWidth;
+  const naturalEst = chars * charWidth;
+  // Stay under the slot so the seed never paints a clipped right edge.
+  return Math.floor(kashidaCountForWidth(naturalEst, fillTarget, fontSize) * 0.55);
+}
 
 /** Fixed miniature palette (independent of app theme). */
 const ILLUM = {
@@ -85,8 +150,9 @@ type Props = {
   onVisiblePositionChange?: (surahNumber: number, ayahNumber: number, pageNumber: number) => void;
 };
 
-function isOpeningPage(page: number) {
-  return page === 1 || page === 2;
+function isOpeningPage(_page: number) {
+  // Pages 1–2 use the same slim 16-line frame as the rest of the mushaf.
+  return false;
 }
 
 /** Bismillah under surah name except Fatiha (ayah 1) and Tawbah (none). */
@@ -97,16 +163,16 @@ function shouldInjectBasmallah(line: HifzLine, next: HifzLine | undefined): bool
   return next?.type !== 'basmallah';
 }
 
-function estimatePageFontSize(page: HifzPage, contentWidth: number, opening: boolean): number {
-  if (contentWidth <= 0) return opening ? OPENING_FONT : BASE_FONT;
+function longestJustifiedAyahChars(page: HifzPage): number {
   const ayahLines = page.lines.filter((line) => line.type === 'ayah' && line.text && !line.centered);
-  if (ayahLines.length === 0) return opening ? OPENING_FONT : BASE_FONT;
-  const longest = Math.max(...ayahLines.map((line) => visibleLength(line.text)));
-  // Longest line nearly fills the column; shorter lines stretch up to it.
-  const estimated = (contentWidth * 0.98) / (Math.max(longest, 1) * 0.52);
-  const lo = opening ? 18 : MIN_FONT;
-  const hi = opening ? 24 : MAX_FONT;
-  return Math.max(lo, Math.min(hi, Math.floor(estimated)));
+  if (ayahLines.length === 0) return 0;
+  // Stretch budget is for the body only — trailing ﴿n﴾ is pinned separately.
+  return Math.max(
+    ...ayahLines.map((line) => {
+      const { body } = splitLineBodyAndMarkers(line.text);
+      return visibleLength(body || line.text);
+    }),
+  );
 }
 
 const androidFontPad = Platform.OS === 'android' ? { includeFontPadding: true as const } : null;
@@ -197,29 +263,111 @@ function CornerBloom({ x, y }: { x: number; y: number }) {
 
 /**
  * Repeating green–blue floral border.
- * `slim` keeps a ~12px band so regular pages keep room for 16 lines.
+ * Full ornate frame on opening pages; `slim` draws only top and bottom bands
+ * so pages 3+ keep room for 16 lines with open sides.
  */
 const FloralOpeningBorder = memo(function FloralOpeningBorder({
   width,
   height,
   slim = false,
+  sparse = false,
 }: {
   width: number;
   height: number;
   slim?: boolean;
+  /** Dedication page: corners + sparse band flowers, no dense side garden. */
+  sparse?: boolean;
 }) {
   if (width <= 0 || height <= 0) return null;
 
   const w = width;
   const h = height;
-  const outer = slim ? 0 : 6;
-  const bandOuter = slim ? 0 : 12;
-  const bandInner = slim ? 5 : 34;
-  const tip = slim ? 0 : 8;
-  const step = slim ? 8 : 14;
-  const unitStep = slim ? 12 : 24;
-  const flowerScale = slim ? 0.28 : 0.92;
-  const cornerScale = slim ? 0.3 : 1;
+
+  // Slim pages: top and bottom bands only — no left/right frame.
+  if (slim) {
+    const bandH = 8;
+    const unitStep = 14;
+    const flowerScale = 0.32;
+    const topUnits: number[] = [];
+    for (let x = 10; x < w - 8; x += unitStep) {
+      topUnits.push(x);
+    }
+    const midY = bandH / 2;
+    return (
+      <Svg
+        width={w}
+        height={h}
+        style={[StyleSheet.absoluteFill, styles.floralSvg]}
+        pointerEvents="none"
+      >
+        <Rect x={0} y={0} width={w} height={bandH} fill={ILLUM.field} opacity={0.45} />
+        <Rect x={0} y={h - bandH} width={w} height={bandH} fill={ILLUM.field} opacity={0.45} />
+        <Rect
+          x={0}
+          y={0}
+          width={w}
+          height={bandH}
+          fill="none"
+          stroke={ILLUM.greenDark}
+          strokeWidth={1.1}
+        />
+        <Rect
+          x={2}
+          y={2}
+          width={w - 4}
+          height={bandH - 4}
+          fill="none"
+          stroke={ILLUM.gold}
+          strokeWidth={0.8}
+        />
+        <Rect
+          x={0}
+          y={h - bandH}
+          width={w}
+          height={bandH}
+          fill="none"
+          stroke={ILLUM.greenDark}
+          strokeWidth={1.1}
+        />
+        <Rect
+          x={2}
+          y={h - bandH + 2}
+          width={w - 4}
+          height={bandH - 4}
+          fill="none"
+          stroke={ILLUM.gold}
+          strokeWidth={0.8}
+        />
+        {topUnits.map((x, i) => (
+          <FloralUnit
+            key={`t-${i}`}
+            x={x}
+            y={midY}
+            scale={flowerScale}
+            rotate={i % 2 === 0 ? -10 : 10}
+          />
+        ))}
+        {topUnits.map((x, i) => (
+          <FloralUnit
+            key={`b-${i}`}
+            x={x}
+            y={h - midY}
+            scale={flowerScale}
+            rotate={i % 2 === 0 ? 170 : 190}
+          />
+        ))}
+      </Svg>
+    );
+  }
+
+  const outer = 6;
+  const bandOuter = 12;
+  const bandInner = 34;
+  const tip = 8;
+  const step = 14;
+  const unitStep = sparse ? 56 : 24;
+  const flowerScale = sparse ? 0.72 : 0.92;
+  const cornerScale = sparse ? 0.85 : 1;
 
   // Scalloped outer path
   const scallopOuter: string[] = [`M ${outer},${outer + tip}`];
@@ -263,39 +411,42 @@ const FloralOpeningBorder = memo(function FloralOpeningBorder({
   ].join(' ');
 
   const topUnits: number[] = [];
-  for (let x = bandInner + (slim ? 4 : 8); x < w - bandInner - (slim ? 2 : 6); x += unitStep) {
+  for (let x = bandInner + 8; x < w - bandInner - 6; x += unitStep) {
     topUnits.push(x);
   }
   const sideUnits: number[] = [];
-  for (let y = bandInner + (slim ? 8 : 14); y < h - bandInner - (slim ? 6 : 10); y += unitStep) {
+  for (let y = bandInner + 14; y < h - bandInner - 10; y += unitStep) {
     sideUnits.push(y);
   }
 
   const midY = (bandOuter + bandInner) / 2;
   const midX = (bandOuter + bandInner) / 2;
-  const cornerInset = slim ? 6 : 10;
+  const cornerInset = 10;
 
   return (
-    <Svg width={w} height={h} style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Rect x={0} y={0} width={w} height={h} fill={ILLUM.cream} />
-      <Path d={scallopOuter.join(' ')} fill={ILLUM.greenDark} />
+    <Svg
+      width={w}
+      height={h}
+      style={[StyleSheet.absoluteFill, styles.floralSvg]}
+      pointerEvents="none"
+    >
+      <Path d={scallopOuter.join(' ')} fill="none" />
       <Path
         d={scallopOuter.join(' ')}
         fill="none"
         stroke={ILLUM.gold}
-        strokeWidth={slim ? 0.8 : 1.4}
+        strokeWidth={1.4}
       />
       <Rect
-        x={outer + (slim ? 2 : 4)}
-        y={outer + (slim ? 2 : 4)}
-        width={w - (outer + (slim ? 2 : 4)) * 2}
-        height={h - (outer + (slim ? 2 : 4)) * 2}
-        fill={ILLUM.cream}
+        x={outer + 4}
+        y={outer + 4}
+        width={w - (outer + 4) * 2}
+        height={h - (outer + 4) * 2}
+        fill="none"
         stroke={ILLUM.goldLite}
-        strokeWidth={slim ? 0.6 : 1}
+        strokeWidth={1}
       />
-      <Path d={frameRing} fill={ILLUM.field} fillRule="evenodd" />
-      <Path d={frameRing} fill={ILLUM.blueLight} fillRule="evenodd" opacity={0.35} />
+      <Path d={frameRing} fill="none" />
       <Rect
         x={bandOuter}
         y={bandOuter}
@@ -303,29 +454,27 @@ const FloralOpeningBorder = memo(function FloralOpeningBorder({
         height={h - bandOuter * 2}
         fill="none"
         stroke={ILLUM.greenDark}
-        strokeWidth={slim ? 1.2 : 2.2}
+        strokeWidth={2.2}
       />
       <Rect
         x={bandInner}
         y={bandInner}
         width={w - bandInner * 2}
         height={h - bandInner * 2}
-        fill="#FFFEFA"
+        fill="none"
         stroke={ILLUM.gold}
-        strokeWidth={slim ? 1 : 1.8}
+        strokeWidth={1.8}
       />
-      {!slim ? (
-        <Rect
-          x={bandInner + 4}
-          y={bandInner + 4}
-          width={w - (bandInner + 4) * 2}
-          height={h - (bandInner + 4) * 2}
-          fill="none"
-          stroke={ILLUM.green}
-          strokeWidth={0.9}
-          opacity={0.6}
-        />
-      ) : null}
+      <Rect
+        x={bandInner + 4}
+        y={bandInner + 4}
+        width={w - (bandInner + 4) * 2}
+        height={h - (bandInner + 4) * 2}
+        fill="none"
+        stroke={ILLUM.green}
+        strokeWidth={0.9}
+        opacity={0.6}
+      />
 
       {topUnits.map((x, i) => (
         <FloralUnit
@@ -345,24 +494,28 @@ const FloralOpeningBorder = memo(function FloralOpeningBorder({
           rotate={i % 2 === 0 ? 170 : 190}
         />
       ))}
-      {sideUnits.map((y, i) => (
-        <FloralUnit
-          key={`l-${i}`}
-          x={midX}
-          y={y}
-          scale={flowerScale * 0.95}
-          rotate={i % 2 === 0 ? -98 : -82}
-        />
-      ))}
-      {sideUnits.map((y, i) => (
-        <FloralUnit
-          key={`r-${i}`}
-          x={w - midX}
-          y={y}
-          scale={flowerScale * 0.95}
-          rotate={i % 2 === 0 ? 98 : 82}
-        />
-      ))}
+      {!sparse
+        ? sideUnits.map((y, i) => (
+            <FloralUnit
+              key={`l-${i}`}
+              x={midX}
+              y={y}
+              scale={flowerScale * 0.95}
+              rotate={i % 2 === 0 ? -98 : -82}
+            />
+          ))
+        : null}
+      {!sparse
+        ? sideUnits.map((y, i) => (
+            <FloralUnit
+              key={`r-${i}`}
+              x={w - midX}
+              y={y}
+              scale={flowerScale * 0.95}
+              rotate={i % 2 === 0 ? 98 : 82}
+            />
+          ))
+        : null}
 
       <G transform={`translate(${bandOuter + cornerInset}, ${bandOuter + cornerInset}) scale(${cornerScale})`}>
         <CornerBloom x={0} y={0} />
@@ -472,19 +625,177 @@ const OpeningGarden = memo(function OpeningGarden() {
   );
 });
 
+type TitleMeasurePhase = 'natural' | 'stretched' | 'done';
+
+/**
+ * Stretch a surah name with measured tatweels so it fills the decorative banner
+ * (طاق). Reuses the same kashida helpers as ayah lines.
+ */
+const StretchedSurahTitle = memo(function StretchedSurahTitle({
+  title,
+  fontSize,
+  lineHeight,
+  textStyle,
+}: {
+  title: string;
+  fontSize: number;
+  lineHeight: number;
+  textStyle: object | object[];
+}) {
+  const [fitWidth, setFitWidth] = useState(0);
+  const [kashidaCount, setKashidaCount] = useState(0);
+  const [phase, setPhase] = useState<TitleMeasurePhase>('done');
+  const naturalWidth = useRef(0);
+  const countRef = useRef(0);
+  const refinePass = useRef(0);
+
+  const fillTarget = Math.max(0, fitWidth - 2);
+
+  const onContainerLayout = useCallback((event: LayoutChangeEvent) => {
+    const next = Math.floor(event.nativeEvent.layout.width);
+    if (next <= 0) return;
+    setFitWidth((prev) => {
+      if (prev === next) return prev;
+      naturalWidth.current = 0;
+      countRef.current = 0;
+      refinePass.current = 0;
+      setKashidaCount(0);
+      setPhase('natural');
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    naturalWidth.current = 0;
+    countRef.current = 0;
+    refinePass.current = 0;
+    setKashidaCount(0);
+    setPhase(fitWidth > 0 ? 'natural' : 'done');
+  }, [title, fontSize, fitWidth]);
+
+  const commit = useCallback((finalCount: number) => {
+    const clamped = Math.max(0, Math.min(MAX_KASHIDA_TOTAL, finalCount));
+    setKashidaCount(clamped);
+    setPhase('done');
+  }, []);
+
+  const onNaturalLayout = useCallback(
+    (event: { nativeEvent: { lines: { width: number }[] } }) => {
+      if (phase !== 'natural' || fillTarget <= 0) return;
+      const width = event.nativeEvent.lines[0]?.width ?? 0;
+      if (width <= 0) return;
+      naturalWidth.current = width;
+      if (width >= fillTarget) {
+        countRef.current = 0;
+        commit(0);
+        return;
+      }
+      const measured = kashidaCountForWidth(width, fillTarget, fontSize);
+      countRef.current = measured;
+      setKashidaCount(measured);
+      if (measured <= 0) {
+        commit(0);
+        return;
+      }
+      setPhase('stretched');
+    },
+    [commit, fillTarget, fontSize, phase],
+  );
+
+  const onStretchedLayout = useCallback(
+    (event: { nativeEvent: { lines: { width: number }[] } }) => {
+      if (phase !== 'stretched' || fillTarget <= 0) return;
+      const width = event.nativeEvent.lines[0]?.width ?? 0;
+      if (width <= 0) return;
+
+      const count = countRef.current;
+      const overflow = width - fillTarget;
+      const gained = width - naturalWidth.current;
+      const per = count > 0 && gained > 0 ? gained / count : Math.max(fontSize * 0.28, 3.2);
+
+      if (overflow > 2) {
+        const next = Math.max(0, count - Math.max(1, Math.ceil(overflow / per)));
+        if (refinePass.current >= 6 || next === count) {
+          commit(next);
+          return;
+        }
+        refinePass.current += 1;
+        countRef.current = next;
+        setKashidaCount(next);
+        return;
+      }
+
+      const slack = fillTarget - width;
+      if (slack > 4 && refinePass.current < 6 && count < MAX_KASHIDA_TOTAL) {
+        refinePass.current += 1;
+        const next = Math.min(MAX_KASHIDA_TOTAL, count + Math.max(1, Math.round(slack / per)));
+        countRef.current = next;
+        setKashidaCount(next);
+        return;
+      }
+
+      commit(count);
+    },
+    [commit, fillTarget, fontSize, phase],
+  );
+
+  const display =
+    kashidaCount > 0 ? applyKashida(title, kashidaCount, KASHIDA_SLOT_CAP) : title;
+  const measuring = fitWidth > 0 && phase !== 'done';
+  const measureText =
+    phase === 'stretched' && kashidaCount > 0
+      ? applyKashida(title, kashidaCount, KASHIDA_SLOT_CAP)
+      : title;
+
+  return (
+    <View style={styles.stretchedTitleWrap} onLayout={onContainerLayout}>
+      {measuring ? (
+        <View style={styles.measureHost} pointerEvents="none">
+          <Text
+            key={`title-m-${phase}-${kashidaCount}`}
+            style={[
+              {
+                fontFamily: HIFZ_FONT,
+                fontSize,
+                lineHeight,
+                textAlign: 'center' as const,
+                writingDirection: 'rtl' as const,
+              },
+              androidFontPad,
+            ]}
+            onTextLayout={phase === 'natural' ? onNaturalLayout : onStretchedLayout}
+          >
+            {measureText}
+          </Text>
+        </View>
+      ) : null}
+      <Text
+        numberOfLines={1}
+        ellipsizeMode="clip"
+        style={[
+          { fontFamily: HIFZ_FONT, fontSize, lineHeight },
+          textStyle,
+          androidFontPad,
+        ]}
+      >
+        {display}
+      </Text>
+    </View>
+  );
+});
+
 /** Blue–green cartouche with gold trim for the surah name above the ayah text. */
 const SurahCartouche = memo(function SurahCartouche({ title }: { title?: string }) {
   if (!title) return null;
   return (
     <View style={styles.surahCartouche}>
       <View style={styles.surahCartoucheFrame} />
-      <Text
-        numberOfLines={1}
-        ellipsizeMode="clip"
-        style={[styles.surahCartoucheText, { fontFamily: HIFZ_FONT }, androidFontPad]}
-      >
-        {title}
-      </Text>
+      <StretchedSurahTitle
+        title={title}
+        fontSize={22}
+        lineHeight={36}
+        textStyle={styles.surahCartoucheText}
+      />
     </View>
   );
 });
@@ -514,7 +825,7 @@ const SurahFloralHeader = memo(function SurahFloralHeader({
   lineHeight: number;
 }) {
   const titleSize = Math.max(13, fontSize - 1);
-  const titleText = title ? applyKashida(title, 4, 2) : '';
+  const titleLineHeight = Math.round(titleSize * 1.5);
   return (
     <View style={styles.floralHeader}>
       {title ? (
@@ -522,20 +833,12 @@ const SurahFloralHeader = memo(function SurahFloralHeader({
           <MiniFloral size={14} />
           <View style={styles.surahBanner}>
             <View style={styles.surahBannerInner} />
-            <Text
-              numberOfLines={1}
-              style={[
-                styles.surahBannerText,
-                {
-                  fontFamily: HIFZ_FONT,
-                  fontSize: titleSize,
-                  lineHeight: Math.round(titleSize * 1.5),
-                },
-                androidFontPad,
-              ]}
-            >
-              {titleText}
-            </Text>
+            <StretchedSurahTitle
+              title={title}
+              fontSize={titleSize}
+              lineHeight={titleLineHeight}
+              textStyle={styles.surahBannerText}
+            />
           </View>
           <MiniFloral size={14} />
         </View>
@@ -606,9 +909,26 @@ const BasmallahText = memo(function BasmallahText({
   );
 });
 
-const MAX_KASHIDA_TOTAL = 12 * KASHIDA_SLOT_CAP;
-
+const MAX_KASHIDA_TOTAL = MAX_STRETCH_LETTERS * KASHIDA_SLOT_CAP;
+/** Remeasure passes while settling ayah stretch against the real line width. */
+const KASHIDA_REFINE_PASSES = 10;
+/** Probe may sit this many px from the target before we commit. */
+const PROBE_SLACK_PX = 6;
+/** Shrink-wrap probe reports glyph advance. */
+const PROBE_WIDTH_BIAS = 1;
 type MeasurePhase = 'natural' | 'stretched' | 'done';
+
+/**
+ * Conservative reserve for a trailing ﴿n﴾ until onLayout measures the real width.
+ * Scheherazade ornament markers are much wider than digit count suggests.
+ */
+function estimateMarkerWidth(markers: string, fontSize: number): number {
+  if (!markers) return 0;
+  return Math.ceil(fontSize * 6);
+}
+
+/** RLM so bracket glyphs stay RTL when the marker Text has no Arabic letter. */
+const MARKER_RTL_MARK = '\u200F';
 
 const JustifiedAyahText = memo(function JustifiedAyahText({
   text,
@@ -621,6 +941,11 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   ayahStart,
   ayahEnd,
   highlightAyah,
+  pageNumber,
+  lineNumber,
+  longestChars,
+  measureEnabled = true,
+  onAyahPress,
 }: {
   text: string;
   fontSize: number;
@@ -633,112 +958,292 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   ayahStart?: number;
   ayahEnd?: number;
   highlightAyah?: number | null;
+  pageNumber: number;
+  lineNumber: number;
+  longestChars: number;
+  /** False while the pager is turning — paint seed only, no measure restyles. */
+  measureEnabled?: boolean;
+  /** Play the ayah under the tap (not the line's ayahStart). */
+  onAyahPress?: (ayah: number) => void;
 }) {
-  const prepared = text;
+  const { body, markers } = useMemo(() => splitLineBodyAndMarkers(text), [text]);
   const fitWidth = Math.max(0, contentWidth);
   const stretch = justify && !centered;
-  const fillTarget = Math.max(0, fitWidth - 2);
+  const [measuredMarkerWidth, setMeasuredMarkerWidth] = useState(0);
+  const [bodySlotWidth, setBodySlotWidth] = useState(0);
+  const markerReserve = markers
+    ? measuredMarkerWidth > 0
+      ? measuredMarkerWidth
+      : estimateMarkerWidth(markers, fontSize)
+    : 0;
+  // Target the content box only — onLayout width includes start/end padding.
+  const fillTarget = Math.max(
+    0,
+    (bodySlotWidth > 0
+      ? bodyContentWidth(bodySlotWidth)
+      : Math.max(0, fitWidth - (stretch ? markerReserve : 0) - AYAH_PAD_TOTAL)) - 2,
+  );
+  const cacheKey = kashidaCacheKey(
+    pageNumber,
+    lineNumber,
+    fitWidth,
+    fontSize,
+    markerReserve,
+    bodySlotWidth,
+  );
+  const seed = useMemo(
+    () => (stretch ? estimateSeedKashida(body, longestChars, fillTarget, fontSize) : 0),
+    [body, fillTarget, fontSize, longestChars, stretch],
+  );
 
+  const initialCached = stretch && fitWidth > 0 ? kashidaCache.get(cacheKey) : undefined;
   const [kashidaCount, setKashidaCount] = useState(0);
-  const [phase, setPhase] = useState<MeasurePhase>(stretch ? 'natural' : 'done');
-  const refinePass = useRef(0);
-  const naturalWidth = useRef(0);
+  const [phase, setPhase] = useState<MeasurePhase>('done');
   const countRef = useRef(0);
-  const [visibleCount, setVisibleCount] = useState(0);
+  const refinePass = useRef(0);
+  const loRef = useRef(0);
+  const hiRef = useRef(MAX_KASHIDA_TOTAL);
+  const visibleCountRef = useRef(0);
+  const seedRef = useRef(seed);
+  seedRef.current = seed;
+  const bodySlotRef = useRef(0);
+  bodySlotRef.current = bodySlotWidth;
+  const phaseRef = useRef(phase);
+  phaseRef.current = phase;
+  const [visibleCount, setVisibleCount] = useState(() =>
+    initialCached !== undefined ? initialCached : seed,
+  );
+  visibleCountRef.current = visibleCount;
+  const lineTatweelCap = useMemo(() => {
+    const slots = kashidaSlots(body).length;
+    return Math.min(MAX_KASHIDA_TOTAL, Math.max(0, slots) * KASHIDA_SLOT_CAP);
+  }, [body]);
 
   useEffect(() => {
-    refinePass.current = 0;
-    naturalWidth.current = 0;
-    countRef.current = 0;
-    setKashidaCount(0);
-    setVisibleCount(0);
-    setPhase(stretch && prepared && fitWidth > 0 ? 'natural' : 'done');
-  }, [fitWidth, fontSize, prepared, stretch]);
+    setMeasuredMarkerWidth(0);
+  }, [markers, fontSize, body]);
 
-  const display = useMemo(() => {
-    if (!stretch || visibleCount <= 0) return prepared;
-    return applyKashida(prepared, visibleCount, KASHIDA_SLOT_CAP);
-  }, [prepared, stretch, visibleCount]);
+  const onMarkerLayout = useCallback((event: LayoutChangeEvent) => {
+    const next = Math.ceil(event.nativeEvent.layout.width);
+    if (next <= 0) return;
+    setMeasuredMarkerWidth((prev) => (Math.abs(prev - next) <= 1 ? prev : next));
+  }, []);
 
-  const measureText = useMemo(() => {
-    if (kashidaCount <= 0) return prepared;
-    return applyKashida(prepared, kashidaCount, KASHIDA_SLOT_CAP);
-  }, [kashidaCount, prepared]);
+  const onBodySlotLayout = useCallback((event: LayoutChangeEvent) => {
+    const next = Math.floor(event.nativeEvent.layout.width);
+    if (next <= 0) return;
+    setBodySlotWidth((prev) => (Math.abs(prev - next) <= 1 ? prev : next));
+  }, []);
 
-  const onNaturalLayout = useCallback(
-    (event: { nativeEvent: { lines: { width: number }[] } }) => {
-      if (phase !== 'natural' || !stretch || fitWidth <= 0) return;
-      const lines = event.nativeEvent.lines;
-      let width = lines[0]?.width ?? 0;
-      // If the measure host was clipped, Android reports multiple wrapped lines
-      // near the column width — fall back to a character estimate.
-      if (lines.length > 1 && width >= fillTarget - 8) {
-        const chars = visibleLength(prepared);
-        const targetChars = fillTarget / Math.max(fontSize * 0.22, 4);
-        width = Math.max(1, chars * (fillTarget / Math.max(targetChars, chars)));
+  const commitVisible = useCallback(
+    (finalCount: number, opts?: { allowZero?: boolean; cache?: boolean }) => {
+      let clamped = Math.max(0, Math.min(MAX_KASHIDA_TOTAL, finalCount));
+      if (clamped === 0 && seedRef.current > 0 && !opts?.allowZero) {
+        clamped = seedRef.current;
       }
-      if (width <= 0) return;
-      naturalWidth.current = width;
-      if (width >= fillTarget) {
-        countRef.current = 0;
-        setKashidaCount(0);
-        setVisibleCount(0);
-        setPhase('done');
-        return;
+      if (opts?.cache === true) {
+        kashidaCache.set(cacheKey, clamped);
       }
-      const measured = kashidaCountForWidth(width, fillTarget, fontSize);
-      countRef.current = measured;
-      setKashidaCount(measured);
-      setPhase(measured > 0 ? 'stretched' : 'done');
-    },
-    [fillTarget, fitWidth, fontSize, phase, prepared, stretch]
-  );
-
-  const onStretchedLayout = useCallback(
-    (event: { nativeEvent: { lines: { width: number }[] } }) => {
-      if (phase !== 'stretched' || fitWidth <= 0) return;
-      const width = event.nativeEvent.lines[0]?.width ?? 0;
-      if (width <= 0) return;
-
-      const count = countRef.current;
-      const overflow = width - fillTarget;
-      const gained = width - naturalWidth.current;
-      const per = count > 0 && gained > 0 ? gained / count : Math.max(fontSize * 0.28, 3.2);
-
-      if (overflow > 2) {
-        const next = Math.max(0, count - Math.max(1, Math.ceil(overflow / per)));
-        if (refinePass.current >= 6 || next === count) {
-          setVisibleCount(next);
-          setPhase('done');
-          return;
-        }
-        refinePass.current += 1;
-        countRef.current = next;
-        setKashidaCount(next);
-        return;
-      }
-
-      const slack = fillTarget - width;
-      if (slack > 4 && refinePass.current < 6 && count < MAX_KASHIDA_TOTAL) {
-        refinePass.current += 1;
-        const next = Math.min(MAX_KASHIDA_TOTAL, count + Math.max(1, Math.round(slack / per)));
-        countRef.current = next;
-        setKashidaCount(next);
-        return;
-      }
-
-      setVisibleCount(count);
+      setVisibleCount((prev) =>
+        Math.abs(prev - clamped) <= KASHIDA_COMMIT_EPSILON ? prev : clamped,
+      );
       setPhase('done');
     },
-    [fillTarget, fitWidth, fontSize, phase]
+    [cacheKey],
   );
 
-  const spans = useMemo(() => {
-    if (ayahStart == null || ayahEnd == null) {
-      return [{ text: display, ayah: -1 }];
+  useEffect(() => {
+    countRef.current = 0;
+    refinePass.current = 0;
+    loRef.current = 0;
+    hiRef.current = MAX_KASHIDA_TOTAL;
+    setKashidaCount(0);
+
+    if (!stretch || !body || fitWidth <= 0) {
+      setVisibleCount(0);
+      setPhase('done');
+      return;
     }
-    return splitAyahSpans(display, ayahStart, ayahEnd);
-  }, [ayahEnd, ayahStart, display]);
+
+    // Do not stretch until the real body slot (and marker) are known — a seed
+    // based on the full column width overshoots and clips the RTL start (right).
+    if (bodySlotWidth <= 0) {
+      setVisibleCount(0);
+      setPhase('done');
+      return;
+    }
+    if (markers && measuredMarkerWidth <= 0) {
+      setVisibleCount(0);
+      setPhase('done');
+      return;
+    }
+
+    const hit = kashidaCache.get(cacheKey);
+    if (hit !== undefined) {
+      setVisibleCount(hit);
+      setPhase('done');
+      return;
+    }
+
+    // Stable paint while probing: conservative seed for this measured slot.
+    setVisibleCount(seed);
+
+    if (!measureEnabled) {
+      setPhase('done');
+      return;
+    }
+
+    setPhase('natural');
+  }, [
+    body,
+    bodySlotWidth,
+    cacheKey,
+    fitWidth,
+    measureEnabled,
+    measuredMarkerWidth,
+    markers,
+    seed,
+    stretch,
+  ]);
+
+  const bodyDisplay = useMemo(() => {
+    if (!stretch || visibleCount <= 0) return body;
+    return applyKashida(body, visibleCount, KASHIDA_SLOT_CAP);
+  }, [body, stretch, visibleCount]);
+
+  const probeDisplay = useMemo(() => {
+    if (!stretch) return body;
+    if (phase === 'natural') return body;
+    if (kashidaCount <= 0) return body;
+    return applyKashida(body, kashidaCount, KASHIDA_SLOT_CAP);
+  }, [body, kashidaCount, phase, stretch]);
+
+  const settleWithProbeWidth = useCallback(
+    (rawWidth: number, lineCount: number, secondLineWidth = 0) => {
+      if (!stretch) return;
+      const slot = bodyContentWidth(bodySlotRef.current);
+      if (slot <= 0) return;
+      const wrapped = lineCount > 1 && secondLineWidth > fontSize * 0.85;
+      const painted = Math.max(0, Math.ceil(rawWidth * PROBE_WIDTH_BIAS));
+      const shortfall = slot - painted;
+      // Past the content box → step tatweel down before showing a clipped start.
+      const overshoot = wrapped || painted > slot;
+      const filled = !overshoot && shortfall <= PROBE_SLACK_PX;
+      const cap = Math.max(0, lineTatweelCap || MAX_KASHIDA_TOTAL);
+
+      const currentPhase = phaseRef.current;
+      if (currentPhase === 'natural') {
+        // If the bare body already fills or overshoots the slot, do not add tatweel.
+        if (overshoot || filled) {
+          commitVisible(0, { allowZero: true, cache: true });
+          return;
+        }
+        const fromSlack = kashidaCountForWidth(Math.max(painted, 1), slot, fontSize);
+        // Climb from the conservative seed — never jump straight to a full-slack guess.
+        const start = Math.min(
+          cap,
+          Math.max(seedRef.current, Math.min(fromSlack, seedRef.current + Math.max(4, Math.floor(cap * 0.15)))),
+        );
+        countRef.current = start;
+        refinePass.current = 0;
+        loRef.current = 0;
+        hiRef.current = cap;
+        // Probe only — visible line keeps seed/cache until commit.
+        setKashidaCount(start);
+        setPhase('stretched');
+        return;
+      }
+
+      if (currentPhase !== 'stretched') return;
+      if (refinePass.current >= KASHIDA_REFINE_PASSES + 12) {
+        commitVisible(Math.max(loRef.current, countRef.current > 0 ? loRef.current : seedRef.current), {
+          allowZero: true,
+          cache: true,
+        });
+        return;
+      }
+      refinePass.current += 1;
+
+      const count = countRef.current;
+      if (overshoot) {
+        // Run is past the slot — step down so we never paint a clipped right edge.
+        hiRef.current = count;
+        const next = Math.max(
+          loRef.current,
+          count - Math.max(1, Math.ceil((count - loRef.current) / 2) || 1),
+        );
+        if (next >= count) {
+          const finalCount = loRef.current > 0 ? loRef.current : Math.max(0, count - 1);
+          commitVisible(finalCount, { allowZero: true, cache: true });
+          return;
+        }
+        countRef.current = next;
+        setKashidaCount(next);
+        return;
+      }
+
+      loRef.current = count;
+      if (filled || count >= hiRef.current || count >= cap) {
+        commitVisible(count, { allowZero: true, cache: true });
+        return;
+      }
+
+      const per = Math.max(fontSize * 0.28, 3.5);
+      const need = Math.max(1, Math.ceil(shortfall / per));
+      const room = hiRef.current - count;
+      const step = Math.max(1, Math.min(room, Math.max(need, Math.ceil(room / 2))));
+      const next = Math.min(cap, count + step);
+      if (next === count) {
+        commitVisible(count, { allowZero: true, cache: true });
+        return;
+      }
+      countRef.current = next;
+      setKashidaCount(next);
+    },
+    [commitVisible, fontSize, lineTatweelCap, stretch],
+  );
+
+  const onProbeTextLayout = useCallback(
+    (event: { nativeEvent: { lines: { width: number }[] } }) => {
+      if (!stretch) return;
+      if (phaseRef.current === 'done') return;
+      const lines = event.nativeEvent.lines;
+      if (!lines.length) return;
+      const width = Math.ceil(lines[0]?.width ?? 0);
+      const second = Math.ceil(lines[1]?.width ?? 0);
+      settleWithProbeWidth(width, lines.length, second);
+    },
+    [settleWithProbeWidth, stretch],
+  );
+
+  const onBodyTextLayout = useCallback(
+    (event: { nativeEvent: { lines: { width: number }[] } }) => {
+      if (!stretch) return;
+      if (phaseRef.current !== 'done') return;
+      const lines = event.nativeEvent.lines;
+      if (!lines.length) return;
+      const slot = bodyContentWidth(bodySlotRef.current);
+      if (slot <= 0) return;
+      const painted = Math.ceil(lines[0]?.width ?? 0);
+      const wrapped = lines.length > 1;
+      // Visible line past the content box — trim tatweel (do not grow further).
+      const overshoots = wrapped || painted > slot;
+      if (!overshoots) return;
+      const prev = visibleCountRef.current;
+      if (prev <= 0) return;
+      const next = Math.max(0, prev - Math.max(2, Math.ceil(prev * 0.2)));
+      const clamped = next === prev ? Math.max(0, prev - 1) : next;
+      kashidaCache.delete(cacheKey);
+      commitVisible(clamped, { allowZero: true, cache: true });
+    },
+    [cacheKey, commitVisible, stretch],
+  );
+
+  const markerAyah = useMemo(() => {
+    if (!markers || ayahStart == null) return -1;
+    const hit = splitAyahSpans(markers, ayahStart, ayahEnd ?? ayahStart);
+    return hit[0]?.ayah ?? ayahStart;
+  }, [ayahEnd, ayahStart, markers]);
 
   const lineStyle = useMemo(
     () => [
@@ -747,54 +1252,335 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
       { color, fontSize, lineHeight },
       androidFontPad,
     ],
-    [centered, color, fontSize, lineHeight]
+    [centered, color, fontSize, lineHeight],
   );
 
-  const measureStyle = useMemo(
+  const probeStyle = useMemo(
     () => [
+      styles.lineText,
       {
-        fontFamily: HIFZ_FONT,
         color,
         fontSize,
         lineHeight,
-        textAlign: 'right' as const,
+        // Shrink-wrap: lines[0].width reports glyph advance (fixed width lied on both platforms).
         writingDirection: 'rtl' as const,
       },
       androidFontPad,
     ],
-    [color, fontSize, lineHeight]
+    [color, fontSize, lineHeight],
   );
 
-  const measuring = stretch && fitWidth > 0 && phase !== 'done';
+  const renderSpan = useCallback(
+    (span: { text: string; ayah: number }, index: number) => {
+      const active = highlightAyah != null && span.ayah === highlightAyah && span.ayah > 0;
+      const pressable = onAyahPress && span.ayah > 0;
+      return (
+        <Text
+          key={`${span.ayah}-${index}`}
+          style={active ? styles.ayahHighlight : undefined}
+          onPress={pressable ? () => onAyahPress(span.ayah) : undefined}
+          suppressHighlighting
+        >
+          {span.text}
+        </Text>
+      );
+    },
+    [highlightAyah, onAyahPress],
+  );
+
+  if (centered || !stretch) {
+    const fullSpans =
+      ayahStart == null || ayahEnd == null
+        ? [{ text, ayah: -1 as number }]
+        : splitAyahSpans(text, ayahStart, ayahEnd);
+    return (
+      <View style={[styles.lineMeasureWrap, styles.centeredLinePad]}>
+        <Text style={[lineStyle, styles.centeredLineText]} numberOfLines={1} ellipsizeMode="clip">
+          {onAyahPress || highlightAyah != null
+            ? fullSpans.map(renderSpan)
+            : text}
+        </Text>
+      </View>
+    );
+  }
+
+  const measuring = measureEnabled && phase !== 'done' && bodySlotWidth > 0;
+
+  const markerHighlight =
+    highlightAyah != null && markerAyah === highlightAyah && markerAyah > 0
+      ? styles.ayahHighlight
+      : undefined;
+
+  const bodyPress =
+    onAyahPress && ayahStart != null && ayahStart > 0
+      ? () => onAyahPress(ayahStart)
+      : undefined;
+
+  const bodyActive =
+    highlightAyah != null &&
+    ayahStart != null &&
+    ayahEnd != null &&
+    highlightAyah >= ayahStart &&
+    highlightAyah <= ayahEnd
+      ? styles.ayahHighlight
+      : undefined;
 
   return (
     <View style={styles.lineMeasureWrap}>
       {measuring ? (
-        <View style={styles.measureHost} pointerEvents="none">
+        <View
+          style={styles.ayahProbeHost}
+          pointerEvents="none"
+          collapsable={false}
+          accessible={false}
+          importantForAccessibility="no-hide-descendants"
+        >
           <Text
-            key={`m-${phase}-${kashidaCount}`}
-            style={measureStyle}
-            onTextLayout={phase === 'natural' ? onNaturalLayout : onStretchedLayout}
+            key={`ayah-probe-${phase}-${kashidaCount}-${bodySlotWidth}`}
+            style={probeStyle}
+            onTextLayout={onProbeTextLayout}
+            accessible={false}
           >
-            {phase === 'natural' ? prepared : measureText}
+            {probeDisplay}
           </Text>
         </View>
       ) : null}
-      <Text style={lineStyle}>
-        {highlightAyah == null
-          ? display
-          : spans.map((span, index) => {
-              const active = span.ayah === highlightAyah && span.ayah > 0;
-              return (
+      <View style={styles.ayahLineRow}>
+        <View style={styles.ayahLineBody} onLayout={onBodySlotLayout}>
+          <Text
+            style={[lineStyle, styles.ayahLineBodyText, bodyActive]}
+            numberOfLines={1}
+            ellipsizeMode="clip"
+            onTextLayout={onBodyTextLayout}
+            onPress={bodyPress}
+            suppressHighlighting
+          >
+            {bodyDisplay}
+          </Text>
+        </View>
+        {markers ? (
+          <View style={styles.ayahLineMarker} onLayout={onMarkerLayout}>
+            <Text
+              style={[lineStyle, styles.ayahLineMarkerText, markerHighlight]}
+              numberOfLines={1}
+              onPress={
+                onAyahPress && markerAyah > 0 ? () => onAyahPress(markerAyah) : undefined
+              }
+              suppressHighlighting
+            >
+              {MARKER_RTL_MARK}
+              {markers}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+    </View>
+  );
+});
+
+const DEDICATION_BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ';
+const DEDICATION_HAMD_AR =
+  'الحمدُ للهِ الّذي أنزلَ القرآنَ هُدىً ورحمةً، والصلاةُ والسلامُ على سيدنا محمدٍ، وعلى آله وصحبه أجمعين.';
+const DEDICATION_CLOSING_AR =
+  'تَقَبَّلَ اللهُ مِنَّا وَمِنْكُمْ، وَجَعَلَ الْقُرْآنَ رَبِيعَ قُلُوبِنَا وَنُورَ صُدُورِنَا.';
+
+type DedicationCopy = {
+  /** Local-language body (Dari / Pashto / English). Arabic lines are shared constants. */
+  paras: readonly string[];
+  fromLabel: string;
+  donorName: string;
+};
+
+const DEDICATION_BY_LANGUAGE: Record<AppLanguage, DedicationCopy> = {
+  dari: {
+    paras: [
+      'این مصحف شریف را به نیت رضای خدا و خدمت به کلام او وقف می‌کنم.',
+      'باشد که تلاوت آن سبب هدایت و آرامش دل‌ها گردد.',
+    ],
+    fromLabel: 'وقف و تقدیم از جانب',
+    donorName: 'سید عبدالاله شیرزادی',
+  },
+  pashto: {
+    paras: [
+      'دا مبارک مصحف د الله د رضا او د ده د کلام د خدمت لپاره وقفوم.',
+      'هیله ده چې تلاوت یې د هدایت او د زړونو د سکون سبب شي.',
+    ],
+    fromLabel: 'وقف او وړاندې کول له خوا د',
+    donorName: 'سید عبدالاله شیرزادی',
+  },
+  english: {
+    paras: [
+      'I dedicate this noble mushaf for the pleasure of Allah and in service of His Word.',
+      'May its recitation bring guidance and peace to hearts.',
+    ],
+    fromLabel: 'Dedicated and presented by',
+    donorName: 'Sayed Abdulilah Shirzadi',
+  },
+};
+
+const NASTALIQ_FONT = 'NotoNastaliqUrdu';
+const NASTALIQ_LINE_RATIO = 2.4;
+const ARABIC_LINE_RATIO = 1.7;
+
+/** Waqf / dedication leaf past Fatiha — not part of the 548-page mushaf. */
+const HifzDedicationPage = memo(function HifzDedicationPage({
+  background,
+  contentPaddingTop,
+  contentPaddingBottom,
+  pageHeight,
+}: {
+  background: string;
+  contentPaddingTop: number;
+  contentPaddingBottom: number;
+  pageHeight: number;
+}) {
+  const language = useAppLanguage();
+  const copy = DEDICATION_BY_LANGUAGE[language] ?? DEDICATION_BY_LANGUAGE.dari;
+  const isEnglish = language === 'english';
+  /** Dari/Pashto body in Nastaliq; English uses the platform UI face. */
+  const localFont = isEnglish ? undefined : NASTALIQ_FONT;
+  const localSize = isEnglish ? 14 : 15;
+  const localLine = Math.round(localSize * (isEnglish ? 1.45 : NASTALIQ_LINE_RATIO));
+  const arabicSize = 16;
+  const arabicLine = Math.round(arabicSize * ARABIC_LINE_RATIO);
+  const bismillahSize = 18;
+  const bismillahLine = Math.round(bismillahSize * ARABIC_LINE_RATIO);
+  const align = isEnglish ? ('left' as const) : ('center' as const);
+  const writingDirection = isEnglish ? ('ltr' as const) : ('rtl' as const);
+
+  const [frameSize, setFrameSize] = useState(() => ({
+    width: Math.floor(PAGE_WIDTH),
+    height: 0,
+  }));
+
+  const onFrameLayout = useCallback((event: LayoutChangeEvent) => {
+    const width = Math.floor(event.nativeEvent.layout.width);
+    const height = Math.floor(event.nativeEvent.layout.height);
+    setFrameSize((prev) => {
+      if (Math.abs(prev.width - width) <= 1 && prev.height === height) return prev;
+      return { width, height };
+    });
+  }, []);
+
+  return (
+    <View
+      style={[
+        styles.page,
+        {
+          width: PAGE_WIDTH,
+          height: pageHeight > 0 ? pageHeight : undefined,
+          backgroundColor: background,
+          paddingTop: contentPaddingTop,
+          paddingBottom: contentPaddingBottom,
+        },
+      ]}
+    >
+      <View style={styles.ltr}>
+        <View style={styles.openingFrame} onLayout={onFrameLayout}>
+          <FloralOpeningBorder
+            width={frameSize.width}
+            height={frameSize.height}
+            sparse
+          />
+          <View style={styles.dedicationInner}>
+            <View style={styles.dedicationContent}>
+              <Text
+                style={[
+                  styles.dedicationBismillah,
+                  {
+                    fontFamily: HIFZ_FONT,
+                    fontSize: bismillahSize,
+                    lineHeight: bismillahLine,
+                    paddingBottom: 4,
+                  },
+                  androidFontPad,
+                ]}
+              >
+                {DEDICATION_BISMILLAH}
+              </Text>
+              <View style={styles.dedicationRule} />
+              <Text
+                style={[
+                  styles.dedicationArabic,
+                  {
+                    fontFamily: HIFZ_FONT,
+                    fontSize: arabicSize,
+                    lineHeight: arabicLine,
+                    paddingBottom: 4,
+                  },
+                  androidFontPad,
+                ]}
+              >
+                {DEDICATION_HAMD_AR}
+              </Text>
+              {copy.paras.map((para) => (
                 <Text
-                  key={`${span.ayah}-${index}`}
-                  style={active ? styles.ayahHighlight : undefined}
+                  key={para.slice(0, 28)}
+                  style={[
+                    styles.dedicationPara,
+                    {
+                      fontFamily: localFont,
+                      fontSize: localSize,
+                      lineHeight: localLine,
+                      textAlign: align,
+                      writingDirection,
+                      paddingBottom: isEnglish ? 2 : 6,
+                    },
+                    androidFontPad,
+                  ]}
                 >
-                  {span.text}
+                  {para}
                 </Text>
-              );
-            })}
-      </Text>
+              ))}
+              <View style={styles.dedicationRule} />
+              <Text
+                style={[
+                  styles.dedicationFromLabel,
+                  {
+                    fontFamily: localFont,
+                    writingDirection,
+                    paddingBottom: isEnglish ? 0 : 4,
+                  },
+                  androidFontPad,
+                ]}
+              >
+                {copy.fromLabel}
+              </Text>
+              <Text
+                style={[
+                  styles.dedicationName,
+                  {
+                    fontFamily: localFont,
+                    fontSize: isEnglish ? 15 : 16,
+                    lineHeight: Math.round(
+                      (isEnglish ? 15 : 16) * (isEnglish ? 1.35 : NASTALIQ_LINE_RATIO),
+                    ),
+                    writingDirection,
+                    paddingBottom: isEnglish ? 2 : 6,
+                  },
+                  androidFontPad,
+                ]}
+              >
+                {copy.donorName}
+              </Text>
+              <Text
+                style={[
+                  styles.dedicationClosing,
+                  {
+                    fontFamily: HIFZ_FONT,
+                    fontSize: 14,
+                    lineHeight: Math.round(14 * ARABIC_LINE_RATIO),
+                    paddingBottom: 4,
+                  },
+                  androidFontPad,
+                ]}
+              >
+                {DEDICATION_CLOSING_AR}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
     </View>
   );
 });
@@ -812,11 +1598,13 @@ export const Hifz16View = memo(function Hifz16View({
   const { theme } = useApp();
   const { position, updatePosition } = useReadingPosition();
   const { isBookmarked } = useBookmarks();
-  const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<number>>(null);
 
   const pageNumbers = useMemo(
-    () => Array.from({ length: HIFZ16_PAGE_COUNT }, (_, index) => index + 1),
+    () => [
+      ...Array.from({ length: HIFZ16_PAGE_COUNT }, (_, index) => HIFZ16_PAGE_COUNT - index),
+      HIFZ_DEDICATION_PAGE,
+    ],
     []
   );
 
@@ -841,23 +1629,31 @@ export const Hifz16View = memo(function Hifz16View({
     return getHifzSurahStartPage(surahNumber);
   }, [initialAyah, surahNumber]);
 
-  const startIndex = Math.max(0, startPage - 1);
+  /** Reversed mushaf pages, then dedication after Fatiha in the swipe list. */
+  const pageIndex = useCallback((page: number) => {
+    if (page === HIFZ_DEDICATION_PAGE) return HIFZ16_PAGE_COUNT;
+    return HIFZ16_PAGE_COUNT - page;
+  }, []);
+  const startIndex = Math.max(0, pageIndex(startPage));
   const visiblePageRef = useRef(startPage);
   const userInterruptedFollowRef = useRef(false);
   const followProgrammaticRef = useRef(false);
 
-  const scrollToPage = useCallback((page: number, animated: boolean) => {
-    const index = Math.max(0, page - 1);
-    visiblePageRef.current = page;
-    followProgrammaticRef.current = true;
-    requestAnimationFrame(() => {
-      listRef.current?.scrollToIndex({ index, animated });
-      // FlatList settle; clear flag after animation window.
-      setTimeout(() => {
-        followProgrammaticRef.current = false;
-      }, animated ? 450 : 80);
-    });
-  }, []);
+  const scrollToPage = useCallback(
+    (page: number, animated: boolean) => {
+      const index = Math.max(0, pageIndex(page));
+      visiblePageRef.current = page;
+      followProgrammaticRef.current = true;
+      requestAnimationFrame(() => {
+        listRef.current?.scrollToIndex({ index, animated });
+        // FlatList settle; clear flag after animation window.
+        setTimeout(() => {
+          followProgrammaticRef.current = false;
+        }, animated ? 450 : 80);
+      });
+    },
+    [pageIndex],
+  );
 
   useEffect(() => {
     visiblePageRef.current = startPage;
@@ -884,6 +1680,7 @@ export const Hifz16View = memo(function Hifz16View({
 
     const jumpToNearestContainingPage = () => {
       const visible = visiblePageRef.current;
+      if (visible === HIFZ_DEDICATION_PAGE) return;
       if (pages.includes(visible)) return;
       const target =
         visible < firstPage ? firstPage : visible > lastPage ? lastPage : firstPage;
@@ -913,6 +1710,7 @@ export const Hifz16View = memo(function Hifz16View({
     };
 
     const followProgress = (position: number, duration: number) => {
+      if (visiblePageRef.current === HIFZ_DEDICATION_PAGE) return;
       const target = pageForProgress(position, duration);
       if (userInterruptedFollowRef.current) {
         if (target === visiblePageRef.current) {
@@ -935,11 +1733,10 @@ export const Hifz16View = memo(function Hifz16View({
     });
   }, [activePlayingAyah, activePlayingSurah, scrollToPage]);
 
-  const handleLinePress = useCallback(
-    (line: HifzLine) => {
-      const target = getHifzLinePlayTarget(line);
-      if (!target || !onPlayAyah) return;
-      onPlayAyah(target.surah, target.ayah);
+  const handleAyahPress = useCallback(
+    (surah: number, ayah: number) => {
+      if (!onPlayAyah || surah < 1 || ayah < 1) return;
+      onPlayAyah(surah, ayah);
     },
     [onPlayAyah]
   );
@@ -954,6 +1751,11 @@ export const Hifz16View = memo(function Hifz16View({
   playingRef.current = { surah: activePlayingSurah, ayah: activePlayingAyah };
 
   const reportVisiblePosition = useCallback((pageNumber: number) => {
+    if (pageNumber === HIFZ_DEDICATION_PAGE) {
+      // Title only — keep dock / reading position on the last mushaf ayah.
+      onVisiblePositionChangeRef.current?.(0, 0, HIFZ_DEDICATION_PAGE);
+      return;
+    }
     const playing = playingRef.current;
     const saved = positionRef.current;
     const resolved = resolveHifzPageTarget(pageNumber, {
@@ -995,11 +1797,18 @@ export const Hifz16View = memo(function Hifz16View({
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
 
+  const [measureEnabled, setMeasureEnabled] = useState(true);
+
   const handleScrollBeginDrag = useCallback(() => {
+    setMeasureEnabled(false);
     if (followProgrammaticRef.current) return;
     if (playingRef.current.surah != null && playingRef.current.ayah != null) {
       userInterruptedFollowRef.current = true;
     }
+  }, []);
+
+  const handleMomentumScrollEnd = useCallback(() => {
+    setMeasureEnabled(true);
   }, []);
 
   const lineHasBookmark = useCallback(
@@ -1016,21 +1825,50 @@ export const Hifz16View = memo(function Hifz16View({
     [isBookmarked]
   );
 
+  const [listHeight, setListHeight] = useState(() => Math.floor(WINDOW_HEIGHT));
+  const onListLayout = useCallback((event: LayoutChangeEvent) => {
+    const next = Math.floor(event.nativeEvent.layout.height);
+    if (next <= 0) return;
+    setListHeight((prev) => (prev === next ? prev : next));
+  }, []);
+
+  const pageHeight = listHeight;
+
   const renderPage = useCallback(
     ({ item: pageNumber }: ListRenderItemInfo<number>) => {
+      if (pageNumber === HIFZ_DEDICATION_PAGE) {
+        return (
+          <View style={[{ width: PAGE_WIDTH, height: pageHeight }, UNMIRROR_RTL]}>
+            <HifzDedicationPage
+              background={theme.background}
+              contentPaddingTop={contentPaddingTop}
+              contentPaddingBottom={contentPaddingBottom}
+              pageHeight={pageHeight}
+            />
+          </View>
+        );
+      }
       const page = getHifzPage(pageNumber);
-      if (!page) return <View style={{ width: PAGE_WIDTH }} />;
+      if (!page) {
+        return (
+          <View style={[{ width: PAGE_WIDTH, height: pageHeight }, UNMIRROR_RTL]} />
+        );
+      }
       return (
-        <HifzPageCard
-          page={page}
-          background={theme.background}
-          contentPaddingTop={contentPaddingTop}
-          contentPaddingBottom={contentPaddingBottom + insets.bottom}
-          activePlayingSurah={activePlayingSurah}
-          activePlayingAyah={activePlayingAyah}
-          onLinePress={handleLinePress}
-          lineHasBookmark={lineHasBookmark}
-        />
+        <View style={[{ width: PAGE_WIDTH, height: pageHeight }, UNMIRROR_RTL]}>
+          <HifzPageCard
+            page={page}
+            background={theme.background}
+            contentPaddingTop={contentPaddingTop}
+            contentPaddingBottom={contentPaddingBottom}
+            pageHeight={pageHeight}
+            activePlayingSurah={activePlayingSurah}
+            activePlayingAyah={activePlayingAyah}
+            onAyahPress={handleAyahPress}
+            lineHasBookmark={lineHasBookmark}
+            measureEnabled={measureEnabled}
+          />
+        </View>
       );
     },
     [
@@ -1038,9 +1876,10 @@ export const Hifz16View = memo(function Hifz16View({
       activePlayingSurah,
       contentPaddingBottom,
       contentPaddingTop,
-      handleLinePress,
-      insets.bottom,
+      handleAyahPress,
       lineHasBookmark,
+      measureEnabled,
+      pageHeight,
       theme.background,
     ]
   );
@@ -1048,11 +1887,15 @@ export const Hifz16View = memo(function Hifz16View({
   return (
     <FlatList
       ref={listRef}
-      style={[styles.list, { backgroundColor: theme.background }]}
+      style={[styles.list, { backgroundColor: theme.background }, UNMIRROR_RTL]}
       data={pageNumbers}
-      keyExtractor={(page) => `hifz16-${page}`}
+      keyExtractor={(page) =>
+        page === HIFZ_DEDICATION_PAGE ? 'hifz16-dedication' : `hifz16-${page}`
+      }
       horizontal
       pagingEnabled
+      decelerationRate="fast"
+      disableIntervalMomentum
       showsHorizontalScrollIndicator={false}
       initialScrollIndex={startIndex}
       getItemLayout={(_, index) => ({
@@ -1060,6 +1903,7 @@ export const Hifz16View = memo(function Hifz16View({
         offset: PAGE_WIDTH * index,
         index,
       })}
+      onLayout={onListLayout}
       onScrollToIndexFailed={({ index }) => {
         requestAnimationFrame(() => {
           listRef.current?.scrollToIndex({ index, animated: false });
@@ -1069,6 +1913,7 @@ export const Hifz16View = memo(function Hifz16View({
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
       onScrollBeginDrag={handleScrollBeginDrag}
+      onMomentumScrollEnd={handleMomentumScrollEnd}
       windowSize={3}
       initialNumToRender={2}
       maxToRenderPerBatch={2}
@@ -1082,43 +1927,69 @@ const HifzPageCard = memo(function HifzPageCard({
   background,
   contentPaddingTop,
   contentPaddingBottom,
+  pageHeight,
   activePlayingSurah,
   activePlayingAyah,
-  onLinePress,
+  onAyahPress,
   lineHasBookmark,
+  measureEnabled,
 }: {
   page: HifzPage;
   background: string;
   contentPaddingTop: number;
   contentPaddingBottom: number;
+  pageHeight: number;
   activePlayingSurah?: number | null;
   activePlayingAyah?: number | null;
-  onLinePress: (line: HifzLine) => void;
+  onAyahPress: (surah: number, ayah: number) => void;
   lineHasBookmark: (line: HifzLine) => boolean;
+  measureEnabled: boolean;
 }) {
   const opening = isOpeningPage(page.page);
-  const [contentWidth, setContentWidth] = useState(0);
-  const [frameSize, setFrameSize] = useState({ width: 0, height: 0 });
+  const predictedWidth = predictContentWidth();
+  const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
+  const contentWidth =
+    measuredWidth != null && Math.abs(measuredWidth - predictedWidth) > 1
+      ? measuredWidth
+      : predictedWidth;
+  const [frameSize, setFrameSize] = useState(() => ({
+    width: Math.floor(PAGE_WIDTH),
+    height: 0,
+  }));
 
-  const onTextColumnLayout = useCallback((event: LayoutChangeEvent) => {
-    const next = Math.floor(event.nativeEvent.layout.width);
-    setContentWidth((prev) => (prev === next ? prev : next));
-  }, []);
+  useEffect(() => {
+    setMeasuredWidth(null);
+  }, [page.page, opening]);
+
+  const onTextColumnLayout = useCallback(
+    (event: LayoutChangeEvent) => {
+      const next = Math.floor(event.nativeEvent.layout.width);
+      setMeasuredWidth((prev) => {
+        if (Math.abs(next - predictedWidth) <= 1) return null;
+        return prev === next ? prev : next;
+      });
+    },
+    [predictedWidth],
+  );
 
   const onFrameLayout = useCallback((event: LayoutChangeEvent) => {
-    const { width, height } = event.nativeEvent.layout;
-    setFrameSize((prev) =>
-      prev.width === Math.floor(width) && prev.height === Math.floor(height)
-        ? prev
-        : { width: Math.floor(width), height: Math.floor(height) }
-    );
+    const width = Math.floor(event.nativeEvent.layout.width);
+    const height = Math.floor(event.nativeEvent.layout.height);
+    setFrameSize((prev) => {
+      const widthStable = Math.abs(prev.width - width) <= 1;
+      const heightStable = prev.height === height;
+      if (widthStable && heightStable) return prev;
+      return {
+        width: widthStable ? prev.width : width,
+        height,
+      };
+    });
   }, []);
 
-  const fontSize = useMemo(
-    () => estimatePageFontSize(page, contentWidth, opening),
-    [page, contentWidth, opening]
-  );
+  // One body size on every page — same as the rest of the mushaf.
+  const fontSize = BASE_FONT;
   const lineHeight = Math.round(fontSize * LINE_HEIGHT_RATIO);
+  const longestChars = useMemo(() => longestJustifiedAyahChars(page), [page]);
 
   const surahLine = page.lines.find((line) => line.type === 'surah_name');
   const surahInfo = surahLine?.surahNumber ? getSurah(surahLine.surahNumber) : undefined;
@@ -1135,6 +2006,7 @@ const HifzPageCard = memo(function HifzPageCard({
         styles.page,
         {
           width: PAGE_WIDTH,
+          height: pageHeight > 0 ? pageHeight : undefined,
           backgroundColor: background,
           paddingTop: contentPaddingTop,
           paddingBottom: contentPaddingBottom,
@@ -1171,12 +2043,9 @@ const HifzPageCard = memo(function HifzPageCard({
                     const highlightAyah =
                       line.surahNumber === activePlayingSurah ? activePlayingAyah : null;
                     const bookmarked = lineHasBookmark(line);
+                    const surah = line.surahNumber;
                     return (
-                      <Pressable
-                        key={`${page.page}-${line.line}`}
-                        onPress={() => onLinePress(line)}
-                        style={styles.openingLineRow}
-                      >
+                      <View key={`${page.page}-${line.line}`} style={styles.openingLineRow}>
                         {bookmarked ? (
                           <View style={styles.bookmarkMark} pointerEvents="none">
                             <MaterialIcons name="bookmark" size={12} color={ILLUM.gold} />
@@ -1192,8 +2061,16 @@ const HifzPageCard = memo(function HifzPageCard({
                           ayahStart={line.ayahStart}
                           ayahEnd={line.ayahEnd}
                           highlightAyah={highlightAyah}
+                          pageNumber={page.page}
+                          lineNumber={line.line}
+                          longestChars={longestChars}
+                          onAyahPress={
+                            surah
+                              ? (ayah) => onAyahPress(surah, ayah)
+                              : undefined
+                          }
                         />
-                      </Pressable>
+                      </View>
                     );
                   })}
                 </View>
@@ -1245,10 +2122,8 @@ const HifzPageCard = memo(function HifzPageCard({
                   const hasHeaderBasmallah = headerBasmallah != null;
 
                   return (
-                    <Pressable
+                    <View
                       key={`${page.page}-${line.line}`}
-                      disabled={!playable}
-                      onPress={() => onLinePress(line)}
                       style={[
                         styles.lineRow,
                         isSpacer && styles.spacerRow,
@@ -1276,6 +2151,15 @@ const HifzPageCard = memo(function HifzPageCard({
                           ayahStart={line.ayahStart}
                           ayahEnd={line.ayahEnd}
                           highlightAyah={highlightAyah}
+                          pageNumber={page.page}
+                          lineNumber={line.line}
+                          longestChars={longestChars}
+                          measureEnabled={measureEnabled}
+                          onAyahPress={
+                            line.surahNumber
+                              ? (ayah) => onAyahPress(line.surahNumber!, ayah)
+                              : undefined
+                          }
                         />
                       ) : line.type === 'basmallah' ? (
                         <BasmallahText text={line.text} fontSize={fontSize} ornate />
@@ -1303,7 +2187,7 @@ const HifzPageCard = memo(function HifzPageCard({
                           {line.text}
                         </Text>
                       )}
-                    </Pressable>
+                    </View>
                   );
                 })}
               </View>
@@ -1365,6 +2249,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: ILLUM.cream,
   },
+  floralSvg: {
+    zIndex: 0,
+    backgroundColor: 'transparent',
+  },
   slimFrame: {
     flex: 1,
     position: 'relative',
@@ -1374,10 +2262,13 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   slimInner: {
-    flex: 1,
-    marginHorizontal: 14,
-    marginTop: 10,
-    marginBottom: 10,
+    position: 'absolute',
+    top: 10,
+    right: 18,
+    bottom: 10,
+    left: 18,
+    zIndex: 10,
+    elevation: 10,
     paddingTop: 2,
     paddingBottom: 4,
   },
@@ -1402,9 +2293,67 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   openingInner: {
-    flex: 1,
-    margin: 46,
+    position: 'absolute',
+    top: 46,
+    right: 46,
+    bottom: 46,
+    left: 46,
+    zIndex: 10,
+    elevation: 10,
     paddingTop: 2,
+  },
+  dedicationInner: {
+    position: 'absolute',
+    top: 46,
+    right: 40,
+    bottom: 46,
+    left: 40,
+    zIndex: 10,
+    elevation: 10,
+  },
+  dedicationContent: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 4,
+    gap: 8,
+  },
+  dedicationBismillah: {
+    color: ILLUM.greenDark,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  dedicationArabic: {
+    color: ILLUM.ink,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  dedicationRule: {
+    alignSelf: 'center',
+    width: '42%',
+    height: StyleSheet.hairlineWidth * 2,
+    backgroundColor: ILLUM.gold,
+    opacity: 0.9,
+    marginVertical: 2,
+  },
+  dedicationPara: {
+    color: ILLUM.ink,
+  },
+  dedicationFromLabel: {
+    fontSize: 12,
+    color: ILLUM.greenDark,
+    textAlign: 'center',
+    marginTop: 2,
+  },
+  dedicationName: {
+    color: ILLUM.greenDark,
+    textAlign: 'center',
+  },
+  dedicationClosing: {
+    color: ILLUM.greenDark,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    marginTop: 2,
   },
   openingMetaBand: {
     flexDirection: 'row',
@@ -1461,6 +2410,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     width: '100%',
+  },
+  stretchedTitleWrap: {
+    width: '100%',
+    alignSelf: 'stretch',
   },
   openingFacts: {
     flexDirection: 'row',
@@ -1579,7 +2532,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     fontWeight: '600',
-    paddingHorizontal: 12,
+    width: '100%',
   },
   basmallahOrnateRowCompact: {
     paddingTop: 0,
@@ -1664,17 +2617,62 @@ const styles = StyleSheet.create({
     overflow: 'visible',
     justifyContent: 'center',
   },
-  measureHost: {
-    position: 'absolute',
-    opacity: 0,
-    left: 0,
-    top: 0,
-    width: 8000,
-    zIndex: -1,
+  centeredLinePad: {
+    paddingHorizontal: 10,
+  },
+  centeredLineText: {
+    maxWidth: '100%',
   },
   lineText: {
     fontFamily: HIFZ_FONT,
+  },
+  ayahLineRow: {
     width: '100%',
+    // Physical row-reverse: first child (body) sits on the right edge.
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+  },
+  ayahLineBody: {
+    flex: 1,
+    justifyContent: 'center',
+    // Prevent children from stretching to the slot width (Yoga default alignItems:stretch).
+    alignItems: 'flex-end',
+    // Physical right = on-screen right (line start) once RTL unmirror cancels out.
+    paddingRight: AYAH_PAD_START,
+    paddingLeft: AYAH_PAD_END,
+  },
+  ayahLineBodyText: {
+    alignSelf: 'flex-end',
+    maxWidth: '100%',
+    textAlign: 'right',
+    writingDirection: 'rtl',
+  },
+  ayahLineMarker: {
+    flexGrow: 0,
+    flexShrink: 0,
+    paddingLeft: 2,
+    paddingRight: 6,
+  },
+  ayahLineMarkerText: {
+    writingDirection: 'rtl',
+    textAlign: 'right',
+  },
+  /** Off-screen shrink-wrap probe — wide so the run never wraps at the page column. */
+  ayahProbeHost: {
+    position: 'absolute',
+    opacity: 0,
+    left: -10000,
+    top: 0,
+    width: 4096,
+    zIndex: -1,
+  },
+  measureHost: {
+    position: 'absolute',
+    opacity: 0,
+    // Off-screen, unconstrained width so onTextLayout reports true glyph advance.
+    left: -10000,
+    top: 0,
+    zIndex: -1,
   },
   lineArabic: {
     textAlign: 'right',
@@ -1683,6 +2681,7 @@ const styles = StyleSheet.create({
   lineCentered: {
     textAlign: 'center',
     writingDirection: 'rtl',
+    width: '100%',
   },
   surahName: {
     fontWeight: '600',

@@ -51,6 +51,11 @@ export const quranMessages = {
     pashto: '۱۶ کرښیز مصحف — یوازې د قرآن متن د حفظ لپاره',
     english: '16-line mushaf — Arabic text for memorization',
   },
+  'quran.hifz.dedicationTitle': {
+    dari: 'مقدمه',
+    pashto: 'مقدمه',
+    english: 'Preface',
+  },
   'quran.hifz.dock.play': {
     dari: 'شروع تلاوت',
     pashto: 'تلاوت پیل',

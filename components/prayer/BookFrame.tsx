@@ -1,10 +1,11 @@
 /**
- * Double-line ornamental frame for prayer-learning book pages.
+ * Full-width paper page for prayer-learning — no tight double frame.
  */
 
 import React, { type ReactNode } from 'react';
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 
+import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 
@@ -18,43 +19,38 @@ export function BookFrame({ children, style, padded = true }: BookFrameProps) {
   const { theme } = useApp();
 
   return (
-    <View
+    <RtlView
       style={[
-        styles.outer,
+        styles.page,
         {
           backgroundColor: theme.backgroundSecondary,
-          borderColor: theme.accent,
+          borderColor: `${theme.accent}55`,
+          padding: padded ? Spacing.lg : 0,
         },
         style,
       ]}
     >
-      <View
-        style={[
-          styles.inner,
-          {
-            borderColor: `${theme.accent}66`,
-            padding: padded ? Spacing.md : 0,
-          },
-        ]}
-      >
-        {children}
-      </View>
-    </View>
+      <View style={[styles.goldRule, { backgroundColor: theme.accent }]} />
+      {children}
+      <View style={[styles.goldRule, { backgroundColor: theme.accent, marginTop: Spacing.md }]} />
+    </RtlView>
   );
 }
 
 const styles = StyleSheet.create({
-  outer: {
-    borderWidth: 1.5,
-    borderRadius: BorderRadius.lg,
+  page: {
     marginHorizontal: Spacing.md,
     marginVertical: Spacing.sm,
+    borderRadius: BorderRadius.lg,
+    borderWidth: StyleSheet.hairlineWidth,
     overflow: 'hidden',
   },
-  inner: {
-    borderWidth: 1,
-    borderRadius: BorderRadius.md,
-    margin: 5,
+  goldRule: {
+    height: 1.5,
+    width: '28%',
+    alignSelf: 'center',
+    marginBottom: Spacing.md,
+    opacity: 0.85,
   },
 });
 

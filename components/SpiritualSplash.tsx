@@ -1,6 +1,7 @@
 /**
  * Spiritual Splash Screen
  * Calm opening: greeting phase then loading until app is interactive.
+ * Arabic + Dari + Pashto + English always shown together; company credit stays visible.
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -19,7 +20,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import { Spacing } from '@/constants/theme';
 import { LocalizedText } from '@/components/ui/LocalizedText';
-import type { AppLanguage } from '@/types/quran';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -60,13 +60,7 @@ const PHRASES = [
 ] as const;
 
 const SPLASH_PHRASE = PHRASES[Math.floor(Math.random() * PHRASES.length)];
-
-const SPLASH_TEXT_STYLE = {
-  dari: 'dariText',
-  pashto: 'pashtoText',
-  english: 'englishText',
-} as const satisfies Record<AppLanguage, 'dariText' | 'pashtoText' | 'englishText'>;
-const SPLASH_VISIBLE_MS = 2400;
+const SPLASH_VISIBLE_MS = 2800;
 const SPLASH_FADE_MS = 400;
 
 type SplashScreenPhase = 'greeting' | 'loading';
@@ -78,13 +72,29 @@ interface SpiritualSplashProps {
   dismiss?: boolean;
 }
 
+function SplashCredit({ creatorLabel }: { creatorLabel: string }) {
+  return (
+    <View style={styles.creditContainer}>
+      <View style={styles.creditCard}>
+        <CenteredText style={styles.creditDeveloper}>{creatorLabel}</CenteredText>
+        <Pressable
+          onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
+          style={styles.creditLinkButton}
+        >
+          <CenteredText style={styles.creditLink}>WWW.AFGHAN.DEV</CenteredText>
+        </Pressable>
+      </View>
+    </View>
+  );
+}
+
 export function SpiritualSplash({
   onComplete,
   onReady,
   onGreetingComplete,
   dismiss = false,
 }: SpiritualSplashProps) {
-  const { language, t } = useI18n();
+  const { t } = useI18n();
   const insets = useSafeAreaInsets();
   const [screenPhase, setScreenPhase] = useState<SplashScreenPhase>('greeting');
   const [isExiting, setIsExiting] = useState(false);
@@ -151,6 +161,8 @@ export function SpiritualSplash({
     transform: [{ rotate: `${spin.value}deg` }],
   }));
 
+  const creatorLabel = t('app.splash.creator');
+
   return (
     <Animated.View
       testID="spiritual-splash-overlay"
@@ -185,65 +197,39 @@ export function SpiritualSplash({
           <View style={styles.frameContainer}>
             <View style={styles.frame}>
               <View style={styles.frameContent}>
-                {language === 'dari' ? (
-                  <>
-                    <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
+                <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
 
-                    <View style={styles.decorativeLine}>
-                      <View style={styles.lineLeft} />
-                      <View style={styles.lineRight} />
-                    </View>
+                <View style={styles.decorativeLine}>
+                  <View style={styles.lineLeft} />
+                  <View style={styles.lineRight} />
+                </View>
 
-                    <View style={styles.translationContainer}>
-                      <CenteredText style={styles[SPLASH_TEXT_STYLE[language]]}>
-                        {SPLASH_PHRASE[language]}
-                      </CenteredText>
-                    </View>
-                  </>
-                ) : (
-                  <>
-                    <View style={styles.translationContainer}>
-                      <CenteredText style={styles[SPLASH_TEXT_STYLE[language]]}>
-                        {SPLASH_PHRASE[language]}
-                      </CenteredText>
-                    </View>
-
-                    <View style={styles.decorativeLine}>
-                      <View style={styles.lineLeft} />
-                      <View style={styles.lineRight} />
-                    </View>
-
-                    <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
-                  </>
-                )}
+                <View style={styles.translationContainer}>
+                  <CenteredText style={styles.dariText}>{SPLASH_PHRASE.dari}</CenteredText>
+                  <CenteredText style={styles.pashtoText}>{SPLASH_PHRASE.pashto}</CenteredText>
+                  <CenteredText style={styles.englishText}>{SPLASH_PHRASE.english}</CenteredText>
+                </View>
               </View>
             </View>
           </View>
 
-          <View style={styles.creditContainer}>
-            <View style={styles.creditCard}>
-              <CenteredText style={styles.creditDeveloper}>{t('app.splash.creator')}</CenteredText>
-              <Pressable
-                onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
-                style={styles.creditLinkButton}
-              >
-                <CenteredText style={styles.creditLink}>WWW.AFGHAN.DEV</CenteredText>
-              </Pressable>
-            </View>
-          </View>
+          <SplashCredit creatorLabel={creatorLabel} />
         </>
       ) : (
-        <View style={styles.loadingSection}>
-          <Image
-            source={BRAND_MARK}
-            style={styles.brandMark}
-            resizeMode="contain"
-            accessibilityIgnoresInvertColors
-          />
-          <LocalizedText style={styles.appName}>عبادت</LocalizedText>
-          <Animated.View style={[styles.loadingRing, ringStyle]} />
-          <CenteredText style={styles.loadingText}>{t('common.loading')}</CenteredText>
-        </View>
+        <>
+          <View style={styles.loadingSection}>
+            <Image
+              source={BRAND_MARK}
+              style={styles.brandMark}
+              resizeMode="contain"
+              accessibilityIgnoresInvertColors
+            />
+            <LocalizedText style={styles.appName}>عبادت</LocalizedText>
+            <Animated.View style={[styles.loadingRing, ringStyle]} />
+            <CenteredText style={styles.loadingText}>{t('common.loading')}</CenteredText>
+          </View>
+          <SplashCredit creatorLabel={creatorLabel} />
+        </>
       )}
     </Animated.View>
   );
@@ -288,7 +274,7 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH - 48,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
     minHeight: 0,
   },
   frame: {
@@ -298,20 +284,20 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1,
     borderColor: 'rgba(212, 175, 55, 0.35)',
-    padding: 20,
+    padding: 16,
     overflow: 'hidden',
   },
   frameContent: {
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 4,
   },
   arabicText: {
-    fontSize: 27,
+    fontSize: 24,
     color: '#fff',
     fontFamily: 'Amiri-Bold',
     textAlign: 'center',
-    lineHeight: 54,
+    lineHeight: 48,
     writingDirection: 'rtl',
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -319,7 +305,7 @@ const styles = StyleSheet.create({
   decorativeLine: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 12,
+    marginVertical: 10,
     width: '80%',
     gap: 0,
   },
@@ -336,40 +322,38 @@ const styles = StyleSheet.create({
   translationContainer: {
     alignItems: 'center',
     paddingHorizontal: 8,
+    gap: 6,
   },
   dariText: {
-    fontSize: 18,
+    fontSize: 16,
     color: GOLD_LIGHT,
     textAlign: 'center',
-    lineHeight: 30,
+    lineHeight: 26,
     fontFamily: 'Amiri',
     writingDirection: 'rtl',
   },
   englishText: {
-    fontSize: 17,
-    color: GOLD_LIGHT,
+    fontSize: 14,
+    color: `${GOLD_LIGHT}CC`,
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 22,
     writingDirection: 'ltr',
+    marginTop: 2,
   },
   pashtoText: {
-    fontSize: 18,
-    color: `${GOLD_LIGHT}90`,
+    fontSize: 15,
+    color: `${GOLD_LIGHT}E0`,
     textAlign: 'center',
-    marginTop: 10,
-    // Nastaliq glyphs (especially Pashto dots) extend beyond the nominal
-    // ascent/descent. Keep native font padding and reserve that space so the
-    // dots never get clipped on Android or during the splash transition.
     includeFontPadding: true,
-    lineHeight: 48,
-    paddingVertical: 4,
+    lineHeight: 36,
+    paddingVertical: 2,
     fontFamily: 'NotoNastaliqUrdu',
     writingDirection: 'rtl',
   },
   appNameSection: {
     alignItems: 'center',
     paddingHorizontal: 24,
-    marginBottom: 12,
+    marginBottom: 8,
     flexShrink: 0,
   },
   brandMark: {
@@ -396,7 +380,7 @@ const styles = StyleSheet.create({
   },
   creditContainer: {
     marginHorizontal: 20,
-    marginTop: 16,
+    marginTop: 8,
     alignItems: 'center',
     flexShrink: 0,
   },
