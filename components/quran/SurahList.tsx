@@ -120,6 +120,52 @@ const SurahItem = React.memo(function SurahItem({
   );
 });
 
+type GlassOption = {
+  key: string;
+  active: boolean;
+  icon: React.ComponentProps<typeof MaterialIcons>['name'];
+  label: string;
+  a11y?: string;
+  testID?: string;
+  onPress: () => void;
+};
+
+/** Two-option green glass switch used for every choice row in the Quran tab header. */
+function GlassSegment({ options, direction }: { options: GlassOption[]; direction: object }) {
+  return (
+    <View style={[styles.glassToggle, direction]} accessibilityRole="tablist">
+      {options.map((option) => (
+        <Pressable
+          key={option.key}
+          testID={option.testID}
+          accessibilityRole="tab"
+          accessibilityLabel={option.a11y ?? option.label}
+          accessibilityState={{ selected: option.active }}
+          onPress={option.onPress}
+          style={({ pressed }) => [
+            styles.glassButton,
+            direction,
+            option.active && styles.glassButtonActive,
+            pressed && styles.glassButtonPressed,
+          ]}
+        >
+          {option.active ? <View style={styles.glassSheen} pointerEvents="none" /> : null}
+          <MaterialIcons
+            name={option.active ? 'check-circle' : option.icon}
+            size={18}
+            color={option.active ? '#fff' : 'rgba(255,255,255,0.78)'}
+          />
+          <CenteredText
+            style={[styles.glassButtonText, option.active && styles.glassButtonTextActive]}
+          >
+            {option.label}
+          </CenteredText>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+
 export function SurahList() {
   const { theme, themeMode, state, setHifz16Line } = useApp();
   const { t, n, language } = useI18n();
@@ -289,75 +335,67 @@ export function SurahList() {
         </Pressable>
       )}
 
-      <View style={[styles.modeToggle, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-        <Pressable
-          testID="quran-reading-translation"
-          accessibilityLabel={t('quran.reading.translation')}
-          onPress={() => setHifz16Line(false)}
-          style={[
-            styles.modeButton,
-            { backgroundColor: !hifz16Line ? theme.tint : 'transparent' },
-          ]}
-        >
-          <CenteredText style={[styles.modeButtonText, { color: !hifz16Line ? '#fff' : theme.textSecondary }]}>
-            {t('quran.reading.translation')}
-          </CenteredText>
-        </Pressable>
-        <Pressable
-          testID="quran-reading-hifz16"
-          accessibilityLabel={t('quran.hifz16.hint')}
-          onPress={() => setHifz16Line(true)}
-          style={[
-            styles.modeButton,
-            { backgroundColor: hifz16Line ? theme.tint : 'transparent' },
-          ]}
-        >
-          <CenteredText style={[styles.modeButtonText, { color: hifz16Line ? '#fff' : theme.textSecondary }]}>
-            {t('quran.reading.hifz16')}
-          </CenteredText>
-        </Pressable>
-      </View>
+      <GlassSegment
+        direction={directionalRow}
+        options={[
+          {
+            key: 'translation',
+            active: !hifz16Line,
+            icon: 'translate',
+            label: t('quran.reading.translation'),
+            a11y: t('quran.reading.translation'),
+            testID: 'quran-reading-translation',
+            onPress: () => setHifz16Line(false),
+          },
+          {
+            key: 'hifz16',
+            active: hifz16Line,
+            icon: 'menu-book',
+            label: t('quran.reading.hifz16'),
+            a11y: t('quran.hifz16.hint'),
+            testID: 'quran-reading-hifz16',
+            onPress: () => setHifz16Line(true),
+          },
+        ]}
+      />
 
-      <View style={[styles.modeToggle, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
-        <Pressable
-          onPress={() => handleBrowseModeChange('surah')}
-          style={[
-            styles.modeButton,
-            { backgroundColor: browseMode === 'surah' ? theme.tint : 'transparent' },
-          ]}
-        >
-          <CenteredText style={[styles.modeButtonText, { color: browseMode === 'surah' ? '#fff' : theme.textSecondary }]}>
-            {t('quran.mode.surah')}
-          </CenteredText>
-        </Pressable>
-        <Pressable
-          onPress={() => handleBrowseModeChange('juz')}
-          style={[
-            styles.modeButton,
-            { backgroundColor: browseMode === 'juz' ? theme.tint : 'transparent' },
-          ]}
-        >
-          <CenteredText style={[styles.modeButtonText, { color: browseMode === 'juz' ? '#fff' : theme.textSecondary }]}>
-            {t('quran.mode.juz')}
-          </CenteredText>
-        </Pressable>
-      </View>
+      <GlassSegment
+        direction={directionalRow}
+        options={[
+          {
+            key: 'surah',
+            active: browseMode === 'surah',
+            icon: 'format-list-numbered-rtl',
+            label: t('quran.mode.surah'),
+            testID: 'quran-browse-surah',
+            onPress: () => handleBrowseModeChange('surah'),
+          },
+          {
+            key: 'juz',
+            active: browseMode === 'juz',
+            icon: 'auto-stories',
+            label: t('quran.mode.juz'),
+            testID: 'quran-browse-juz',
+            onPress: () => handleBrowseModeChange('juz'),
+          },
+        ]}
+      />
 
-      <View style={[styles.searchContainer, directionalRow, { backgroundColor: theme.backgroundSecondary }]}>
-        <MaterialIcons name="search" size={20} color={theme.icon} />
+      <View style={[styles.searchContainer, styles.glassSearch, directionalRow]}>
+        <MaterialIcons name="search" size={20} color="rgba(255,255,255,0.85)" />
         <LocalizedTextInput
-          style={[styles.searchInput, { color: theme.text }]}
+          style={[styles.searchInput, styles.glassSearchInput]}
           placeholder={
             browseMode === 'juz' ? t('quran.search.juzPlaceholder') : t('quran.search.surahPlaceholder')
           }
-          placeholderTextColor={theme.textSecondary}
+          placeholderTextColor="rgba(255,255,255,0.7)"
           value={searchQuery}
           onChangeText={setSearchQuery}
           textAlign="center"
         />
         {searchQuery.length > 0 && (
           <Pressable onPress={() => setSearchQuery('')}>
-            <MaterialIcons name="close" size={20} color={theme.icon} />
+            <MaterialIcons name="close" size={20} color="rgba(255,255,255,0.85)" />
           </Pressable>
         )}
       </View>
@@ -520,26 +558,70 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
   },
-  modeToggle: {
+  glassSearch: {
+    minHeight: 48,
+    borderRadius: BorderRadius.lg + 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.28)',
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
+  glassSearchInput: {
+    color: '#fff',
+  },
+  glassToggle: {
     alignItems: 'center',
     marginHorizontal: Spacing.md,
     marginBottom: Spacing.sm,
-    padding: 4,
-    borderRadius: BorderRadius.lg,
+    padding: 5,
+    gap: 6,
+    borderRadius: BorderRadius.lg + 4,
     borderWidth: 1,
-    gap: 4,
+    borderColor: 'rgba(255,255,255,0.28)',
+    backgroundColor: 'rgba(255,255,255,0.10)',
   },
-  modeButton: {
+  glassButton: {
     flex: 1,
-    paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.md,
+    minHeight: 46,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 6,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.16)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    overflow: 'hidden',
   },
-  modeButtonText: {
+  glassButtonActive: {
+    borderColor: 'rgba(190,255,220,0.75)',
+    backgroundColor: 'rgba(52,178,122,0.55)',
+    shadowColor: '#3DDC97',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    elevation: 4,
+  },
+  glassButtonPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+  /** Top highlight that reads as a glass surface on the selected option. */
+  glassSheen: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '50%',
+    backgroundColor: 'rgba(255,255,255,0.16)',
+  },
+  glassButtonText: {
     fontSize: Typography.ui.subtitle,
     fontFamily: 'Vazirmatn',
     fontWeight: '600',
+    color: 'rgba(255,255,255,0.82)',
+  },
+  glassButtonTextActive: {
+    color: '#fff',
+    fontWeight: '700',
   },
   list: {
     flex: 1,

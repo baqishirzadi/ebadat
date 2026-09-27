@@ -77,8 +77,12 @@ function addWaIdhaDisplaySpace(text: string, gap: string): string {
 
 /** Short stroke per join — matches MAX_TATWEEL_PER_LETTER in hifzKashida. */
 const KASHIDA_SLOT_CAP = 5;
-/** Only the short opening-page rows with insufficient join slots need this. */
+/** Pages 1–2 stretch every line to the column; short rows need longer joins. */
 const OPENING_SHORT_LINE_SLOT_CAP = 14;
+/** Pages 1–2 fill the column with their real rows and a larger surah plaque. */
+function isOpeningFillPage(page: number): boolean {
+  return page === 1 || page === 2;
+}
 /** Matches `slimInner` horizontal inset (all pages). */
 const SLIM_COLUMN_MARGIN = 18;
 /**
@@ -148,9 +152,9 @@ function estimateSeedKashida(
 }
 
 /**
- * A small number of opening-page lines need more than five strokes per join to
- * reach the same column width. Keep the normal helper untouched for every other
- * line, and spread only these extra strokes over the line's available joins.
+ * Short lines on pages 1–2 can need more than five strokes per join to reach the
+ * column width. Keep the normal helper for every other line, and spread only
+ * these extra strokes over the line's available joins.
  */
 function applyKashidaWithSlotCap(text: string, count: number, maxPerSlot: number): string {
   if (maxPerSlot <= KASHIDA_SLOT_CAP) {
@@ -160,6 +164,11 @@ function applyKashidaWithSlotCap(text: string, count: number, maxPerSlot: number
 
   const slots = kashidaSlots(text);
   if (slots.length === 0) return text;
+  // The even fill below starts at the line head; while the normal helper can
+  // hold the budget, let it spread strokes along the whole line instead.
+  if (count <= Math.min(slots.length, MAX_STRETCH_LETTERS) * KASHIDA_SLOT_CAP) {
+    return applyKashida(text, count, KASHIDA_SLOT_CAP);
+  }
 
   const cap = Math.max(KASHIDA_SLOT_CAP, Math.floor(maxPerSlot));
   const budget = Math.min(count, slots.length * cap);
@@ -219,6 +228,55 @@ function isOpeningPage(_page: number) {
   // Pages 1–2 use the same slim 16-line frame as the rest of the mushaf.
   return false;
 }
+
+function lastAyahLineOf(page: HifzPage | null): HifzLine | undefined {
+  if (!page) return undefined;
+  for (let i = page.lines.length - 1; i >= 0; i -= 1) {
+    const line = page.lines[i];
+    if (line.type === 'ayah' && line.text && line.ayahStart != null) return line;
+  }
+  return undefined;
+}
+
+/**
+ * Lines that carry a bookmark ribbon: the line where a bookmarked ayah begins.
+ * An ayah that wraps (even across a page) keeps a single ribbon on its opening line.
+ */
+function bookmarkRibbonLines(
+  page: HifzPage,
+  isAyahBookmarked: (surah: number, ayah: number) => boolean,
+): Set<number> {
+  const marked = new Set<number>();
+  let prev = lastAyahLineOf(getHifzPage(page.page - 1));
+  for (const line of page.lines) {
+    if (line.type !== 'ayah' || !line.text || line.surahNumber == null || line.ayahStart == null) {
+      continue;
+    }
+    const end = line.ayahEnd ?? line.ayahStart;
+    const continues =
+      prev?.surahNumber === line.surahNumber &&
+      (prev.ayahEnd ?? prev.ayahStart) === line.ayahStart;
+    for (let ayah = continues ? line.ayahStart + 1 : line.ayahStart; ayah <= end; ayah += 1) {
+      if (isAyahBookmarked(line.surahNumber, ayah)) {
+        marked.add(line.line);
+        break;
+      }
+    }
+    prev = line;
+  }
+  return marked;
+}
+
+/** Gold ribbon hung in the right margin beside the line, clear of the ayah text. */
+const BookmarkRibbon = memo(function BookmarkRibbon() {
+  return (
+    <View style={styles.bookmarkRibbon} pointerEvents="none">
+      <Svg width={10} height={18}>
+        <Path d="M0 0 H10 V18 L5 13.5 L0 18 Z" fill={ILLUM.gold} stroke="#9C7C34" strokeWidth={0.8} />
+      </Svg>
+    </View>
+  );
+});
 
 /** Bismillah under surah name except Fatiha (ayah 1) and Tawbah (none). */
 function shouldInjectBasmallah(line: HifzLine, next: HifzLine | undefined): boolean {
@@ -763,33 +821,41 @@ const SurahFloralHeader = memo(function SurahFloralHeader({
   fontSize: number;
   lineHeight: number;
 }) {
-  // Keep the opening-page cartouche and decorative Bismillah on pages 1–2.
+  // Pages 1–2: double-framed plaque with the mushaf side notes and Bismillah.
   if (surahNumber === 1 || surahNumber === 2) {
-    const titleSize = Math.max(13, fontSize - 1);
+    const titleSize = fontSize + 3;
+    const info = getSurah(surahNumber);
+    const revelation = info?.revelationType === 'مدنی' ? 'مدنية' : 'مكية';
     return (
       <View style={styles.floralHeader}>
         {title ? (
-          <View style={styles.surahBannerRow}>
-            <MiniFloral size={14} />
-            <View style={styles.surahBanner}>
-              <View style={styles.surahBannerInner} />
-              <SurahTitleText
-                title={title}
-                fontSize={titleSize}
-                lineHeight={Math.round(titleSize * 1.5)}
-                textStyle={styles.surahBannerText}
-              />
+          <View style={styles.openingPlaqueOuter}>
+            <View style={styles.openingPlaqueInner}>
+              <View style={styles.openingPlaqueSide}>
+                <Text style={[styles.openingPlaqueNote, androidFontPad]} numberOfLines={1}>
+                  {revelation}
+                </Text>
+              </View>
+              <View style={styles.openingPlaqueCenter}>
+                <MiniFloral size={16} />
+                <SurahTitleText
+                  title={title}
+                  fontSize={titleSize}
+                  lineHeight={Math.round(titleSize * 1.55)}
+                  textStyle={styles.openingPlaqueTitle}
+                />
+                <MiniFloral size={16} />
+              </View>
+              <View style={styles.openingPlaqueSide}>
+                <Text style={[styles.openingPlaqueNote, androidFontPad]} numberOfLines={1}>
+                  {info ? `آياتها ${toArabicNumerals(info.ayahCount)}` : ''}
+                </Text>
+              </View>
             </View>
-            <MiniFloral size={14} />
           </View>
         ) : null}
         {basmallahText != null ? (
-          <BasmallahText
-            text={basmallahText || BISMILLAH}
-            fontSize={fontSize}
-            ornate
-            compact
-          />
+          <BasmallahText text={basmallahText || BISMILLAH} fontSize={fontSize + 2} ornate />
         ) : null}
       </View>
     );
@@ -980,9 +1046,9 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   );
   const fitWidth = Math.max(0, contentWidth);
   const stretch = justify && !centered;
-  const openingShortLine =
-    (pageNumber === 1 && lineNumber === 5) || (pageNumber === 2 && lineNumber === 6);
-  const lineSlotCap = openingShortLine ? OPENING_SHORT_LINE_SLOT_CAP : KASHIDA_SLOT_CAP;
+  const lineSlotCap = isOpeningFillPage(pageNumber)
+    ? OPENING_SHORT_LINE_SLOT_CAP
+    : KASHIDA_SLOT_CAP;
   const [measuredMarkerWidth, setMeasuredMarkerWidth] = useState(0);
   const [bodySlotWidth, setBodySlotWidth] = useState(0);
   const markerReserve = markers
@@ -1315,19 +1381,12 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
       ? styles.ayahHighlight
       : undefined;
 
-  const bodyPress =
-    onAyahPress && ayahStart != null && ayahStart > 0
-      ? () => onAyahPress(ayahStart)
-      : undefined;
-
-  const bodyActive =
-    highlightAyah != null &&
-    ayahStart != null &&
-    ayahEnd != null &&
-    highlightAyah >= ayahStart &&
-    highlightAyah <= ayahEnd
-      ? styles.ayahHighlight
-      : undefined;
+  // A justified line can hold the tail of one ayah and the start of the next;
+  // each part must highlight and play on its own.
+  const bodySpans =
+    ayahStart == null || ayahEnd == null
+      ? null
+      : splitAyahSpans(bodyDisplay, ayahStart, ayahEnd);
 
   return (
     <View style={styles.lineMeasureWrap}>
@@ -1358,13 +1417,13 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
           onLayout={onBodySlotLayout}
         >
           <Text
-            style={[lineStyle, styles.ayahLineBodyText, bodyActive]}
+            style={[lineStyle, styles.ayahLineBodyText]}
             numberOfLines={1}
             ellipsizeMode="clip"
-            onPress={bodyPress}
-            suppressHighlighting
           >
-            {bodyDisplay}
+            {bodySpans && (onAyahPress || highlightAyah != null)
+              ? bodySpans.map(renderSpan)
+              : bodyDisplay}
           </Text>
         </View>
         {markers ? (
@@ -1813,17 +1872,8 @@ export const Hifz16View = memo(function Hifz16View({
     }
   }, []);
 
-  const lineHasBookmark = useCallback(
-    (line: HifzLine) => {
-      if (line.type !== 'ayah' || line.surahNumber == null || line.ayahStart == null) {
-        return false;
-      }
-      const end = line.ayahEnd ?? line.ayahStart;
-      for (let ayah = line.ayahStart; ayah <= end; ayah += 1) {
-        if (isBookmarked(line.surahNumber, ayah)) return true;
-      }
-      return false;
-    },
+  const isAyahBookmarked = useCallback(
+    (surah: number, ayah: number) => isBookmarked(surah, ayah),
     [isBookmarked]
   );
 
@@ -1867,7 +1917,7 @@ export const Hifz16View = memo(function Hifz16View({
             activePlayingSurah={activePlayingSurah}
             activePlayingAyah={activePlayingAyah}
             onAyahPress={handleAyahPress}
-            lineHasBookmark={lineHasBookmark}
+            isAyahBookmarked={isAyahBookmarked}
           />
         </View>
       );
@@ -1878,7 +1928,7 @@ export const Hifz16View = memo(function Hifz16View({
       contentPaddingBottom,
       contentPaddingTop,
       handleAyahPress,
-      lineHasBookmark,
+      isAyahBookmarked,
       pageHeight,
       theme.background,
     ]
@@ -1930,7 +1980,7 @@ const HifzPageCard = memo(function HifzPageCard({
   activePlayingSurah,
   activePlayingAyah,
   onAyahPress,
-  lineHasBookmark,
+  isAyahBookmarked,
 }: {
   page: HifzPage;
   background: string;
@@ -1940,8 +1990,12 @@ const HifzPageCard = memo(function HifzPageCard({
   activePlayingSurah?: number | null;
   activePlayingAyah?: number | null;
   onAyahPress: (surah: number, ayah: number) => void;
-  lineHasBookmark: (line: HifzLine) => boolean;
+  isAyahBookmarked: (surah: number, ayah: number) => boolean;
 }) {
+  const ribbonLines = useMemo(
+    () => bookmarkRibbonLines(page, isAyahBookmarked),
+    [isAyahBookmarked, page]
+  );
   const opening = isOpeningPage(page.page);
   const predictedWidth = predictContentWidth();
   const [measuredWidth, setMeasuredWidth] = useState<number | null>(null);
@@ -1996,6 +2050,10 @@ const HifzPageCard = memo(function HifzPageCard({
     [page.lines]
   );
   const regularLines = page.lines;
+  const openingFill = isOpeningFillPage(page.page);
+  const lastAyahLine = openingFill
+    ? regularLines.reduce((last, l) => (l.type === 'ayah' && l.text ? l.line : last), 0)
+    : 0;
 
   return (
     <View
@@ -2039,15 +2097,10 @@ const HifzPageCard = memo(function HifzPageCard({
                   {openingAyahLines.map((line) => {
                     const highlightAyah =
                       line.surahNumber === activePlayingSurah ? activePlayingAyah : null;
-                    const bookmarked = lineHasBookmark(line);
                     const surah = line.surahNumber;
                     return (
                       <View key={`${page.page}-${line.line}`} style={styles.openingLineRow}>
-                        {bookmarked ? (
-                          <View style={styles.bookmarkMark} pointerEvents="none">
-                            <MaterialIcons name="bookmark" size={12} color={ILLUM.gold} />
-                          </View>
-                        ) : null}
+                        {ribbonLines.has(line.line) ? <BookmarkRibbon /> : null}
                         <JustifiedAyahText
                           text={line.text}
                           fontSize={fontSize}
@@ -2096,17 +2149,22 @@ const HifzPageCard = memo(function HifzPageCard({
                     return null;
                   }
 
+                  const isSpacer = line.type === 'spacer' || !line.text;
+                  // Trailing blank slots would leave the lower half of pages 1–2 empty.
+                  if (openingFill && isSpacer) {
+                    return null;
+                  }
+
                   const playable = line.type === 'ayah';
                   const centered =
                     line.type === 'surah_name' ||
                     line.type === 'basmallah' ||
-                    Boolean(line.centered);
-                  const isSpacer = line.type === 'spacer' || !line.text;
+                    (Boolean(line.centered) && !(openingFill && playable));
                   const highlightAyah =
                     playable && line.surahNumber === activePlayingSurah
                       ? activePlayingAyah
                       : null;
-                  const bookmarked = playable && lineHasBookmark(line);
+                  const bookmarked = playable && ribbonLines.has(line.line);
                   const injectBasmallah = shouldInjectBasmallah(line, next);
                   const headerBasmallah =
                     line.type === 'surah_name'
@@ -2127,13 +2185,19 @@ const HifzPageCard = memo(function HifzPageCard({
                         line.type === 'surah_name' && styles.surahBlockRow,
                         hasHeaderBasmallah && styles.surahWithBasmallahRow,
                         line.type === 'basmallah' && styles.surahBlockRow,
+                        openingFill && playable && styles.openingFillAyahRow,
+                        openingFill &&
+                          playable &&
+                          line.line === lastAyahLine &&
+                          styles.openingFillLastRow,
+                        openingFill &&
+                          line.type === 'surah_name' &&
+                          (hasHeaderBasmallah
+                            ? styles.openingFillHeaderWithBasmallahRow
+                            : styles.openingFillHeaderRow),
                       ]}
                     >
-                      {bookmarked ? (
-                        <View style={styles.bookmarkMark} pointerEvents="none">
-                          <MaterialIcons name="bookmark" size={12} color={ILLUM.gold} />
-                        </View>
-                      ) : null}
+                      {bookmarked ? <BookmarkRibbon /> : null}
                       {isSpacer ? (
                         <View style={styles.spacer} />
                       ) : line.type === 'ayah' ? (
@@ -2542,42 +2606,53 @@ const styles = StyleSheet.create({
     paddingTop: 4,
     paddingBottom: 2,
   },
-  surahBannerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+  openingPlaqueOuter: {
     alignSelf: 'stretch',
-    gap: 6,
-    paddingHorizontal: 2,
-  },
-  surahBanner: {
-    flex: 1,
-    paddingTop: 2,
-    paddingBottom: 2,
-    paddingHorizontal: 16,
-    borderRadius: 3,
+    padding: 3,
+    borderRadius: 8,
     borderWidth: 1.5,
     borderColor: ILLUM.greenDark,
-    backgroundColor: '#F3FAF7',
-    justifyContent: 'center',
+    backgroundColor: '#EEF6F1',
+  },
+  openingPlaqueInner: {
+    // Physical row-reverse: the revelation note sits on the right, mushaf style.
+    flexDirection: 'row-reverse',
     alignItems: 'center',
-  },
-  surahBannerInner: {
-    ...StyleSheet.absoluteFillObject,
-    top: 3,
-    right: 5,
-    bottom: 3,
-    left: 5,
-    borderRadius: 2,
-    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderRadius: 6,
+    borderWidth: 1,
     borderColor: ILLUM.gold,
+    backgroundColor: '#F7FBF8',
+    paddingVertical: 8,
+    paddingHorizontal: 6,
   },
-  surahBannerText: {
+  openingPlaqueSide: {
+    width: 58,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 2,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth * 2,
+    borderColor: 'rgba(196,163,90,0.7)',
+    backgroundColor: ILLUM.cream,
+  },
+  openingPlaqueNote: {
+    fontFamily: HIFZ_FONT,
+    fontSize: 11,
+    lineHeight: 20,
     color: ILLUM.greenDark,
     textAlign: 'center',
     writingDirection: 'rtl',
+  },
+  openingPlaqueCenter: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  openingPlaqueTitle: {
+    color: ILLUM.greenDark,
     fontWeight: '600',
-    width: '100%',
   },
   basmallahOrnateRowCompact: {
     paddingTop: 0,
@@ -2621,10 +2696,11 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     position: 'relative',
   },
-  bookmarkMark: {
+  bookmarkRibbon: {
     position: 'absolute',
-    top: 2,
-    left: 2,
+    top: '50%',
+    marginTop: -9,
+    right: -14,
     zIndex: 2,
   },
   openingAyahBlock: {
@@ -2652,6 +2728,23 @@ const styles = StyleSheet.create({
   },
   spacerRow: {
     opacity: 0,
+  },
+  openingFillAyahRow: {
+    flex: 1.5,
+    flexGrow: 1.5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(196,163,90,0.45)',
+  },
+  openingFillLastRow: {
+    borderBottomWidth: 0,
+  },
+  openingFillHeaderRow: {
+    flex: 2.2,
+    flexGrow: 2.2,
+  },
+  openingFillHeaderWithBasmallahRow: {
+    flex: 3.2,
+    flexGrow: 3.2,
   },
   spacer: {
     height: 1,

@@ -385,8 +385,11 @@ function RootLayoutNav() {
         }}
       >
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="quran" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false, gestureEnabled: false }} />
+        <Stack.Screen
+          name="quran"
+          options={{ headerShown: false, fullScreenGestureEnabled: false }}
+        />
         <Stack.Screen name="adhkar" options={{ headerShown: false }} />
         <Stack.Screen name="qibla" options={{ headerShown: false }} />
         <Stack.Screen name="search" options={{ headerShown: true }} />

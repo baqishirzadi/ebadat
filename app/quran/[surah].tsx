@@ -6,7 +6,7 @@
 
 import React, { useState, useCallback, useEffect, useMemo } from 'react';
 
-import { View, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, StyleSheet, Pressable, Alert, BackHandler } from 'react-native';
 import { LocalizedText } from '@/components/ui/LocalizedText';
 import { StatusBar } from 'expo-status-bar';
 import { useFocusEffect, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
@@ -151,16 +151,39 @@ export default function QuranReaderScreen() {
     }
   }, [surah, shouldGoBack]);
 
-  useEffect(() => {
-    if (!shouldGoBack) return;
-
+  const goBackToList = useCallback(() => {
     if (navigation.canGoBack()) {
       router.back();
       return;
     }
-
     router.replace('/(tabs)/quran-tab');
-  }, [navigation, router, shouldGoBack]);
+  }, [navigation, router]);
+
+  useEffect(() => {
+    if (!shouldGoBack) return;
+    goBackToList();
+  }, [goBackToList, shouldGoBack]);
+
+  // Opened cold from a notification or link, the stack has nothing below this
+  // screen and Android's back gesture would close the app instead of the reader.
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (navigation.canGoBack()) return false;
+        router.replace('/(tabs)/quran-tab');
+        return true;
+      });
+      return () => subscription.remove();
+    }, [navigation, router])
+  );
+
+  // Horizontal page turns own both screen edges in the 16-line mushaf; an iOS
+  // edge swipe must never also pop the reader or the stack beneath it.
+  useEffect(() => {
+    const parent = navigation.getParent();
+    navigation.setOptions({ gestureEnabled: !hifz16Line });
+    parent?.setOptions({ gestureEnabled: !hifz16Line });
+  }, [hifz16Line, navigation]);
 
   useEffect(() => {
     void audioManager.initialize();
@@ -371,13 +394,7 @@ export default function QuranReaderScreen() {
         ]}
       >
         <Pressable
-          onPress={() => {
-            if (navigation.canGoBack()) {
-              router.back();
-            } else {
-              router.replace('/(tabs)/quran-tab');
-            }
-          }}
+          onPress={goBackToList}
           hitSlop={8}
           style={styles.topBarBackButton}
         >
