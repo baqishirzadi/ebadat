@@ -54,7 +54,7 @@
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "30"
+      "buildNumber": "16"
     },
     "android": {
       "package": "com.afghandev.ebadat",
