@@ -423,6 +423,11 @@ export function SurahList() {
           renderItem={renderSurah}
           showsVerticalScrollIndicator={false}
           ListHeaderComponent={headerContent}
+          ListEmptyComponent={
+            <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
+              {t('common.noResults')}
+            </CenteredText>
+          }
           contentContainerStyle={styles.listContent}
           style={[styles.list, { backgroundColor: theme.background }]}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -641,6 +646,11 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: Spacing.md,
+  },
+  emptyText: {
+    paddingVertical: Spacing.xl,
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn',
   },
   juzListWrapper: {
     paddingHorizontal: 0,

@@ -380,6 +380,7 @@ function RootLayoutNav() {
       <Stack
         screenOptions={{
           headerShown: false,
+          headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: theme.background },
           animation: I18nManager.isRTL ? 'slide_from_right' : 'slide_from_left',
         }}

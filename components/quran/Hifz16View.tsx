@@ -1818,7 +1818,10 @@ export const Hifz16View = memo(function Hifz16View({
   const playingRef = useRef({ surah: activePlayingSurah, ayah: activePlayingAyah });
   playingRef.current = { surah: activePlayingSurah, ayah: activePlayingAyah };
 
-  const reportVisiblePosition = useCallback((pageNumber: number) => {
+  const reportVisiblePosition = useCallback((
+    pageNumber: number,
+    preferred?: { surah: number; ayah: number },
+  ) => {
     if (pageNumber === HIFZ_DEDICATION_PAGE) {
       // Title only — keep dock / reading position on the last mushaf ayah.
       onVisiblePositionChangeRef.current?.(0, 0, HIFZ_DEDICATION_PAGE);
@@ -1829,8 +1832,8 @@ export const Hifz16View = memo(function Hifz16View({
     const resolved = resolveHifzPageTarget(pageNumber, {
       playingSurah: playing.surah,
       playingAyah: playing.ayah,
-      savedSurah: saved.surahNumber > 0 ? saved.surahNumber : null,
-      savedAyah: saved.ayahNumber > 0 ? saved.ayahNumber : null,
+      savedSurah: preferred?.surah ?? (saved.surahNumber > 0 ? saved.surahNumber : null),
+      savedAyah: preferred?.ayah ?? (saved.ayahNumber > 0 ? saved.ayahNumber : null),
     });
     if (!resolved) return;
 
@@ -1842,9 +1845,10 @@ export const Hifz16View = memo(function Hifz16View({
     onVisiblePositionChangeRef.current?.(resolved.surah, resolved.ayah, resolved.page);
   }, []);
 
+  // A surah or juz opened on a shared page starts from the requested ayah.
   useEffect(() => {
-    reportVisiblePosition(startPage);
-  }, [reportVisiblePosition, startPage]);
+    reportVisiblePosition(startPage, { surah: surahNumber, ayah: Math.max(1, initialAyah) });
+  }, [initialAyah, reportVisiblePosition, startPage, surahNumber]);
 
   // Re-resolve dock target when playback moves onto the visible page.
   useEffect(() => {
