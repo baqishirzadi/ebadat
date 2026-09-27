@@ -767,7 +767,10 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       });
     });
 
-    const playbackErrorSub = TrackPlayer.addEventListener(Event.PlaybackError, (event) => {
+    const playbackErrorSub = TrackPlayer.addEventListener(Event.PlaybackError, async (event) => {
+      // Quran shares this player and handles its own errors.
+      const activeTrack = await TrackPlayer.getActiveTrack().catch(() => undefined);
+      if ((activeTrack as { mediaType?: string } | undefined)?.mediaType === 'quran') return;
       if (currentNaatRef.current) {
         completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
       }
@@ -813,66 +816,30 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     };
   }, [playerReady, findNaatByTrack, maybeAutoDownloadCompletedNaat, syncPlayerSnapshot]);
 
-  // Remote notification / lock-screen controls (main app context)
+  // Remote notification / lock-screen controls. The actions themselves live in
+  // services/naatPlaybackService.ts (same JS runtime on iOS); performing them here
+  // too would run every skip/stop twice. Only completion bookkeeping stays here.
   useEffect(() => {
     if (!playerReady) return;
 
+    const markNotCompletable = () => {
+      if (currentNaatRef.current) {
+        completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
+      }
+    };
     const subs = [
-      TrackPlayer.addEventListener(Event.RemotePlay, () => {
-        TrackPlayer.play().catch(() => {});
-      }),
-      TrackPlayer.addEventListener(Event.RemotePause, () => {
-        TrackPlayer.pause().catch(() => {});
-      }),
-      TrackPlayer.addEventListener(Event.RemoteStop, () => {
-        if (currentNaatRef.current) {
-          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
-        }
-        TrackPlayer.reset().catch(() => {});
-      }),
-      TrackPlayer.addEventListener(Event.RemoteSeek, (e) => {
-        if (currentNaatRef.current) {
-          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
-        }
-        TrackPlayer.seekTo(e.position).catch(() => {});
-      }),
-      TrackPlayer.addEventListener(Event.RemoteNext, () => {
-        if (currentNaatRef.current) {
-          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
-        }
-        TrackPlayer.skipToNext().catch(() => {});
-      }),
-      TrackPlayer.addEventListener(Event.RemoteJumpForward, () => {
-        if (currentNaatRef.current) {
-          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
-        }
-      }),
-      TrackPlayer.addEventListener(Event.RemoteJumpBackward, () => {
-        if (currentNaatRef.current) {
-          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
-        }
-      }),
-      TrackPlayer.addEventListener(Event.RemotePrevious, async () => {
-        if (currentNaatRef.current) {
-          completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
-        }
-        try {
-          const progress = await TrackPlayer.getProgress();
-          if (progress.position > 3) {
-            await TrackPlayer.seekTo(0);
-            return;
-          }
-          await TrackPlayer.skipToPrevious();
-        } catch {
-          TrackPlayer.seekTo(0).catch(() => {});
-        }
-      }),
-    ];
+      Event.RemoteStop,
+      Event.RemoteSeek,
+      Event.RemoteNext,
+      Event.RemotePrevious,
+      Event.RemoteJumpForward,
+      Event.RemoteJumpBackward,
+    ].map((event) => TrackPlayer.addEventListener(event, markNotCompletable));
 
     return () => {
       subs.forEach((sub) => sub.remove());
     };
-  }, [playerReady, isPashto]);
+  }, [playerReady]);
 
   // Progress updates from native player (works in background too)
   useEffect(() => {

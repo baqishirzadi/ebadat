@@ -5,6 +5,8 @@
 
 import TrackPlayer, { Event } from 'react-native-track-player';
 
+import { audioManager } from '../utils/quranAudio';
+
 export async function NaatPlaybackService() {
   TrackPlayer.addEventListener(Event.RemotePlay, async () => {
     try {
@@ -57,6 +59,7 @@ export async function NaatPlaybackService() {
   });
   TrackPlayer.addEventListener(Event.RemoteNext, async () => {
     try {
+      if (await audioManager.skipFromRemote(1)) return;
       await TrackPlayer.skipToNext();
     } catch (err) {
       if (__DEV__) console.log('RemoteNext:', err);
@@ -64,6 +67,7 @@ export async function NaatPlaybackService() {
   });
   TrackPlayer.addEventListener(Event.RemotePrevious, async () => {
     try {
+      if (await audioManager.skipFromRemote(-1)) return;
       const progress = await TrackPlayer.getProgress();
       if (progress.position > 3) {
         await TrackPlayer.seekTo(0);

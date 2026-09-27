@@ -5,7 +5,8 @@ import { JUZ_RANGES, getJuzRange } from '@/data/juzRanges';
 import { getSurahSync } from '@/hooks/useSurahData';
 import {
   getAyahCachePath,
-  getAyahUrl,
+  getAyahUrlCandidates,
+  hasMp3Header,
   RECITERS,
   type ReciterKey,
 } from '@/utils/quranAudio';
@@ -39,6 +40,8 @@ export type QuranDownloadProgress = QuranDownloadManifestEntry & {
 export const QURAN_DOWNLOAD_MANIFEST_KEY = '@ebadat/quran_download_manifest_v1';
 export const QURAN_DOWNLOAD_RECITER_KEY = '@ebadat/quran_download_reciter_v1';
 const MIN_VALID_AUDIO_BYTES = 1024;
+const DOWNLOAD_ATTEMPTS_PER_AYAH = 3;
+const DOWNLOAD_RETRY_DELAY_MS = 500;
 
 function isReciterKey(value: string | null): value is ReciterKey {
   return Boolean(value && value in RECITERS);
@@ -104,6 +107,20 @@ async function writeManifest(entries: QuranDownloadManifestEntry[]): Promise<voi
   await AsyncStorage.setItem(QURAN_DOWNLOAD_MANIFEST_KEY, JSON.stringify(entries));
 }
 
+// Two cards (translation header and 16-line mode) can download at the same time,
+// so every read-modify-write of the manifest goes through one queue.
+let manifestQueue: Promise<unknown> = Promise.resolve();
+
+function updateManifest(
+  update: (entries: QuranDownloadManifestEntry[]) => QuranDownloadManifestEntry[],
+): Promise<void> {
+  const next = manifestQueue.then(async () => {
+    await writeManifest(update(await readManifest()));
+  });
+  manifestQueue = next.catch(() => undefined);
+  return next;
+}
+
 export async function getDownloadManifest(): Promise<QuranDownloadManifestEntry[]> {
   return readManifest();
 }
@@ -111,10 +128,46 @@ export async function getDownloadManifest(): Promise<QuranDownloadManifestEntry[
 async function isValidCachedFile(path: string): Promise<boolean> {
   try {
     const info = await FileSystem.getInfoAsync(path);
-    return Boolean(info.exists && !info.isDirectory && typeof info.size === 'number' && info.size >= MIN_VALID_AUDIO_BYTES);
+    const sizeOk = Boolean(
+      info.exists && !info.isDirectory && typeof info.size === 'number' && info.size >= MIN_VALID_AUDIO_BYTES,
+    );
+    return sizeOk && (await hasMp3Header(path));
   } catch {
     return false;
   }
+}
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function downloadAyahFile(
+  surah: number,
+  ayah: number,
+  reciter: ReciterKey,
+  path: string,
+  signal?: AbortSignal,
+): Promise<void> {
+  const urls = getAyahUrlCandidates(surah, ayah, reciter);
+  let lastError: unknown = new Error('download_failed');
+  for (let attempt = 0; attempt < DOWNLOAD_ATTEMPTS_PER_AYAH; attempt += 1) {
+    if (signal?.aborted) throw new Error('download_cancelled');
+    const temporaryPath = `${path}.part-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    try {
+      const result = await FileSystem.downloadAsync(urls[attempt % urls.length], temporaryPath);
+      if (result.status !== 200) throw new Error(`http_${result.status}`);
+      if (!(await isValidCachedFile(temporaryPath))) throw new Error('invalid_audio_file');
+      await FileSystem.deleteAsync(path, { idempotent: true });
+      await FileSystem.moveAsync({ from: temporaryPath, to: path });
+      return;
+    } catch (error) {
+      lastError = error;
+    } finally {
+      await FileSystem.deleteAsync(temporaryPath, { idempotent: true }).catch(() => undefined);
+    }
+    if (attempt < DOWNLOAD_ATTEMPTS_PER_AYAH - 1) await wait(DOWNLOAD_RETRY_DELAY_MS * (attempt + 1));
+  }
+  throw lastError;
 }
 
 async function ensureDirectory(reciter: ReciterKey): Promise<string> {
@@ -136,8 +189,6 @@ export async function downloadQuranScope(
   const ranges = scope.ranges;
   const total = ranges.reduce((sum, range) => sum + Math.max(0, range.endAyah - range.startAyah + 1), 0);
   const key = getDownloadManifestKey(reciter, scope);
-  const entries = await readManifest();
-  const existing = entries.find((entry) => entry.key === key);
   let completed = 0;
   const manifest: QuranDownloadManifestEntry = {
     key,
@@ -156,28 +207,17 @@ export async function downloadQuranScope(
       const path = getAyahCachePath(range.surah, ayah, reciter);
       if (!path) throw new Error('cache_dir_unavailable');
       if (!(await isValidCachedFile(path))) {
-        const temporaryPath = `${path}.part`;
-        try {
-          await FileSystem.downloadAsync(getAyahUrl(range.surah, ayah, reciter), temporaryPath);
-          if (!(await isValidCachedFile(temporaryPath))) throw new Error('invalid_audio_file');
-          await FileSystem.moveAsync({ from: temporaryPath, to: path });
-        } finally {
-          const tempInfo = await FileSystem.getInfoAsync(temporaryPath).catch(() => null);
-          if (tempInfo?.exists) await FileSystem.deleteAsync(temporaryPath, { idempotent: true });
-        }
+        await downloadAyahFile(range.surah, ayah, reciter, path, signal);
       }
       completed += 1;
       manifest.completed = completed;
       manifest.updatedAt = Date.now();
-      const nextEntries = entries.filter((entry) => entry.key !== key);
-      nextEntries.push(manifest);
-      await writeManifest(nextEntries);
-      onProgress?.({ ...manifest, current: { ...range, ayah } });
+      const snapshot = { ...manifest };
+      await updateManifest((entries) => [...entries.filter((entry) => entry.key !== key), snapshot]);
+      onProgress?.({ ...snapshot, current: { ...range, ayah } });
     }
   }
-  // A resumed manifest can only be trusted after every range has been checked.
-  if (existing && existing.total === total && completed === 0) manifest.completed = existing.completed;
-  return manifest;
+  return { ...manifest };
 }
 
 export async function deleteQuranScope(scope: QuranDownloadScope, reciter: ReciterKey): Promise<void> {
@@ -187,8 +227,8 @@ export async function deleteQuranScope(scope: QuranDownloadScope, reciter: Recit
       if (path) await FileSystem.deleteAsync(path, { idempotent: true });
     }
   }
-  const entries = await readManifest();
-  await writeManifest(entries.filter((entry) => entry.key !== getDownloadManifestKey(reciter, scope)));
+  const key = getDownloadManifestKey(reciter, scope);
+  await updateManifest((entries) => entries.filter((entry) => entry.key !== key));
 }
 
 export { JUZ_RANGES };

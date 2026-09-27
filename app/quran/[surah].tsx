@@ -299,6 +299,7 @@ export default function QuranReaderScreen() {
     if (
       isSameAyah &&
       !audioManager.getIsPlaying() &&
+      audioManager.getPlaybackSnapshot().isActive &&
       audioManager.getCurrentSurah() === surahNum &&
       audioManager.getCurrentAyah() === ayahNum
     ) {
@@ -335,6 +336,18 @@ export default function QuranReaderScreen() {
       setCurrentlyPlaying(null);
       setShowAudioPlayer(false);
       void audioManager.stop();
+      return;
+    }
+
+    if (
+      isSameAyah &&
+      audioManager.getPlaybackSnapshot().isActive &&
+      audioManager.getCurrentSurah() === surahNum &&
+      audioManager.getCurrentAyah() === ayahNum
+    ) {
+      setIsPlaying(true);
+      setShowAudioPlayer(true);
+      void audioManager.resume();
       return;
     }
 

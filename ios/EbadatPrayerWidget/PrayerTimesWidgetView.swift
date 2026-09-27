@@ -1,6 +1,12 @@
 import SwiftUI
 import WidgetKit
 
+/// Every line of the medium widget is sized by this Dari Nastaliq reference,
+/// so Dari, Pashto and English share one frame and nothing moves when the
+/// app language changes.
+private let referenceFont = "NotoNastaliqUrdu"
+private let referenceSample = "صبح ظهر"
+
 struct PrayerTimesWidgetView: View {
   @Environment(\.widgetFamily) private var family
   let entry: PrayerTimesWidgetEntry
@@ -12,26 +18,40 @@ struct PrayerTimesWidgetView: View {
   private var uiFontRegular: String {
     if isEnglish { return "Vazirmatn" }
     if isDari { return "NotoNastaliqUrdu" }
-    if isPashto {
-      return snapshot?.pashtoFont == "nastaliq" ? "NotoNastaliqUrdu" : "Amiri"
-    }
-    return snapshot?.dariFont == "amiri" ? "Amiri" : "Vazirmatn"
+    return snapshot?.pashtoFont == "nastaliq" ? "NotoNastaliqUrdu" : "Amiri"
   }
   private var uiFontBold: String {
     if uiFontRegular == "Vazirmatn" { return "Vazirmatn-Bold" }
     if uiFontRegular == "Amiri" { return "Amiri-Bold" }
     return "NotoNastaliqUrdu"
   }
-  private func weekday(_ value: WidgetSnapshot) -> String { isPashto ? (value.weekdayPashto ?? value.weekdayDari) : value.weekdayDari }
-  private func hijri(_ value: WidgetSnapshot) -> String { isPashto ? (value.hijriDisplayPashto ?? value.hijriDisplay) : value.hijriDisplay }
-  private func solar(_ value: WidgetSnapshot) -> String { isPashto ? (value.shamsiDisplayPashto ?? value.shamsiDisplay) : value.shamsiDisplay }
-  private func sunrise(_ value: WidgetSnapshot) -> String { isPashto ? (value.sunriseDisplayPashto ?? value.sunriseDisplay) : value.sunriseDisplay }
-  private func label(_ value: WidgetPrayerEntry) -> String { isPashto ? (value.labelPashto ?? value.labelDari) : value.labelDari }
 
-  private static let gregMonthEnToDari: [String: String] = [
+  private static let weekdayEnglish: [String: String] = [
+    "یکشنبه": "Sun", "دوشنبه": "Mon", "سه‌شنبه": "Tue", "سې‌شنبه": "Tue",
+    "چهارشنبه": "Wed", "پنجشنبه": "Thu", "جمعه": "Fri", "شنبه": "Sat",
+  ]
+  private static let solarMonthEnglish: [String: String] = [
+    "حمل": "Hamal", "ثور": "Sawr", "جوزا": "Jawza", "سرطان": "Saratan",
+    "اسد": "Asad", "سنبله": "Sonbola", "میزان": "Mizan", "عقرب": "Aqrab",
+    "قوس": "Qaws", "جدی": "Jadi", "دلو": "Dalw", "حوت": "Hut",
+  ]
+  private static let hijriMonthEnglish: [String: String] = [
+    "محرم": "Muharram", "صفر": "Safar", "ربیع‌الاول": "Rabi I", "ربیع‌الثانی": "Rabi II",
+    "جمادی‌الاول": "Jumada I", "جمادی‌الثانی": "Jumada II", "رجب": "Rajab", "شعبان": "Shaban",
+    "رمضان": "Ramadan", "شوال": "Shawwal", "ذوالقعده": "Dhul Qadah", "ذوالحجه": "Dhul Hijjah",
+  ]
+  private static let gregMonthDari: [String: String] = [
     "JAN": "جنوری", "FEB": "فبروری", "MAR": "مارچ", "APR": "اپریل",
     "MAY": "می", "JUN": "جون", "JUL": "جولای", "AUG": "اگست",
     "SEP": "سپتمبر", "OCT": "اکتوبر", "NOV": "نومبر", "DEC": "دسمبر",
+  ]
+  private static let gregMonthPashto: [String: String] = [
+    "JAN": "جنوري", "FEB": "فبروري", "MAR": "مارچ", "APR": "اپرېل",
+    "MAY": "مۍ", "JUN": "جون", "JUL": "جولای", "AUG": "اګست",
+    "SEP": "سپتمبر", "OCT": "اکتوبر", "NOV": "نومبر", "DEC": "ډسمبر",
+  ]
+  private static let prayerEnglish: [String: String] = [
+    "fajr": "Fajr", "dhuhr": "Dhuhr", "asr": "Asr", "maghrib": "Maghrib", "isha": "Isha",
   ]
 
   private func easternDigits(_ value: String) -> String {
@@ -42,46 +62,83 @@ struct PrayerTimesWidgetView: View {
     return String(value.map { map[$0] ?? $0 })
   }
 
-  private func dariGregorianShort(_ gregorianDisplay: String) -> String {
-    let parts = gregorianDisplay.trimmingCharacters(in: .whitespacesAndNewlines)
+  private func latinDigits(_ value: String) -> String {
+    let map: [Character: Character] = [
+      "۰": "0", "۱": "1", "۲": "2", "۳": "3", "۴": "4", "۵": "5", "۶": "6", "۷": "7", "۸": "8", "۹": "9",
+      "٠": "0", "١": "1", "٢": "2", "٣": "3", "٤": "4", "٥": "5", "٦": "6", "٧": "7", "٨": "8", "٩": "9",
+    ]
+    return String(value.map { map[$0] ?? $0 })
+  }
+
+  private func tokens(_ value: String) -> [String] {
+    value.trimmingCharacters(in: .whitespacesAndNewlines)
       .split(whereSeparator: { $0.isWhitespace })
       .map(String.init)
-    guard parts.count >= 2 else { return easternDigits(gregorianDisplay.trimmingCharacters(in: .whitespacesAndNewlines)) }
-    let day = easternDigits(parts[0])
-    let month = Self.gregMonthEnToDari[parts[1].uppercased()] ?? parts[1]
-    let year = parts.count >= 3 ? easternDigits(parts[2]) : ""
-    return year.isEmpty ? "\(day) \(month)" : "\(day) \(month) \(year)"
   }
 
-  /// Dari/Pashto accent title + three date cells (Dari shortens copy).
-  private func rtlHeaderTitle(from value: WidgetSnapshot) -> String {
-    [weekday(value), solar(value)].filter { !$0.isEmpty }.joined(separator: "، ")
+  /// "day month year" with the month translated to English and Latin digits.
+  private func englishDate(_ value: String, months: [String: String]) -> String {
+    let parts = tokens(value)
+    guard parts.count >= 2 else { return latinDigits(value) }
+    let day = latinDigits(parts[0])
+    let lastIsYear = parts.count >= 3 && Int(latinDigits(parts[parts.count - 1])) != nil
+    let monthRaw = (lastIsYear ? parts[1..<(parts.count - 1)] : parts[1...]).joined(separator: " ")
+    let month = months[monthRaw] ?? monthRaw
+    let year = lastIsYear ? latinDigits(parts[parts.count - 1]) : ""
+    return [day, month, year].filter { !$0.isEmpty }.joined(separator: " ")
   }
 
-  private func gregorianCell(from value: WidgetSnapshot) -> String {
-    if isDari { return dariGregorianShort(value.gregorianDisplay) }
-    return "\(value.gregorianDisplay) میلادي"
-  }
-
-  private func hijriCell(from value: WidgetSnapshot) -> String {
-    let h = hijri(value)
-    return isDari ? h : "قمري \(h)"
-  }
-
-  private func sunriseCell(from value: WidgetSnapshot) -> String {
-    let raw = sunrise(value).trimmingCharacters(in: .whitespacesAndNewlines)
-    let parts = raw.split(whereSeparator: { $0.isWhitespace }).map(String.init)
-    let time = parts.last ?? ""
-    let caption: String
-    if isDari {
-      caption = "طلوع"
-    } else if parts.count > 1 {
-      caption = parts.dropLast().joined(separator: " ")
-    } else {
-      caption = "لمر ختل"
+  private func headerTitle(_ value: WidgetSnapshot) -> String {
+    if isEnglish {
+      let day = Self.weekdayEnglish[value.weekdayDari] ?? ""
+      let solar = englishDate(value.shamsiDisplay, months: Self.solarMonthEnglish)
+      return [day, solar].filter { !$0.isEmpty }.joined(separator: ", ")
     }
-    return time.isEmpty ? caption : "\(caption) \(time)"
+    let weekday = isPashto ? (value.weekdayPashto ?? value.weekdayDari) : value.weekdayDari
+    let solar = isPashto ? (value.shamsiDisplayPashto ?? value.shamsiDisplay) : value.shamsiDisplay
+    return [weekday, solar].filter { !$0.isEmpty }.joined(separator: "، ")
   }
+
+  /// Day and month, without the year, so the cell fits one line.
+  private func gregorianCell(_ value: WidgetSnapshot) -> String {
+    let parts = tokens(value.gregorianDisplay)
+    guard parts.count >= 2 else { return value.gregorianDisplay }
+    let key = parts[1].uppercased()
+    if isEnglish { return "\(latinDigits(parts[0])) \(key)" }
+    let month = (isPashto ? Self.gregMonthPashto[key] : Self.gregMonthDari[key]) ?? parts[1]
+    return "\(easternDigits(parts[0])) \(month)"
+  }
+
+  private func sunriseTime(_ value: WidgetSnapshot) -> String {
+    let raw = isPashto ? (value.sunriseDisplayPashto ?? value.sunriseDisplay) : value.sunriseDisplay
+    let time = tokens(raw).last ?? ""
+    return isEnglish ? latinDigits(time) : time
+  }
+
+  private var sunriseCaption: String {
+    if isEnglish { return "Sunrise" }
+    return isPashto ? "لمر" : "طلوع"
+  }
+
+  private func sunriseCell(_ value: WidgetSnapshot) -> String {
+    let time = sunriseTime(value)
+    return time.isEmpty ? sunriseCaption : "\(sunriseCaption) \(time)"
+  }
+
+  private func hijriCell(_ value: WidgetSnapshot) -> String {
+    if isEnglish { return englishDate(value.hijriDisplay, months: Self.hijriMonthEnglish) }
+    return isPashto ? (value.hijriDisplayPashto ?? value.hijriDisplay) : value.hijriDisplay
+  }
+
+  private func label(_ value: WidgetPrayerEntry) -> String {
+    if isEnglish { return Self.prayerEnglish[value.key] ?? value.labelDari }
+    return isPashto ? (value.labelPashto ?? value.labelDari) : value.labelDari
+  }
+
+  private func prayerTime(_ value: WidgetPrayerEntry) -> String {
+    isEnglish ? latinDigits(value.time12h) : value.time12h
+  }
+
   private var widgetBackground: LinearGradient {
     LinearGradient(
       colors: [Color(red: 0.06, green: 0.12, blue: 0.08), Color(red: 0.10, green: 0.30, blue: 0.24)],
@@ -91,7 +148,6 @@ struct PrayerTimesWidgetView: View {
   }
 
   private var accent: Color { Color(red: 0.55, green: 0.85, blue: 0.72) }
-  private var tint: Color { Color(red: 0.10, green: 0.30, blue: 0.24) }
 
   var body: some View {
     ZStack {
@@ -122,38 +178,12 @@ struct PrayerTimesWidgetView: View {
       GeometryReader { geo in
         let s = homeScale(for: geo.size.height)
         VStack(alignment: .center, spacing: 4 * s) {
-          // Dari and Pashto share the polished Pashto card. English stays LTR.
-          Text(isEnglish ? solar(snapshot) : rtlHeaderTitle(from: snapshot))
-            .font(.custom(uiFontBold, size: 20 * s))
-            .foregroundColor(accent)
-            .lineLimit(1)
-            .minimumScaleFactor(0.7)
-            .allowsTightening(true)
+          LockedLine(text: headerTitle(snapshot), font: uiFontBold, size: 20 * s, color: accent, minimumScale: 0.6)
 
           HStack(spacing: 4) {
-            Text(isEnglish ? snapshot.gregorianDisplay : gregorianCell(from: snapshot))
-              .font(.custom(uiFontBold, size: 15 * s))
-              .foregroundColor(.white.opacity(0.85))
-              .lineLimit(1)
-              .minimumScaleFactor(0.65)
-              .allowsTightening(true)
-              .frame(maxWidth: .infinity)
-
-            Text(isEnglish ? sunrise(snapshot) : sunriseCell(from: snapshot))
-              .font(.custom(uiFontBold, size: 15 * s))
-              .foregroundColor(accent)
-              .lineLimit(1)
-              .minimumScaleFactor(0.65)
-              .allowsTightening(true)
-              .frame(maxWidth: .infinity)
-
-            Text(isEnglish ? hijri(snapshot) : hijriCell(from: snapshot))
-              .font(.custom(uiFontBold, size: 15 * s))
-              .foregroundColor(.white)
-              .lineLimit(1)
-              .minimumScaleFactor(0.65)
-              .allowsTightening(true)
-              .frame(maxWidth: .infinity)
+            LockedLine(text: gregorianCell(snapshot), font: uiFontBold, size: 15 * s, color: .white.opacity(0.85))
+            LockedLine(text: sunriseCell(snapshot), font: uiFontBold, size: 15 * s, color: accent)
+            LockedLine(text: hijriCell(snapshot), font: uiFontBold, size: 15 * s, color: .white)
           }
           .frame(maxWidth: .infinity)
 
@@ -161,7 +191,7 @@ struct PrayerTimesWidgetView: View {
             ForEach(snapshot.prayers, id: \.key) { prayer in
               PrayerChipView(
                 label: label(prayer),
-                time: prayer.time12h,
+                time: prayerTime(prayer),
                 active: snapshot.currentPrayer == prayer.key,
                 boldFont: uiFontBold,
                 scale: s
@@ -173,7 +203,8 @@ struct PrayerTimesWidgetView: View {
         .padding(.vertical, 6 * s)
         .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
       }
-      .environment(\.layoutDirection, isEnglish ? .leftToRight : .rightToLeft)
+      // Fajr, Gregorian and the title stay on the same edge in every language.
+      .environment(\.layoutDirection, .rightToLeft)
     } else {
       emptyState
     }
@@ -183,18 +214,21 @@ struct PrayerTimesWidgetView: View {
   private var accessoryRectangular: some View {
     if let snapshot {
       VStack(alignment: .leading, spacing: 2) {
-        Text(solar(snapshot))
+        Text(headerTitle(snapshot))
           .font(.custom(uiFontBold, size: 13))
-          .minimumScaleFactor(0.8)
-        if !sunrise(snapshot).isEmpty {
-          Text(sunrise(snapshot))
+          .lineLimit(1)
+          .minimumScaleFactor(0.7)
+        if !sunriseTime(snapshot).isEmpty {
+          Text(sunriseCell(snapshot))
             .font(.custom(uiFontRegular, size: 11))
             .foregroundColor(.secondary)
+            .lineLimit(1)
             .minimumScaleFactor(0.8)
         }
         if let next = nextPrayer(from: snapshot) {
-          Text("\(label(next)) \(next.time12h)")
+          Text("\(label(next)) \(prayerTime(next))")
             .font(.custom(uiFontBold, size: 12))
+            .lineLimit(1)
             .minimumScaleFactor(0.8)
         }
       }
@@ -212,16 +246,18 @@ struct PrayerTimesWidgetView: View {
       VStack(spacing: 1) {
         Text(label(next))
           .font(.custom(uiFontBold, size: 10))
+          .lineLimit(1)
           .minimumScaleFactor(0.7)
-        Text(next.time12h)
+        Text(prayerTime(next))
           .font(.custom(uiFontBold, size: 12))
+          .lineLimit(1)
           .minimumScaleFactor(0.7)
       }
       .environment(\.layoutDirection, .rightToLeft)
-    } else if let snapshot, !sunrise(snapshot).isEmpty {
-      let prefix = isPashto ? "لمر ختل " : "طلوع آفتاب "
-      Text(sunrise(snapshot).replacingOccurrences(of: prefix, with: ""))
+    } else if let snapshot, !sunriseTime(snapshot).isEmpty {
+      Text(sunriseTime(snapshot))
         .font(.custom(uiFontBold, size: 12))
+        .lineLimit(1)
         .minimumScaleFactor(0.7)
         .environment(\.layoutDirection, .rightToLeft)
     } else {
@@ -251,6 +287,33 @@ struct PrayerTimesWidgetView: View {
   }
 }
 
+/// One text line whose box is always the height of the Dari Nastaliq
+/// reference at the same size; other fonts shrink to fit inside it.
+private struct LockedLine: View {
+  let text: String
+  let font: String
+  let size: CGFloat
+  let color: Color
+  var minimumScale: CGFloat = 0.6
+
+  var body: some View {
+    Text(referenceSample)
+      .font(.custom(referenceFont, size: size))
+      .lineLimit(1)
+      .hidden()
+      .frame(maxWidth: .infinity)
+      .overlay(
+        Text(text)
+          .font(.custom(font, size: size))
+          .foregroundColor(color)
+          .lineLimit(1)
+          .minimumScaleFactor(minimumScale)
+          .allowsTightening(true)
+          .multilineTextAlignment(.center)
+      )
+  }
+}
+
 private struct PrayerChipView: View {
   let label: String
   let time: String
@@ -258,20 +321,24 @@ private struct PrayerChipView: View {
   let boldFont: String
   var scale: CGFloat = 1
 
+  private var tint: Color { Color(red: 0.10, green: 0.30, blue: 0.24) }
+
   var body: some View {
     VStack(spacing: 0) {
-      Text(label)
-        .font(.custom(boldFont, size: 13 * scale))
-        .foregroundColor(active ? Color(red: 0.10, green: 0.30, blue: 0.24) : .white)
-        .lineLimit(1)
-        .minimumScaleFactor(0.62)
-        .allowsTightening(true)
-      Text(time)
-        .font(.custom(boldFont, size: 15 * scale))
-        .foregroundColor(active ? Color(red: 0.10, green: 0.30, blue: 0.24).opacity(0.85) : .white.opacity(0.85))
-        .lineLimit(1)
-        .minimumScaleFactor(0.7)
-        .allowsTightening(true)
+      LockedLine(
+        text: label,
+        font: boldFont,
+        size: 13 * scale,
+        color: active ? tint : .white,
+        minimumScale: 0.62
+      )
+      LockedLine(
+        text: time,
+        font: boldFont,
+        size: 15 * scale,
+        color: active ? tint.opacity(0.85) : .white.opacity(0.85),
+        minimumScale: 0.7
+      )
     }
     .frame(maxWidth: .infinity)
     .padding(.vertical, 3 * scale)

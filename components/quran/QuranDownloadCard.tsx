@@ -63,6 +63,16 @@ export function QuranDownloadCard({
   const reciterRef = useRef(reciter);
   reciterRef.current = reciter;
   const openedRef = useRef(false);
+  const controllerRef = useRef<AbortController | null>(null);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      controllerRef.current?.abort();
+    };
+  }, []);
 
   const downloadKey = useMemo(
     () => getDownloadManifestKey(reciter, activeScopeRef.current),
@@ -107,28 +117,33 @@ export function QuranDownloadCard({
   }, [activeKey, visible]);
 
   const startDownload = async (nextReciter = reciter) => {
-    if (controller) return;
+    if (controllerRef.current) return;
     const nextController = new AbortController();
+    controllerRef.current = nextController;
     setController(nextController);
     setError(null);
     setProgress(null);
     try {
-      await setPreferredDownloadReciter(nextReciter);
       setShowReciters(false);
       setReciter(nextReciter);
       const result = await downloadQuranScope(activeScope, nextReciter, setProgress, nextController.signal);
-      // Keep playback aligned with the files just downloaded. Otherwise the
-      // player may select a different reciter and require a network URL when
-      // the user immediately plays while offline.
-      await audioManager.setReciter(nextReciter);
+      await setPreferredDownloadReciter(nextReciter);
+      // Keep playback aligned with the files just downloaded so an immediate
+      // offline play uses them. Never interrupt audio that is already playing.
+      if (audioManager.getReciter() !== nextReciter && !audioManager.getPlaybackSnapshot().isActive) {
+        await audioManager.setReciter(nextReciter);
+      }
+      if (!mountedRef.current) return;
       setCompletedKeys((current) => current.includes(result.key) ? current : [...current, result.key]);
       onCompleted?.(nextReciter);
     } catch (downloadError) {
+      if (!mountedRef.current) return;
       if (!(downloadError instanceof Error && downloadError.message === 'download_cancelled')) {
         setError(t('quran.download.failed'));
       }
     } finally {
-      setController(null);
+      if (controllerRef.current === nextController) controllerRef.current = null;
+      if (mountedRef.current) setController(null);
     }
   };
 
