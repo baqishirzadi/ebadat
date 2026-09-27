@@ -21,33 +21,41 @@ import {
 import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { forwardChevronName } from '@/utils/i18n/direction';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 
 interface DailyHadithCardProps {
   selection: DailyHadithSelection;
+  isToday: boolean;
   isBookmarked: boolean;
   onToggleBookmark: (hadithId: number) => void;
   onShare: () => void;
   onSwipeNext: () => void;
   onSwipePrevious: () => void;
+  onToday: () => void;
 }
 
 export function DailyHadithCard({
   selection,
+  isToday,
   isBookmarked,
   onToggleBookmark,
   onShare,
   onSwipeNext,
   onSwipePrevious,
+  onToday,
 }: DailyHadithCardProps) {
   const { theme, themeMode, state } = useApp();
-  const { t, language, fontFamily, isRtl } = useI18n();
+  const { t, language, fontFamily, isRtl, digits } = useI18n();
   const opacity = useRef(new Animated.Value(1)).current;
   const translateX = useRef(new Animated.Value(0)).current;
   const swipeDirectionRef = useRef<0 | 1 | -1>(0);
 
   const gradient = useMemo(() => deriveDailyCardGradient(theme, themeMode), [theme, themeMode]);
   const translation = getHadithTranslation(selection.hadith, language);
+  const nastaliq = fontFamily === 'NotoNastaliqUrdu';
+  const previousIcon = isRtl ? 'chevron-right' : 'chevron-left';
+  const nextIcon = forwardChevronName(language);
 
   useEffect(() => {
     const direction = swipeDirectionRef.current;
@@ -74,6 +82,16 @@ export function DailyHadithCard({
     });
   }, [selection.hadith.id, opacity, translateX]);
 
+  const goNext = React.useCallback(() => {
+    swipeDirectionRef.current = 1;
+    onSwipeNext();
+  }, [onSwipeNext]);
+
+  const goPrevious = React.useCallback(() => {
+    swipeDirectionRef.current = -1;
+    onSwipePrevious();
+  }, [onSwipePrevious]);
+
   const panResponder = useMemo(
     () =>
       PanResponder.create({
@@ -81,30 +99,29 @@ export function DailyHadithCard({
           Math.abs(gestureState.dx) > 18 && Math.abs(gestureState.dy) < 16,
         onPanResponderRelease: (_, gestureState) => {
           if (gestureState.dx < -44) {
-            swipeDirectionRef.current = 1;
-            onSwipeNext();
+            goNext();
             return;
           }
           if (gestureState.dx > 44) {
-            swipeDirectionRef.current = -1;
-            onSwipePrevious();
+            goPrevious();
           }
         },
       }),
-    [onSwipeNext, onSwipePrevious]
+    [goNext, goPrevious]
   );
 
   const hadith = selection.hadith;
   const gradeLabel = hadith.is_muttafaq
     ? getMuttafaqBadgeLabel(language)
     : getAuthenticityGradeLabel(hadith.authenticity_grade, language);
+  const onPanel = theme.surface;
+  const chipStyle = { backgroundColor: alphaColor(onPanel, 0.14), borderColor: alphaColor(onPanel, 0.3) };
 
   return (
     <Animated.View style={{ opacity, transform: [{ translateX }] }} {...panResponder.panHandlers}>
       <Pressable
         onLongPress={() => onToggleBookmark(hadith.id)}
         delayLongPress={280}
-        accessibilityRole="button"
         accessibilityHint={t('ahadith.card.bookmarkHint')}
       >
         <View
@@ -117,65 +134,53 @@ export function DailyHadithCard({
             },
           ]}
         >
-          <LinearGradient
-            colors={gradient}
-            locations={[0, 0.58, 1]}
-            style={[
-              styles.topPanel,
-              {
-                borderColor: alphaColor(theme.primary, 0.28),
-              },
-            ]}
-          >
-            <View style={styles.actionsRow}>
-              <Pressable onPress={onShare} style={[styles.iconButton, { backgroundColor: alphaColor(theme.surface, 0.18) }]} accessibilityLabel={t('ahadith.card.share')}>
-                <MaterialIcons name="share" size={20} color={theme.surface} />
+          <LinearGradient colors={gradient} locations={[0, 0.58, 1]} style={styles.topPanel}>
+            <View style={styles.navRow}>
+              <Pressable
+                onPress={goPrevious}
+                hitSlop={8}
+                style={({ pressed }) => [styles.navButton, chipStyle, pressed && styles.pressed]}
+                accessibilityRole="button"
+                accessibilityLabel={t('ahadith.day.previous')}
+              >
+                <View style={styles.iconLtr}>
+                  <MaterialIcons name={previousIcon} size={24} color={onPanel} />
+                </View>
               </Pressable>
 
               <Pressable
-                onPress={() => onToggleBookmark(hadith.id)}
-                style={[styles.iconButton, { backgroundColor: alphaColor(theme.surface, 0.18) }]}
-                accessibilityLabel={t(isBookmarked ? 'ahadith.card.removeBookmark' : 'ahadith.card.addBookmark')}
+                onPress={onToday}
+                disabled={isToday}
+                style={({ pressed }) => [styles.todayChip, chipStyle, pressed && styles.pressed]}
+                accessibilityRole="button"
+                accessibilityLabel={t(isToday ? 'ahadith.day.today' : 'ahadith.day.backToToday')}
               >
-                <MaterialIcons
-                  name={isBookmarked ? 'bookmark' : 'bookmark-border'}
-                  size={22}
-                  color={isBookmarked ? theme.accent : theme.surface}
-                />
-              </Pressable>
-            </View>
-
-            <View style={styles.tagRow}>
-              <View style={[styles.reasonChip, { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) }]}>
-                <CenteredText style={[styles.reasonText, { color: theme.surface }]}>{getReasonLabel(selection.reason, language)}</CenteredText>
-              </View>
-
-              <View
-                style={[
-                  styles.badge,
-                  hadith.is_muttafaq
-                    ? { backgroundColor: alphaColor(theme.accent, 0.24), borderColor: alphaColor(theme.accent, 0.45) }
-                    : { backgroundColor: alphaColor(theme.surface, 0.14), borderColor: alphaColor(theme.surface, 0.34) },
-                ]}
-              >
+                {!isToday ? <MaterialIcons name="today" size={16} color={onPanel} /> : null}
                 <CenteredText
-                  style={[
-                    styles.badgeText,
-                    { color: hadith.is_muttafaq ? theme.accent : theme.surface },
-                  ]}
+                  numberOfLines={1}
+                  style={[styles.todayText, { color: onPanel, lineHeight: nastaliq ? 30 : 20 }]}
                 >
-                  {gradeLabel}
+                  {isToday ? getReasonLabel(selection.reason, language) : t('ahadith.day.backToToday')}
                 </CenteredText>
-              </View>
+              </Pressable>
+
+              <Pressable
+                onPress={goNext}
+                hitSlop={8}
+                style={({ pressed }) => [styles.navButton, chipStyle, pressed && styles.pressed]}
+                accessibilityRole="button"
+                accessibilityLabel={t('ahadith.day.next')}
+              >
+                <View style={styles.iconLtr}>
+                  <MaterialIcons name={nextIcon} size={24} color={onPanel} />
+                </View>
+              </Pressable>
             </View>
 
             <CenteredText
               style={[
                 styles.arabic,
-                {
-                  color: theme.surface,
-                  fontFamily: getQuranFontFamily(state.preferences.quranFont),
-                },
+                { color: onPanel, fontFamily: getQuranFontFamily(state.preferences.quranFont) },
               ]}
             >
               {hadith.arabic_text}
@@ -191,17 +196,69 @@ export function DailyHadithCard({
                   fontFamily,
                   writingDirection: isRtl ? 'rtl' : 'ltr',
                 },
+                nastaliq && styles.translationNastaliq,
               ]}
             >
               {translation || t('ahadith.translation.unavailable')}
             </CenteredText>
 
             <View style={[styles.footer, { borderTopColor: alphaColor(theme.textSecondary, 0.2) }]}>
-              <CenteredText style={[styles.source, { color: theme.textSecondary }]}>
-                {formatSourceLabel(hadith.source_book, hadith.source_number, language)}
-                {' · '}
-                {gradeLabel}
-              </CenteredText>
+              <Pressable
+                onPress={onShare}
+                hitSlop={6}
+                style={({ pressed }) => [
+                  styles.actionButton,
+                  { backgroundColor: alphaColor(theme.primary, 0.1) },
+                  pressed && styles.pressed,
+                ]}
+                accessibilityRole="button"
+                accessibilityLabel={t('ahadith.card.share')}
+              >
+                <MaterialIcons name="share" size={20} color={theme.primary} />
+              </Pressable>
+
+              <View style={styles.sourceWrap}>
+                <CenteredText style={[styles.source, { color: theme.primary, lineHeight: nastaliq ? 30 : 20 }]}>
+                  {digits(formatSourceLabel(hadith.source_book, hadith.source_number, language))}
+                </CenteredText>
+                <View
+                  style={[
+                    styles.gradeChip,
+                    {
+                      backgroundColor: alphaColor(hadith.is_muttafaq ? theme.accent : theme.primary, 0.12),
+                      borderColor: alphaColor(hadith.is_muttafaq ? theme.accent : theme.primary, 0.32),
+                    },
+                  ]}
+                >
+                  <CenteredText
+                    style={[
+                      styles.gradeText,
+                      { color: theme.primary, lineHeight: nastaliq ? 26 : 16 },
+                    ]}
+                  >
+                    {gradeLabel}
+                  </CenteredText>
+                </View>
+              </View>
+
+              <Pressable
+                onPress={() => onToggleBookmark(hadith.id)}
+                hitSlop={6}
+                style={({ pressed }) => [
+                  styles.actionButton,
+                  { backgroundColor: alphaColor(theme.primary, isBookmarked ? 0.18 : 0.1) },
+                  pressed && styles.pressed,
+                ]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isBookmarked }}
+                accessibilityLabel={t(isBookmarked ? 'ahadith.card.removeBookmark' : 'ahadith.card.addBookmark')}
+              >
+                <MaterialIcons
+                  name={isBookmarked ? 'bookmark' : 'bookmark-border'}
+                  size={22}
+                  color={theme.primary}
+                />
+              </Pressable>
             </View>
           </View>
         </View>
@@ -212,81 +269,75 @@ export function DailyHadithCard({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 22,
+    borderRadius: 24,
     borderWidth: 1,
     shadowOpacity: 0.12,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
     elevation: 4,
     overflow: 'hidden',
   },
   topPanel: {
-    paddingHorizontal: 16,
-    paddingTop: 14,
-    paddingBottom: 16,
-    borderBottomWidth: 1,
-    gap: 10,
-  },
-  actionsRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 18,
     gap: 12,
   },
-  tagRow: {
+  navRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  navButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconLtr: {
+    direction: 'ltr',
+  },
+  todayChip: {
+    flexShrink: 1,
+    minHeight: 36,
+    borderRadius: 18,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 6,
-    flexWrap: 'wrap',
   },
-  reasonChip: {
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    minHeight: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  reasonText: {
+  todayText: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: 11,
+    fontSize: 13,
   },
-  badge: {
-    borderWidth: 1,
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    minHeight: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badgeText: {
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: 10,
+  pressed: {
+    opacity: 0.75,
   },
   arabic: {
     textAlign: 'center',
     writingDirection: 'rtl',
-    fontSize: 40,
-    lineHeight: 76,
+    fontSize: 32,
+    lineHeight: 62,
+    paddingHorizontal: 4,
   },
   bottomPanel: {
     paddingHorizontal: 16,
-    paddingTop: 14,
+    paddingTop: 16,
     paddingBottom: 14,
-    gap: 12,
+    gap: 14,
   },
   translation: {
-    fontSize: 22,
-    lineHeight: 36,
+    fontSize: 20,
+    lineHeight: 34,
     textAlign: 'center',
+  },
+  translationNastaliq: {
+    lineHeight: 44,
   },
   translationEnglish: {
     fontSize: 18,
@@ -297,10 +348,35 @@ const styles = StyleSheet.create({
   footer: {
     borderTopWidth: 1,
     paddingTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  actionButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sourceWrap: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 6,
   },
   source: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: 13,
+    fontSize: 14,
     textAlign: 'center',
+  },
+  gradeChip: {
+    borderWidth: 1,
+    borderRadius: 999,
+    paddingHorizontal: 12,
+    paddingVertical: 3,
+  },
+  gradeText: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 11,
   },
 });

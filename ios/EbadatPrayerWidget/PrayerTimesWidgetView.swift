@@ -9,7 +9,6 @@ struct PrayerTimesWidgetView: View {
   private var isPashto: Bool { snapshot?.appLanguage == "pashto" }
   private var isEnglish: Bool { snapshot?.appLanguage == "english" }
   private var isDari: Bool { !isEnglish && !isPashto }
-  private var dariNastaliq: Bool { isDari }
   private var uiFontRegular: String {
     if isEnglish { return "Vazirmatn" }
     if isDari { return "NotoNastaliqUrdu" }
@@ -110,60 +109,70 @@ struct PrayerTimesWidgetView: View {
     .widgetURL(URL(string: "ebadat:///(tabs)/jantari"))
   }
 
+  /// Type is tuned for the 170pt Pro Max medium widget. Smaller phones get a
+  /// shorter widget, and text cannot shrink vertically on its own, so every
+  /// size follows the actual height or the prayer row falls off the bottom.
+  private func homeScale(for height: CGFloat) -> CGFloat {
+    min(1, max(0.8, height / 170))
+  }
+
   @ViewBuilder
   private var homeMedium: some View {
     if let snapshot {
-      VStack(alignment: .center, spacing: 4) {
-        // Dari and Pashto share the polished Pashto card. English stays LTR.
-        Text(isEnglish ? solar(snapshot) : rtlHeaderTitle(from: snapshot))
-          .font(.custom(uiFontBold, size: 20))
-          .foregroundColor(accent)
-          .lineLimit(1)
-          .minimumScaleFactor(0.7)
-          .allowsTightening(true)
-
-        HStack(spacing: 4) {
-          Text(isEnglish ? snapshot.gregorianDisplay : gregorianCell(from: snapshot))
-            .font(.custom(uiFontBold, size: 15))
-            .foregroundColor(.white.opacity(0.85))
-            .lineLimit(1)
-            .minimumScaleFactor(0.65)
-            .allowsTightening(true)
-            .frame(maxWidth: .infinity)
-
-          Text(isEnglish ? sunrise(snapshot) : sunriseCell(from: snapshot))
-            .font(.custom(uiFontBold, size: 15))
+      GeometryReader { geo in
+        let s = homeScale(for: geo.size.height)
+        VStack(alignment: .center, spacing: 4 * s) {
+          // Dari and Pashto share the polished Pashto card. English stays LTR.
+          Text(isEnglish ? solar(snapshot) : rtlHeaderTitle(from: snapshot))
+            .font(.custom(uiFontBold, size: 20 * s))
             .foregroundColor(accent)
             .lineLimit(1)
-            .minimumScaleFactor(0.65)
+            .minimumScaleFactor(0.7)
             .allowsTightening(true)
-            .frame(maxWidth: .infinity)
 
-          Text(isEnglish ? hijri(snapshot) : hijriCell(from: snapshot))
-            .font(.custom(uiFontBold, size: 15))
-            .foregroundColor(.white)
-            .lineLimit(1)
-            .minimumScaleFactor(0.65)
-            .allowsTightening(true)
-            .frame(maxWidth: .infinity)
-        }
-        .frame(maxWidth: .infinity)
+          HStack(spacing: 4) {
+            Text(isEnglish ? snapshot.gregorianDisplay : gregorianCell(from: snapshot))
+              .font(.custom(uiFontBold, size: 15 * s))
+              .foregroundColor(.white.opacity(0.85))
+              .lineLimit(1)
+              .minimumScaleFactor(0.65)
+              .allowsTightening(true)
+              .frame(maxWidth: .infinity)
 
-        HStack(spacing: 2) {
-          ForEach(snapshot.prayers, id: \.key) { prayer in
-            PrayerChipView(
-              label: label(prayer),
-              time: prayer.time12h,
-              active: snapshot.currentPrayer == prayer.key,
-              boldFont: uiFontBold,
-              tightSpacing: isPashto || dariNastaliq
-            )
+            Text(isEnglish ? sunrise(snapshot) : sunriseCell(from: snapshot))
+              .font(.custom(uiFontBold, size: 15 * s))
+              .foregroundColor(accent)
+              .lineLimit(1)
+              .minimumScaleFactor(0.65)
+              .allowsTightening(true)
+              .frame(maxWidth: .infinity)
+
+            Text(isEnglish ? hijri(snapshot) : hijriCell(from: snapshot))
+              .font(.custom(uiFontBold, size: 15 * s))
+              .foregroundColor(.white)
+              .lineLimit(1)
+              .minimumScaleFactor(0.65)
+              .allowsTightening(true)
+              .frame(maxWidth: .infinity)
+          }
+          .frame(maxWidth: .infinity)
+
+          HStack(spacing: 2) {
+            ForEach(snapshot.prayers, id: \.key) { prayer in
+              PrayerChipView(
+                label: label(prayer),
+                time: prayer.time12h,
+                active: snapshot.currentPrayer == prayer.key,
+                boldFont: uiFontBold,
+                scale: s
+              )
+            }
           }
         }
+        .padding(.horizontal, 6)
+        .padding(.vertical, 6 * s)
+        .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
       }
-      .padding(.horizontal, 6)
-      .padding(.vertical, 4)
-      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
       .environment(\.layoutDirection, isEnglish ? .leftToRight : .rightToLeft)
     } else {
       emptyState
@@ -247,27 +256,25 @@ private struct PrayerChipView: View {
   let time: String
   let active: Bool
   let boldFont: String
-  /// Pashto / Dari Nastaliq pull the time up; Dari Vazirmatn keeps a clear gap.
-  var tightSpacing: Bool = true
+  var scale: CGFloat = 1
 
   var body: some View {
-    VStack(spacing: tightSpacing ? 0 : 1) {
+    VStack(spacing: 0) {
       Text(label)
-        .font(.custom(boldFont, size: 13))
+        .font(.custom(boldFont, size: 13 * scale))
         .foregroundColor(active ? Color(red: 0.10, green: 0.30, blue: 0.24) : .white)
         .lineLimit(1)
         .minimumScaleFactor(0.62)
         .allowsTightening(true)
       Text(time)
-        .font(.custom(boldFont, size: 15))
+        .font(.custom(boldFont, size: 15 * scale))
         .foregroundColor(active ? Color(red: 0.10, green: 0.30, blue: 0.24).opacity(0.85) : .white.opacity(0.85))
         .lineLimit(1)
         .minimumScaleFactor(0.7)
         .allowsTightening(true)
-        .padding(.top, tightSpacing ? -2 : 0)
     }
     .frame(maxWidth: .infinity)
-    .padding(.vertical, 3)
+    .padding(.vertical, 3 * scale)
     .background(active ? Color.white : Color.white.opacity(0.12))
     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
   }

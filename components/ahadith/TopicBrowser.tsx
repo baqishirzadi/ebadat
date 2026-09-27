@@ -4,10 +4,9 @@ import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
 import { getTopicLabel } from '@/utils/ahadith/labels';
-import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
+import { HadithListCard } from '@/components/ahadith/HadithListCard';
 import { useI18n } from '@/utils/i18n/useI18n';
-import { getQuranFontFamily } from '@/hooks/useFonts';
 
 interface TopicBrowserProps {
   allHadiths: Hadith[];
@@ -26,8 +25,9 @@ export function TopicBrowser({
   onSelectTopic,
   onOpenHadith,
 }: TopicBrowserProps) {
-  const { theme, state } = useApp();
-  const { t, language, fontFamily, isRtl } = useI18n();
+  const { theme } = useApp();
+  const { t, language, fontFamily, n } = useI18n();
+  const nastaliq = fontFamily === 'NotoNastaliqUrdu';
 
   const title = useMemo(
     () => (selectedTopic
@@ -43,91 +43,62 @@ export function TopicBrowser({
 
   const visibleHadiths = selectedTopic ? topicHadiths : allHadithsNewestFirst;
 
+  const renderChip = (key: string, label: string, selected: boolean, onPress: () => void) => (
+    <Pressable
+      key={key}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected }}
+      style={({ pressed }) => [
+        styles.topicChip,
+        {
+          backgroundColor: selected ? theme.primary : theme.surface,
+          borderColor: selected ? theme.primary : alphaColor(theme.textSecondary, 0.25),
+        },
+        pressed && { opacity: 0.85 },
+      ]}
+    >
+      <CenteredText
+        numberOfLines={1}
+        style={[
+          styles.topicChipText,
+          { color: selected ? theme.surface : theme.textSecondary, lineHeight: nastaliq ? 30 : 20 },
+        ]}
+      >
+        {label}
+      </CenteredText>
+    </Pressable>
+  );
+
   return (
     <View style={styles.container}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.topicsRow}>
-        <Pressable
-          onPress={() => onSelectTopic(null)}
-          style={({ pressed }) => [
-            styles.topicChip,
-            {
-              backgroundColor: selectedTopic === null ? alphaColor(theme.primary, 0.18) : theme.surface,
-              borderColor: selectedTopic === null ? alphaColor(theme.primary, 0.4) : alphaColor(theme.textSecondary, 0.25),
-            },
-            pressed && { opacity: 0.85 },
-          ]}
-        >
-          <CenteredText numberOfLines={1} style={[styles.topicChipText, { color: selectedTopic === null ? theme.primary : theme.textSecondary }]}>{t('ahadith.topics.allChip')}</CenteredText>
-        </Pressable>
-
-        {topics.map((topic) => {
-          const selected = selectedTopic === topic;
-          return (
-            <Pressable
-              key={topic}
-              onPress={() => onSelectTopic(topic)}
-              style={({ pressed }) => [
-                styles.topicChip,
-                {
-                  backgroundColor: selected ? alphaColor(theme.primary, 0.18) : theme.surface,
-                  borderColor: selected ? alphaColor(theme.primary, 0.4) : alphaColor(theme.textSecondary, 0.25),
-                },
-                pressed && { opacity: 0.85 },
-              ]}
-            >
-              <CenteredText numberOfLines={1} style={[styles.topicChipText, { color: selected ? theme.primary : theme.textSecondary }]}>
-                {getTopicLabel(topic, language)}
-              </CenteredText>
-            </Pressable>
-          );
-        })}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.topicsScroll}
+        contentContainerStyle={styles.topicsRow}
+      >
+        {renderChip('all', t('ahadith.topics.allChip'), selectedTopic === null, () => onSelectTopic(null))}
+        {topics.map((topic) =>
+          renderChip(topic, getTopicLabel(topic, language), selectedTopic === topic, () => onSelectTopic(topic))
+        )}
       </ScrollView>
 
-      <CenteredText style={[styles.sectionTitle, { color: theme.textPrimary }]}>{title}</CenteredText>
+      <View style={styles.titleRow}>
+        <CenteredText style={[styles.sectionTitle, { color: theme.textPrimary, lineHeight: nastaliq ? 32 : 22 }]}>
+          {title}
+        </CenteredText>
+        <View style={[styles.countChip, { backgroundColor: alphaColor(theme.primary, 0.1) }]}>
+          <CenteredText style={[styles.countText, { color: theme.primary }]}>{n(visibleHadiths.length)}</CenteredText>
+        </View>
+      </View>
 
       <FlatList
         data={visibleHadiths}
         keyExtractor={(item) => String(item.id)}
-        ItemSeparatorComponent={() => <View style={{ height: 10 }} />}
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() => onOpenHadith(item)}
-            style={({ pressed }) => [
-              styles.card,
-              {
-                backgroundColor: theme.surface,
-                borderColor: alphaColor(theme.primary, 0.2),
-              },
-              pressed && { opacity: 0.9 },
-            ]}
-          >
-            <CenteredText
-              numberOfLines={2}
-              style={[
-                styles.arabic,
-                {
-                  color: theme.textPrimary,
-                  fontFamily: getQuranFontFamily(state.preferences.quranFont),
-                },
-              ]}
-            >
-              {item.arabic_text}
-            </CenteredText>
-            <CenteredText
-              numberOfLines={2}
-              style={[
-                styles.translation,
-                {
-                  color: theme.textSecondary,
-                  fontFamily,
-                  writingDirection: isRtl ? 'rtl' : 'ltr',
-                },
-              ]}
-            >
-              {getHadithTranslation(item, language) || t('ahadith.translation.unavailable')}
-            </CenteredText>
-          </Pressable>
-        )}
+        showsVerticalScrollIndicator={false}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        renderItem={({ item }) => <HadithListCard hadith={item} onPress={onOpenHadith} />}
         ListEmptyComponent={
           <CenteredText style={[styles.empty, { color: theme.textSecondary }]}>
             {t(selectedTopic ? 'ahadith.topics.emptyForTopic' : 'ahadith.topics.empty')}
@@ -143,56 +114,55 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  topicsScroll: {
+    flexGrow: 0,
+  },
   topicsRow: {
     gap: 8,
-    paddingBottom: 8,
-    paddingTop: 2,
+    paddingVertical: 4,
     alignItems: 'center',
   },
   topicChip: {
     borderWidth: 1,
     borderRadius: 22,
-    height: 42,
-    minHeight: 42,
+    minHeight: 40,
     paddingHorizontal: 16,
-    maxWidth: 140,
+    paddingVertical: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center',
   },
   topicChipText: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 13,
     textAlign: 'center',
   },
-  sectionTitle: {
-    marginTop: 10,
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 8,
     marginBottom: 10,
+  },
+  sectionTitle: {
     fontFamily: 'Vazirmatn-Bold',
-    fontSize: 14,
+    fontSize: 15,
     textAlign: 'center',
-    writingDirection: 'rtl',
+  },
+  countChip: {
+    borderRadius: 999,
+    paddingHorizontal: 10,
+    paddingVertical: 2,
+  },
+  countText: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 12,
+  },
+  separator: {
+    height: 10,
   },
   listContent: {
-    paddingBottom: 24,
-  },
-  card: {
-    borderWidth: 1,
-    borderRadius: 14,
-    padding: 12,
-    gap: 8,
-  },
-  arabic: {
-    fontSize: 22,
-    lineHeight: 42,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  translation: {
-    fontSize: 14,
-    lineHeight: 24,
-    textAlign: 'center',
-    writingDirection: 'rtl',
+    paddingBottom: 28,
   },
   empty: {
     fontFamily: 'Vazirmatn',

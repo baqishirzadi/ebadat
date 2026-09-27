@@ -44,6 +44,7 @@ export const UI_MESSAGES = {
   'common.continue': { dari: 'ادامه', pashto: 'دوام', english: 'Continue' },
   'common.cancel': { dari: 'انصراف', pashto: 'لغوه', english: 'Cancel' },
   'common.close': { dari: 'بستن', pashto: 'بندول', english: 'Close' },
+  'common.back': { dari: 'برگشت', pashto: 'شاته', english: 'Back' },
   'common.retry': { dari: 'تلاش دوباره', pashto: 'بیا هڅه', english: 'Try again' },
   'common.save': { dari: 'ذخیره', pashto: 'ساتل', english: 'Save' },
   'common.delete': { dari: 'حذف', pashto: 'ړنګول', english: 'Delete' },

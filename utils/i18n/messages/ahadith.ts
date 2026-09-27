@@ -12,6 +12,10 @@ export const ahadithMessages = {
   'ahadith.card.removeBookmark': { dari: 'حذف نشانه', pashto: 'نښه لرې کول', english: 'Remove bookmark' },
   'ahadith.card.bookmarkHint': { dari: 'برای نشانه‌گذاری حدیث، نگه دارید', pashto: 'د حدیث د نښه کولو لپاره یې ونیسئ', english: 'Press and hold to bookmark this hadith' },
   'ahadith.card.holdToBookmark': { dari: 'برای نشانه‌گذاری، نگه‌دارید', pashto: 'د نښه کولو لپاره یې ونیسئ', english: 'Press and hold to bookmark' },
+  'ahadith.day.previous': { dari: 'روز قبل', pashto: 'تېره ورځ', english: 'Previous day' },
+  'ahadith.day.next': { dari: 'روز بعد', pashto: 'بله ورځ', english: 'Next day' },
+  'ahadith.day.today': { dari: 'امروز', pashto: 'نن', english: 'Today' },
+  'ahadith.day.backToToday': { dari: 'بازگشت به امروز', pashto: 'نن ته ستنېدل', english: 'Back to today' },
   'ahadith.translation.unavailable': {
     dari: 'ترجمهٔ این زبان هنوز موجود نیست.',
     pashto: 'د دې ژبې ژباړه لا نشته.',

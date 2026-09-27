@@ -1,13 +1,12 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import { ActivityIndicator, Modal, Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useAhadith } from '@/context/AhadithContext';
 import { useApp } from '@/context/AppContext';
-import { DailyHadithSelection, Hadith } from '@/types/hadith';
+import { Hadith } from '@/types/hadith';
 import { HadithSectionTabs } from '@/components/ahadith/HadithSectionTabs';
 import { DailyHadithCard } from '@/components/ahadith/DailyHadithCard';
 import { MuttafaqList } from '@/components/ahadith/MuttafaqList';
@@ -17,40 +16,27 @@ import { HadithShareCanvas } from '@/components/ahadith/HadithShareCanvas';
 import { HadithNotificationTimePicker } from '@/components/ahadith/HadithNotificationTimePicker';
 import { shareHadithCard } from '@/utils/ahadith/shareCard';
 import { alphaColor } from '@/utils/ahadith/theme';
-import { formatSourceLabel, getAuthenticityGradeLabel, getMuttafaqBadgeLabel } from '@/utils/ahadith/labels';
+import { formatSourceLabel } from '@/utils/ahadith/labels';
 import { getHadithTranslation } from '@/utils/ahadith/translation';
 import CenteredText from '@/components/CenteredText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { verifyHadithAdminPin } from '@/utils/hadithAdminService';
 import { useI18n } from '@/utils/i18n/useI18n';
 
-function buildFocusedSelection(hadith: Hadith): DailyHadithSelection {
-  return {
-    hadith,
-    reason: 'daily_index',
-    context: {
-      gregorianDate: new Date(),
-      epochDay: 0,
-      weekday: new Date().getDay(),
-      hijri: { year: 0, month: 0, day: 0 },
-      specialDayKeys: [],
-      isFriday: false,
-    },
-  };
-}
-
 export function AhadithScreen() {
   const params = useLocalSearchParams<{ section?: string }>();
   const router = useRouter();
   const { theme } = useApp();
-  const { t, language, fontFamily, isRtl } = useI18n();
+  const { t, language } = useI18n();
   const {
     hadiths,
     dailySelection,
+    dayOffset,
     section,
     setSection,
     goToNextDay,
     goToPreviousDay,
+    goToToday,
     refreshDaily,
     isRefreshing,
     isLoading,
@@ -76,7 +62,6 @@ export function AhadithScreen() {
     }
   }, [params.section, setSection]);
 
-  const [focusedHadith, setFocusedHadith] = useState<Hadith | null>(null);
   const [showAdminPinModal, setShowAdminPinModal] = useState(false);
   const [adminPin, setAdminPin] = useState('');
   const [adminPinError, setAdminPinError] = useState<string | null>(null);
@@ -90,10 +75,7 @@ export function AhadithScreen() {
     }, [syncRemoteHadiths])
   );
 
-  const activeSelection = useMemo(
-    () => (focusedHadith ? buildFocusedSelection(focusedHadith) : dailySelection),
-    [dailySelection, focusedHadith]
-  );
+  const activeSelection = dailySelection;
 
   const handleShare = async () => {
     if (!activeSelection) return;
@@ -105,7 +87,7 @@ export function AhadithScreen() {
   };
 
   const handleOpenHadith = (hadith: Hadith) => {
-    setFocusedHadith(hadith);
+    router.push({ pathname: '/ahadith/[id]', params: { id: String(hadith.id) } } as never);
   };
 
   const openAdminPinModal = () => {
@@ -179,11 +161,13 @@ export function AhadithScreen() {
           {activeSelection ? (
             <DailyHadithCard
               selection={activeSelection}
+              isToday={dayOffset === 0}
               isBookmarked={isBookmarked(activeSelection.hadith.id)}
               onToggleBookmark={(id) => void toggleBookmark(id)}
               onShare={handleShare}
               onSwipeNext={goToNextDay}
               onSwipePrevious={goToPreviousDay}
+              onToday={goToToday}
             />
           ) : null}
 
@@ -230,41 +214,6 @@ export function AhadithScreen() {
           <HadithShareCanvas ref={shareCanvasRef} hadith={activeSelection.hadith} />
         </View>
       ) : null}
-
-      <Modal visible={!!focusedHadith} transparent animationType="fade" onRequestClose={() => setFocusedHadith(null)}>
-        <View style={[styles.modalBackdrop, { backgroundColor: alphaColor(theme.textPrimary, 0.45) }]}> 
-          <View style={[styles.modalCard, { backgroundColor: theme.background, borderColor: alphaColor(theme.primary, 0.28) }]}> 
-            <Pressable onPress={() => setFocusedHadith(null)} style={styles.closeButton}>
-              <MaterialIcons name="close" size={22} color={theme.primary} />
-            </Pressable>
-
-            {focusedHadith ? (
-              <ScrollView>
-                <CenteredText style={[styles.modalArabic, { color: theme.textPrimary }]}>{focusedHadith.arabic_text}</CenteredText>
-                <CenteredText
-                  style={[
-                    styles.modalTranslation,
-                    {
-                      color: theme.textPrimary,
-                      fontFamily,
-                      writingDirection: isRtl ? 'rtl' : 'ltr',
-                    },
-                  ]}
-                >
-                  {getHadithTranslation(focusedHadith, language) || t('ahadith.translation.unavailable')}
-                </CenteredText>
-                <CenteredText style={[styles.modalSource, { color: theme.primary }]}>
-                  {formatSourceLabel(focusedHadith.source_book, focusedHadith.source_number, language)}
-                  {' · '}
-                  {focusedHadith.is_muttafaq
-                    ? getMuttafaqBadgeLabel(language)
-                    : getAuthenticityGradeLabel(focusedHadith.authenticity_grade, language)}
-                </CenteredText>
-              </ScrollView>
-            ) : null}
-          </View>
-        </View>
-      </Modal>
 
       <Modal
         visible={showAdminPinModal}
@@ -359,40 +308,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: 14,
   },
-  topHeader: {
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    paddingHorizontal: 16,
-    paddingBottom: 14,
-    alignItems: 'center',
-    gap: 4,
-  },
-  topHeaderBackButton: {
-    position: 'absolute',
-    right: 14,
-    top: 14,
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  topHeaderTitle: {
-    color: '#ffffff',
-    fontFamily: 'Vazirmatn-Bold',
-    fontSize: 24,
-    textAlign: 'center',
-  },
-  topHeaderSubtitle: {
-    color: 'rgba(255,255,255,0.92)',
-    fontFamily: 'Vazirmatn',
-    fontSize: 12,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
   headerWrap: {
     paddingHorizontal: 12,
-    paddingTop: 10,
-    paddingBottom: 8,
+    paddingTop: 12,
+    paddingBottom: 10,
   },
   content: {
     flex: 1,
@@ -400,68 +319,17 @@ const styles = StyleSheet.create({
   sectionContent: {
     flex: 1,
     paddingHorizontal: 12,
-    paddingBottom: 12,
   },
   dailyContent: {
     paddingHorizontal: 12,
-    paddingBottom: 18,
-    gap: 12,
-  },
-  tipBox: {
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 12,
-  },
-  tipText: {
-    fontFamily: 'Vazirmatn',
-    fontSize: 12,
-    textAlign: 'center',
-    writingDirection: 'rtl',
+    paddingBottom: 28,
+    gap: 14,
   },
   hiddenShareCanvas: {
     position: 'absolute',
     left: -9999,
     top: -9999,
     opacity: 0,
-  },
-  modalBackdrop: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 16,
-  },
-  modalCard: {
-    maxHeight: '84%',
-    borderWidth: 1,
-    borderRadius: 18,
-    padding: 14,
-  },
-  closeButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignSelf: 'flex-start',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalArabic: {
-    marginTop: 6,
-    fontSize: 30,
-    lineHeight: 58,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-    fontFamily: 'ScheherazadeNew',
-  },
-  modalTranslation: {
-    marginTop: 14,
-    fontSize: 18,
-    lineHeight: 30,
-    textAlign: 'center',
-  },
-  modalSource: {
-    marginTop: 14,
-    textAlign: 'center',
-    fontSize: 13,
-    fontFamily: 'Vazirmatn-Bold',
   },
   pinModalOverlay: {
     flex: 1,

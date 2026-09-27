@@ -50,6 +50,7 @@ interface AhadithContextValue {
   setSection: (section: AhadithSection) => void;
   goToNextDay: () => void;
   goToPreviousDay: () => void;
+  goToToday: () => void;
   refreshDaily: () => Promise<void>;
   setSelectedTopic: (topic: string | null) => void;
   setSearchQuery: (query: string) => void;
@@ -272,6 +273,10 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
     setDayOffset((prev) => prev - 1);
   }, []);
 
+  const goToToday = useCallback(() => {
+    setDayOffset(0);
+  }, []);
+
   const refreshDaily = useCallback(async () => {
     setIsRefreshing(true);
     try {
@@ -345,6 +350,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
       setSection,
       goToNextDay,
       goToPreviousDay,
+      goToToday,
       refreshDaily,
       setSelectedTopic,
       setSearchQuery,
@@ -371,6 +377,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
       notificationPrefs,
       goToNextDay,
       goToPreviousDay,
+      goToToday,
       refreshDaily,
       toggleBookmark,
       isBookmarked,
