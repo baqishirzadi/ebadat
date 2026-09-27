@@ -81,6 +81,11 @@ const GREG_MONTHS_DARI = [
   'جولای', 'اگست', 'سپتمبر', 'اکتوبر', 'نومبر', 'دسمبر',
 ];
 
+const GREG_MONTHS_PASHTO = [
+  'جنوري', 'فبروري', 'مارچ', 'اپرېل', 'مۍ', 'جون',
+  'جولای', 'اګست', 'سپتمبر', 'اکتوبر', 'نومبر', 'ډسمبر',
+];
+
 export function formatGregorianDateCompact(
   gregorianDate: Date,
   formatNumber: (value: number) => string = String,
@@ -89,7 +94,9 @@ export function formatGregorianDateCompact(
   const parts = getKabulDateParts(gregorianDate);
   const month = language === 'dari'
     ? GREG_MONTHS_DARI[parts.month - 1]
-    : GREG_MONTHS_EN[parts.month - 1];
+    : language === 'pashto'
+      ? GREG_MONTHS_PASHTO[parts.month - 1]
+      : GREG_MONTHS_EN[parts.month - 1];
   return `${formatNumber(parts.day)} ${month} ${formatNumber(parts.year)}`;
 }
 

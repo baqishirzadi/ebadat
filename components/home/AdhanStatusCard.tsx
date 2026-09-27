@@ -1,7 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { router, useFocusEffect } from 'expo-router';
-import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, Pressable, StyleSheet } from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, InteractionManager, Platform, Pressable, StyleSheet } from 'react-native';
 
 import {
   AdhanHealthStatusChip,
@@ -60,29 +60,47 @@ export function AdhanStatusCard() {
   const { theme, state } = useApp();
   const { t, fontFamily, language } = useI18n();
   const locale = adhanPermissionLocale(state.preferences.appLanguage);
+  const hasStatusRef = useRef(false);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState<HealthVisualStatus>('warning');
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
   const subtitleLineHeight = language !== 'english' ? (isNastaliq ? 28 : 24) : 20;
+  // Two summary lines plus the status chip. Keeping this slot stable stops the
+  // card from resizing when a refresh finishes during an iOS swipe-back.
+  const statusSlotMinHeight = subtitleLineHeight * 2 + 40;
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
+  const refresh = useCallback(async (isCancelled: () => boolean) => {
+    const showSpinner = !hasStatusRef.current;
+    if (showSpinner) setLoading(true);
     try {
       const report = await buildAdhanHealthReport(locale);
+      if (isCancelled()) return;
       setStatus(homeCardStatusFromReport(report));
       setNotificationsEnabled(report.health.notificationsEnabled);
+      hasStatusRef.current = true;
     } catch {
-      setStatus('warning');
-      setNotificationsEnabled(true);
+      if (isCancelled()) return;
+      if (!hasStatusRef.current) {
+        setStatus('warning');
+        setNotificationsEnabled(true);
+      }
+      hasStatusRef.current = true;
     } finally {
-      setLoading(false);
+      if (showSpinner) setLoading(false);
     }
   }, [locale]);
 
   useFocusEffect(
     useCallback(() => {
-      refresh().catch(() => {});
+      let cancelled = false;
+      const task = InteractionManager.runAfterInteractions(() => {
+        if (!cancelled) refresh(() => cancelled).catch(() => {});
+      });
+      return () => {
+        cancelled = true;
+        task.cancel();
+      };
     }, [refresh]),
   );
 
@@ -118,19 +136,21 @@ export function AdhanStatusCard() {
           <RtlText align="center" style={[styles.title, { color: theme.text }]}>
             {statusTitle}
           </RtlText>
-          {loading ? (
-            <ActivityIndicator color={theme.tint} size="small" style={styles.loader} />
-          ) : (
-            <>
-              <RtlText
-                align="center"
-                style={[styles.subtitle, { color: theme.textSecondary, lineHeight: subtitleLineHeight }]}
-              >
-                {t(summaryKeyForStatus(status))}
-              </RtlText>
-              <AdhanHealthStatusChip status={status} />
-            </>
-          )}
+          <RtlView style={[styles.statusSlot, { minHeight: statusSlotMinHeight }]}>
+            {loading ? (
+              <ActivityIndicator color={theme.tint} size="small" />
+            ) : (
+              <>
+                <RtlText
+                  align="center"
+                  style={[styles.subtitle, { color: theme.textSecondary, lineHeight: subtitleLineHeight }]}
+                >
+                  {t(summaryKeyForStatus(status))}
+                </RtlText>
+                <AdhanHealthStatusChip status={status} />
+              </>
+            )}
+          </RtlView>
         </RtlView>
         <MaterialIcons name={forwardChevronName(language)} size={24} color={theme.textSecondary} />
       </RtlView>
@@ -156,6 +176,12 @@ const styles = StyleSheet.create({
     gap: Spacing.xs,
     alignItems: 'center',
   },
+  statusSlot: {
+    alignSelf: 'stretch',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+  },
   title: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
@@ -164,8 +190,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.caption,
     lineHeight: 20,
-  },
-  loader: {
-    marginTop: Spacing.xs,
   },
 });

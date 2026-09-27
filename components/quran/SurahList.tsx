@@ -334,7 +334,7 @@ export function SurahList() {
               adjustsFontSizeToFit
               style={[styles.continueDetails, { color: theme.textSecondary }]}
             >
-              {t('quran.mode.surah')} {n(position.surahNumber)} • {t('quran.ayah', { number: n(position.ayahNumber) })}
+              {t('quran.mode.surah')} {n(position.surahNumber)}{language === 'pashto' ? '، ' : ' • '}{t('quran.ayah', { number: n(position.ayahNumber) })}
             </CenteredText>
           </View>
           <View style={[styles.continueIconSlot, styles.continuePlaySlot]}>

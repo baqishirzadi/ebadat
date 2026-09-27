@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -18,9 +18,16 @@ import {
   type QuranDownloadScope,
 } from '@/utils/quranDownloadService';
 
+export type QuranDownloadScopeChoice = {
+  label: string;
+  scope: QuranDownloadScope;
+};
+
 type Props = {
   visible: boolean;
   scope: QuranDownloadScope;
+  /** When more than one choice is passed, the sheet lets the reader pick a scope. */
+  scopeChoices?: QuranDownloadScopeChoice[];
   theme: ThemeColors;
   title: string;
   primaryLabel: string;
@@ -31,6 +38,7 @@ type Props = {
 export function QuranDownloadCard({
   visible,
   scope,
+  scopeChoices,
   theme,
   title,
   primaryLabel,
@@ -44,14 +52,34 @@ export function QuranDownloadCard({
   const [error, setError] = useState<string | null>(null);
   const [controller, setController] = useState<AbortController | null>(null);
   const [completedKeys, setCompletedKeys] = useState<string[]>([]);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const downloadKey = useMemo(() => getDownloadManifestKey(reciter, scope), [reciter, scope]);
+  const choices = scopeChoices && scopeChoices.length > 0 ? scopeChoices : [{ label: title, scope }];
+  const safeIndex = Math.min(selectedIndex, Math.max(choices.length - 1, 0));
+  const activeScope = choices[safeIndex]?.scope ?? scope;
+  const activeKey = `${activeScope.type}:${activeScope.id}`;
+  const activeScopeRef = useRef(activeScope);
+  activeScopeRef.current = activeScope;
+  const reciterRef = useRef(reciter);
+  reciterRef.current = reciter;
+  const openedRef = useRef(false);
+
+  const downloadKey = useMemo(
+    () => getDownloadManifestKey(reciter, activeScopeRef.current),
+    [activeKey, reciter],
+  );
   const isComplete = completedKeys.includes(downloadKey);
   const isDownloading = Boolean(controller);
   const canDownload = !isDownloading && !isComplete;
 
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      openedRef.current = false;
+      setSelectedIndex(0);
+      return;
+    }
+    const opening = !openedRef.current;
+    openedRef.current = true;
     let mounted = true;
     void Promise.all([
       getPreferredDownloadReciter(audioManager.getReciter()),
@@ -59,21 +87,24 @@ export function QuranDownloadCard({
       getDownloadManifest(),
     ]).then(([preferred, saved, entries]) => {
       if (!mounted) return;
-      setReciter(preferred);
-      setShowReciters(!saved);
+      const nextReciter = opening ? preferred : reciterRef.current;
+      if (opening) {
+        setReciter(preferred);
+        setShowReciters(!saved);
+      }
       setCompletedKeys(
         entries
           .filter((entry) => entry.completed === entry.total && entry.total > 0)
           .map((entry) => entry.key)
       );
-      const existing = entries.find((entry) => entry.key === getDownloadManifestKey(preferred, scope));
+      const existing = entries.find((entry) => entry.key === getDownloadManifestKey(nextReciter, activeScopeRef.current));
       setProgress(existing ?? null);
       setError(null);
     });
     return () => {
       mounted = false;
     };
-  }, [scope, visible]);
+  }, [activeKey, visible]);
 
   const startDownload = async (nextReciter = reciter) => {
     if (controller) return;
@@ -85,7 +116,7 @@ export function QuranDownloadCard({
       await setPreferredDownloadReciter(nextReciter);
       setShowReciters(false);
       setReciter(nextReciter);
-      const result = await downloadQuranScope(scope, nextReciter, setProgress, nextController.signal);
+      const result = await downloadQuranScope(activeScope, nextReciter, setProgress, nextController.signal);
       // Keep playback aligned with the files just downloaded. Otherwise the
       // player may select a different reciter and require a network URL when
       // the user immediately plays while offline.
@@ -101,6 +132,11 @@ export function QuranDownloadCard({
     }
   };
 
+  const requestClose = () => {
+    setSelectedIndex(0);
+    onClose();
+  };
+
   const selectedName = RECITERS[reciter].name;
   const progressLabel = isComplete
     ? t('quran.downloaded')
@@ -112,11 +148,11 @@ export function QuranDownloadCard({
       : t('quran.download.ready');
 
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
-      <Pressable style={styles.modalBackdrop} onPress={onClose}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={requestClose}>
+      <Pressable style={styles.modalBackdrop} onPress={requestClose}>
         <Pressable style={[styles.sheet, { backgroundColor: theme.card }]} onPress={(event) => event.stopPropagation()}>
           <View style={styles.headerRow}>
-            <Pressable onPress={onClose} hitSlop={8} style={styles.closeButton}>
+            <Pressable onPress={requestClose} hitSlop={8} style={styles.closeButton}>
               <MaterialIcons name="close" size={22} color={theme.icon} />
             </Pressable>
             <View style={styles.titleBlock}>
@@ -127,6 +163,47 @@ export function QuranDownloadCard({
             </View>
             <View style={styles.closeButton} />
           </View>
+
+          {choices.length > 1 ? (
+            <View style={styles.scopeRow}>
+              {choices.map((choice, index) => {
+                const selected = index === safeIndex;
+                const choiceDone = completedKeys.includes(getDownloadManifestKey(reciter, choice.scope));
+                return (
+                  <Pressable
+                    key={`${choice.scope.type}:${choice.scope.id}`}
+                    testID={`quran-download-scope-${choice.scope.type}`}
+                    disabled={isDownloading}
+                    onPress={() => {
+                      setSelectedIndex(index);
+                      setProgress(null);
+                      setError(null);
+                    }}
+                    style={[
+                      styles.scopeChip,
+                      {
+                        borderColor: selected ? theme.tint : theme.divider,
+                        backgroundColor: selected ? theme.tint : theme.backgroundSecondary,
+                        opacity: isDownloading && !selected ? 0.55 : 1,
+                      },
+                    ]}
+                  >
+                    <MaterialIcons
+                      name={choiceDone ? 'check-circle' : 'download'}
+                      size={16}
+                      color={selected ? '#fff' : theme.tint}
+                    />
+                    <CenteredText
+                      numberOfLines={2}
+                      style={[styles.scopeChipText, { color: selected ? '#fff' : theme.text }]}
+                    >
+                      {choice.label}
+                    </CenteredText>
+                  </Pressable>
+                );
+              })}
+            </View>
+          ) : null}
 
           {showReciters ? (
             <ScrollView style={styles.reciterList} contentContainerStyle={styles.reciterListContent}>
@@ -167,7 +244,7 @@ export function QuranDownloadCard({
           ) : null}
 
           <Pressable
-            testID={`quran-download-${scope.type}`}
+            testID={`quran-download-${activeScope.type}`}
             disabled={!canDownload}
             onPress={() => void startDownload()}
             style={[
@@ -250,8 +327,31 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
     marginTop: 2,
   },
+  scopeRow: {
+    flexDirection: 'row',
+    gap: Spacing.xs,
+    marginBottom: Spacing.sm,
+  },
+  scopeChip: {
+    flex: 1,
+    minHeight: 64,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    gap: 4,
+  },
+  scopeChipText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    fontWeight: '700',
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
   reciterList: {
-    maxHeight: 360,
+    maxHeight: 280,
   },
   reciterListContent: {
     gap: Spacing.xs,

@@ -7,11 +7,11 @@ import * as Clipboard from 'expo-clipboard';
 import { Stack, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { ActivityIndicator, AccessibilityInfo, Alert, Dimensions, FlatList, Keyboard, Platform, Pressable, StyleSheet, ToastAndroid, View } from 'react-native';
+import { ActivityIndicator, AccessibilityInfo, Alert, Dimensions, FlatList, Keyboard, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { CopiedNotice, useCopiedNotice } from '@/components/ui/CopiedNotice';
 import { MarkdownText, normalizeMarkdownForClipboard } from '@/components/MarkdownText';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
@@ -44,22 +44,19 @@ interface ChatBubbleProps {
   theme: ThemeColors;
 }
 
-function ChatBubble({ isUser, text, theme, copiedLabel, copyFailedLabel, errorLabel, isEnglish }: ChatBubbleProps & {
-  copiedLabel: string; copyFailedLabel: string; errorLabel: string; isEnglish: boolean;
+function ChatBubble({ isUser, text, theme, copiedLabel, copyFailedLabel, errorLabel, isEnglish, onCopied }: ChatBubbleProps & {
+  copiedLabel: string; copyFailedLabel: string; errorLabel: string; isEnglish: boolean; onCopied: () => void;
 }) {
   const displayText = isUser ? text : formatAssistantBubbleText(text);
   const handleCopy = useCallback(async () => {
     try {
       await Clipboard.setStringAsync(normalizeMarkdownForClipboard(text));
-      if (Platform.OS === 'android') {
-        ToastAndroid.show(copiedLabel, ToastAndroid.SHORT);
-      } else {
-        void AccessibilityInfo.announceForAccessibility(copiedLabel);
-      }
+      onCopied();
+      void AccessibilityInfo.announceForAccessibility(copiedLabel);
     } catch {
       Alert.alert(errorLabel, copyFailedLabel);
     }
-  }, [text, copiedLabel, errorLabel, copyFailedLabel]);
+  }, [text, copiedLabel, errorLabel, copyFailedLabel, onCopied]);
 
   return (
     <RtlView
@@ -169,6 +166,7 @@ function StarterChips({ theme, disabled, onSelect, t }: StarterChipsProps & {
 export default function MuftiChatScreen() {
   const { theme } = useApp();
   const { t, fontFamily, language } = useI18n();
+  const { copiedVisible, showCopied } = useCopiedNotice();
   const isEnglish = language === 'english';
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<ChatRow>>(null);
@@ -329,13 +327,14 @@ export default function MuftiChatScreen() {
           text={item.message.content}
           theme={theme}
           isEnglish={isEnglish}
-          copiedLabel={t('common.copyReply')}
+          copiedLabel={t('common.copy')}
           copyFailedLabel={t('common.copyFailed')}
           errorLabel={t('common.error')}
+          onCopied={showCopied}
         />
       );
     },
-    [theme, t, isEnglish],
+    [theme, t, isEnglish, showCopied],
   );
 
   const chatBody = (
@@ -495,6 +494,7 @@ export default function MuftiChatScreen() {
         <View style={[styles.flex, keyboardHeight > 0 && { paddingBottom: keyboardHeight }]}>
           {chatBody}
         </View>
+        <CopiedNotice visible={copiedVisible} label={t('common.copy')} />
       </RtlView>
     </>
   );

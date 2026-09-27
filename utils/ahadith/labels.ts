@@ -16,6 +16,16 @@ const SOURCE_BOOK_LABELS: Record<HadithSourceBook, string> = {
   IbnMajah: 'سنن ابن ماجه',
 };
 
+const SOURCE_BOOK_LABELS_PS: Record<HadithSourceBook, string> = {
+  Bukhari: 'صحیح بخاري',
+  Muslim: 'صحیح مسلم',
+  Ahmad: 'مسند احمد',
+  AbuDawud: 'سنن ابوداود',
+  Tirmidhi: 'جامع ترمذي',
+  Nasai: 'سنن نسائي',
+  IbnMajah: 'سنن ابن ماجه',
+};
+
 const SOURCE_BOOK_LABELS_EN: Record<HadithSourceBook, string> = {
   Bukhari: 'Sahih al-Bukhari',
   Muslim: 'Sahih Muslim',
@@ -145,7 +155,11 @@ export function formatSourceLabel(
   sourceNumber: string,
   language: AppLanguage = 'dari',
 ): string {
-  const labels = language === 'english' ? SOURCE_BOOK_LABELS_EN : SOURCE_BOOK_LABELS;
+  const labels = language === 'english'
+    ? SOURCE_BOOK_LABELS_EN
+    : language === 'pashto'
+      ? SOURCE_BOOK_LABELS_PS
+      : SOURCE_BOOK_LABELS;
   return `${labels[book]} ${sourceNumber}`;
 }
 

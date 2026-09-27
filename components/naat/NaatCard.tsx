@@ -6,6 +6,7 @@ import { Naat } from '@/types/naat';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { NaatProgressBar } from '@/components/naat/NaatProgressBar';
 import { RtlText } from '@/components/ui/RtlText';
+import { shareDownloadedNaat } from '@/utils/naatShare';
 import { tUi } from '@/utils/i18n/ui';
 
 type Props = {
@@ -112,6 +113,7 @@ export function NaatCard({
           onPress={onPlay}
           style={({ pressed }) => [
             styles.actionButton,
+            !naat.isDownloaded && styles.actionButtonPair,
             { backgroundColor: theme.tint },
             pressed && styles.iconPressed,
           ]}
@@ -132,6 +134,7 @@ export function NaatCard({
           style={({ pressed }) => [
             styles.actionButton,
             styles.downloadActionButton,
+            !naat.isDownloaded && styles.actionButtonPair,
             {
               backgroundColor: naat.isDownloaded ? `${theme.tint}18` : theme.backgroundSecondary,
               borderColor: naat.isDownloaded ? `${theme.tint}55` : theme.cardBorder,
@@ -155,6 +158,33 @@ export function NaatCard({
             </RtlText>
           </View>
         </Pressable>
+        {naat.isDownloaded ? (
+          <Pressable
+            testID="naat-card-share-button"
+            accessibilityLabel={tUi('اشتراک نعت', language)}
+            accessibilityHint={tUi('اشتراک‌گذاری', language)}
+            hitSlop={8}
+            onPress={() => {
+              shareDownloadedNaat(naat, language).catch(() => {});
+            }}
+            style={({ pressed }) => [
+              styles.actionButton,
+              styles.downloadActionButton,
+              {
+                backgroundColor: theme.backgroundSecondary,
+                borderColor: theme.cardBorder,
+              },
+              pressed && styles.iconPressed,
+            ]}
+          >
+            <View style={styles.actionButtonContent}>
+              <MaterialIcons name="share" size={22} color={theme.text} />
+              <RtlText align="center" wrap={false} style={[styles.secondaryActionText, { color: theme.text }]}>
+                {tUi('اشتراک', language)}
+              </RtlText>
+            </View>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );
@@ -237,10 +267,13 @@ const styles = StyleSheet.create({
   actionButton: {
     flex: 1,
     minHeight: 52,
-    maxWidth: 180,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: Spacing.sm,
+  },
+  actionButtonPair: {
+    maxWidth: 180,
     paddingHorizontal: Spacing.md,
   },
   actionButtonContent: {

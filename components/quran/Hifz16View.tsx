@@ -62,18 +62,38 @@ const BASMALLAH_LINE_HEIGHT_RATIO = 2.35;
 const BISMILLAH = 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ';
 const AYAH_HIGHLIGHT = 'rgba(14, 107, 79, 0.12)';
 /**
- * Display-only gaps before اِذَا.
- * Scheherazade's side bearings swallow one U+0020 between waw and alef, so
- * «وَاِذَا» still reads as one word. Two non-breaking spaces clear that gap.
- * U+00A0 is already a kashida break, so Arabic joining is unchanged.
- * A line with no spare width steps down to one space, then to none.
+ * Conjunction «وَ» before a hamza-alef word (وَاِذَا، وَاِذْ، وَاِیَّایَ، وَاَنِّیْ…)
+ * must read as two words on a physical iPhone. Scheherazade swallows the
+ * space after و there, so the break is a layout spacer Core Text cannot
+ * collapse. The alef must carry a vowel sign: stems like والد and the
+ * article وَال keep their bare alef and stay joined.
  */
-const WA_IDHA_GAPS = ['', '\u00A0', '\u00A0\u00A0'] as const;
-type WaIdhaGapLevel = 0 | 1 | 2;
+const WAW_GAP_RE = /(^|[\s\u00A0])(و[\u064B-\u065F]*)(?=ا[\u064E\u064F\u0650\u0670\u0653])/gu;
+const WAW_GAP_MAX = 8;
+/** Still a visible word break on the tightest lines. */
+const WAW_GAP_MIN = 4;
 
-function addWaIdhaDisplaySpace(text: string, gap: string): string {
-  if (!gap) return text;
-  return text.replace(/(و[\u064B-\u065F]*)(?=اِذَا)/gu, `$1${gap}`);
+function countWawGaps(text: string): number {
+  const hits = text.match(new RegExp(WAW_GAP_RE.source, 'gu'));
+  return hits ? hits.length : 0;
+}
+
+type WawGapPart = { type: 'text'; text: string } | { type: 'gap' };
+
+function splitWawGapParts(text: string): WawGapPart[] {
+  const parts: WawGapPart[] = [];
+  const re = new RegExp(WAW_GAP_RE.source, 'gu');
+  let last = 0;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text))) {
+    const end = match.index + match[0].length;
+    if (end > last) parts.push({ type: 'text', text: text.slice(last, end) });
+    parts.push({ type: 'gap' });
+    last = end;
+  }
+  if (last < text.length) parts.push({ type: 'text', text: text.slice(last) });
+  if (parts.length === 0) parts.push({ type: 'text', text });
+  return parts;
 }
 
 /** Short stroke per join — matches MAX_TATWEEL_PER_LETTER in hifzKashida. */
@@ -94,11 +114,23 @@ const AYAH_PAD_START = 12;
 const AYAH_PAD_END = 4;
 const AYAH_TEXT_START_INSET = 4;
 const AYAH_PAD_TOTAL = AYAH_PAD_START + AYAH_PAD_END + AYAH_TEXT_START_INSET;
+/** End-side inset when a ﴿n﴾ follows — the number reads as part of the ayah. */
+const AYAH_PAD_BEFORE_MARKER = 3;
+/** Keep at least this much of the end-side inset when a tight line borrows it. */
+const AYAH_END_PAD_FLOOR = 2;
 /**
- * Two nbsp before اِذَا need about 5pt more than one space. Take that from the
- * left (marker-side) padding so the right edge, where و sits, does not move.
+ * Per-line fit for a line wider than the column even with no kashida:
+ * narrow the waw gaps, borrow the end (left) inset, then shrink that one
+ * line's font. The start edge never moves and nothing is ever ellipsized.
  */
-const WA_IDHA_PAD_RELIEF = 8;
+type LineFit = { gap: number; relief: number; scale: number };
+const LINE_FIT_DEFAULT: LineFit = { gap: WAW_GAP_MAX, relief: 0, scale: 1 };
+/** Smallest per-line font scale (17pt → 13.6pt) that still reads cleanly. */
+const LINE_SCALE_FLOOR = 0.75;
+const CENTERED_LINE_PAD = 10;
+const LINE_SCALE_STEP = 0.005;
+/** Survives FlatList remounts so a revisited page does not re-probe and jump. */
+const lineFitCache = new Map<string, LineFit>();
 /** Keep the seed when the refined count is this close. */
 const KASHIDA_COMMIT_EPSILON = 1;
 /** Rough Scheherazade char advance as a fraction of font size (seed estimate). */
@@ -123,11 +155,11 @@ function kashidaCacheKey(
   fontSize: number,
   markerWidth = 0,
   bodySlot = 0,
-  gapLevel: WaIdhaGapLevel = 2,
+  gapReserve = 0,
   padTotal = AYAH_PAD_TOTAL,
 ): string {
-  // v32: wa-idha gap width is part of the measured advance.
-  return `v32:${pageNumber}:${lineNumber}:${contentWidth}:${fontSize}:${markerWidth}:${bodySlot}:g${gapLevel}:p${padTotal}`;
+  // v36: overlong lines shrink their font instead of spilling or ellipsizing.
+  return `v37:${pageNumber}:${lineNumber}:${contentWidth}:${fontSize}:${markerWidth}:${bodySlot}:r${gapReserve}:p${padTotal}`;
 }
 
 /**
@@ -870,14 +902,12 @@ const SurahFloralHeader = memo(function SurahFloralHeader({
           <View style={styles.surahHeaderRule} />
           <Text
             numberOfLines={1}
-            adjustsFontSizeToFit
-            minimumFontScale={0.85}
             ellipsizeMode="clip"
             style={[
               styles.surahHeaderTitle,
               {
                 fontFamily: HIFZ_FONT,
-                fontSize: Math.max(13, fontSize - 1),
+                fontSize,
                 lineHeight,
               },
               androidFontPad,
@@ -991,9 +1021,45 @@ function estimateMarkerWidth(markers: string, fontSize: number): number {
 /** RLM so bracket glyphs stay RTL when the marker Text has no Arabic letter. */
 const MARKER_RTL_MARK = '\u200F';
 
+function WawGapPieces({
+  text,
+  textStyle,
+  gap,
+  highlight,
+  onPress,
+}: {
+  text: string;
+  textStyle: object | object[];
+  gap: number;
+  highlight?: object;
+  onPress?: () => void;
+}) {
+  const parts = splitWawGapParts(text);
+  return (
+    <>
+      {parts.map((part, index) =>
+        part.type === 'gap' ? (
+          <View key={`gap-${index}`} style={{ width: gap }} />
+        ) : (
+          <Text
+            key={`tx-${index}`}
+            style={[textStyle, styles.wawGapPiece, highlight]}
+            onPress={onPress}
+            suppressHighlighting
+            numberOfLines={1}
+            ellipsizeMode="clip"
+          >
+            {part.text}
+          </Text>
+        ),
+      )}
+    </>
+  );
+}
+
 const JustifiedAyahText = memo(function JustifiedAyahText({
   text,
-  fontSize,
+  fontSize: baseFontSize,
   lineHeight,
   color,
   contentWidth,
@@ -1024,40 +1090,61 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   /** Play the ayah under the tap (not the line's ayahStart). */
   onAyahPress?: (ayah: number) => void;
 }) {
-  const gapScope = `${pageNumber}:${lineNumber}:${fontSize}:${text}`;
-  const [gapScopeKey, setGapScopeKey] = useState(gapScope);
-  const [gapLevel, setGapLevel] = useState<WaIdhaGapLevel>(2);
-  if (gapScopeKey !== gapScope) {
-    setGapScopeKey(gapScope);
-    setGapLevel(2);
-  }
-  const activeGapLevel: WaIdhaGapLevel = gapScopeKey === gapScope ? gapLevel : 2;
-  const gapLevelRef = useRef(activeGapLevel);
-  gapLevelRef.current = activeGapLevel;
-  const textRef = useRef(text);
-  textRef.current = text;
-  const hasWaIdha = useMemo(
-    () => /و[\u064B-\u065F]*اِذَا/u.test(text),
+  const { body, markers } = useMemo(
+    () => splitLineBodyAndMarkers(text),
     [text],
   );
-  const padTotal = hasWaIdha ? AYAH_PAD_TOTAL - WA_IDHA_PAD_RELIEF : AYAH_PAD_TOTAL;
+  const fitWidth = Math.max(0, contentWidth);
+  const wawCount = useMemo(() => countWawGaps(text), [text]);
+  const hasWawGap = wawCount > 0;
+  const fitKey = `${pageNumber}:${lineNumber}:${fitWidth}:${baseFontSize}`;
+  const [lineFit, setLineFit] = useState<LineFit>(
+    () => lineFitCache.get(fitKey) ?? LINE_FIT_DEFAULT,
+  );
+  useEffect(() => {
+    setLineFit(lineFitCache.get(fitKey) ?? LINE_FIT_DEFAULT);
+  }, [fitKey, text]);
+  const stretch = justify && !centered;
+  const fontSize = Math.round(baseFontSize * lineFit.scale * 100) / 100;
+  const wawGap = lineFit.gap;
+  const wawCountRef = useRef(wawCount);
+  wawCountRef.current = wawCount;
+  const lineFitRef = useRef(lineFit);
+  lineFitRef.current = lineFit;
+  const fitKeyRef = useRef(fitKey);
+  fitKeyRef.current = fitKey;
+  const gapReserve = wawCount * wawGap;
+  const gapReserveRef = useRef(gapReserve);
+  gapReserveRef.current = gapReserve;
+  const baseEndPad = markers ? AYAH_PAD_BEFORE_MARKER : AYAH_PAD_START;
+  const maxPadRelief = Math.max(0, baseEndPad - AYAH_END_PAD_FLOOR);
+  const endPad = baseEndPad - Math.min(stretch ? lineFit.relief : 0, maxPadRelief);
+  const padTotal = endPad + AYAH_PAD_END + AYAH_TEXT_START_INSET;
+  const maxPadReliefRef = useRef(maxPadRelief);
+  maxPadReliefRef.current = maxPadRelief;
   const padTotalRef = useRef(padTotal);
   padTotalRef.current = padTotal;
-  const displayText = useMemo(
-    () => addWaIdhaDisplaySpace(text, WA_IDHA_GAPS[activeGapLevel]),
-    [activeGapLevel, text],
-  );
-  const { body, markers } = useMemo(
-    () => splitLineBodyAndMarkers(displayText),
-    [displayText],
-  );
-  const fitWidth = Math.max(0, contentWidth);
-  const stretch = justify && !centered;
   const lineSlotCap = isOpeningFillPage(pageNumber)
     ? OPENING_SHORT_LINE_SLOT_CAP
     : KASHIDA_SLOT_CAP;
-  const [measuredMarkerWidth, setMeasuredMarkerWidth] = useState(0);
-  const [bodySlotWidth, setBodySlotWidth] = useState(0);
+  // Keyed to the marker run: a reset effect would land after the one-shot
+  // onLayout and leave the width at 0 for good.
+  const markerMeasureKey = `${markers}:${fontSize}`;
+  const [markerMeasure, setMarkerMeasure] = useState({ key: '', width: 0 });
+  const measuredMarkerWidth = markerMeasure.key === markerMeasureKey ? markerMeasure.width : 0;
+  const markerMeasureKeyRef = useRef(markerMeasureKey);
+  markerMeasureKeyRef.current = markerMeasureKey;
+  const [rowWidth, setRowWidth] = useState(0);
+  // The body hugs its text so the number sits right after the last word;
+  // its stretch slot is the row minus the number.
+  const bodySlotWidth =
+    rowWidth <= 0
+      ? 0
+      : markers
+        ? measuredMarkerWidth > 0
+          ? Math.max(0, rowWidth - measuredMarkerWidth)
+          : 0
+        : rowWidth;
   const markerReserve = markers
     ? measuredMarkerWidth > 0
       ? measuredMarkerWidth
@@ -1068,7 +1155,7 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
     0,
     (bodySlotWidth > 0
       ? bodyContentWidth(bodySlotWidth, padTotal)
-      : Math.max(0, fitWidth - (stretch ? markerReserve : 0) - padTotal)) - 2,
+      : Math.max(0, fitWidth - (stretch ? markerReserve : 0) - padTotal)) - gapReserve - 2,
   );
   const cacheKey = kashidaCacheKey(
     pageNumber,
@@ -1077,7 +1164,7 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
     fontSize,
     markerReserve,
     bodySlotWidth,
-    activeGapLevel,
+    gapReserve,
     padTotal,
   );
   const seed = useMemo(
@@ -1106,20 +1193,19 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
     return Math.min(MAX_KASHIDA_TOTAL, Math.max(0, slots) * lineSlotCap);
   }, [body, lineSlotCap]);
 
-  useEffect(() => {
-    setMeasuredMarkerWidth(0);
-  }, [markers, fontSize, body]);
-
   const onMarkerLayout = useCallback((event: LayoutChangeEvent) => {
     const next = Math.ceil(event.nativeEvent.layout.width);
     if (next <= 0) return;
-    setMeasuredMarkerWidth((prev) => (Math.abs(prev - next) <= 1 ? prev : next));
+    const key = markerMeasureKeyRef.current;
+    setMarkerMeasure((prev) =>
+      prev.key === key && Math.abs(prev.width - next) <= 1 ? prev : { key, width: next },
+    );
   }, []);
 
-  const onBodySlotLayout = useCallback((event: LayoutChangeEvent) => {
+  const onRowLayout = useCallback((event: LayoutChangeEvent) => {
     const next = Math.floor(event.nativeEvent.layout.width);
     if (next <= 0) return;
-    setBodySlotWidth((prev) => (Math.abs(prev - next) <= 1 ? prev : next));
+    setRowWidth((prev) => (Math.abs(prev - next) <= 1 ? prev : next));
   }, []);
 
   const commitVisible = useCallback(
@@ -1202,7 +1288,10 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   const settleWithProbeWidth = useCallback(
     (rawWidth: number, lineCount: number, secondLineWidth = 0) => {
       if (!stretch) return;
-      const slot = bodyContentWidth(bodySlotRef.current, padTotalRef.current);
+      const slot = Math.max(
+        0,
+        bodyContentWidth(bodySlotRef.current, padTotalRef.current) - gapReserveRef.current,
+      );
       if (slot <= 0) return;
       const wrapped = lineCount > 1 && secondLineWidth > fontSize * 0.85;
       const painted = Math.max(0, Math.ceil(rawWidth * PROBE_WIDTH_BIAS));
@@ -1214,25 +1303,46 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
 
       const currentPhase = phaseRef.current;
       if (currentPhase === 'natural') {
-        // Bare body already past the slot. A wide wa-idha gap must shrink
-        // before we paint, or the RTL start (right edge) is clipped.
-        if (overshoot) {
-          const level = gapLevelRef.current;
-          if (level > 0) {
-            const narrower = (level - 1) as WaIdhaGapLevel;
-            const source = textRef.current;
-            if (
-              addWaIdhaDisplaySpace(source, WA_IDHA_GAPS[level]) !==
-              addWaIdhaDisplaySpace(source, WA_IDHA_GAPS[narrower])
-            ) {
-              setGapLevel(narrower);
-              return;
-            }
+        const gaps = wawCountRef.current;
+        if (overshoot && !wrapped) {
+          // Wider than the column with no kashida: narrow the waw gaps (never
+          // below a visible break), borrow the end inset, then shrink this line.
+          const fit = lineFitRef.current;
+          const content = bodyContentWidth(bodySlotRef.current, padTotalRef.current);
+          const total = painted + gaps * fit.gap;
+          let next: LineFit | null = null;
+          if (gaps > 0 && fit.gap > WAW_GAP_MIN) {
+            next = {
+              ...fit,
+              gap: Math.max(
+                WAW_GAP_MIN,
+                Math.min(fit.gap - 1, Math.floor((content - painted) / gaps)),
+              ),
+            };
+          } else if (fit.relief < maxPadReliefRef.current) {
+            next = {
+              ...fit,
+              relief: Math.min(
+                maxPadReliefRef.current,
+                fit.relief + Math.max(1, Math.ceil(total - content)),
+              ),
+            };
+          } else if (fit.scale > LINE_SCALE_FLOOR) {
+            const ratio = total > 0 ? content / total : 1;
+            const target = Math.floor(fit.scale * ratio / LINE_SCALE_STEP) * LINE_SCALE_STEP;
+            next = {
+              ...fit,
+              scale: Math.max(LINE_SCALE_FLOOR, Math.min(fit.scale - LINE_SCALE_STEP, target)),
+            };
           }
-          commitVisible(0, { allowZero: true, cache: true });
-          return;
+          if (next) {
+            lineFitCache.set(fitKeyRef.current, next);
+            setLineFit(next);
+            return;
+          }
         }
-        if (filled) {
+        // The word gap is reserved layout, not a character we can delete.
+        if (overshoot || filled) {
           commitVisible(0, { allowZero: true, cache: true });
           return;
         }
@@ -1305,15 +1415,59 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
     (event: { nativeEvent: { lines: { width: number }[] } }) => {
       if (!stretch) return;
       if (phaseRef.current === 'done') return;
-      // Ignore a probe that finished after the wa-idha gap stepped down.
-      if (activeGapLevel !== gapLevelRef.current) return;
       const lines = event.nativeEvent.lines;
       if (!lines.length) return;
       const width = Math.ceil(lines[0]?.width ?? 0);
       const second = Math.ceil(lines[1]?.width ?? 0);
       settleWithProbeWidth(width, lines.length, second);
     },
-    [activeGapLevel, settleWithProbeWidth, stretch],
+    [settleWithProbeWidth, stretch],
+  );
+
+  // Centered lines never stretch, but a long one must still fit its column.
+  const [centerAvail, setCenterAvail] = useState(0);
+  const [centerChecked, setCenterChecked] = useState('');
+  const centerKey = `${fitKey}:${fontSize}:${wawGap}:${centerAvail}`;
+  const onCenterLayout = useCallback((event: LayoutChangeEvent) => {
+    const next = Math.floor(event.nativeEvent.layout.width) - CENTERED_LINE_PAD * 2;
+    if (next <= 0) return;
+    setCenterAvail((prev) => (Math.abs(prev - next) <= 1 ? prev : next));
+  }, []);
+  const onCenterProbeLayout = useCallback(
+    (event: { nativeEvent: { lines: { width: number }[] } }) => {
+      const lines = event.nativeEvent.lines;
+      if (!lines.length || centerAvail <= 0) return;
+      const painted = Math.ceil((lines[0]?.width ?? 0) * PROBE_WIDTH_BIAS);
+      const fit = lineFitRef.current;
+      const gaps = wawCountRef.current;
+      const total = painted + gaps * fit.gap;
+      let next: LineFit | null = null;
+      if (total > centerAvail) {
+        if (gaps > 0 && fit.gap > WAW_GAP_MIN) {
+          next = {
+            ...fit,
+            gap: Math.max(
+              WAW_GAP_MIN,
+              Math.min(fit.gap - 1, Math.floor((centerAvail - painted) / gaps)),
+            ),
+          };
+        } else if (fit.scale > LINE_SCALE_FLOOR) {
+          const target =
+            Math.floor((fit.scale * centerAvail) / total / LINE_SCALE_STEP) * LINE_SCALE_STEP;
+          next = {
+            ...fit,
+            scale: Math.max(LINE_SCALE_FLOOR, Math.min(fit.scale - LINE_SCALE_STEP, target)),
+          };
+        }
+      }
+      if (next) {
+        lineFitCache.set(fitKeyRef.current, next);
+        setLineFit(next);
+        return;
+      }
+      setCenterChecked(centerKey);
+    },
+    [centerAvail, centerKey],
   );
 
   const markerAyah = useMemo(() => {
@@ -1366,17 +1520,56 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   );
 
   if (centered || !stretch) {
+    const source = text;
     const fullSpans =
       ayahStart == null || ayahEnd == null
-        ? [{ text: displayText, ayah: -1 as number }]
-        : splitAyahSpans(displayText, ayahStart, ayahEnd);
+        ? [{ text: source, ayah: -1 as number }]
+        : splitAyahSpans(source, ayahStart, ayahEnd);
     return (
-      <View style={[styles.lineMeasureWrap, styles.centeredLinePad]}>
-        <Text style={[lineStyle, styles.centeredLineText]} numberOfLines={1} ellipsizeMode="clip">
-          {onAyahPress || highlightAyah != null
-            ? fullSpans.map(renderSpan)
-            : displayText}
-        </Text>
+      <View
+        style={[
+          styles.lineMeasureWrap,
+          styles.centeredLinePad,
+          hasWawGap && styles.wawGapRun,
+          hasWawGap && centered && styles.centeredWawRun,
+        ]}
+        onLayout={onCenterLayout}
+      >
+        {centerAvail > 0 && centerChecked !== centerKey ? (
+          <View
+            style={styles.ayahProbeHost}
+            pointerEvents="none"
+            collapsable={false}
+            accessible={false}
+            importantForAccessibility="no-hide-descendants"
+          >
+            <Text key={centerKey} style={probeStyle} onTextLayout={onCenterProbeLayout} accessible={false}>
+              {source}
+            </Text>
+          </View>
+        ) : null}
+        {hasWawGap ? (
+          fullSpans.map((span, index) => (
+            <WawGapPieces
+              key={`${span.ayah}-${index}`}
+              text={span.text}
+              textStyle={lineStyle}
+              gap={wawGap}
+              highlight={
+                highlightAyah != null && span.ayah === highlightAyah && span.ayah > 0
+                  ? styles.ayahHighlight
+                  : undefined
+              }
+              onPress={onAyahPress && span.ayah > 0 ? () => onAyahPress(span.ayah) : undefined}
+            />
+          ))
+        ) : (
+          <Text style={[lineStyle, styles.centeredLineText]} numberOfLines={1} ellipsizeMode="clip">
+            {onAyahPress || highlightAyah != null
+              ? fullSpans.map(renderSpan)
+              : source}
+          </Text>
+        )}
       </View>
     );
   }
@@ -1406,7 +1599,7 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
           importantForAccessibility="no-hide-descendants"
         >
           <Text
-            key={`ayah-probe-${phase}-${kashidaCount}-${bodySlotWidth}-g${activeGapLevel}`}
+            key={`ayah-probe-${phase}-${kashidaCount}-${bodySlotWidth}-${gapReserve}-${padTotal}-${fontSize}`}
             style={probeStyle}
             onTextLayout={onProbeTextLayout}
             accessible={false}
@@ -1415,29 +1608,57 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
           </Text>
         </View>
       ) : null}
-      <View style={styles.ayahLineRow}>
+      <View style={styles.ayahLineRow} onLayout={onRowLayout}>
         <View
           style={[
             styles.ayahLineBody,
-            hasWaIdha && { paddingLeft: AYAH_PAD_START - WA_IDHA_PAD_RELIEF },
+            { paddingLeft: endPad },
           ]}
-          onLayout={onBodySlotLayout}
         >
-          <Text
-            style={[lineStyle, styles.ayahLineBodyText]}
-            numberOfLines={1}
-            ellipsizeMode="clip"
-          >
-            {bodySpans && (onAyahPress || highlightAyah != null)
-              ? bodySpans.map(renderSpan)
-              : bodyDisplay}
-          </Text>
+          {hasWawGap ? (
+            <View style={[styles.ayahLineBodyText, styles.wawGapRun]}>
+              {bodySpans && (onAyahPress || highlightAyah != null)
+                ? bodySpans.map((span, index) => (
+                    <WawGapPieces
+                      key={`${span.ayah}-${index}`}
+                      text={span.text}
+                      textStyle={lineStyle}
+                      gap={wawGap}
+                      highlight={
+                        highlightAyah != null && span.ayah === highlightAyah && span.ayah > 0
+                          ? styles.ayahHighlight
+                          : undefined
+                      }
+                      onPress={
+                        onAyahPress && span.ayah > 0 ? () => onAyahPress(span.ayah) : undefined
+                      }
+                    />
+                  ))
+                : (
+                    <WawGapPieces text={bodyDisplay} textStyle={lineStyle} gap={wawGap} />
+                  )}
+            </View>
+          ) : (
+            <Text
+              style={[lineStyle, styles.ayahLineBodyText]}
+              numberOfLines={1}
+              ellipsizeMode="clip"
+            >
+              {bodySpans && (onAyahPress || highlightAyah != null)
+                ? bodySpans.map(renderSpan)
+                : bodyDisplay}
+            </Text>
+          )}
         </View>
         {markers ? (
-          <View style={styles.ayahLineMarker} onLayout={onMarkerLayout}>
+          <View
+            style={styles.ayahLineMarker}
+            onLayout={onMarkerLayout}
+          >
             <Text
               style={[lineStyle, styles.ayahLineMarkerText, markerHighlight]}
               numberOfLines={1}
+              ellipsizeMode="clip"
               onPress={
                 onAyahPress && markerAyah > 0 ? () => onAyahPress(markerAyah) : undefined
               }
@@ -1729,7 +1950,6 @@ export const Hifz16View = memo(function Hifz16View({
     },
     [pageIndex],
   );
-
   useEffect(() => {
     visiblePageRef.current = startPage;
     userInterruptedFollowRef.current = false;
@@ -2269,6 +2489,7 @@ const HifzPageCard = memo(function HifzPageCard({
                       ) : (
                         <Text
                           numberOfLines={1}
+                          ellipsizeMode="clip"
                           style={[
                             styles.lineText,
                             styles.lineCentered,
@@ -2622,7 +2843,7 @@ const styles = StyleSheet.create({
     color: ILLUM.greenDark,
     textAlign: 'center',
     writingDirection: 'rtl',
-    fontWeight: '600',
+    paddingHorizontal: 2,
   },
   surahHeaderBasmallah: {
     maxWidth: '78%',
@@ -2687,7 +2908,6 @@ const styles = StyleSheet.create({
   },
   openingPlaqueTitle: {
     color: ILLUM.greenDark,
-    fontWeight: '600',
   },
   basmallahOrnateRowCompact: {
     paddingTop: 0,
@@ -2701,13 +2921,13 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   /** One line slot for a standalone surah name / orphan basmallah. */
   surahBlockRow: {
     flexGrow: 1,
     flexShrink: 0,
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   /**
    * Name + Bismillah share one header while the data basmallah line is omitted;
@@ -2717,7 +2937,7 @@ const styles = StyleSheet.create({
     flex: 2,
     flexGrow: 2,
     flexShrink: 0,
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   openingLineRow: {
     width: '100%',
@@ -2791,7 +3011,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   centeredLinePad: {
-    paddingHorizontal: 10,
+    paddingHorizontal: CENTERED_LINE_PAD,
   },
   centeredLineText: {
     maxWidth: '100%',
@@ -2806,13 +3026,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   ayahLineBody: {
-    flex: 1,
+    // Hug the text from the right edge; kashida fills the slot, and any
+    // leftover sits past the ﴿n﴾ instead of between it and the last word.
+    flexGrow: 0,
+    flexShrink: 1,
     justifyContent: 'center',
     // Prevent children from stretching to the slot width (Yoga default alignItems:stretch).
     alignItems: 'flex-end',
     // The start-side safety inset maps to the left side of this view on device.
     paddingRight: AYAH_PAD_END,
-    paddingLeft: AYAH_PAD_START,
   },
   ayahLineBodyText: {
     alignSelf: 'flex-end',
@@ -2825,7 +3047,18 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 0,
     paddingLeft: 2,
-    paddingRight: 6,
+    paddingRight: 1,
+  },
+  wawGapRun: {
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
+  },
+  centeredWawRun: {
+    justifyContent: 'center',
+  },
+  /** A squeezed piece would truncate itself; the line fit keeps the run in the slot. */
+  wawGapPiece: {
+    flexShrink: 0,
   },
   ayahLineMarkerText: {
     writingDirection: 'rtl',
@@ -2856,8 +3089,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     width: '100%',
-  },
-  surahName: {
-    fontWeight: '600',
   },
 });

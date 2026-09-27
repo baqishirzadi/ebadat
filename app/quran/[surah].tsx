@@ -16,8 +16,16 @@ import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
 import { pinSurahInCache } from '@/hooks/useSurahData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
-import { MushafView, AudioPlayer, Hifz16View, HifzIdleDock } from '@/components/quran';
+import { MushafView, AudioPlayer, Hifz16View, HifzIdleDock, QuranDownloadCard } from '@/components/quran';
 import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
+import { findHifzPageForAyah, getHifzPage } from '@/utils/hifz16';
+import {
+  getDownloadManifest,
+  getDownloadManifestKey,
+  getJuzDownloadScope,
+  getPreferredDownloadReciter,
+  getSurahDownloadScope,
+} from '@/utils/quranDownloadService';
 import { Spacing } from '@/constants/theme';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import AppCenteredText from '@/components/CenteredText';
@@ -47,7 +55,7 @@ export default function QuranReaderScreen() {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const { theme, state, setHifz16Line } = useApp();
-  const { t, language } = useI18n();
+  const { t, n, language } = useI18n();
   const { getSurah } = useQuranData();
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
   const hifz16Line = state.preferences.hifz16Line;
@@ -81,23 +89,28 @@ export default function QuranReaderScreen() {
   const surah = useMemo(() => getSurah(surahNumber), [getSurah, surahNumber]);
   const [hifzVisibleSurah, setHifzVisibleSurah] = useState(surahNumber);
   const [hifzVisibleAyah, setHifzVisibleAyah] = useState(initialAyah);
+  const [hifzVisiblePage, setHifzVisiblePage] = useState<number | null>(() =>
+    findHifzPageForAyah(surahNumber, initialAyah),
+  );
   const [hifzOnDedication, setHifzOnDedication] = useState(false);
   const headerSurahNumber = hifz16Line ? hifzVisibleSurah : surahNumber;
   const surahNameData = getSurahName(headerSurahNumber);
 
-  const onHifzVisiblePosition = useCallback((surah: number, ayah: number, page?: number) => {
+  const onHifzVisiblePosition = useCallback((nextSurah: number, ayah: number, page?: number) => {
     if (page === 0) {
       setHifzOnDedication(true);
       return;
     }
     setHifzOnDedication(false);
-    setHifzVisibleSurah(surah);
+    setHifzVisibleSurah(nextSurah);
     setHifzVisibleAyah(ayah);
+    if (typeof page === 'number' && page > 0) setHifzVisiblePage(page);
   }, []);
 
   useEffect(() => {
     setHifzVisibleSurah(surahNumber);
     setHifzVisibleAyah(initialAyah);
+    setHifzVisiblePage(findHifzPageForAyah(surahNumber, initialAyah));
     setHifzOnDedication(false);
   }, [initialAyah, surahNumber]);
 
@@ -119,6 +132,53 @@ export default function QuranReaderScreen() {
     ayah: number;
   } | null>(null);
   const [shouldGoBack, setShouldGoBack] = useState(false);
+  const [showDownloadSheet, setShowDownloadSheet] = useState(false);
+  const [surahDownloaded, setSurahDownloaded] = useState(false);
+  const [downloadBadgeNonce, setDownloadBadgeNonce] = useState(0);
+
+  const downloadSurahNumber = (hifz16Line ? hifzVisibleSurah : surahNumber) || surahNumber;
+  const downloadSurahMeta = getSurahName(downloadSurahNumber);
+  const surahScope = useMemo(
+    () => getSurahDownloadScope(downloadSurahNumber, downloadSurahMeta?.ayahCount),
+    [downloadSurahMeta?.ayahCount, downloadSurahNumber],
+  );
+  const hifzPageNumber = hifzVisiblePage ?? findHifzPageForAyah(hifzVisibleSurah, hifzVisibleAyah);
+  const hifzJuz = hifz16Line && !hifzOnDedication && hifzPageNumber
+    ? getHifzPage(hifzPageNumber)?.juz ?? null
+    : null;
+  const juzScope = useMemo(
+    () => (hifzJuz ? getJuzDownloadScope(hifzJuz) : null),
+    [hifzJuz],
+  );
+  const surahChoiceLabel = downloadSurahMeta
+    ? `${t('quran.mode.surah')} ${
+        language === 'english'
+          ? downloadSurahMeta.english
+          : language === 'pashto'
+            ? downloadSurahMeta.pashto
+            : downloadSurahMeta.dari
+      }`
+    : t('quran.mode.surah');
+  const downloadScopeChoices = useMemo(() => {
+    if (!hifz16Line || hifzOnDedication || !juzScope || hifzJuz == null) return undefined;
+    return [
+      { label: surahChoiceLabel, scope: surahScope },
+      { label: `${t('quran.mode.juz')} ${n(hifzJuz)}`, scope: juzScope },
+    ];
+  }, [hifz16Line, hifzJuz, hifzOnDedication, juzScope, n, surahChoiceLabel, surahScope, t]);
+  const downloadDisabled = hifz16Line && hifzOnDedication;
+
+  useEffect(() => {
+    let mounted = true;
+    void Promise.all([getPreferredDownloadReciter(), getDownloadManifest()]).then(([preferred, entries]) => {
+      if (!mounted) return;
+      const entry = entries.find((item) => item.key === getDownloadManifestKey(preferred, surahScope));
+      setSurahDownloaded(Boolean(entry && entry.completed === entry.total && entry.total > 0));
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [downloadBadgeNonce, surahScope]);
 
   const syncFromAudioSnapshot = useCallback(() => {
     const snapshot = audioManager.getPlaybackSnapshot();
@@ -406,6 +466,23 @@ export default function QuranReaderScreen() {
           {surahName}
         </LocalizedText>
         <View style={styles.topBarNav}>
+          <Pressable
+            testID="quran-reader-download"
+            accessibilityLabel={surahDownloaded ? t('quran.downloaded') : t('quran.download.action')}
+            accessibilityState={{ disabled: downloadDisabled }}
+            disabled={downloadDisabled}
+            onPress={() => setShowDownloadSheet(true)}
+            hitSlop={8}
+            style={[
+              styles.topBarDownloadButton,
+              {
+                backgroundColor: surahDownloaded ? 'rgba(255,255,255,0.24)' : 'rgba(255,255,255,0.14)',
+                opacity: downloadDisabled ? 0.4 : 1,
+              },
+            ]}
+          >
+            <MaterialIcons name={surahDownloaded ? 'check-circle' : 'download'} size={20} color="#fff" />
+          </Pressable>
           <View style={styles.modeSwitch}>
             <Pressable
               testID="quran-reader-translation"
@@ -413,7 +490,17 @@ export default function QuranReaderScreen() {
               accessibilityState={{ selected: !hifz16Line }}
               onPress={() => {
                 if (!hifz16Line) return;
+                const snapshot = audioManager.getPlaybackSnapshot();
+                const playing = snapshot.isActive && snapshot.surah > 0 && snapshot.ayah > 0;
+                const targetSurah = playing ? snapshot.surah : hifzVisibleSurah;
+                const targetAyah = playing ? snapshot.ayah : Math.max(1, hifzVisibleAyah);
                 setHifz16Line(false);
+                if (targetSurah !== surahNumber || targetAyah !== initialAyah) {
+                  router.setParams({
+                    surah: String(targetSurah),
+                    ayah: String(targetAyah),
+                  });
+                }
               }}
               hitSlop={4}
               style={[styles.modeSegment, !hifz16Line && styles.modeSegmentActive]}
@@ -482,7 +569,7 @@ export default function QuranReaderScreen() {
         />
       ) : (
         <MushafView
-          key={`mushaf-${surahNumber}-${normalizedJumpToken ?? 'default'}`}
+          key={`mushaf-${surahNumber}-${initialAyah}-${normalizedJumpToken ?? 'default'}`}
           surahNumber={surahNumber}
           initialAyah={initialAyah}
           jumpMode={jumpMode}
@@ -522,6 +609,20 @@ export default function QuranReaderScreen() {
           onClose={handleAudioClose}
         />
       )}
+
+      <QuranDownloadCard
+        visible={showDownloadSheet && !downloadDisabled}
+        scope={surahScope}
+        scopeChoices={downloadScopeChoices}
+        theme={theme}
+        title={hifz16Line ? t('quran.download.sheetTitle') : t('quran.downloadAll')}
+        primaryLabel={t('quran.download.action')}
+        onClose={() => {
+          setShowDownloadSheet(false);
+          setDownloadBadgeNonce((value) => value + 1);
+        }}
+        onCompleted={() => setDownloadBadgeNonce((value) => value + 1)}
+      />
     </View>
   );
 }
@@ -566,6 +667,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+  },
+  topBarDownloadButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modeSwitch: {
     flexDirection: 'row',

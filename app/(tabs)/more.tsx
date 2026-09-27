@@ -35,7 +35,8 @@ import {
 import { pickContent } from '@/utils/i18n/content';
 import { rowStyle } from '@/utils/i18n/direction';
 import { formatHijriDate } from '@/utils/islamicCalendar';
-import { toArabicNumerals } from '@/utils/numbers';
+import { localizeDigits, toArabicNumerals } from '@/utils/numbers';
+import type { AppLanguage } from '@/types/quran';
 
 type DeferredSectionKey = 'summary' | 'today' | 'upcoming' | 'support' | 'creatorMessage' | 'creatorCompany';
 
@@ -52,8 +53,10 @@ interface UpcomingDayCard {
   badgeColor: string;
 }
 
-function formatGregorianDate(date: Date): string {
-  return formatGregorianDateCompact(date, toArabicNumerals);
+function formatGregorianDate(date: Date, language: AppLanguage): string {
+  return language === 'pashto'
+    ? formatGregorianDateCompact(date, toArabicNumerals, 'pashto')
+    : formatGregorianDateCompact(date, toArabicNumerals);
 }
 
 export default function MoreScreen() {
@@ -245,13 +248,15 @@ export default function MoreScreen() {
 
           <CenteredText style={[styles.heroLead, { color: theme.textSecondary }]}>امروز در یک نگاه</CenteredText>
           <CenteredText style={[styles.heroHijri, { color: theme.text }]}>
-            {formatHijriDate(truth.hijri, language)}
+            {language === 'pashto'
+              ? localizeDigits(formatHijriDate(truth.hijri, language), language)
+              : formatHijriDate(truth.hijri, language)}
           </CenteredText>
           <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
             {formatAfghanSolarHijriDateWithPersianNumerals(truth.shamsi, language)}
           </CenteredText>
           <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
-            {formatGregorianDate(truth.gregorianDate)}
+            {formatGregorianDate(truth.gregorianDate, language)}
           </CenteredText>
 
           <View style={styles.heroMetricsRow}>

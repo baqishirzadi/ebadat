@@ -48,7 +48,7 @@ export function RequestCard({
     return formatGregorianDateCompact(
       date,
       language === 'english' ? String : toArabicNumerals,
-      language === 'dari' ? 'dari' : 'english',
+      language,
     );
   };
 

@@ -20,6 +20,7 @@ import { toArabicNumerals } from '@/utils/numbers';
 import { pickContent } from '@/utils/i18n/content';
 import { backIconName, directionStyle } from '@/utils/i18n/direction';
 import { LocalizedText } from '@/components/ui/LocalizedText';
+import { CopiedNotice, useCopiedNotice } from '@/components/ui/CopiedNotice';
 import { useI18n } from '@/utils/i18n/useI18n';
 import {
   ActivityIndicator,
@@ -34,6 +35,7 @@ import {
 export default function DuaRequestDetailScreen() {
   const { theme } = useApp();
   const { t, language } = useI18n();
+  const { copiedVisible, showCopied } = useCopiedNotice();
   const isEnglish = language === 'english';
   const isPashto = language === 'pashto';
   const { getRequestById, refreshRequests, markRequestSeen } = useDua();
@@ -79,11 +81,11 @@ export default function DuaRequestDetailScreen() {
   const handleCopyResponse = useCallback(async (response: string) => {
     try {
       await Clipboard.setStringAsync(normalizeMarkdownForClipboard(response));
-      Alert.alert(t('common.success'), t('dua.detail.copySuccess'));
+      showCopied();
     } catch {
       Alert.alert(t('common.error'), t('dua.detail.copyFailure'));
     }
-  }, [t]);
+  }, [showCopied, t]);
 
   useEffect(() => {
     loadRequest();
@@ -307,6 +309,7 @@ export default function DuaRequestDetailScreen() {
 
         <View style={styles.bottomPadding} />
       </ScrollView>
+      <CopiedNotice visible={copiedVisible} label={t('common.copy')} />
     </View>
   );
 }

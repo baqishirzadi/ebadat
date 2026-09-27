@@ -42,7 +42,7 @@ export const ahadithMessages = {
   'ahadith.notification.save': { dari: 'ذخیره زمان اعلان', pashto: 'د خبرتیا وخت ساتل', english: 'Save the notification time' },
   'ahadith.notification.preview': {
     dari: 'زمان فعلی: {meridiem} • ساعت {hour} • دقیقه {minute}',
-    pashto: 'اوسنی وخت: {meridiem} • ساعت {hour} • دقیقې {minute}',
+    pashto: 'ټاکلی وخت: {hour}:{minute} {meridiem}',
     english: 'Current time: {hour}:{minute} {meridiem}',
   },
   'ahadith.notification.channelName': { dari: 'احادیث روزانه', pashto: 'ورځني حدیثونه', english: 'Daily hadith' },

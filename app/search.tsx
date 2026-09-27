@@ -422,7 +422,11 @@ export default function SearchScreen() {
                 ]}
               >
                 <CenteredText
-                  style={[styles.modeButtonText, { color: active ? '#fff' : theme.text }]}
+                  style={[
+                    styles.modeButtonText,
+                    language === 'pashto' && styles.modeButtonTextPashto,
+                    { color: active ? '#fff' : theme.text },
+                  ]}
                 >
                   {option.label}
                 </CenteredText>
@@ -545,6 +549,9 @@ const styles = StyleSheet.create({
   modeButtonText: {
     fontSize: Typography.ui.caption,
     fontWeight: '500',
+  },
+  modeButtonTextPashto: {
+    fontSize: Typography.ui.body,
   },
   loadingContainer: {
     flex: 1,

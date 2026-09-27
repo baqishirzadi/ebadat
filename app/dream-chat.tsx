@@ -7,11 +7,12 @@ import * as Clipboard from 'expo-clipboard';
 import { Stack } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { ActivityIndicator, AccessibilityInfo, Alert, Dimensions, FlatList, Keyboard, Platform, Pressable, StyleSheet, ToastAndroid, View } from 'react-native';
+import { ActivityIndicator, AccessibilityInfo, Alert, Dimensions, FlatList, Keyboard, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { CopiedNotice, useCopiedNotice } from '@/components/ui/CopiedNotice';
 import { MarkdownText, normalizeMarkdownForClipboard } from '@/components/MarkdownText';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
@@ -45,21 +46,18 @@ interface ChatBubbleProps {
   theme: ThemeColors;
 }
 
-function ChatBubble({ isUser, text, theme, isEnglish }: ChatBubbleProps & { isEnglish: boolean }) {
+function ChatBubble({ isUser, text, theme, isEnglish, onCopied }: ChatBubbleProps & { isEnglish: boolean; onCopied: () => void }) {
   const { t } = useI18n();
   const displayText = isUser ? text : formatAssistantBubbleText(text);
   const handleCopy = useCallback(async () => {
     try {
       await Clipboard.setStringAsync(normalizeMarkdownForClipboard(stripDreamMarkdown(text)));
-      if (Platform.OS === 'android') {
-        ToastAndroid.show(t('common.copy'), ToastAndroid.SHORT);
-      } else {
-        void AccessibilityInfo.announceForAccessibility(t('common.copyReply'));
-      }
+      onCopied();
+      void AccessibilityInfo.announceForAccessibility(t('common.copy'));
     } catch {
       Alert.alert(t('common.error'), t('common.copyFailed'));
     }
-  }, [text, t]);
+  }, [onCopied, t, text]);
 
   return (
     <RtlView
@@ -146,7 +144,8 @@ function StarterChips({ theme, disabled, copy, onSelect }: StarterChipsProps) {
 
 export default function DreamChatScreen() {
   const { theme, state } = useApp();
-  const { isPashto, fontFamily, language } = useI18n();
+  const { t, isPashto, fontFamily, language } = useI18n();
+  const { copiedVisible, showCopied } = useCopiedNotice();
   const isEnglish = language === 'english';
   const isNastaliq = isPashto && fontFamily === 'NotoNastaliqUrdu';
   const insets = useSafeAreaInsets();
@@ -328,10 +327,11 @@ export default function DreamChatScreen() {
           text={item.message.content}
           theme={theme}
           isEnglish={isEnglish}
+          onCopied={showCopied}
         />
       );
     },
-    [theme, isEnglish],
+    [theme, isEnglish, showCopied],
   );
 
   const chatBody = (
@@ -504,6 +504,7 @@ export default function DreamChatScreen() {
         <View style={[styles.flex, keyboardHeight > 0 && { paddingBottom: keyboardHeight }]}>
           {chatBody}
         </View>
+        <CopiedNotice visible={copiedVisible} label={t('common.copy')} />
       </RtlView>
     </>
   );

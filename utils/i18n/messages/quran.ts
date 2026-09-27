@@ -24,6 +24,7 @@ export const quranMessages = {
   'quran.translation.label': { dari: 'ترجمه', pashto: 'ژباړه', english: 'Translation' },
   'quran.showTranslation': { dari: 'نمایش ترجمه', pashto: 'ژباړه ښکاره کول', english: 'Show translation' },
   'quran.download.action': { dari: 'دانلود', pashto: 'ښکته کول', english: 'Download' },
+  'quran.download.sheetTitle': { dari: 'دانلود تلاوت', pashto: 'د تلاوت ښکته کول', english: 'Download recitation' },
   'quran.download.ready': { dari: 'آماده دانلود', pashto: 'د ښکته کولو لپاره چمتو', english: 'Ready to download' },
   'quran.download.progress': { dari: '{done} از {total}', pashto: '{done} له {total}', english: '{done} of {total}' },
   'quran.download.cancel': { dari: 'لغو', pashto: 'لغوه', english: 'Cancel' },
