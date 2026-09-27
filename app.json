@@ -49,12 +49,12 @@
         "NSLocationAlwaysUsageDescription": "برای یادآوری نماز به موقعیت شما نیاز داریم",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "برای یادآوری نماز به موقعیت شما نیاز داریم",
         "ITSAppUsesNonExemptEncryption": false,
-        "CFBundleShortVersionString": "2.0.0"
+        "CFBundleShortVersionString": "2.0.1"
       },
       "config": {
         "usesNonExemptEncryption": false
       },
-      "buildNumber": "16"
+      "buildNumber": "17"
     },
     "android": {
       "package": "com.afghandev.ebadat",
