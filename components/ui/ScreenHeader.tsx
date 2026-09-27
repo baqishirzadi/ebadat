@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RtlText } from '@/components/ui/RtlText';
 import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { backIconName } from '@/utils/i18n/direction';
+import { backIconName, directionStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 type ScreenHeaderVariant = 'standard' | 'toolbar' | 'hero';
@@ -38,7 +38,6 @@ export function ScreenHeader({
   const router = useRouter();
   const { themeMode } = useApp();
   const { language } = useI18n();
-  const isEnglish = language === 'english';
 
   const shouldShowBack = showBack ?? variant !== 'hero';
 
@@ -67,11 +66,13 @@ export function ScreenHeader({
       testID={testID}
     >
       {variant === 'toolbar' ? (
-        <View style={[styles.toolbarRow, isEnglish && styles.toolbarRowEnglish]}>
+        <View style={[styles.toolbarRow, directionStyle(language)]}>
           <View style={styles.toolbarSide}>
             {shouldShowBack ? (
               <Pressable onPress={handleBack} hitSlop={10} style={styles.backButton}>
-                <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
+                <View style={styles.iconUnmirrored}>
+                  <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
+                </View>
               </Pressable>
             ) : (
               <View style={styles.backPlaceholder} />
@@ -92,17 +93,20 @@ export function ScreenHeader({
       ) : (
         <>
           {shouldShowBack ? (
-            <Pressable
-              onPress={handleBack}
-              hitSlop={10}
+            <View
+              pointerEvents="box-none"
               style={[
-                styles.backButtonAbsolute,
-                isEnglish && styles.backButtonAbsoluteEnglish,
+                styles.backRow,
+                directionStyle(language),
                 { top: insets.top + Spacing.sm },
               ]}
             >
-              <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
-            </Pressable>
+              <Pressable onPress={handleBack} hitSlop={10} style={styles.backButton}>
+                <View style={styles.iconUnmirrored}>
+                  <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
+                </View>
+              </Pressable>
+            </View>
           ) : null}
           {icon ? (
             <MaterialIcons
@@ -143,13 +147,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   toolbarRow: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
     minHeight: 44,
-  },
-  toolbarRowEnglish: {
-    flexDirection: 'row',
   },
   toolbarSide: {
     width: 44,
@@ -164,15 +165,16 @@ const styles = StyleSheet.create({
   backButton: {
     padding: Spacing.xs,
   },
-  backButtonAbsolute: {
+  backRow: {
     position: 'absolute',
-    right: Spacing.md,
+    left: 0,
+    right: 0,
     zIndex: 2,
-    padding: Spacing.xs,
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.md,
   },
-  backButtonAbsoluteEnglish: {
-    right: undefined,
-    left: Spacing.md,
+  iconUnmirrored: {
+    direction: 'ltr',
   },
   backPlaceholder: {
     width: 24,

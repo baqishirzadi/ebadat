@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     paddingTop: 56,
     paddingBottom: Spacing.md,
     paddingHorizontal: Spacing.lg,
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomLeftRadius: 28,

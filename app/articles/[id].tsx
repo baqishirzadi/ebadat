@@ -23,11 +23,14 @@ import { ArticleReader } from '@/components/articles/ArticleReader';
 import { BookmarkButton } from '@/components/articles/BookmarkButton';
 import { ShareButton } from '@/components/articles/ShareButton';
 import CenteredText from '@/components/CenteredText';
+import { backIconName, directionStyle } from '@/utils/i18n/direction';
+import { useI18n } from '@/utils/i18n/useI18n';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ArticleReadingScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { theme } = useApp();
+  const { language } = useI18n();
   const { toggleBookmark, isBookmarked } = useArticles();
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -110,8 +113,10 @@ export default function ArticleReadingScreen() {
       />
 
       <Animated.View
+        pointerEvents="box-none"
         style={[
           styles.backButtonContainer,
+          directionStyle(language),
           {
             top: insets.top + Spacing.sm,
             opacity: headerOpacity,
@@ -132,7 +137,9 @@ export default function ArticleReadingScreen() {
             pressed && styles.backButtonPressed,
           ]}
         >
-          <MaterialIcons name="arrow-forward" size={22} color="#fff" />
+          <View style={styles.iconUnmirrored}>
+            <MaterialIcons name={backIconName(language)} size={22} color="#fff" />
+          </View>
         </Pressable>
       </Animated.View>
 
@@ -192,8 +199,14 @@ const styles = StyleSheet.create({
   },
   backButtonContainer: {
     position: 'absolute',
-    right: Spacing.lg,
+    left: 0,
+    right: 0,
     zIndex: 20,
+    flexDirection: 'row',
+    paddingHorizontal: Spacing.lg,
+  },
+  iconUnmirrored: {
+    direction: 'ltr',
   },
   backButton: {
     width: 36,
