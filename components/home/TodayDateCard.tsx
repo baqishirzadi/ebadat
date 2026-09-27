@@ -80,23 +80,38 @@ function TodayDateCardInner() {
         <RtlView style={[styles.dariTitleRow, isNastaliq && styles.dariTitleRowNastaliq]}>
           <RtlText
             testID="home-today-date-heading"
+            wrap={false}
             align="center"
-            style={[styles.heading, pashtoFontMetrics?.heading, { color: theme.textSecondary }]}
+            numberOfLines={1}
+            style={[
+              styles.heading,
+              pashtoFontMetrics?.heading,
+              isNastaliq && styles.dariInlineNastaliq,
+              { color: theme.textSecondary },
+            ]}
           >
             {t('home.date.today')}
           </RtlText>
           <RtlText
+            wrap={false}
             align="center"
-            style={[styles.dariTitleDot, pashtoFontMetrics?.heading, { color: theme.textSecondary }]}
+            style={[
+              styles.dariTitleDot,
+              isNastaliq && styles.dariInlineNastaliq,
+              { color: theme.textSecondary },
+            ]}
           >
             ·
           </RtlText>
           <RtlText
+            wrap={false}
             align="center"
+            numberOfLines={1}
             style={[
               styles.weekday,
               pashtoFontMetrics?.weekday,
               styles.dariWeekdayInline,
+              isNastaliq && styles.dariInlineNastaliq,
               { color: theme.text },
             ]}
           >
@@ -175,9 +190,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexWrap: 'nowrap',
     gap: 6,
+    overflow: 'visible',
   },
   dariTitleRowNastaliq: {
-    minHeight: 38,
+    minHeight: 48,
+    paddingTop: 6,
+    paddingBottom: 2,
+  },
+  dariInlineNastaliq: {
+    lineHeight: 42,
+    includeFontPadding: true,
   },
   dariTitleDot: {
     fontFamily: 'Vazirmatn',

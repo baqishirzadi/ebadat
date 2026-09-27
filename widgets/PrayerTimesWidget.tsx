@@ -67,17 +67,25 @@ const GREG_MONTH_EN_TO_DARI: Record<string, string> = {
   DEC: 'دسمبر',
 };
 
-/** Dari Gregorian: "۲۵ سپتمبر ۲۰۲۶" from snapshot "25 SEP 2026". */
+/** Dari Gregorian: "۲۵ سپتمبر" from snapshot "25 SEP 2026" (no year — fits the 1-row cell). */
 function dariGregorianShort(gregorianDisplay: string): string {
   const parts = gregorianDisplay.trim().split(/\s+/).filter(Boolean);
   if (parts.length >= 2) {
     const day = toArabicNumeralsString(parts[0]);
     const monthKey = parts[1].toUpperCase();
     const month = GREG_MONTH_EN_TO_DARI[monthKey] || parts[1];
-    const year = parts.length >= 3 ? toArabicNumeralsString(parts[2]) : '';
-    return `${day} ${month}${year ? ` ${year}` : ''}`.trim();
+    return `${day} ${month}`.trim();
   }
   return toArabicNumeralsString(gregorianDisplay.trim());
+}
+
+/** Dari Hijri without year: "١٣ ربیع‌الثانی". */
+function dariHijriShort(hijriDisplay: string): string {
+  const parts = hijriDisplay.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2 && /^\d+$/.test(toLatinNumeralsString(parts[parts.length - 1] || ''))) {
+    return parts.slice(0, -1).join(' ').trim();
+  }
+  return hijriDisplay.trim();
 }
 
 interface PrayerTimesWidgetProps {
@@ -108,23 +116,23 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         ? 'Amiri-Bold'
         : 'NotoNastaliqUrdu';
 
-  // One frame for Dari, Pashto, and English. Type matches the polished
-  // Pashto card, a step larger so the copy reads heavier on a 1-row cell.
+  // One frame for Dari, Pashto, and English. Dari Nastaliq needs compact
+  // metrics on the 1-row Samsung cell or prayer times clip under the chip edge.
   const oneRow = height < 140;
   const short = height < 125;
-  const rootPaddingVertical = oneRow ? 4 : 5;
-  const rootPaddingHorizontal = 6;
   const isDari = !isEnglish && !isPashto;
   const nastaliq = !isEnglish && regularFontFamily === 'NotoNastaliqUrdu';
-  const prayerLabelSize = short ? 15 : 16;
-  const prayerTimeSize = short ? 20 : 22;
-  const prayerChipPaddingVertical = 3;
-  const prayerTimeMarginTop = nastaliq ? -8 : 1;
-  const headerTitleSize = short ? 18 : 20;
-  const gregHijriSize = short ? 15 : 16;
-  const sunriseLineSize = short ? 14 : 15;
-  const dateRowMarginTop = oneRow ? 2 : 3;
-  const prayerRowMarginTop = oneRow ? 3 : 4;
+  const rootPaddingVertical = oneRow ? (nastaliq ? 2 : 4) : 5;
+  const rootPaddingHorizontal = 6;
+  const prayerLabelSize = short ? (nastaliq ? 13 : 15) : nastaliq ? 14 : 16;
+  const prayerTimeSize = short ? (nastaliq ? 16 : 20) : nastaliq ? 18 : 22;
+  const prayerChipPaddingVertical = short && nastaliq ? 1 : 3;
+  const prayerTimeMarginTop = nastaliq ? (short ? -2 : -5) : 1;
+  const headerTitleSize = short ? (nastaliq ? 15 : 18) : nastaliq ? 17 : 20;
+  const gregHijriSize = short ? (nastaliq ? 12 : 15) : nastaliq ? 13 : 16;
+  const sunriseLineSize = short ? (nastaliq ? 12 : 14) : nastaliq ? 13 : 15;
+  const dateRowMarginTop = oneRow ? (nastaliq ? 1 : 2) : 3;
+  const prayerRowMarginTop = oneRow ? (nastaliq ? 1 : 3) : 4;
 
   if (!snapshot) {
     return (
@@ -144,7 +152,13 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           style={{ fontSize: short ? 15 : 18, fontFamily: boldFontFamily, color: TEXT_PRIMARY }}
         />
         <TextWidget
-          text={isEnglish ? 'Open the app' : 'اپ پرانیزئ'}
+          text={
+            isEnglish
+              ? 'Open the app'
+              : isPashto
+                ? 'اپ پرانیزئ'
+                : 'اپ را باز کنید'
+          }
           style={{ fontSize: short ? 11 : 12, fontFamily: regularFontFamily, color: TEXT_SECONDARY, marginTop: 4 }}
         />
       </FlexWidget>
@@ -207,7 +221,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
   const rightDateCell = isEnglish
     ? gregorianDisplay.trim()
     : isDari
-      ? (hijriLabel || '').trim()
+      ? dariHijriShort(hijriLabel || '')
       : `قمري ${hijriLabel || ''}`.trim();
   const sunriseCell = `${sunriseCaption}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim();
 

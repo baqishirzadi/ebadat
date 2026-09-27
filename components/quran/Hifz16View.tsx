@@ -6,43 +6,43 @@
 
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Dimensions,
-  FlatList,
-  I18nManager,
-  type ListRenderItemInfo,
-  Platform,
-  StyleSheet,
-  Text,
-  View,
-  type LayoutChangeEvent,
+    Dimensions,
+    FlatList,
+    I18nManager,
+    Platform,
+    StyleSheet,
+    Text,
+    View,
+    type LayoutChangeEvent,
+    type ListRenderItemInfo,
 } from 'react-native';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
 import { BorderRadius, Spacing } from '@/constants/theme';
-import { getSurah } from '@/data/surahNames';
 import { useApp, useAppLanguage, useBookmarks, useReadingPosition } from '@/context/AppContext';
+import { getSurah } from '@/data/surahNames';
 import type { AppLanguage } from '@/types/quran';
-import audioManager from '@/utils/quranAudio';
 import {
-  applyKashida,
-  kashidaCountForWidth,
-  kashidaSlots,
-  MAX_STRETCH_LETTERS,
-  splitAyahSpans,
-  splitLineBodyAndMarkers,
-  visibleLength,
+    getHifzPage,
+    getHifzSurahStartPage,
+    HIFZ16_PAGE_COUNT,
+    hifzAyahVisibleLengthOnPage,
+    listHifzPagesForAyah,
+    resolveHifzPageTarget,
+    type HifzLine,
+    type HifzPage,
+} from '@/utils/hifz16';
+import {
+    applyKashida,
+    kashidaCountForWidth,
+    kashidaSlots,
+    MAX_STRETCH_LETTERS,
+    splitAyahSpans,
+    splitLineBodyAndMarkers,
+    visibleLength,
 } from '@/utils/hifzKashida';
 import { toArabicNumerals } from '@/utils/numbers';
-import {
-  getHifzPage,
-  getHifzSurahStartPage,
-  hifzAyahVisibleLengthOnPage,
-  listHifzPagesForAyah,
-  resolveHifzPageTarget,
-  HIFZ16_PAGE_COUNT,
-  type HifzLine,
-  type HifzPage,
-} from '@/utils/hifz16';
+import audioManager from '@/utils/quranAudio';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const HIFZ_FONT = Platform.OS === 'ios' ? 'Scheherazade New' : 'ScheherazadeNew';
@@ -60,17 +60,40 @@ const LINE_HEIGHT_RATIO = 1.9;
 const BASMALLAH_LINE_HEIGHT_RATIO = 2.35;
 const BISMILLAH = 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ';
 const AYAH_HIGHLIGHT = 'rgba(14, 107, 79, 0.12)';
+/**
+ * Display-only gaps before اِذَا.
+ * Scheherazade's side bearings swallow one U+0020 between waw and alef, so
+ * «وَاِذَا» still reads as one word. Two non-breaking spaces clear that gap.
+ * U+00A0 is already a kashida break, so Arabic joining is unchanged.
+ * A line with no spare width steps down to one space, then to none.
+ */
+const WA_IDHA_GAPS = ['', '\u00A0', '\u00A0\u00A0'] as const;
+type WaIdhaGapLevel = 0 | 1 | 2;
+
+function addWaIdhaDisplaySpace(text: string, gap: string): string {
+  if (!gap) return text;
+  return text.replace(/(و[\u064B-\u065F]*)(?=اِذَا)/gu, `$1${gap}`);
+}
+
 /** Short stroke per join — matches MAX_TATWEEL_PER_LETTER in hifzKashida. */
 const KASHIDA_SLOT_CAP = 5;
+/** Only the short opening-page rows with insufficient join slots need this. */
+const OPENING_SHORT_LINE_SLOT_CAP = 14;
 /** Matches `slimInner` horizontal inset (all pages). */
 const SLIM_COLUMN_MARGIN = 18;
 /**
- * Horizontal pads on `ayahLineBody`. After RTL unmirror cancels out, physical
- * right is the on-screen right (RTL line start). Keep first-letter ink inside.
+ * Keep the same 20px total safety inset around the rendered body. Four pixels
+ * sit inside Text on the RTL start side so glyph ink cannot touch Text's clip edge.
  */
-const AYAH_PAD_START = 16; // physical right → on-screen right (line start)
-const AYAH_PAD_END = 4; // physical left → toward markers
-const AYAH_PAD_TOTAL = AYAH_PAD_START + AYAH_PAD_END;
+const AYAH_PAD_START = 12;
+const AYAH_PAD_END = 4;
+const AYAH_TEXT_START_INSET = 4;
+const AYAH_PAD_TOTAL = AYAH_PAD_START + AYAH_PAD_END + AYAH_TEXT_START_INSET;
+/**
+ * Two nbsp before اِذَا need about 5pt more than one space. Take that from the
+ * left (marker-side) padding so the right edge, where و sits, does not move.
+ */
+const WA_IDHA_PAD_RELIEF = 8;
 /** Keep the seed when the refined count is this close. */
 const KASHIDA_COMMIT_EPSILON = 1;
 /** Rough Scheherazade char advance as a fraction of font size (seed estimate). */
@@ -84,8 +107,8 @@ function predictContentWidth(): number {
 }
 
 /** Content box inside `ayahLineBody` (onLayout width includes padding). */
-function bodyContentWidth(slotWidth: number): number {
-  return Math.max(0, slotWidth - AYAH_PAD_TOTAL);
+function bodyContentWidth(slotWidth: number, padTotal = AYAH_PAD_TOTAL): number {
+  return Math.max(0, slotWidth - padTotal);
 }
 
 function kashidaCacheKey(
@@ -95,9 +118,11 @@ function kashidaCacheKey(
   fontSize: number,
   markerWidth = 0,
   bodySlot = 0,
+  gapLevel: WaIdhaGapLevel = 2,
+  padTotal = AYAH_PAD_TOTAL,
 ): string {
-  // v26: start inset on physical right; stretch targets content box only.
-  return `v26:${pageNumber}:${lineNumber}:${contentWidth}:${fontSize}:${markerWidth}:${bodySlot}`;
+  // v32: wa-idha gap width is part of the measured advance.
+  return `v32:${pageNumber}:${lineNumber}:${contentWidth}:${fontSize}:${markerWidth}:${bodySlot}:g${gapLevel}:p${padTotal}`;
 }
 
 /**
@@ -120,6 +145,46 @@ function estimateSeedKashida(
   const naturalEst = chars * charWidth;
   // Stay under the slot so the seed never paints a clipped right edge.
   return Math.floor(kashidaCountForWidth(naturalEst, fillTarget, fontSize) * 0.55);
+}
+
+/**
+ * A small number of opening-page lines need more than five strokes per join to
+ * reach the same column width. Keep the normal helper untouched for every other
+ * line, and spread only these extra strokes over the line's available joins.
+ */
+function applyKashidaWithSlotCap(text: string, count: number, maxPerSlot: number): string {
+  if (maxPerSlot <= KASHIDA_SLOT_CAP) {
+    return applyKashida(text, count, maxPerSlot);
+  }
+  if (!text || count <= 0) return text;
+
+  const slots = kashidaSlots(text);
+  if (slots.length === 0) return text;
+
+  const cap = Math.max(KASHIDA_SLOT_CAP, Math.floor(maxPerSlot));
+  const budget = Math.min(count, slots.length * cap);
+  const inserts = new Map<number, number>();
+  let placed = 0;
+  while (placed < budget) {
+    let progressed = false;
+    for (const slot of slots) {
+      if (placed >= budget) break;
+      const current = inserts.get(slot) ?? 0;
+      if (current >= cap) continue;
+      inserts.set(slot, current + 1);
+      placed += 1;
+      progressed = true;
+    }
+    if (!progressed) break;
+  }
+
+  let result = '';
+  for (let index = 0; index <= text.length; index += 1) {
+    const extra = inserts.get(index) ?? 0;
+    if (extra > 0) result += 'ـ'.repeat(extra);
+    if (index < text.length) result += text[index];
+  }
+  return result;
 }
 
 /** Fixed miniature palette (independent of app theme). */
@@ -625,13 +690,8 @@ const OpeningGarden = memo(function OpeningGarden() {
   );
 });
 
-type TitleMeasurePhase = 'natural' | 'stretched' | 'done';
-
-/**
- * Stretch a surah name with measured tatweels so it fills the decorative banner
- * (طاق). Reuses the same kashida helpers as ayah lines.
- */
-const StretchedSurahTitle = memo(function StretchedSurahTitle({
+/** Surah names stay fixed and centered; only ayah body lines use kashida. */
+const SurahTitleText = memo(function SurahTitleText({
   title,
   fontSize,
   lineHeight,
@@ -642,145 +702,24 @@ const StretchedSurahTitle = memo(function StretchedSurahTitle({
   lineHeight: number;
   textStyle: object | object[];
 }) {
-  const [fitWidth, setFitWidth] = useState(0);
-  const [kashidaCount, setKashidaCount] = useState(0);
-  const [phase, setPhase] = useState<TitleMeasurePhase>('done');
-  const naturalWidth = useRef(0);
-  const countRef = useRef(0);
-  const refinePass = useRef(0);
-
-  const fillTarget = Math.max(0, fitWidth - 2);
-
-  const onContainerLayout = useCallback((event: LayoutChangeEvent) => {
-    const next = Math.floor(event.nativeEvent.layout.width);
-    if (next <= 0) return;
-    setFitWidth((prev) => {
-      if (prev === next) return prev;
-      naturalWidth.current = 0;
-      countRef.current = 0;
-      refinePass.current = 0;
-      setKashidaCount(0);
-      setPhase('natural');
-      return next;
-    });
-  }, []);
-
-  useEffect(() => {
-    naturalWidth.current = 0;
-    countRef.current = 0;
-    refinePass.current = 0;
-    setKashidaCount(0);
-    setPhase(fitWidth > 0 ? 'natural' : 'done');
-  }, [title, fontSize, fitWidth]);
-
-  const commit = useCallback((finalCount: number) => {
-    const clamped = Math.max(0, Math.min(MAX_KASHIDA_TOTAL, finalCount));
-    setKashidaCount(clamped);
-    setPhase('done');
-  }, []);
-
-  const onNaturalLayout = useCallback(
-    (event: { nativeEvent: { lines: { width: number }[] } }) => {
-      if (phase !== 'natural' || fillTarget <= 0) return;
-      const width = event.nativeEvent.lines[0]?.width ?? 0;
-      if (width <= 0) return;
-      naturalWidth.current = width;
-      if (width >= fillTarget) {
-        countRef.current = 0;
-        commit(0);
-        return;
-      }
-      const measured = kashidaCountForWidth(width, fillTarget, fontSize);
-      countRef.current = measured;
-      setKashidaCount(measured);
-      if (measured <= 0) {
-        commit(0);
-        return;
-      }
-      setPhase('stretched');
-    },
-    [commit, fillTarget, fontSize, phase],
-  );
-
-  const onStretchedLayout = useCallback(
-    (event: { nativeEvent: { lines: { width: number }[] } }) => {
-      if (phase !== 'stretched' || fillTarget <= 0) return;
-      const width = event.nativeEvent.lines[0]?.width ?? 0;
-      if (width <= 0) return;
-
-      const count = countRef.current;
-      const overflow = width - fillTarget;
-      const gained = width - naturalWidth.current;
-      const per = count > 0 && gained > 0 ? gained / count : Math.max(fontSize * 0.28, 3.2);
-
-      if (overflow > 2) {
-        const next = Math.max(0, count - Math.max(1, Math.ceil(overflow / per)));
-        if (refinePass.current >= 6 || next === count) {
-          commit(next);
-          return;
-        }
-        refinePass.current += 1;
-        countRef.current = next;
-        setKashidaCount(next);
-        return;
-      }
-
-      const slack = fillTarget - width;
-      if (slack > 4 && refinePass.current < 6 && count < MAX_KASHIDA_TOTAL) {
-        refinePass.current += 1;
-        const next = Math.min(MAX_KASHIDA_TOTAL, count + Math.max(1, Math.round(slack / per)));
-        countRef.current = next;
-        setKashidaCount(next);
-        return;
-      }
-
-      commit(count);
-    },
-    [commit, fillTarget, fontSize, phase],
-  );
-
-  const display =
-    kashidaCount > 0 ? applyKashida(title, kashidaCount, KASHIDA_SLOT_CAP) : title;
-  const measuring = fitWidth > 0 && phase !== 'done';
-  const measureText =
-    phase === 'stretched' && kashidaCount > 0
-      ? applyKashida(title, kashidaCount, KASHIDA_SLOT_CAP)
-      : title;
-
   return (
-    <View style={styles.stretchedTitleWrap} onLayout={onContainerLayout}>
-      {measuring ? (
-        <View style={styles.measureHost} pointerEvents="none">
-          <Text
-            key={`title-m-${phase}-${kashidaCount}`}
-            style={[
-              {
-                fontFamily: HIFZ_FONT,
-                fontSize,
-                lineHeight,
-                textAlign: 'center' as const,
-                writingDirection: 'rtl' as const,
-              },
-              androidFontPad,
-            ]}
-            onTextLayout={phase === 'natural' ? onNaturalLayout : onStretchedLayout}
-          >
-            {measureText}
-          </Text>
-        </View>
-      ) : null}
-      <Text
-        numberOfLines={1}
-        ellipsizeMode="clip"
-        style={[
-          { fontFamily: HIFZ_FONT, fontSize, lineHeight },
-          textStyle,
-          androidFontPad,
-        ]}
-      >
-        {display}
-      </Text>
-    </View>
+    <Text
+      numberOfLines={1}
+      ellipsizeMode="clip"
+      style={[
+        {
+          fontFamily: HIFZ_FONT,
+          fontSize,
+          lineHeight,
+          textAlign: 'center' as const,
+          writingDirection: 'rtl' as const,
+        },
+        textStyle,
+        androidFontPad,
+      ]}
+    >
+      {title}
+    </Text>
   );
 });
 
@@ -790,7 +729,7 @@ const SurahCartouche = memo(function SurahCartouche({ title }: { title?: string 
   return (
     <View style={styles.surahCartouche}>
       <View style={styles.surahCartoucheFrame} />
-      <StretchedSurahTitle
+      <SurahTitleText
         title={title}
         fontSize={22}
         lineHeight={36}
@@ -810,46 +749,95 @@ const MiniFloral = memo(function MiniFloral({ size = 22 }: { size?: number }) {
   );
 });
 
-/**
- * Compact floral gold header: surah name in a slim cartouche with side flowers,
- * optional Bismillah with gold rules and end blooms.
- */
+/** Static mid-mushaf header: centered surah name and Bismillah with plain gold rules. */
 const SurahFloralHeader = memo(function SurahFloralHeader({
   title,
   basmallahText,
+  surahNumber,
   fontSize,
+  lineHeight,
 }: {
   title?: string;
   basmallahText?: string | null;
+  surahNumber?: number;
   fontSize: number;
   lineHeight: number;
 }) {
-  const titleSize = Math.max(13, fontSize - 1);
-  const titleLineHeight = Math.round(titleSize * 1.5);
-  return (
-    <View style={styles.floralHeader}>
-      {title ? (
-        <View style={styles.surahBannerRow}>
-          <MiniFloral size={14} />
-          <View style={styles.surahBanner}>
-            <View style={styles.surahBannerInner} />
-            <StretchedSurahTitle
-              title={title}
-              fontSize={titleSize}
-              lineHeight={titleLineHeight}
-              textStyle={styles.surahBannerText}
-            />
+  // Keep the opening-page cartouche and decorative Bismillah on pages 1–2.
+  if (surahNumber === 1 || surahNumber === 2) {
+    const titleSize = Math.max(13, fontSize - 1);
+    return (
+      <View style={styles.floralHeader}>
+        {title ? (
+          <View style={styles.surahBannerRow}>
+            <MiniFloral size={14} />
+            <View style={styles.surahBanner}>
+              <View style={styles.surahBannerInner} />
+              <SurahTitleText
+                title={title}
+                fontSize={titleSize}
+                lineHeight={Math.round(titleSize * 1.5)}
+                textStyle={styles.surahBannerText}
+              />
+            </View>
+            <MiniFloral size={14} />
           </View>
-          <MiniFloral size={14} />
+        ) : null}
+        {basmallahText != null ? (
+          <BasmallahText
+            text={basmallahText || BISMILLAH}
+            fontSize={fontSize}
+            ornate
+            compact
+          />
+        ) : null}
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.surahHeader}>
+      {title ? (
+        <View style={styles.surahHeaderTitleRow}>
+          <View style={styles.surahHeaderRule} />
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="clip"
+            style={[
+              styles.surahHeaderTitle,
+              {
+                fontFamily: HIFZ_FONT,
+                fontSize: Math.max(13, fontSize - 1),
+                lineHeight,
+              },
+              androidFontPad,
+            ]}
+          >
+            {title}
+          </Text>
+          <View style={styles.surahHeaderRule} />
         </View>
       ) : null}
       {basmallahText != null ? (
-        <BasmallahText
-          text={basmallahText || BISMILLAH}
-          fontSize={fontSize}
-          ornate
-          compact
-        />
+        <View style={styles.surahHeaderBasmallahRow}>
+          <View style={styles.surahHeaderRule} />
+          <Text
+            numberOfLines={1}
+            ellipsizeMode="clip"
+            style={[
+              styles.surahHeaderBasmallah,
+              {
+                fontFamily: HIFZ_FONT,
+                fontSize: BASE_FONT,
+                lineHeight,
+              },
+              androidFontPad,
+            ]}
+          >
+            {basmallahText || BISMILLAH}
+          </Text>
+          <View style={styles.surahHeaderRule} />
+        </View>
       ) : null}
     </View>
   );
@@ -865,7 +853,7 @@ const BasmallahText = memo(function BasmallahText({
   text?: string;
   fontSize: number;
   ornate?: boolean;
-  /** Mid-page header: smaller type so it fits the two-line slot. */
+  /** Retained for non-header callers that need a compact ornament. */
   compact?: boolean;
 }) {
   const size = compact ? Math.max(13, fontSize - 2) : fontSize + 1;
@@ -944,7 +932,6 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   pageNumber,
   lineNumber,
   longestChars,
-  measureEnabled = true,
   onAyahPress,
 }: {
   text: string;
@@ -961,14 +948,41 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   pageNumber: number;
   lineNumber: number;
   longestChars: number;
-  /** False while the pager is turning — paint seed only, no measure restyles. */
-  measureEnabled?: boolean;
   /** Play the ayah under the tap (not the line's ayahStart). */
   onAyahPress?: (ayah: number) => void;
 }) {
-  const { body, markers } = useMemo(() => splitLineBodyAndMarkers(text), [text]);
+  const gapScope = `${pageNumber}:${lineNumber}:${fontSize}:${text}`;
+  const [gapScopeKey, setGapScopeKey] = useState(gapScope);
+  const [gapLevel, setGapLevel] = useState<WaIdhaGapLevel>(2);
+  if (gapScopeKey !== gapScope) {
+    setGapScopeKey(gapScope);
+    setGapLevel(2);
+  }
+  const activeGapLevel: WaIdhaGapLevel = gapScopeKey === gapScope ? gapLevel : 2;
+  const gapLevelRef = useRef(activeGapLevel);
+  gapLevelRef.current = activeGapLevel;
+  const textRef = useRef(text);
+  textRef.current = text;
+  const hasWaIdha = useMemo(
+    () => /و[\u064B-\u065F]*اِذَا/u.test(text),
+    [text],
+  );
+  const padTotal = hasWaIdha ? AYAH_PAD_TOTAL - WA_IDHA_PAD_RELIEF : AYAH_PAD_TOTAL;
+  const padTotalRef = useRef(padTotal);
+  padTotalRef.current = padTotal;
+  const displayText = useMemo(
+    () => addWaIdhaDisplaySpace(text, WA_IDHA_GAPS[activeGapLevel]),
+    [activeGapLevel, text],
+  );
+  const { body, markers } = useMemo(
+    () => splitLineBodyAndMarkers(displayText),
+    [displayText],
+  );
   const fitWidth = Math.max(0, contentWidth);
   const stretch = justify && !centered;
+  const openingShortLine =
+    (pageNumber === 1 && lineNumber === 5) || (pageNumber === 2 && lineNumber === 6);
+  const lineSlotCap = openingShortLine ? OPENING_SHORT_LINE_SLOT_CAP : KASHIDA_SLOT_CAP;
   const [measuredMarkerWidth, setMeasuredMarkerWidth] = useState(0);
   const [bodySlotWidth, setBodySlotWidth] = useState(0);
   const markerReserve = markers
@@ -980,8 +994,8 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   const fillTarget = Math.max(
     0,
     (bodySlotWidth > 0
-      ? bodyContentWidth(bodySlotWidth)
-      : Math.max(0, fitWidth - (stretch ? markerReserve : 0) - AYAH_PAD_TOTAL)) - 2,
+      ? bodyContentWidth(bodySlotWidth, padTotal)
+      : Math.max(0, fitWidth - (stretch ? markerReserve : 0) - padTotal)) - 2,
   );
   const cacheKey = kashidaCacheKey(
     pageNumber,
@@ -990,6 +1004,8 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
     fontSize,
     markerReserve,
     bodySlotWidth,
+    activeGapLevel,
+    padTotal,
   );
   const seed = useMemo(
     () => (stretch ? estimateSeedKashida(body, longestChars, fillTarget, fontSize) : 0),
@@ -1003,7 +1019,6 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   const refinePass = useRef(0);
   const loRef = useRef(0);
   const hiRef = useRef(MAX_KASHIDA_TOTAL);
-  const visibleCountRef = useRef(0);
   const seedRef = useRef(seed);
   seedRef.current = seed;
   const bodySlotRef = useRef(0);
@@ -1013,11 +1028,10 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   const [visibleCount, setVisibleCount] = useState(() =>
     initialCached !== undefined ? initialCached : seed,
   );
-  visibleCountRef.current = visibleCount;
   const lineTatweelCap = useMemo(() => {
     const slots = kashidaSlots(body).length;
-    return Math.min(MAX_KASHIDA_TOTAL, Math.max(0, slots) * KASHIDA_SLOT_CAP);
-  }, [body]);
+    return Math.min(MAX_KASHIDA_TOTAL, Math.max(0, slots) * lineSlotCap);
+  }, [body, lineSlotCap]);
 
   useEffect(() => {
     setMeasuredMarkerWidth(0);
@@ -1088,18 +1102,12 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
     // Stable paint while probing: conservative seed for this measured slot.
     setVisibleCount(seed);
 
-    if (!measureEnabled) {
-      setPhase('done');
-      return;
-    }
-
     setPhase('natural');
   }, [
     body,
     bodySlotWidth,
     cacheKey,
     fitWidth,
-    measureEnabled,
     measuredMarkerWidth,
     markers,
     seed,
@@ -1108,20 +1116,20 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
 
   const bodyDisplay = useMemo(() => {
     if (!stretch || visibleCount <= 0) return body;
-    return applyKashida(body, visibleCount, KASHIDA_SLOT_CAP);
-  }, [body, stretch, visibleCount]);
+    return applyKashidaWithSlotCap(body, visibleCount, lineSlotCap);
+  }, [body, lineSlotCap, stretch, visibleCount]);
 
   const probeDisplay = useMemo(() => {
     if (!stretch) return body;
     if (phase === 'natural') return body;
     if (kashidaCount <= 0) return body;
-    return applyKashida(body, kashidaCount, KASHIDA_SLOT_CAP);
-  }, [body, kashidaCount, phase, stretch]);
+    return applyKashidaWithSlotCap(body, kashidaCount, lineSlotCap);
+  }, [body, kashidaCount, lineSlotCap, phase, stretch]);
 
   const settleWithProbeWidth = useCallback(
     (rawWidth: number, lineCount: number, secondLineWidth = 0) => {
       if (!stretch) return;
-      const slot = bodyContentWidth(bodySlotRef.current);
+      const slot = bodyContentWidth(bodySlotRef.current, padTotalRef.current);
       if (slot <= 0) return;
       const wrapped = lineCount > 1 && secondLineWidth > fontSize * 0.85;
       const painted = Math.max(0, Math.ceil(rawWidth * PROBE_WIDTH_BIAS));
@@ -1133,8 +1141,25 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
 
       const currentPhase = phaseRef.current;
       if (currentPhase === 'natural') {
-        // If the bare body already fills or overshoots the slot, do not add tatweel.
-        if (overshoot || filled) {
+        // Bare body already past the slot. A wide wa-idha gap must shrink
+        // before we paint, or the RTL start (right edge) is clipped.
+        if (overshoot) {
+          const level = gapLevelRef.current;
+          if (level > 0) {
+            const narrower = (level - 1) as WaIdhaGapLevel;
+            const source = textRef.current;
+            if (
+              addWaIdhaDisplaySpace(source, WA_IDHA_GAPS[level]) !==
+              addWaIdhaDisplaySpace(source, WA_IDHA_GAPS[narrower])
+            ) {
+              setGapLevel(narrower);
+              return;
+            }
+          }
+          commitVisible(0, { allowZero: true, cache: true });
+          return;
+        }
+        if (filled) {
           commitVisible(0, { allowZero: true, cache: true });
           return;
         }
@@ -1207,36 +1232,15 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
     (event: { nativeEvent: { lines: { width: number }[] } }) => {
       if (!stretch) return;
       if (phaseRef.current === 'done') return;
+      // Ignore a probe that finished after the wa-idha gap stepped down.
+      if (activeGapLevel !== gapLevelRef.current) return;
       const lines = event.nativeEvent.lines;
       if (!lines.length) return;
       const width = Math.ceil(lines[0]?.width ?? 0);
       const second = Math.ceil(lines[1]?.width ?? 0);
       settleWithProbeWidth(width, lines.length, second);
     },
-    [settleWithProbeWidth, stretch],
-  );
-
-  const onBodyTextLayout = useCallback(
-    (event: { nativeEvent: { lines: { width: number }[] } }) => {
-      if (!stretch) return;
-      if (phaseRef.current !== 'done') return;
-      const lines = event.nativeEvent.lines;
-      if (!lines.length) return;
-      const slot = bodyContentWidth(bodySlotRef.current);
-      if (slot <= 0) return;
-      const painted = Math.ceil(lines[0]?.width ?? 0);
-      const wrapped = lines.length > 1;
-      // Visible line past the content box — trim tatweel (do not grow further).
-      const overshoots = wrapped || painted > slot;
-      if (!overshoots) return;
-      const prev = visibleCountRef.current;
-      if (prev <= 0) return;
-      const next = Math.max(0, prev - Math.max(2, Math.ceil(prev * 0.2)));
-      const clamped = next === prev ? Math.max(0, prev - 1) : next;
-      kashidaCache.delete(cacheKey);
-      commitVisible(clamped, { allowZero: true, cache: true });
-    },
-    [cacheKey, commitVisible, stretch],
+    [activeGapLevel, settleWithProbeWidth, stretch],
   );
 
   const markerAyah = useMemo(() => {
@@ -1291,20 +1295,20 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   if (centered || !stretch) {
     const fullSpans =
       ayahStart == null || ayahEnd == null
-        ? [{ text, ayah: -1 as number }]
-        : splitAyahSpans(text, ayahStart, ayahEnd);
+        ? [{ text: displayText, ayah: -1 as number }]
+        : splitAyahSpans(displayText, ayahStart, ayahEnd);
     return (
       <View style={[styles.lineMeasureWrap, styles.centeredLinePad]}>
         <Text style={[lineStyle, styles.centeredLineText]} numberOfLines={1} ellipsizeMode="clip">
           {onAyahPress || highlightAyah != null
             ? fullSpans.map(renderSpan)
-            : text}
+            : displayText}
         </Text>
       </View>
     );
   }
 
-  const measuring = measureEnabled && phase !== 'done' && bodySlotWidth > 0;
+  const measuring = phase !== 'done' && bodySlotWidth > 0;
 
   const markerHighlight =
     highlightAyah != null && markerAyah === highlightAyah && markerAyah > 0
@@ -1336,7 +1340,7 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
           importantForAccessibility="no-hide-descendants"
         >
           <Text
-            key={`ayah-probe-${phase}-${kashidaCount}-${bodySlotWidth}`}
+            key={`ayah-probe-${phase}-${kashidaCount}-${bodySlotWidth}-g${activeGapLevel}`}
             style={probeStyle}
             onTextLayout={onProbeTextLayout}
             accessible={false}
@@ -1346,12 +1350,17 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
         </View>
       ) : null}
       <View style={styles.ayahLineRow}>
-        <View style={styles.ayahLineBody} onLayout={onBodySlotLayout}>
+        <View
+          style={[
+            styles.ayahLineBody,
+            hasWaIdha && { paddingLeft: AYAH_PAD_START - WA_IDHA_PAD_RELIEF },
+          ]}
+          onLayout={onBodySlotLayout}
+        >
           <Text
             style={[lineStyle, styles.ayahLineBodyText, bodyActive]}
             numberOfLines={1}
             ellipsizeMode="clip"
-            onTextLayout={onBodyTextLayout}
             onPress={bodyPress}
             suppressHighlighting
           >
@@ -1797,18 +1806,11 @@ export const Hifz16View = memo(function Hifz16View({
 
   const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
 
-  const [measureEnabled, setMeasureEnabled] = useState(true);
-
   const handleScrollBeginDrag = useCallback(() => {
-    setMeasureEnabled(false);
     if (followProgrammaticRef.current) return;
     if (playingRef.current.surah != null && playingRef.current.ayah != null) {
       userInterruptedFollowRef.current = true;
     }
-  }, []);
-
-  const handleMomentumScrollEnd = useCallback(() => {
-    setMeasureEnabled(true);
   }, []);
 
   const lineHasBookmark = useCallback(
@@ -1866,7 +1868,6 @@ export const Hifz16View = memo(function Hifz16View({
             activePlayingAyah={activePlayingAyah}
             onAyahPress={handleAyahPress}
             lineHasBookmark={lineHasBookmark}
-            measureEnabled={measureEnabled}
           />
         </View>
       );
@@ -1878,7 +1879,6 @@ export const Hifz16View = memo(function Hifz16View({
       contentPaddingTop,
       handleAyahPress,
       lineHasBookmark,
-      measureEnabled,
       pageHeight,
       theme.background,
     ]
@@ -1913,7 +1913,6 @@ export const Hifz16View = memo(function Hifz16View({
       onViewableItemsChanged={onViewableItemsChanged}
       viewabilityConfig={viewabilityConfig}
       onScrollBeginDrag={handleScrollBeginDrag}
-      onMomentumScrollEnd={handleMomentumScrollEnd}
       windowSize={3}
       initialNumToRender={2}
       maxToRenderPerBatch={2}
@@ -1932,7 +1931,6 @@ const HifzPageCard = memo(function HifzPageCard({
   activePlayingAyah,
   onAyahPress,
   lineHasBookmark,
-  measureEnabled,
 }: {
   page: HifzPage;
   background: string;
@@ -1943,7 +1941,6 @@ const HifzPageCard = memo(function HifzPageCard({
   activePlayingAyah?: number | null;
   onAyahPress: (surah: number, ayah: number) => void;
   lineHasBookmark: (line: HifzLine) => boolean;
-  measureEnabled: boolean;
 }) {
   const opening = isOpeningPage(page.page);
   const predictedWidth = predictContentWidth();
@@ -2154,7 +2151,6 @@ const HifzPageCard = memo(function HifzPageCard({
                           pageNumber={page.page}
                           lineNumber={line.line}
                           longestChars={longestChars}
-                          measureEnabled={measureEnabled}
                           onAyahPress={
                             line.surahNumber
                               ? (ayah) => onAyahPress(line.surahNumber!, ayah)
@@ -2167,6 +2163,7 @@ const HifzPageCard = memo(function HifzPageCard({
                         <SurahFloralHeader
                           title={line.text}
                           basmallahText={headerBasmallah}
+                          surahNumber={line.surahNumber}
                           fontSize={fontSize}
                           lineHeight={lineHeight}
                         />
@@ -2488,6 +2485,54 @@ const styles = StyleSheet.create({
   basmallahTextOrnate: {
     paddingHorizontal: 2,
   },
+  surahHeader: {
+    width: '100%',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'visible',
+  },
+  surahHeaderTitleRow: {
+    width: '100%',
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: 4,
+  },
+  surahHeaderBasmallahRow: {
+    width: '100%',
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: 4,
+  },
+  surahHeaderRule: {
+    flex: 1,
+    minWidth: 12,
+    height: StyleSheet.hairlineWidth * 2,
+    backgroundColor: ILLUM.gold,
+    opacity: 0.85,
+  },
+  surahHeaderTitle: {
+    maxWidth: '72%',
+    flexShrink: 1,
+    color: ILLUM.greenDark,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    fontWeight: '600',
+  },
+  surahHeaderBasmallah: {
+    maxWidth: '78%',
+    flexShrink: 1,
+    color: ILLUM.greenDark,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    paddingHorizontal: 2,
+  },
   floralHeader: {
     width: '100%',
     flex: 1,
@@ -2637,13 +2682,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // Prevent children from stretching to the slot width (Yoga default alignItems:stretch).
     alignItems: 'flex-end',
-    // Physical right = on-screen right (line start) once RTL unmirror cancels out.
-    paddingRight: AYAH_PAD_START,
-    paddingLeft: AYAH_PAD_END,
+    // The start-side safety inset maps to the left side of this view on device.
+    paddingRight: AYAH_PAD_END,
+    paddingLeft: AYAH_PAD_START,
   },
   ayahLineBodyText: {
     alignSelf: 'flex-end',
     maxWidth: '100%',
+    paddingRight: AYAH_TEXT_START_INSET,
     textAlign: 'right',
     writingDirection: 'rtl',
   },
