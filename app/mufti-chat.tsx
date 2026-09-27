@@ -15,6 +15,7 @@ import { CopiedNotice, useCopiedNotice } from '@/components/ui/CopiedNotice';
 import { MarkdownText, normalizeMarkdownForClipboard } from '@/components/MarkdownText';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { BorderRadius, RTL_CONTAINER, Spacing, ThemeColors, Typography } from '@/constants/theme';
 import {
   persianCaptionText,

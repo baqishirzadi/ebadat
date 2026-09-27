@@ -4,11 +4,12 @@
  */
 
 import React, { useRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, FlatList, Dimensions, Pressable, ActivityIndicator, ViewToken } from 'react-native';
+import { View, StyleSheet, FlatList, Pressable, ActivityIndicator, ViewToken } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp, useReadingPosition } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
+import { getPortraitWindowSize } from '@/hooks/usePortraitLock';
 import { AyahRow } from './AyahRow';
 import { SurahHeader } from './SurahHeader';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
@@ -945,7 +946,7 @@ export const MushafView = React.memo(function MushafView({
         showsHorizontalScrollIndicator={false}
         inverted // RTL support
         renderItem={({ item }) => (
-          <View style={[styles.mushafPage, { width: Dimensions.get('window').width }]}>
+          <View style={[styles.mushafPage, { width: getPortraitWindowSize().width }]}>
             <View style={[styles.pageHeader, { borderBottomColor: theme.divider }]}>
               <CenteredText style={[styles.pageNumber, { color: theme.textSecondary }]}>
                 {toArabicNumerals(item.page)}

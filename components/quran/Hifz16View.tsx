@@ -6,7 +6,6 @@
 
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-    Dimensions,
     FlatList,
     I18nManager,
     Platform,
@@ -21,6 +20,7 @@ import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useApp, useAppLanguage, useBookmarks, useReadingPosition } from '@/context/AppContext';
 import { getSurah } from '@/data/surahNames';
+import { getPortraitWindowSize } from '@/hooks/usePortraitLock';
 import type { AppLanguage } from '@/types/quran';
 import {
     getHifzPage,
@@ -47,8 +47,7 @@ import audioManager from '@/utils/quranAudio';
 import { MaterialIcons } from '@expo/vector-icons';
 
 const HIFZ_FONT = Platform.OS === 'ios' ? 'Scheherazade New' : 'ScheherazadeNew';
-const PAGE_WIDTH = Dimensions.get('window').width;
-const WINDOW_HEIGHT = Dimensions.get('window').height;
+const { width: PAGE_WIDTH, height: WINDOW_HEIGHT } = getPortraitWindowSize();
 /** Sentinel past Fatiha in the swipe list; not a mushaf page number. */
 const HIFZ_DEDICATION_PAGE = 0;
 /** Android mirrors horizontal FlatLists under RTL; undo that for physical LTR paging. */
@@ -59,6 +58,11 @@ const BASE_FONT = 17;
 const LINE_HEIGHT_RATIO = 1.9;
 /** Extra tall for Bismillah so ی / م descenders are not clipped. */
 const BASMALLAH_LINE_HEIGHT_RATIO = 2.35;
+/**
+ * iOS draws Text only inside its bounds; stacked high/low marks (small meem over tanween)
+ * rise past the line box, so visible line Texts get symmetric headroom.
+ */
+const LINE_INK_PAD = 6;
 const BISMILLAH = 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ';
 const AYAH_HIGHLIGHT = 'rgba(14, 107, 79, 0.12)';
 /**
@@ -1043,13 +1047,13 @@ function WawGapPieces({
         ) : (
           <Text
             key={`tx-${index}`}
-            style={[textStyle, styles.wawGapPiece, highlight]}
+            style={[textStyle, styles.wawGapPiece]}
             onPress={onPress}
             suppressHighlighting
             numberOfLines={1}
             ellipsizeMode="clip"
           >
-            {part.text}
+            {highlight ? <Text style={highlight}>{part.text}</Text> : part.text}
           </Text>
         ),
       )}
@@ -1481,6 +1485,7 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
       styles.lineText,
       centered ? styles.lineCentered : styles.lineArabic,
       { color, fontSize, lineHeight },
+      styles.lineInkPad,
       androidFontPad,
     ],
     [centered, color, fontSize, lineHeight],
@@ -1656,7 +1661,7 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
             onLayout={onMarkerLayout}
           >
             <Text
-              style={[lineStyle, styles.ayahLineMarkerText, markerHighlight]}
+              style={[lineStyle, styles.ayahLineMarkerText]}
               numberOfLines={1}
               ellipsizeMode="clip"
               onPress={
@@ -1665,7 +1670,7 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
               suppressHighlighting
             >
               {MARKER_RTL_MARK}
-              {markers}
+              {markerHighlight ? <Text style={markerHighlight}>{markers}</Text> : markers}
             </Text>
           </View>
         ) : null}
@@ -3016,6 +3021,10 @@ const styles = StyleSheet.create({
   centeredLineText: {
     maxWidth: '100%',
   },
+  lineInkPad: {
+    paddingVertical: LINE_INK_PAD,
+    marginVertical: -LINE_INK_PAD,
+  },
   lineText: {
     fontFamily: HIFZ_FONT,
   },
@@ -3056,9 +3065,14 @@ const styles = StyleSheet.create({
   centeredWawRun: {
     justifyContent: 'center',
   },
-  /** A squeezed piece would truncate itself; the line fit keeps the run in the slot. */
+  /**
+   * A squeezed piece would truncate itself; the line fit keeps the run in the slot.
+   * Width is reset because centered lines carry width: '100%', which would give every
+   * piece a full row and push the rest of the line off the page.
+   */
   wawGapPiece: {
     flexShrink: 0,
+    width: 'auto',
   },
   ayahLineMarkerText: {
     writingDirection: 'rtl',

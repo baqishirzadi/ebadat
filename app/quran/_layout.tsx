@@ -5,7 +5,11 @@
 import { Stack } from 'expo-router';
 import { I18nManager } from 'react-native';
 
+import { usePortraitLock } from '@/hooks/usePortraitLock';
+
 export default function QuranLayout() {
+  // Covers the reader in translation and 16-line mode, and the juz page.
+  usePortraitLock();
   return (
     <Stack
       screenOptions={{
