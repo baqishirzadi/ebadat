@@ -65,3 +65,7 @@ expo-env.d.ts
 # @end expo-cli
 
 .tmp-verify/
+
+# Local agent screenshots and task notes
+/.cursor-*.png
+/CURSOR_*.md
