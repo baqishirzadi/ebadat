@@ -61,6 +61,24 @@ export function findHifzJuzStartPage(juzNumber: number): number | null {
   return page?.page ?? null;
 }
 
+let juzPageRanges: Map<number, { start: number; end: number }> | null = null;
+
+/** First and last 16-line page of a juz (1–30). */
+export function getHifzJuzPageRange(juzNumber: number): { start: number; end: number } | null {
+  if (!juzPageRanges) {
+    juzPageRanges = new Map();
+    for (const entry of payload.pages) {
+      const range = juzPageRanges.get(entry.juz);
+      if (range) {
+        range.end = Math.max(range.end, entry.page);
+      } else {
+        juzPageRanges.set(entry.juz, { start: entry.page, end: entry.page });
+      }
+    }
+  }
+  return juzPageRanges.get(juzNumber) ?? null;
+}
+
 /** Surah and ayah that open the start of a juz in the 16-line reader. */
 export function findHifzJuzStartAyah(
   juzNumber: number

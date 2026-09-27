@@ -23,7 +23,7 @@ import { NumericText } from '@/components/ui/NumericText';
 import { getUthmaniFont } from '@/hooks/useFonts';
 import { RtlView } from '@/components/ui/RtlView';
 import { normalizeArabicForSearch, normalizeDariForSearch, normalizePashtoForSearch } from '@/utils/quranSearchNormalize';
-import { findHifzJuzStartAyah } from '@/utils/hifz16';
+import { findHifzJuzStartAyah, getHifzJuzPageRange } from '@/utils/hifz16';
 import { SearchButton } from './SearchButton';
 import { JuzList } from './JuzList';
 import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
@@ -234,6 +234,14 @@ export function SurahList() {
       );
     });
   }, [searchQuery, surahByNumber]);
+
+  const displayedJuzs = useMemo(() => {
+    if (!hifz16Line) return filteredJuzs;
+    return filteredJuzs.map((juz) => {
+      const range = getHifzJuzPageRange(juz.juzNumber);
+      return range ? { ...juz, startPage: range.start, endPage: range.end } : juz;
+    });
+  }, [filteredJuzs, hifz16Line]);
 
   const handleSurahPress = useCallback((surahNumber: number) => {
     router.push(`/quran/${surahNumber}`);
@@ -446,7 +454,7 @@ export function SurahList() {
           {headerContent}
           <View style={styles.juzListWrapper}>
             <JuzList
-              juzItems={filteredJuzs}
+              juzItems={displayedJuzs}
               currentPosition={position}
               onPressJuz={(juz) => handleJuzPress(juz.juzNumber)}
             />
@@ -635,7 +643,7 @@ const styles = StyleSheet.create({
     height: Spacing.md,
   },
   juzListWrapper: {
-    paddingHorizontal: Spacing.md,
+    paddingHorizontal: 0,
   },
   surahItem: {
     alignItems: 'center',

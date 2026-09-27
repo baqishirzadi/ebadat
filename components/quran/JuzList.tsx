@@ -3,6 +3,7 @@ import { useApp } from '@/context/AppContext';
 import { JuzRange } from '@/data/juzRanges';
 import { SURAH_NAMES, toArabicNumerals } from '@/data/surahNames';
 import { getUthmaniFont } from '@/hooks/useFonts';
+import { directionStyle, textCenterStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 import React, { useMemo } from 'react';
 
@@ -37,7 +38,9 @@ function isPositionInsideJuz(position: ReadingPosition, juz: JuzRange): boolean 
 
 export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps) {
   const { theme } = useApp();
-  const { t, content } = useI18n();
+  const { t, content, language } = useI18n();
+  const direction = directionStyle(language);
+  const textCenter = textCenterStyle(language);
   const surahNameMap = useMemo(
     () => new Map(SURAH_NAMES.map((surah) => [surah.number, content(surah, null)])),
     [content],
@@ -52,65 +55,78 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.grid, direction]}>
       {juzItems.map((juz) => {
         const isCurrent = currentPosition ? isPositionInsideJuz(currentPosition, juz) : false;
-        const startSurahName = surahNameMap.get(juz.startSurah) || toArabicNumerals(juz.startSurah);
-        const endSurahName = surahNameMap.get(juz.endSurah) || toArabicNumerals(juz.endSurah);
+        const title = t('quran.juzTitle', { number: toArabicNumerals(juz.juzNumber) });
         const pageLine = t('quran.pageRange', {
           start: toArabicNumerals(juz.startPage),
           end: toArabicNumerals(juz.endPage),
         });
         const rangeLine = t('quran.surahAyahRange', {
-          startSurah: startSurahName,
+          startSurah: surahNameMap.get(juz.startSurah) || toArabicNumerals(juz.startSurah),
           startAyah: toArabicNumerals(juz.startAyah),
-          endSurah: endSurahName,
+          endSurah: surahNameMap.get(juz.endSurah) || toArabicNumerals(juz.endSurah),
           endAyah: toArabicNumerals(juz.endAyah),
         });
 
         return (
           <Pressable
             key={`juz-${juz.juzNumber}`}
+            testID={`quran-juz-${juz.juzNumber}`}
+            accessibilityRole="button"
+            accessibilityLabel={`${title}، ${pageLine}، ${rangeLine}`}
+            accessibilityState={{ selected: isCurrent }}
             onPress={() => onPressJuz(juz)}
             style={({ pressed }) => [
-              styles.juzCard,
+              styles.plaque,
               {
-                backgroundColor: theme.card,
-                borderColor: isCurrent ? `${theme.playing}CC` : `${theme.playing}3D`,
-                borderWidth: isCurrent ? 1.4 : 1.1,
-                shadowColor: isCurrent ? `${theme.playing}66` : `${theme.playing}40`,
+                backgroundColor: isCurrent ? theme.playing : theme.card,
+                borderColor: theme.playing,
               },
-              pressed && styles.juzCardPressed,
-              pressed && !isCurrent && { borderColor: `${theme.playing}66` },
+              pressed && styles.plaquePressed,
             ]}
           >
             <View
               style={[
-                styles.decorativeTopLine,
-                { backgroundColor: isCurrent ? `${theme.playing}70` : `${theme.playing}3D` },
+                styles.plaqueInner,
+                { borderColor: isCurrent ? `${theme.accent}CC` : `${theme.accent}8C` },
               ]}
-            />
-            <View
-              style={[
-                styles.decorativeBottomLine,
-                { backgroundColor: isCurrent ? `${theme.playing}3D` : `${theme.playing}26` },
-              ]}
-            />
-
-            <View style={styles.calligraphyWrap}>
-              <LocalizedText style={[styles.calligraphy, { color: `${theme.playing}D9` }]}>﷽</LocalizedText>
-            </View>
-
-            <View style={styles.centerInfo}>
-              <LocalizedText style={[styles.title, { color: theme.text }]}>
-                {t('quran.juzTitle', { number: toArabicNumerals(juz.juzNumber) })}
-              </LocalizedText>
-              <LocalizedText style={[styles.detailLine, { color: theme.textSecondary }]} numberOfLines={1}>
-                {pageLine}
-              </LocalizedText>
-              <LocalizedText style={[styles.rangeLine, { color: theme.textSecondary }]} numberOfLines={2}>
-                {rangeLine}
-              </LocalizedText>
+            >
+              <View
+                style={[
+                  styles.medallion,
+                  isCurrent
+                    ? { backgroundColor: '#fff', borderColor: theme.accent }
+                    : { backgroundColor: `${theme.playing}12`, borderColor: `${theme.accent}B3` },
+                ]}
+              >
+                <LocalizedText
+                  style={[styles.medallionNumber, { color: theme.playing }]}
+                  numberOfLines={1}
+                >
+                  {toArabicNumerals(juz.juzNumber)}
+                </LocalizedText>
+              </View>
+              <View style={styles.info}>
+                <LocalizedText
+                  style={[styles.title, textCenter, { color: isCurrent ? '#fff' : theme.text }]}
+                  numberOfLines={1}
+                >
+                  {title}
+                </LocalizedText>
+                <LocalizedText
+                  style={[
+                    styles.pages,
+                    textCenter,
+                    { color: isCurrent ? 'rgba(255,255,255,0.85)' : theme.textSecondary },
+                  ]}
+                  numberOfLines={1}
+                  adjustsFontSizeToFit
+                >
+                  {pageLine}
+                </LocalizedText>
+              </View>
             </View>
           </Pressable>
         );
@@ -120,84 +136,68 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
 }
 
 const styles = StyleSheet.create({
-  container: {
-    gap: Spacing.md,
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: Spacing.sm + 2,
+    paddingTop: Spacing.sm,
   },
-  juzCard: {
-    minHeight: 128,
-    borderRadius: BorderRadius.xl,
-    borderWidth: 1.1,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.md,
+  plaque: {
+    width: '48.5%',
+    minHeight: 76,
+    padding: 3,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1.2,
+    shadowColor: '#0B5E4B',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  plaquePressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
+  plaqueInner: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 46,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+  },
+  medallion: {
+    position: 'absolute',
+    start: 5,
+    top: '50%',
+    marginTop: -19,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderWidth: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 3,
-    shadowColor: '#0B5E4B',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    overflow: 'hidden',
-    position: 'relative',
   },
-  juzCardPressed: {
-    opacity: 0.92,
-    transform: [{ scale: 0.99 }],
-  },
-  decorativeTopLine: {
-    position: 'absolute',
-    top: 0,
-    right: 22,
-    left: 22,
-    height: 2,
-    borderBottomLeftRadius: 2,
-    borderBottomRightRadius: 2,
-  },
-  decorativeBottomLine: {
-    position: 'absolute',
-    bottom: 0,
-    right: 42,
-    left: 42,
-    height: 1,
-    borderTopLeftRadius: 1,
-    borderTopRightRadius: 1,
-  },
-  calligraphyWrap: {
-    marginTop: 2,
-    marginBottom: 2,
-  },
-  calligraphy: {
+  medallionNumber: {
     fontFamily: getUthmaniFont(),
-    fontSize: 26,
+    fontSize: 19,
+    lineHeight: 27,
     textAlign: 'center',
-    writingDirection: 'rtl',
     includeFontPadding: false,
   },
-  centerInfo: {
-    width: '100%',
-    alignItems: 'center',
+  info: {
     justifyContent: 'center',
-    gap: 6,
+    gap: 2,
   },
   title: {
-    fontSize: Typography.ui.heading,
+    fontSize: Typography.ui.body,
     fontWeight: '700',
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    writingDirection: 'rtl',
   },
-  detailLine: {
+  pages: {
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
-    lineHeight: 20,
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  rangeLine: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    lineHeight: 22,
-    textAlign: 'center',
-    writingDirection: 'rtl',
+    lineHeight: 18,
   },
   emptyContainer: {
     paddingVertical: Spacing.xl,
