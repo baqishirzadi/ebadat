@@ -18,7 +18,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { formatGregorianDateTimeCompact } from '@/utils/calendarDisplay';
 import { toArabicNumerals } from '@/utils/numbers';
 import { pickContent } from '@/utils/i18n/content';
-import { backIconName } from '@/utils/i18n/direction';
+import { backIconName, directionStyle } from '@/utils/i18n/direction';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { useI18n } from '@/utils/i18n/useI18n';
 import {
   ActivityIndicator,
@@ -152,7 +153,8 @@ export default function DuaRequestDetailScreen() {
   const responderName = responder
     ? pickContent(responder, 'name', language)
     : request.responderName || '';
-
+  const senderName = responderName || request.reviewerName || '';
+  const direction = directionStyle(language);
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Header */}
@@ -234,46 +236,62 @@ export default function DuaRequestDetailScreen() {
 
         {/* Response (if answered) */}
         {request.status === 'answered' && request.response && (
-          <View style={[styles.card, styles.responseCard, { backgroundColor: `${statusInfo.color}15`, borderColor: statusInfo.color }]}>
-            <View style={styles.cardHeader}>
-              <MaterialIcons name="check-circle" size={20} color={statusInfo.color} />
-              <CenteredText style={[styles.cardTitle, { color: theme.text }]}>
-              {t('dua.detail.response')}
-            </CenteredText>
-              <Pressable
-                testID="dua-copy-response"
-                onPress={() => void handleCopyResponse(request.response!)}
-                hitSlop={8}
-                style={styles.copyResponseButton}
-              >
-                <MaterialIcons name="content-copy" size={17} color={theme.textSecondary} />
-                <CenteredText style={[styles.copyResponseLabel, { color: theme.textSecondary }]}>{t('dua.detail.copy')}</CenteredText>
-              </Pressable>
+          <View testID="dua-reply-bubble" style={[styles.replyThread, direction]}>
+            <View style={[styles.replyAvatar, { backgroundColor: theme.tint }]}>
+              <MaterialIcons name="person" size={20} color="#fff" />
             </View>
-            <MarkdownText style={[styles.responseText, { color: theme.text }]} boldStyle={{ color: theme.text }}>
-              {request.response}
-            </MarkdownText>
-            {/0787506666|لنگر/.test(request.response) ? (
-              <View style={[styles.distressBox, { backgroundColor: theme.backgroundSecondary }]}>
-                <MaterialIcons name="phone-in-talk" size={18} color={theme.tint} />
-                <CenteredText style={[styles.distressText, { color: theme.textSecondary }]}>
-                  {t('dua.detail.distress')}
-                </CenteredText>
+            <View
+              style={[
+                styles.replyBubble,
+                { backgroundColor: theme.card, borderColor: `${statusInfo.color}55` },
+              ]}
+            >
+              <View style={[styles.replyHeader, direction]}>
+                <View style={styles.replyHeaderText}>
+                  <LocalizedText style={[styles.replySender, styles.replyRtl, { color: theme.tint }]} numberOfLines={1}>
+                    {senderName || t('dua.detail.response')}
+                  </LocalizedText>
+                  {request.reviewerName && request.reviewerName !== senderName ? (
+                    <LocalizedText style={[styles.replyMeta, styles.replyRtl, { color: theme.textSecondary }]} numberOfLines={1}>
+                      {t('dua.detail.responderLabel', { name: request.reviewerName })}
+                    </LocalizedText>
+                  ) : null}
+                </View>
+                <Pressable
+                  testID="dua-copy-response"
+                  accessibilityRole="button"
+                  accessibilityLabel={t('dua.detail.copy')}
+                  onPress={() => void handleCopyResponse(request.response!)}
+                  hitSlop={8}
+                  style={({ pressed }) => [styles.copyResponseButton, direction, pressed && styles.pressed]}
+                >
+                  <MaterialIcons name="content-copy" size={16} color={theme.textSecondary} />
+                  <CenteredText style={[styles.copyResponseLabel, { color: theme.textSecondary }]}>{t('dua.detail.copy')}</CenteredText>
+                </Pressable>
               </View>
-            ) : null}
-            {request.reviewerName && (
-              <View style={styles.reviewerInfo}>
-                <MaterialIcons name="person" size={16} color={theme.textSecondary} />
-                <CenteredText style={[styles.reviewerText, { color: theme.textSecondary }]}>
-                  {t('dua.detail.responderLabel', { name: request.reviewerName })}
-                </CenteredText>
-              </View>
-            )}
-            {request.answeredAt && (
-              <CenteredText style={[styles.dateText, { color: theme.textSecondary }]}>
-                {formatDate(request.answeredAt)}
-              </CenteredText>
-            )}
+              <MarkdownText
+                style={[styles.responseText, styles.replyRtl, { color: theme.text }]}
+                boldStyle={{ color: theme.text }}
+              >
+                {request.response}
+              </MarkdownText>
+              {/0787506666|لنگر/.test(request.response) ? (
+                <View style={[styles.distressBox, direction, { backgroundColor: theme.backgroundSecondary }]}>
+                  <MaterialIcons name="phone-in-talk" size={18} color={theme.tint} />
+                  <CenteredText style={[styles.distressText, { color: theme.textSecondary }]}>
+                    {t('dua.detail.distress')}
+                  </CenteredText>
+                </View>
+              ) : null}
+              {request.answeredAt ? (
+                <View style={[styles.replyFooter, direction]}>
+                  <MaterialIcons name="done-all" size={15} color={statusInfo.color} />
+                  <LocalizedText style={[styles.replyTime, styles.replyRtl, { color: theme.textSecondary }]}>
+                    {formatDate(request.answeredAt)}
+                  </LocalizedText>
+                </View>
+              ) : null}
+            </View>
           </View>
         )}
 
@@ -403,11 +421,78 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
   },
   copyResponseButton: {
-    position: 'absolute',
-    right: 0,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
+  },
+  pressed: {
+    opacity: 0.6,
+  },
+  replyThread: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  replyAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  replyBubble: {
+    flex: 1,
+    minWidth: 0,
+    borderWidth: 1,
+    borderRadius: BorderRadius.lg,
+    borderBottomStartRadius: 4,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.xs,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
+  },
+  replyHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginBottom: Spacing.xs,
+  },
+  replyHeaderText: {
+    flex: 1,
+    minWidth: 0,
+  },
+  replySender: {
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn-Bold',
+  },
+  replyMeta: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+  },
+  replyFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 4,
+    marginTop: 2,
+  },
+  replyTime: {
+    fontSize: 12,
+    fontFamily: 'Vazirmatn',
+  },
+  // Responders always write in Dari or Pashto, whatever the reader's app language.
+  // Natural alignment follows the RTL base direction; an explicit 'right' is
+  // mirrored to the left by iOS inside RTL layouts.
+  replyRtl: {
+    textAlign: 'auto',
+    writingDirection: 'rtl',
   },
   copyResponseLabel: {
     fontSize: Typography.ui.caption,
@@ -420,15 +505,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
   },
-  responseCard: {
-    borderWidth: 2,
-  },
   responseText: {
     fontSize: Typography.ui.body,
-    lineHeight: 24,
-    marginBottom: Spacing.md,
+    lineHeight: 26,
+    marginBottom: Spacing.xs,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
   },
   distressBox: {
     flexDirection: 'row',
@@ -444,17 +525,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontFamily: 'Vazirmatn',
     textAlign: 'center',
-  },
-  reviewerInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: Spacing.xs,
-    marginBottom: Spacing.sm,
-  },
-  reviewerText: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
   },
   dateText: {
     fontSize: Typography.ui.caption,

@@ -6,6 +6,7 @@
 import React from 'react';
 
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { UnreadCountBadge } from '@/components/dua/UnreadCountBadge';
 import { LocalizedText } from '@/components/ui/LocalizedText';
 import { RtlView } from '@/components/ui/RtlView';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -165,12 +166,8 @@ export default function AdhkarScreen() {
       >
         <RtlView style={styles.duaCardRow}>
           <View style={styles.duaIconContainer}>
-            <LocalizedText style={styles.duaEmoji}>🤲</LocalizedText>
-            {unreadCount > 0 ? (
-              <View style={styles.duaUnreadBadge}>
-                <LocalizedText style={styles.duaUnreadText}>{unreadCount > 9 ? `${n(9)}+` : n(unreadCount)}</LocalizedText>
-              </View>
-            ) : null}
+            <MaterialIcons name="volunteer-activism" size={22} color="#fff" />
+            <UnreadCountBadge count={unreadCount} testID="adhkar-dua-unread-badge" />
           </View>
           <View style={styles.duaCardInfo}>
             <RtlText align="center" style={[styles.duaCardTitle, { fontFamily }]}>{t('adhkar.dua.title')}</RtlText>
@@ -383,31 +380,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.22)',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  duaUnreadBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    minWidth: 18,
-    height: 18,
-    borderRadius: 9,
-    paddingHorizontal: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#E11D48',
-  },
-  duaUnreadText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '700',
-    lineHeight: 14,
-  },
-  duaEmoji: {
-    fontSize: 22,
-    lineHeight: 24,
-    color: '#fff',
-    textAlign: 'center',
-    includeFontPadding: false,
   },
   duaCardInfo: {
     flex: 1,

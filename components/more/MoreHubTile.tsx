@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import CenteredText from '@/components/CenteredText';
+import { UnreadCountBadge } from '@/components/dua/UnreadCountBadge';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useI18n } from '@/utils/i18n/useI18n';
@@ -41,13 +42,7 @@ export function MoreHubTile({
     >
       <View style={[styles.iconWrap, { backgroundColor: `${theme.tint}18`, borderColor: `${theme.tint}30` }]}>
         <MaterialIcons name={icon} size={24} color={theme.tint} />
-        {badgeCount > 0 ? (
-          <View style={styles.badge}>
-            <CenteredText style={styles.badgeText}>
-              {badgeCount > 9 ? '۹+' : String(badgeCount)}
-            </CenteredText>
-          </View>
-        ) : null}
+        <UnreadCountBadge count={badgeCount} testID={testID ? `${testID}-badge` : undefined} />
       </View>
       <CenteredText style={[styles.label, { color: theme.text }]}>{label}</CenteredText>
       <CenteredText style={[styles.subtitle, { color: theme.textSecondary, lineHeight: subtitleLineHeight }]}>
@@ -74,24 +69,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: Spacing.sm,
-  },
-  badge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    minWidth: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: '#E11D48',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  badgeText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '700',
-    lineHeight: 12,
   },
   label: {
     fontSize: Typography.ui.body,

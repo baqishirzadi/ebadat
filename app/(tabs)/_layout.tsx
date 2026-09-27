@@ -131,7 +131,6 @@ export default function TabLayout() {
       {/* Hidden routes */}
       <Tabs.Screen name="articles" options={{ href: null }} />
       <Tabs.Screen name="adhkar" options={{ href: null }} />
-      <Tabs.Screen name="prayer" options={{ href: null }} />
       <Tabs.Screen name="ahadith" options={{ href: null }} />
       <Tabs.Screen name="prayer-learning" options={{ href: null }} />
       <Tabs.Screen name="bookmarks" options={{ href: null }} />

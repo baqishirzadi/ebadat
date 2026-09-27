@@ -33,7 +33,6 @@
       "infoPlist": {
         "UIBackgroundModes": [
           "audio",
-          "location",
           "processing"
         ],
         "BGTaskSchedulerPermittedIdentifiers": [

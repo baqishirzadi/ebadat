@@ -11,6 +11,7 @@ import { DuaRequest, DUA_CATEGORIES } from '@/types/dua';
 import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { StatusBadge } from './StatusBadge';
+import { UnreadCountBadge, UNREAD_BADGE_COLOR } from './UnreadCountBadge';
 import CenteredText from '@/components/CenteredText';
 import { formatGregorianDateCompact } from '@/utils/calendarDisplay';
 import { toArabicNumerals } from '@/utils/numbers';
@@ -82,9 +83,11 @@ export function RequestCard({
           <CenteredText style={[styles.category, { color: theme.textSecondary }]}>
             {categoryName}
           </CenteredText>
-          {unread ? (
-            <View style={styles.unreadDot} />
-          ) : null}
+          <UnreadCountBadge
+            count={unread ? 1 : 0}
+            variant="inline"
+            testID={`dua-request-${request.id}-unread`}
+          />
         </View>
         <StatusBadge status={request.status} />
       </View>
@@ -101,8 +104,12 @@ export function RequestCard({
         </CenteredText>
         {request.status === 'answered' && (
           <View style={styles.answeredIndicator}>
-            <MaterialIcons name="check-circle" size={16} color="#10B981" />
-            <CenteredText style={styles.answeredText}>
+            <MaterialIcons
+              name={unread ? 'mark-chat-unread' : 'check-circle'}
+              size={16}
+              color={unread ? UNREAD_BADGE_COLOR : '#10B981'}
+            />
+            <CenteredText style={[styles.answeredText, unread && styles.answeredTextUnread]}>
               {unread ? t('dua.reply.new') : t('dua.status.answered')}
             </CenteredText>
           </View>
@@ -173,11 +180,9 @@ const styles = StyleSheet.create({
     color: '#10B981',
     fontFamily: 'Vazirmatn',
   },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#E11D48',
+  answeredTextUnread: {
+    color: UNREAD_BADGE_COLOR,
+    fontFamily: 'Vazirmatn-Bold',
   },
   arrow: {
     position: 'absolute',

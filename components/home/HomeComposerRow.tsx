@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet } from 'react-native';
 
 import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { RtlView } from '@/components/ui/RtlView';
@@ -41,11 +41,19 @@ export function HomeComposerRow({
   const isEnglish = language === 'english';
   const isRtlHome = !isEnglish;
   const disabled = !value.trim() || isStreaming || !isConfigured;
+  const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
   const compactInputStyle = isRtlHome
-    ? fontFamily === 'NotoNastaliqUrdu'
+    ? isNastaliq
       ? styles.pashtoNastaliqInput
       : styles.pashtoInput
     : null;
+  // iOS pins multiline text to the top of the box; center the first line instead.
+  const iosCenterStyle =
+    Platform.OS === 'ios' && isRtlHome
+      ? isNastaliq
+        ? styles.iosNastaliqCenter
+        : styles.iosCenter
+      : null;
 
   const sendButton = (
     <Pressable
@@ -71,6 +79,7 @@ export function HomeComposerRow({
       style={[
         styles.input,
         compactInputStyle,
+        iosCenterStyle,
         isEnglish && styles.inputEnglish,
       ]}
       value={value}
@@ -147,6 +156,14 @@ const styles = StyleSheet.create({
     minHeight: 40,
     paddingVertical: 2,
     includeFontPadding: true,
+  },
+  iosCenter: {
+    paddingTop: 10,
+    paddingBottom: 6,
+  },
+  iosNastaliqCenter: {
+    paddingTop: 6,
+    paddingBottom: 2,
   },
   sendButton: {
     width: 44,

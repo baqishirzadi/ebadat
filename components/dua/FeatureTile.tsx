@@ -11,6 +11,7 @@ import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import { UnreadCountBadge } from '@/components/dua/UnreadCountBadge';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 export function DuaFeatureTile() {
@@ -34,13 +35,7 @@ export function DuaFeatureTile() {
       {/* Icon */}
       <View style={[styles.iconContainer, { backgroundColor: `${theme.tint}20` }]}>
         <MaterialIcons name="favorite" size={32} color={theme.tint} />
-        {unreadCount > 0 ? (
-          <View style={styles.badge}>
-            <CenteredText style={styles.badgeText}>
-              {unreadCount > 9 ? '۹+' : String(unreadCount)}
-            </CenteredText>
-          </View>
-        ) : null}
+        <UnreadCountBadge count={unreadCount} style={styles.badge} />
       </View>
 
       {/* Content */}
@@ -80,22 +75,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badge: {
-    position: 'absolute',
     top: -2,
     left: -2,
-    minWidth: 18,
-    height: 18,
-    borderRadius: 9,
-    paddingHorizontal: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#E11D48',
-  },
-  badgeText: {
-    color: '#fff',
-    fontSize: 11,
-    fontFamily: 'Vazirmatn-Bold',
-    lineHeight: 14,
   },
   content: {
     flex: 1,

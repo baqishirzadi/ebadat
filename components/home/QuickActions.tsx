@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { UnreadCountBadge } from '@/components/dua/UnreadCountBadge';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
@@ -43,12 +44,8 @@ export function QuickActions() {
             <RtlView style={[styles.iconCircle, { backgroundColor: `${theme.tint}18` }]}>
               <MaterialIcons name={action.icon} size={24} color={theme.tint} />
             </RtlView>
-            {action.badgeKey === 'dua' && unreadCount > 0 ? (
-              <View style={[styles.badge, { backgroundColor: '#E11D48' }]}>
-                <RtlText style={styles.badgeText}>
-                  {unreadCount > 9 ? (isEnglish ? '9+' : '۹+') : String(unreadCount)}
-                </RtlText>
-              </View>
+            {action.badgeKey === 'dua' ? (
+              <UnreadCountBadge count={unreadCount} testID="home-quick-dua-unread-badge" />
             ) : null}
           </View>
           <RtlText
@@ -98,22 +95,5 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 11,
     lineHeight: 15,
-  },
-  badge: {
-    position: 'absolute',
-    top: -4,
-    left: -4,
-    minWidth: 18,
-    height: 18,
-    borderRadius: 9,
-    paddingHorizontal: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  badgeText: {
-    color: '#fff',
-    fontSize: 11,
-    fontFamily: 'Vazirmatn-Bold',
-    lineHeight: 14,
   },
 });

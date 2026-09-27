@@ -6,7 +6,7 @@
 import React, { useState } from 'react';
 
 import { View, StyleSheet, ScrollView, Pressable, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { LocalizedText, LocalizedTextInput } from '@/components/ui/LocalizedText';
+import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import { useApp } from '@/context/AppContext';
@@ -41,7 +41,7 @@ export default function NewDuaRequestScreen() {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [gender, setGender] = useState<UserGender | null>(null);
-  const [responderId, setResponderId] = useState<ResponderId | null>(null);
+  const [responderId, setResponderId] = useState<ResponderId | null>('qari_syed_safiullah_shirzadi');
   const [messageHeight, setMessageHeight] = useState(120);
 
   const handleSubmit = async () => {
@@ -212,8 +212,8 @@ export default function NewDuaRequestScreen() {
           </CenteredText>
           <View style={styles.genderRow}>
             {[
-              { id: 'male' as const, label: t('dua.gender.male'), emoji: '👨' },
-              { id: 'female' as const, label: t('dua.gender.female'), emoji: '🧕' },
+              { id: 'male' as const, label: t('dua.gender.male'), icon: 'man' as const },
+              { id: 'female' as const, label: t('dua.gender.female'), icon: 'woman' as const },
             ].map((option) => {
               const selected = gender === option.id;
               return (
@@ -229,7 +229,7 @@ export default function NewDuaRequestScreen() {
                     pressed && styles.buttonPressed,
                   ]}
                 >
-                  <LocalizedText style={styles.genderEmoji}>{option.emoji}</LocalizedText>
+                  <MaterialIcons name={option.icon} size={20} color={selected ? theme.tint : theme.textSecondary} />
                   <CenteredText
                     style={[
                       styles.genderText,
@@ -346,9 +346,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     fontWeight: '600',
     fontFamily: 'Vazirmatn',
-  },
-  genderEmoji: {
-    fontSize: 18,
   },
   genderChip: {
     flex: 1,

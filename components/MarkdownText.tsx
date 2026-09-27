@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { StyleProp, TextStyle } from 'react-native';
+import { StyleProp, StyleSheet, TextStyle } from 'react-native';
 import { LocalizedText } from '@/components/ui/LocalizedText';
 
 type MarkdownTextProps = {
@@ -44,6 +44,11 @@ export function MarkdownText({
 }: MarkdownTextProps) {
   const parts: React.ReactNode[] = [];
   let key = 0;
+  const flatStyle = StyleSheet.flatten(style);
+  const paragraphStyle: TextStyle | undefined =
+    flatStyle?.textAlign || flatStyle?.writingDirection
+      ? { textAlign: flatStyle.textAlign, writingDirection: flatStyle.writingDirection }
+      : undefined;
 
   const renderInline = (value: string): React.ReactNode[] => {
     const inline: React.ReactNode[] = [];
@@ -87,7 +92,7 @@ export function MarkdownText({
         ? bulletStyle
         : undefined;
     parts.push(
-      <LocalizedText key={`line-${key++}`} style={lineStyle}>
+      <LocalizedText key={`line-${key++}`} style={[paragraphStyle, lineStyle]}>
         {bullet ? '• ' : null}
         {lineChildren}
       </LocalizedText>,

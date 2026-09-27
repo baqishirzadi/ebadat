@@ -27,6 +27,7 @@ import {
     getHifzSurahStartPage,
     HIFZ16_PAGE_COUNT,
     hifzAyahVisibleLengthOnPage,
+    hifzPageContainsAyah,
     listHifzPagesForAyah,
     resolveHifzPageTarget,
     type HifzLine,
@@ -865,9 +866,12 @@ const SurahFloralHeader = memo(function SurahFloralHeader({
     <View style={styles.surahHeader}>
       {title ? (
         <View style={styles.surahHeaderTitleRow}>
+          <MiniFloral size={14} />
           <View style={styles.surahHeaderRule} />
           <Text
             numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.85}
             ellipsizeMode="clip"
             style={[
               styles.surahHeaderTitle,
@@ -882,10 +886,12 @@ const SurahFloralHeader = memo(function SurahFloralHeader({
             {title}
           </Text>
           <View style={styles.surahHeaderRule} />
+          <MiniFloral size={14} />
         </View>
       ) : null}
       {basmallahText != null ? (
         <View style={styles.surahHeaderBasmallahRow}>
+          <MiniFloral size={14} />
           <View style={styles.surahHeaderRule} />
           <Text
             numberOfLines={1}
@@ -903,6 +909,7 @@ const SurahFloralHeader = memo(function SurahFloralHeader({
             {basmallahText || BISMILLAH}
           </Text>
           <View style={styles.surahHeaderRule} />
+          <MiniFloral size={14} />
         </View>
       ) : null}
     </View>
@@ -1818,6 +1825,12 @@ export const Hifz16View = memo(function Hifz16View({
   const playingRef = useRef({ surah: activePlayingSurah, ayah: activePlayingAyah });
   playingRef.current = { surah: activePlayingSurah, ayah: activePlayingAyah };
 
+  // The ayah this reader was opened on; a shared start page resolves to it
+  // instead of the previous surah's first line.
+  const openTargetRef = useRef({ page: startPage, surah: surahNumber, ayah: Math.max(1, initialAyah) });
+  openTargetRef.current = { page: startPage, surah: surahNumber, ayah: Math.max(1, initialAyah) };
+  const leftStartPageRef = useRef(false);
+
   const reportVisiblePosition = useCallback((
     pageNumber: number,
     preferred?: { surah: number; ayah: number },
@@ -1829,11 +1842,29 @@ export const Hifz16View = memo(function Hifz16View({
     }
     const playing = playingRef.current;
     const saved = positionRef.current;
+    const open = openTargetRef.current;
+    if (pageNumber !== open.page || playing.surah != null) leftStartPageRef.current = true;
+    let target = preferred;
+    if (!target) {
+      const savedOnPage =
+        saved.surahNumber > 0 &&
+        saved.ayahNumber > 0 &&
+        hifzPageContainsAyah(pageNumber, saved.surahNumber, saved.ayahNumber);
+      const openOnPage = pageNumber === open.page;
+      target =
+        openOnPage && !leftStartPageRef.current
+          ? { surah: open.surah, ayah: open.ayah }
+          : savedOnPage
+            ? { surah: saved.surahNumber, ayah: saved.ayahNumber }
+            : openOnPage
+              ? { surah: open.surah, ayah: open.ayah }
+              : undefined;
+    }
     const resolved = resolveHifzPageTarget(pageNumber, {
       playingSurah: playing.surah,
       playingAyah: playing.ayah,
-      savedSurah: preferred?.surah ?? (saved.surahNumber > 0 ? saved.surahNumber : null),
-      savedAyah: preferred?.ayah ?? (saved.ayahNumber > 0 ? saved.ayahNumber : null),
+      savedSurah: target?.surah ?? null,
+      savedAyah: target?.ayah ?? null,
     });
     if (!resolved) return;
 
