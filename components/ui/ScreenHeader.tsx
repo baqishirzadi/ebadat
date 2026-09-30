@@ -92,7 +92,7 @@ export function ScreenHeader({
         </View>
       ) : (
         <>
-          {shouldShowBack ? (
+          {shouldShowBack || rightAction ? (
             <View
               pointerEvents="box-none"
               style={[
@@ -101,11 +101,16 @@ export function ScreenHeader({
                 { top: insets.top + Spacing.sm },
               ]}
             >
-              <Pressable onPress={handleBack} hitSlop={10} style={styles.backButton}>
-                <View style={styles.iconUnmirrored}>
-                  <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
-                </View>
-              </Pressable>
+              {shouldShowBack ? (
+                <Pressable onPress={handleBack} hitSlop={10} style={styles.backButton}>
+                  <View style={styles.iconUnmirrored}>
+                    <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
+                  </View>
+                </Pressable>
+              ) : (
+                <View style={styles.backPlaceholder} />
+              )}
+              {rightAction ? <View style={styles.backButton}>{rightAction}</View> : null}
             </View>
           ) : null}
           {icon ? (
@@ -171,6 +176,8 @@ const styles = StyleSheet.create({
     right: 0,
     zIndex: 2,
     flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.md,
   },
   iconUnmirrored: {

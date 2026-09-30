@@ -203,8 +203,6 @@ export default function MuftiChatScreen() {
     return items;
   }, [messages, isStreaming, streamingContent]);
 
-  const clearLabel = t('mufti.clear.title');
-
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const scrollRafRef = useRef<number | null>(null);
 
@@ -282,17 +280,17 @@ export default function MuftiChatScreen() {
   const handleClear = useCallback(() => {
     if (messages.length === 0) return;
 
-    Alert.alert(t('mufti.clear.confirmTitle'), t('mufti.clear.confirmBody'), [
+    Alert.alert(t('chat.history.confirmTitle'), t('chat.history.confirmBody'), [
       { text: t('common.cancel'), style: 'cancel' },
       {
-        text: clearLabel,
+        text: t('chat.history.delete'),
         style: 'destructive',
         onPress: () => {
           void clearConversation();
         },
       },
     ]);
-  }, [clearConversation, clearLabel, messages.length, t]);
+  }, [clearConversation, messages.length, t]);
 
   const renderItem = useCallback(
     ({ item }: { item: ChatRow }) => {
@@ -484,11 +482,17 @@ export default function MuftiChatScreen() {
           title={t('home.mufti.title')}
           subtitle={t('mufti.subtitle')}
           rightAction={
-            messages.length > 0 ? (
-              <Pressable onPress={handleClear} hitSlop={10}>
-                <MaterialIcons name="delete-outline" size={22} color="#fff" />
-              </Pressable>
-            ) : null
+            <Pressable
+              onPress={handleClear}
+              disabled={messages.length === 0}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel={t('chat.history.delete')}
+              accessibilityState={{ disabled: messages.length === 0 }}
+              style={{ opacity: messages.length === 0 ? 0.4 : 1 }}
+            >
+              <MaterialIcons name="delete-outline" size={24} color="#fff" />
+            </Pressable>
           }
         />
 

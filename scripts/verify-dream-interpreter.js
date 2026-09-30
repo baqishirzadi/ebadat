@@ -67,7 +67,7 @@ for (const marker of [
   'dream-chat-input',
   'copy.welcome',
   'copy.disclaimer',
-  'copy.newChat',
+  'chat.history.delete',
   'copy.retry',
 ]) {
   if (!chat.includes(marker)) fail(`dream-chat is missing ${marker}`);

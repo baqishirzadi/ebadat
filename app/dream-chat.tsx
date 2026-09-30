@@ -135,9 +135,6 @@ function StarterChips({ theme, disabled, copy, onSelect }: StarterChipsProps) {
           </Pressable>
         ))}
       </RtlView>
-      <RtlText align="center" style={[styles.emptyDisclaimer, { color: theme.textSecondary }]}>
-        {copy.note}
-      </RtlText>
     </RtlView>
   );
 }
@@ -268,21 +265,17 @@ export default function DreamChatScreen() {
   const handleClear = useCallback(() => {
     if (messages.length === 0) return;
 
-    Alert.alert(
-      copy.newChat,
-      isEnglish ? 'Are you sure?' : isPashto ? 'ډاډه یاست؟' : 'آیا مطمئن هستید؟',
-      [
-        { text: isEnglish ? 'Cancel' : isPashto ? 'پرېښودل' : 'انصراف', style: 'cancel' },
-        {
-          text: copy.newChat,
-          style: 'destructive',
-          onPress: () => {
-            void clearConversation();
-          },
+    Alert.alert(t('chat.history.confirmTitle'), t('chat.history.confirmBody'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('chat.history.delete'),
+        style: 'destructive',
+        onPress: () => {
+          void clearConversation();
         },
-      ],
-    );
-  }, [clearConversation, copy.newChat, messages.length, isEnglish, isPashto]);
+      },
+    ]);
+  }, [clearConversation, messages.length, t]);
 
   const handleErrorPress = useCallback(() => {
     const last = messages[messages.length - 1];
@@ -493,11 +486,17 @@ export default function DreamChatScreen() {
           title={copy.title}
           subtitle={copy.subtitle}
           rightAction={
-            messages.length > 0 ? (
-              <Pressable onPress={handleClear} hitSlop={10} accessibilityLabel={copy.newChat}>
-                <MaterialIcons name="delete-outline" size={22} color="#fff" />
-              </Pressable>
-            ) : null
+            <Pressable
+              onPress={handleClear}
+              disabled={messages.length === 0}
+              hitSlop={10}
+              accessibilityRole="button"
+              accessibilityLabel={t('chat.history.delete')}
+              accessibilityState={{ disabled: messages.length === 0 }}
+              style={{ opacity: messages.length === 0 ? 0.4 : 1 }}
+            >
+              <MaterialIcons name="delete-outline" size={24} color="#fff" />
+            </Pressable>
           }
         />
 
@@ -563,11 +562,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontSize: Typography.ui.body,
     lineHeight: 24,
-  },
-  emptyDisclaimer: {
-    ...persianCaptionText,
-    lineHeight: 20,
-    paddingHorizontal: Spacing.md,
   },
   messageRow: {
     width: '100%',
