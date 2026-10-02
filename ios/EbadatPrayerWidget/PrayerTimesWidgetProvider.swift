@@ -48,7 +48,7 @@ struct PrayerTimesWidgetProvider: TimelineProvider {
 
   private func sampleSnapshot() -> WidgetSnapshot {
     WidgetSnapshot(
-      version: 6,
+      version: 7,
       updatedAt: ISO8601DateFormatter().string(from: Date()),
       cityName: "کابل",
       timezone: "Asia/Kabul",

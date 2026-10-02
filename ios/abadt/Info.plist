@@ -108,6 +108,8 @@
 		<string>Vazirmatn-Regular.ttf</string>
 		<string>Vazirmatn-Bold.ttf</string>
 		<string>NotoNastaliqUrdu-Regular.ttf</string>
+		<string>NotoNaskhArabic-Regular.ttf</string>
+		<string>NotoNaskhArabic-Bold.ttf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

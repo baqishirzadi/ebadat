@@ -133,7 +133,9 @@
         {
           "fonts": [
             "./assets/fonts/Vazirmatn-Regular.ttf",
-            "./assets/fonts/Vazirmatn-Bold.ttf"
+            "./assets/fonts/Vazirmatn-Bold.ttf",
+            "./assets/fonts/NotoNaskhArabic-Regular.ttf",
+            "./assets/fonts/NotoNaskhArabic-Bold.ttf"
           ],
           "widgets": [
             {
@@ -192,7 +194,9 @@
             "./assets/fonts/Amiri-Bold.ttf",
             "./assets/fonts/Vazirmatn-Regular.ttf",
             "./assets/fonts/Vazirmatn-Bold.ttf",
-            "./assets/fonts/NotoNastaliqUrdu-Regular.ttf"
+            "./assets/fonts/NotoNastaliqUrdu-Regular.ttf",
+            "./assets/fonts/NotoNaskhArabic-Regular.ttf",
+            "./assets/fonts/NotoNaskhArabic-Bold.ttf"
           ],
           "android": {
             "fonts": [
@@ -265,6 +269,24 @@
                   {
                     "path": "./assets/fonts/NotoNastaliqUrdu-Regular.ttf",
                     "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "NotoNaskhArabic-Regular",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/NotoNaskhArabic-Regular.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "NotoNaskhArabic-Bold",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/NotoNaskhArabic-Bold.ttf",
+                    "weight": 700
                   }
                 ]
               }

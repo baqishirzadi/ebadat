@@ -21,6 +21,7 @@ import { useApp } from '@/context/AppContext';
 export function CreatorMessageCard() {
   const { theme, state } = useApp();
   const isEnglish = state.preferences.appLanguage === 'english';
+  const isPashtoUi = state.preferences.appLanguage === 'pashto';
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -67,17 +68,17 @@ export function CreatorMessageCard() {
           <View style={[styles.divider, { backgroundColor: theme.divider }]} />
 
           <View style={[styles.block, styles.pashtoBlock]}>
-            <CenteredText style={[styles.blockTitlePashto, { color: theme.tint }]}>
+            <CenteredText style={[styles.blockTitlePashto, isPashtoUi && styles.blockTitlePashtoNaskh, { color: theme.tint }]}>
               {CREATOR_MESSAGE_PASHTO_TITLE}
             </CenteredText>
             <CenteredText
-              style={[styles.bodyPashto, { color: theme.text }]}
+              style={[styles.bodyPashto, isPashtoUi && styles.bodyPashtoNaskh, { color: theme.text }]}
               {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
             >
               {CREATOR_MESSAGE_PASHTO_BODY}
             </CenteredText>
             <CenteredText
-              style={[styles.signaturePashto, { color: theme.bookmark }]}
+              style={[styles.signaturePashto, isPashtoUi && styles.signaturePashtoNaskh, { color: theme.bookmark }]}
               {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
             >
               {CREATOR_MESSAGE_PASHTO_SIGNATURE}
@@ -196,5 +197,16 @@ const styles = StyleSheet.create({
   pashtoBlock: {
     paddingBottom: Spacing.md,
     paddingTop: Spacing.xs,
+  },
+  // In Pashto mode these blocks render in the Pashto Naskh face, not Nastaliq.
+  blockTitlePashtoNaskh: {
+    lineHeight: 30,
+    marginBottom: Spacing.sm,
+  },
+  bodyPashtoNaskh: {
+    lineHeight: 28,
+  },
+  signaturePashtoNaskh: {
+    lineHeight: 26,
   },
 });

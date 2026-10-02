@@ -31,7 +31,7 @@ assert(widgetStore.includes('.commit()'), 'Widget snapshot save must commit sync
 const widgetTask = read('widgets/widgetTaskHandler.tsx');
 assert(widgetTask.includes('refreshWidgetSnapshot(stored)'), 'Widget task does not refresh the stored snapshot');
 const widgetSnapshot = read('utils/widgetSnapshot.ts');
-assert(widgetSnapshot.includes('version: 6'), 'Widget snapshot schema was not bumped to version 6');
+assert(widgetSnapshot.includes('version: 7'), 'Widget snapshot schema was not bumped to version 7');
 assert(!widgetSnapshot.includes('getWidgetHadithForDateKey'), 'Prayer widget snapshots still select daily Hadith');
 const androidWidgetUi = read('widgets/PrayerTimesWidget.tsx');
 assert(!androidWidgetUi.includes('snapshot.hadithText') && !androidWidgetUi.includes('حدیث روز'), 'Android widget still renders daily Hadith');

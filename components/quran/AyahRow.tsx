@@ -100,6 +100,7 @@ export const AyahRow = memo(function AyahRow({
         <QuranText
           style={[
             styles.translationText,
+            lang === 'english' && styles.translationTextEnglish,
             {
               color: theme.translationText,
               fontSize: translationSize,
@@ -274,6 +275,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     width: '100%',
+  },
+  translationTextEnglish: {
+    writingDirection: 'ltr',
   },
   actionBar: {
     alignItems: 'center',

@@ -99,21 +99,18 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
   const language = snapshot?.appLanguage || 'dari';
   const isPashto = language === 'pashto';
   const isEnglish = language === 'english';
-  const selectedFont = isPashto ? snapshot?.pashtoFont : snapshot?.dariFont;
-  // English uses Vazirmatn. Dari widget is always Nastaliq.
+  // English uses Vazirmatn. Dari widget is always Nastaliq. Pashto uses its Naskh choice.
   const regularFontFamily = isEnglish
     ? 'Vazirmatn'
-    : language === 'dari' || selectedFont === 'nastaliq'
-      ? 'NotoNastaliqUrdu'
-      : selectedFont === 'amiri'
-        ? 'Amiri'
-        : 'Vazirmatn';
+    : isPashto
+      ? snapshot?.pashtoFont === 'amiri' ? 'Amiri' : 'NotoNaskhArabic-Regular'
+      : 'NotoNastaliqUrdu';
   const boldFontFamily = isEnglish
     ? 'Vazirmatn-Bold'
-    : regularFontFamily === 'Vazirmatn'
-      ? 'Vazirmatn-Bold'
-      : regularFontFamily === 'Amiri'
-        ? 'Amiri-Bold'
+    : regularFontFamily === 'Amiri'
+      ? 'Amiri-Bold'
+      : regularFontFamily === 'NotoNaskhArabic-Regular'
+        ? 'NotoNaskhArabic-Bold'
         : 'NotoNastaliqUrdu';
 
   // One frame for Dari, Pashto, and English. Dari Nastaliq needs compact

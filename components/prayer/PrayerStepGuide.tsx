@@ -6,9 +6,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { LocalizedText } from '@/components/ui/LocalizedText';
-import type { PashtoFontFamily } from '@/constants/theme';
-import { BorderRadius, PashtoFonts, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { getPashtoBoldFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { pickContent } from '@/utils/i18n/content';
 import { useI18n } from '@/utils/i18n/useI18n';
 
@@ -37,9 +37,9 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
   const { theme, state } = useApp();
   const { t, language, fontFamily } = useI18n();
   const [index, setIndex] = useState(0);
-  const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
-  const bodyFont = language === 'pashto' ? pashtoFontFamily : fontFamily;
-  const titleFont = language === 'pashto' ? pashtoFontFamily : 'Vazirmatn-Bold';
+  const pashtoFont = state.preferences.pashtoFont;
+  const bodyFont = language === 'pashto' ? getPashtoFontFamily(pashtoFont) : fontFamily;
+  const titleFont = language === 'pashto' ? getPashtoBoldFontFamily(pashtoFont) : 'Vazirmatn-Bold';
   const bodyLineHeight = language === 'pashto' ? 42 : 30;
 
   useEffect(() => {

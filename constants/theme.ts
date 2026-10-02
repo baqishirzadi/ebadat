@@ -246,7 +246,7 @@ export type QuranFontFamily = 'qpcHafs' | 'scheherazade';
 export type DariFontFamily = 'vazirmatn' | 'amiri';
 
 // Pashto Font Type  
-export type PashtoFontFamily = 'amiri' | 'nastaliq';
+export type PashtoFontFamily = 'naskh' | 'amiri';
 
 // Font configuration
 export const QuranFonts: Record<QuranFontFamily, { 
@@ -285,20 +285,25 @@ export const DariFonts: Record<DariFontFamily, {
 
 export const PashtoFonts: Record<PashtoFontFamily, {
   name: string;
+  boldName: string;
   displayName: string;
   displayNamePashto: string;
 }> = {
+  naskh: {
+    name: 'NotoNaskhArabic-Regular',
+    boldName: 'NotoNaskhArabic-Bold',
+    displayName: 'Noto Naskh',
+    displayNamePashto: 'نسخ (معیاري)',
+  },
   amiri: {
     name: 'Amiri',
+    boldName: 'Amiri-Bold',
     displayName: 'Amiri Naskh',
-    displayNamePashto: 'امیری نسخ',
-  },
-  nastaliq: {
-    name: 'NotoNastaliqUrdu',
-    displayName: 'Nastaliq',
-    displayNamePashto: 'نستعلیق',
+    displayNamePashto: 'امیري نسخ',
   },
 };
+
+export const DEFAULT_PASHTO_FONT: PashtoFontFamily = 'naskh';
 
 // Platform fonts
 export const Fonts = Platform.select({

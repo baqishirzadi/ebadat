@@ -37,7 +37,7 @@ enum WidgetShared {
         ?? calendar.date(byAdding: .day, value: 1, to: date).map { $0.timeIntervalSince1970 * 1000 }
         ?? stored.nextRefreshAtMs
       return WidgetSnapshot(
-        version: max(stored.version, 6),
+        version: max(stored.version, 7),
         appLanguage: stored.appLanguage,
         dariFont: stored.dariFont,
         pashtoFont: stored.pashtoFont,
@@ -112,7 +112,7 @@ enum WidgetShared {
     }
 
     return WidgetSnapshot(
-      version: max(stored.version, 6),
+      version: max(stored.version, 7),
       appLanguage: stored.appLanguage,
       dariFont: stored.dariFont,
       pashtoFont: stored.pashtoFont,
@@ -367,7 +367,7 @@ struct WidgetSnapshot: Codable {
     version: Int,
     appLanguage: String = "dari",
     dariFont: String? = "vazirmatn",
-    pashtoFont: String? = "amiri",
+    pashtoFont: String? = "naskh",
     updatedAt: String,
     cityName: String,
     timezone: String = "Asia/Kabul",
@@ -430,7 +430,8 @@ struct WidgetSnapshot: Codable {
     version = try container.decode(Int.self, forKey: .version)
     appLanguage = try container.decodeIfPresent(String.self, forKey: .appLanguage) ?? "dari"
     dariFont = try container.decodeIfPresent(String.self, forKey: .dariFont) ?? "vazirmatn"
-    pashtoFont = try container.decodeIfPresent(String.self, forKey: .pashtoFont) ?? "amiri"
+    let decodedPashtoFont = try container.decodeIfPresent(String.self, forKey: .pashtoFont) ?? "naskh"
+    pashtoFont = version < 7 ? "naskh" : decodedPashtoFont
     updatedAt = try container.decode(String.self, forKey: .updatedAt)
     cityName = try container.decode(String.self, forKey: .cityName)
     timezone = try container.decodeIfPresent(String.self, forKey: .timezone) ?? "Asia/Kabul"

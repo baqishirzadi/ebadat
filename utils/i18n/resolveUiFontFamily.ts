@@ -1,7 +1,7 @@
 import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
 import type { DariFontFamily, PashtoFontFamily } from '@/constants/theme';
-import { getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
+import { getDariFontFamily, getPashtoBoldFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import type { AppLanguage } from '@/types/quran';
 
 export type UiLanguage = AppLanguage;
@@ -17,6 +17,8 @@ const APP_UI_FONTS = new Set([
   'Amiri',
   'Amiri-Bold',
   'NotoNastaliqUrdu',
+  'NotoNaskhArabic-Regular',
+  'NotoNaskhArabic-Bold',
 ]);
 
 /**
@@ -59,8 +61,9 @@ export function resolveUiFontFamily(
   if (language === 'english') return undefined;
 
   if (language === 'pashto') {
-    const font = getPashtoFontFamily(preferences?.pashtoFont ?? 'amiri');
-    return isBold && font === 'Amiri' ? 'Amiri-Bold' : font;
+    return isBold
+      ? getPashtoBoldFontFamily(preferences?.pashtoFont)
+      : getPashtoFontFamily(preferences?.pashtoFont);
   }
 
   const font = getDariFontFamily(preferences?.dariFont ?? 'vazirmatn');

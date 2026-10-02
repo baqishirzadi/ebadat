@@ -92,8 +92,8 @@ export default function SettingsScreen() {
 
   const pashtoFonts: { id: PashtoFontFamily; name: string; sample: string }[] = useMemo(
     () => [
+      { id: 'naskh', name: PashtoFonts.naskh.displayNamePashto, sample: 'د خدای په نوم' },
       { id: 'amiri', name: PashtoFonts.amiri.displayNamePashto, sample: 'د خدای په نوم' },
-      { id: 'nastaliq', name: PashtoFonts.nastaliq.displayNamePashto, sample: 'د خدای په نوم' },
     ],
     [],
   );
@@ -375,7 +375,7 @@ export default function SettingsScreen() {
             <View style={styles.sectionInfo}>
               <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('خط پښتو', uiLanguage)}</LocalizedText>
               <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
-                {PashtoFonts[state.preferences.pashtoFont]?.displayNamePashto || 'امیری نسخ'}
+                {PashtoFonts[state.preferences.pashtoFont]?.displayNamePashto || PashtoFonts.naskh.displayNamePashto}
               </LocalizedText>
             </View>
             <MaterialIcons
@@ -406,10 +406,9 @@ export default function SettingsScreen() {
                         styles.fontSample,
                         {
                           color: theme.text,
-                          fontFamily: f.id === 'amiri' ? 'Amiri' : 'NotoNastaliqUrdu',
-                          fontSize: f.id === 'nastaliq' ? 18 : Typography.arabic.small,
-                          lineHeight: f.id === 'nastaliq' ? 42 : 30,
-                          includeFontPadding: f.id === 'nastaliq',
+                          fontFamily: PashtoFonts[f.id].name,
+                          fontSize: Typography.arabic.small,
+                          lineHeight: 34,
                         },
                       ]}
                     >

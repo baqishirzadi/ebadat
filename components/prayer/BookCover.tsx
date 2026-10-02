@@ -8,9 +8,9 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { BookFrame } from '@/components/prayer/BookFrame';
 import { BookOrnament } from '@/components/prayer/BookOrnament';
 import { LocalizedText } from '@/components/ui/LocalizedText';
-import type { PashtoFontFamily } from '@/constants/theme';
-import { PashtoFonts, Spacing, Typography } from '@/constants/theme';
+import { Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { getPashtoBoldFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 export interface BookCategory {
@@ -29,9 +29,9 @@ interface BookCoverProps {
 export function BookCover({ categories, onSelectCategory }: BookCoverProps) {
   const { theme, state } = useApp();
   const { t, content, language, fontFamily } = useI18n();
-  const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
-  const titleFont = language === 'pashto' ? pashtoFontFamily : 'Vazirmatn-Bold';
-  const bodyFont = language === 'pashto' ? pashtoFontFamily : fontFamily || 'Vazirmatn';
+  const pashtoFont = state.preferences.pashtoFont;
+  const titleFont = language === 'pashto' ? getPashtoBoldFontFamily(pashtoFont) : 'Vazirmatn-Bold';
+  const bodyFont = language === 'pashto' ? getPashtoFontFamily(pashtoFont) : fontFamily || 'Vazirmatn';
 
   return (
     <BookFrame>

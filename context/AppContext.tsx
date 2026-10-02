@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useRef, useState, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts } from '@/constants/theme';
+import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts, PashtoFonts, DEFAULT_PASHTO_FONT } from '@/constants/theme';
 import {
   Bookmark,
   ReadingPosition,
@@ -20,9 +20,12 @@ import { DEFAULT_APP_LANGUAGE, isAppLanguage } from '@/utils/i18n/languages';
 // Storage keys
 const STORAGE_KEYS = {
   PREFERENCES: '@ebadat/preferences',
+  PASHTO_FONT_MIGRATION_VERSION: '@ebadat/pashto_font_migration_version',
   BOOKMARKS: '@ebadat/bookmarks',
   LAST_POSITION: '@ebadat/last_position',
 };
+
+const PASHTO_FONT_MIGRATION_TARGET = 2;
 
 // Default preferences
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -31,7 +34,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   theme: 'light',
   quranFont: 'scheherazade',  // Uthmani Taha (عثمان طه) - default Quran font
   dariFont: 'vazirmatn',    // Modern Dari font
-  pashtoFont: 'amiri',      // Naskh style for Pashto (readable)
+  pashtoFont: DEFAULT_PASHTO_FONT,
   arabicFontSize: 'small',
   translationFontSize: 'small',
   viewMode: 'scroll',
@@ -212,6 +215,10 @@ function isValidQuranFontFamily(value: unknown): value is QuranFontFamily {
   return typeof value === 'string' && value in QuranFonts;
 }
 
+function isValidPashtoFontFamily(value: unknown): value is PashtoFontFamily {
+  return typeof value === 'string' && value in PashtoFonts;
+}
+
 function isValidAppLanguage(value: unknown): value is AppLanguage {
   return isAppLanguage(value);
 }
@@ -324,8 +331,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   async function loadPersistedState() {
     try {
-      const [prefsJson, bookmarksJson, positionJson] = await Promise.all([
+      const [prefsJson, pashtoFontMigrationVersionJson, bookmarksJson, positionJson] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.PREFERENCES),
+        AsyncStorage.getItem(STORAGE_KEYS.PASHTO_FONT_MIGRATION_VERSION),
         AsyncStorage.getItem(STORAGE_KEYS.BOOKMARKS),
         AsyncStorage.getItem(STORAGE_KEYS.LAST_POSITION),
       ]);
@@ -391,11 +399,35 @@ export function AppProvider({ children }: { children: ReactNode }) {
         preferencesNormalized = true;
       }
 
+      // v2 retires the Vazirmatn and Nastaliq Pashto faces; only Amiri survives as a saved choice.
+      const pashtoFontMigrationVersion = Number(pashtoFontMigrationVersionJson || 0);
+      const needsPashtoFontMigration =
+        !Number.isFinite(pashtoFontMigrationVersion) || pashtoFontMigrationVersion < PASHTO_FONT_MIGRATION_TARGET;
+      if (needsPashtoFontMigration) {
+        preferences = {
+          ...preferences,
+          pashtoFont: preferences.pashtoFont === 'amiri' ? 'amiri' : DEFAULT_PASHTO_FONT,
+        };
+        preferencesNormalized = true;
+      } else if (!isValidPashtoFontFamily(preferences.pashtoFont)) {
+        preferences = {
+          ...preferences,
+          pashtoFont: DEFAULT_PASHTO_FONT,
+        };
+        preferencesNormalized = true;
+      }
+
       const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
       const lastPosition = positionJson ? JSON.parse(positionJson) : DEFAULT_POSITION;
 
       if (preferencesNormalized) {
         await AsyncStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(preferences));
+      }
+      if (needsPashtoFontMigration) {
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.PASHTO_FONT_MIGRATION_VERSION,
+          String(PASHTO_FONT_MIGRATION_TARGET),
+        );
       }
 
       dispatch({

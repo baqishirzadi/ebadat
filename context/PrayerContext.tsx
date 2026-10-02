@@ -64,6 +64,7 @@ import { getPrayerTimesForDate, getPrayerTimesForDateRange } from '@/utils/praye
 import { applyPrayerTimeOffsets } from '@/utils/prayerOffsets';
 import { resolvePrayerCalculationPolicy } from '@/utils/prayerCalculationPolicy';
 import { addDaysToDateKey, buildDateFromLocalTimeInTimezone as buildZonedLocalTime, getDateKeyInTimezone } from '@/utils/prayerTimezone';
+import { isFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
 import { pushWidgetSnapshot } from '@/utils/pushWidgetSnapshot';
 import {
   canUseNativeAdhanScheduler,
@@ -2320,6 +2321,12 @@ async function configureAndroidNotificationChannels(
           PRAYER_BLOCKER_MESSAGES.notification_denied,
           { exactDebugState, scheduleMode, warnings: scheduleWarnings }
         );
+        return;
+      }
+      if (!(await isFirstOpenAdhanSetupDone())) {
+        // The onboarding notifications step owns the first prompt; asking here pops the
+        // system dialog over that screen before the user taps its button.
+        markAdhanSettled();
         return;
       }
       const { status } = await NotificationsModule.requestPermissionsAsync();

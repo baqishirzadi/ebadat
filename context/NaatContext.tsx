@@ -179,26 +179,38 @@ async function probeRemoteAudio(uri: string): Promise<void> {
   }
 }
 
+const PLAYBACK_CANCELLED = 'naat-playback-cancelled';
+
+function isPlaybackCancelled(error: unknown): boolean {
+  return getErrorMessage(error) === PLAYBACK_CANCELLED;
+}
+
 async function loadAndStartTrackQueue(
   queueTracks: AddTrack[],
   selectedIndex: number,
   initialPosition: number,
   selectedId: string,
+  isCurrent: () => boolean,
 ): Promise<void> {
-  await TrackPlayer.reset();
-  await TrackPlayer.add(queueTracks);
-  await TrackPlayer.skip(selectedIndex, initialPosition);
-  await TrackPlayer.play();
+  const step = async (action: () => Promise<unknown>) => {
+    if (!isCurrent()) throw new Error(PLAYBACK_CANCELLED);
+    await action();
+  };
+  await step(() => TrackPlayer.reset());
+  await step(() => TrackPlayer.add(queueTracks));
+  await step(() => TrackPlayer.skip(selectedIndex, initialPosition));
+  await step(() => TrackPlayer.play());
 
-  await waitForPlaybackStart(selectedId);
+  await waitForPlaybackStart(selectedId, isCurrent);
 }
 
-async function waitForPlaybackStart(selectedId: string): Promise<void> {
+async function waitForPlaybackStart(selectedId: string, isCurrent: () => boolean): Promise<void> {
   const startedAt = Date.now();
   let lastState: State | null = null;
   let lastPosition = 0;
 
   while (Date.now() - startedAt < PLAYBACK_START_TIMEOUT_MS) {
+    if (!isCurrent()) throw new Error(PLAYBACK_CANCELLED);
     const [activeTrack, playbackState, progress] = await Promise.all([
       TrackPlayer.getActiveTrack(),
       TrackPlayer.getPlaybackState(),
@@ -225,7 +237,7 @@ async function waitForPlaybackStart(selectedId: string): Promise<void> {
       lastPosition = Math.max(lastPosition, progress.position);
     }
 
-    if (state === State.Ready || state === State.Paused) {
+    if ((state === State.Ready || state === State.Paused) && isCurrent()) {
       await TrackPlayer.play();
     }
 
@@ -313,6 +325,9 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   const autoDownloadByIdRef = useRef<(id: string) => void>(() => {});
   const lastProgressEventAtRef = useRef(0);
   const progressGenerationRef = useRef(0);
+  // Bumped by every play request and by stop(); a start that is no longer current gives up.
+  const playRequestRef = useRef(0);
+  const latestPlayRequestRef = useRef(0);
   const lastPlaybackErrorAt = useRef<number>(0);
   const progressIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const downloadProgressTickRef = useRef<Record<string, number>>({});
@@ -1018,8 +1033,16 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
     selectedId: string,
     source: NaatQueueSource,
   ) => {
+    const request = ++playRequestRef.current;
+    latestPlayRequestRef.current = request;
+    const isCurrent = () => request === playRequestRef.current;
+    const ensureCurrent = () => {
+      if (!isCurrent()) throw new Error(PLAYBACK_CANCELLED);
+    };
+
     try {
       await ensurePlayerReady('play');
+      ensureCurrent();
 
       const queueItems = uniqueNaats(items.length > 0 ? items : naatsRef.current);
       const selectedNaat =
@@ -1031,9 +1054,11 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       }
 
       let audioSource = await resolveAudioSource(selectedNaat);
+      ensureCurrent();
 
       if (!audioSource.isLocal && !audioSource.probeOk) {
         const cachedUri = await cacheNaatForPlayback(selectedNaat, audioSource.uri);
+        ensureCurrent();
         audioSource = {
           uri: cachedUri,
           isOffline: audioSource.isOffline,
@@ -1048,6 +1073,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         audioSource.uri,
         audioSource.isOffline,
       );
+      ensureCurrent();
       let selectedIndex = queueTracks.findIndex((track) => String(track.id) === selectedNaat.id);
 
       if (!queueTracks.length || selectedIndex < 0) {
@@ -1058,6 +1084,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       // Naat must always play at natural speed and must not inherit Quran's
       // persisted 1.25x/1.5x/2x setting.
       await TrackPlayer.setRate(1);
+      ensureCurrent();
 
       // Selecting a Naat is an explicit replay action: always start at zero.
       // Pause/Resume uses the separate resume() path and keeps its position.
@@ -1066,6 +1093,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       lastSavedPosition.current = 0;
       progressGenerationRef.current += 1;
       await upsertLocalMeta(selectedNaat.id, { lastPositionMillis: 0 });
+      ensureCurrent();
       const initialPositionMillis = 0;
       const initialPosition = 0;
       const queueIds = queueTracks.map((track) => String(track.id));
@@ -1080,26 +1108,30 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
+        await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id, isCurrent);
       } catch (firstError) {
+        ensureCurrent();
+        if (isPlaybackCancelled(firstError)) throw firstError;
         if (shouldRetryPlaybackStart(firstError)) {
           if (__DEV__) {
             console.log('[NaatPlayer] First playback start failed, retrying once:', getErrorMessage(firstError));
           }
           await ensurePlayerReady('play-retry');
-          await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
+          await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id, isCurrent);
         } else if (!audioSource.isLocal) {
           if (__DEV__) {
             console.log('[NaatPlayer] Stream did not start, caching selected track:', getErrorMessage(firstError));
           }
           const cachedUri = await cacheNaatForPlayback(selectedNaat, audioSource.uri);
+          ensureCurrent();
           queueTracks = await buildQueueTracks(selectedNaat, queueItems, cachedUri, false);
+          ensureCurrent();
           selectedIndex = queueTracks.findIndex((track) => String(track.id) === selectedNaat.id);
           if (!queueTracks.length || selectedIndex < 0) {
             throw new Error('no-audio');
           }
           await ensurePlayerReady('play-cache-retry');
-          await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id);
+          await loadAndStartTrackQueue(queueTracks, selectedIndex, initialPosition, selectedNaat.id, isCurrent);
           audioSource = {
             uri: cachedUri,
             isOffline: false,
@@ -1110,6 +1142,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           throw firstError;
         }
       }
+      ensureCurrent();
 
       // Enable completion downloads only after the new queue has started. This
       // prevents the reset of a previously active track from looking like a
@@ -1138,6 +1171,14 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         };
       });
     } catch (error: any) {
+      if (isPlaybackCancelled(error) || !isCurrent()) {
+        // Stopped mid-start: a stop() that ran before our queue was added
+        // cannot have cleared it, so clear it here unless a newer play owns the player.
+        if (latestPlayRequestRef.current === request) {
+          await TrackPlayer.reset().catch(() => {});
+        }
+        return;
+      }
       if (error?.message === 'offline') {
         Alert.alert(isPashto ? 'بې‌انټرنېټه' : 'آفلاین', isPashto ? 'لومړی نعت ښکته کړئ.' : 'ابتدا دانلود نمایید');
         return;
@@ -1243,6 +1284,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
   }, [ensurePlayerReady, syncPlayerSnapshot]);
 
   const stop = useCallback(async () => {
+    playRequestRef.current += 1;
     if (currentNaatRef.current) {
       completionEligibleByNaatRef.current[currentNaatRef.current.id] = false;
     }

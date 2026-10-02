@@ -79,6 +79,8 @@ class MainApplication : Application(), ReactApplication {
     ReactFontManager.getInstance().addCustomFont(this, "Vazirmatn", R.font.xml_vazirmatn)
     ReactFontManager.getInstance().addCustomFont(this, "Vazirmatn-Bold", R.font.xml_vazirmatn_bold)
     ReactFontManager.getInstance().addCustomFont(this, "NotoNastaliqUrdu", R.font.xml_noto_nastaliq_urdu)
+    ReactFontManager.getInstance().addCustomFont(this, "NotoNaskhArabic-Regular", R.font.xml_noto_naskh_arabic)
+    ReactFontManager.getInstance().addCustomFont(this, "NotoNaskhArabic-Bold", R.font.xml_noto_naskh_arabic_bold)
     // @generated end xml-fonts-init
     DefaultNewArchitectureEntryPoint.releaseLevel = try {
       ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())

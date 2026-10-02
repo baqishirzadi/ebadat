@@ -19,7 +19,7 @@ export function useI18n() {
   const fontFamily = useMemo(() => {
     if (language === 'english') return undefined;
     return language === 'pashto'
-      ? getPashtoFontFamily(fonts?.pashtoFont ?? 'amiri')
+      ? getPashtoFontFamily(fonts?.pashtoFont)
       : getDariFontFamily(fonts?.dariFont ?? 'vazirmatn');
   }, [fonts?.dariFont, fonts?.pashtoFont, language]);
 

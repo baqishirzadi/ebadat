@@ -18,12 +18,16 @@ struct PrayerTimesWidgetView: View {
   private var uiFontRegular: String {
     if isEnglish { return "Vazirmatn" }
     if isDari { return "NotoNastaliqUrdu" }
-    return snapshot?.pashtoFont == "nastaliq" ? "NotoNastaliqUrdu" : "Amiri"
+    guard let snapshot, snapshot.version >= 7 else { return "NotoNaskhArabic-Regular" }
+    return snapshot.pashtoFont == "amiri" ? "Amiri" : "NotoNaskhArabic-Regular"
   }
   private var uiFontBold: String {
-    if uiFontRegular == "Vazirmatn" { return "Vazirmatn-Bold" }
-    if uiFontRegular == "Amiri" { return "Amiri-Bold" }
-    return "NotoNastaliqUrdu"
+    switch uiFontRegular {
+    case "Vazirmatn": return "Vazirmatn-Bold"
+    case "Amiri": return "Amiri-Bold"
+    case "NotoNastaliqUrdu": return "NotoNastaliqUrdu"
+    default: return "NotoNaskhArabic-Bold"
+    }
   }
 
   private static let weekdayEnglish: [String: String] = [
@@ -165,11 +169,10 @@ struct PrayerTimesWidgetView: View {
     .widgetURL(URL(string: "ebadat:///(tabs)/jantari"))
   }
 
-  /// Type is tuned for the 170pt Pro Max medium widget. Smaller phones get a
-  /// shorter widget, and text cannot shrink vertically on its own, so every
-  /// size follows the actual height or the prayer row falls off the bottom.
+  /// Keep the complete three-row layout inside WidgetKit's rounded medium
+  /// widget bounds, including the extra line height of the prayer chips.
   private func homeScale(for height: CGFloat) -> CGFloat {
-    min(1, max(0.8, height / 170))
+    min(0.88, max(0.72, height / 194))
   }
 
   @ViewBuilder
@@ -177,7 +180,7 @@ struct PrayerTimesWidgetView: View {
     if let snapshot {
       GeometryReader { geo in
         let s = homeScale(for: geo.size.height)
-        VStack(alignment: .center, spacing: 4 * s) {
+        VStack(alignment: .center, spacing: 3 * s) {
           LockedLine(text: headerTitle(snapshot), font: uiFontBold, size: 20 * s, color: accent, minimumScale: 0.6)
 
           HStack(spacing: 4) {
@@ -187,7 +190,7 @@ struct PrayerTimesWidgetView: View {
           }
           .frame(maxWidth: .infinity)
 
-          HStack(spacing: 2) {
+          HStack(spacing: 3 * s) {
             ForEach(snapshot.prayers, id: \.key) { prayer in
               PrayerChipView(
                 label: label(prayer),
@@ -198,9 +201,10 @@ struct PrayerTimesWidgetView: View {
               )
             }
           }
+          .padding(.horizontal, 7 * s)
         }
-        .padding(.horizontal, 6)
-        .padding(.vertical, 6 * s)
+        .padding(.horizontal, 6 * s)
+        .padding(.vertical, 5 * s)
         .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
       }
       // Fajr, Gregorian and the title stay on the same edge in every language.
@@ -341,7 +345,8 @@ private struct PrayerChipView: View {
       )
     }
     .frame(maxWidth: .infinity)
-    .padding(.vertical, 3 * scale)
+    .padding(.horizontal, 2 * scale)
+    .padding(.vertical, 2 * scale)
     .background(active ? Color.white : Color.white.opacity(0.12))
     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
   }

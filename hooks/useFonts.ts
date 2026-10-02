@@ -38,8 +38,12 @@ export function getDariFontFamily(fontKey: DariFontFamily): string {
 /**
  * Get the actual font family name for Pashto text
  */
-export function getPashtoFontFamily(fontKey: PashtoFontFamily): string {
-  return PashtoFonts[fontKey]?.name || 'Amiri';
+export function getPashtoFontFamily(fontKey: PashtoFontFamily | undefined): string {
+  return (fontKey && PashtoFonts[fontKey]?.name) || PashtoFonts.naskh.name;
+}
+
+export function getPashtoBoldFontFamily(fontKey: PashtoFontFamily | undefined): string {
+  return (fontKey && PashtoFonts[fontKey]?.boldName) || PashtoFonts.naskh.boldName;
 }
 
 /**

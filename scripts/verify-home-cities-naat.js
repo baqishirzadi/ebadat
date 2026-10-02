@@ -86,7 +86,7 @@ const settings = read('app/settings.tsx');
 const pashtoFontSettings = settings.match(/\{\/\* Pashto Font Settings \*\/\}([\s\S]*?)\{\/\* Arabic font size \*\/\}/)?.[1] ?? '';
 assert.ok(pashtoFontSettings.includes('preserveFontFamily'), 'Pashto font previews must use the font being previewed, not the current Dari UI font');
 assert.ok(pashtoFontSettings.includes('settings-pashto-font-option-${f.id}'), 'Pashto font options need stable testIDs');
-assert.ok(pashtoFontSettings.includes("f.id === 'nastaliq' ? 42 : 30"), 'Pashto font previews must reserve suitable line height for Nastaliq');
+assert.ok(!pashtoFontSettings.includes("'nastaliq'") && !pashtoFontSettings.includes("'vazirmatn'"), 'Pashto font picker must only offer the Naskh faces');
 
 const dateCard = read('components/home/TodayDateCard.tsx');
 assert.ok(dateCard.includes('home-today-date-card'), 'Home date card needs a stable testID');

@@ -1,0 +1,293 @@
+appId: com.afghandev.ebadat
+---
+# Full pre-release pass for the iOS Release build: fresh onboarding, every tab,
+# the main stack screens, Naat playback, adhan test and a Pashto round trip.
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible:
+      id: "onboarding-primary-button-1"
+    timeout: 30000
+# The splash's afghan.dev link sits over the onboarding button until it fades out.
+- extendedWaitUntil:
+    notVisible:
+      id: "spiritual-splash-overlay"
+    timeout: 30000
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible: "زبان برنامه"
+- takeScreenshot: full-01-onboarding-language
+- tapOn:
+    id: "onboarding-primary-button-1"
+
+- extendedWaitUntil:
+    visible:
+      text: "انتخاب کشور و شهر"
+    timeout: 15000
+- tapOn:
+    text: "کابل"
+- tapOn:
+    id: "onboarding-primary-button-2"
+
+- extendedWaitUntil:
+    visible:
+      id: "onboarding-primary-button-3"
+    timeout: 15000
+- takeScreenshot: full-02-onboarding-notifications
+# The system prompt must wait for the onboarding button, not pop up on its own.
+- extendedWaitUntil:
+    visible: "Allow"
+    timeout: 10000
+    optional: true
+- assertNotVisible: "Allow"
+- tapOn:
+    id: "onboarding-primary-button-3"
+- tapOn:
+    text: "Allow"
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+
+- extendedWaitUntil:
+    visible:
+      id: "ios-home-dashboard-ready"
+    timeout: 40000
+- takeScreenshot: full-03-home
+
+- openLink: "ebadat:///quran-tab"
+- extendedWaitUntil:
+    visible:
+      id: "ios-home-ready"
+    timeout: 15000
+- takeScreenshot: full-04-quran-tab
+
+- openLink: "ebadat:///quran/1"
+- extendedWaitUntil:
+    visible:
+      id: "quran-reader-translation"
+    timeout: 20000
+- takeScreenshot: full-05-surah-1
+
+- openLink: "ebadat:///quran/juz/30"
+- extendedWaitUntil:
+    visible:
+      id: "quran-download-juz-header"
+    timeout: 20000
+- takeScreenshot: full-06-juz-30
+
+- openLink: "ebadat:///search"
+- waitForAnimationToEnd:
+    timeout: 4000
+- takeScreenshot: full-07-search
+
+- openLink: "ebadat:///jantari"
+- waitForAnimationToEnd:
+    timeout: 4000
+- assertVisible: ".*جنتری.*"
+- takeScreenshot: full-08-jantari
+
+- openLink: "ebadat:///naat"
+- extendedWaitUntil:
+    visible:
+      id: "naat-screen-list"
+    timeout: 30000
+- tapOn:
+    id: "naat-card-play-button"
+- extendedWaitUntil:
+    visible:
+      id: "naat-player-dock"
+    timeout: 60000
+# Stopping while the track is still starting must not let playback come back.
+- tapOn:
+    id: "naat-player-stop-button"
+- extendedWaitUntil:
+    visible:
+      id: "never-present-wait-for-naat-start"
+    timeout: 20000
+    optional: true
+- assertNotVisible:
+    id: "naat-player-dock"
+
+- tapOn:
+    id: "naat-card-play-button"
+- extendedWaitUntil:
+    visible:
+      id: "naat-player-dock"
+    timeout: 60000
+- takeScreenshot: full-09-naat-playing
+- extendedWaitUntil:
+    visible:
+      id: "never-present-wait-for-naat-start"
+    timeout: 20000
+    optional: true
+- tapOn:
+    id: "naat-player-toggle-button"
+- tapOn:
+    id: "naat-player-toggle-button"
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    id: "naat-player-stop-button"
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertNotVisible:
+    id: "naat-player-dock"
+- tapOn:
+    id: "naat-downloads-button"
+- extendedWaitUntil:
+    visible:
+      id: "ios-naat-downloads-ready"
+    timeout: 15000
+- takeScreenshot: full-10-naat-downloads
+
+- openLink: "ebadat:///more"
+- extendedWaitUntil:
+    visible:
+      id: "ios-more-ready"
+    timeout: 15000
+- takeScreenshot: full-11-more
+- scrollUntilVisible:
+    element:
+      id: "ios-open-ahadith"
+    direction: DOWN
+    centerElement: true
+    timeout: 15000
+- tapOn:
+    id: "ios-open-ahadith"
+- extendedWaitUntil:
+    visible:
+      id: "ios-ahadith-ready"
+    timeout: 20000
+- takeScreenshot: full-12-ahadith
+
+- openLink: "ebadat:///articles"
+- extendedWaitUntil:
+    visible:
+      id: "ios-articles-ready"
+    timeout: 20000
+- tapOn:
+    id: "ios-article-card"
+    index: 0
+- extendedWaitUntil:
+    visible:
+      id: "ios-article-detail-ready"
+    timeout: 20000
+- takeScreenshot: full-13-article
+
+- openLink: "ebadat:///adhkar"
+- waitForAnimationToEnd:
+    timeout: 4000
+- assertVisible: ".*اذکار.*"
+- takeScreenshot: full-14-adhkar
+
+- openLink: "ebadat:///counter"
+- waitForAnimationToEnd:
+    timeout: 4000
+- takeScreenshot: full-15-counter
+
+- openLink: "ebadat:///prayer-learning"
+- waitForAnimationToEnd:
+    timeout: 4000
+- assertVisible: ".*آموزش نماز.*"
+- takeScreenshot: full-16-prayer-learning
+
+- openLink: "ebadat:///bookmarks"
+- waitForAnimationToEnd:
+    timeout: 4000
+- takeScreenshot: full-17-bookmarks
+
+- openLink: "ebadat:///calendar"
+- waitForAnimationToEnd:
+    timeout: 4000
+- takeScreenshot: full-18-calendar
+
+- openLink: "ebadat:///qibla"
+- waitForAnimationToEnd:
+    timeout: 5000
+- assertVisible: ".*قبله‌نما.*"
+- takeScreenshot: full-19-qibla
+
+- openLink: "ebadat:///mufti-chat"
+- extendedWaitUntil:
+    visible:
+      id: "mufti-chat-input"
+    timeout: 15000
+- takeScreenshot: full-20-mufti-chat
+
+- openLink: "ebadat:///dream-chat"
+- extendedWaitUntil:
+    visible:
+      id: "dream-chat-input"
+    timeout: 15000
+- takeScreenshot: full-21-dream-chat
+
+- openLink: "ebadat:///dua-request/new"
+- extendedWaitUntil:
+    visible:
+      id: "dua-message-input"
+    timeout: 15000
+- takeScreenshot: full-22-dua-new
+
+- openLink: "ebadat:///adhan-settings"
+- extendedWaitUntil:
+    visible:
+      id: "ios-adhan-settings-ready"
+    timeout: 15000
+- tapOn:
+    id: "adhan-system-test-button"
+- tapOn:
+    text: "Allow"
+    optional: true
+- tapOn:
+    text: "OK"
+    optional: true
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: full-23-adhan-test
+
+# Pashto round trip, ending back in Dari.
+- openLink: "ebadat:///settings"
+- extendedWaitUntil:
+    visible:
+      text: ".*زبان برنامه.*"
+    timeout: 15000
+- tapOn: ".*زبان برنامه.*"
+- tapOn: "پښتو"
+- extendedWaitUntil:
+    visible:
+      text: ".*د اپ ژبه.*"
+    timeout: 15000
+- takeScreenshot: full-24-settings-pashto
+- openLink: "ebadat:///quran/1"
+- extendedWaitUntil:
+    visible:
+      id: "quran-reader-translation"
+    timeout: 20000
+- takeScreenshot: full-25-surah-1-pashto
+- openLink: "ebadat:///"
+- extendedWaitUntil:
+    visible:
+      id: "ios-home-dashboard-ready"
+    timeout: 20000
+- takeScreenshot: full-26-home-pashto
+- openLink: "ebadat:///settings"
+- extendedWaitUntil:
+    visible:
+      text: ".*د اپ ژبه.*"
+    timeout: 15000
+- tapOn: ".*د اپ ژبه.*"
+- tapOn: "دری"
+- extendedWaitUntil:
+    visible:
+      text: ".*زبان برنامه.*"
+    timeout: 15000
+
+# Cold relaunch with persisted state.
+- stopApp
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "ios-home-dashboard-ready"
+    timeout: 40000
+- takeScreenshot: full-27-relaunch-home

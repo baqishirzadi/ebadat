@@ -36,7 +36,7 @@ export default function OnboardingNotificationsScreen() {
   const { theme, state: appState } = useApp();
   const locale = adhanPermissionLocale(appState.preferences.appLanguage);
   const { t } = useI18n();
-  const { state } = usePrayer();
+  const { state, requestPrayerSchedule } = usePrayer();
   const [busy, setBusy] = useState(false);
   const [totalSteps, setTotalSteps] = useState(4);
 
@@ -72,6 +72,9 @@ export default function OnboardingNotificationsScreen() {
       const result = await requestAdhanNotificationPermission();
       if (result === 'granted' || result === 'skipped') {
         await goNext();
+        if (result === 'granted') {
+          requestPrayerSchedule('onboarding-permission').catch(() => {});
+        }
         return;
       }
 

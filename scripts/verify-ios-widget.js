@@ -77,7 +77,8 @@ for (const fixture of fixtures) {
     maghribOffsetMinutes: fixture.offset,
     fixedDhuhrLocalTime: fixture.fixedDhuhr,
   });
-  assert(snapshot.version === 6, `${fixture.name}: expected schema version 6`);
+  assert(snapshot.version === 7, `${fixture.name}: expected schema version 7`);
+  assert(snapshot.pashtoFont === 'naskh', `${fixture.name}: default Pashto font must be Noto Naskh`);
   assert(snapshot.latitude === fixture.latitude && snapshot.longitude === fixture.longitude, `${fixture.name}: location was not persisted`);
   assert(snapshot.calculationMethod === 'Karachi' && snapshot.asrMethod === 'Hanafi', `${fixture.name}: policy was not persisted`);
   assert(!('hadithText' in snapshot) && !('hadithSource' in snapshot), `${fixture.name}: new widget snapshot retained Hadith fields`);
@@ -95,7 +96,7 @@ for (const fixture of fixtures) {
   assert(!maghribLabel.includes('+۳') && !maghribLabel.includes('+3'), `${fixture.name}: widget prayer label must not expose offset metadata`);
 
   const roundTrip = parseWidgetSnapshot(JSON.stringify(snapshot));
-  assert(roundTrip?.version === 6 && roundTrip.latitude === fixture.latitude, `${fixture.name}: snapshot round-trip failed`);
+  assert(roundTrip?.version === 7 && roundTrip.latitude === fixture.latitude, `${fixture.name}: snapshot round-trip failed`);
   assert(!JSON.stringify(roundTrip).includes('hadithText'), `${fixture.name}: Hadith reappeared after snapshot round-trip`);
   const boundaries = listWidgetTimelineBoundaries(snapshot, anchor);
   const hasPrayerBoundary = Object.values(entries).some((entry) => boundaries.includes(entry.atMs));
@@ -116,9 +117,29 @@ const legacy = parseWidgetSnapshot(JSON.stringify({
   prayers: [{ key: 'fajr', labelDari: 'صبح', time12h: '۴:۳۰', atMs: 1783336200000 }],
   nextRefreshAtMs: 1783336200000,
 }));
-assert(legacy?.version === 6 && legacy.latitude === 34.5553 && legacy.asrMethod === 'Hanafi', 'legacy snapshot migration failed');
+assert(legacy?.version === 7 && legacy.latitude === 34.5553 && legacy.asrMethod === 'Hanafi', 'legacy snapshot migration failed');
+assert(legacy?.pashtoFont === 'naskh', 'legacy snapshot did not migrate its Pashto font to Noto Naskh');
 assert(!JSON.stringify(legacy).includes('hadithText') && !JSON.stringify(legacy).includes('hadithSource'), 'legacy widget Hadith fields were not discarded');
 assert(legacy?.gregorianDisplay === '6 JUL 2026', 'legacy widget snapshot did not migrate to compact Gregorian month codes');
+
+const oldFontSnapshot = parseWidgetSnapshot(JSON.stringify({
+  ...legacy,
+  version: 6,
+  pashtoFont: 'nastaliq',
+}));
+assert(oldFontSnapshot?.version === 7 && oldFontSnapshot.pashtoFont === 'naskh', 'schema 6 widget snapshot did not migrate a saved Pashto font');
+const retiredFontSnapshot = parseWidgetSnapshot(JSON.stringify({
+  ...legacy,
+  version: 7,
+  pashtoFont: 'vazirmatn',
+}));
+assert(retiredFontSnapshot?.pashtoFont === 'naskh', 'retired Pashto Vazirmatn choice did not migrate to Noto Naskh');
+const selectedAmiriSnapshot = parseWidgetSnapshot(JSON.stringify({
+  ...legacy,
+  version: 7,
+  pashtoFont: 'amiri',
+}));
+assert(selectedAmiriSnapshot?.pashtoFont === 'amiri', 'schema 7 widget snapshot did not preserve an explicit font choice');
 
 const staleCalendarDisplaySnapshot = refreshWidgetSnapshot({
   ...legacy,
@@ -238,6 +259,8 @@ let date = formatter.date(from: "2026-07-06T07:30:00Z")!
 let day = WidgetPrayerCalculator.daySnapshot(snapshot: snapshot, date: date)
 let calculated = WidgetPrayerCalculator.calculate(snapshot: snapshot, date: date)
 var rawObject = try! JSONSerialization.jsonObject(with: JSONEncoder().encode(snapshot)) as! [String: Any]
+rawObject["version"] = 6
+rawObject["pashtoFont"] = "nastaliq"
 rawObject["maghribOffsetMinutes"] = 0
 rawObject["hadithText"] = "old widget hadith"
 rawObject["hadithSource"] = "old widget source"
@@ -266,7 +289,7 @@ let monthLabels = (1...12).map { month -> String in
   let monthDate = calendar.date(from: DateComponents(year: 2026, month: month, day: 15, hour: 12))!
   return WidgetPrayerCalculator.daySnapshot(snapshot: snapshot, date: monthDate).gregorianDisplay
 }
-let output = ["dateKey": day.dateKey, "gregorianDisplay": day.gregorianDisplay, "shamsiDisplayPashto": day.shamsiDisplayPashto ?? "", "hijriDisplay": day.hijriDisplay, "migratedHijriDisplay": migrated.hijriDisplay, "migratedGregorianDisplay": migrated.gregorianDisplay, "septemberHijriDisplay": septemberDay.hijriDisplay, "septemberGregorianDisplay": septemberDay.gregorianDisplay, "verifiedHijriDisplay": verifiedDay.hijriDisplay, "june27HijriDisplay": june27Day.hijriDisplay, "september13HijriDisplay": september13Day.hijriDisplay, "february17HijriDisplay": february17Day.hijriDisplay, "april18HijriDisplay": april18Day.hijriDisplay, "monthLabels": monthLabels, "dhuhr": day.prayers.first(where: { $0.key == "dhuhr" })!.atMs, "maghrib": day.prayers.first(where: { $0.key == "maghrib" })!.atMs, "rawMaghrib": calculated.rawMaghrib.timeIntervalSince1970 * 1000, "zeroOffsetMaghrib": rawDay.prayers.first(where: { $0.key == "maghrib" })!.atMs, "migratedMaghrib": migrated.prayers.first(where: { $0.key == "maghrib" })!.atMs, "strippedLegacyHadith": strippedLegacyHadith, "maghribLabel": day.prayers.first(where: { $0.key == "maghrib" })!.labelDari] as [String: Any]
+let output = ["dateKey": day.dateKey, "gregorianDisplay": day.gregorianDisplay, "shamsiDisplayPashto": day.shamsiDisplayPashto ?? "", "hijriDisplay": day.hijriDisplay, "migratedHijriDisplay": migrated.hijriDisplay, "migratedGregorianDisplay": migrated.gregorianDisplay, "migratedPashtoFont": rawSnapshot.pashtoFont ?? "", "septemberHijriDisplay": septemberDay.hijriDisplay, "septemberGregorianDisplay": septemberDay.gregorianDisplay, "verifiedHijriDisplay": verifiedDay.hijriDisplay, "june27HijriDisplay": june27Day.hijriDisplay, "september13HijriDisplay": september13Day.hijriDisplay, "february17HijriDisplay": february17Day.hijriDisplay, "april18HijriDisplay": april18Day.hijriDisplay, "monthLabels": monthLabels, "dhuhr": day.prayers.first(where: { $0.key == "dhuhr" })!.atMs, "maghrib": day.prayers.first(where: { $0.key == "maghrib" })!.atMs, "rawMaghrib": calculated.rawMaghrib.timeIntervalSince1970 * 1000, "zeroOffsetMaghrib": rawDay.prayers.first(where: { $0.key == "maghrib" })!.atMs, "migratedMaghrib": migrated.prayers.first(where: { $0.key == "maghrib" })!.atMs, "strippedLegacyHadith": strippedLegacyHadith, "maghribLabel": day.prayers.first(where: { $0.key == "maghrib" })!.labelDari] as [String: Any]
 print(String(data: try! JSONSerialization.data(withJSONObject: output), encoding: .utf8)!)
 `);
 try {
@@ -287,6 +310,7 @@ try {
   assert(output.april18HijriDisplay === '۱ ذوالقعده ۱۴۴۷', `iOS widget has a discontinuity after Shawwal: ${output.april18HijriDisplay}`);
   assert(JSON.stringify(output.monthLabels) === JSON.stringify(['15 JAN 2026', '15 FEB 2026', '15 MAR 2026', '15 APR 2026', '15 MAY 2026', '15 JUN 2026', '15 JUL 2026', '15 AUG 2026', '15 SEP 2026', '15 OCT 2026', '15 NOV 2026', '15 DEC 2026']), 'iOS widget month-code coverage is incomplete');
   assert(output.strippedLegacyHadith, 'iOS widget snapshot did not discard legacy Hadith fields');
+  assert(output.migratedPashtoFont === 'naskh', 'iOS widget decoder did not migrate a stale Pashto font');
   assert(output.maghrib - output.rawMaghrib === 300000, 'iOS fallback widget must schedule Maghrib exactly 300 seconds after raw time');
   assert(output.maghrib === output.zeroOffsetMaghrib, 'iOS global fallback must not depend on the stored country offset');
   assert(output.migratedMaghrib === output.maghrib, 'iOS must migrate an old +3 canonical widget time by only the missing two minutes');

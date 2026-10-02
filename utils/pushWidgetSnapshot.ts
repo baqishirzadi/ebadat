@@ -7,6 +7,7 @@ import { buildWidgetSnapshot } from '@/utils/widgetSnapshot';
 import { writeWidgetSnapshot } from '@/utils/widgetDataBridge';
 import { resolvePrayerCalculationPolicy } from '@/utils/prayerCalculationPolicy';
 import type { DailyHadithLanguage } from '@/utils/ahadith/daily';
+import type { PashtoFontFamily } from '@/constants/theme';
 
 let lastPushedAt = 0;
 const MIN_PUSH_INTERVAL_MS = 15_000;
@@ -56,7 +57,7 @@ export async function pushWidgetSnapshot(
     timezone?: string;
     appLanguage?: DailyHadithLanguage;
     dariFont?: 'vazirmatn' | 'amiri';
-    pashtoFont?: 'amiri' | 'nastaliq';
+    pashtoFont?: PashtoFontFamily;
     /** Days to prefetch into the widget snapshot. Default 30 for app-independent rollover. */
     horizonDays?: number;
   },

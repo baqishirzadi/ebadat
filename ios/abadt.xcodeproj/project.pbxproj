@@ -34,6 +34,12 @@
 		W1D2G3E4XT004 /* WidgetShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR004 /* WidgetShared.swift */; };
 		W1D2G3E4XT005 /* Vazirmatn-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C7AAF416978A422FB6AE300F /* Vazirmatn-Regular.ttf */; };
 		W1D2G3E4XT006 /* Vazirmatn-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */; };
+		NKSH0BF0A1PP0000000000R1 /* NotoNaskhArabic-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = NKSH0FR0000000000000REG1 /* NotoNaskhArabic-Regular.ttf */; };
+		NKSH0BF0A1PP0000000000B1 /* NotoNaskhArabic-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = NKSH0FR0000000000000BLD1 /* NotoNaskhArabic-Bold.ttf */; };
+		NKSH0BF0W1DG0000000000R1 /* NotoNaskhArabic-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = NKSH0FR0000000000000REG1 /* NotoNaskhArabic-Regular.ttf */; };
+		NKSH0BF0W1DG0000000000B1 /* NotoNaskhArabic-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = NKSH0FR0000000000000BLD1 /* NotoNaskhArabic-Bold.ttf */; };
+		AMRI0BF0W1DG0000000000R1 /* Amiri-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 25348C55611241EFBD8E0EFC /* Amiri-Regular.ttf */; };
+		AMRI0BF0W1DG0000000000B1 /* Amiri-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EAA20087D1EB4669933289B6 /* Amiri-Bold.ttf */; };
 		W1D2G3E4XT007 /* EbadatPrayerWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		W1D2G3E4XT008 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR007 /* PrivacyInfo.xcprivacy */; };
 		W1D2G3E4XT009 /* WidgetPrayerCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR008 /* WidgetPrayerCalculator.swift */; };
@@ -76,6 +82,8 @@
 		36FD6C85C92A47DABA7ACD38 /* barakatullah_salim_18sec.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = barakatullah_salim_18sec.mp3; path = abadt/barakatullah_salim_18sec.mp3; sourceTree = "<group>"; };
 		9035DA2D9AF546ECB81744CF /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = fa.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		961C4D789D714B179CF85826 /* NotoNastaliqUrdu-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoNastaliqUrdu-Regular.ttf"; path = "../assets/fonts/NotoNastaliqUrdu-Regular.ttf"; sourceTree = "<group>"; };
+		NKSH0FR0000000000000REG1 /* NotoNaskhArabic-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoNaskhArabic-Regular.ttf"; path = "../assets/fonts/NotoNaskhArabic-Regular.ttf"; sourceTree = "<group>"; };
+		NKSH0FR0000000000000BLD1 /* NotoNaskhArabic-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoNaskhArabic-Bold.ttf"; path = "../assets/fonts/NotoNaskhArabic-Bold.ttf"; sourceTree = "<group>"; };
 		A1C0N160X60FIL001 /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon60x60@2x.png"; path = "abadt/AppIcon60x60@2x.png"; sourceTree = "<group>"; };
 		A1C0N176X76FIL001 /* AppIcon76x76@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon76x76@2x~ipad.png"; path = "abadt/AppIcon76x76@2x~ipad.png"; sourceTree = "<group>"; };
 		A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Vazirmatn-Bold.ttf"; path = "../assets/fonts/Vazirmatn-Bold.ttf"; sourceTree = "<group>"; };
@@ -181,6 +189,8 @@
 				C7AAF416978A422FB6AE300F /* Vazirmatn-Regular.ttf */,
 				A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */,
 				961C4D789D714B179CF85826 /* NotoNastaliqUrdu-Regular.ttf */,
+				NKSH0FR0000000000000REG1 /* NotoNaskhArabic-Regular.ttf */,
+				NKSH0FR0000000000000BLD1 /* NotoNaskhArabic-Bold.ttf */,
 			);
 			name = Resources;
 			path = "";
@@ -372,6 +382,8 @@
 				C79F30A048B943ECB519CB63 /* Vazirmatn-Regular.ttf in Resources */,
 				E6DCE0B9CA9B468389137939 /* Vazirmatn-Bold.ttf in Resources */,
 				88DEF67A0D7E400CB94A84F9 /* NotoNastaliqUrdu-Regular.ttf in Resources */,
+				NKSH0BF0A1PP0000000000R1 /* NotoNaskhArabic-Regular.ttf in Resources */,
+				NKSH0BF0A1PP0000000000B1 /* NotoNaskhArabic-Bold.ttf in Resources */,
 				67110609A39B4AA5B5632CDB /* barakatullah_salim_18sec.mp3 in Resources */,
 				A1B2C3D4E5F60718293A4B5C /* barakatullah_salim_18sec.caf in Resources */,
 				BDEA7F426C230A2FCEAEC264 /* PrivacyInfo.xcprivacy in Resources */,
@@ -384,6 +396,10 @@
 			files = (
 				W1D2G3E4XT005 /* Vazirmatn-Regular.ttf in Resources */,
 				W1D2G3E4XT006 /* Vazirmatn-Bold.ttf in Resources */,
+				NKSH0BF0W1DG0000000000R1 /* NotoNaskhArabic-Regular.ttf in Resources */,
+				NKSH0BF0W1DG0000000000B1 /* NotoNaskhArabic-Bold.ttf in Resources */,
+				AMRI0BF0W1DG0000000000R1 /* Amiri-Regular.ttf in Resources */,
+				AMRI0BF0W1DG0000000000B1 /* Amiri-Bold.ttf in Resources */,
 				W1D2G3E4XT008 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

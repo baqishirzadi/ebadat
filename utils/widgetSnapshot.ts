@@ -42,8 +42,8 @@ export interface WidgetDaySnapshot {
 }
 
 export interface WidgetSnapshot {
-  /** Snapshot schema 6 removes Hadith payloads from prayer widgets. */
-  version: 6;
+  /** Snapshot schema 7 migrates existing Pashto font choices to Vazirmatn. */
+  version: 7;
   appLanguage?: DailyHadithLanguage;
   dariFont?: DariFontFamily;
   pashtoFont?: PashtoFontFamily;
@@ -80,6 +80,13 @@ export interface WidgetSnapshot {
 }
 
 const PRAYER_ORDER: WidgetPrayerKey[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+
+// Kept local: importing values from constants/theme pulls react-native into widget and Node contexts.
+const DEFAULT_PASHTO_FONT: PashtoFontFamily = 'naskh';
+
+function normalizePashtoFont(value: unknown): PashtoFontFamily {
+  return value === 'amiri' ? 'amiri' : DEFAULT_PASHTO_FONT;
+}
 
 function formatGregorianDisplay(gregorianDate: Date): string {
   return formatGregorianDateCompact(gregorianDate);
@@ -276,10 +283,10 @@ export function buildWidgetSnapshot(
   const currentPrayer = getCurrentPrayerFromEntries(active.prayers, now, previous?.prayers);
 
   return {
-    version: 6,
+    version: 7,
     appLanguage,
     dariFont: options?.dariFont ?? 'vazirmatn',
-    pashtoFont: options?.pashtoFont ?? 'amiri',
+    pashtoFont: normalizePashtoFont(options?.pashtoFont),
     updatedAt: now.toISOString(),
     cityName,
     timezone,
@@ -343,7 +350,10 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
 
   return {
     ...cleanSnapshot,
-    version: 6,
+    version: 7,
+    pashtoFont: cleanSnapshot.version < 7
+      ? DEFAULT_PASHTO_FONT
+      : normalizePashtoFont(cleanSnapshot.pashtoFont),
     appLanguage,
     updatedAt: now.toISOString(),
     days,
@@ -407,7 +417,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       prayers?: WidgetPrayerEntry[];
       nextRefreshAtMs?: number;
     };
-    if (!parsed || ![1, 2, 3, 4, 5, 6].includes(parsed.version ?? 0)) return null;
+    if (!parsed || ![1, 2, 3, 4, 5, 6, 7].includes(parsed.version ?? 0)) return null;
     if ((!Array.isArray(parsed.prayers) || parsed.prayers.length === 0) &&
       (!Array.isArray(parsed.days) || parsed.days.length === 0)) {
       return null;
@@ -428,10 +438,10 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         ),
       };
       return refreshWidgetSnapshot({
-        version: 6,
+        version: 7,
         appLanguage: parsed.appLanguage || 'dari',
         dariFont: parsed.dariFont || 'vazirmatn',
-        pashtoFont: parsed.pashtoFont || 'amiri',
+        pashtoFont: DEFAULT_PASHTO_FONT,
         updatedAt: parsed.updatedAt || new Date().toISOString(),
         cityName: parsed.cityName || '',
         timezone,
@@ -498,10 +508,12 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       .map((entry) => ({ ...entry, labelPashto: entry.labelPashto || PRAYER_LABELS_PASHTO[entry.key] }));
 
     return {
-      version: 6,
+      version: 7,
       appLanguage: parsed.appLanguage || 'dari',
       dariFont: parsed.dariFont || 'vazirmatn',
-      pashtoFont: parsed.pashtoFont || 'amiri',
+      pashtoFont: (parsed.version ?? 0) < 7
+        ? DEFAULT_PASHTO_FONT
+        : normalizePashtoFont(parsed.pashtoFont),
       updatedAt: parsed.updatedAt || new Date().toISOString(),
       cityName: parsed.cityName || '',
       timezone,

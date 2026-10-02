@@ -6,9 +6,9 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { LocalizedText } from '@/components/ui/LocalizedText';
-import type { PashtoFontFamily } from '@/constants/theme';
-import { BorderRadius, PashtoFonts, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { getPashtoFontFamily } from '@/hooks/useFonts';
 import type { AppLanguage } from '@/types/quran';
 import { resolveContent } from '@/utils/i18n/content';
 import { APP_LANGUAGES } from '@/utils/i18n/languages';
@@ -31,7 +31,7 @@ export function PrayerTextBlock({
 }: PrayerTextBlockProps) {
   const { theme, state } = useApp();
   const language = state.preferences.appLanguage;
-  const pashtoFontFamily = PashtoFonts[state.preferences.pashtoFont as PashtoFontFamily]?.name || 'Amiri';
+  const pashtoFontFamily = getPashtoFontFamily(state.preferences.pashtoFont);
 
   const translation = resolveContent(source, translationField, language);
   const instruction = resolveContent(source, instructionField, language);
