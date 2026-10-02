@@ -20,6 +20,7 @@ export interface ArticleCategoryInfo {
   id: ArticleCategory;
   nameDari: string;
   namePashto: string;
+  nameEnglish: string;
   icon: string;
   color: string;
 }
@@ -29,6 +30,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'iman',
     nameDari: 'ایمان',
     namePashto: 'ایمان',
+    nameEnglish: 'Faith',
     icon: 'favorite',
     color: '#E91E63',
   },
@@ -36,6 +38,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'salah',
     nameDari: 'نماز',
     namePashto: 'لمونځ',
+    nameEnglish: 'Prayer',
     icon: 'access-time',
     color: '#2196F3',
   },
@@ -43,6 +46,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'akhlaq',
     nameDari: 'اخلاق',
     namePashto: 'اخلاق',
+    nameEnglish: 'Character',
     icon: 'auto-awesome',
     color: '#9C27B0',
   },
@@ -50,6 +54,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'family',
     nameDari: 'خانواده',
     namePashto: 'کورنۍ',
+    nameEnglish: 'Family',
     icon: 'family-restroom',
     color: '#FF9800',
   },
@@ -57,6 +62,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'anxiety',
     nameDari: 'اضطراب',
     namePashto: 'اندېښنه',
+    nameEnglish: 'Anxiety',
     icon: 'psychology',
     color: '#F44336',
   },
@@ -64,6 +70,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'rizq',
     nameDari: 'رزق',
     namePashto: 'رزق',
+    nameEnglish: 'Provision',
     icon: 'attach-money',
     color: '#4CAF50',
   },
@@ -71,6 +78,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'dua',
     nameDari: 'دعا',
     namePashto: 'دعا',
+    nameEnglish: 'Supplication',
     icon: 'favorite-border',
     color: '#00BCD4',
   },
@@ -78,6 +86,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'tazkiyah',
     nameDari: 'تزکیه',
     namePashto: 'تزکیه',
+    nameEnglish: 'Purification',
     icon: 'spa',
     color: '#795548',
   },
@@ -85,6 +94,7 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     id: 'asma_husna',
     nameDari: 'اسماء الحسنی',
     namePashto: 'اسماء الحسنی',
+    nameEnglish: 'Names of Allah',
     icon: 'vpn-key',
     color: '#009688',
   },

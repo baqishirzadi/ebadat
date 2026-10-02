@@ -2,6 +2,7 @@ import type { AppLanguage } from '@/types/quran';
 
 import { contentFallbackChain } from './languages';
 import { ahadithMessages } from './messages/ahadith';
+import { articlesMessages } from './messages/articles';
 import { mediaMessages } from './messages/media';
 import { miscMessages } from './messages/misc';
 import { prayerMessages } from './messages/prayer';
@@ -381,6 +382,7 @@ export const UI_MESSAGES = {
   'language.restart.title': { dari: 'راه‌اندازی دوباره لازم است', pashto: 'بیا پیلول اړین دي', english: 'Restart recommended' },
   'language.restart.body': { dari: 'زبان تغییر کرد. برای اینکه جهت چیدمان کاملاً درست شود، برنامه را یک بار ببندید و دوباره باز کنید.', pashto: 'ژبه بدله شوه. د چیدنې د بشپړ سموالي لپاره اپ یو ځل بند او بیا پرانیزئ.', english: 'The language changed. Close and reopen the app once so the layout direction fully matches.' },
   ...ahadithMessages,
+  ...articlesMessages,
   ...mediaMessages,
   ...miscMessages,
   ...prayerMessages,

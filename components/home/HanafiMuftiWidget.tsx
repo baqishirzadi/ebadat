@@ -82,23 +82,26 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
           testID="home-mufti-view-conversation"
           style={[styles.viewConversationButton, isRtlHome && styles.viewConversationButtonPashto]}
         >
-          <RtlText
-            align="center"
-            wrap={false}
-            style={[
-              styles.viewConversationText,
-              isRtlHome && styles.viewConversationTextPashto,
-              isEnglish && styles.viewConversationTextEnglish,
-              {
-                fontFamily: isEnglish ? undefined : fontFamily,
-                lineHeight: isRtlHome ? (isNastaliq ? 28 : 26) : isEnglish ? 20 : 17,
-                includeFontPadding: isRtlHome,
-                paddingTop: isRtlHome ? 2 : undefined,
-              },
-            ]}
-          >
-            {t('home.viewConversation')}
-          </RtlText>
+          <View style={language === 'pashto' ? styles.viewConversationUnderlinePashto : undefined}>
+            <RtlText
+              align="center"
+              wrap={false}
+              style={[
+                styles.viewConversationText,
+                isRtlHome && styles.viewConversationTextPashto,
+                isEnglish && styles.viewConversationTextEnglish,
+                language === 'pashto' && styles.viewConversationTextBorderUnderlined,
+                {
+                  fontFamily: isEnglish ? undefined : fontFamily,
+                  lineHeight: isRtlHome ? (isNastaliq ? 28 : 26) : isEnglish ? 20 : 17,
+                  includeFontPadding: isRtlHome,
+                  paddingTop: isRtlHome ? 2 : undefined,
+                },
+              ]}
+            >
+              {t('home.viewConversation')}
+            </RtlText>
+          </View>
         </Pressable>
       </View>
 
@@ -197,6 +200,16 @@ const styles = StyleSheet.create({
   viewConversationTextEnglish: {
     fontSize: 13,
     color: 'rgba(255,255,255,0.9)',
+  },
+  viewConversationTextBorderUnderlined: {
+    textDecorationLine: 'none',
+    marginBottom: -3,
+  },
+  // iOS draws no text underline with the Pashto Naskh font, so the line is a border instead.
+  viewConversationUnderlinePashto: {
+    alignSelf: 'center',
+    borderBottomWidth: 0.75,
+    borderBottomColor: 'rgba(255,255,255,0.9)',
   },
   errorBox: {
     backgroundColor: 'rgba(0,0,0,0.25)',

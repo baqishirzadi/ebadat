@@ -1,125 +1,104 @@
 /**
- * Scholar Carousel Component
- * Horizontal scrollable list of featured scholars
+ * Scholar Carousel
+ * Horizontal strip of scholar avatars; tapping one filters the feed.
  */
 
 import React from 'react';
-import { View, StyleSheet, FlatList, Pressable } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+
+import { scholarInitial, scholarTone, shortScholarName } from '@/components/articles/articleTheme';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { useApp } from '@/context/AppContext';
-import { Scholar } from '@/types/articles';
-import { Spacing, BorderRadius } from '@/constants/theme';
-import CenteredText from '@/components/CenteredText';
+import type { Scholar } from '@/types/articles';
+import { directionStyle } from '@/utils/i18n/direction';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface ScholarCarouselProps {
   scholars: Scholar[];
+  selectedId?: string | null;
+  onSelect: (scholar: Scholar) => void;
 }
 
-export function ScholarCarousel({ scholars }: ScholarCarouselProps) {
+export function ScholarCarousel({ scholars, selectedId, onSelect }: ScholarCarouselProps) {
   const { theme } = useApp();
-  const router = useRouter();
-
-  const handleScholarPress = (scholarId: string) => {
-    // Navigate to scholar's articles or profile
-    router.push(`/articles?author=${scholarId}`);
-  };
-
-  const renderScholar = ({ item }: { item: Scholar }) => (
-    <Pressable
-      onPress={() => handleScholarPress(item.id)}
-      style={({ pressed }) => [
-        styles.scholarCard,
-        {
-          backgroundColor: theme.card,
-          borderColor: theme.cardBorder,
-        },
-        pressed && styles.cardPressed,
-      ]}
-    >
-      {item.photoUrl ? (
-        <View style={[styles.avatar, { backgroundColor: theme.backgroundSecondary }]}>
-          <MaterialIcons name="person" size={24} color={theme.tint} />
-        </View>
-      ) : (
-        <View style={[styles.avatar, { backgroundColor: theme.tint }]}>
-          <MaterialIcons name="person" size={24} color="#fff" />
-        </View>
-      )}
-      <CenteredText style={[styles.scholarName, { color: theme.text }]} numberOfLines={2}>
-        {item.fullName}
-      </CenteredText>
-      {item.verified && (
-        <MaterialIcons name="verified" size={16} color={theme.tint} style={styles.verified} />
-      )}
-    </Pressable>
-  );
+  const { language } = useI18n();
 
   if (scholars.length === 0) return null;
 
   return (
-    <View style={styles.container}>
-      <CenteredText style={[styles.title, { color: theme.text }]}>
-        علما و نویسندگان
-      </CenteredText>
-      <FlatList
-        data={scholars}
-        keyExtractor={(item) => item.id}
-        renderItem={renderScholar}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-      />
-    </View>
+    <FlatList
+      data={scholars}
+      keyExtractor={(item) => item.id}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={directionStyle(language)}
+      contentContainerStyle={styles.row}
+      renderItem={({ item }) => {
+        const selected = selectedId === item.id;
+        return (
+          <Pressable
+            onPress={() => onSelect(item)}
+            accessibilityRole="button"
+            accessibilityState={{ selected }}
+            style={({ pressed }) => [styles.item, pressed && styles.pressed]}
+          >
+            <View style={[styles.ring, { borderColor: selected ? theme.tint : 'transparent' }]}>
+              <View style={[styles.avatar, { backgroundColor: scholarTone(item.fullName) }]}>
+                <LocalizedText style={styles.initial}>{scholarInitial(item.fullName)}</LocalizedText>
+              </View>
+            </View>
+            <LocalizedText
+              numberOfLines={2}
+              style={[styles.name, { color: selected ? theme.tint : theme.text }, selected && styles.nameSelected]}
+            >
+              {shortScholarName(item.fullName)}
+            </LocalizedText>
+          </Pressable>
+        );
+      }}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
+  row: {
+    flexDirection: 'row',
+    gap: 6,
+    paddingHorizontal: 12,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: Spacing.sm,
-    fontFamily: 'Vazirmatn',
-  },
-  listContent: {
-    paddingHorizontal: Spacing.xs,
-  },
-  scholarCard: {
-    width: 120,
-    padding: Spacing.md,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
+  item: {
+    width: 78,
     alignItems: 'center',
-    position: 'relative',
+    gap: 6,
   },
-  cardPressed: {
-    opacity: 0.9,
+  pressed: {
+    opacity: 0.8,
+  },
+  ring: {
+    borderWidth: 2,
+    borderRadius: 32,
+    padding: 2,
   },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    justifyContent: 'center',
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     alignItems: 'center',
-    marginBottom: Spacing.sm,
+    justifyContent: 'center',
   },
-  scholarName: {
-    fontSize: 12,
-    fontWeight: '600',
+  initial: {
+    color: '#FFFFFF',
+    fontSize: 22,
+    lineHeight: 32,
+    fontWeight: '700',
     textAlign: 'center',
-    fontFamily: 'Vazirmatn',
   },
-  verified: {
-    position: 'absolute',
-    top: Spacing.xs,
-    right: Spacing.xs,
+  name: {
+    fontSize: 11.5,
+    lineHeight: 18,
+    textAlign: 'center',
   },
-  separator: {
-    width: Spacing.sm,
+  nameSelected: {
+    fontWeight: '700',
   },
 });

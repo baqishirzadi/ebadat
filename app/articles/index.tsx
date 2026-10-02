@@ -1,24 +1,30 @@
 /**
  * Articles Feed Screen
- * Shows featured scholars and latest articles
+ * Language switch, category chips, scholar strip, a featured article and the
+ * latest articles.
  */
 
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-
-import { View, StyleSheet, FlatList, RefreshControl, ActivityIndicator, Animated, useWindowDimensions, Pressable, Modal } from 'react-native';
-import { LocalizedTextInput } from '@/components/ui/LocalizedText';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, Modal, Pressable, RefreshControl, StyleSheet, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { ArticleCard } from '@/components/articles/ArticleCard';
+import { ArticleText } from '@/components/articles/ArticleText';
+import { CategoryFilter } from '@/components/articles/CategoryFilter';
+import { ScholarCarousel } from '@/components/articles/ScholarCarousel';
+import { categoryName, shortScholarName } from '@/components/articles/articleTheme';
+import { CenteredText } from '@/components/CenteredText';
+import { LocalizedText, LocalizedTextInput } from '@/components/ui/LocalizedText';
+import { ScreenHeader } from '@/components/ui/ScreenHeader';
 import { useApp } from '@/context/AppContext';
 import { useArticles } from '@/context/ArticlesContext';
-import { Article, Scholar, ARTICLE_CATEGORIES } from '@/types/articles';
-import { Spacing, BorderRadius } from '@/constants/theme';
-import { ArticleCard } from '@/components/articles/ArticleCard';
-import { CategoryFilter } from '@/components/articles/CategoryFilter';
-import CenteredText from '@/components/CenteredText';
-import { ScreenHeader } from '@/components/ui/ScreenHeader';
-import { isArticlesRemoteEnabled } from '@/utils/articleService';
+import type { Article, ArticleCategory, ArticleLanguage, Scholar } from '@/types/articles';
 import { verifyPin } from '@/utils/articleAdminService';
+import { isArticlesRemoteEnabled } from '@/utils/articleService';
+import { directionStyle, writingDirectionFor } from '@/utils/i18n/direction';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 const PINNED_SCHOLARS: Scholar[] = [
   {
@@ -235,24 +241,54 @@ const PINNED_SCHOLAR_FILTERS: Record<string, { authorIds?: string[]; authorNames
 
 const normalizeName = (value?: string) => (value || '').replace(/\s+/g, ' ').trim().toLowerCase();
 
+function scholarFilterFor(scholar: Scholar): ScholarFilter {
+  const pinned = PINNED_SCHOLAR_FILTERS[scholar.id];
+  return {
+    scholarId: scholar.id,
+    scholarName: scholar.fullName,
+    authorIds: pinned?.authorIds ?? [scholar.id],
+    authorNames: pinned?.authorNames ?? [scholar.fullName],
+  };
+}
+
+function matchesScholar(article: Article, filter: ScholarFilter): boolean {
+  return (
+    filter.authorIds.includes(article.authorId) ||
+    filter.authorNames.some((name) => normalizeName(name) === normalizeName(article.authorName))
+  );
+}
+
+const LANGUAGE_OPTIONS: { id: ArticleLanguage; label: string }[] = [
+  { id: 'dari', label: 'دری' },
+  { id: 'pashto', label: 'پښتو' },
+];
+
 export default function ArticlesFeed() {
   const { theme } = useApp();
+  const { t, n, language: appLanguage } = useI18n();
   const { state, refreshArticles, syncArticles, isBookmarked } = useArticles();
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedLanguage, setSelectedLanguage] = useState<'dari' | 'pashto'>('dari');
+  const [selectedLanguage, setSelectedLanguage] = useState<ArticleLanguage>(
+    appLanguage === 'pashto' ? 'pashto' : 'dari',
+  );
   const [selectedScholar, setSelectedScholar] = useState<ScholarFilter | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [showAdminPinModal, setShowAdminPinModal] = useState(false);
   const [adminPin, setAdminPin] = useState('');
   const [submittingAdminPin, setSubmittingAdminPin] = useState(false);
   const [adminPinError, setAdminPinError] = useState<string | null>(null);
+  const insets = useSafeAreaInsets();
   const scrollY = useRef(new Animated.Value(0)).current;
-  const { width } = useWindowDimensions();
+  const statusBackdropOpacity = scrollY.interpolate({ inputRange: [140, 200], outputRange: [0, 1], extrapolate: 'clamp' });
 
   useEffect(() => {
     refreshArticles();
   }, [refreshArticles]);
+
+  useEffect(() => {
+    setSelectedLanguage(appLanguage === 'pashto' ? 'pashto' : 'dari');
+  }, [appLanguage]);
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -260,80 +296,49 @@ export default function ArticlesFeed() {
     setRefreshing(false);
   }, [syncArticles]);
 
-  const filteredArticles = useMemo(
-    () =>
-      state.articles.filter((article) => {
-        if (selectedCategory && article.category !== selectedCategory) return false;
-        if (article.language !== selectedLanguage) return false;
-        if (!article.published) return false;
-
-        if (!selectedScholar) return true;
-
-        const byId = selectedScholar.authorIds.includes(article.authorId);
-        const byName = selectedScholar.authorNames.some(
-          (name) => normalizeName(name) === normalizeName(article.authorName)
-        );
-        return byId || byName;
-      }),
-    [selectedCategory, selectedLanguage, selectedScholar, state.articles]
+  const languageArticles = useMemo(
+    () => state.articles.filter((article) => article.published && article.language === selectedLanguage),
+    [selectedLanguage, state.articles],
   );
 
-  const displayArticles = useMemo(() => {
-    if (filteredArticles.length > 0) return filteredArticles;
-    if (selectedScholar && filteredArticles.length === 0) {
-      const scholarOnly = state.articles.filter((a) => {
-        if (!a.published || a.language !== selectedLanguage) return false;
-        const byId = selectedScholar.authorIds.includes(a.authorId);
-        const byName = selectedScholar.authorNames.some(
-          (n) => normalizeName(n) === normalizeName(a.authorName)
-        );
-        return byId || byName;
-      });
-      if (scholarOnly.length > 0) return scholarOnly;
-    }
-    return filteredArticles;
-  }, [filteredArticles, selectedScholar, selectedLanguage, state.articles]);
+  const scholarArticles = useMemo(
+    () => (selectedScholar ? languageArticles.filter((article) => matchesScholar(article, selectedScholar)) : languageArticles),
+    [languageArticles, selectedScholar],
+  );
 
-  const isShowingScholarFallback =
-    filteredArticles.length === 0 &&
-    selectedScholar != null &&
-    displayArticles.length > 0;
+  const filteredArticles = useMemo(
+    () => (selectedCategory ? scholarArticles.filter((article) => article.category === selectedCategory) : scholarArticles),
+    [scholarArticles, selectedCategory],
+  );
+
+  const isShowingScholarFallback = !!selectedScholar && !!selectedCategory && filteredArticles.length === 0 && scholarArticles.length > 0;
+  const displayArticles = isShowingScholarFallback ? scholarArticles : filteredArticles;
+
+  const categoryCounts = useMemo(() => {
+    const counts: Partial<Record<ArticleCategory, number>> = {};
+    for (const article of scholarArticles) counts[article.category] = (counts[article.category] ?? 0) + 1;
+    return counts;
+  }, [scholarArticles]);
 
   const displayScholars = useMemo(() => {
-    const seenNames = new Set<string>();
-    const normalizedName = (value: string) =>
-      value.replace(/\s+/g, ' ').trim().toLowerCase();
-
-    const merged = [...PINNED_SCHOLARS, ...state.scholars].filter((scholar) => {
-      const key = normalizedName(scholar.fullName);
-      if (seenNames.has(key)) return false;
-      seenNames.add(key);
-      return true;
+    const seen = new Set<string>();
+    return [...PINNED_SCHOLARS, ...state.scholars].filter((scholar) => {
+      const key = normalizeName(scholar.fullName);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      const filter = scholarFilterFor(scholar);
+      return languageArticles.some((article) => matchesScholar(article, filter));
     });
+  }, [languageArticles, state.scholars]);
 
-    return merged;
-  }, [state.scholars]);
+  const showFeatured = !selectedCategory && !selectedScholar && displayArticles.length > 2;
+  const featuredArticle = showFeatured ? displayArticles[0] : null;
+  const listArticles = featuredArticle ? displayArticles.slice(1) : displayArticles;
 
-  const handleArticlePress = useCallback(
-    (articleId: string) => {
-      router.push(`/articles/${articleId}`);
-    },
-    [router]
-  );
+  const handleArticlePress = useCallback((articleId: string) => router.push(`/articles/${articleId}`), [router]);
 
   const handleScholarPress = useCallback((scholar: Scholar) => {
-    setSelectedScholar((prev) => {
-      if (prev?.scholarId === scholar.id) return null;
-
-      const pinnedMap = PINNED_SCHOLAR_FILTERS[scholar.id];
-      const filter: ScholarFilter = {
-        scholarId: scholar.id,
-        scholarName: scholar.fullName,
-        authorIds: pinnedMap?.authorIds ?? [scholar.id],
-        authorNames: pinnedMap?.authorNames ?? [scholar.fullName],
-      };
-      return filter;
-    });
+    setSelectedScholar((previous) => (previous?.scholarId === scholar.id ? null : scholarFilterFor(scholar)));
   }, []);
 
   const openAdminPinModal = useCallback(() => {
@@ -351,325 +356,231 @@ export default function ArticlesFeed() {
   const handleAdminPinSubmit = useCallback(async () => {
     const normalizedPin = adminPin.trim();
     if (!normalizedPin) {
-      setAdminPinError('PIN را وارد کنید.');
+      setAdminPinError(t('articles.admin.pinRequired'));
       return;
     }
-
     try {
       setSubmittingAdminPin(true);
       setAdminPinError(null);
       const valid = await verifyPin(normalizedPin);
       if (!valid) {
-        setAdminPinError('PIN اشتباه است.');
+        setAdminPinError(t('articles.admin.pinWrong'));
         return;
       }
-
       closeAdminPinModal();
       router.push('/articles/admin');
     } catch (error) {
-      setAdminPinError('تأیید PIN ممکن نشد. دوباره تلاش کنید.');
-      if (__DEV__) {
-        console.warn('[ArticlesAdmin] verifyPin failed', error);
-      }
+      setAdminPinError(t('articles.admin.pinFailed'));
+      if (__DEV__) console.warn('[ArticlesAdmin] verifyPin failed', error);
     } finally {
       setSubmittingAdminPin(false);
     }
-  }, [adminPin, closeAdminPinModal, router]);
+  }, [adminPin, closeAdminPinModal, router, t]);
+
+  const chromeText = { textAlign: 'auto' as const, writingDirection: writingDirectionFor(appLanguage) };
 
   const renderArticle = useCallback(
     ({ item }: { item: Article }) => (
-      <ArticleCard
-        article={item}
-        isBookmarked={isBookmarked(item.id)}
-        onPress={() => handleArticlePress(item.id)}
-      />
+      <ArticleCard article={item} isBookmarked={isBookmarked(item.id)} onPress={() => handleArticlePress(item.id)} />
     ),
-    [isBookmarked, handleArticlePress]
+    [handleArticlePress, isBookmarked],
   );
 
-  const numColumns = width >= 420 ? 3 : 2;
-
-  const renderScholar = useCallback(
-    ({ item }: { item: Scholar }) => (
-      <Pressable
-        onPress={() => handleScholarPress(item)}
-        style={[
-          styles.scholarCard,
-          {
-            backgroundColor: theme.card,
-            borderColor: theme.cardBorder,
-          },
-          selectedScholar?.scholarId === item.id && {
-            borderColor: theme.tint,
-            backgroundColor: `${theme.tint}14`,
-          },
-        ]}
-      >
-        <CenteredText style={[styles.scholarName, { color: theme.text }]} numberOfLines={2}>
-          {item.fullName}
-        </CenteredText>
+  const listHeader = (
+    <View>
+      <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
+        <ScreenHeader title={t('articles.title')} subtitle={t('articles.subtitle')} icon="article" />
       </Pressable>
-    ),
-    [handleScholarPress, selectedScholar?.scholarId, theme]
-  );
 
-  const headerOpacity = scrollY.interpolate({
-    inputRange: [0, 120],
-    outputRange: [1, 0],
-    extrapolate: 'clamp',
-  });
-
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, 180],
-    outputRange: [1, 0.6],
-    extrapolate: 'clamp',
-  });
-
-  const articlesTitleHeader = (
-    <Pressable onLongPress={openAdminPinModal} delayLongPress={650}>
-      <ScreenHeader
-        title="مقالات"
-        subtitle="مقالات و نوشته‌های علما"
-        icon="article"
-      />
-    </Pressable>
-  );
-
-  const renderListHeader = () => (
-    <Animated.View
-      style={[
-        styles.headerWrapper,
-        {
-          opacity: headerOpacity,
-          transform: [{ scaleY: headerHeight }],
-        },
-      ]}
-    >
-      {articlesTitleHeader}
-
-      <CategoryFilter
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-        selectedLanguage={selectedLanguage}
-        onSelectLanguage={setSelectedLanguage}
-      />
-
-      {selectedScholar && (
-        <View style={[styles.scholarFilterBanner, { backgroundColor: theme.card, borderColor: theme.tint }]}>
-          <CenteredText style={[styles.scholarFilterText, { color: theme.text }]}>
-            فیلتر عالم فعال است: {selectedScholar.scholarName}
-          </CenteredText>
-          <Pressable
-            onPress={() => setSelectedScholar(null)}
-            style={[styles.clearScholarFilterButton, { backgroundColor: theme.tint }]}
-          >
-            <CenteredText style={styles.clearScholarFilterText}>حذف فیلتر</CenteredText>
-          </Pressable>
+      <View style={styles.controls}>
+        <View
+          style={[styles.languageTrack, directionStyle(appLanguage), { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
+          accessibilityRole="tablist"
+          accessibilityLabel={t('articles.languageLabel')}
+        >
+          {LANGUAGE_OPTIONS.map((option) => {
+            const selected = selectedLanguage === option.id;
+            return (
+              <Pressable
+                key={option.id}
+                testID={`articles-language-${option.id}`}
+                accessibilityRole="tab"
+                accessibilityState={{ selected }}
+                onPress={() => {
+                  setSelectedLanguage(option.id);
+                  setSelectedScholar(null);
+                  setSelectedCategory(null);
+                }}
+                style={[styles.languageOption, selected && [styles.languageOptionSelected, { backgroundColor: theme.card }]]}
+              >
+                <ArticleText
+                  language={option.id}
+                  align="center"
+                  style={[styles.languageText, { color: selected ? theme.tint : theme.textSecondary }, selected && styles.languageTextSelected]}
+                >
+                  {option.label}
+                </ArticleText>
+              </Pressable>
+            );
+          })}
         </View>
-      )}
 
-      {isShowingScholarFallback && selectedCategory && (
-        <View style={[styles.scholarFallbackBanner, { backgroundColor: `${theme.tint}18`, borderColor: theme.tint }]}>
-          <CenteredText style={[styles.scholarFallbackText, { color: theme.text }]}>
-            این عالم در {selectedCategory in ARTICLE_CATEGORIES
-              ? ARTICLE_CATEGORIES[selectedCategory as keyof typeof ARTICLE_CATEGORIES].nameDari
-              : 'این دسته'} مقاله‌ای ندارد؛ مقالات او در سایر دسته‌ها:
-          </CenteredText>
-        </View>
-      )}
-    </Animated.View>
-  );
+        <CategoryFilter selectedCategory={selectedCategory} onSelectCategory={setSelectedCategory} counts={categoryCounts} />
 
-  const renderStaticHeader = () => (
-    <View style={styles.headerWrapper}>
-      {articlesTitleHeader}
+        {displayScholars.length > 0 ? (
+          <View style={styles.scholarsBlock}>
+            <LocalizedText style={[styles.sectionLabel, chromeText, { color: theme.textSecondary }]}>
+              {t('articles.scholars')}
+            </LocalizedText>
+            <ScholarCarousel scholars={displayScholars} selectedId={selectedScholar?.scholarId} onSelect={handleScholarPress} />
+          </View>
+        ) : null}
 
-      <CategoryFilter
-        selectedCategory={selectedCategory}
-        onSelectCategory={setSelectedCategory}
-        selectedLanguage={selectedLanguage}
-        onSelectLanguage={setSelectedLanguage}
-      />
+        {selectedScholar ? (
+          <View style={[styles.filterRow, directionStyle(appLanguage)]}>
+            <Pressable
+              onPress={() => setSelectedScholar(null)}
+              style={[styles.filterChip, { backgroundColor: `${theme.tint}14`, borderColor: `${theme.tint}55` }]}
+              accessibilityRole="button"
+              accessibilityLabel={t('articles.clearFilter')}
+            >
+              <LocalizedText numberOfLines={1} style={[styles.filterChipText, { color: theme.tint }]}>
+                {t('articles.byScholar', { name: shortScholarName(selectedScholar.scholarName) })}
+              </LocalizedText>
+              <MaterialIcons name="close" size={16} color={theme.tint} />
+            </Pressable>
+          </View>
+        ) : null}
 
-      {selectedScholar && (
-        <View style={[styles.scholarFilterBanner, { backgroundColor: theme.card, borderColor: theme.tint }]}>
-          <CenteredText style={[styles.scholarFilterText, { color: theme.text }]}>
-            فیلتر عالم فعال است: {selectedScholar.scholarName}
-          </CenteredText>
-          <Pressable
-            onPress={() => setSelectedScholar(null)}
-            style={[styles.clearScholarFilterButton, { backgroundColor: theme.tint }]}
-          >
-            <CenteredText style={styles.clearScholarFilterText}>حذف فیلتر</CenteredText>
-          </Pressable>
-        </View>
-      )}
+        {isShowingScholarFallback && selectedCategory ? (
+          <View style={[styles.notice, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}>
+            <LocalizedText style={[styles.noticeText, chromeText, { color: theme.textSecondary }]}>
+              {t('articles.scholarFallback', { category: categoryName(selectedCategory, appLanguage) })}
+            </LocalizedText>
+          </View>
+        ) : null}
+      </View>
+
+      <View style={styles.listPadding}>
+        {featuredArticle ? (
+          <ArticleCard
+            variant="featured"
+            article={featuredArticle}
+            isBookmarked={isBookmarked(featuredArticle.id)}
+            onPress={() => handleArticlePress(featuredArticle.id)}
+          />
+        ) : null}
+
+        {displayArticles.length > 0 ? (
+          <View style={[styles.sectionHeader, directionStyle(appLanguage)]}>
+            <LocalizedText style={[styles.sectionTitle, chromeText, { color: theme.text }]}>
+              {selectedScholar ? shortScholarName(selectedScholar.scholarName) : selectedCategory ? categoryName(selectedCategory, appLanguage) : t('articles.latest')}
+            </LocalizedText>
+            <LocalizedText style={[styles.sectionCount, { color: theme.textSecondary }]}>
+              {t('articles.count', { count: n(displayArticles.length) })}
+            </LocalizedText>
+          </View>
+        ) : null}
+      </View>
     </View>
   );
 
-  const renderListFooter = () => (
-    <View>
-      {displayScholars.length > 0 && (
-        <View style={styles.scholarsSectionFooter}>
-          <CenteredText style={[styles.scholarsTitle, { color: theme.text }]}>
-            علما و نویسندگان
-          </CenteredText>
-          <FlatList
-            data={displayScholars}
-            keyExtractor={(item) => item.id}
-            renderItem={renderScholar}
-            numColumns={numColumns}
-            scrollEnabled={false}
-            columnWrapperStyle={styles.scholarRow}
-            contentContainerStyle={styles.scholarsGrid}
-          />
-        </View>
+  const emptyState = (
+    <View style={styles.emptyContainer}>
+      <View style={[styles.emptyIcon, { backgroundColor: theme.backgroundSecondary }]}>
+        <MaterialIcons name="menu-book" size={30} color={theme.textSecondary} />
+      </View>
+      {!isArticlesRemoteEnabled() && state.articles.length === 0 ? (
+        <>
+          <CenteredText style={[styles.emptyText, { color: theme.text }]}>{t('articles.empty.demo')}</CenteredText>
+          <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>{t('articles.empty.demoHint')}</CenteredText>
+        </>
+      ) : state.error && state.articles.length === 0 ? (
+        <CenteredText style={[styles.emptyText, { color: '#C62828' }]}>{state.error}</CenteredText>
+      ) : state.articles.length === 0 ? (
+        <>
+          <CenteredText style={[styles.emptyText, { color: theme.text }]}>{t('articles.empty.none')}</CenteredText>
+          <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>{t('articles.empty.noneHint')}</CenteredText>
+        </>
+      ) : (
+        <>
+          <CenteredText style={[styles.emptyText, { color: theme.text }]}>{t('articles.empty.filter')}</CenteredText>
+          {selectedScholar || selectedCategory ? (
+            <Pressable
+              onPress={() => {
+                setSelectedScholar(null);
+                setSelectedCategory(null);
+              }}
+              style={[styles.emptyButton, { backgroundColor: theme.tint }]}
+            >
+              <LocalizedText style={styles.emptyButtonText}>{t('articles.clearFilter')}</LocalizedText>
+            </Pressable>
+          ) : null}
+        </>
       )}
-      <View style={styles.footer} />
     </View>
   );
 
   return (
     <View testID="ios-articles-ready" style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Articles List */}
       {state.isLoading && state.articles.length === 0 ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.tint} />
-          <CenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>
-            در حال بارگذاری...
-          </CenteredText>
-        </View>
-      ) : displayArticles.length === 0 ? (
-        <View style={styles.emptyStateWrapper}>
-          {renderStaticHeader()}
-          <View style={styles.emptyContainer}>
-            {!isArticlesRemoteEnabled() ? (
-              <>
-                <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-                  مقالات به حالت نمایشی فعال است
-                </CenteredText>
-                <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
-                  فعلاً فقط مقالات محلی نمایش داده می‌شوند
-                </CenteredText>
-              </>
-            ) : state.error ? (
-              <>
-                <CenteredText style={[styles.emptyText, { color: '#F44336' }]}>
-                  {state.error}
-                </CenteredText>
-                {state.articles.length > 0 && (
-                  <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary, marginTop: 8 }]}>
-                    نمایش داده‌های ذخیره شده محلی
-                  </CenteredText>
-                )}
-              </>
-            ) : state.articles.length === 0 && !state.isLoading ? (
-              <>
-                <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-                  مقاله‌ای یافت نشد
-                </CenteredText>
-                <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
-                  مقالات در Supabase وجود ندارند
-                </CenteredText>
-                <CenteredText style={[styles.emptySubtext, { color: theme.textSecondary, marginTop: 8 }]}>
-                  برای اضافه کردن مقالات، راهنمای ADD_ARTICLES.md را ببینید
-                </CenteredText>
-              </>
-            ) : (
-              <>
-                <CenteredText style={[styles.emptyText, { color: theme.textSecondary }]}>
-                  مقاله‌ای با فیلتر انتخابی یافت نشد
-                </CenteredText>
-                {selectedScholar && (
-                  <Pressable
-                    onPress={() => setSelectedScholar(null)}
-                    style={[styles.clearScholarFilterButton, { backgroundColor: theme.tint, marginTop: Spacing.md }]}
-                  >
-                    <CenteredText style={styles.clearScholarFilterText}>حذف فیلتر عالم</CenteredText>
-                  </Pressable>
-                )}
-              </>
-            )}
-          </View>
+          <CenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>{t('common.loading')}</CenteredText>
         </View>
       ) : (
         <Animated.FlatList
           testID="ios-articles-list"
-          data={displayArticles}
+          data={listArticles}
           keyExtractor={(item) => item.id}
           renderItem={renderArticle}
-          ListHeaderComponent={renderListHeader}
-          ListHeaderComponentStyle={styles.listHeader}
+          ListHeaderComponent={listHeader}
+          ListEmptyComponent={featuredArticle ? null : emptyState}
           contentContainerStyle={styles.listContent}
           refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={handleRefresh}
-              tintColor={theme.tint}
-              colors={[theme.tint]}
-            />
+            <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} tintColor={theme.tint} colors={[theme.tint]} />
           }
           showsVerticalScrollIndicator={false}
-          ListFooterComponent={renderListFooter}
-          onScroll={Animated.event(
-            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-            { useNativeDriver: true }
-          )}
+          onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
           scrollEventThrottle={16}
         />
       )}
 
-      {/* Offline Indicator */}
-      {state.isOffline && (
-        <View style={[styles.offlineIndicator, { backgroundColor: theme.card }]}>
-          <CenteredText style={[styles.offlineText, { color: theme.textSecondary }]}>
-            حالت آفلاین - نمایش داده‌های ذخیره شده
-          </CenteredText>
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.statusBackdrop,
+          { height: insets.top, backgroundColor: theme.background, borderBottomColor: theme.cardBorder, opacity: statusBackdropOpacity },
+        ]}
+      />
+
+      {state.isOffline ? (
+        <View style={[styles.offlineIndicator, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+          <MaterialIcons name="cloud-off" size={15} color={theme.textSecondary} />
+          <LocalizedText style={[styles.offlineText, { color: theme.textSecondary }]}>{t('articles.offline')}</LocalizedText>
         </View>
-      )}
+      ) : null}
 
-      <Modal
-        visible={showAdminPinModal}
-        transparent
-        animationType="fade"
-        onRequestClose={closeAdminPinModal}
-      >
+      <Modal visible={showAdminPinModal} transparent animationType="fade" onRequestClose={closeAdminPinModal}>
         <View style={styles.pinModalOverlay}>
-          <View
-            style={[
-              styles.pinModalContent,
-              { backgroundColor: theme.card, borderColor: theme.cardBorder },
-            ]}
-          >
-            <CenteredText style={[styles.pinModalTitle, { color: theme.text }]}>
-              ورود به مدیریت مقالات
-            </CenteredText>
-
+          <View style={[styles.pinModalContent, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <CenteredText style={[styles.pinModalTitle, { color: theme.text }]}>{t('articles.admin.title')}</CenteredText>
             <LocalizedTextInput
               value={adminPin}
               onChangeText={(value) => {
                 setAdminPin(value);
-                if (adminPinError) {
-                  setAdminPinError(null);
-                }
+                if (adminPinError) setAdminPinError(null);
               }}
               placeholder="PIN"
               placeholderTextColor={theme.textSecondary}
               secureTextEntry
               keyboardType="number-pad"
               maxLength={8}
-              style={[
-                styles.pinInput,
-                { borderColor: theme.cardBorder, color: theme.text, backgroundColor: theme.backgroundSecondary },
-              ]}
+              style={[styles.pinInput, { borderColor: theme.cardBorder, color: theme.text, backgroundColor: theme.backgroundSecondary }]}
               textAlign="center"
             />
-
-            {adminPinError && (
-              <CenteredText style={styles.pinErrorText}>{adminPinError}</CenteredText>
-            )}
-
-            <View style={styles.pinActions}>
+            {adminPinError ? <CenteredText style={styles.pinErrorText}>{adminPinError}</CenteredText> : null}
+            <View style={[styles.pinActions, directionStyle(appLanguage)]}>
               <Pressable
                 onPress={handleAdminPinSubmit}
                 disabled={submittingAdminPin}
@@ -678,20 +589,15 @@ export default function ArticlesFeed() {
                 {submittingAdminPin ? (
                   <ActivityIndicator size="small" color="#fff" />
                 ) : (
-                  <CenteredText style={styles.pinConfirmText}>تأیید</CenteredText>
+                  <CenteredText style={styles.pinConfirmText}>{t('articles.admin.confirm')}</CenteredText>
                 )}
               </Pressable>
               <Pressable
                 onPress={closeAdminPinModal}
                 disabled={submittingAdminPin}
-                style={[
-                  styles.pinCancelButton,
-                  { borderColor: theme.cardBorder, backgroundColor: theme.backgroundSecondary },
-                ]}
+                style={[styles.pinCancelButton, { borderColor: theme.cardBorder, backgroundColor: theme.backgroundSecondary }]}
               >
-                <CenteredText style={[styles.pinCancelText, { color: theme.text }]}>
-                  انصراف
-                </CenteredText>
+                <CenteredText style={[styles.pinCancelText, { color: theme.text }]}>{t('common.cancel')}</CenteredText>
               </Pressable>
             </View>
           </View>
@@ -705,316 +611,227 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    paddingTop: 60,
-    paddingBottom: Spacing.lg,
-    paddingHorizontal: Spacing.lg,
-    alignItems: 'center',
-    width: '100%',
-    overflow: 'hidden',
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
-  },
-  headerWrapper: {
-    width: '100%',
-    overflow: 'hidden',
-    alignSelf: 'stretch',
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
-  },
-  listHeader: {
-    marginHorizontal: -Spacing.md,
-    marginTop: -Spacing.md,
-  },
-  headerPattern: {
+  statusBackdrop: {
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: 0,
-    opacity: 0.12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  patternLine: {
-    position: 'absolute',
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.35)',
-    width: '120%',
-    left: '-10%',
+  controls: {
+    paddingTop: 16,
+    gap: 14,
   },
-  patternLine1: {
-    top: 20,
-    transform: [{ rotate: '12deg' }],
+  languageTrack: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    padding: 4,
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
   },
-  patternLine2: {
-    top: 60,
-    transform: [{ rotate: '12deg' }],
-  },
-  patternLine3: {
-    top: 100,
-    transform: [{ rotate: '12deg' }],
-  },
-  patternLine4: {
-    top: 140,
-    transform: [{ rotate: '12deg' }],
-  },
-  patternCorner: {
-    position: 'absolute',
-    width: 18,
-    height: 18,
-    borderColor: 'rgba(255,255,255,0.35)',
-  },
-  patternTopLeft: {
-    top: 12,
-    left: 12,
-    borderTopWidth: 1,
-    borderLeftWidth: 1,
-  },
-  patternTopRight: {
-    top: 12,
-    right: 12,
-    borderTopWidth: 1,
-    borderRightWidth: 1,
-  },
-  patternBottomLeft: {
-    bottom: 12,
-    left: 12,
-    borderBottomWidth: 1,
-    borderLeftWidth: 1,
-  },
-  patternBottomRight: {
-    bottom: 12,
-    right: 12,
-    borderBottomWidth: 1,
-    borderRightWidth: 1,
-  },
-  headerTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#fff',
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: Spacing.xs,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  headerBackButton: {
-    position: 'absolute',
-    right: Spacing.md,
-    top: 54,
-    width: 36,
-    height: 36,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 3,
-  },
-  scholarsSection: {
-    paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.md,
-    paddingBottom: Spacing.sm,
-  },
-  scholarsSectionFooter: {
-    paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.sm,
-  },
-  scholarsTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: Spacing.sm,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  scholarsGrid: {
-    paddingBottom: Spacing.sm,
-  },
-  scholarRow: {
-    justifyContent: 'center',
-    gap: Spacing.sm,
-    marginBottom: Spacing.sm,
-  },
-  scholarCard: {
+  languageOption: {
     flex: 1,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.sm,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
+    minHeight: 40,
+    borderRadius: 11,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  scholarName: {
-    fontSize: 11,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    writingDirection: 'rtl',
+  languageOptionSelected: {
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 2,
   },
-  scholarFilterBanner: {
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.sm,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
+  languageText: {
+    fontSize: 15,
+    lineHeight: 24,
+  },
+  languageTextSelected: {
+    fontWeight: '700',
+  },
+  scholarsBlock: {
+    gap: 8,
+  },
+  sectionLabel: {
+    fontSize: 13,
+    lineHeight: 20,
+    fontWeight: '700',
+    paddingHorizontal: 18,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+  },
+  filterChip: {
+    flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
-  },
-  scholarFilterText: {
-    fontSize: 12,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    writingDirection: 'rtl',
-  },
-  clearScholarFilterButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 6,
-    borderRadius: BorderRadius.full,
-  },
-  clearScholarFilterText: {
-    fontSize: 12,
-    fontFamily: 'Vazirmatn',
-    color: '#fff',
-    textAlign: 'center',
-    writingDirection: 'rtl',
-    fontWeight: '600',
-  },
-  scholarFallbackBanner: {
-    marginHorizontal: Spacing.md,
-    marginTop: Spacing.sm,
-    borderRadius: BorderRadius.md,
+    gap: 6,
+    maxWidth: '100%',
+    paddingHorizontal: 14,
+    minHeight: 34,
+    borderRadius: 999,
     borderWidth: 1,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    alignItems: 'center',
   },
-  scholarFallbackText: {
-    fontSize: 12,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
-    writingDirection: 'rtl',
+  filterChipText: {
+    flexShrink: 1,
+    fontSize: 13,
+    lineHeight: 21,
+    fontWeight: '700',
+  },
+  notice: {
+    marginHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
+  noticeText: {
+    fontSize: 13,
+    lineHeight: 22,
+  },
+  listPadding: {
+    paddingHorizontal: 16,
+    paddingTop: 18,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    gap: 12,
+  },
+  sectionTitle: {
+    flex: 1,
+    fontSize: 17,
+    lineHeight: 28,
+    fontWeight: '700',
+  },
+  sectionCount: {
+    fontSize: 12.5,
+    lineHeight: 20,
+  },
+  listContent: {
+    paddingBottom: 110,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 12,
   },
   loadingText: {
-    marginTop: Spacing.md,
     fontSize: 14,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
-  emptyStateWrapper: {
-    flex: 1,
   },
   emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: Spacing.xl,
+    paddingHorizontal: 32,
+    paddingVertical: 40,
+    gap: 10,
+  },
+  emptyIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
   },
   emptyText: {
     fontSize: 16,
-    fontFamily: 'Vazirmatn',
-    marginBottom: Spacing.xs,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    lineHeight: 26,
+    fontWeight: '700',
   },
   emptySubtext: {
-    fontSize: 14,
-    fontFamily: 'Vazirmatn',
-    marginTop: Spacing.xs,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    fontSize: 13.5,
+    lineHeight: 22,
   },
-  listContent: {
-    padding: Spacing.md,
-    paddingBottom: 100,
+  emptyButton: {
+    marginTop: 6,
+    paddingHorizontal: 20,
+    paddingVertical: 9,
+    borderRadius: 999,
   },
-  footer: {
-    height: Spacing.xl,
+  emptyButtonText: {
+    color: '#fff',
+    fontSize: 13.5,
+    lineHeight: 21,
+    fontWeight: '700',
+    textAlign: 'center',
   },
   offlineIndicator: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: Spacing.sm,
+    bottom: 96,
+    alignSelf: 'center',
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
   },
   offlineText: {
     fontSize: 12,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'right',
-    writingDirection: 'rtl',
+    lineHeight: 19,
   },
   pinModalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.4)',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
+    paddingHorizontal: 24,
   },
   pinModalContent: {
     width: '100%',
-    borderRadius: BorderRadius.lg,
+    borderRadius: 18,
     borderWidth: 1,
-    padding: Spacing.md,
-    gap: Spacing.sm,
+    padding: 16,
+    gap: 10,
   },
   pinModalTitle: {
-    fontFamily: 'Vazirmatn',
     fontSize: 16,
     fontWeight: '700',
     textAlign: 'center',
   },
   pinInput: {
     borderWidth: 1,
-    borderRadius: BorderRadius.md,
+    borderRadius: 10,
     minHeight: 44,
-    paddingHorizontal: Spacing.md,
-    fontFamily: 'Vazirmatn',
+    paddingHorizontal: 16,
     fontSize: 16,
   },
   pinErrorText: {
-    color: '#F44336',
-    fontFamily: 'Vazirmatn',
+    color: '#C62828',
     fontSize: 12,
     textAlign: 'center',
   },
   pinActions: {
-    flexDirection: 'row-reverse',
-    gap: Spacing.sm,
-    marginTop: Spacing.xs,
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 4,
   },
   pinConfirmButton: {
     flex: 1,
-    minHeight: 40,
-    borderRadius: BorderRadius.md,
+    minHeight: 42,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   pinConfirmText: {
     color: '#fff',
-    fontFamily: 'Vazirmatn',
     fontSize: 13,
     fontWeight: '700',
   },
   pinCancelButton: {
     flex: 1,
-    minHeight: 40,
-    borderRadius: BorderRadius.md,
+    minHeight: 42,
+    borderRadius: 10,
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   pinCancelText: {
-    fontFamily: 'Vazirmatn',
     fontSize: 13,
     fontWeight: '600',
   },

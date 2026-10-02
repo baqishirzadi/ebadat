@@ -1,183 +1,105 @@
 /**
- * Category Filter Component
- * Filter articles by category and language
+ * Category Filter
+ * Horizontal pill chips; categories without articles in the current view are
+ * hidden.
  */
 
 import React from 'react';
-import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { Pressable, ScrollView, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+
+import { categoryName, categoryPalette } from '@/components/articles/articleTheme';
+import { LocalizedText } from '@/components/ui/LocalizedText';
 import { useApp } from '@/context/AppContext';
-import { ArticleCategory, ARTICLE_CATEGORIES } from '@/types/articles';
-import { Spacing, BorderRadius } from '@/constants/theme';
-import CenteredText from '@/components/CenteredText';
+import { ARTICLE_CATEGORIES, type ArticleCategory } from '@/types/articles';
+import { directionStyle } from '@/utils/i18n/direction';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface CategoryFilterProps {
   selectedCategory: string | null;
   onSelectCategory: (category: string | null) => void;
-  selectedLanguage: 'dari' | 'pashto';
-  onSelectLanguage: (language: 'dari' | 'pashto') => void;
+  counts: Partial<Record<ArticleCategory, number>>;
 }
 
-export function CategoryFilter({
-  selectedCategory,
-  onSelectCategory,
-  selectedLanguage,
-  onSelectLanguage,
-}: CategoryFilterProps) {
-  const { theme } = useApp();
+export function CategoryFilter({ selectedCategory, onSelectCategory, counts }: CategoryFilterProps) {
+  const { theme, themeMode } = useApp();
+  const { t, language } = useI18n();
+  const isDark = themeMode === 'night';
 
-  const categories = Object.values(ARTICLE_CATEGORIES);
+  const categories = Object.values(ARTICLE_CATEGORIES).filter(
+    (category) => (counts[category.id] ?? 0) > 0 || selectedCategory === category.id,
+  );
+
+  const chip = (selected: boolean) => [
+    styles.chip,
+    selected
+      ? { backgroundColor: theme.tint, borderColor: theme.tint }
+      : { backgroundColor: theme.card, borderColor: theme.cardBorder },
+  ];
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.backgroundSecondary }]}>
-      {/* Language Toggle */}
-      <View style={styles.languageToggle}>
-        <Pressable
-          onPress={() => onSelectLanguage('dari')}
-          style={({ pressed }) => [
-            styles.languageButton,
-            {
-              backgroundColor: selectedLanguage === 'dari' ? theme.tint : theme.card,
-              borderColor: selectedLanguage === 'dari' ? theme.tint : theme.cardBorder,
-            },
-            pressed && styles.buttonPressed,
-          ]}
-        >
-          <CenteredText
-            style={[
-              styles.languageText,
-              { color: selectedLanguage === 'dari' ? '#fff' : theme.text },
-            ]}
-          >
-            دری
-          </CenteredText>
-        </Pressable>
-        <Pressable
-          onPress={() => onSelectLanguage('pashto')}
-          style={({ pressed }) => [
-            styles.languageButton,
-            {
-              backgroundColor: selectedLanguage === 'pashto' ? theme.tint : theme.card,
-              borderColor: selectedLanguage === 'pashto' ? theme.tint : theme.cardBorder,
-            },
-            pressed && styles.buttonPressed,
-          ]}
-        >
-          <CenteredText
-            style={[
-              styles.languageText,
-              { color: selectedLanguage === 'pashto' ? '#fff' : theme.text },
-            ]}
-          >
-            پښتو
-          </CenteredText>
-        </Pressable>
-      </View>
-
-      {/* Category Filter */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.categoriesContainer}
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      style={directionStyle(language)}
+      contentContainerStyle={styles.row}
+    >
+      <Pressable
+        testID="articles-category-all"
+        onPress={() => onSelectCategory(null)}
+        style={({ pressed }) => [chip(selectedCategory === null), pressed && styles.pressed]}
       >
-        <Pressable
-          onPress={() => onSelectCategory(null)}
-          style={({ pressed }) => [
-            styles.categoryButton,
-            {
-              backgroundColor: selectedCategory === null ? theme.tint : theme.card,
-              borderColor: selectedCategory === null ? theme.tint : theme.cardBorder,
-            },
-            pressed && styles.buttonPressed,
-          ]}
-        >
-          <CenteredText
-            style={[
-              styles.categoryText,
-              { color: selectedCategory === null ? '#fff' : theme.text },
-            ]}
-          >
-            همه
-          </CenteredText>
-        </Pressable>
+        <LocalizedText style={[styles.chipText, { color: selectedCategory === null ? '#fff' : theme.text }]}>
+          {t('articles.all')}
+        </LocalizedText>
+      </Pressable>
 
-        {categories.map((category) => (
+      {categories.map((category) => {
+        const selected = selectedCategory === category.id;
+        const palette = categoryPalette(category.id);
+        return (
           <Pressable
             key={category.id}
-            onPress={() =>
-              onSelectCategory(selectedCategory === category.id ? null : category.id)
-            }
-            style={({ pressed }) => [
-              styles.categoryButton,
-              {
-                backgroundColor: selectedCategory === category.id ? theme.tint : theme.card,
-                borderColor: selectedCategory === category.id ? theme.tint : theme.cardBorder,
-              },
-              pressed && styles.buttonPressed,
-            ]}
+            onPress={() => onSelectCategory(selected ? null : category.id)}
+            style={({ pressed }) => [chip(selected), pressed && styles.pressed]}
           >
             <MaterialIcons
               name={category.icon as any}
-              size={16}
-              color={selectedCategory === category.id ? '#fff' : category.color}
+              size={15}
+              color={selected ? '#fff' : isDark ? palette.accent : palette.primary}
             />
-            <CenteredText
-              style={[
-                styles.categoryText,
-                { color: selectedCategory === category.id ? '#fff' : theme.text },
-              ]}
-            >
-              {category.nameDari}
-            </CenteredText>
+            <LocalizedText style={[styles.chipText, { color: selected ? '#fff' : theme.text }]}>
+              {categoryName(category.id, language)}
+            </LocalizedText>
           </Pressable>
-        ))}
-      </ScrollView>
-    </View>
+        );
+      })}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.md,
-  },
-  languageToggle: {
+  row: {
     flexDirection: 'row',
-    gap: Spacing.sm,
-    marginBottom: Spacing.md,
+    gap: 8,
+    paddingHorizontal: 16,
   },
-  languageButton: {
-    flex: 1,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
-  languageText: {
-    fontSize: 14,
-    fontWeight: '600',
-    fontFamily: 'Vazirmatn',
-  },
-  categoriesContainer: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
-  categoryButton: {
+  chip: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
+    gap: 6,
+    paddingHorizontal: 14,
+    minHeight: 36,
+    borderRadius: 999,
+    borderWidth: StyleSheet.hairlineWidth,
   },
-  categoryText: {
-    fontSize: 12,
+  chipText: {
+    fontSize: 13,
+    lineHeight: 21,
     fontWeight: '600',
-    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
   },
-  buttonPressed: {
+  pressed: {
     opacity: 0.8,
   },
 });
