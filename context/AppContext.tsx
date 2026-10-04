@@ -21,11 +21,13 @@ import { DEFAULT_APP_LANGUAGE, isAppLanguage } from '@/utils/i18n/languages';
 const STORAGE_KEYS = {
   PREFERENCES: '@ebadat/preferences',
   PASHTO_FONT_MIGRATION_VERSION: '@ebadat/pashto_font_migration_version',
+  HIFZ16_DEFAULT_VERSION: '@ebadat/hifz16_default_version',
   BOOKMARKS: '@ebadat/bookmarks',
   LAST_POSITION: '@ebadat/last_position',
 };
 
 const PASHTO_FONT_MIGRATION_TARGET = 2;
+const HIFZ16_DEFAULT_TARGET = 1;
 
 // Default preferences
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -38,7 +40,8 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   arabicFontSize: 'small',
   translationFontSize: 'small',
   viewMode: 'scroll',
-  hifz16Line: false,
+  hifz16Line: true,
+  hifz16DefaultVersion: HIFZ16_DEFAULT_TARGET,
   showTranslation: 'dari',
   autoPlayAudio: true,
   repeatAyah: false,
@@ -331,9 +334,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   async function loadPersistedState() {
     try {
-      const [prefsJson, pashtoFontMigrationVersionJson, bookmarksJson, positionJson] = await Promise.all([
+      const [prefsJson, pashtoFontMigrationVersionJson, hifz16DefaultVersionJson, bookmarksJson, positionJson] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.PREFERENCES),
         AsyncStorage.getItem(STORAGE_KEYS.PASHTO_FONT_MIGRATION_VERSION),
+        AsyncStorage.getItem(STORAGE_KEYS.HIFZ16_DEFAULT_VERSION),
         AsyncStorage.getItem(STORAGE_KEYS.BOOKMARKS),
         AsyncStorage.getItem(STORAGE_KEYS.LAST_POSITION),
       ]);
@@ -394,7 +398,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (typeof preferences.hifz16Line !== 'boolean') {
         preferences = {
           ...preferences,
-          hifz16Line: false,
+          hifz16Line: true,
+        };
+        preferencesNormalized = true;
+      }
+
+      // Restore the 16-line Hafiz mushaf for existing readers once. A later
+      // switch to Translation is saved normally and is never overridden again.
+      const hifz16DefaultVersion = Number(hifz16DefaultVersionJson || 0);
+      const needsHifz16DefaultMigration =
+        !Number.isFinite(hifz16DefaultVersion) || hifz16DefaultVersion < HIFZ16_DEFAULT_TARGET;
+      if (needsHifz16DefaultMigration) {
+        preferences = {
+          ...preferences,
+          hifz16Line: true,
+          hifz16DefaultVersion: HIFZ16_DEFAULT_TARGET,
+        };
+        preferencesNormalized = true;
+      } else if (preferences.hifz16DefaultVersion !== HIFZ16_DEFAULT_TARGET) {
+        preferences = {
+          ...preferences,
+          hifz16DefaultVersion: HIFZ16_DEFAULT_TARGET,
         };
         preferencesNormalized = true;
       }
@@ -427,6 +451,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         await AsyncStorage.setItem(
           STORAGE_KEYS.PASHTO_FONT_MIGRATION_VERSION,
           String(PASHTO_FONT_MIGRATION_TARGET),
+        );
+      }
+      if (needsHifz16DefaultMigration) {
+        await AsyncStorage.setItem(
+          STORAGE_KEYS.HIFZ16_DEFAULT_VERSION,
+          String(HIFZ16_DEFAULT_TARGET),
         );
       }
 

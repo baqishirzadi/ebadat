@@ -1,0 +1,44 @@
+appId: com.afghandev.ebadat
+---
+- openLink: "ebadat://quran/1"
+- tapOn:
+    id: quran-reader-hifz16
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-1
+    timeout: 15000
+- assertVisible:
+    id: hifz16-reader-controls
+- tapOn:
+    id: hifz16-next-page
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-2
+    timeout: 5000
+- tapOn:
+    id: hifz16-navigator-open
+- extendedWaitUntil:
+    visible:
+      id: hifz16-navigator-sheet
+    timeout: 5000
+- tapOn:
+    id: hifz16-navigator-juz
+- inputText: "2"
+- tapOn:
+    id: hifz16-navigator-juz-go
+- extendedWaitUntil:
+    visible:
+      id: hifz16-reader-controls
+    timeout: 5000
+- tapOn:
+    id: hifz16-bookmark
+- tapOn:
+    id: quran-reader-translation
+- assertNotVisible:
+    id: hifz16-reader-controls
+- tapOn:
+    id: quran-reader-hifz16
+- extendedWaitUntil:
+    visible:
+      id: hifz16-reader-controls
+    timeout: 10000

@@ -1,0 +1,78 @@
+appId: com.afghandev.ebadat
+---
+- openLink: "ebadat://quran/1"
+- waitForAnimationToEnd:
+    timeout: 15000
+- assertVisible:
+    id: quran-reader-settings
+- tapOn:
+    id: quran-reader-settings
+- extendedWaitUntil:
+    visible:
+      id: quran-reader-settings-sheet
+    timeout: 5000
+- takeScreenshot: android-quran-reader-settings-open
+- assertVisible:
+    id: quran-reader-size-increase
+- tapOn:
+    id: quran-reader-size-preset-small
+- tapOn:
+    id: quran-reader-size-decrease
+- tapOn:
+    id: quran-reader-size-decrease
+- tapOn:
+    id: quran-reader-size-decrease
+- tapOn:
+    id: quran-reader-size-increase
+- tapOn:
+    id: quran-reader-spacing-relaxed
+- tapOn:
+    id: quran-reader-page-sepia
+- scrollUntilVisible:
+    element:
+      id: quran-reader-font-qpcHafs
+    direction: DOWN
+    timeout: 5000
+- tapOn:
+    id: quran-reader-font-qpcHafs
+- tapOn:
+    id: quran-reader-font-scheherazade
+- tapOn:
+    id: quran-reader-size-preset-large
+- tapOn:
+    id: quran-reader-spacing-normal
+- tapOn:
+    id: quran-reader-page-auto
+- tapOn:
+    id: quran-reader-font-scheherazade
+- tapOn:
+    id: quran-reader-translation-english
+- tapOn:
+    id: quran-reader-translation-pashto
+- tapOn:
+    id: quran-reader-settings-done
+- takeScreenshot: android-quran-reader-settings
+- tapOn:
+    id: quran-reader-mode-mushaf
+- extendedWaitUntil:
+    visible:
+      id: quran-mushaf-page-1
+    timeout: 10000
+- takeScreenshot: android-quran-mushaf-page-1
+- tapOn:
+    id: quran-mushaf-next-page
+- extendedWaitUntil:
+    visible:
+      id: quran-mushaf-page-2
+    timeout: 5000
+- tapOn:
+    id: quran-reader-mode-reading
+- assertNotVisible:
+    id: quran-mushaf-pages
+- tapOn:
+    id: quran-reader-mode-mushaf
+- extendedWaitUntil:
+    visible:
+      id: quran-mushaf-page-2
+    timeout: 10000
+- takeScreenshot: android-quran-mushaf-return

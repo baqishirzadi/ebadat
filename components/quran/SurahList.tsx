@@ -251,7 +251,9 @@ export function SurahList() {
     if (hifz16Line) {
       const start = findHifzJuzStartAyah(juzNumber);
       if (start) {
-        router.push(`/quran/${start.surah}?ayah=${start.ayah}`);
+        // Page is the source of truth in the 548-page Hafiz mushaf. Passing it
+        // avoids the shared-page / RTL pager path that could land on page 548.
+        router.push(`/quran/${start.surah}?ayah=${start.ayah}&hifzPage=${start.page}`);
         return;
       }
     }

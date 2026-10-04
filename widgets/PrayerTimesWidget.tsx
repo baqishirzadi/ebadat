@@ -4,12 +4,17 @@ import { FlexWidget, TextWidget } from 'react-native-android-widget';
 import type { WidgetSnapshot } from '@/utils/widgetSnapshot';
 import { toArabicNumeralsString, toLatinNumeralsString } from '@/utils/numbers';
 
-const TINT = '#1a4d3e';
+const TINT = '#1a4d3d';
 const ACTIVE_BG = '#ffffff';
 const INACTIVE_BG = '#ffffff1f';
 const TEXT_PRIMARY = '#ffffff';
 const TEXT_SECONDARY = '#ffffffd9';
-const ACCENT = '#8bd9b8';
+const ACCENT = '#8cd9b8';
+const BACKGROUND_GRADIENT = {
+  from: '#0f1f14',
+  to: TINT,
+  orientation: 'TL_BR' as const,
+} as const;
 
 const WEEKDAY_SHORT_EN: Record<string, string> = {
   Sunday: 'Sun',
@@ -28,28 +33,23 @@ const HIJRI_MONTH_SHORT_EN: Record<string, string> = {
   'Jumada al-Thani': 'Jumada II',
 };
 
-/** English Hijri: "4 Jumada I" (day + short month, no year/prefix). */
-function englishHijriCell(hijriDisplay: string): string {
+/** English Hijri, with the month style used by the iOS widget. */
+function englishHijriDate(hijriDisplay: string): string {
   const parts = hijriDisplay.trim().split(/\s+/).filter(Boolean);
   if (parts.length < 2) return hijriDisplay.trim();
-  const day = parts[0];
+  const day = toLatinNumeralsString(parts[0]);
   const yearMaybe = parts[parts.length - 1];
-  const monthTokens = /^\d+$/.test(yearMaybe) ? parts.slice(1, -1) : parts.slice(1);
+  const hasYear = /^\d+$/.test(toLatinNumeralsString(yearMaybe));
+  const monthTokens = hasYear ? parts.slice(1, -1) : parts.slice(1);
   const monthFull = monthTokens.join(' ');
   const monthShort = HIJRI_MONTH_SHORT_EN[monthFull] || monthFull;
-  return `${day} ${monthShort}`.trim();
+  return [day, monthShort, hasYear ? toLatinNumeralsString(yearMaybe) : ''].filter(Boolean).join(' ');
 }
 
-/** English hero: "Fri · 12 Rabi II" — Qamari first (day + short month, no year). */
-function englishHeaderTitle(weekday: string, hijriDisplay: string): string {
+/** English hero: weekday and Shamsi display, matching the iOS widget. */
+function englishHeaderTitle(weekday: string, shamsiDisplay: string): string {
   const shortDay = WEEKDAY_SHORT_EN[weekday] || weekday.slice(0, 3);
-  return [shortDay, englishHijriCell(hijriDisplay)].filter(Boolean).join(' · ');
-}
-
-/** English solar cell: "3 Mizan" (drop year). */
-function englishSolarShort(shamsi: string): string {
-  const parts = shamsi.trim().split(/\s+/).filter(Boolean);
-  return parts.length >= 2 ? `${parts[0]} ${parts[1]}` : shamsi.trim();
+  return [shortDay, toLatinNumeralsString(shamsiDisplay)].filter(Boolean).join(', ');
 }
 
 const GREG_MONTH_EN_TO_DARI: Record<string, string> = {
@@ -67,25 +67,32 @@ const GREG_MONTH_EN_TO_DARI: Record<string, string> = {
   DEC: 'دسمبر',
 };
 
-/** Dari Gregorian: "۲۵ سپتمبر" from snapshot "25 SEP 2026" (no year — fits the 1-row cell). */
-function dariGregorianShort(gregorianDisplay: string): string {
-  const parts = gregorianDisplay.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    const day = toArabicNumeralsString(parts[0]);
-    const monthKey = parts[1].toUpperCase();
-    const month = GREG_MONTH_EN_TO_DARI[monthKey] || parts[1];
-    return `${day} ${month}`.trim();
-  }
-  return toArabicNumeralsString(gregorianDisplay.trim());
-}
+const GREG_MONTH_EN_TO_PASHTO: Record<string, string> = {
+  JAN: 'جنوري',
+  FEB: 'فبروري',
+  MAR: 'مارچ',
+  APR: 'اپرېل',
+  MAY: 'مۍ',
+  JUN: 'جون',
+  JUL: 'جولای',
+  AUG: 'اګست',
+  SEP: 'سپتمبر',
+  OCT: 'اکتوبر',
+  NOV: 'نومبر',
+  DEC: 'دسمبر',
+};
 
-/** Dari Hijri without year: "١٣ ربیع‌الثانی". */
-function dariHijriShort(hijriDisplay: string): string {
-  const parts = hijriDisplay.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2 && /^\d+$/.test(toLatinNumeralsString(parts[parts.length - 1] || ''))) {
-    return parts.slice(0, -1).join(' ').trim();
+/** Gregorian day and month, omitting the year as on iOS. */
+function gregorianCell(gregorianDisplay: string, isEnglish: boolean, isPashto: boolean): string {
+  const parts = gregorianDisplay.trim().split(/\s+/).filter(Boolean);
+  if (parts.length < 2) {
+    return isEnglish ? toLatinNumeralsString(gregorianDisplay.trim()) : toArabicNumeralsString(gregorianDisplay.trim());
   }
-  return hijriDisplay.trim();
+  const day = isEnglish ? toLatinNumeralsString(parts[0]) : toArabicNumeralsString(parts[0]);
+  const monthKey = parts[1].toUpperCase();
+  if (isEnglish) return `${day} ${monthKey}`;
+  const month = (isPashto ? GREG_MONTH_EN_TO_PASHTO : GREG_MONTH_EN_TO_DARI)[monthKey] || parts[1];
+  return `${day} ${month}`;
 }
 
 interface PrayerTimesWidgetProps {
@@ -95,41 +102,45 @@ interface PrayerTimesWidgetProps {
   height?: number;
 }
 
+type WidgetDateCell = {
+  key: 'gregorian' | 'sunrise' | 'hijri';
+  text: string;
+  color: `#${string}`;
+};
+
 export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: PrayerTimesWidgetProps) {
   const language = snapshot?.appLanguage || 'dari';
   const isPashto = language === 'pashto';
   const isEnglish = language === 'english';
-  // English uses Vazirmatn. Dari widget is always Nastaliq. Pashto uses its Naskh choice.
+  // Dari follows the app's non-Nastaliq font preference. English and Pashto
+  // keep their existing font behavior.
   const regularFontFamily = isEnglish
     ? 'Vazirmatn'
     : isPashto
       ? snapshot?.pashtoFont === 'amiri' ? 'Amiri' : 'NotoNaskhArabic-Regular'
-      : 'NotoNastaliqUrdu';
+      : snapshot?.dariFont === 'amiri' ? 'Amiri' : 'Vazirmatn';
   const boldFontFamily = isEnglish
     ? 'Vazirmatn-Bold'
     : regularFontFamily === 'Amiri'
       ? 'Amiri-Bold'
       : regularFontFamily === 'NotoNaskhArabic-Regular'
         ? 'NotoNaskhArabic-Bold'
-        : 'NotoNastaliqUrdu';
+        : 'Vazirmatn-Bold';
 
-  // One frame for Dari, Pashto, and English. Dari Nastaliq needs compact
-  // metrics on the 1-row Samsung cell or prayer times clip under the chip edge.
-  const oneRow = height < 140;
-  const short = height < 125;
-  const isDari = !isEnglish && !isPashto;
-  const nastaliq = !isEnglish && regularFontFamily === 'NotoNastaliqUrdu';
-  const rootPaddingVertical = oneRow ? (nastaliq ? 2 : 4) : 5;
-  const rootPaddingHorizontal = 6;
-  const prayerLabelSize = short ? (nastaliq ? 13 : 15) : nastaliq ? 14 : 16;
-  const prayerTimeSize = short ? (nastaliq ? 16 : 20) : nastaliq ? 18 : 22;
-  const prayerChipPaddingVertical = short && nastaliq ? 1 : 3;
-  const prayerTimeMarginTop = nastaliq ? (short ? -2 : -5) : 1;
-  const headerTitleSize = short ? (nastaliq ? 15 : 18) : nastaliq ? 17 : 20;
-  const gregHijriSize = short ? (nastaliq ? 12 : 15) : nastaliq ? 13 : 16;
-  const sunriseLineSize = short ? (nastaliq ? 12 : 14) : nastaliq ? 13 : 15;
-  const dateRowMarginTop = oneRow ? (nastaliq ? 1 : 2) : 3;
-  const prayerRowMarginTop = oneRow ? (nastaliq ? 1 : 3) : 4;
+  // Use the same 0.88 medium-widget scale as iOS at the configured 4x2 size.
+  // A narrow legacy placement can shrink down to 0.76 while keeping all rows.
+  const scale = Math.min(0.88, Math.max(0.76, height / 125));
+  const rootPaddingVertical = 5 * scale;
+  const rootPaddingHorizontal = 6 * scale;
+  const prayerLabelSize = 13 * scale;
+  const prayerTimeSize = 15 * scale;
+  const prayerChipPaddingVertical = 2 * scale;
+  const prayerTimeMarginTop = 0;
+  const headerTitleSize = 20 * scale;
+  const dateLineSize = 15 * scale;
+  const sunriseLineSize = 15 * scale;
+  const dateRowMarginTop = 3 * scale;
+  const prayerRowMarginTop = 4 * scale;
 
   if (!snapshot) {
     return (
@@ -137,7 +148,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         style={{
           height: 'match_parent',
           width: 'match_parent',
-          backgroundColor: TINT,
+          backgroundGradient: BACKGROUND_GRADIENT,
           justifyContent: 'center',
           alignItems: 'center',
           padding: 10,
@@ -146,7 +157,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       >
         <TextWidget
           text={isEnglish ? 'Ebadat' : 'عبادت'}
-          style={{ fontSize: short ? 15 : 18, fontFamily: boldFontFamily, color: TEXT_PRIMARY }}
+          style={{ fontSize: 18 * scale, fontFamily: boldFontFamily, color: TEXT_PRIMARY }}
         />
         <TextWidget
           text={
@@ -156,7 +167,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                 ? 'اپ پرانیزئ'
                 : 'اپ را باز کنید'
           }
-          style={{ fontSize: short ? 11 : 12, fontFamily: regularFontFamily, color: TEXT_SECONDARY, marginTop: 4 }}
+          style={{ fontSize: 12 * scale, fontFamily: regularFontFamily, color: TEXT_SECONDARY, marginTop: 4 * scale }}
         />
       </FlexWidget>
     );
@@ -191,36 +202,31 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
   const prayersOrdered = isEnglish ? prayers : [...prayers].reverse();
   const sunriseParts = (sunriseLabel || '').trim().split(/\s+/).filter(Boolean);
   const sunriseTimeOnly = sunriseParts.length ? localizeDigits(sunriseParts.slice(-1)[0] || '') : '';
-  // Dari always uses the short طلوع caption so the middle cell stays one size.
+  // Keep the localized sunrise caption short, matching the iOS widget.
   const sunriseCaption = isEnglish
-    ? 'Sun'
-    : isDari
-      ? 'طلوع'
-      : sunriseParts.length > 1
-        ? sunriseParts.slice(0, -1).join(' ')
-        : 'لمر ختل';
+    ? 'Sunrise'
+    : isPashto
+      ? 'لمر'
+      : 'طلوع';
 
   const solarDisplay = shamsiLabel || snapshot.shamsiDisplay || '';
   const headerTitleText = isEnglish
-    ? englishHeaderTitle(weekdayLabel || '', hijriLabel || '')
+    ? englishHeaderTitle(weekdayLabel || '', solarDisplay)
     : [weekdayLabel, solarDisplay].filter(Boolean).join('، ');
-  const gregorianDisplay = isEnglish
-    ? toLatinNumeralsString(snapshot.gregorianDisplay || '')
-    : toArabicNumeralsString(snapshot.gregorianDisplay || '');
-  // English row: solar · sunrise · Gregorian (Qamari is the accent title).
-  // Pashto keeps Gregorian · sunrise · Hijri with calendar labels.
-  // Dari shortens those cells so they stay one type size.
-  const leftDateCell = isEnglish
-    ? englishSolarShort(solarDisplay)
-    : isDari
-      ? dariGregorianShort(snapshot.gregorianDisplay || '')
-      : `${gregorianDisplay} میلادي`.trim();
-  const rightDateCell = isEnglish
-    ? gregorianDisplay.trim()
-    : isDari
-      ? dariHijriShort(hijriLabel || '')
-      : `قمري ${hijriLabel || ''}`.trim();
+  const gregorianText = gregorianCell(snapshot.gregorianDisplay || '', isEnglish, isPashto);
+  const hijriText = isEnglish ? englishHijriDate(hijriLabel || '') : (hijriLabel || '');
   const sunriseCell = `${sunriseCaption}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim();
+  const dateCells: WidgetDateCell[] = isEnglish
+    ? [
+        { key: 'gregorian', text: gregorianText, color: TEXT_SECONDARY },
+        { key: 'sunrise', text: sunriseCell, color: ACCENT },
+        { key: 'hijri', text: hijriText, color: TEXT_PRIMARY },
+      ]
+    : [
+        { key: 'hijri', text: hijriText, color: TEXT_PRIMARY },
+        { key: 'sunrise', text: sunriseCell, color: ACCENT },
+        { key: 'gregorian', text: gregorianText, color: TEXT_SECONDARY },
+      ];
 
   // Prefer the snapshot field; if a stale push left it null (seen after
   // Pashto ↔ Dari flips before SharedPreferences.commit), derive the active
@@ -234,7 +240,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       .pop() ??
     null;
 
-  // Title + one horizontal date row.
+  // Title + Gregorian / sunrise / Hijri row, in each language's reading order.
   // Keep each cell as FlexWidget > TextWidget — no LTR isolates and
   // no flex on TextWidget itself (those produced Null RemoteViews on One UI).
   const sharedHeader = (
@@ -263,45 +269,21 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           marginTop: dateRowMarginTop,
         }}
       >
-        <FlexWidget style={{ flex: 1, alignItems: 'center' }}>
-          <TextWidget
-            text={leftDateCell}
-            maxLines={1}
-            allowFontScaling={false}
-            style={{
-              fontSize: gregHijriSize,
-              fontFamily: boldFontFamily,
-              color: TEXT_SECONDARY,
-              adjustsFontSizeToFit: true,
-            }}
-          />
-        </FlexWidget>
-        <FlexWidget style={{ flex: 1, alignItems: 'center' }}>
-          <TextWidget
-            text={sunriseCell}
-            maxLines={1}
-            allowFontScaling={false}
-            style={{
-              fontSize: sunriseLineSize,
-              fontFamily: boldFontFamily,
-              color: ACCENT,
-              adjustsFontSizeToFit: true,
-            }}
-          />
-        </FlexWidget>
-        <FlexWidget style={{ flex: 1, alignItems: 'center' }}>
-          <TextWidget
-            text={rightDateCell}
-            maxLines={1}
-            allowFontScaling={false}
-            style={{
-              fontSize: gregHijriSize,
-              fontFamily: boldFontFamily,
-              color: TEXT_PRIMARY,
-              adjustsFontSizeToFit: true,
-            }}
-          />
-        </FlexWidget>
+        {dateCells.map((cell) => (
+          <FlexWidget key={cell.key} style={{ flex: 1, alignItems: 'center' }}>
+            <TextWidget
+              text={cell.text}
+              maxLines={1}
+              allowFontScaling={false}
+              style={{
+                fontSize: cell.key === 'sunrise' ? sunriseLineSize : dateLineSize,
+                fontFamily: boldFontFamily,
+                color: cell.color,
+                adjustsFontSizeToFit: true,
+              }}
+            />
+          </FlexWidget>
+        ))}
       </FlexWidget>
     </FlexWidget>
   );
@@ -311,26 +293,22 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        // Keep the launcher cell transparent below the content card. This
-        // removes the large dark tail on launchers that give the widget two
-        // rows of height without changing the widget's requested size.
+        // Keep the launcher cell transparent around the medium-height card.
         backgroundColor: '#00000000',
         flexDirection: 'column',
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         alignItems: 'center',
       }}
       clickAction="OPEN_APP"
     >
       <FlexWidget
         style={{
-          // Fill the 1-row launcher cell. Legacy 2-row placements stay
-          // wrap_content so a short card is not stretched into empty green.
-          height: oneRow ? 'match_parent' : 'wrap_content',
+          height: 'wrap_content',
           width: 'match_parent',
-          backgroundColor: TINT,
+          backgroundGradient: BACKGROUND_GRADIENT,
           borderRadius: 16,
           flexDirection: 'column',
-          justifyContent: oneRow ? 'space-between' : 'flex-start',
+          justifyContent: 'flex-start',
           alignItems: 'center',
           paddingVertical: rootPaddingVertical,
           paddingHorizontal: rootPaddingHorizontal,

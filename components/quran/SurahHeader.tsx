@@ -26,6 +26,7 @@ import {
 import type { ReciterKey } from '@/utils/quranAudio';
 import { getSurah } from '@/data/surahNames';
 import { useI18n } from '@/utils/i18n/useI18n';
+import type { QuranReaderTokens } from '@/hooks/useQuranReaderSettings';
 
 interface SurahHeaderProps {
   number: number;
@@ -36,6 +37,8 @@ interface SurahHeaderProps {
   onPlayPress?: () => void;
   onInfoPress?: () => void;
   onSettingsPress?: () => void;
+  compactReader?: boolean;
+  readerTokens?: QuranReaderTokens;
 }
 
 export const SurahHeader = memo(function SurahHeader({
@@ -46,6 +49,8 @@ export const SurahHeader = memo(function SurahHeader({
   showBismillah = true,
   onPlayPress,
   onSettingsPress,
+  compactReader = false,
+  readerTokens,
 }: SurahHeaderProps) {
   const { theme, state } = useApp();
   const { isPashto, t } = useI18n();
@@ -57,6 +62,7 @@ export const SurahHeader = memo(function SurahHeader({
   const surahDownloadKey = getDownloadManifestKey(downloadReciter, { type: 'surah', id: number });
 
   useEffect(() => {
+    if (compactReader) return;
     let mounted = true;
     void Promise.all([getPreferredDownloadReciter(), getDownloadManifest()]).then(([preferred, entries]) => {
       if (!mounted) return;
@@ -65,11 +71,59 @@ export const SurahHeader = memo(function SurahHeader({
       setSurahDownloaded(Boolean(entry && entry.completed === entry.total && entry.total > 0));
     });
     return () => { mounted = false; };
-  }, [surahDownloadKey]);
+  }, [compactReader, surahDownloadKey]);
 
   const handleHeaderDownload = () => {
     setShowDownloadSheet(true);
   };
+
+  if (compactReader) {
+    const textColor = readerTokens?.text ?? theme.text;
+    const secondaryColor = readerTokens?.textSecondary ?? theme.textSecondary;
+    const arabicColor = readerTokens?.arabic ?? theme.arabicText;
+    const accentColor = readerTokens?.accent ?? theme.tint;
+    const pageColor = readerTokens?.page ?? theme.background;
+
+    return (
+      <View style={[styles.compactWrapper, { backgroundColor: pageColor, borderBottomColor: readerTokens?.divider ?? theme.divider }]}>
+        <View style={styles.compactHeader}>
+          <View style={[styles.compactNumber, { backgroundColor: readerTokens?.surface ?? theme.backgroundSecondary }]}>
+            <NumericText style={[styles.compactNumberText, { color: accentColor }]}>{toArabicNumerals(number)}</NumericText>
+          </View>
+          <View style={styles.compactTitleBlock}>
+            <QuranText
+              numberOfLines={1}
+              style={[styles.compactTitle, { color: textColor, fontFamily: quranFontFamily }]}
+            >
+              سُورَةُ {name}
+            </QuranText>
+            <CenteredText style={[styles.compactMeta, { color: secondaryColor }]}>
+              {t(revelationType === 'Meccan' ? 'quran.meccan' : 'quran.medinan')}
+              {' · '}
+              {toArabicNumerals(ayahCount)} آیه
+            </CenteredText>
+          </View>
+          {onPlayPress ? (
+            <Pressable
+              onPress={onPlayPress}
+              accessibilityRole="button"
+              accessibilityLabel={t('quran.audio.playAyah')}
+              style={[styles.compactPlayButton, { backgroundColor: readerTokens?.surface ?? theme.backgroundSecondary }]}
+            >
+              <MaterialIcons name="play-arrow" size={23} color={accentColor} />
+            </Pressable>
+          ) : null}
+        </View>
+        {showBismillah && number !== 1 && number !== 9 ? (
+          <QuranText
+            style={[styles.compactBismillah, { color: readerTokens?.arabic ?? theme.bismillah, fontFamily: quranFontFamily }]}
+          >
+            بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
+          </QuranText>
+        ) : null}
+      </View>
+    );
+  }
 
   return (
     <RtlView style={styles.wrapper}>
@@ -189,6 +243,57 @@ export const SurahHeader = memo(function SurahHeader({
 });
 
 const styles = StyleSheet.create({
+  compactWrapper: {
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  compactHeader: {
+    minHeight: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  compactNumber: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  compactNumberText: {
+    fontSize: Typography.ui.body,
+    fontWeight: '700',
+  },
+  compactTitleBlock: {
+    flex: 1,
+    alignItems: 'flex-start',
+  },
+  compactTitle: {
+    width: '100%',
+    fontSize: Typography.ui.subtitle,
+    lineHeight: 30,
+    textAlign: 'right',
+  },
+  compactMeta: {
+    alignSelf: 'flex-start',
+    fontSize: Typography.ui.caption,
+    textAlign: 'right',
+  },
+  compactPlayButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  compactBismillah: {
+    marginTop: Spacing.sm,
+    fontSize: 22,
+    lineHeight: 48,
+    textAlign: 'center',
+  },
   wrapper: {
     marginBottom: Spacing.md,
   },

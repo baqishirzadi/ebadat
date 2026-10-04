@@ -18,6 +18,7 @@ import { stripQuranicMarks } from '@/utils/quranText';
 import { QuranText } from './QuranText';
 import CenteredText from '@/components/CenteredText';
 import { toArabicNumerals } from '@/utils/numbers';
+import type { QuranReaderTokens } from '@/hooks/useQuranReaderSettings';
 
 interface MushafViewProps {
   surahNumber: number;
@@ -32,6 +33,7 @@ interface MushafViewProps {
   onPageChange?: (page: number) => void;
   contentPaddingTop?: number;
   contentPaddingBottom?: number;
+  readerTokens?: QuranReaderTokens;
 }
 
 const MAX_SCROLL_RETRY_ATTEMPTS = 6;
@@ -84,6 +86,7 @@ export const MushafView = React.memo(function MushafView({
   onPageChange,
   contentPaddingTop = 0,
   contentPaddingBottom = 0,
+  readerTokens,
 }: MushafViewProps) {
   const { theme, state } = useApp();
   const { updatePosition } = useReadingPosition();
@@ -910,10 +913,11 @@ export const MushafView = React.memo(function MushafView({
           englishTranslation={englishTranslation}
           isPlaying={isPlaying}
           onPlayPress={() => handlePlayAyah(item.number)}
+          readerTokens={readerTokens}
         />
       );
     },
-    [surahNumber, getTranslation, activePlayingAyah, handlePlayAyah]
+    [surahNumber, getTranslation, activePlayingAyah, handlePlayAyah, readerTokens]
   );
 
   // Render header - Arabic/Dari only, NO ENGLISH
@@ -928,9 +932,11 @@ export const MushafView = React.memo(function MushafView({
         revelationType={surah.revelationType}
         onPlayPress={() => onPlayAyah?.(surahNumber, 1)}
         onSettingsPress={onSettingsPress}
+        compactReader={effectiveViewMode === 'scroll'}
+        readerTokens={readerTokens}
       />
     );
-  }, [surah, surahNumber, onPlayAyah, onSettingsPress]);
+  }, [surah, surahNumber, onPlayAyah, onSettingsPress, effectiveViewMode, readerTokens]);
 
   // Render Mushaf page mode
   const renderMushafPage = useCallback(() => {
@@ -1017,7 +1023,7 @@ export const MushafView = React.memo(function MushafView({
   // Scroll mode (default)
   if (effectiveViewMode === 'scroll') {
     return (
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.container, { backgroundColor: readerTokens?.page ?? theme.background }]}>
         {jumpMode === 'exact' && jumpFailureAyah !== null && (
           <View style={[styles.jumpFailureBanner, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             <CenteredText style={[styles.jumpFailureText, { color: theme.text }]}>
@@ -1083,7 +1089,7 @@ export const MushafView = React.memo(function MushafView({
 
   // Mushaf page mode
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={[styles.container, { backgroundColor: readerTokens?.page ?? theme.background }]}>
       {renderHeader()}
       {renderMushafPage()}
     </View>

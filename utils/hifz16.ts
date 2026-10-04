@@ -42,40 +42,69 @@ type HifzMeta = {
 const payload = hifzPages as HifzPayload;
 const meta = hifzMeta as HifzMeta;
 
+/**
+ * The 16-line reader navigates these relationships constantly while audio is
+ * playing. Build them once with the bundled data instead of walking all 548
+ * pages for every position update.
+ */
+const pageByNumber = new Map<number, HifzPage>();
+const pagesByAyah = new Map<string, number[]>();
+const firstPageBySurah = new Map<number, number>();
+const juzPageRanges = new Map<number, { start: number; end: number }>();
+
+function ayahKey(surahNumber: number, ayahNumber: number): string {
+  return `${surahNumber}:${ayahNumber}`;
+}
+
+for (const page of payload.pages) {
+  pageByNumber.set(page.page, page);
+  const juzRange = juzPageRanges.get(page.juz);
+  if (juzRange) {
+    juzRange.end = page.page;
+  } else {
+    juzPageRanges.set(page.juz, { start: page.page, end: page.page });
+  }
+
+  for (const line of page.lines) {
+    if (
+      line.type !== 'ayah' ||
+      line.surahNumber == null ||
+      line.ayahStart == null ||
+      line.ayahEnd == null
+    ) {
+      continue;
+    }
+    if (!firstPageBySurah.has(line.surahNumber)) {
+      firstPageBySurah.set(line.surahNumber, page.page);
+    }
+    for (let ayah = line.ayahStart; ayah <= line.ayahEnd; ayah += 1) {
+      const key = ayahKey(line.surahNumber, ayah);
+      const pages = pagesByAyah.get(key);
+      if (pages?.[pages.length - 1] !== page.page) {
+        (pages ?? pagesByAyah.set(key, []).get(key)!).push(page.page);
+      }
+    }
+  }
+}
+
 export const HIFZ16_PAGE_COUNT = payload.pageCount;
 export const HIFZ16_LINES_PER_PAGE = payload.linesPerPage;
 
 export function getHifzPage(pageNumber: number): HifzPage | null {
-  if (pageNumber < 1 || pageNumber > payload.pages.length) return null;
-  return payload.pages[pageNumber - 1] ?? null;
+  return pageByNumber.get(pageNumber) ?? null;
 }
 
 export function getHifzSurahStartPage(surahNumber: number): number {
-  return meta.surahFirstPage[String(surahNumber)] ?? 1;
+  return firstPageBySurah.get(surahNumber) ?? meta.surahFirstPage[String(surahNumber)] ?? 1;
 }
 
 /** First page of a juz in the 16-line mushaf (1–30). */
 export function findHifzJuzStartPage(juzNumber: number): number | null {
-  if (juzNumber < 1 || juzNumber > 30) return null;
-  const page = payload.pages.find((entry) => entry.juz === juzNumber);
-  return page?.page ?? null;
+  return juzPageRanges.get(juzNumber)?.start ?? null;
 }
-
-let juzPageRanges: Map<number, { start: number; end: number }> | null = null;
 
 /** First and last 16-line page of a juz (1–30). */
 export function getHifzJuzPageRange(juzNumber: number): { start: number; end: number } | null {
-  if (!juzPageRanges) {
-    juzPageRanges = new Map();
-    for (const entry of payload.pages) {
-      const range = juzPageRanges.get(entry.juz);
-      if (range) {
-        range.end = Math.max(range.end, entry.page);
-      } else {
-        juzPageRanges.set(entry.juz, { start: entry.page, end: entry.page });
-      }
-    }
-  }
   return juzPageRanges.get(juzNumber) ?? null;
 }
 
@@ -171,20 +200,7 @@ export function findHifzPageForAyah(surahNumber: number, ayahNumber: number): nu
 
 /** Every hifz page that contains this ayah, in mushaf order. */
 export function listHifzPagesForAyah(surahNumber: number, ayahNumber: number): number[] {
-  const pages: number[] = [];
-  for (const page of payload.pages) {
-    const hit = page.lines.some(
-      (line) =>
-        line.type === 'ayah' &&
-        line.surahNumber === surahNumber &&
-        line.ayahStart != null &&
-        line.ayahEnd != null &&
-        line.ayahStart <= ayahNumber &&
-        ayahNumber <= line.ayahEnd
-    );
-    if (hit) pages.push(page.page);
-  }
-  return pages;
+  return pagesByAyah.get(ayahKey(surahNumber, ayahNumber)) ?? [];
 }
 
 /**

@@ -19,6 +19,8 @@ import { stripQuranicMarks } from '@/utils/quranText';
 import { rowStyle } from '@/utils/i18n/direction';
 import { QuranText } from './QuranText';
 import { toArabicNumerals } from '@/utils/numbers';
+import type { QuranReaderTokens } from '@/hooks/useQuranReaderSettings';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface AyahRowProps {
   ayah: Ayah;
@@ -30,6 +32,7 @@ interface AyahRowProps {
   onPress?: () => void;
   onLongPress?: () => void;
   onPlayPress?: () => void;
+  readerTokens?: QuranReaderTokens;
 }
 
 const BISMILLAH_REGEX = /^بِسْمِ(?:\s+[^\s]+){3}\s+(.+)/;
@@ -45,13 +48,6 @@ function stripBismillah(text: string, surahNumber: number, ayahNumber: number): 
   return text;
 }
 
-function arabicLineMetrics(fontSize: number) {
-  return {
-    lineHeight: Math.round(fontSize * 2.1),
-    paddingBottom: Math.round(fontSize * 0.15),
-  };
-}
-
 export const AyahRow = memo(function AyahRow({
   ayah,
   surahNumber,
@@ -62,8 +58,10 @@ export const AyahRow = memo(function AyahRow({
   onPress,
   onLongPress,
   onPlayPress,
+  readerTokens,
 }: AyahRowProps) {
   const { theme, state } = useApp();
+  const { t } = useI18n();
   const language = state.preferences.appLanguage;
   const { isBookmarked, addBookmark, removeBookmark, getBookmark } = useBookmarks();
 
@@ -74,7 +72,11 @@ export const AyahRow = memo(function AyahRow({
   const bookmarked = isBookmarked(surahNumber, ayah.number);
   const arabicSize = Typography.arabic[arabicFontSize];
   const translationSize = Typography.translation[translationFontSize];
-  const arabicMetrics = arabicLineMetrics(arabicSize);
+  const lineHeightRatio = readerTokens?.lineHeightRatio ?? 2.1;
+  const arabicLineHeight = Math.round(arabicSize * lineHeightRatio);
+  const arabicColor = readerTokens?.arabic ?? theme.arabicText;
+  const translationColor = readerTokens?.translation ?? theme.translationText;
+  const dividerColor = readerTokens?.divider ?? theme.divider;
 
   const handleBookmarkPress = () => {
     if (bookmarked) {
@@ -102,10 +104,10 @@ export const AyahRow = memo(function AyahRow({
             styles.translationText,
             lang === 'english' && styles.translationTextEnglish,
             {
-              color: theme.translationText,
+              color: translationColor,
               fontSize: translationSize,
               fontFamily,
-              lineHeight: Math.round(translationSize * 1.65),
+              lineHeight: Math.round(translationSize * Math.max(1.5, lineHeightRatio - 0.45)),
             },
           ]}
         >
@@ -122,16 +124,13 @@ export const AyahRow = memo(function AyahRow({
       style={({ pressed }) => [
         styles.container,
         {
-          backgroundColor: isPlaying ? `${theme.playing}15` : theme.card,
-          borderColor: isPlaying ? theme.playing : theme.cardBorder,
+          backgroundColor: isPlaying ? `${theme.playing}10` : 'transparent',
+          borderBottomColor: dividerColor,
+          borderStartColor: isPlaying ? theme.playing : 'transparent',
           opacity: pressed ? 0.9 : 1,
         },
       ]}
     >
-      <View style={[styles.ayahBadge, { backgroundColor: theme.ayahNumber }]}>
-        <Text style={styles.ayahNumber}>{toArabicNumerals(ayah.number)}</Text>
-      </View>
-
       <View style={styles.arabicContainer}>
         <QuranText
           allowFontScaling={false}
@@ -141,19 +140,31 @@ export const AyahRow = memo(function AyahRow({
             styles.arabicText,
             {
               fontFamily: quranFontFamily,
-              color: theme.arabicText,
+              color: arabicColor,
               fontSize: arabicSize,
-              lineHeight: arabicMetrics.lineHeight,
-              paddingBottom: arabicMetrics.paddingBottom,
+              lineHeight: arabicLineHeight,
+              paddingBottom: Math.round(arabicSize * 0.15),
             },
           ]}
         >
           {stripBismillah(stripQuranicMarks(ayah.text, state.preferences.quranFont), surahNumber, ayah.number)}
+          <Text
+            style={[
+              styles.ayahMarker,
+              {
+                color: readerTokens?.accent ?? theme.tint,
+                fontFamily: quranFontFamily,
+                fontSize: Math.round(arabicSize * 0.72),
+              },
+            ]}
+          >
+            {' '}﴿{toArabicNumerals(ayah.number)}﴾
+          </Text>
         </QuranText>
       </View>
 
       {showTranslation !== 'none' && (
-        <View style={[styles.translationsWrapper, { borderTopColor: theme.divider }]}>
+        <View style={[styles.translationsWrapper, { borderTopColor: dividerColor }]}>
           {showTranslation === 'both' ? (
             <>
               {renderTranslation(dariTranslation, 'dari')}
@@ -169,9 +180,12 @@ export const AyahRow = memo(function AyahRow({
         </View>
       )}
 
-      <View style={[styles.actionBar, rowStyle(language), { borderTopColor: theme.divider }]}>
+      <View style={[styles.actionBar, rowStyle(language)]}>
         <Pressable
           onPress={onPlayPress}
+          accessibilityRole="button"
+          accessibilityLabel={t('quran.reader.play')}
+          hitSlop={6}
           style={({ pressed }) => [
             styles.actionButton,
             pressed && styles.actionButtonPressed,
@@ -186,6 +200,9 @@ export const AyahRow = memo(function AyahRow({
 
         <Pressable
           onPress={handleBookmarkPress}
+          accessibilityRole="button"
+          accessibilityLabel={bookmarked ? t('quran.reader.unbookmark') : t('quran.reader.bookmark')}
+          hitSlop={6}
           style={({ pressed }) => [
             styles.actionButton,
             pressed && styles.actionButtonPressed,
@@ -199,14 +216,14 @@ export const AyahRow = memo(function AyahRow({
         </Pressable>
 
         <View style={styles.metaInfo}>
-          <Text style={[styles.metaText, { color: theme.textSecondary }]}>
+          <Text style={[styles.metaText, { color: readerTokens?.textSecondary ?? theme.textSecondary }]}>
             صفحه {toArabicNumerals(ayah.page)} • جز {toArabicNumerals(ayah.juz)}
           </Text>
         </View>
       </View>
 
       {ayah.sajda && (
-        <View style={[styles.sajdaIndicator, { backgroundColor: theme.tint }]}>
+        <View style={[styles.sajdaIndicator, { backgroundColor: readerTokens?.accent ?? theme.tint }]}>
           <Text style={styles.sajdaText}>سجده</Text>
         </View>
       )}
@@ -217,77 +234,54 @@ export const AyahRow = memo(function AyahRow({
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: Spacing.md,
-    marginVertical: Spacing.sm,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  ayahBadge: {
-    position: 'absolute',
-    top: Spacing.sm,
-    start: Spacing.sm,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  ayahNumber: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: '700',
-    fontFamily: 'Vazirmatn',
+    paddingVertical: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderStartWidth: 3,
   },
   arabicContainer: {
-    paddingTop: 50,
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.md,
-    alignItems: 'center',
+    paddingHorizontal: Spacing.xs,
+    paddingBottom: Spacing.xs,
+    alignItems: 'stretch',
     width: '100%',
   },
   arabicText: {
-    textAlign: 'center',
+    textAlign: 'right',
     writingDirection: 'rtl',
     width: '100%',
   },
+  ayahMarker: {
+    fontWeight: '600',
+  },
   translationsWrapper: {
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.md,
-    borderTopWidth: StyleSheet.hairlineWidth,
-    marginTop: Spacing.xs,
+    paddingHorizontal: Spacing.xs,
     paddingTop: Spacing.sm,
+    marginTop: Spacing.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
   translationContainer: {
-    marginTop: Spacing.sm,
-    paddingTop: Spacing.xs,
-    alignItems: 'center',
-    width: '100%',
-  },
-  translationLabel: {
-    fontSize: Typography.ui.caption,
-    fontWeight: '600',
-    marginBottom: Spacing.xs,
-    textAlign: 'center',
+    paddingVertical: Spacing.xs,
+    alignItems: 'stretch',
     width: '100%',
   },
   translationText: {
-    textAlign: 'center',
+    textAlign: 'right',
     writingDirection: 'rtl',
     width: '100%',
   },
   translationTextEnglish: {
+    textAlign: 'left',
     writingDirection: 'ltr',
   },
   actionBar: {
+    minHeight: 40,
     alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.sm,
-    borderTopWidth: 1,
+    paddingTop: Spacing.xs,
   },
   actionButton: {
-    padding: Spacing.sm,
-    borderRadius: BorderRadius.full,
+    width: 38,
+    height: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   actionButtonPressed: {
     opacity: 0.7,
@@ -302,9 +296,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   sajdaIndicator: {
-    position: 'absolute',
-    bottom: Spacing.sm,
-    left: Spacing.sm,
+    alignSelf: 'flex-start',
+    marginTop: Spacing.xs,
+    marginStart: Spacing.xs,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
     borderRadius: BorderRadius.sm,

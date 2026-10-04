@@ -16,7 +16,7 @@ import { useApp } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
 import { pinSurahInCache } from '@/hooks/useSurahData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
-import { MushafView, AudioPlayer, Hifz16View, HifzIdleDock, QuranDownloadCard } from '@/components/quran';
+import { MushafView, AudioPlayer, Hifz16View, QuranDownloadCard } from '@/components/quran';
 import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
 import { findHifzPageForAyah, getHifzPage } from '@/utils/hifz16';
 import {
@@ -32,21 +32,25 @@ import AppCenteredText from '@/components/CenteredText';
 import { backIconName, directionStyle, forwardChevronName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { isRtlLanguage } from '@/utils/i18n/languages';
+import { QuranReaderSettingsSheet } from '@/components/quran/QuranReaderSettingsSheet';
+import { useQuranReaderSettings } from '@/hooks/useQuranReaderSettings';
 
 const SURAH_TOP_BAR_HEIGHT = 56;
 const QURAN_AUDIO_PLAYER_RESERVED_HEIGHT = 170;
-const HIFZ_DOCK_HEIGHT = 48;
+const QURAN_FONT_SIZES = ['small', 'medium', 'large', 'xlarge'] as const;
 
 export default function QuranReaderScreen() {
   const {
     surah: surahParam,
     ayah: ayahParam,
+    hifzPage: hifzPageParam,
     jump: jumpParam,
     jumpToken: jumpTokenParam,
     resumeSource: resumeSourceParam,
   } = useLocalSearchParams<{
     surah: string | string[];
     ayah?: string | string[];
+    hifzPage?: string | string[];
     jump?: string | string[];
     jumpToken?: string | string[];
     resumeSource?: string | string[];
@@ -62,9 +66,11 @@ export default function QuranReaderScreen() {
   const backIcon = backIconName(language);
   const nextSurahIcon = forwardChevronName(language);
   const prevSurahIcon = isRtlLanguage(language) ? 'chevron-right' : 'chevron-left';
+  const { tokens: readerTokens } = useQuranReaderSettings();
 
   const normalizedSurahParam = Array.isArray(surahParam) ? surahParam[0] : surahParam;
   const normalizedAyahParam = Array.isArray(ayahParam) ? ayahParam[0] : ayahParam;
+  const normalizedHifzPageParam = Array.isArray(hifzPageParam) ? hifzPageParam[0] : hifzPageParam;
   const normalizedJumpParam = Array.isArray(jumpParam) ? jumpParam[0] : jumpParam;
   const normalizedJumpToken = Array.isArray(jumpTokenParam) ? jumpTokenParam[0] : jumpTokenParam;
   const normalizedResumeSource = Array.isArray(resumeSourceParam) ? resumeSourceParam[0] : resumeSourceParam;
@@ -78,6 +84,10 @@ export default function QuranReaderScreen() {
   const initialAyah = Number.isFinite(parsedAyahNumber) && parsedAyahNumber > 0
     ? parsedAyahNumber
     : 1;
+  const parsedHifzPage = Number.parseInt(normalizedHifzPageParam ?? '', 10);
+  const requestedHifzPage = Number.isFinite(parsedHifzPage) && getHifzPage(parsedHifzPage)
+    ? parsedHifzPage
+    : null;
   const jumpMode: 'default' | 'exact' | 'continue' | 'search_exact' =
     normalizedJumpParam === 'exact'
       ? 'exact'
@@ -90,7 +100,7 @@ export default function QuranReaderScreen() {
   const [hifzVisibleSurah, setHifzVisibleSurah] = useState(surahNumber);
   const [hifzVisibleAyah, setHifzVisibleAyah] = useState(initialAyah);
   const [hifzVisiblePage, setHifzVisiblePage] = useState<number | null>(() =>
-    findHifzPageForAyah(surahNumber, initialAyah),
+    requestedHifzPage ?? findHifzPageForAyah(surahNumber, initialAyah),
   );
   const [hifzOnDedication, setHifzOnDedication] = useState(false);
   const headerSurahNumber = hifz16Line ? hifzVisibleSurah : surahNumber;
@@ -110,9 +120,9 @@ export default function QuranReaderScreen() {
   useEffect(() => {
     setHifzVisibleSurah(surahNumber);
     setHifzVisibleAyah(initialAyah);
-    setHifzVisiblePage(findHifzPageForAyah(surahNumber, initialAyah));
+    setHifzVisiblePage(requestedHifzPage ?? findHifzPageForAyah(surahNumber, initialAyah));
     setHifzOnDedication(false);
-  }, [initialAyah, surahNumber]);
+  }, [initialAyah, requestedHifzPage, surahNumber]);
 
   useEffect(() => {
     if (!hifz16Line) setHifzOnDedication(false);
@@ -135,6 +145,7 @@ export default function QuranReaderScreen() {
   const [showDownloadSheet, setShowDownloadSheet] = useState(false);
   const [surahDownloaded, setSurahDownloaded] = useState(false);
   const [downloadBadgeNonce, setDownloadBadgeNonce] = useState(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const downloadSurahNumber = (hifz16Line ? hifzVisibleSurah : surahNumber) || surahNumber;
   const downloadSurahMeta = getSurahName(downloadSurahNumber);
@@ -436,7 +447,7 @@ export default function QuranReaderScreen() {
 
   const contentPaddingTop = insets.top + SURAH_TOP_BAR_HEIGHT + Spacing.sm;
   const contentPaddingBottom = hifz16Line
-    ? HIFZ_DOCK_HEIGHT + insets.bottom + 8
+    ? insets.bottom + 64
     : showAudioPlayer
       ? insets.bottom + QURAN_AUDIO_PLAYER_RESERVED_HEIGHT
       : Spacing.xxl;
@@ -544,7 +555,7 @@ export default function QuranReaderScreen() {
               </LocalizedText>
             </Pressable>
           </View>
-          <Pressable testID="quran-reader-settings" onPress={() => router.push('/settings?section=quran' as never)} hitSlop={8}>
+          <Pressable testID="quran-reader-settings" onPress={() => setSettingsOpen(true)} hitSlop={8}>
             <MaterialIcons name="tune" size={22} color="#fff" />
           </Pressable>
           {surahNumber > 1 ? (
@@ -570,9 +581,10 @@ export default function QuranReaderScreen() {
 
       {hifz16Line ? (
         <Hifz16View
-          key={`hifz16-${surahNumber}-${initialAyah}`}
+          key={`hifz16-${surahNumber}-${initialAyah}-${requestedHifzPage ?? 'ayah'}`}
           surahNumber={surahNumber}
           initialAyah={initialAyah}
+          initialPage={requestedHifzPage}
           contentPaddingTop={contentPaddingTop}
           contentPaddingBottom={contentPaddingBottom}
           activePlayingSurah={currentlyPlaying?.surah ?? null}
@@ -589,20 +601,13 @@ export default function QuranReaderScreen() {
           jumpToken={normalizedJumpToken}
           resumeSource={normalizedResumeSource === 'notification' ? 'notification' : undefined}
           onPlayAyah={handlePlayAyah}
-          onSettingsPress={() => router.push('/settings?section=quran' as never)}
+          onSettingsPress={() => setSettingsOpen(true)}
           activePlayingAyah={activeAyahNumber}
           contentPaddingTop={contentPaddingTop}
           contentPaddingBottom={contentPaddingBottom}
+          readerTokens={readerTokens}
         />
       )}
-
-      {hifz16Line && !(showAudioPlayer && currentlyPlaying) ? (
-        <HifzIdleDock
-          surahNumber={hifzVisibleSurah}
-          ayahNumber={hifzVisibleAyah}
-          onPlay={handleHifzPlayAyah}
-        />
-      ) : null}
 
       {showAudioPlayer && currentlyPlaying && (
         <AudioPlayer
@@ -636,6 +641,7 @@ export default function QuranReaderScreen() {
         }}
         onCompleted={() => setDownloadBadgeNonce((value) => value + 1)}
       />
+      <QuranReaderSettingsSheet visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </View>
   );
 }
