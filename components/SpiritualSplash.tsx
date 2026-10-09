@@ -1,7 +1,7 @@
 /**
  * Spiritual Splash Screen
  * Calm opening: greeting phase then loading until app is interactive.
- * Arabic + Dari + Pashto + English always shown together; company credit stays visible.
+ * The ayah stays in Arabic. The line under it is the saved app language only.
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -19,6 +19,8 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Spacing } from '@/constants/theme';
+import { useLocalizedFontPreferences } from '@/context/AppContext';
+import { getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { LocalizedText } from '@/components/ui/LocalizedText';
 import { useI18n } from '@/utils/i18n/useI18n';
 
@@ -32,30 +34,35 @@ const PHRASES = [
     dari: 'به نام خداوند بخشنده مهربان',
     pashto: 'د بخښونکي مهربان الله په نوم',
     english: 'In the name of Allah, the Most Gracious, the Most Merciful',
+    turkish: 'Rahman ve Rahim olan Allah’ın adıyla',
   },
   {
     arabic: 'الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ',
     dari: 'ستایش خدایی را که پروردگار جهانیان است',
     pashto: 'ستاینه د الله ده چې د ټولو جهانونو پالونکی دی',
     english: 'All praise is due to Allah, Lord of all the worlds',
+    turkish: 'Hamd, âlemlerin Rabbi olan Allah’a mahsustur',
   },
   {
     arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ',
     dari: 'معبودی جز خدا نیست',
     pashto: 'هیڅ معبود نشته مګر الله',
     english: 'There is no god but Allah',
+    turkish: 'Allah’tan başka ilah yoktur',
   },
   {
     arabic: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
     dari: 'پاک است خدا و ستایش او را',
     pashto: 'الله پاک دی او ستاینه یې ده',
     english: 'Glory be to Allah, and praise be to Him',
+    turkish: 'Allah’ı tesbih eder ve O’na hamdederim',
   },
   {
     arabic: 'اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ وَأَصْحَابِ مُحَمَّدٍ',
     dari: 'ای خداوند بزرگ، بر محمد، خاندان پاکش و یاران گرامی او درود و رحمت بفرست.',
     pashto: 'ای لوی خدا، پر محمد، د هغه پاک کورنۍ او د هغه ګران ملګرو برکت او رحمت ولیږه.',
     english: 'O Allah, send Your blessings upon Muhammad, upon his family, and upon his companions.',
+    turkish: 'Allah’ım, Muhammed’e, onun ailesine ve ashabına salât eyle.',
   },
 ] as const;
 
@@ -94,7 +101,8 @@ export function SpiritualSplash({
   onGreetingComplete,
   dismiss = false,
 }: SpiritualSplashProps) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const fonts = useLocalizedFontPreferences();
   const insets = useSafeAreaInsets();
   const [screenPhase, setScreenPhase] = useState<SplashScreenPhase>('greeting');
   const [isExiting, setIsExiting] = useState(false);
@@ -162,6 +170,13 @@ export function SpiritualSplash({
   }));
 
   const creatorLabel = t('app.splash.creator');
+  const translation = language === 'arabic' ? null : SPLASH_PHRASE[language];
+  const latin = language === 'english' || language === 'turkish';
+  const translationFont = language === 'pashto'
+    ? getPashtoFontFamily(fonts?.pashtoFont)
+    : language === 'dari'
+      ? getDariFontFamily(fonts?.dariFont ?? 'vazirmatn')
+      : undefined;
 
   return (
     <Animated.View
@@ -191,7 +206,7 @@ export function SpiritualSplash({
               accessibilityIgnoresInvertColors
             />
             <LocalizedText style={styles.appName}>عبادت</LocalizedText>
-            <LocalizedText style={styles.appSubtitle}>{t('app.splash.subtitle')}</LocalizedText>
+            <CenteredText style={styles.appSubtitle}>{t('app.splash.subtitle')}</CenteredText>
           </View>
 
           <View style={styles.frameContainer}>
@@ -199,16 +214,26 @@ export function SpiritualSplash({
               <View style={styles.frameContent}>
                 <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
 
-                <View style={styles.decorativeLine}>
-                  <View style={styles.lineLeft} />
-                  <View style={styles.lineRight} />
-                </View>
-
-                <View style={styles.translationContainer}>
-                  <CenteredText style={styles.dariText}>{SPLASH_PHRASE.dari}</CenteredText>
-                  <CenteredText style={styles.pashtoText}>{SPLASH_PHRASE.pashto}</CenteredText>
-                  <CenteredText style={styles.englishText}>{SPLASH_PHRASE.english}</CenteredText>
-                </View>
+                {translation ? (
+                  <>
+                    <View style={styles.decorativeLine}>
+                      <View style={styles.lineLeft} />
+                      <View style={styles.lineRight} />
+                    </View>
+                    <Text
+                      style={[
+                        styles.translationText,
+                        {
+                          fontFamily: translationFont,
+                          writingDirection: latin ? 'ltr' : 'rtl',
+                          lineHeight: language === 'pashto' ? 40 : latin ? 24 : 30,
+                        },
+                      ]}
+                    >
+                      {translation}
+                    </Text>
+                  </>
+                ) : null}
               </View>
             </View>
           </View>
@@ -265,9 +290,9 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 16,
     color: GOLD_LIGHT,
-    fontFamily: 'Vazirmatn',
     textAlign: 'center',
-    writingDirection: 'rtl',
+    lineHeight: 28,
+    includeFontPadding: true,
   },
   frameContainer: {
     flex: 1,
@@ -319,36 +344,13 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: `${GOLD}40`,
   },
-  translationContainer: {
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    gap: 6,
-  },
-  dariText: {
+  translationText: {
     fontSize: 16,
     color: GOLD_LIGHT,
     textAlign: 'center',
-    lineHeight: 26,
-    fontFamily: 'Amiri',
-    writingDirection: 'rtl',
-  },
-  englishText: {
-    fontSize: 14,
-    color: `${GOLD_LIGHT}CC`,
-    textAlign: 'center',
-    lineHeight: 22,
-    writingDirection: 'ltr',
-    marginTop: 2,
-  },
-  pashtoText: {
-    fontSize: 15,
-    color: `${GOLD_LIGHT}E0`,
-    textAlign: 'center',
     includeFontPadding: true,
-    lineHeight: 36,
-    paddingVertical: 2,
-    fontFamily: 'NotoNastaliqUrdu',
-    writingDirection: 'rtl',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
   },
   appNameSection: {
     alignItems: 'center',
@@ -374,9 +376,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: GOLD_LIGHT,
     marginTop: 8,
-    fontFamily: 'Amiri',
     letterSpacing: 0.5,
     opacity: 0.95,
+    includeFontPadding: true,
+    lineHeight: 28,
   },
   creditContainer: {
     marginHorizontal: 20,

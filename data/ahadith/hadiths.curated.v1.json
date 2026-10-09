@@ -2,9 +2,9 @@
   {
     "id": 1,
     "arabic_text": "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى",
-    "dari_translation": "اعمال فقط به نیت‌ها بستگی دارد و برای هر انسان همان است که نیت کرده است.",
+    "dari_translation": "عمل از روی نیت است، و هر کس به آنچه اراده کرده است می رسد.",
     "arabic_translation": "إنما الأعمال بالنيات، ولكل إنسان ما نوى.",
-    "pashto_translation": "اعمال د نيتونو پر بنسټ دي، او هر انسان ته هماغه څه رسي چې نيت يې کړی وي.",
+    "pashto_translation": "بېشکه چې عملونه د نيتونو له مخې (اعتبار) لري.",
     "source_book": "Bukhari",
     "source_number": "1",
     "is_muttafaq": true,
@@ -14,15 +14,15 @@
     ],
     "daily_index": 1,
     "authenticity_grade": "sahih",
-    "english_translation": "Actions are judged only by intentions, and every person will have what they intended.",
-    "turkish_translation": "Ameller ancak niyetlere göre değerlendirilir ve her insan, niyet ettiği şeye sahip olur."
+    "english_translation": "The reward of deeds depends upon the intentions and every person will get the reward according to what he has intended.",
+    "turkish_translation": "Ameller niyetlere göredir ve herkes için niyet ettiğinin karşılığı vardır."
   },
   {
     "id": 2,
     "arabic_text": "الدِّينُ النَّصِيحَةُ",
-    "dari_translation": "دین خیرخواهی است.",
+    "dari_translation": "دین نصیحت کردن است.",
     "arabic_translation": "الدين هو الاحسان .",
-    "pashto_translation": "دين نصيحت او خيرخواهي ده.",
+    "pashto_translation": "دین نصیحت دی.",
     "source_book": "Muslim",
     "source_number": "55",
     "is_muttafaq": false,
@@ -32,15 +32,15 @@
     ],
     "daily_index": 2,
     "authenticity_grade": "sahih",
-    "english_translation": "The religion is sincere counsel and goodwill.",
+    "english_translation": "Religion is sincerity (An-Nasihah).' They said: 'To whom, O Messenger of Allah?",
     "turkish_translation": "Din, samimi öğüt ve iyi niyettir."
   },
   {
     "id": 3,
     "arabic_text": "مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ",
-    "dari_translation": "هر کس رمضان را با ایمان و امید پاداش روزه بگیرد، گناهان گذشته‌اش بخشیده می‌شود.",
+    "dari_translation": "کسی که رمضان را از روی ایمان و به امید ثواب روزه بگیرد، گناهان قبلی او بخشیده می شود.",
     "arabic_translation": "ومن صام رمضان إيماناً واحتساباً غفر له ما تقدم من ذنبه.",
-    "pashto_translation": "څوک چې رمضان په ايمان او د اجر په نيت روژه ونيسي، پخواني ګناهونه يې بښل کېږي.",
+    "pashto_translation": "چا چې د رمضان روژه - په الله تعالی - د ایمان په وجه د ثواب په نیت ونیوله؛ نو مخکني ټول ګناهونه یې وبخښل شي.",
     "source_book": "Bukhari",
     "source_number": "38",
     "is_muttafaq": true,
@@ -58,8 +58,8 @@
     },
     "daily_index": 3,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever fasts Ramadan out of faith and hoping for reward will have their past sins forgiven.",
-    "turkish_translation": "Kim inanarak ve sevabını umarak Ramazan orucunu tutarsa geçmiş günahları bağışlanır."
+    "english_translation": "Whoever observes fasts during the month of Ramadan out of sincere faith, and hoping to attain Allah's rewards, then all his past sins will be forgiven.",
+    "turkish_translation": "Kim inanarak ve sevabını yalnızca Allah tan umarak Ramazan orucunu tutarsa geçmiş günahları bağışlanır."
   },
   {
     "id": 4,
@@ -81,7 +81,7 @@
     "daily_index": 4,
     "authenticity_grade": "sahih",
     "english_translation": "Whoever spends the Night of Decree in worship out of faith and hoping for reward will have their past sins forgiven.",
-    "turkish_translation": "Kim inanarak ve sevabını umarak Kadir Gecesini ibadetle geçirirse geçmiş günahları bağışlanır."
+    "turkish_translation": "Kim Kadir gecesini iman ederek ve sevabını Allah'tan umarak ihya ederse geçmiş günahları bağışlanır."
   },
   {
     "id": 5,
@@ -99,15 +99,15 @@
     "weekday_only": "friday",
     "daily_index": 5,
     "authenticity_grade": "sahih",
-    "english_translation": "Prayer is light.",
-    "turkish_translation": "Dua hafiftir."
+    "english_translation": "And prayer is a light.",
+    "turkish_translation": "Namaz bir nurdur."
   },
   {
     "id": 6,
     "arabic_text": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "dari_translation": "هر که به خدا و روز آخرت ایمان دارد، سخن نیک بگوید یا خاموش بماند.",
+    "dari_translation": "کسی که به الله و روز آخرت ایمان دارد سخن خیر بگوید یا سکوت کند.",
     "arabic_translation": "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت.",
-    "pashto_translation": "څوک چې پر الله او آخرت ايمان لري، ښه خبره دې وکړي يا دې چوپ پاتې شي.",
+    "pashto_translation": "څوک چې په الله او د آخرت په ورځ ایمان لري، نو هغه دې یا د خیر وینا وکړي او یا دې چوپ پاتې شي.",
     "source_book": "Bukhari",
     "source_number": "6018",
     "is_muttafaq": true,
@@ -118,14 +118,14 @@
     "daily_index": 6,
     "authenticity_grade": "sahih",
     "english_translation": "Whoever believes in Allah and the Last Day should speak good or remain silent.",
-    "turkish_translation": "Kim Allah'a ve ahiret gününe inanıyorsa ya hayır söylesin ya da sussun."
+    "turkish_translation": "Allah'a ve ahiret gününe iman eden bir kimse ya hayır söylesin yahut sussun."
   },
   {
     "id": 7,
     "arabic_text": "خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ",
-    "dari_translation": "بهترین شما کسی است که قرآن را بیاموزد و آن را آموزش دهد.",
+    "dari_translation": "بهترین شما کسی است که قرآن را بیاموزد، و آن را به دیگران بیاموزاند.",
     "arabic_translation": "خيركم من تعلم القرآن وعلمه.",
-    "pashto_translation": "ستاسو غوره هغه څوک دی چې قرآن زده کړي او ور وښيي.",
+    "pashto_translation": "په تاسو کې غوره هغه څوک دی چې قرآن زده کړي او نورو ته یې وښایي.",
     "source_book": "Bukhari",
     "source_number": "5027",
     "is_muttafaq": false,
@@ -136,15 +136,15 @@
     "weekday_only": "friday",
     "daily_index": 7,
     "authenticity_grade": "sahih",
-    "english_translation": "The best among you are those who learn the Quran and teach it.",
-    "turkish_translation": "Sizin en hayırlınız Kur'an'ı öğrenen ve öğreteninizdir."
+    "english_translation": "The best among you (Muslims) are those who learn the Qur'an and teach it.",
+    "turkish_translation": "Sizin en hayırlınız Kur'an'ı öğrenen ve öğretendir."
   },
   {
     "id": 8,
     "arabic_text": "الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ",
-    "dari_translation": "مسلمان کسی است که مسلمانان از زبان و دست او در امان باشند.",
+    "dari_translation": "مسلمان کسی است که مسلمانان از زبان و دست او در امان باشند، و مهاجر آن است آنچه را که الله متعال از آن نهی کرده ترک نماید.",
     "arabic_translation": "المسلم من سلم المسلمون من لسانه ويده.",
-    "pashto_translation": "مسلمان هغه دی چې مسلمانان يې له ژبې او لاسه خوندي وي.",
+    "pashto_translation": "مسلمان هغه څوک دی چې نور مسلمانان يې د ژبې او لاس له ضرر څخه په امان کې وي او مهاجر هغه څوک دی چې هغه څه پریږدي چې الله پاک ورڅخه منعه کړی وي.",
     "source_book": "Bukhari",
     "source_number": "10",
     "is_muttafaq": true,
@@ -154,15 +154,15 @@
     ],
     "daily_index": 8,
     "authenticity_grade": "sahih",
-    "english_translation": "A Muslim is one from whose tongue and hand other Muslims are safe.",
-    "turkish_translation": "Müslüman, diğer Müslümanların dilinden ve elinden emin olduğu kimsedir."
+    "english_translation": "A Muslim is the one who avoids harming Muslims with his tongue and hands.",
+    "turkish_translation": "Müslüman, dilinden, elinden müslümanlar selamette kalan kimsedir."
   },
   {
     "id": 9,
     "arabic_text": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "dari_translation": "ایمان کسی کامل نمی‌شود تا برای برادرش همان را بخواهد که برای خود می‌خواهد.",
+    "dari_translation": "هیچ یک از شما ایمان نمی‌برد تا این که برای برادر خود دوست بدارد آن‌چه را که برای خود دوست می دارد.",
     "arabic_translation": "ولا يكتمل إيمان أحد حتى يحب لأخيه ما يحب لنفسه.",
-    "pashto_translation": "ستاسو ايمان تر هغه بشپړ نه دی څو چې د خپل ورور لپاره هغه څه خوښ نه کړي چې ځان ته يې خوښوي.",
+    "pashto_translation": "په تاسو کې هیڅوک مومن کیدلی نه شي؛ تر څو چې د خپل ورور لپاره هغه څه خوښ کړي چې د ځان لپاره یې خوښوي.",
     "source_book": "Bukhari",
     "source_number": "13",
     "is_muttafaq": true,
@@ -172,15 +172,15 @@
     ],
     "daily_index": 9,
     "authenticity_grade": "sahih",
-    "english_translation": "None of you truly believes until they love for their brother what they love for themselves.",
-    "turkish_translation": "Sizden biriniz, kendisi için sevdiğini kardeşi için de sevmedikçe gerçek anlamda iman etmiş olmaz."
+    "english_translation": "None of you will have faith till he wishes for his (Muslim) brother what he likes for himself.",
+    "turkish_translation": "Hiçbiriniz kendisi için sevdiğini (istediğini) (Müslüman) kardeşi için de sevmedikçe iman etmiş olamaz."
   },
   {
     "id": 10,
     "arabic_text": "إِنَّ اللَّهَ كَتَبَ الإِحْسَانَ عَلَى كُلِّ شَيْءٍ",
-    "dari_translation": "خداوند نیکی را بر هر کاری واجب کرده است.",
+    "dari_translation": "همانا الله در همه چیز و هر کاری نیکوکاری و احسان را برای شما فرض کرده است.",
     "arabic_translation": "وقد جعل الله الخير على كل شيء.",
-    "pashto_translation": "الله تعالی پر هر کار کې احسان واجب کړی دی.",
+    "pashto_translation": "بېشکه الله تعالی په هر شي کې احسان (نیکي) فرض کړې ده.",
     "source_book": "Muslim",
     "source_number": "1955",
     "is_muttafaq": false,
@@ -198,7 +198,7 @@
     },
     "daily_index": 10,
     "authenticity_grade": "sahih",
-    "english_translation": "Allah has prescribed excellence in everything.",
+    "english_translation": "Allah has decreed proficiency in all things, so when you kill, kill well, and when you slaughter, slaughter well.",
     "turkish_translation": "Allah her şeyde mükemmelliği emretmiştir."
   },
   {
@@ -225,15 +225,15 @@
     },
     "daily_index": 11,
     "authenticity_grade": "sahih",
-    "english_translation": "The first thing we begin with on Eid al-Adha is the Eid prayer; then we return and offer the sacrifice.",
-    "turkish_translation": "Kurban Bayramı'nda ilk başladığımız şey bayram namazıdır; sonra geri döneriz ve kurbanımızı sunarız."
+    "english_translation": "The first thing we will do on this day of ours, is to offer the (`Id) prayer and then return to slaughter the sacrifice.",
+    "turkish_translation": "Bu günümüzde ilk başlayacağımız iş namaz kılmamız, sonra dönüp kurban kesmemizdir."
   },
   {
     "id": 12,
     "arabic_text": "مَا مِنْ أَيَّامٍ الْعَمَلُ الصَّالِحُ فِيهَا أَحَبُّ إِلَى اللَّهِ مِنْ هَذِهِ الأَيَّامِ",
-    "dari_translation": "هیچ روزهایی نیست که عمل صالح در آن نزد خدا محبوب‌تر از ده روز نخست ذوالحجه باشد.",
+    "dari_translation": "هیچ روزهای نیست که عمل صالح نزد الله متعال محبوبتر از این روزها نباشد» یعنی روزهای ده گانه.",
     "arabic_translation": "ما من أيام العمل الصالح فيها أحب إلى الله من الأيام العشر الأولى من ذي الحجة.",
-    "pashto_translation": "داسې ورځې نشته چې نېک عمل پکې الله ته تر دې لسو ورځو ډېر خوښ وي.",
+    "pashto_translation": "هېڅ داسې ورځې نشته چې نېک عمل پکې الله جل جلاله ته لدې ورځو څخه زیات محبوب وي، یعنې (د ذی الحجې) لس ورځې.",
     "source_book": "Bukhari",
     "source_number": "969",
     "is_muttafaq": false,
@@ -251,13 +251,13 @@
     },
     "daily_index": 12,
     "authenticity_grade": "sahih",
-    "english_translation": "There are no days in which righteous deeds are more beloved to Allah than the first ten days of Dhul-Hijjah.",
+    "english_translation": "There are no days during which righteous deeds are more beloved to Allah than these days.",
     "turkish_translation": "Salih amellerin Allah katında Zilhiccenin ilk on gününden daha sevimli olduğu gün yoktur."
   },
   {
     "id": 13,
     "arabic_text": "أَفْضَلُ الصِّيَامِ بَعْدَ رَمَضَانَ شَهْرُ اللَّهِ الْمُحَرَّمُ",
-    "dari_translation": "بهترین روزه بعد از رمضان، روزه ماه محرم است.",
+    "dari_translation": "بهترین روزه پس از روزه ی رمضان، روزه گرفتن در ماهِ الله، محرّم است؛ و بهترین نماز پس از نماز فرض، نماز شب می باشد.",
     "arabic_translation": "أفضل الصيام بعد رمضان المحرم.",
     "pashto_translation": "له رمضان وروسته غوره روژه د الله مياشت محرم ده.",
     "source_book": "Muslim",
@@ -278,8 +278,8 @@
     },
     "daily_index": 13,
     "authenticity_grade": "sahih",
-    "english_translation": "The best fasting after Ramadan is fasting in the month of Muharram.",
-    "turkish_translation": "Ramazandan sonra en faziletli oruç Muharrem ayında tutulan oruçtur."
+    "english_translation": "The most excellent fast after Ramadan is God's month.",
+    "turkish_translation": "Ramazandan sonra en faziletli oruç, Allah'ın ay'ı olan Muharrem'de tutulan oruçtur."
   },
   {
     "id": 14,
@@ -300,14 +300,14 @@
     "daily_index": 14,
     "authenticity_grade": "sahih",
     "english_translation": "I hope that fasting on Ashura will cleanse the sins of the past year.",
-    "turkish_translation": "Aşure günü tutulan orucun geçen senenin günahlarından temizlenmesini temenni ediyorum."
+    "turkish_translation": "Ömer (tekrar): — İki gün oruç tutup bir gün tutmayanın hâli ne olacak?"
   },
   {
     "id": 15,
     "arabic_text": "غُسْلُ يَوْمِ الْجُمُعَةِ وَاجِبٌ عَلَى كُلِّ مُحْتَلِمٍ",
-    "dari_translation": "غسل روز جمعه بر هر بالغ تأکید شده است.",
+    "dari_translation": "غسل روز جمعه بر هر بالغی واجب است، و اینکه مسواک بزند و اگر عطر دارد از آن استفاده کند.",
     "arabic_translation": "وشدد على غسل يوم الجمعة لكل بالغ.",
-    "pashto_translation": "د جمعې د ورځې غسل پر هر بالغ مسلمان ټينګار شوی دی.",
+    "pashto_translation": "د جمعې په ورځ پر هر بالغ غسل کول واجب دي او باید چې مسواک ووهي، خوش بویي ولګوي که وموندل شي.",
     "source_book": "Bukhari",
     "source_number": "879",
     "is_muttafaq": false,
@@ -318,15 +318,15 @@
     "weekday_only": "friday",
     "daily_index": 15,
     "authenticity_grade": "sahih",
-    "english_translation": "The Friday bath is stressed upon every adult.",
-    "turkish_translation": "Cuma banyosu her yetişkinin stresidir."
+    "english_translation": "The taking of a bath on Friday is compulsory for every male (Muslim) who has attained the age of puberty.",
+    "turkish_translation": "Cum'a günü boy abdesti (ğusül) almak ihtilam olan (ergenlik çağına giren) herkese vaciptir."
   },
   {
     "id": 16,
     "arabic_text": "إِذَا قُلْتَ لِصَاحِبِكَ يَوْمَ الْجُمُعَةِ أَنْصِتْ وَالإِمَامُ يَخْطُبُ فَقَدْ لَغَوْتَ",
-    "dari_translation": "اگر روز جمعه هنگام خطبه به همراهت بگویی خاموش باش، کار بیهوده کرده‌ای.",
+    "dari_translation": "اگر به هم نشینت در روز جمعه در حالی که امام خطبه می‌خواند گفتی: گوش فرا بده، مرتکب لغو شده‌ای.",
     "arabic_translation": "إذا قلت لصاحبك أن يصمت أثناء خطبة الجمعة فقد ذهبت هباءً.",
-    "pashto_translation": "که د جمعې د خطبې پر مهال ملګري ته ووايې چوپ شه، نو بېځايه کار دې وکړ.",
+    "pashto_translation": "که خپل ملګرې ته دې د جمعې په ورځ وویل چې: چپ شه، په داسې حال کې چې امام خطبه وایي، نو تا د جمعې فضیلت له لاسه ورکړ.",
     "source_book": "Bukhari",
     "source_number": "934",
     "is_muttafaq": false,
@@ -337,15 +337,15 @@
     "weekday_only": "friday",
     "daily_index": 16,
     "authenticity_grade": "sahih",
-    "english_translation": "If during the Friday sermon you tell your companion to be quiet, you have spoken idle talk.",
-    "turkish_translation": "Cuma hutbesinde arkadaşınıza sus dersen, boş konuşmuş olursun."
+    "english_translation": "When the Imam is delivering the Khutba, and you ask your companion to keep quiet and listen, then no doubt you have done an evil act.",
+    "turkish_translation": "Cum'a günü imam hutbe okurken yanı başında bulunan kimselere 'Susun!' desen bile boş söz söylemiş olursun."
   },
   {
     "id": 17,
     "arabic_text": "يَسِّرُوا وَلَا تُعَسِّرُوا، وَبَشِّرُوا وَلَا تُنَفِّرُوا",
-    "dari_translation": "آسان بگیرید و سخت نگیرید؛ بشارت دهید و مردم را متنفر نسازید.",
+    "dari_translation": "آسان بگیرید وسختگیر نباشید، بشارت دهید و متنفر کننده نباشید.",
     "arabic_translation": "خذ الأمور ببساطة ولا تأخذ الأمور بصعوبة؛ بشر بالخير ولا تجعل الناس يكرهون.",
-    "pashto_translation": "اسانتيا راولئ، سختي مه راوړئ؛ زېرى ورکړئ او خلک مه تنګ کړئ.",
+    "pashto_translation": "(پر خلکو) اسانتیا راولئ او سختي مه کوئ، زیری ورکړئ او خلک مه زړه توري کوئ.",
     "source_book": "Bukhari",
     "source_number": "69",
     "is_muttafaq": true,
@@ -361,9 +361,9 @@
   {
     "id": 18,
     "arabic_text": "الرَّاحِمُونَ يَرْحَمُهُمُ الرَّحْمَنُ",
-    "dari_translation": "مهربانان را خداوند رحمان مورد رحمت قرار می‌دهد.",
+    "dari_translation": "کسانی که مهربان هستند، الله مهربان به آنان رحم خواهد کرد، به اهل زمین رحم کنید، آنکه در آسمان است به شما رحم خواهد کرد.",
     "arabic_translation": "وسوف يرحم الله الرحمن الرحيم هذا النوع.",
-    "pashto_translation": "پر مهربانانو رحمن رب رحم کوي.",
+    "pashto_translation": "په رحم کوونکو باندې الله رحم کوي، تاسو د ځمکې پر خلکو رحم وکړئ هغه ذات چې په اسمانونو کې دی پر تاسو به رحم وکړي.",
     "source_book": "Muslim",
     "source_number": "2319",
     "is_muttafaq": false,
@@ -373,15 +373,15 @@
     ],
     "daily_index": 18,
     "authenticity_grade": "sahih",
-    "english_translation": "The Merciful shows mercy to those who are merciful.",
-    "turkish_translation": "Merhametli olana Rahman da merhamet eder."
+    "english_translation": "The merciful are shown mercy by Ar-Rahman.",
+    "turkish_translation": "Merhametlilere Rahman olan Allah merhamet eder."
   },
   {
     "id": 19,
     "arabic_text": "الطُّهُورُ شَطْرُ الإِيمَانِ",
-    "dari_translation": "پاکی نصف ایمان است.",
+    "dari_translation": "پاکیزگی نصف ایمان است، و الحمدلله ترازو را پر می کند، و \"سبحان الله\" و \"الحمدلله\" ما بین آسمان و زمین را پر می کنند.",
     "arabic_translation": "والطهارة نصف الإيمان.",
-    "pashto_translation": "پاکي د ايمان نيمايي ده.",
+    "pashto_translation": "طهارت (پاکي) د ایمان نیمايي/ برخه ده، \"الحمد لله\" ترازو (د عملونو میزان) ډکوي، او \"سبحان الله\" او \"الحمد لله\" دواړه د آسمان او ځمکې ترمنځ فضا ډکوي.",
     "source_book": "Muslim",
     "source_number": "223",
     "is_muttafaq": false,
@@ -392,13 +392,13 @@
     "weekday_only": "friday",
     "daily_index": 19,
     "authenticity_grade": "sahih",
-    "english_translation": "Purity is half of faith.",
-    "turkish_translation": "Temizlik imanın yarısıdır."
+    "english_translation": "Cleanliness is half of faith.",
+    "turkish_translation": "Abdest imanın yarısıdır."
   },
   {
     "id": 20,
     "arabic_text": "مَنْ لاَ يَرْحَمْ لاَ يُرْحَمْ",
-    "dari_translation": "هر که رحم نکند، بر او رحم نمی‌شود.",
+    "dari_translation": "کسی که رحم نکند، مورد رحمت قرار نمی گیرد.",
     "arabic_translation": "ومن لا يرحم لا يُرحم.",
     "pashto_translation": "څوک چې رحم ونه کړي، پر هغه رحم نه کېږي.",
     "source_book": "Bukhari",
@@ -410,15 +410,15 @@
     ],
     "daily_index": 20,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever does not show mercy will not be shown mercy.",
-    "turkish_translation": "Merhamet etmeyene merhamet edilmez."
+    "english_translation": "I have ten children and I have never kissed anyone of them.",
+    "turkish_translation": "Resulullah Sallallahu Aleyhi ve Sellem yanında Temimli el-Akra İbn Habis oturuyor iken Ali'nin oğlu Hasen'i öptü."
   },
   {
     "id": 21,
     "arabic_text": "السَّاعِي عَلَى الأَرْمَلَةِ وَالْمِسْكِينِ كَالْمُجَاهِدِ فِي سَبِيلِ اللَّهِ",
-    "dari_translation": "کسی که برای بیوه و نیازمند تلاش می‌کند مانند مجاهد در راه خداست.",
+    "dari_translation": "تلاش‌کننده بر بیوه‌زن و بینوا مانند مجاهد در راه الله یا کسی است که شب را به عبادت می‌ایستد و روز را روزه می‌شود.",
     "arabic_translation": "والساعي على الأرملة والمسكين كالمجاهد في سبيل الله.",
-    "pashto_translation": "څوک چې د کونډې او مسکين لپاره هڅه کوي، د الله په لار کې د مجاهد په شان دی.",
+    "pashto_translation": "د کونډې او مسکینانو پالنه کوونکی د هغه چا په څېر دی چې د الله په لاره کې جهاد کوي، او یا د هغه چا په څېر دی چې د شپې ولاړ وي (تهجد کوي) او د ورځې روژه نیسي.",
     "source_book": "Bukhari",
     "source_number": "5353",
     "is_muttafaq": true,
@@ -428,8 +428,8 @@
     ],
     "daily_index": 21,
     "authenticity_grade": "sahih",
-    "english_translation": "The one who works for the widow and the needy is like a fighter in the path of Allah.",
-    "turkish_translation": "Dul ve muhtaçlar için çalışan, Allah yolunda savaşan gibidir."
+    "english_translation": "The one who looks after a widow or a poor person is like a Mujahid (warrior) who fights for Allah's Cause, or like him who performs prayers all the night and fasts all the day.",
+    "turkish_translation": "Nebi Sallallahu Aleyhi ve Sellem: Dul kadın(lar)ın ve yoksul (lar) ın ihtiyaçlarını karşılamak için çalışıp çabalayan bir kimse, Allah yolunda cihad eden ya da geceyi namazla, gündüzü oruçla geçiren kimse gibidir, diye buyurdu."
   },
   {
     "id": 22,
@@ -446,8 +446,8 @@
     ],
     "daily_index": 22,
     "authenticity_grade": "sahih",
-    "english_translation": "The deeds most beloved to Allah are those done consistently, even if they are few.",
-    "turkish_translation": "Allah katında en sevimli amel, az da olsa devamlı olarak yapılan ameldir."
+    "english_translation": "Do good deeds properly, sincerely and moderately and know that your deeds will not make you enter Paradise, and that the most beloved deed to Allah is the most regular and constant even if it were little.",
+    "turkish_translation": "Doğru yolu tutunuz, ifrat etmeyiniz."
   },
   {
     "id": 23,
@@ -465,15 +465,15 @@
     "weekday_only": "friday",
     "daily_index": 23,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever travels a path seeking knowledge, Allah makes the path to Paradise easy for them.",
-    "turkish_translation": "Kim ilim öğrenmek için bir yola girerse, Allah ona cennetin yolunu kolaylaştırır."
+    "english_translation": "Whoever takes a path upon which to obtain knowledge, Allah makes the path to Paradise easy for him.",
+    "turkish_translation": "Her kim din ilmini tahsil için yola koyulur ve her sebebe başvurursa Allah Cennete varan yolu onun için kolaylaştırır."
   },
   {
     "id": 24,
     "arabic_text": "إِنَّ اللَّهَ لاَ يَنْظُرُ إِلَى صُوَرِكُمْ وَأَمْوَالِكُمْ وَلَكِنْ يَنْظُرُ إِلَى قُلُوبِكُمْ وَأَعْمَالِكُمْ",
-    "dari_translation": "خدا به چهره‌ها و مال شما نگاه نمی‌کند، بلکه به دل‌ها و اعمال شما می‌نگرد.",
+    "dari_translation": "الله متعال به چهره ها، و اموال شما نگاه نمی کند، بلکه به قلب ها و اعمال شما می نگرد.",
     "arabic_translation": "إن الله لا ينظر إلى وجوهكم وأموالكم، بل إلى قلوبكم وأعمالكم.",
-    "pashto_translation": "الله ستاسو شکلونو او مالونو ته نه ګوري، بلکې زړونو او اعمالو ته ګوري.",
+    "pashto_translation": "الله تعالی ستاسو شکلونو او مالونو ته نه ګوري، بلکې هغه ستاسو زړونو او عملونو ته ګوري.",
     "source_book": "Muslim",
     "source_number": "2564",
     "is_muttafaq": false,
@@ -483,15 +483,15 @@
     ],
     "daily_index": 24,
     "authenticity_grade": "sahih",
-    "english_translation": "Allah does not look at your appearance or wealth, but at your hearts and deeds.",
+    "english_translation": "Verily Allah does not look to your faces and your wealth but He looks to your heart and to your deeds.",
     "turkish_translation": "Allah sizin dış görünüşünüze ve mallarınıza değil, kalplerinize ve amellerinize bakar."
   },
   {
     "id": 25,
     "arabic_text": "الْبِرُّ حُسْنُ الْخُلُقِ",
-    "dari_translation": "نیکی همان خوش‌خلقی است.",
+    "dari_translation": "نیکی، [همان] خوش‌ اخلاقی است، و گناه آن چیزی است که در سینه‌ات تردید و اضطراب آفریند، و دوست نداری مردم از آن آگاه شوند.",
     "arabic_translation": "الخير هو المزاج الجيد.",
-    "pashto_translation": "نېکي ښه اخلاق دي.",
+    "pashto_translation": "نیکي ښه اخلاق دي، او ګناه هغه څه ده چې په زړه کې دې شک او تردد وي او نه غواړې چې خلک پرې خبر شي.",
     "source_book": "Muslim",
     "source_number": "2553",
     "is_muttafaq": false,
@@ -501,8 +501,8 @@
     ],
     "daily_index": 25,
     "authenticity_grade": "sahih",
-    "english_translation": "Righteousness is good character.",
-    "turkish_translation": "Doğruluk iyi karakterdir."
+    "english_translation": "Virtue is a kind disposition and vice is what rankles in your heart and that you disapprove that people should come to know of it.",
+    "turkish_translation": "Birr, ahlakın güzelliğidir."
   },
   {
     "id": 26,
@@ -519,8 +519,8 @@
     ],
     "daily_index": 26,
     "authenticity_grade": "sahih",
-    "english_translation": "Allah is beautiful and loves beauty.",
-    "turkish_translation": "Allah güzeldir ve güzeli sever."
+    "english_translation": "Verily a person loves that his dress should be fine.",
+    "turkish_translation": "Kalbinde zerre ağırlığınca kibir bulunan bir kimse cennete girmez."
   },
   {
     "id": 27,
@@ -537,15 +537,15 @@
     ],
     "daily_index": 27,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever cheats us is not one of us.",
-    "turkish_translation": "Bizi aldatan bizden değildir."
+    "english_translation": "I saw the Messenger of Allah (ﷺ) pass by a man having food in a vessel.",
+    "turkish_translation": "Not: Zevaid'de şöyle denilmiştir: Bunun senedinde Ebu Davud künyeli bir ravi vardır."
   },
   {
     "id": 28,
     "arabic_text": "الْيَدُ الْعُلْيَا خَيْرٌ مِنَ الْيَدِ السُّفْلَى",
-    "dari_translation": "دستِ بالا (دهنده) از دست پایین (گیرنده) بهتر است.",
+    "dari_translation": "الیدُ العُلْیَا خَیر من الیدِ السُّفْلَی.",
     "arabic_translation": "واليد العليا (المعطية) خير من اليد السفلية (المتلقية).",
-    "pashto_translation": "لوړه لاس (ورکوونکی) له ښکته لاس (اخيستونکی) غوره دی.",
+    "pashto_translation": "یعنې پورته لاس (ورکوونکی لاس) له ټيټ لاس (غوښتونکي لاس) څخه غوره دی.",
     "source_book": "Bukhari",
     "source_number": "1429",
     "is_muttafaq": true,
@@ -555,8 +555,8 @@
     ],
     "daily_index": 28,
     "authenticity_grade": "sahih",
-    "english_translation": "The upper hand (the giving hand) is better than the lower hand (the receiving hand).",
-    "turkish_translation": "Üstteki el (veren el), alttaki elden (alıcı el) daha iyidir."
+    "english_translation": "The upper hand is better than the lower hand.",
+    "turkish_translation": "Üstteki el, alttaki elden daha hayırlıdır."
   },
   {
     "id": 29,
@@ -573,7 +573,7 @@
     ],
     "daily_index": 29,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever relieves a Muslim of a hardship, Allah will relieve them of a hardship on the Day of Resurrection.",
+    "english_translation": "The Muslim is the brother of the Muslim.",
     "turkish_translation": "Kim bir Müslümanın bir sıkıntısını giderirse, Allah da onu kıyamet gününde bir sıkıntıdan kurtarır."
   },
   {
@@ -591,15 +591,15 @@
     ],
     "daily_index": 30,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever conceals a Muslim’s fault, Allah will conceal their fault in this world and the Next.",
-    "turkish_translation": "Kim bir Müslümanın ayıbını gizlerse, Allah da onun dünyada ve ahirette ayıbını örter."
+    "english_translation": "Whoever covers (the sin of) a Muslim, Allah will cover him (his sin) in this world and in the Hereafter.",
+    "turkish_translation": "Kim bir müslüman (kardeşinin aybın)ı örterse Allah da onutn aybmı) dünyada ve âhirette örter."
   },
   {
     "id": 31,
     "arabic_text": "إِذَا مَاتَ الإِنْسَانُ انْقَطَعَ عَمَلُهُ إِلَّا مِنْ ثَلاَثٍ: صَدَقَةٍ جَارِيَةٍ ...",
-    "dari_translation": "وقتی انسان می‌میرد عملش قطع می‌شود مگر از سه چیز: صدقه جاریه، علمی که نفع برساند، یا فرزند صالح.",
+    "dari_translation": "هرگاه انسان بمیرد تمام اعمالش قطع می‌شود بجز سه مورد: صدقه جاریه، و علمی که سود می‌رساند، و یا فرزند صالحی که برای او دعا کند.",
     "arabic_translation": "إذا مات الإنسان انقطع عمله إلا من ثلاثة أشياء: صدقة جارية، أو علم ينتفع به، أو ولد صالح.",
-    "pashto_translation": "کله چې انسان مړ شي عمل يې درې شيانو پرته بندېږي: جاريه صدقه، ګټور علم، او صالح اولاد.",
+    "pashto_translation": "کله چې انسان مړ شي نو عمل یې قطع کیږي پرته له درېو څېزونو څخه: جاریه صدقه، علم چې ګټه ترې اخېستل کیږي، او صالح اولاد چې دعا ورته وکړي.",
     "source_book": "Muslim",
     "source_number": "1631",
     "is_muttafaq": false,
@@ -610,12 +610,12 @@
     "daily_index": 31,
     "authenticity_grade": "sahih",
     "english_translation": "When a person dies, their deeds end except for three: ongoing charity, beneficial knowledge, or a righteous child who prays for them.",
-    "turkish_translation": "İnsan ölünce üç şey dışında ameli kesilir: Devam eden sadaka, faydalı ilim veya kendisine dua eden salih evlat."
+    "turkish_translation": "İnsan öldüğü vakit bütün amelleri ondan kesilir."
   },
   {
     "id": 32,
     "arabic_text": "الْمُؤْمِنُ الْقَوِيُّ خَيْرٌ وَأَحَبُّ إِلَى اللَّهِ مِنَ الْمُؤْمِنِ الضَّعِيفِ",
-    "dari_translation": "مؤمن نیرومند نزد خدا بهتر و محبوب‌تر از مؤمن ضعیف است.",
+    "dari_translation": "مؤمن قوی بهتر و نزد الله دوست داشتنی‌تر از مؤمن ضعیف است، و در هر یک خیر است.",
     "arabic_translation": "والمؤمن القوي خير وأحب إلى الله من المؤمن الضعيف.",
     "pashto_translation": "قوي مؤمن الله ته له کمزوري مؤمنه غوره او ډېر محبوب دی.",
     "source_book": "Muslim",
@@ -628,7 +628,7 @@
     "daily_index": 32,
     "authenticity_grade": "sahih",
     "english_translation": "The strong believer is better and more beloved to Allah than the weak believer.",
-    "turkish_translation": "Güçlü mü'min, Allah katında zayıf mü'minden daha hayırlı ve daha sevimlidir."
+    "turkish_translation": "Kuvvetli mü'min Allah'a zayıf mü'minden daha hayırlı ve daha makbuldür."
   },
   {
     "id": 33,
@@ -645,15 +645,15 @@
     ],
     "daily_index": 33,
     "authenticity_grade": "sahih",
-    "english_translation": "Be eager for what benefits you, seek help from Allah, and do not feel helpless.",
-    "turkish_translation": "Size fayda sağlayacak şeylere istekli olun, Allah'tan yardım isteyin ve çaresiz kalmayın."
+    "english_translation": "A strong believer is better and is more lovable to Allah than a weak believer.",
+    "turkish_translation": "Kuvvetli mü'min Allah'a zayıf mü'minden daha hayırlı ve daha makbuldür."
   },
   {
     "id": 34,
     "arabic_text": "لاَ تَحْقِرَنَّ مِنَ الْمَعْرُوفِ شَيْئًا وَلَوْ أَنْ تَلْقَى أَخَاكَ بِوَجْهٍ طَلْقٍ",
-    "dari_translation": "هیچ کار نیکی را کوچک مشمار؛ حتی این‌که برادرت را با چهره گشاده دیدار کنی.",
+    "dari_translation": "هیچ چیزی از نیکوئی را ناچیز مشمار، حتی اگر برادرت را با چهره ای بشاش ملاقات کنی.",
     "arabic_translation": "فلا تستهن بأي عمل صالح؛ ولو قابلت أخاك بوجه مفتوح.",
-    "pashto_translation": "هيڅ نېکي کمه مه ګڼئ؛ که څه هم خپل ورور په ورين تندي ووينئ.",
+    "pashto_translation": "له ښېګڼې څخه څه شی سپک مه ګڼه، اګر که د خپل ورور سره په ورین تندي مخامخ شې.",
     "source_book": "Muslim",
     "source_number": "2626",
     "is_muttafaq": false,
@@ -663,13 +663,13 @@
     ],
     "daily_index": 34,
     "authenticity_grade": "sahih",
-    "english_translation": "Do not belittle any good deed, even meeting your brother with a cheerful face.",
-    "turkish_translation": "Kardeşinle güler yüzle karşılaşmak dahi olsa, hiçbir iyiliği küçümseme."
+    "english_translation": "Abu Dharr reported:Allah's Apostle (ﷺ) said to me: Don't consider anything insignificant out of good things even if it is that you meet your brother with a cheerful countenance.",
+    "turkish_translation": "Sakın maruftan hiç bir şeyi hakir görme!"
   },
   {
     "id": 35,
     "arabic_text": "إِنَّمَا يَرْحَمُ اللَّهُ مِنْ عِبَادِهِ الرُّحَمَاءَ",
-    "dari_translation": "خداوند تنها بر بندگان مهربانش رحم می‌کند.",
+    "dari_translation": "این رحمتی است که الله متعال در دل بندگانش نهاده است و الله به بندگانی رحم می کند که رحم و شفقت داشته باشند.",
     "arabic_translation": "والله لا يرحم إلا عباده الطيبين.",
     "pashto_translation": "الله تعالی پر خپلو مهربانو بندګانو رحم کوي.",
     "source_book": "Bukhari",
@@ -682,12 +682,12 @@
     "daily_index": 35,
     "authenticity_grade": "sahih",
     "english_translation": "Allah shows mercy only to His merciful servants.",
-    "turkish_translation": "Allah ancak merhametli kullarına merhamet eder."
+    "turkish_translation": "Oğlum ya da kızım can vermek üzeredir (acele) yanımıza gel."
   },
   {
     "id": 36,
     "arabic_text": "الْمَرْءُ مَعَ مَنْ أَحَبَّ",
-    "dari_translation": "انسان با کسی خواهد بود که او را دوست دارد.",
+    "dari_translation": "هر شخصی با کسی خواهد بود که او را دوست دارد.",
     "arabic_translation": "سيكون الإنسان مع من يحبه.",
     "pashto_translation": "انسان به له هغه چا سره وي چې مينه ورسره لري.",
     "source_book": "Bukhari",
@@ -700,14 +700,14 @@
     "daily_index": 36,
     "authenticity_grade": "sahih",
     "english_translation": "A person will be with those they love.",
-    "turkish_translation": "İnsan sevdiğiyle birlikte olur."
+    "turkish_translation": "Bir adam Nebi Sallallahu Aleyhi ve Sellem'e gelerek: Ey Allah'ın Rasulü, bir topluluğu sevmekle birlikte onlara erişemeyen kimse hakkında nasıl açıklamada bulunursunuz, diye sordu."
   },
   {
     "id": 37,
     "arabic_text": "نِعْمَتَانِ مَغْبُونٌ فِيهِمَا كَثِيرٌ مِنَ النَّاسِ: الصِّحَّةُ وَالْفَرَاغُ",
-    "dari_translation": "دو نعمت است که بسیاری مردم در آن زیان می‌کنند: تندرستی و فراغت.",
+    "dari_translation": "بسیاری از مردم درباره ی دو نعمت زیان می بینند (و آنگونه که باید از آنها استفاده نمی کنند): تندرستی و فراغت.",
     "arabic_translation": "نعمتان مغبون فيهما كثير من الناس : الصحة و الفراغ .",
-    "pashto_translation": "دوه نعمتونه دي چې ډېر خلک پکې تاوان کوي: روغتيا او فراغت.",
+    "pashto_translation": "دوه نعمتونه داسې دي چې ډېری خلک یې له پامه غورځوي: روغتیا او فارغ وخت.",
     "source_book": "Bukhari",
     "source_number": "6412",
     "is_muttafaq": false,
@@ -717,8 +717,8 @@
     ],
     "daily_index": 37,
     "authenticity_grade": "sahih",
-    "english_translation": "Two blessings many people waste: health and free time.",
-    "turkish_translation": "Birçok insanın israf ettiği iki nimet: sağlık ve boş zaman."
+    "english_translation": "There are two blessings that many people are deceived into losing: health and free time.",
+    "turkish_translation": "Çoğu insanın farkına varamadığı iki nimet vardır ki, onlar sağlık ve boş vakittir."
   },
   {
     "id": 38,
@@ -735,8 +735,8 @@
     ],
     "daily_index": 38,
     "authenticity_grade": "sahih",
-    "english_translation": "Protect yourselves from the Fire, even with half a date in charity.",
-    "turkish_translation": "Yarım hurma sadakasıyla da olsa kendinizi ateşten koruyun."
+    "english_translation": "Save yourself from Hell-fire even by giving half a date-fruit in charity.",
+    "turkish_translation": "nu işittim demiştir: ‘’Yarım hurmayla bile olsa cehennem'den korunun."
   },
   {
     "id": 39,
@@ -754,14 +754,14 @@
     "daily_index": 39,
     "authenticity_grade": "sahih",
     "english_translation": "A kind word is charity.",
-    "turkish_translation": "Güzel söz hayırseverliktir."
+    "turkish_translation": "İçinde güneş doğan her gün."
   },
   {
     "id": 40,
     "arabic_text": "لَا تَحَاسَدُوا، وَلَا تَبَاغَضُوا، وَلَا تَدَابَرُوا، وَكُونُوا عِبَادَ اللَّهِ إِخْوَانًا",
-    "dari_translation": "به هم حسادت نکنید و دشمنی نورزید؛ بندگان خدا و برادر باشید.",
+    "dari_translation": "با یکدیگر حسادت نکنید، وبرای یکدیگر بعنوان فریب در قیمت کالاها اضافه نکنید، و با یکدیگر بغض و کینه نداشته باشید، و از یکدیگر رو مگردانید، و بعضی از شماها بر بیع بعض دیگر معامله نکنید، و همه بندگان الله بوده؛ برادر باشید.",
     "arabic_translation": "لا تغاروا من بعضكم ولا تتعادوا. كونوا عباد الله وإخوة.",
-    "pashto_translation": "حسد مه کوئ، کينه مه کوئ؛ د الله بندګان او وروڼه اوسئ.",
+    "pashto_translation": "یو بل سره کینه مه کوئ، یو پر بل قیمت مه لوړوئ په داسې حال کې چې توکي اخېستونکي نه یاست، له یو بل سره کینه مه کوئ، یو بل ته شا مه اړوئ، او کله چې یو څوک اخیستل کوي نو د هغه د بېعې د پاسه تاسو بیعه مه کوئ (تر دې چې هغه سره یې خبره خلاصه شوې نه وي)، او یو بل سره د الله بندګان؛ وروڼه وروڼه شئ.",
     "source_book": "Bukhari",
     "source_number": "6065",
     "is_muttafaq": true,
@@ -771,8 +771,8 @@
     ],
     "daily_index": 40,
     "authenticity_grade": "sahih",
-    "english_translation": "Do not envy one another or hate one another; be servants of Allah and brothers.",
-    "turkish_translation": "Birbirinizi kıskanmayın, birbirinizden nefret etmeyin; Allah'ın kulu ve kardeşi olun."
+    "english_translation": "Do not hate one another, and do not be jealous of one another, and do not desert each other, and O, Allah's worshipers!",
+    "turkish_translation": "Birbirinize buğzetmeyiniz, birbirinizi kıskanmayınız, birbirinize arkanızı çevirmeyiniz."
   },
   {
     "id": 41,
@@ -789,13 +789,13 @@
     ],
     "daily_index": 41,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever helps their brother in need, Allah will help them in their need.",
-    "turkish_translation": "Kim ihtiyacı olan kardeşine yardım ederse, Allah da ona yardım eder."
+    "english_translation": "Allah will fulfill his needs.",
+    "turkish_translation": "Her kim kardeşinin bir ihtiyacını görürse Allah da onun ihtiyacını görür."
   },
   {
     "id": 42,
     "arabic_text": "لَا يَحِلُّ لِمُسْلِمٍ أَنْ يَهْجُرَ أَخَاهُ فَوْقَ ثَلَاثٍ",
-    "dari_translation": "برای مسلمان جایز نیست بیش از سه روز با برادرش قهر بماند.",
+    "dari_translation": "برای هیچ مسلمانی جایز نیست که بیش از سه شبانه روز با برادر مسلمانش قهر باشد؛ و هرکس بیش از سه روز قهر کند و در همین حالت بمیرد، وارد دوزخ می شود.",
     "arabic_translation": "ولا يحل لمسلم أن يغضب على أخيه أكثر من ثلاثة أيام.",
     "pashto_translation": "مسلمان ته روا نه ده چې له خپل ورور سره تر درې ورځو ډېر قهر پاتې شي.",
     "source_book": "Bukhari",
@@ -807,15 +807,15 @@
     ],
     "daily_index": 42,
     "authenticity_grade": "sahih",
-    "english_translation": "It is not lawful for a Muslim to forsake their brother for more than three days.",
-    "turkish_translation": "Bir Müslümanın kardeşini üç günden fazla terk etmesi helal değildir."
+    "english_translation": "It is not lawful for a man to desert his brother Muslim for more than three nights.",
+    "turkish_translation": "Resulullah Sallallahu Aleyhi ve Sellem şöyle buyurdu: Bir kimseye kardeşinden -karşılaştıkları halde biri yüzünü bir tarafa, öbürü öbür tarafa çevirerek- üç günden fazla dargın durması helal değildir."
   },
   {
     "id": 43,
     "arabic_text": "مَنْ يَرِدِ اللَّهُ بِهِ خَيْرًا يُفَقِّهْهُ فِي الدِّينِ",
-    "dari_translation": "هرکس را خدا خیر بخواهد، او را در دین دانا می‌گرداند.",
+    "dari_translation": "برای کسی که الله متعال ارادۀ خیر داشته باشد.",
     "arabic_translation": "من يرد الله به خيرا يعقله في الدين.",
-    "pashto_translation": "چې الله يې خير وغواړي، په دين کې يې پوهوي.",
+    "pashto_translation": "د چا لپاره چې الله جل جلاله د خیر اراده وکړي نو هغه ته په دین کې پوهه ورکړي.",
     "source_book": "Bukhari",
     "source_number": "71",
     "is_muttafaq": true,
@@ -826,13 +826,13 @@
     "weekday_only": "friday",
     "daily_index": 43,
     "authenticity_grade": "sahih",
-    "english_translation": "When Allah wants good for someone, He grants them understanding of the religion.",
-    "turkish_translation": "Allah bir kimse için iyilik istediğinde ona dinde anlayış verir."
+    "english_translation": "If Allah wants to do good to a person, He makes him comprehend the religion.",
+    "turkish_translation": "Allah kimin için hayır dilerse onu dinde fakih (anlayış sahibi) kılar."
   },
   {
     "id": 44,
     "arabic_text": "الْحَيَاءُ شُعْبَةٌ مِنَ الإِيمَانِ",
-    "dari_translation": "حیا شاخه‌ای از ایمان است.",
+    "dari_translation": "ایمان هفتاد و اندی یا شصت و اندی شعبه دارد که برترینش گفتن لااله الاالله می باشد و پایین ترین بخشِ ایمان، برداشتن خار و خاشاک (و هر چیز آزاردهنده ای) از سرِ راه است و شرم و حیا، بخشی از ایمان به شمار می رود.",
     "arabic_translation": "الحياء شعبة من الإيمان.",
     "pashto_translation": "حيا د ايمان يوه څانګه ده.",
     "source_book": "Bukhari",
@@ -845,7 +845,7 @@
     "daily_index": 44,
     "authenticity_grade": "sahih",
     "english_translation": "Modesty is a branch of faith.",
-    "turkish_translation": "Tevazu imanın bir koludur."
+    "turkish_translation": "Haya da iman’ın bir şu`besidir."
   },
   {
     "id": 45,
@@ -863,15 +863,15 @@
     "weekday_only": "friday",
     "daily_index": 45,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever builds a mosque for Allah, Allah builds a house for them in Paradise.",
-    "turkish_translation": "Kim Allah için bir mescid inşa ederse, Allah da ona cennette bir ev bina eder."
+    "english_translation": "You have talked too much.",
+    "turkish_translation": "Ubeydullah el-Havlânî, Mescid-i Nebevî'yi yeniden inşa ettiği zaman, İnsanların kendisi hakkında ileri geri konuşmaya başladığı bir sırada Hz."
   },
   {
     "id": 46,
     "arabic_text": "إِنَّ مِنْ خِيَارِكُمْ أَحْسَنَكُمْ أَخْلَاقًا",
-    "dari_translation": "از بهترین شما کسانی‌اند که اخلاق‌شان نیکوتر است.",
+    "dari_translation": "همانا بهترین شما، خوش اخلاق ترین شماست.",
     "arabic_translation": "ومن خياركم من أحسن أخلاقه.",
-    "pashto_translation": "ستاسو له غوره کسانو هغه دي چې اخلاق يې ډېر ښه وي.",
+    "pashto_translation": "یقینا چې په تاسو کې غوره هغه څوک دی چې ښه اخلاق ولري.",
     "source_book": "Bukhari",
     "source_number": "6035",
     "is_muttafaq": true,
@@ -882,12 +882,12 @@
     "daily_index": 46,
     "authenticity_grade": "sahih",
     "english_translation": "Among the best of you are those with the finest character.",
-    "turkish_translation": "En iyileriniz arasında en güzel karaktere sahip olanlar vardır."
+    "turkish_translation": "Abdullah İbn Amr'ın yanında oturuyorduk."
   },
   {
     "id": 47,
     "arabic_text": "إِذَا أَقْبَلَ اللَّيْلُ مِنْ هَا هُنَا وَأَدْبَرَ النَّهَارُ مِنْ هَا هُنَا فَقَدْ أَفْطَرَ الصَّائِمُ",
-    "dari_translation": "وقتی شب از این سو فرا رسد و روز از آن سو برود، روزه‌دار افطار کرده است.",
+    "dari_translation": "هرگاه شب از این سمت - یعنی از سوی مشرق - نمایان شد و روز از این طرف - یعنی از سمتِ مغرب - رفت، روزه دار باید افطار کند.",
     "arabic_translation": "فإذا أتى الليل من هاهنا، وذهب النهار من تلك الجهة، فقد أفطر الصائم.",
     "pashto_translation": "کله چې شپه راشي او ورځ ولاړه شي، روژه دار افطار کړی دی.",
     "source_book": "Bukhari",
@@ -907,15 +907,15 @@
     },
     "daily_index": 47,
     "authenticity_grade": "sahih",
-    "english_translation": "When night comes from this side and day goes from that side, the fasting person has broken the fast.",
-    "turkish_translation": "Gece bu taraftan gelip, gündüz de o taraftan geçtiğinde oruçlunun orucu bozulur."
+    "english_translation": "When night falls from this side and the day vanishes from this side and the sun sets, then the fasting person should break his fast.",
+    "turkish_translation": "Gece karanlığı bu taraftan bastırıp, gündüz şu taraftan geri çekilir ve güneş batarsa artık oruçlunun iftar etme vakti gelmiştir."
   },
   {
     "id": 48,
     "arabic_text": "كَانَ رَسُولُ اللَّهِ أَجْوَدَ النَّاسِ، وَكَانَ أَجْوَدَ مَا يَكُونُ فِي رَمَضَانَ",
-    "dari_translation": "پیامبر سخاوتمندترین مردم بود و در رمضان سخاوتمندتر می‌شد.",
+    "dari_translation": "رسول الله صلی الله علیه وسلم سخاوتمندترین مردم بود، و در رمضان هنگامی که جبریل علیه السلام.",
     "arabic_translation": "وكان النبي صلى الله عليه وسلم أجود الناس، وكان أجود ما يكون في رمضان.",
-    "pashto_translation": "رسول الله تر ټولو سخي و، او په رمضان کې لا ډېر سخي کېده.",
+    "pashto_translation": "رسول الله صلی الله علیه وسلم تر ټولو زیات سخي و او د نورو وختونو په پرتله به یې د رمضان په میاشت کې سخا ډېره زیاته وه کله به چې جبرایل علیه السلام ورسره مخ کېده.",
     "source_book": "Bukhari",
     "source_number": "1902",
     "is_muttafaq": true,
@@ -929,14 +929,14 @@
     "daily_index": 48,
     "authenticity_grade": "sahih",
     "english_translation": "The Prophet was the most generous of people, and he was even more generous in Ramadan.",
-    "turkish_translation": "Peygamber insanların en cömertiydi ve Ramazan ayında daha da cömert davranırdı."
+    "turkish_translation": "Hayır yapma konusunda Resul-i Ekrem Sallallahu Aleyhi ve Sellem insanların en cömerti idi."
   },
   {
     "id": 49,
     "arabic_text": "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً",
-    "dari_translation": "سحری بخورید؛ زیرا در سحری برکت است.",
+    "dari_translation": "سحری بخورید که در سحری خوردن برکت است.",
     "arabic_translation": "تناول الفطور؛ لأنه مبارك عند الفجر.",
-    "pashto_translation": "پېشلمی کوئ، ځکه په پېشلمي کې برکت دی.",
+    "pashto_translation": "پېشلمی وکړئ، ځکه چې په پېشلمي کې برکت وي.",
     "source_book": "Bukhari",
     "source_number": "1923",
     "is_muttafaq": true,
@@ -949,8 +949,8 @@
     ],
     "daily_index": 49,
     "authenticity_grade": "sahih",
-    "english_translation": "Eat the pre-dawn meal, for there is blessing in the suhoor.",
-    "turkish_translation": "Sabah yemeğini yiyin, çünkü sahurda bereket vardır."
+    "english_translation": "Take Suhur as there is a blessing in it.",
+    "turkish_translation": "Sahur yapınl Çünkü sahurda bereket vardır."
   },
   {
     "id": 50,
@@ -976,12 +976,12 @@
     "daily_index": 50,
     "authenticity_grade": "sahih",
     "english_translation": "I hope that fasting on the Day of Arafah will cleanse the sins of the past year and the coming year.",
-    "turkish_translation": "Arefe günü tutulan orucun geçmiş yılın ve gelecek yılın günahlarından temizlenmesini dilerim."
+    "turkish_translation": "Ömer (tekrar): — İki gün oruç tutup bir gün tutmayanın hâli ne olacak?"
   },
   {
     "id": 51,
     "arabic_text": "مَا مِنْ يَوْمٍ أَكْثَرَ مِنْ أَنْ يُعْتِقَ اللَّهُ فِيهِ عَبْدًا مِنَ النَّارِ مِنْ يَوْمِ عَرَفَةَ",
-    "dari_translation": "هیچ روزی نیست که خدا در آن بیش از روز عرفه بندگان را از آتش آزاد کند.",
+    "dari_translation": "الله متعال در هیچ روزی به اندازه ی روز عرفه، بندگان را از آتش جهنم آزاد نمی کند.",
     "arabic_translation": "ما من يوم أكثر من أن يعتق الله فيه عبدا من النار من يوم عرفة.",
     "pashto_translation": "د عرفې له ورځې زياته بله ورځ نشته چې الله پکې بندګان له اوره آزاد کړي.",
     "source_book": "Muslim",
@@ -1001,8 +1001,8 @@
     },
     "daily_index": 51,
     "authenticity_grade": "sahih",
-    "english_translation": "There is no day on which Allah frees more servants from the Fire than the Day of Arafah.",
-    "turkish_translation": "Allah'ın, Arefe gününden daha fazla kulunu ateşten azad ettiği bir gün yoktur."
+    "english_translation": "There is no day when God sets free more servants from Hell than the Day of 'Arafa.",
+    "turkish_translation": "Arafe gününden başka Allah'ın bir kulu cehennemden en fazla âzâd ettiği hiç bir gün yoktur."
   },
   {
     "id": 52,
@@ -1033,7 +1033,7 @@
   {
     "id": 53,
     "arabic_text": "أَحَبُّ الْكَلَامِ إِلَى اللَّهِ أَرْبَعٌ: سُبْحَانَ اللَّهِ، وَالْحَمْدُ لِلَّهِ، وَلَا إِلَهَ إِلَّا اللَّهُ، وَاللَّهُ أَكْبَرُ",
-    "dari_translation": "محبوب‌ترین سخن‌ها نزد خدا چهار کلمه است: سبحان‌الله، الحمدلله، لا اله الا الله و الله‌اکبر.",
+    "dari_translation": "محبوب‌ترین کلمه‌ها نزد الله متعال چهار است: سبحان الله (پاکیست الله را)، الحمد لله (ثنا و صفت الله را است)، لا اله الا الله (نیست معبودی بر حق جز الله)، و الله اکبر (الله بزرگ است)، فرقی نمی‌کند که از هر کدام آن شروع کرده اید.",
     "arabic_translation": "أشهر الكلام عند الله أربع كلمات: سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر.",
     "pashto_translation": "الله ته تر ټولو خوښې خبرې څلور دي: سبحان الله، الحمدلله، لا اله الا الله او الله اکبر.",
     "source_book": "Muslim",
@@ -1061,7 +1061,7 @@
     "arabic_text": "أَحَبُّ الْبِلَادِ إِلَى اللَّهِ مَسَاجِدُهَا",
     "dari_translation": "محبوب‌ترین جای شهر نزد خدا مسجدهای آن است.",
     "arabic_translation": "أشهر مكان في المدينة عند الله هو مساجدها.",
-    "pashto_translation": "الله ته د ښار تر ټولو خوښ ځايونه جوماتونه دي.",
+    "pashto_translation": "الله تعالی ته تر ټولو خوښ ځایونه جوماتونه او تر ټولو ناخوښ ځایونه بازارونه دي.",
     "source_book": "Muslim",
     "source_number": "671",
     "is_muttafaq": false,
@@ -1072,15 +1072,15 @@
     "weekday_only": "friday",
     "daily_index": 54,
     "authenticity_grade": "sahih",
-    "english_translation": "The places in a town most beloved to Allah are its mosques.",
-    "turkish_translation": "Bir beldenin Allah katında en sevilen yerleri mescidlerdir."
+    "english_translation": "The parts of land dearest to Allah are its mosques, and the parts most hateful to Allah are markets.",
+    "turkish_translation": "Âllâh'a en makbul beldeler, o beldelerin mescidleridir."
   },
   {
     "id": 55,
     "arabic_text": "مَنْ دَلَّ عَلَى خَيْرٍ فَلَهُ مِثْلُ أَجْرِ فَاعِلِهِ",
-    "dari_translation": "هرکس به کار خیر راهنمایی کند، پاداشی مانند انجام‌دهنده دارد.",
+    "dari_translation": "هر کسی (مردم را به کار) خیر راهنمایی کرد، پاداشی مانند پاداش انجام دهنده ی آن را دارد.",
     "arabic_translation": "ومن دل على خير فله مثل أجر فاعله.",
-    "pashto_translation": "څوک چې خير ته لارښوونه وکړي، د کوونکي په شان اجر لري.",
+    "pashto_translation": "چا چې د یو ښه کار لارښوونه وکړه، هغه لره د هغه کار د تر سره کوونکي په څېر اجر دی.",
     "source_book": "Muslim",
     "source_number": "1893",
     "is_muttafaq": false,
@@ -1098,15 +1098,15 @@
     },
     "daily_index": 55,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever guides to a good deed has a reward like the one who does it.",
-    "turkish_translation": "Kim bir iyiliğe hidayet ederse, onu yapan gibi sevap vardır."
+    "english_translation": "My riding beast has been killed.",
+    "turkish_translation": "Bunun üzerine bir adam: — Yâ Resûlâllah!"
   },
   {
     "id": 56,
     "arabic_text": "إِنَّ اللهَ رَفِيقٌ يُحِبُّ الرِّفْقَ",
-    "dari_translation": "خداوند مهربان است و نرمی را دوست دارد.",
+    "dari_translation": "الله مهربان و آسان گیر است و نرمی و ملایمت را دوست دارد.",
     "arabic_translation": "إن الله رفيق يحب الرفق.",
-    "pashto_translation": "الله نرم دی او نرمي خوښوي.",
+    "pashto_translation": "اې عائشې! الله تعالی مهربان دی او نرمي خوښوي، او پر نرمۍ هغه څه ورکوي چې پر سختۍ او نورو شیانو یې نه ورکوي.",
     "source_book": "Bukhari",
     "source_number": "6927",
     "is_muttafaq": true,
@@ -1122,9 +1122,9 @@
   {
     "id": 57,
     "arabic_text": "لَا يَدْخُلُ الْجَنَّةَ قَاطِعٌ",
-    "dari_translation": "قطع‌کننده رحم وارد بهشت نمی‌شود.",
+    "dari_translation": "قطع کنندۀ پیوند خویشاوندی وارد بهشت نمی شود.",
     "arabic_translation": "لا يدخل الجنة من يقطع رحم.",
-    "pashto_translation": "د خپلوانو پرېکوونکی جنت ته نه ننوځي.",
+    "pashto_translation": "خپلوي پرې کوونکی به جنت ته داخل نه شي.",
     "source_book": "Bukhari",
     "source_number": "5984",
     "is_muttafaq": true,
@@ -1134,15 +1134,15 @@
     ],
     "daily_index": 57,
     "authenticity_grade": "sahih",
-    "english_translation": "The one who severs family ties will not enter Paradise.",
-    "turkish_translation": "Aile bağlarını kesen Cennete giremez."
+    "english_translation": "The person who severs the bond of kinship will not enter Paradise.",
+    "turkish_translation": "Cennete akrabalık bağını koparan hiçbir kimse giremez."
   },
   {
     "id": 58,
     "arabic_text": "مَنْ أَحَبَّ أَنْ يُبْسَطَ لَهُ فِي رِزْقِهِ وَيُنْسَأَ لَهُ فِي أَثَرِهِ فَلْيَصِلْ رَحِمَهُ",
-    "dari_translation": "هرکه دوست دارد روزی‌اش فراخ و عمرش بابرکت شود، پیوند خویشاوندی را نگه دارد.",
+    "dari_translation": "هر کی دوست دارد رزق وی افزایش یابد، و اجل وی به تأخیر بیافتد، پس صله ی رحمی کند.",
     "arabic_translation": "ومن أراد أن يطول في عمره، ويطيب في عمره، فليصل صلة الرحم.",
-    "pashto_translation": "څوک چې د رزق پراخي او د عمر برکت غواړي، خپلوي دې وپالي.",
+    "pashto_translation": "څوک چې دا غواړي چې روزي يې پراخه شي او عمر يې اوږد شي، نو خپلوي دې وپالي.",
     "source_book": "Bukhari",
     "source_number": "5986",
     "is_muttafaq": true,
@@ -1152,13 +1152,13 @@
     ],
     "daily_index": 58,
     "authenticity_grade": "sahih",
-    "english_translation": "Whoever wants their provision expanded and their life blessed should keep family ties.",
-    "turkish_translation": "Kim rızkının genişletilmesini ve ömrünün bereketli olmasını istiyorsa aile bağlarını korumalıdır."
+    "english_translation": "Whoever loves that he be granted more wealth and that his lease of life be prolonged then he should keep good relations with his Kith and kin.",
+    "turkish_translation": "Kim rızkının lehine genişletilmesini, ecelinin de lehine geciktirilmesini seviyor ise akrabalık bağını gözetsin."
   },
   {
     "id": 59,
     "arabic_text": "أَنَا عِنْدَ ظَنِّ عَبْدِي بِي",
-    "dari_translation": "خداوند می‌فرماید: من نزد گمان بنده‌ام نسبت به من هستم.",
+    "dari_translation": "من با بنده ام مطابق گمانی که نسبت به من دارد، رفتار می کنم و هرجا مرا یاد کند.",
     "arabic_translation": "فيقول الله: أنا مع ظن عبدي بي.",
     "pashto_translation": "الله تعالی فرمايي: زه د خپل بنده له ګمان سره سم يم.",
     "source_book": "Bukhari",
@@ -1170,15 +1170,15 @@
     ],
     "daily_index": 59,
     "authenticity_grade": "sahih",
-    "english_translation": "Allah says: I am as My servant thinks of Me.",
-    "turkish_translation": "Allah şöyle buyuruyor: Ben kulumun beni zannettiği gibiyim."
+    "english_translation": "Allah says: 'I am just as My slave thinks I am, (i.e.",
+    "turkish_translation": "Yüce Allah şöyle buyuruyor: Ben kulumun beni zannı üzereyim."
   },
   {
     "id": 60,
     "arabic_text": "كَلِمَتَانِ خَفِيفَتَانِ عَلَى اللِّسَانِ، ثَقِيلَتَانِ فِي الْمِيزَانِ، حَبِيبَتَانِ إِلَى الرَّحْمَنِ",
-    "dari_translation": "دو کلمه بر زبان سبک، در ترازوی عمل سنگین، و نزد رحمان محبوب‌اند.",
+    "dari_translation": "دو کلمه وجود دارد که بر زبان آسان گفته می شود، و در ترازوی اعمال سنگین هستند، و در نزد الله رحمان محبوبیت دارد.",
     "arabic_translation": "كلمتان في اللغة الخفيفة، في ميزان الفعل الثقيل، ومحبوبتان عند الرحمن.",
-    "pashto_translation": "دوې کلمې پر ژبه سپکې، په ميزان کې درنې او رحمن ته محبوبې دي.",
+    "pashto_translation": "دوه کلمې دي چې په ژبه سپکې، په تله کې درنې او رحمان - ذات - ته محبوبې دي.",
     "source_book": "Bukhari",
     "source_number": "6406",
     "is_muttafaq": true,
@@ -1196,8 +1196,8 @@
     },
     "daily_index": 60,
     "authenticity_grade": "sahih",
-    "english_translation": "Two words are light on the tongue, heavy on the scale, and beloved to the Most Merciful.",
-    "turkish_translation": "İki kelime dile hafif, mizanda ağır, Rahman katında sevgilidir."
+    "english_translation": "There are two expressions which are very easy for the tongue to say, but they are very heavy in the balance and are very dear to The Beneficent (Allah), and they are, 'Subhan Allah Al- `Azim and 'Subhan Allah wa bihamdihi.",
+    "turkish_translation": "Söylenmesi kolay olan ama mizanda ağırlığı fazla olacak iki söz şöyledir: Azim olan Allah'ı tesbih ederim."
   },
   {
     "id": 61,
@@ -1215,8 +1215,8 @@
       "good_deeds"
     ],
     "daily_index": 61,
-    "english_translation": "Which deed is most beloved to Allah? He said: Prayer on time. Then what? He said: Kindness to parents.",
-    "turkish_translation": "Hangi amel Allah katında en sevimlidir? Şöyle buyurdu: Namazı vaktinde kılın. Sonra ne olacak? Dedi ki: Anne babaya iyilik."
+    "english_translation": "Which deed is the dearest to Allah?",
+    "turkish_translation": "Abdullah'tan şöyle nakledilmiştir: Allah Resûlü Sallallahu Aleyhi ve Sellem'e, amellerin hangisinin Allah'a daha sevimli olduğunu sordum."
   },
   {
     "id": 62,
@@ -1272,13 +1272,13 @@
       "community"
     ],
     "daily_index": 64,
-    "english_translation": "Whoever believes in Allah and the Last Day should honour their neighbour.",
+    "english_translation": "He who believes in Allah and the Last Day should either utter good words or better keep silence.",
     "turkish_translation": "Kim Allah'a ve ahiret gününe inanıyorsa komşusuna ikram etsin."
   },
   {
     "id": 65,
     "arabic_text": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ ضَيْفَهُ",
-    "dari_translation": "هر که به خدا و روز آخرت ایمان دارد، مهمانش را گرامی بدارد.",
+    "dari_translation": "هرکس به الله و روز قیامت ایمان دارد.",
     "arabic_translation": "من كان يؤمن بالله واليوم الآخر فليكرم ضيفه.",
     "pashto_translation": "څوک چې پر الله او آخرت ايمان لري، خپل مېلمه دې وګرځوي.",
     "source_book": "Bukhari",
@@ -1291,8 +1291,8 @@
       "manners"
     ],
     "daily_index": 65,
-    "english_translation": "Whoever believes in Allah and the Last Day should honour their guest.",
-    "turkish_translation": "Allah'a ve ahiret gününe inanan, misafirine ikramda bulunsun."
+    "english_translation": "Whoever believes in Allah and the Last Day, should serve his guest generously; and whoever believes in Allah and the Last Day, should unite the bond of kinship (i.e.",
+    "turkish_translation": "Allah'a ve ahiret gününe iman eden bir kimse, misafirine ikram etsin."
   },
   {
     "id": 66,
@@ -1310,13 +1310,13 @@
       "mercy"
     ],
     "daily_index": 66,
-    "english_translation": "I and the guardian of an orphan will be like this in Paradise (and he held two fingers together).",
-    "turkish_translation": "Ben ve bir yetimin velisi cennette böyle olacağız (ve iki parmağını bir arada tutuyordu)."
+    "english_translation": "I and the person who looks after an orphan and provides for him, will be in Paradise like this.",
+    "turkish_translation": "Ben ve yetime bakan kişi cennette böyleyiz, buyurdu ve bu arada şehadet parmağı ile orta parmağını işaret etti."
   },
   {
     "id": 67,
     "arabic_text": "مَطْلُ الْغَنِيِّ ظُلْمٌ",
-    "dari_translation": "تأخیر پرداخت بدهی از سوی توانگر، ظلم است.",
+    "dari_translation": "تأخیر نمودن ثروتمند برای ادای بدهی اش، ظلم است؛ و چون یکی از شما برای دریافت طلبش به شخص توانگری حواله داده شد، بپذیرد و به او مراجعه کند.",
     "arabic_translation": "إن تأخير سداد الديون من جانب الأثرياء هو ظلم.",
     "pashto_translation": "د شتمن سړي پور ورکول ځنډول ظلم دی.",
     "source_book": "Bukhari",
@@ -1329,8 +1329,8 @@
       "social_justice"
     ],
     "daily_index": 67,
-    "english_translation": "Delaying payment by one who is able is oppression.",
-    "turkish_translation": "Gücü yeten kimsenin ödemeyi geciktirmesi zulümdür."
+    "english_translation": "When a rich man takes too long to repay a debt, this is wrongdoing, and if the debt is transferred to a rich man, you should accept if.",
+    "turkish_translation": "Borcunu ödemeye muktedir olanın özürsüz olarak borcunu ödemeyi geciktirmesi bir zulümdür."
   },
   {
     "id": 68,
@@ -1354,7 +1354,7 @@
   {
     "id": 69,
     "arabic_text": "إِنَّ الظُّلْمَ ظُلُمَاتٌ يَوْمَ الْقِيَامَةِ",
-    "dari_translation": "بی‌عدالتی در روز قیامت تاریکی‌هاست.",
+    "dari_translation": "ظلم و ستم، تاریکی های فراوانی را در روز قیامت به دنبال خواهد داشت.",
     "arabic_translation": "والظلم يوم القيامة ظلمات.",
     "pashto_translation": "ظلم د قیامت په ورځ تیارۍ دي.",
     "source_book": "Bukhari",
@@ -1367,15 +1367,15 @@
       "end_times"
     ],
     "daily_index": 69,
-    "english_translation": "Injustice will be darknesses on the Day of Resurrection.",
-    "turkish_translation": "Kıyamet gününde haksızlık karanlık olacaktır."
+    "english_translation": "Oppression is the darkness on the Day of Resurrection.",
+    "turkish_translation": "Şüphesiz ki, zulüm kıyamet gününde karanlıklar (olacak) dir."
   },
   {
     "id": 70,
     "arabic_text": "الدُّنْيَا سِجْنُ الْمُؤْمِنِ وَجَنَّةُ الْكَافِرِ",
     "dari_translation": "دنیا برای مؤمن زندان و برای کافر بهشت است.",
     "arabic_translation": "الدنيا سجن المؤمن وجنة الكافر.",
-    "pashto_translation": "نړۍ د مومن لپاره زندان او د کافر لپاره جنت ده.",
+    "pashto_translation": "دنیا د مؤمن لپاره زندان او د کافر لپاره جنت دی.",
     "source_book": "Muslim",
     "source_number": "2956",
     "is_muttafaq": false,
@@ -1386,8 +1386,8 @@
       "mindset"
     ],
     "daily_index": 70,
-    "english_translation": "The world is a prison for the believer and a paradise for the disbeliever.",
-    "turkish_translation": "Dünya mümin için zindan, kafir için ise cennettir."
+    "english_translation": "The world is a prison-house for a believer and Paradise for a non-believer.",
+    "turkish_translation": "Dünya mü'minîn zindanı, kâfir'în cennetidir."
   },
   {
     "id": 71,
@@ -1405,8 +1405,8 @@
       "good_deeds"
     ],
     "daily_index": 71,
-    "english_translation": "Whoever builds a mosque for Allah, Allah builds a house for them in Paradise.",
-    "turkish_translation": "Kim Allah için bir mescid inşa ederse, Allah da ona cennette bir ev bina eder."
+    "english_translation": "You have talked too much.",
+    "turkish_translation": "Ubeydullah el-Havlânî, Mescid-i Nebevî'yi yeniden inşa ettiği zaman, İnsanların kendisi hakkında ileri geri konuşmaya başladığı bir sırada Hz."
   },
   {
     "id": 72,
@@ -1424,8 +1424,8 @@
       "faith"
     ],
     "daily_index": 72,
-    "english_translation": "You will not enter Paradise until you believe, and you will not believe until you love one another.",
-    "turkish_translation": "İman etmedikçe cennete giremezsiniz ve birbirinizi sevmedikçe de iman etmemiş olursunuz."
+    "english_translation": "By him in whose hand my soul is.",
+    "turkish_translation": "Varlığım elinde olan zat'a yemin olsun ki siz iman etmedikçe cennet'e giremezsiniz."
   },
   {
     "id": 73,
@@ -1462,7 +1462,7 @@
       "community"
     ],
     "daily_index": 74,
-    "english_translation": "Whoever does not show mercy to our young and honour to our elders is not one of us.",
+    "english_translation": "An older man came to talk to the Prophet, and the people were hesitant to make room for him.",
     "turkish_translation": "Küçüklerimize merhamet, büyüklerimize saygı göstermeyen bizden değildir."
   },
   {
@@ -1481,15 +1481,15 @@
       "community"
     ],
     "daily_index": 75,
-    "english_translation": "A Muslim is the brother of a Muslim; he does not wrong him or hand him over to an enemy.",
-    "turkish_translation": "Müslüman, Müslümanın kardeşidir; ona haksızlık etmez, onu düşmana teslim etmez."
+    "english_translation": "A Muslim is a brother of another Muslim, so he should not oppress him, nor should he hand him over to an oppressor.",
+    "turkish_translation": "Müslüman Müslüman'ın kardeşidir; ona haksızlık etmez ve onu ölüme terketmez."
   },
   {
     "id": 76,
     "arabic_text": "مَنْ نَفَّسَ عَنْ مُؤْمِنٍ كُرْبَةً مِنْ كُرَبِ الدُّنْيَا نَفَّسَ اللَّهُ عَنْهُ كُرْبَةً مِنْ كُرَبِ يَوْمِ الْقِيَامَةِ",
-    "dari_translation": "هر که غم مؤمنی را از غم‌های دنیا برطرف کند، خدا غم او را در روز قیامت برطرف می‌کند.",
+    "dari_translation": "هرکس یکی از مشکل‌های مومن را در دنیا رفع کند الله متعال در روز قیامت سختی و مشکل‌های او را رفع می‌کند.",
     "arabic_translation": "ومن نفس مؤمن كربة من كرب الدنيا نفس الله حزنه يوم القيامة.",
-    "pashto_translation": "څوک چې د مومن د نړۍ غم لرې کړي، الله به د هغه د قیامت غم لرې کړي.",
+    "pashto_translation": "څوک چې له یو مومن څخه یوه دنیوي ستونزه لرې کړي، الله جل جلاله به ترې د قیامت له ستونزو او سختیو څخه یوه لرې کړي.",
     "source_book": "Muslim",
     "source_number": "2699",
     "is_muttafaq": false,
@@ -1500,8 +1500,8 @@
       "community"
     ],
     "daily_index": 76,
-    "english_translation": "Whoever relieves a believer of a worldly distress, Allah will relieve them of a distress on the Day of Resurrection.",
-    "turkish_translation": "Kim bir mü'minin dünyevi bir sıkıntısını giderirse, Allah da onun kıyamet gününde bir sıkıntısını giderir."
+    "english_translation": "Whoever relieves a Muslim of some worldly distress, Allah will relieve him of some of the distress of the Day of Resurrection, and whoever conceals (the faults of) a Muslim, Allah will conceal him (his faults) in this world and the Day of Resurrection.",
+    "turkish_translation": "Kim bir müslümandan dünya kederlerinden bir keder giderirse Allah ondan ahiret günü kederlerinden bir keder giderecektir."
   },
   {
     "id": 77,
@@ -1519,8 +1519,8 @@
       "generosity"
     ],
     "daily_index": 77,
-    "english_translation": "Guard yourselves from the Fire, even with half a date given in charity.",
-    "turkish_translation": "Sadaka olarak verilen yarım hurma ile de olsa kendinizi ateşten koruyun."
+    "english_translation": "As regards stealing and robberies, there will shortly come a time when a caravan will go to Mecca (from Medina) without any guard.",
+    "turkish_translation": "Yol kesicilik meselesine gelince; az bir zaman sonra ticaret kervanları, yanlarında her hangi bir yol muhafızı (dahî) bulundurmadan Mekke'ye kadar gelecektir."
   },
   {
     "id": 78,
@@ -1538,8 +1538,8 @@
       "generosity"
     ],
     "daily_index": 78,
-    "english_translation": "The food of one is enough for two, and the food of two is enough for four.",
-    "turkish_translation": "Bir kişinin yiyeceği iki kişiye, iki kişinin yiyeceği ise dört kişiye yeter."
+    "english_translation": "The food of one person is sufficient for two, the food of two is sufficient for four, and the food for four is sufficient for eight.",
+    "turkish_translation": "demiştir: Bir kişi'nin (doyurucu) yemeği iki kişiye yeter ve iki kişinin (doyurucu) yemeği dört kişiye yeter."
   },
   {
     "id": 79,
@@ -1558,7 +1558,7 @@
     ],
     "daily_index": 79,
     "english_translation": "Deeds are judged by their endings.",
-    "turkish_translation": "Ameller, sonlarına göre değerlendirilir."
+    "turkish_translation": "Bu hadislerin şerhine Megazi Bölümünde Hayber Gazvesi başlığı altında yer verilmiştir."
   },
   {
     "id": 80,
@@ -1576,13 +1576,13 @@
       "guidance"
     ],
     "daily_index": 80,
-    "english_translation": "Whoever travels a path seeking knowledge, Allah makes a path to Paradise easy for them.",
-    "turkish_translation": "Kim ilim öğrenmek için bir yola girerse, Allah ona cennetin yolunu kolaylaştırır."
+    "english_translation": "Whoever takes a path upon which to obtain knowledge, Allah makes the path to Paradise easy for him.",
+    "turkish_translation": "Her kim din ilmini tahsil için yola koyulur ve her sebebe başvurursa Allah Cennete varan yolu onun için kolaylaştırır."
   },
   {
     "id": 81,
     "arabic_text": "مَنْ كَذَبَ عَلَيَّ مُتَعَمِّدًا فَلْيَتَبَوَّأْ مَقْعَدَهُ مِنَ النَّارِ",
-    "dari_translation": "هر که عمداً بر من دروغ ببندد، جایش را در آتش آماده کند.",
+    "dari_translation": "کسی که به عمد بر من دروغ بندد، جایگاه خود را در آتش مهیا سازد.",
     "arabic_translation": "ومن كذب علي متعمدا فليتبوأ مقعده من النار.",
     "pashto_translation": "څوک چې په ما باندې په قصد دروغ وويني، خپل ځای دې په اور کې تیار کړي.",
     "source_book": "Bukhari",
@@ -1595,15 +1595,15 @@
       "prophet"
     ],
     "daily_index": 81,
-    "english_translation": "Whoever deliberately lies about me, let them take their seat in the Fire.",
-    "turkish_translation": "Kim benim hakkımda kasten yalan söylerse, artık ateşteki yerini hazırlasın."
+    "english_translation": "Az-Zubair replied, 'I was always with him (the Prophet) and I heard him saying.",
+    "turkish_translation": "Falan ve falan kimselerin hadis aktardığı gibi senin Resûlullah'tan hadîs aktardığını (niçin) duymuyorum?"
   },
   {
     "id": 82,
     "arabic_text": "لاَ يَرْحَمُ اللَّهُ مَنْ لاَ يَرْحَمُ النَّاسَ",
-    "dari_translation": "خدا به کسی رحم نمی‌کند که به مردم رحم نکند.",
+    "dari_translation": "کسی که بالای مردم رحم نمی کند، الله متعال به او رحم نخواهد کرد.",
     "arabic_translation": "لا يرحم الله من لا يرحم الناس.",
-    "pashto_translation": "الله هغه ته رحم نه کوي چې خلکو ته رحم نه کوي.",
+    "pashto_translation": "څوک چې پر خلکو رحم نه کوي، الله تعالی به پر هغه رحم ونه کړي.",
     "source_book": "Bukhari",
     "source_number": "5997",
     "is_muttafaq": false,
@@ -1614,15 +1614,15 @@
       "character"
     ],
     "daily_index": 82,
-    "english_translation": "Allah does not show mercy to those who do not show mercy to people.",
-    "turkish_translation": "İnsanlara merhamet etmeyene Allah da merhamet etmez."
+    "english_translation": "I have ten children and I have never kissed anyone of them.",
+    "turkish_translation": "Resulullah Sallallahu Aleyhi ve Sellem yanında Temimli el-Akra İbn Habis oturuyor iken Ali'nin oğlu Hasen'i öptü."
   },
   {
     "id": 83,
     "arabic_text": "الْبِرُّ حُسْنُ الْخُلُقِ",
-    "dari_translation": "نیکی، خوش‌اخلاقی است.",
+    "dari_translation": "نیکی، [همان] خوش‌ اخلاقی است، و گناه آن چیزی است که در سینه‌ات تردید و اضطراب آفریند، و دوست نداری مردم از آن آگاه شوند.",
     "arabic_translation": "الصلاح هو حسن الخلق .",
-    "pashto_translation": "نېکي ښه اخلاق دي.",
+    "pashto_translation": "نیکي ښه اخلاق دي، او ګناه هغه څه ده چې په زړه کې دې شک او تردد وي او نه غواړې چې خلک پرې خبر شي.",
     "source_book": "Muslim",
     "source_number": "2553",
     "is_muttafaq": false,
@@ -1633,15 +1633,15 @@
       "good_deeds"
     ],
     "daily_index": 83,
-    "english_translation": "Righteousness is good character.",
-    "turkish_translation": "Doğruluk iyi karakterdir."
+    "english_translation": "Virtue is a kind disposition and vice is what rankles in your heart and that you disapprove that people should come to know of it.",
+    "turkish_translation": "Birr, ahlakın güzelliğidir."
   },
   {
     "id": 84,
     "arabic_text": "إِنَّ اللَّهَ طَيِّبٌ لاَ يَقْبَلُ إِلاَّ طَيِّبًا",
-    "dari_translation": "خداوند پاک است و جز پاکی نمی‌پذیرد.",
+    "dari_translation": "ای مردم، الله پاک است و فقط پاکیزه را می پذیرد، الله به مؤمنان همان دستوری را داده که به پیامبران داده است.",
     "arabic_translation": "إن الله طاهر لا يقبل إلا طهورا.",
-    "pashto_translation": "الله پاک دی او يوازې پاکي مني.",
+    "pashto_translation": "اې خلکو! الله پاک دی او له پاکۍ پرته بل څه نه قبلوي، او الله تعالی مومنانو ته د هغه څه امر کړی چې رسولانو ته یې امر کړی و.",
     "source_book": "Muslim",
     "source_number": "1015",
     "is_muttafaq": false,
@@ -1652,7 +1652,7 @@
       "charity"
     ],
     "daily_index": 84,
-    "english_translation": "Allah is Pure and accepts only what is pure.",
+    "english_translation": "O people, Allah is Good and He therefore, accepts only that which is good.",
     "turkish_translation": "Allah temizdir ve ancak temiz olanı kabul eder."
   },
   {
@@ -1671,8 +1671,8 @@
       "service"
     ],
     "daily_index": 85,
-    "english_translation": "Whoever has land should cultivate it or give it to their brother to cultivate.",
-    "turkish_translation": "Kimin toprağı varsa onu işlemeli veya işlemesi için kardeşine vermelidir."
+    "english_translation": "He who has land should cultivate it or lend it to his brother, but if he refuses, he should retain his land.",
+    "turkish_translation": "Kimin yeri varsa onu eksin yahud dîn kardeşine bahşetsin; bunu yapmazsa yerine sahib olsun!"
   },
   {
     "id": 86,
@@ -1690,15 +1690,15 @@
       "strength"
     ],
     "daily_index": 86,
-    "english_translation": "A believer to another believer is like a building; each part strengthens the other.",
-    "turkish_translation": "Bir mümin, diğer bir mümine bina gibidir; her parça diğerini güçlendirir."
+    "english_translation": "A faithful believer to a faithful believer is like the bricks of a wall, enforcing each other.",
+    "turkish_translation": "Mu'min, mu'min için, parçaları birbirini sıkı sıkıya tutan bir bina gibidir."
   },
   {
     "id": 87,
     "arabic_text": "مَنْ غَشَّ فَلَيْسَ مِنَّا",
-    "dari_translation": "هر که تقلب کند، از ما نیست.",
+    "dari_translation": "کسی که علیه ما سلاح بردارد از ما نیست.",
     "arabic_translation": "ومن غش فليس منا.",
-    "pashto_translation": "څوک چې درغلي وکړي، زموږ څخه نه دی.",
+    "pashto_translation": "څوک چې زموږ پر وړاندې وسله پورته کړي، له موږ څخه نه دی.",
     "source_book": "Muslim",
     "source_number": "101",
     "is_muttafaq": false,
@@ -1709,7 +1709,7 @@
       "ethics"
     ],
     "daily_index": 87,
-    "english_translation": "Whoever cheats is not one of us.",
+    "english_translation": "He who took up arms against us is not of us and he who acted dishonestly towards us is not of us.",
     "turkish_translation": "Hile yapan bizden değildir."
   },
   {
@@ -1748,7 +1748,7 @@
     ],
     "daily_index": 89,
     "english_translation": "I and the Hour have been sent like these two (and he held two fingers close together).",
-    "turkish_translation": "Ben ve kıyamet bu ikisi gibi gönderildik (ve iki parmağını birbirine yaklaştırdı)."
+    "turkish_translation": "Kıyamet günü ile ben şu ikisi gibi gönderildim."
   },
   {
     "id": 90,
@@ -1862,7 +1862,7 @@
     ],
     "daily_index": 95,
     "english_translation": "A time is near when the best wealth of a Muslim will be sheep with which they follow distant rainy mountains.",
-    "turkish_translation": "Bir Müslümanın en büyük servetinin uzak yağmurlu dağları takip ettiği koyunları olacağı günler yakındır."
+    "turkish_translation": "Yakın bir gelecekte Müslüman'nın en hayırlı malı, dağ başında ve yağmur suyu (birikintileri) başında güttüğü davarlar olacaktır."
   },
   {
     "id": 96,
@@ -1900,7 +1900,7 @@
     ],
     "daily_index": 97,
     "english_translation": "A group of my ummah will always remain upon the truth; those who abandon them will not harm them.",
-    "turkish_translation": "Ümmetimden bir grup daima hak üzeredir; onları terk edenler onlara zarar veremezler."
+    "turkish_translation": "Ümmetimden bir taife hakka yardımcı olmakta devam edecektir."
   },
   {
     "id": 98,
@@ -1918,7 +1918,7 @@
       "faith"
     ],
     "daily_index": 98,
-    "english_translation": "At the start of every century Allah sends for this ummah someone who renews its religion.",
+    "english_translation": "Allah will raise for this community at the end of every hundred years the one who will renovate its religion for it.",
     "turkish_translation": "Allah her asrın başında bu ümmete dinini yenileyecek birini gönderir."
   },
   {
@@ -2046,9 +2046,9 @@
   {
     "id": 105,
     "arabic_text": "زَكَاةُ الْفِطْرِ صَاعٌ مِنْ تَمْرٍ أَوْ صَاعٌ مِنْ شَعِيرٍ عَنْ كُلِّ حُرٍّ أَوْ عَبْدٍ ذَكَرٍ أَوْ أُنْثَى مِنَ الْمُسْلِمِينَ",
-    "dari_translation": "زکات فطر برای هر مسلمان آزاد یا برده، مرد یا زن، یک صاع خرما یا یک صاع جو است.",
+    "dari_translation": "رسول الله صلی الله علیه وسلم زکات فطر را بر مرد و زن، آزاد و برده، کودک و بزرگ مسلمان از هر نفر یک صاع خرما یا جو واجب نمودند، و امر نمودند که باید قبل از رفتن مردم برای ادای نماز عید پرداخته شود.",
     "arabic_translation": "زكاة الفطر صاعا من تمر، أو صاعا من شعير، عن كل مسلم حر أو عبد، ذكر أو أنثى.",
-    "pashto_translation": "د فطر زکات د هر مسلمان لپاره، ازاد یا غلام، نارینه يا ښځه، يو صاع خرما يا يو صاع اوربشې ده.",
+    "pashto_translation": "رسول الله صلی الله علیه وسلم د مسلمانانو په غلام او آزاد، نارینه او ښځینه، کوچني او لوی باندې یو صاع خرما، یا یو صاع وربشې د فطر صدقه فرض کړې ده، او امر یې کړی چې عیدګاه ته له وتلو مخکې دې ادا کړی شي.",
     "source_book": "Bukhari",
     "source_number": "1503",
     "is_muttafaq": true,
@@ -2100,9 +2100,9 @@
   {
     "id": 107,
     "arabic_text": "تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً",
-    "dari_translation": "سحری بخورید، زیرا در سحری برکت است.",
+    "dari_translation": "سحری بخورید که در سحری خوردن برکت است.",
     "arabic_translation": "تسحروا فإن في السحور بركة.",
-    "pashto_translation": "سحري وخورئ، ځکه په سحري کې برکت دی.",
+    "pashto_translation": "پېشلمی وکړئ، ځکه چې په پېشلمي کې برکت وي.",
     "source_book": "Bukhari",
     "source_number": "1923",
     "is_muttafaq": true,
@@ -2121,8 +2121,8 @@
       "day_end": 30
     },
     "daily_index": 107,
-    "english_translation": "Take the pre-dawn meal, for there is blessing in suhoor.",
-    "turkish_translation": "Şafak yemeği yiyin, çünkü sahurda bereket vardır."
+    "english_translation": "Take Suhur as there is a blessing in it.",
+    "turkish_translation": "Sahur yapınl Çünkü sahurda bereket vardır."
   },
   {
     "id": 108,
@@ -2150,14 +2150,14 @@
     },
     "daily_index": 108,
     "english_translation": "When the last ten nights of Ramadan begin, tighten the belt of worship, stay up at night, and wake your household.",
-    "turkish_translation": "Ramazanın son on gecesi girince ibadet kemerinizi sıkın, geceyi uyanık geçirin ve evinizi uyandırın."
+    "turkish_translation": "Aişe r.anha şöyle demiştir: Ramazanın son on günü geldiğinde Hz."
   },
   {
     "id": 109,
     "arabic_text": "تَحَرَّوْا لَيْلَةَ الْقَدْرِ فِي الْوِتْرِ مِنَ الْعَشْرِ الأَوَاخِرِ",
-    "dari_translation": "شب قدر را در شب‌های فرد دهه آخر رمضان بجویید.",
+    "dari_translation": "شب قدر را در شب های طاق دهه ی آخِر جستجو کنید.",
     "arabic_translation": "البحث عن شعب القدر في الليالي الفردية من العقد الأخير من رمضان.",
-    "pashto_translation": "د قدر شپه د رمضان په وروستۍ لسمه کې په طاق شپو کې ولټوئ.",
+    "pashto_translation": "د رمضان په وروستیو لسو شپو کې د قدر شپه ولټوئ.",
     "source_book": "Bukhari",
     "source_number": "2020",
     "is_muttafaq": true,
@@ -2177,8 +2177,8 @@
       "day_end": 30
     },
     "daily_index": 109,
-    "english_translation": "Seek the Night of Decree among the odd nights of the last ten of Ramadan.",
-    "turkish_translation": "Kadir gecesini Ramazan ayının son on ayının tek geceleri arasında arayın."
+    "english_translation": "Look for the Night of Qadr in the last ten nights of the month of Ramadan.",
+    "turkish_translation": "Kadir gecesini Ramazanın son on gününde araştırınız."
   },
   {
     "id": 110,
@@ -2196,8 +2196,8 @@
     ],
     "weekday_only": "friday",
     "daily_index": 110,
-    "english_translation": "The best day on which the sun has risen is Friday.",
-    "turkish_translation": "Güneşin doğduğu en hayırlı gün Cuma'dır."
+    "english_translation": "The best day on which the sun has risen is Friday; on it Adam was created, on it he was made to enter Paradise, on it he.",
+    "turkish_translation": "Üzerine güneş doğan en hayırlı gün cum'a günüdür."
   },
   {
     "id": 111,
@@ -2244,7 +2244,7 @@
     },
     "daily_index": 112,
     "english_translation": "I hope that fasting on Arafah will cover the sins of the year before and the year after.",
-    "turkish_translation": "Arefe günü tutulan orucun, bir önceki yılın ve bir sonraki yılın günahlarını örtmesini ümit ediyorum."
+    "turkish_translation": "Ömer (tekrar): — İki gün oruç tutup bir gün tutmayanın hâli ne olacak?"
   },
   {
     "id": 113,
@@ -2303,7 +2303,7 @@
   {
     "id": 115,
     "arabic_text": "أَفْضَلُ الصِّيَامِ بَعْدَ شَهْرِ رَمَضَانَ شَهْرُ اللَّهِ الْمُحَرَّمُ",
-    "dari_translation": "بهترین روزه بعد از ماه رمضان، ماه محرم الله است.",
+    "dari_translation": "بهترین روزه پس از روزه ی رمضان، روزه گرفتن در ماهِ الله، محرّم است؛ و بهترین نماز پس از نماز فرض، نماز شب می باشد.",
     "arabic_translation": "أفضل الصيام بعد رمضان شهر المحرم.",
     "pashto_translation": "له رمضان وروسته غوره روژه د الله میاشت محرم ده.",
     "source_book": "Muslim",
@@ -2324,7 +2324,7 @@
       "day_end": 1
     },
     "daily_index": 115,
-    "english_translation": "The best fasting after the month of Ramadan is the month of Allah, Muharram.",
+    "english_translation": "The best fasting after the month of Ramadan is the month of Allah, Al-Muharram, and the best prayer is prayer at night.",
     "turkish_translation": "Ramazan ayından sonra tutulan oruçların en faziletlisi Allah'ın ayı olan Muharrem ayıdır."
   },
   {
@@ -2343,8 +2343,8 @@
       "worship"
     ],
     "daily_index": 116,
-    "english_translation": "Whoever prays Isha in congregation is as if they spent half the night in prayer.",
-    "turkish_translation": "Yatsı namazını cemaatle kılan kimse, gecenin yarısını ibadetle geçirmiş gibidir."
+    "english_translation": "0, son of my brother, I heard the Messenger of Allah (ﷺ) say: He who observed the 'Isha' prayer in congregation, it was as if he prayed up to midnight, and he who prayed the morning prayer in congregation, it was as if he prayed the whole night.",
+    "turkish_translation": "Her kim yatsıyı cemaatla kılarsa, gecenin yarısını namazla geçirmiş gibi olur."
   },
   {
     "id": 117,
@@ -2362,8 +2362,8 @@
       "taqwa"
     ],
     "daily_index": 117,
-    "english_translation": "Whoever fasts one day in the path of Allah, Allah keeps their face seventy autumns away from the Fire.",
-    "turkish_translation": "Kim Allah yolunda bir gün oruç tutarsa, Allah onun yüzünü yetmiş sonbahar ateşten uzak tutar."
+    "english_translation": "Indeed, anyone who fasts for one day for Allah's Pleasure, Allah will keep his face away from the (Hell) fire for (a distance covered by a journey of) seventy years.",
+    "turkish_translation": "nu işittim: \"Kim Allah yolunda bir gün oruç tutarsa Allah onun yüzünü cehennem ateşinden yetmiş yıl uzaklaştırır."
   },
   {
     "id": 118,
@@ -2406,9 +2406,9 @@
   {
     "id": 120,
     "arabic_text": "الْحَيَاءُ مِنَ الإِيمَانِ",
-    "dari_translation": "حیا از ایمان است.",
+    "dari_translation": "حیا جزء ایمان است.",
     "arabic_translation": "العار هو الإيمان.",
-    "pashto_translation": "حیا له ايمانه ده.",
+    "pashto_translation": "حیا له ایمان څخه ده.",
     "source_book": "Bukhari",
     "source_number": "9",
     "is_muttafaq": true,
@@ -2419,15 +2419,15 @@
       "akhlaq"
     ],
     "daily_index": 120,
-    "english_translation": "Modesty is from faith.",
-    "turkish_translation": "Tevazu imandandır."
+    "english_translation": "Faith (Belief) consists of more than sixty branches (i.e.",
+    "turkish_translation": "İman altmış bu kadar şu`bedir."
   },
   {
     "id": 121,
     "arabic_text": "إِنَّمَا الأَعْمَالُ بِالنِّيَّاتِ، وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى",
-    "dari_translation": "همانا اعمال به نیت‌ها بستگی دارد و هر انسان همان چیزی را دارد که نیت کرده است.",
+    "dari_translation": "عمل از روی نیت است، و هر کس به آنچه اراده کرده است می رسد.",
     "arabic_translation": "إن الأعمال بالنيات، ولكل إنسان ما نوى.",
-    "pashto_translation": "عملونه یوازې په نیتونو پورې تړلي دي، او هر انسان ته هغه څه دي چې نیت یې کړی وي.",
+    "pashto_translation": "بېشکه چې عملونه د نيتونو له مخې (اعتبار) لري.",
     "source_book": "Bukhari",
     "source_number": "1",
     "is_muttafaq": true,
@@ -2438,15 +2438,15 @@
       "worship"
     ],
     "daily_index": 121,
-    "english_translation": "Actions are only by intentions, and every person will have only what they intended.",
-    "turkish_translation": "Ameller ancak niyetlere göredir ve her insan ancak niyet ettiği şeye sahip olur."
+    "english_translation": "The reward of deeds depends upon the intentions and every person will get the reward according to what he has intended.",
+    "turkish_translation": "Ameller niyetlere göredir ve herkes için niyet ettiğinin karşılığı vardır."
   },
   {
     "id": 122,
     "arabic_text": "لاَ يُؤْمِنُ أَحَدُكُمْ حَتَّى يُحِبَّ لأَخِيهِ مَا يُحِبُّ لِنَفْسِهِ",
-    "dari_translation": "هیچ‌یک از شما مؤمن کامل نیست تا برای برادرش همان را دوست بدارد که برای خود دوست می‌دارد.",
+    "dari_translation": "هیچ یک از شما ایمان نمی‌برد تا این که برای برادر خود دوست بدارد آن‌چه را که برای خود دوست می دارد.",
     "arabic_translation": "لا أحد منكم كامل المؤمن أن يحب لأخيه ما يحب لنفسه.",
-    "pashto_translation": "له تاسو څخه هېڅوک تر هغه بشپړ مؤمن نه دی، څو د خپل ورور لپاره هغه څه خوښ نه کړي چې د ځان لپاره یې خوښوي.",
+    "pashto_translation": "په تاسو کې هیڅوک مومن کیدلی نه شي؛ تر څو چې د خپل ورور لپاره هغه څه خوښ کړي چې د ځان لپاره یې خوښوي.",
     "source_book": "Muslim",
     "source_number": "45",
     "is_muttafaq": true,
@@ -2457,8 +2457,8 @@
       "akhlaq"
     ],
     "daily_index": 122,
-    "english_translation": "None of you is a complete believer until they love for their brother what they love for themselves.",
-    "turkish_translation": "Hiçbiriniz kendisi için sevdiğini kardeşi için de sevmedikçe tam anlamıyla iman etmiş olamazsınız."
+    "english_translation": "None of you believes until he loves for his brother what he loves for himself.",
+    "turkish_translation": "Sizden biriniz kendisi için sevdiğini mü’min kardeşi içinde sevmedikçe gerçek mü’min olamaz."
   },
   {
     "id": 123,
@@ -2482,9 +2482,9 @@
   {
     "id": 124,
     "arabic_text": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيَقُلْ خَيْرًا أَوْ لِيَصْمُتْ",
-    "dari_translation": "هر کس به خدا و روز آخرت ایمان دارد، باید سخن نیک بگوید یا سکوت کند.",
+    "dari_translation": "کسی که به الله و روز آخرت ایمان دارد سخن خیر بگوید یا سکوت کند.",
     "arabic_translation": "من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت.",
-    "pashto_translation": "څوک چې پر الله او د آخرت پر ورځې ایمان لري، باید ښه خبره وکړي یا چوپ پاتې شي.",
+    "pashto_translation": "څوک چې په الله او د آخرت په ورځ ایمان لري، نو هغه دې یا د خیر وینا وکړي او یا دې چوپ پاتې شي.",
     "source_book": "Bukhari",
     "source_number": "6018",
     "is_muttafaq": true,
@@ -2496,7 +2496,7 @@
     ],
     "daily_index": 124,
     "english_translation": "Whoever believes in Allah and the Last Day should say what is good or keep silent.",
-    "turkish_translation": "Kim Allah'a ve ahiret gününe inanıyorsa ya hayır söylesin ya da sussun."
+    "turkish_translation": "Allah'a ve ahiret gününe iman eden bir kimse ya hayır söylesin yahut sussun."
   },
   {
     "id": 125,
@@ -2514,15 +2514,15 @@
       "guidance"
     ],
     "daily_index": 125,
-    "english_translation": "Whoever takes a path seeking knowledge, Allah makes a path to Paradise easy for them thereby.",
-    "turkish_translation": "Kim ilim öğrenmek için yola çıkarsa, Allah onunla cennete giden yolu kolaylaştırır."
+    "english_translation": "Whoever relieves a Muslim of some worldly distress.",
+    "turkish_translation": "Kim bir müslümandan dünya kederlerinden bir keder giderirse Allah ondan ahiret günü kederlerinden bir keder giderecektir."
   },
   {
     "id": 126,
     "arabic_text": "الدِّينُ النَّصِيحَةُ",
-    "dari_translation": "دین خیرخواهی و خیراندیشی است.",
+    "dari_translation": "دین نصیحت کردن است.",
     "arabic_translation": "إن الدين هو الإحسان والإحسان.",
-    "pashto_translation": "دین خیرخواهي ده.",
+    "pashto_translation": "دین نصیحت دی.",
     "source_book": "Muslim",
     "source_number": "55",
     "is_muttafaq": false,
@@ -2533,7 +2533,7 @@
       "faith"
     ],
     "daily_index": 126,
-    "english_translation": "The religion is sincere advice and goodwill.",
+    "english_translation": "Religion is sincerity (An-Nasihah).' They said: 'To whom, O Messenger of Allah?",
     "turkish_translation": "Din, samimi öğüt ve iyi niyettir."
   },
   {
@@ -2552,13 +2552,13 @@
       "good_deeds"
     ],
     "daily_index": 127,
-    "english_translation": "The deeds most beloved to Allah are the most consistent ones, even if they are small.",
-    "turkish_translation": "Allah'ın en sevdiği amel, küçük de olsa, en devamlı olanıdır."
+    "english_translation": "The most regular constant deeds even though they may be few.\" He added, 'Don't take upon yourselves, except the deeds which are within your ability.",
+    "turkish_translation": "ve \"Sizler amellerden takat getirebileceğiniz kadannı üzerine alınız!\" tavsiyesinde bulundu."
   },
   {
     "id": 128,
     "arabic_text": "مَنْ كَانَ يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الآخِرِ فَلْيُكْرِمْ ضَيْفَهُ",
-    "dari_translation": "هر کس به خدا و روز آخرت ایمان دارد، باید مهمان خود را گرامی بدارد.",
+    "dari_translation": "هرکس به الله و روز قیامت ایمان دارد.",
     "arabic_translation": "من كان يؤمن بالله واليوم الآخر فليحترم ضيفه.",
     "pashto_translation": "څوک چې پر الله او د آخرت پر ورځې ایمان لري، باید خپل مېلمه درناوی کړي.",
     "source_book": "Bukhari",
@@ -2571,13 +2571,13 @@
       "faith"
     ],
     "daily_index": 128,
-    "english_translation": "Whoever believes in Allah and the Last Day should honour their guest.",
-    "turkish_translation": "Allah'a ve ahiret gününe inanan, misafirine ikramda bulunsun."
+    "english_translation": "(To be entertained generously) for a day and a night with high quality of food and the guest has the right to be entertained for three days (with ordinary food) and if he stays longer.",
+    "turkish_translation": "Nebi Sallallahu Aleyhi ve Sellem'in konuşup da şöyle buyurduğunu kulaklarım duydu."
   },
   {
     "id": 129,
     "arabic_text": "الْمُؤْمِنُ الْقَوِيُّ خَيْرٌ وَأَحَبُّ إِلَى اللَّهِ مِنَ الْمُؤْمِنِ الضَّعِيفِ، وَفِي كُلٍّ خَيْرٌ",
-    "dari_translation": "مؤمن نیرومند نزد خداوند بهتر و محبوب‌تر از مؤمن ناتوان است، و در هر دو خیر وجود دارد.",
+    "dari_translation": "مؤمن قوی بهتر و نزد الله دوست داشتنی‌تر از مؤمن ضعیف است، و در هر یک خیر است.",
     "arabic_translation": "فالمؤمن القوي خير وأحب إلى الله من المؤمن الضعيف، وفي كليهما خير.",
     "pashto_translation": "زورور مؤمن الله ته له کمزوري مؤمنه غوره او ډېر ګران دی، او په دواړو کې خیر شته.",
     "source_book": "Muslim",
@@ -2591,14 +2591,14 @@
     ],
     "daily_index": 129,
     "english_translation": "The strong believer is better and more beloved to Allah than the weak believer, and there is good in both.",
-    "turkish_translation": "Güçlü mü'min, Allah katında zayıf mü'minden daha hayırlı ve daha sevimlidir ve her ikisinde de hayır vardır."
+    "turkish_translation": "Kuvvetli mü'min Allah'a zayıf mü'minden daha hayırlı ve daha makbuldür."
   },
   {
     "id": 130,
     "arabic_text": "الْمُسْلِمُ مَنْ سَلِمَ الْمُسْلِمُونَ مِنْ لِسَانِهِ وَيَدِهِ",
-    "dari_translation": "مسلمان کسی است که مسلمانان از زبان و دست او در امان باشند.",
+    "dari_translation": "مسلمان کسی است که مسلمانان از زبان و دست او در امان باشند، و مهاجر آن است آنچه را که الله متعال از آن نهی کرده ترک نماید.",
     "arabic_translation": "المسلم من سلم المسلمون من لسانه ويده.",
-    "pashto_translation": "مسلمان هغه دی چې مسلمانان یې له ژبې او لاسه خوندي وي.",
+    "pashto_translation": "مسلمان هغه څوک دی چې نور مسلمانان يې د ژبې او لاس له ضرر څخه په امان کې وي او مهاجر هغه څوک دی چې هغه څه پریږدي چې الله پاک ورڅخه منعه کړی وي.",
     "source_book": "Bukhari",
     "source_number": "10",
     "is_muttafaq": true,
@@ -2609,7 +2609,7 @@
       "speech"
     ],
     "daily_index": 130,
-    "english_translation": "A Muslim is one from whose tongue and hand other Muslims are safe.",
-    "turkish_translation": "Müslüman, diğer Müslümanların dilinden ve elinden emin olduğu kimsedir."
+    "english_translation": "A Muslim is the one who avoids harming Muslims with his tongue and hands.",
+    "turkish_translation": "Müslüman, dilinden, elinden müslümanlar selamette kalan kimsedir."
   }
 ]

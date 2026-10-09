@@ -17,18 +17,19 @@ import {
   ThemeMode,
   Typography,
 } from '@/constants/theme';
-import { useApp } from '@/context/AppContext';
+import { useApp, useLocalizedFontPreferences } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { CalculationMethods } from '@/utils/prayerTimes';
 import { translateUi } from '@/utils/i18n/catalog';
 import { APP_LANGUAGES, APP_LANGUAGE_ORDER } from '@/utils/i18n/languages';
+import { languageChoiceStyle } from '@/utils/i18n/languageChoiceStyle';
 import { tUi } from '@/utils/i18n/ui';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 
-import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LocalizedText } from '@/components/ui/LocalizedText';
 import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 
@@ -48,6 +49,7 @@ export default function SettingsScreen() {
   } = useApp();
   const { updateSettings, state: prayerState } = usePrayer();
   const uiLanguage = state.preferences.appLanguage;
+  const fonts = useLocalizedFontPreferences();
   const directionalRow = rowStyle(uiLanguage);
   const forwardChevron = forwardChevronName(uiLanguage);
   const calculationMethod = prayerState.settings.calculationMethod;
@@ -228,17 +230,21 @@ export default function SettingsScreen() {
                     onPress={() => setAppLanguage(languageCode)}
                     style={[
                       styles.optionItem,
-                     directionalRow,
+                      styles.languageOption,
                       directionalRow,
                       { borderBottomColor: theme.divider },
                       active && { backgroundColor: theme.backgroundSecondary },
                     ]}
                   >
-                    <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}
-                      style={[styles.optionText, { color: active ? theme.tint : theme.text }]}
+                    <Text
+                      style={[
+                        styles.languageOptionText,
+                        languageChoiceStyle(languageCode, fonts, { fontSize: 16 }),
+                        { color: active ? theme.tint : theme.text },
+                      ]}
                     >
                       {APP_LANGUAGES[languageCode].nativeLabel}
-                    </LocalizedText>
+                    </Text>
                     {active && <MaterialIcons name="check" size={20} color={theme.tint} />}
                   </Pressable>
                 );
@@ -766,6 +772,14 @@ const styles = StyleSheet.create({
   },
   fontPreviewOption: {
     height: 88,
+  },
+  languageOption: {
+    height: 72,
+    paddingVertical: 10,
+  },
+  languageOptionText: {
+    flex: 1,
+    minWidth: 0,
   },
   optionText: {
     flex: 1,

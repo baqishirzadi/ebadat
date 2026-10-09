@@ -235,11 +235,12 @@ export const MushafView = React.memo(function MushafView({
     pendingTypographyFollowAyahRef.current = null;
     clearTypographyFollowTimers();
     if (activePlayingAyahRef.current !== ayahNumber) return;
+    if (viewableAyahNumbersRef.current.has(ayahNumber)) return;
 
     requestAnimationFrame(() => {
-      if (activePlayingAyahRef.current === ayahNumber) {
-        scrollToAyahIndex(ayahNumber, false);
-      }
+      if (activePlayingAyahRef.current !== ayahNumber) return;
+      if (viewableAyahNumbersRef.current.has(ayahNumber)) return;
+      scrollToAyahIndex(ayahNumber, true);
     });
   }, [clearTypographyFollowTimers, scrollToAyahIndex]);
 
@@ -284,12 +285,15 @@ export const MushafView = React.memo(function MushafView({
   // Keeps the playing ayah under the top bar. If it sits before the rendered
   // window, the window moves first and the scroll waits until that render.
   const followAyah = useCallback((ayahNumber: number) => {
+    if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(ayahNumber)) {
+      return;
+    }
     if (effectiveViewMode === 'scroll' && ayahNumber - 1 < windowStart) {
       pendingFollowScrollRef.current = ayahNumber;
       setWindowStart(windowStartForAyah(ayahNumber));
       return;
     }
-    scrollToAyahIndex(ayahNumber, false);
+    scrollToAyahIndex(ayahNumber, true);
   }, [effectiveViewMode, scrollToAyahIndex, windowStart]);
 
   useEffect(() => {
@@ -297,7 +301,8 @@ export const MushafView = React.memo(function MushafView({
     if (pending === null) return;
     pendingFollowScrollRef.current = null;
     const frame = requestAnimationFrame(() => {
-      scrollToAyahIndex(pending, false);
+      if (viewableAyahNumbersRef.current.has(pending)) return;
+      scrollToAyahIndex(pending, true);
     });
     return () => cancelAnimationFrame(frame);
   }, [windowStart, scrollToAyahIndex]);

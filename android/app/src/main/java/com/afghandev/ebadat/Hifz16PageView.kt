@@ -164,12 +164,14 @@ class Hifz16PageView(context: Context) : View(context) {
   fun setActiveSurah(value: Int?) {
     if (highlightSurah == value) return
     highlightSurah = value
+    if (!pageActive) return
     forceRedraw()
   }
 
   fun setActiveAyah(value: Int?) {
     if (highlightAyah == value) return
     highlightAyah = value
+    if (!pageActive) return
     forceRedraw()
   }
 

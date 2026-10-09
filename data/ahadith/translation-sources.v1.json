@@ -1,0 +1,3029 @@
+{
+  "1": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "1",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:1"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66511",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66511"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66511",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66511"
+    }
+  },
+  "2": {
+    "cited": {
+      "book": "Muslim",
+      "number": "55"
+    },
+    "english": {
+      "edition": "eng-nasai",
+      "hadithnumber": "4198",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/nasai:4198"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "nasai",
+      "hadithnumber": "4198"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66516",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66516"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66516",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66516"
+    }
+  },
+  "3": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "38"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "38",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:38"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "38",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/38.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "38"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "4196",
+      "url": "https://hadeethenc.com/prs/browse/hadith/4196"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4196",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4196"
+    }
+  },
+  "4": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1901"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1901",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1901.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1901"
+    }
+  },
+  "5": {
+    "cited": {
+      "book": "Muslim",
+      "number": "223"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "534",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:534"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "534",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/534.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "534"
+    }
+  },
+  "6": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6018"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6018",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6018.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6018"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5437",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5437"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5437",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5437"
+    }
+  },
+  "7": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "5027"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "5027",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:5027"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "5027",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/5027.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "5027"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5913",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5913"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5913",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5913"
+    }
+  },
+  "8": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "10"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "10",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:10"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "10",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/10.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "10"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "10101",
+      "url": "https://hadeethenc.com/prs/browse/hadith/10101"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "10101",
+      "url": "https://hadeethenc.com/ps/browse/hadith/10101"
+    }
+  },
+  "9": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "13"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "13",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:13"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "13",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/13.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "13"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66520",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66520"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66520",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66520"
+    }
+  },
+  "10": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1955"
+    },
+    "english": {
+      "edition": "eng-nasai",
+      "hadithnumber": "4405",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/nasai:4405"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "nasai",
+      "hadithnumber": "4405"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66521",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66521"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66521",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66521"
+    }
+  },
+  "11": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "5545"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "5545",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:5545"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "5545",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/5545.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "5545"
+    }
+  },
+  "12": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "969"
+    },
+    "english": {
+      "edition": "eng-ibnmajah",
+      "hadithnumber": "1727",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/ibnmajah:1727"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "ibnmajah",
+      "hadithnumber": "1727"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "6255",
+      "url": "https://hadeethenc.com/prs/browse/hadith/6255"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "6255",
+      "url": "https://hadeethenc.com/ps/browse/hadith/6255"
+    }
+  },
+  "13": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1163"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "2755",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:2755"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "2755",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/2755.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "2755"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "11261",
+      "url": "https://hadeethenc.com/fa/browse/hadith/11261"
+    }
+  },
+  "14": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1162"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "2746",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/2746.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "2746"
+    }
+  },
+  "15": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "879"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "879",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:879"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "879",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/879.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "879"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "10036",
+      "url": "https://hadeethenc.com/prs/browse/hadith/10036"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "10036",
+      "url": "https://hadeethenc.com/ps/browse/hadith/10036"
+    }
+  },
+  "16": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "934"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "934",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:934"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "934",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/934.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "934"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "3107",
+      "url": "https://hadeethenc.com/prs/browse/hadith/3107"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "3107",
+      "url": "https://hadeethenc.com/ps/browse/hadith/3107"
+    }
+  },
+  "17": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "69"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "69"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5866",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5866"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5866",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5866"
+    }
+  },
+  "18": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2319"
+    },
+    "english": {
+      "edition": "eng-tirmidhi",
+      "hadithnumber": "1924",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/tirmidhi:1924"
+    },
+    "turkish": {
+      "edition": "tur-tirmidhi",
+      "hadithnumber": "1924",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-tirmidhi/1924.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "tirmidhi",
+      "hadithnumber": "1924"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "8289",
+      "url": "https://hadeethenc.com/prs/browse/hadith/8289"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "8289",
+      "url": "https://hadeethenc.com/ps/browse/hadith/8289"
+    }
+  },
+  "19": {
+    "cited": {
+      "book": "Muslim",
+      "number": "223"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "534",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/534.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "534"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "534",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:534"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66526",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66526"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66526",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66526"
+    }
+  },
+  "20": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "5997"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "5997",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:5997"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "5997",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/5997.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "5997"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "5440",
+      "url": "https://hadeethenc.com/fa/browse/hadith/5440"
+    }
+  },
+  "21": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "5353"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "5353",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:5353"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "5353",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/5353.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "5353"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "3135",
+      "url": "https://hadeethenc.com/prs/browse/hadith/3135"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "3135",
+      "url": "https://hadeethenc.com/ps/browse/hadith/3135"
+    }
+  },
+  "22": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6464"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "6464",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:6464"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6464",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6464.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6464"
+    }
+  },
+  "23": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2699"
+    },
+    "english": {
+      "edition": "eng-tirmidhi",
+      "hadithnumber": "2646",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/tirmidhi:2646"
+    },
+    "turkish": {
+      "edition": "tur-tirmidhi",
+      "hadithnumber": "2646",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-tirmidhi/2646.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "tirmidhi",
+      "hadithnumber": "2646"
+    }
+  },
+  "24": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2564"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "6543",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:6543"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "6543"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "4555",
+      "url": "https://hadeethenc.com/prs/browse/hadith/4555"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4555",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4555"
+    }
+  },
+  "25": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2553"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "6516",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:6516"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "6516",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/6516.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "6516"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66540",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66540"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66540",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66540"
+    }
+  },
+  "26": {
+    "cited": {
+      "book": "Muslim",
+      "number": "91"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "265",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:265"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "265",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/265.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "265"
+    }
+  },
+  "27": {
+    "cited": {
+      "book": "Muslim",
+      "number": "102"
+    },
+    "english": {
+      "edition": "eng-ibnmajah",
+      "hadithnumber": "2225",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/ibnmajah:2225"
+    },
+    "turkish": {
+      "edition": "tur-ibnmajah",
+      "hadithnumber": "2225",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-ibnmajah/2225.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "ibnmajah",
+      "hadithnumber": "2225"
+    }
+  },
+  "28": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1429"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "1429",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:1429"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1429",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1429.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1429"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "3599",
+      "url": "https://hadeethenc.com/prs/browse/hadith/3599"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "3599",
+      "url": "https://hadeethenc.com/ps/browse/hadith/3599"
+    }
+  },
+  "29": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2699"
+    },
+    "english": {
+      "edition": "eng-tirmidhi",
+      "hadithnumber": "1426",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/tirmidhi:1426"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "tirmidhi",
+      "hadithnumber": "1426"
+    }
+  },
+  "30": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2699"
+    },
+    "english": {
+      "edition": "eng-ibnmajah",
+      "hadithnumber": "2544",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/ibnmajah:2544"
+    },
+    "turkish": {
+      "edition": "tur-ibnmajah",
+      "hadithnumber": "2544",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-ibnmajah/2544.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "ibnmajah",
+      "hadithnumber": "2544"
+    }
+  },
+  "31": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1631"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "4223",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/4223.min.json"
+    },
+    "match": "variant-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "4223"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "65566",
+      "url": "https://hadeethenc.com/prs/browse/hadith/65566"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "65566",
+      "url": "https://hadeethenc.com/ps/browse/hadith/65566"
+    }
+  },
+  "32": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2664"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "6774",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/6774.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "6774"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5493",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5493"
+    }
+  },
+  "33": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2664"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "6774",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:6774"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "6774",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/6774.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "6774"
+    }
+  },
+  "34": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2626"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "6690",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:6690"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "6690",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/6690.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "6690"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5348",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5348"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5348",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5348"
+    }
+  },
+  "35": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "7376"
+    },
+    "turkish": {
+      "edition": "tur-abudawud",
+      "hadithnumber": "3125",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-abudawud/3125.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "abudawud",
+      "hadithnumber": "3125"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "6405",
+      "url": "https://hadeethenc.com/fa/browse/hadith/6405"
+    }
+  },
+  "36": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6169"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6169",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6169.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6169"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "3074",
+      "url": "https://hadeethenc.com/fa/browse/hadith/3074"
+    }
+  },
+  "37": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6412"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "6412",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:6412"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6412",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6412.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6412"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5449",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5449"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5449",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5449"
+    }
+  },
+  "38": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1417"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "1417",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:1417"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1417",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1417.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1417"
+    }
+  },
+  "39": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1009"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "2335",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/2335.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "2335"
+    }
+  },
+  "40": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6065"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "6065",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:6065"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6065",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6065.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6065"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "4706",
+      "url": "https://hadeethenc.com/prs/browse/hadith/4706"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4706",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4706"
+    }
+  },
+  "41": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "2442"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "2442",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:2442"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "2442",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/2442.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "2442"
+    }
+  },
+  "42": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6077"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "6077",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:6077"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6077",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6077.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6077"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "8882",
+      "url": "https://hadeethenc.com/fa/browse/hadith/8882"
+    }
+  },
+  "43": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "71"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "71",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:71"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "71",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/71.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "71"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5518",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5518"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5518",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5518"
+    }
+  },
+  "44": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "9"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "9",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/9.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "9"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "3276",
+      "url": "https://hadeethenc.com/fa/browse/hadith/3276"
+    }
+  },
+  "45": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "450"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "450",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:450"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "450",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/450.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "450"
+    }
+  },
+  "46": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6035"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6035",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6035.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6035"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5803",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5803"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5803",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5803"
+    }
+  },
+  "47": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1954"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "1954",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:1954"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1954",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1954.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1954"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "4546",
+      "url": "https://hadeethenc.com/fa/browse/hadith/4546"
+    }
+  },
+  "48": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1902"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1902",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1902.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1902"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "6179",
+      "url": "https://hadeethenc.com/prs/browse/hadith/6179"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "6179",
+      "url": "https://hadeethenc.com/ps/browse/hadith/6179"
+    }
+  },
+  "49": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1923"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "1923",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:1923"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1923",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1923.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1923"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "4498",
+      "url": "https://hadeethenc.com/prs/browse/hadith/4498"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4498",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4498"
+    }
+  },
+  "50": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1162"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "2746",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/2746.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "2746"
+    }
+  },
+  "51": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1348"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "3288",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:3288"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "3288",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/3288.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "3288"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "8288",
+      "url": "https://hadeethenc.com/fa/browse/hadith/8288"
+    }
+  },
+  "52": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1141"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "53": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2137"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ],
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5475",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5475"
+    }
+  },
+  "54": {
+    "cited": {
+      "book": "Muslim",
+      "number": "671"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "1528",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:1528"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "1528",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/1528.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "1528"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4933",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4933"
+    }
+  },
+  "55": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1893"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "4899",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:4899"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "4899",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/4899.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "4899"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5354",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5354"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5354",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5354"
+    }
+  },
+  "56": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6927"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6927"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5797",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5797"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5797",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5797"
+    }
+  },
+  "57": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "5984"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "5984",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:5984"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "5984",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/5984.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "5984"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5367",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5367"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5367",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5367"
+    }
+  },
+  "58": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "5986"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "5986",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:5986"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "5986",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/5986.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "5986"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5372",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5372"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5372",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5372"
+    }
+  },
+  "59": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "7405"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "7405",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:7405"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "7405",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/7405.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "7405"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "3636",
+      "url": "https://hadeethenc.com/prs/browse/hadith/3636"
+    }
+  },
+  "60": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6406"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "6406",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:6406"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6406",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6406.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6406"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5507",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5507"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5507",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5507"
+    }
+  },
+  "61": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "527"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "527",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:527"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "527",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/527.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "527"
+    }
+  },
+  "62": {
+    "cited": {
+      "book": "Nasai",
+      "number": "3104"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "63": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "13"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "64": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6014"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "173",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:173"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "173"
+    }
+  },
+  "65": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6138"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "6138",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:6138"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6138",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6138.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6138"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "3042",
+      "url": "https://hadeethenc.com/fa/browse/hadith/3042"
+    }
+  },
+  "66": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6005"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "6005",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:6005"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6005",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6005.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6005"
+    }
+  },
+  "67": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "2300"
+    },
+    "english": {
+      "edition": "eng-ibnmajah",
+      "hadithnumber": "2404",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/ibnmajah:2404"
+    },
+    "turkish": {
+      "edition": "tur-ibnmajah",
+      "hadithnumber": "2404",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-ibnmajah/2404.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "ibnmajah",
+      "hadithnumber": "2404"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "6141",
+      "url": "https://hadeethenc.com/fa/browse/hadith/6141"
+    }
+  },
+  "68": {
+    "cited": {
+      "book": "Tirmidhi",
+      "number": "1209"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "69": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "2315"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "6577",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:6577"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "6577",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/6577.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "6577"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "5328",
+      "url": "https://hadeethenc.com/fa/browse/hadith/5328"
+    }
+  },
+  "70": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2956"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "7417",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:7417"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "7417",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/7417.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "7417"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "3584",
+      "url": "https://hadeethenc.com/ps/browse/hadith/3584"
+    }
+  },
+  "71": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "450"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "450",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:450"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "450",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/450.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "450"
+    }
+  },
+  "72": {
+    "cited": {
+      "book": "Muslim",
+      "number": "54"
+    },
+    "english": {
+      "edition": "eng-abudawud",
+      "hadithnumber": "5193",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/abudawud:5193"
+    },
+    "turkish": {
+      "edition": "tur-abudawud",
+      "hadithnumber": "5193",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-abudawud/5193.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "abudawud",
+      "hadithnumber": "5193"
+    }
+  },
+  "73": {
+    "cited": {
+      "book": "Tirmidhi",
+      "number": "1987"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "74": {
+    "cited": {
+      "book": "Tirmidhi",
+      "number": "1919"
+    },
+    "english": {
+      "edition": "eng-tirmidhi",
+      "hadithnumber": "1919",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/tirmidhi:1919"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "tirmidhi",
+      "hadithnumber": "1919"
+    }
+  },
+  "75": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "2442"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "2442",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:2442"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "2442",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/2442.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "2442"
+    }
+  },
+  "76": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2699"
+    },
+    "english": {
+      "edition": "eng-ibnmajah",
+      "hadithnumber": "225",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/ibnmajah:225"
+    },
+    "turkish": {
+      "edition": "tur-ibnmajah",
+      "hadithnumber": "225",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-ibnmajah/225.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "ibnmajah",
+      "hadithnumber": "225"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "4801",
+      "url": "https://hadeethenc.com/prs/browse/hadith/4801"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4801",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4801"
+    }
+  },
+  "77": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1413"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "1413",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:1413"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1413",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1413.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1413"
+    }
+  },
+  "78": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2059"
+    },
+    "english": {
+      "edition": "eng-ibnmajah",
+      "hadithnumber": "3254",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/ibnmajah:3254"
+    },
+    "turkish": {
+      "edition": "tur-ibnmajah",
+      "hadithnumber": "3254",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-ibnmajah/3254.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "ibnmajah",
+      "hadithnumber": "3254"
+    }
+  },
+  "79": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6609"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6607",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6607.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6607"
+    }
+  },
+  "80": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2699"
+    },
+    "english": {
+      "edition": "eng-tirmidhi",
+      "hadithnumber": "2646",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/tirmidhi:2646"
+    },
+    "turkish": {
+      "edition": "tur-tirmidhi",
+      "hadithnumber": "2646",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-tirmidhi/2646.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "tirmidhi",
+      "hadithnumber": "2646"
+    }
+  },
+  "81": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "107"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "107",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:107"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "107",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/107.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "107"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "65043",
+      "url": "https://hadeethenc.com/prs/browse/hadith/65043"
+    }
+  },
+  "82": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "5997"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "5997",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:5997"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "5997",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/5997.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "5997"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5439",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5439"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5439",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5439"
+    }
+  },
+  "83": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2553"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "6516",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:6516"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "6516",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/6516.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "6516"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66540",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66540"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66540",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66540"
+    }
+  },
+  "84": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1015"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "2346",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:2346"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "2346"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "4316",
+      "url": "https://hadeethenc.com/prs/browse/hadith/4316"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4316",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4316"
+    }
+  },
+  "85": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "2164"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "3931",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:3931"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "3931",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/3931.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "3931"
+    }
+  },
+  "86": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "481"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "481",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:481"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "481",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/481.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "481"
+    }
+  },
+  "87": {
+    "cited": {
+      "book": "Muslim",
+      "number": "101"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "283",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:283"
+    },
+    "match": "variant-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "283"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "2997",
+      "url": "https://hadeethenc.com/prs/browse/hadith/2997"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "2997",
+      "url": "https://hadeethenc.com/ps/browse/hadith/2997"
+    }
+  },
+  "88": {
+    "cited": {
+      "book": "Ahmad",
+      "number": "14433"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "89": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6502"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6504",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6504.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6504"
+    }
+  },
+  "90": {
+    "cited": {
+      "book": "Muslim",
+      "number": "157"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "91": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "80"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1036"
+    }
+  },
+  "92": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2880"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "93": {
+    "cited": {
+      "book": "IbnMajah",
+      "number": "4042"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "94": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1037"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "95": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "3470"
+    },
+    "turkish": {
+      "edition": "tur-abudawud",
+      "hadithnumber": "4267",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-abudawud/4267.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "abudawud",
+      "hadithnumber": "4267"
+    }
+  },
+  "96": {
+    "cited": {
+      "book": "Tirmidhi",
+      "number": "2267"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "97": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1920"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "4950",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/4950.min.json"
+    },
+    "match": "exact-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "4950"
+    }
+  },
+  "98": {
+    "cited": {
+      "book": "AbuDawud",
+      "number": "4291"
+    },
+    "english": {
+      "edition": "eng-abudawud",
+      "hadithnumber": "4291",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/abudawud:4291"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "abudawud",
+      "hadithnumber": "4291"
+    }
+  },
+  "99": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6786"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "100": {
+    "cited": {
+      "book": "IbnMajah",
+      "number": "4088"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "101": {
+    "cited": {
+      "book": "Ahmad",
+      "number": "8939"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "102": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "7198"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "103": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2630"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "104": {
+    "cited": {
+      "book": "AbuDawud",
+      "number": "2354"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "105": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1503"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1503"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "4520",
+      "url": "https://hadeethenc.com/prs/browse/hadith/4520"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4520",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4520"
+    }
+  },
+  "106": {
+    "cited": {
+      "book": "Muslim",
+      "number": "827"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "107": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1923"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "1923",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:1923"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1923",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1923.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1923"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "4498",
+      "url": "https://hadeethenc.com/prs/browse/hadith/4498"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4498",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4498"
+    }
+  },
+  "108": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "2024"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "2024",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/2024.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "2024"
+    }
+  },
+  "109": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "2020"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "2020",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:2020"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "2020",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/2020.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "2020"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "4540",
+      "url": "https://hadeethenc.com/prs/browse/hadith/4540"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "4540",
+      "url": "https://hadeethenc.com/ps/browse/hadith/4540"
+    }
+  },
+  "110": {
+    "cited": {
+      "book": "Muslim",
+      "number": "854"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "1976",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:1976"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "1976",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/1976.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "1976"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "3711",
+      "url": "https://hadeethenc.com/prs/browse/hadith/3711"
+    }
+  },
+  "111": {
+    "cited": {
+      "book": "Muslim",
+      "number": "850"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "112": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1162"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "2746",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/2746.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "2746"
+    }
+  },
+  "113": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1998"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "114": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1134"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "115": {
+    "cited": {
+      "book": "Muslim",
+      "number": "1163"
+    },
+    "english": {
+      "edition": "eng-nasai",
+      "hadithnumber": "1613",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/nasai:1613"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "nasai",
+      "hadithnumber": "1613"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "11261",
+      "url": "https://hadeethenc.com/fa/browse/hadith/11261"
+    }
+  },
+  "116": {
+    "cited": {
+      "book": "Muslim",
+      "number": "656"
+    },
+    "english": {
+      "edition": "eng-muslim",
+      "hadithnumber": "1491",
+      "author": "Abdul Hamid Siddiqui",
+      "url": "https://sunnah.com/muslim:1491"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "1491",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/1491.min.json"
+    },
+    "match": "exact-same-book",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "1491"
+    }
+  },
+  "117": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "2840"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "2840",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:2840"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "2840",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/2840.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "2840"
+    }
+  },
+  "118": {
+    "cited": {
+      "book": "Nasai",
+      "number": "493"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "119": {
+    "cited": {
+      "book": "AbuDawud",
+      "number": "4944"
+    },
+    "match": "unmatched",
+    "kept": [
+      "english_translation",
+      "turkish_translation"
+    ]
+  },
+  "120": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "9"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "9",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:9"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "9",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/9.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "9"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5478",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5478"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5478",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5478"
+    }
+  },
+  "121": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "1"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "1",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:1"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "1",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/1.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "1"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66511",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66511"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66511",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66511"
+    }
+  },
+  "122": {
+    "cited": {
+      "book": "Muslim",
+      "number": "45"
+    },
+    "english": {
+      "edition": "eng-tirmidhi",
+      "hadithnumber": "2515",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/tirmidhi:2515"
+    },
+    "turkish": {
+      "edition": "tur-tirmidhi",
+      "hadithnumber": "2515",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-tirmidhi/2515.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "tirmidhi",
+      "hadithnumber": "2515"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66520",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66520"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66520",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66520"
+    }
+  },
+  "123": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2593"
+    },
+    "match": "variant-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "6601"
+    }
+  },
+  "124": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6018"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6018",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6018.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6018"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5437",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5437"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "5437",
+      "url": "https://hadeethenc.com/ps/browse/hadith/5437"
+    }
+  },
+  "125": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2699"
+    },
+    "english": {
+      "edition": "eng-ibnmajah",
+      "hadithnumber": "225",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/ibnmajah:225"
+    },
+    "turkish": {
+      "edition": "tur-ibnmajah",
+      "hadithnumber": "225",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-ibnmajah/225.min.json"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "ibnmajah",
+      "hadithnumber": "225"
+    }
+  },
+  "126": {
+    "cited": {
+      "book": "Muslim",
+      "number": "55"
+    },
+    "english": {
+      "edition": "eng-nasai",
+      "hadithnumber": "4198",
+      "author": "sunnah.com",
+      "url": "https://sunnah.com/nasai:4198"
+    },
+    "match": "exact-other-book",
+    "located": {
+      "book": "nasai",
+      "hadithnumber": "4198"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "66516",
+      "url": "https://hadeethenc.com/prs/browse/hadith/66516"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "66516",
+      "url": "https://hadeethenc.com/ps/browse/hadith/66516"
+    }
+  },
+  "127": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6465"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "6465",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:6465"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6465",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6465.min.json"
+    },
+    "match": "variant-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6465"
+    }
+  },
+  "128": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "6019"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "6019",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:6019"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "6019",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/6019.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "6019"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "fa",
+      "id": "3042",
+      "url": "https://hadeethenc.com/fa/browse/hadith/3042"
+    }
+  },
+  "129": {
+    "cited": {
+      "book": "Muslim",
+      "number": "2664"
+    },
+    "turkish": {
+      "edition": "tur-muslim",
+      "hadithnumber": "6774",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-muslim/6774.min.json"
+    },
+    "match": "variant-arabicnumber",
+    "located": {
+      "book": "muslim",
+      "hadithnumber": "6774"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "5493",
+      "url": "https://hadeethenc.com/prs/browse/hadith/5493"
+    }
+  },
+  "130": {
+    "cited": {
+      "book": "Bukhari",
+      "number": "10"
+    },
+    "english": {
+      "edition": "eng-bukhari",
+      "hadithnumber": "10",
+      "author": "Muhsin Khan",
+      "url": "https://sunnah.com/bukhari:10"
+    },
+    "turkish": {
+      "edition": "tur-bukhari",
+      "hadithnumber": "10",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/hadith-api@1/editions/tur-bukhari/10.min.json"
+    },
+    "match": "exact-number",
+    "located": {
+      "book": "bukhari",
+      "hadithnumber": "10"
+    },
+    "dari": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "prs",
+      "id": "10101",
+      "url": "https://hadeethenc.com/prs/browse/hadith/10101"
+    },
+    "pashto": {
+      "publisher": "Encyclopedia of Translated Prophetic Hadiths",
+      "language": "ps",
+      "id": "10101",
+      "url": "https://hadeethenc.com/ps/browse/hadith/10101"
+    }
+  }
+}

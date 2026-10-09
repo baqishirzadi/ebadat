@@ -2410,15 +2410,15 @@ const CREDITS_BY_LANGUAGE: Record<AppLanguage, CreditsCopy> = {
     closing: 'Those who recite this blessed Word are asked not to forget them in their prayers. May Allah accept this service from them, forgive them, and lay it up for them in the Hereafter. Amen.',
   },
   turkish: {
-    title: 'Hayır duası',
-    intro: 'Hamd, nimetleriyle güzel işlerin tamamlandığı Allah’a mahsustur.\n\nBu mübarek mushaf, şu kardeşlerin emeği, maddi destekleri ve gözetimleriyle hazırlanıp düzenlenmiştir.',
+    title: 'HAYIR DUASI',
+    intro: 'Hamd, güzel ve hayırlı işleri nimetleriyle tamamlayan Allah’a mahsustur.\n\nBu mübarek Mushaf, aşağıda isimleri zikredilen kardeşlerimizin emekleri, maddi katkıları ve himmetleriyle hazırlanmıştır:',
     names: [
       'Seyit Abdul Ellah Şirzadi',
       'Seyit Safiyullah Şirzadi',
       'Seyit Abdul Baki Şirzadi',
       'Seyit Abdullah Şirzadi',
     ],
-    closing: 'Bu mübarek kelâmı okuyanlardan, onları hayır dualarında unutmamalarını dileriz. Allah bu hizmeti kabul etsin, onları bağışlasın ve ahiretleri için azık eylesin. Âmin.',
+    closing: 'Bu mübarek Kelâm-ı İlâhî’yi okuyanlardan, adı geçen kardeşlerimizi hayır dualarında unutmamalarını niyaz ederiz.\n\nYüce Allah’tan bu hayırlı hizmeti kabul buyurmasını, kendilerini affetmesini, kendilerine rahmet etmesini ve bu hizmeti ahiretleri için kalıcı bir azık ve vesile-i necat eylemesini dileriz.\n\nÂmin.',
   },
 };
 
@@ -2559,6 +2559,12 @@ export const Hifz16View = memo(function Hifz16View({
   const { position, updatePosition } = useReadingPosition();
   const { addBookmark, getBookmark, isBookmarked, removeBookmark } = useBookmarks();
   const { t, n, language } = useI18n();
+  const latinCard = isLatinLanguage(language);
+  // Mushaf pages advance toward the left, so Dari keeps › on the previous
+  // side. Turkish and English read left to right, so ‹ sits on the previous
+  // side and › on the next side.
+  const previousPageIcon = latinCard ? 'chevron-left' : 'chevron-right';
+  const nextPageIcon = latinCard ? 'chevron-right' : 'chevron-left';
   const startPage = useMemo(() => {
     if (initialPage != null && initialPage >= 1 && initialPage <= HIFZ16_PAGE_COUNT) {
       return initialPage;
@@ -3230,7 +3236,11 @@ export const Hifz16View = memo(function Hifz16View({
 
       {controlsVisible ? (
         <View testID="hifz16-reader-controls" pointerEvents="box-none" style={styles.readerControls}>
-          <View style={[styles.readerActionBar, { backgroundColor: readerTokens.page, borderColor: readerTokens.border }]}>
+          <View style={[
+            styles.readerActionBar,
+            latinCard && styles.readerActionBarLatin,
+            { backgroundColor: readerTokens.page, borderColor: readerTokens.border, direction: latinCard ? 'ltr' : 'rtl' },
+          ]}>
             <Pressable
               testID="hifz16-previous-page"
               accessibilityRole="button"
@@ -3246,7 +3256,9 @@ export const Hifz16View = memo(function Hifz16View({
                 ? visiblePage === HIFZ_DEDICATION_PAGE
                 : visiblePage <= 1) && styles.readerActionDisabled]}
             >
-              <MaterialIcons name="chevron-right" size={25} color={readerTokens.accent} />
+              <View style={styles.iconUnmirrored}>
+                <MaterialIcons name={previousPageIcon} size={25} color={readerTokens.accent} />
+              </View>
             </Pressable>
             <Pressable
               testID="hifz16-navigator-open"
@@ -3266,12 +3278,18 @@ export const Hifz16View = memo(function Hifz16View({
                     : visiblePage === HIFZ_CREDITS_PAGE
                       ? 'hifz16-credits-title'
                       : 'hifz16-page-meta'}
-                style={[styles.readerPageText, { color: readerTokens.text }]}
+                style={[
+                  leafTitle == null && latinCard ? styles.readerLatinText : styles.readerPageText,
+                  { color: readerTokens.text },
+                ]}
               >
                 {leafTitle ?? `\u200E${n(visiblePage)} / ${n(HIFZ16_PAGE_COUNT)}\u200E`}
               </Text>
               {leafTitle == null ? (
-                <Text style={[styles.readerJuzText, { color: readerTokens.textSecondary }]}>
+                <Text style={[
+                  latinCard ? styles.readerLatinCaption : styles.readerJuzText,
+                  { color: readerTokens.textSecondary },
+                ]}>
                   {t('quran.mushaf.juz', { number: n(visiblePageData?.juz ?? 1) })}
                 </Text>
               ) : null}
@@ -3307,7 +3325,9 @@ export const Hifz16View = memo(function Hifz16View({
               )}
               style={[styles.readerAction, visiblePage >= HIFZ_CREDITS_PAGE && styles.readerActionDisabled]}
             >
-              <MaterialIcons name="chevron-left" size={25} color={readerTokens.accent} />
+              <View style={styles.iconUnmirrored}>
+                <MaterialIcons name={nextPageIcon} size={25} color={readerTokens.accent} />
+              </View>
             </Pressable>
           </View>
         </View>
@@ -3719,6 +3739,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
     paddingHorizontal: Spacing.xs,
+  },
+  readerActionBarLatin: {
+    minWidth: Math.min(PAGE_WIDTH - Spacing.md * 2, 312),
+    height: 56,
+    paddingHorizontal: Spacing.sm,
+  },
+  readerLatinText: {
+    fontFamily: Platform.OS === 'android' ? 'sans-serif-medium' : undefined,
+    fontWeight: '700',
+    fontSize: 16,
+    lineHeight: 20,
+    letterSpacing: 0.2,
+    textAlign: 'center',
+    includeFontPadding: false,
+  },
+  readerLatinCaption: {
+    fontFamily: Platform.OS === 'android' ? 'sans-serif' : undefined,
+    fontWeight: '500',
+    fontSize: 12,
+    lineHeight: 16,
+    marginTop: 1,
+    textAlign: 'center',
+    includeFontPadding: false,
+  },
+  iconUnmirrored: {
+    direction: 'ltr',
   },
   readerAction: {
     width: 42,

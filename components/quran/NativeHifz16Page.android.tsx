@@ -71,8 +71,8 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
       // native view converts them to physical pixels before drawing.
       contentTop={contentTop}
       contentBottom={contentBottom}
-      activeSurah={activePlayingSurah ?? 0}
-      activeAyah={activePlayingAyah ?? 0}
+      activeSurah={pageActive ? (activePlayingSurah ?? 0) : 0}
+      activeAyah={pageActive ? (activePlayingAyah ?? 0) : 0}
       pageActive={pageActive}
       onHifzLinePress={(event) => {
         const { surah, ayah } = event.nativeEvent;

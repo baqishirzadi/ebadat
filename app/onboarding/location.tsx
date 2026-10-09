@@ -38,6 +38,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { forwardChevronName } from '@/utils/i18n/direction';
+import { regionDisplayName } from '@/utils/regionNames';
 
 const FEATURED_CATEGORIES = [
   'afghanistan',
@@ -55,13 +56,6 @@ const FEATURED_CATEGORIES = [
   'americas',
   'oceania',
 ] as const;
-
-const PASHTO_REGION_NAMES: Record<string, string> = {
-  afghanistan: 'افغانستان', iran: 'ایران', turkey: 'ترکیه', pakistan: 'پاکستان',
-  gulf: 'خلیجي هېوادونه', germany: 'جرمني', uk: 'بریتانیا', france: 'فرانسه',
-  netherlands: 'هالنډ', 'central-asia': 'منځنۍ اسیا', russia: 'روسیه', europe: 'اروپا',
-  americas: 'امریکا', oceania: 'اوشیانیا',
-};
 
 export default function OnboardingLocationScreen() {
   const { theme, state } = useApp();
@@ -174,11 +168,7 @@ export default function OnboardingLocationScreen() {
   const selectedPreview = pendingCityKey ? resolveCity(pendingCityKey) : null;
   const selectedCategoryEntry = categoryOptions.find((c) => c.id === selectedCategory);
   const selectedCategoryName = selectedCategoryEntry
-    ? (language === 'pashto'
-        ? PASHTO_REGION_NAMES[selectedCategoryEntry.id] ?? selectedCategoryEntry.nameEn
-        : language === 'english' || language === 'turkish'
-          ? selectedCategoryEntry.nameEn
-          : selectedCategoryEntry.name)
+    ? regionDisplayName(selectedCategoryEntry.id, language, selectedCategoryEntry)
     : undefined;
 
   return (
@@ -265,11 +255,7 @@ export default function OnboardingLocationScreen() {
                 ]}
               >
                 <RtlText align="center" style={[styles.countryText, { color: active ? '#fff' : theme.text }]}>
-                  {language === 'pashto'
-                    ? PASHTO_REGION_NAMES[cat.id] ?? cat.nameEn
-                    : language === 'english' || language === 'turkish'
-                      ? cat.nameEn
-                      : cat.name}
+                  {regionDisplayName(cat.id, language, cat)}
                 </RtlText>
               </Pressable>
             );

@@ -28,6 +28,7 @@ import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { regionDisplayName } from '@/utils/regionNames';
 
 interface CitySelectorModalProps {
   visible: boolean;
@@ -53,7 +54,7 @@ export function CitySelectorModal({
   initialCategory = 'afghanistan',
 }: CitySelectorModalProps) {
   const { theme } = useApp();
-  const { t, isPashto } = useI18n();
+  const { t, isPashto, language } = useI18n();
   const modalTitle = title || t('qibla.chooseCity');
   const insets = useSafeAreaInsets();
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
@@ -288,7 +289,7 @@ export function CitySelectorModal({
                       },
                     ]}
                   >
-                    {isPashto ? (category.id === 'afghanistan' ? 'افغانستان' : category.nameEn) : category.name}
+                    {regionDisplayName(category.id, language, category)}
                   </RtlText>
                 </Pressable>
               ))}
