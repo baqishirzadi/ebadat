@@ -77,16 +77,22 @@ const HIFZ_DEDICATION_PAGE = 0;
 const HAS_HIFZ_DEDICATION = Platform.OS === 'android';
 /** Dua khatm leaf immediately after the last mushaf page. Not a numbered page. */
 const HIFZ_KHATM_PAGE = HIFZ16_PAGE_COUNT + 1;
+/** Prayer-request leaf immediately after the khatm dua. Not a numbered page. */
+const HIFZ_CREDITS_PAGE = HIFZ16_PAGE_COUNT + 2;
+
+function isHifzExtraLeaf(page: number): boolean {
+  return page === HIFZ_DEDICATION_PAGE || page === HIFZ_KHATM_PAGE || page === HIFZ_CREDITS_PAGE;
+}
 // translateX, not `left`: a layout pass on every finger move is what made the
 // sheet lag. Each page is laid out on screen and then slid, so the neighbor
 // is already drawn when the finger moves.
 const HIFZ_PAGE_SPRING = { damping: 28, stiffness: 320, mass: 0.6, overshootClamping: true } as const;
 
-/** Next (+1) or previous (-1) mushaf page. Dedication 0 sits before page 1; the khatm leaf sits after the last page. */
+/** Next (+1) or previous (-1) mushaf page. Dedication 0 sits before page 1; khatm and the prayer leaf sit after the last page. */
 function neighborHifzPage(page: number, delta: 1 | -1): number | null {
   const next = page + delta;
   const first = HAS_HIFZ_DEDICATION ? HIFZ_DEDICATION_PAGE : 1;
-  if (next < first || next > HIFZ_KHATM_PAGE) return null;
+  if (next < first || next > HIFZ_CREDITS_PAGE) return null;
   return next;
 }
 
@@ -2186,31 +2192,27 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
   );
 });
 
-/** Printed dua of completing the Quran, read off the 16-line mushaf's last leaf. */
-const KHATM_TITLE = 'دعاء ختم القرآن';
+/** Printed dua of completing the Quran, with the same harakat as the 16-line mushaf. */
+const KHATM_TITLE = 'دُعَآءُ خَتْمِ الْقُرْاٰنِ';
 const KHATM_BODY =
-  'صدق الله العلي العظيم ○ وصدق رسوله النبي الكريم ○ ونحن على ذلك من الشاهدين ○ ربنا تقبل منا إنك أنت السميع العليم ○ اللهم ارزقنا بكل حرف من القرآن حلاوة وبكل جزء من القرآن جزاء اللهم ارزقنا بالألف ألفة وبالباء بركة وبالتاء توبة وبالثاء ثوابا وبالجيم جمالا وبالحاء حكمة وبالخاء خيرا وبالدال دليلا وبالذال ذكاء وبالراء رحمة وبالزاي زكوة وبالسين سعادة وبالشين شفاء وبالصاد صدقا وبالضاد ضياء وبالطاء طراوة وبالظاء ظفرا وبالعين علما وبالغين غنى وبالفاء فلاحا وبالقاف قربة وبالكاف كرامة وباللام لطفا وبالميم موعظة وبالنون نورا وبالواو وصلة وبالهاء هداية وبالياء يقينا ○ اللهم انفعنا بالقرآن العظيم ○ وارفعنا بالآيات والذكر الحكيم ○ وتقبل منا قراءتنا وتجاوز عنا ما كان في تلاوة القرآن من خطأ أو نسيان أو تحريف كلمة عن مواضعها أو تقديم أو تأخير أو زيادة أو نقصان أو تأويل على غير ما أنزلته عليه أو شك أو سهو أو سوء إلحان أو تعجيل عند تلاوة القرآن أو كسل أو سرعة أو وقف بغير وقوف أو إدغام بغير مدغم أو إظهار بغير بيان أو مد أو تقديم أو همزة أو جزم أو إعراب بغير ما كتبه أو قلة رغبة ورهبة عند آية الرحمة وآية العذاب فاغفر لنا ربنا واكتبنا مع الشاهدين ○ اللهم نور قلوبنا بالقرآن وزين أخلاقنا بالقرآن ونجنا من النار بالقرآن وأدخلنا في الجنة بالقرآن اللهم اجعل القرآن لنا في الدنيا قرينا وفي القبر مؤنسا وعلى الصراط نورا وفي الجنة رفيقا ومن النار سترا وحجابا وإلى الخيرات كلها دليلا فاكتبنا على الرشاد وارزقنا أداءه بالقلب واللسان وحب الخير والسعادة والبشارة من الإيمان ○ وصلى الله تعالى على خير خلقه محمد وآله وأصحابه وأتباعه أجمعين ○ آمين ○ وسلم';
-const KHATM_CLOSING = 'تسليما كثيرا كثيرا أبدا ○';
+  'صَدَقَ اللّٰهُ الْعَلِیُّ الْعَظِیْمُ ○ وَصَدَقَ رَسُوْلُهُ النَّبِیُّ الْكَرِیْمُ ○ وَنَحْنُ عَلَیْ ذٰلِكَ مِنَ الشّٰهِدِیْنَ ○ رَبَّنَا تَقَبَّلْ مِنَّا اِنَّكَ اَنْتَ السَّمِیْعُ الْعَلِیْمُ ○ اَللّٰهُمَّ ارْزُقْنَا بِكُلِّ حَرْفٍ مِّنَ الْقُرْاٰنِ حَلَاوَةً وَبِكُلِّ جُزْءٍ مِّنَ الْقُرْاٰنِ جَزَآءً اَللّٰهُمَّ ارْزُقْنَا بِالْاَلِفِ اُلْفَةً وَبِالْبَآءِ بَرَكَةً وَبِالتَّآءِ تَوْبَةً وَبِالثَّآءِ ثَوَابًا وَبِالْجِیْمِ جَمَالًا وَبِالْحَآءِ حِكْمَةً وَبِالْخَآءِ خَیْرًا وَبِالدَّالِ دَلِیْلًا وَبِالذَّالِ ذَكَآءً وَبِالرَّآءِ رَحْمَةً وَبِالزَّایِ زَكٰوةً وَبِالسِّیْنِ سَعَادَةً وَبِالشِّیْنِ شِفَآءً وَبِالصَّادِ صِدْقًا وَبِالضَّادِ ضِیَآءً وَبِالطَّآءِ طَرَاوَةً وَبِالظَّآءِ ظَفَرًا وَبِالْعَیْنِ عِلْمًا وَبِالْغَیْنِ غِنًی وَبِالْفَآءِ فَلَاحًا وَبِالْقَافِ قُرْبَةً وَبِالْكَافِ كَرَامَةً وَبِاللَّامِ لُطْفًا وَبِالْمِیْمِ مَوْعِظَةً وَبِالنُّوْنِ نُوْرًا وَبِالْوَاوِ وُصْلَةً وَبِالْهَآءِ هِدَایَةً وَبِالْیَآءِ یَقِیْنًا ○ اَللّٰهُمَّ انْفَعْنَا بِالْقُرْاٰنِ الْعَظِیْمِ ○ وَارْفَعْنَا بِالْاٰیَاتِ وَالذِّكْرِ الْحَكِیْمِ ○ وَتَقَبَّلْ مِنَّا قِرَآءَتَنَا وَتَجَاوَزْ عَنَّا مَا كَانَ فِیْ تِلَاوَةِ الْقُرْاٰنِ مِنْ خَطَاٍ اَوْ نِسْیَانٍ اَوْ تَحْرِیْفِ كَلِمَةٍ عَنْ مَّوَاضِعِهَا اَوْ تَقْدِیْمٍ اَوْ تَاْخِیْرٍ اَوْ زِیَادَةٍ اَوْ نُقْصَانٍ اَوْ تَاْوِیْلٍ عَلَیْ غَیْرِ مَا اَنْزَلْتَهُ عَلَیْهِ اَوْ شَكٍّ اَوْ سَهْوٍ اَوْ سُوْٓءِ اِلْحَانٍ اَوْ تَعْجِیْلٍ عِنْدَ تِلَاوَةِ الْقُرْاٰنِ اَوْ كَسَلٍ اَوْ سُرْعَةٍ اَوْ وَقْفٍ بِغَیْرِ وُقُوْفٍ اَوْ اِدْغَامٍ بِغَیْرِ مُدْغَمٍ اَوْ اِظْهَارٍ بِغَیْرِ بَیَانٍ اَوْ مَدٍّ اَوْ تَقْدِیْمٍ اَوْ هَمْزَةٍ اَوْ جَزْمٍ اَوْ اِعْرَابٍ بِغَیْرِ مَا كَتَبَهُ اَوْ قِلَّةِ رَغْبَةٍ وَّرَهْبَةٍ عِنْدَ اٰیَةِ الرَّحْمَةِ وَاٰیَةِ الْعَذَابِ فَاغْفِرْ لَنَا رَبَّنَا وَاكْتُبْنَا مَعَ الشّٰهِدِیْنَ ○ اَللّٰهُمَّ نَوِّرْ قُلُوْبَنَا بِالْقُرْاٰنِ وَزَیِّنْ اَخْلَاقَنَا بِالْقُرْاٰنِ وَنَجِّنَا مِنَ النَّارِ بِالْقُرْاٰنِ وَاَدْخِلْنَا فِی الْجَنَّةِ بِالْقُرْاٰنِ اَللّٰهُمَّ اجْعَلِ الْقُرْاٰنَ لَنَا فِی الدُّنْیَا قَرِیْنًا وَفِی الْقَبْرِ مُؤْنِسًا وَعَلَی الصِّرَاطِ نُوْرًا وَفِی الْجَنَّةِ رَفِیْقًا وَمِنَ النَّارِ سِتْرًا وَّحِجَابًا وَاِلَی الْخَیْرَاتِ كُلِّهَا دَلِیْلًا فَاكْتُبْنَا عَلَی الرَّشَادِ وَارْزُقْنَا اَدَآءَهُ بِالْقَلْبِ وَاللِّسَانِ وَحُبَّ الْخَیْرِ وَالسَّعَادَةِ وَالْبِشَارَةِ مِنَ الْاِیْمَانِ ○ وَصَلّٰی اللّٰهُ تَعَالٰی عَلٰی خَیْرِ خَلْقِهٖ مُحَمَّدٍ وَّاٰلِهٖ وَاَصْحٰبِهٖ وَاَتْبَاعِهٖ اَجْمَعِیْنَ ○ اٰمِیْنَ ○';
+const KHATM_CLOSING = 'وَسَلِّمْ تَسْلِیْمًا كَثِیْرًا كَثِیْرًا اَبَدًا ○';
 
-/** Double rule and corner diamonds, in the ink of the printed khatm leaf. */
-function KhatmBorder({ width, height, color }: { width: number; height: number; color: string }) {
+/** Gold rectangle used on ordinary mushaf pages (pages 3–548). */
+function MushafGoldFrame({ width, height }: { width: number; height: number }) {
   if (width <= 0 || height <= 0) return null;
-  const corners: Array<[number, number]> = [
-    [11, 11],
-    [width - 11, 11],
-    [11, height - 11],
-    [width - 11, height - 11],
-  ];
+  const inset = 1;
   return (
     <Svg width={width} height={height} style={StyleSheet.absoluteFill} pointerEvents="none">
-      <Rect x={2} y={2} width={width - 4} height={height - 4} stroke={color} strokeWidth={1.7} fill="none" />
-      <Rect x={7} y={7} width={width - 14} height={height - 14} stroke={color} strokeWidth={0.8} fill="none" />
-      {corners.map(([x, y]) => (
-        <G key={`${x}-${y}`} transform={`translate(${x}, ${y}) rotate(45)`}>
-          <Rect x={-4.5} y={-4.5} width={9} height={9} stroke={color} strokeWidth={1} fill="none" />
-          <Rect x={-1.6} y={-1.6} width={3.2} height={3.2} fill={color} />
-        </G>
-      ))}
+      <Rect
+        x={inset}
+        y={inset}
+        width={Math.max(0, width - inset * 2)}
+        height={Math.max(0, height - inset * 2)}
+        stroke={ILLUM.gold}
+        strokeWidth={1.5}
+        fill="none"
+      />
     </Svg>
   );
 }
@@ -2259,28 +2261,32 @@ const HifzKhatmPage = memo(function HifzKhatmPage({
 
   const onSlotLayout = useCallback((event: LayoutChangeEvent) => {
     const height = Math.floor(event.nativeEvent.layout.height);
-    setSlotHeight((prev) => (prev === height ? prev : height));
+    setSlotHeight((prev) => (Math.abs(prev - height) <= 2 ? prev : height));
   }, []);
 
   useEffect(() => {
     setFit(1);
-  }, [pageWidth, pageHeight, slotHeight]);
+  }, [pageWidth, pageHeight]);
 
-  const baseFont = slotHeight > 0 ? Math.min(15, Math.max(12, slotHeight / 34)) : 13;
-  const fontSize = Math.max(11, baseFont * fit);
-  const lineHeight = Math.round(fontSize * 1.5);
+  const baseFont = pageHeight > 0 ? Math.min(15, Math.max(12, pageHeight / 48)) : 13;
+  const fontSize = Math.max(7, baseFont * fit);
+  const lineHeight = Math.round(fontSize * 2.2);
+  const titleLine = Math.round(20 * BASMALLAH_LINE_HEIGHT_RATIO);
+  const khatmInkPad = Platform.OS === 'android' ? { includeFontPadding: false as const } : null;
 
   const onBodyTextLayout = useCallback((event: { nativeEvent: { lines: Array<{ y: number; height: number }> } }) => {
     const lines = event.nativeEvent.lines;
     if (lines.length === 0 || slotHeight <= 0) return;
     const last = lines[lines.length - 1];
-    const used = last.y + last.height + lineHeight;
-    if (used <= slotHeight + 1) return;
+    const used = last.y + last.height + 8;
+    if (used <= slotHeight) return;
     setFit((prev) => {
-      const next = Math.max(0.55, prev * (slotHeight / used));
-      return next < prev - 0.012 ? next : prev;
+      const next = prev * (slotHeight / used);
+      const floor = 7 / baseFont;
+      if (next <= floor) return prev <= floor ? prev : floor;
+      return next < prev ? next : prev;
     });
-  }, [lineHeight, slotHeight]);
+  }, [baseFont, slotHeight]);
 
   return (
     <Pressable
@@ -2298,7 +2304,7 @@ const HifzKhatmPage = memo(function HifzKhatmPage({
       ]}
     >
       <View style={[styles.ltr, styles.khatmFrame]} onLayout={onFrameLayout}>
-        <KhatmBorder width={frameSize.width} height={frameSize.height} color={ink} />
+        <MushafGoldFrame width={frameSize.width} height={frameSize.height} />
         <View style={styles.khatmInner}>
           <Text
             style={[
@@ -2306,10 +2312,10 @@ const HifzKhatmPage = memo(function HifzKhatmPage({
               {
                 fontFamily: HIFZ_FONT,
                 fontSize: 20,
-                lineHeight: 30,
+                lineHeight: titleLine,
                 color: ink,
               },
-              androidFontPad,
+              khatmInkPad,
             ]}
           >
             {KHATM_TITLE}
@@ -2325,29 +2331,209 @@ const HifzKhatmPage = memo(function HifzKhatmPage({
                   lineHeight,
                   color: ink,
                 },
-                androidFontPad,
+                khatmInkPad,
               ]}
             >
               {KHATM_BODY}
             </Text>
-            <Text
-              style={[
-                styles.khatmClosing,
-                {
-                  fontFamily: HIFZ_FONT,
-                  fontSize,
-                  lineHeight,
-                  color: ink,
-                },
-                androidFontPad,
-              ]}
-            >
-              {KHATM_CLOSING}
-            </Text>
           </View>
+          <Text
+            style={[
+              styles.khatmClosing,
+              {
+                fontFamily: HIFZ_FONT,
+                fontSize,
+                lineHeight,
+                color: ink,
+              },
+              khatmInkPad,
+            ]}
+          >
+            {KHATM_CLOSING}
+          </Text>
           <View style={styles.khatmMedallion}>
             <KhatmMedallion color={ink} paper={background} />
           </View>
+        </View>
+      </View>
+    </Pressable>
+  );
+});
+
+const CREDITS_NAMES_AR = [
+  'سید عبدالاله شیرزادی',
+  'سید صفی‌الله شیرزادی',
+  'سید عبدالباقی شیرزادی',
+  'سید عبدالله شیرزادی',
+] as const;
+
+type CreditsCopy = {
+  title: string;
+  intro: string;
+  names: readonly string[];
+  closing: string;
+};
+
+const CREDITS_BY_LANGUAGE: Record<AppLanguage, CreditsCopy> = {
+  dari: {
+    title: 'التماس دعا',
+    intro: 'الحمد لله الذي بنعمته تتم الصالحات.\n\nاین مصحف شریف به سعی و اهتمام، به تمویل و تحت نظارت این برادران گرامی تهیه و ترتیب یافته است.',
+    names: CREDITS_NAMES_AR,
+    closing: 'از تلاوت‌کنندگان التماس دعا است که ایشان را در دعای خیر فراموش نفرمایند. خداوند این خدمت را از آنان بپذیرد، بیامرزدشان، و برای آخرتشان ذخیره گرداند. آمین.',
+  },
+  pashto: {
+    title: 'د خیر دعا التماس',
+    intro: 'حمد هغه الله لره دی چې په نعمت یې نیک عملونه بشپړېږي.\n\nدا مبارک مصحف د دې درنو وروڼو په هڅه او اهتمام، په تمويل او د هغوی تر څارنې لاندې برابر او ترتیب شوی دی.',
+    names: CREDITS_NAMES_AR,
+    closing: 'له تلاوت کوونکو التماس دی چې دوی په خیر دعا کې هېر نه کړي. الله دې دا خدمت ترې ومني، وبښي یې، او د آخرت ذخیره دې یې وګرځوي. آمین.',
+  },
+  arabic: {
+    title: 'التماس الدعاء',
+    intro: 'الحمد لله الذي بنعمته تتم الصالحات.\n\nأُعِدَّ هذا المصحف الشريف ورُتِّب بسعي هؤلاء الإخوة الكرام واهتمامهم، وبتمويلهم وتحت إشرافهم.',
+    names: [
+      'السيد عبدالإله شيرزادي',
+      'السيد صفي الله شيرزادي',
+      'السيد عبدالباقي شيرزادي',
+      'السيد عبدالله شيرزادي',
+    ],
+    closing: 'يُلتَمس من تالي هذا الكلام المبارك ألا ينسوهم من صالح دعائهم. تقبّل الله هذه الخدمة منهم، وغفر لهم، وجعلها لهم ذخراً في الآخرة. آمين.',
+  },
+  english: {
+    title: 'A request for prayers',
+    intro: 'Praise belongs to Allah, by whose favor good works are brought to completion.\n\nThis noble mushaf was prepared and arranged through the care, the funding, and the oversight of these brothers.',
+    names: [
+      'Sayed Abdul Ellah Shirzadi',
+      'Said Safiullah Shirzadi',
+      'Sayed Abdul Baqi Shirzadi',
+      'Said Abdullah Shirzadi',
+    ],
+    closing: 'Those who recite this blessed Word are asked not to forget them in their prayers. May Allah accept this service from them, forgive them, and lay it up for them in the Hereafter. Amen.',
+  },
+  turkish: {
+    title: 'Hayır duası',
+    intro: 'Hamd, nimetleriyle güzel işlerin tamamlandığı Allah’a mahsustur.\n\nBu mübarek mushaf, şu kardeşlerin emeği, maddi destekleri ve gözetimleriyle hazırlanıp düzenlenmiştir.',
+    names: [
+      'Seyit Abdul Ellah Şirzadi',
+      'Seyit Safiyullah Şirzadi',
+      'Seyit Abdul Baki Şirzadi',
+      'Seyit Abdullah Şirzadi',
+    ],
+    closing: 'Bu mübarek kelâmı okuyanlardan, onları hayır dualarında unutmamalarını dileriz. Allah bu hizmeti kabul etsin, onları bağışlasın ve ahiretleri için azık eylesin. Âmin.',
+  },
+};
+
+/** Unnumbered leaf after the khatm dua. Asks only for prayers for the preparation team. */
+const HifzCreditsPage = memo(function HifzCreditsPage({
+  background,
+  ink,
+  contentPaddingTop,
+  contentPaddingBottom,
+  pageHeight,
+  pageWidth,
+  onToggleControls,
+}: {
+  background: string;
+  ink: string;
+  contentPaddingTop: number;
+  contentPaddingBottom: number;
+  pageHeight: number;
+  pageWidth: number;
+  onToggleControls: () => void;
+}) {
+  const language = useAppLanguage();
+  const copy = CREDITS_BY_LANGUAGE[language] ?? CREDITS_BY_LANGUAGE.dari;
+  const latin = isLatinLanguage(language);
+  const arabicScript = language === 'arabic';
+  const font = latin ? undefined : arabicScript ? HIFZ_FONT : NASTALIQ_FONT;
+  const direction = latin ? ('ltr' as const) : ('rtl' as const);
+  const bodySize = latin ? 16 : arabicScript ? 18 : 16;
+  const bodyLine = Math.round(bodySize * (latin ? 1.45 : arabicScript ? ARABIC_LINE_RATIO : NASTALIQ_LINE_RATIO));
+  const titleSize = latin ? 22 : 26;
+  const titleLine = Math.round(titleSize * (latin ? 1.35 : arabicScript ? ARABIC_LINE_RATIO : NASTALIQ_LINE_RATIO));
+  const [frameSize, setFrameSize] = useState({ width: Math.floor(pageWidth), height: 0 });
+
+  const onFrameLayout = useCallback((event: LayoutChangeEvent) => {
+    const width = Math.floor(event.nativeEvent.layout.width);
+    const height = Math.floor(event.nativeEvent.layout.height);
+    setFrameSize((prev) => {
+      if (Math.abs(prev.width - width) <= 1 && prev.height === height) return prev;
+      return { width, height };
+    });
+  }, []);
+
+  const textStyle = {
+    fontFamily: font,
+    color: ink,
+    textAlign: 'center' as const,
+    writingDirection: direction,
+  };
+
+  return (
+    <Pressable
+      testID="hifz16-credits"
+      onPress={onToggleControls}
+      style={[
+        styles.page,
+        {
+          width: pageWidth,
+          height: pageHeight > 0 ? pageHeight : undefined,
+          backgroundColor: background,
+          paddingTop: contentPaddingTop,
+          paddingBottom: contentPaddingBottom,
+        },
+      ]}
+    >
+      <View style={[styles.ltr, styles.khatmFrame]} onLayout={onFrameLayout}>
+        <MushafGoldFrame width={frameSize.width} height={frameSize.height} />
+        <View style={styles.creditsInner}>
+          <View style={styles.creditsHeading}>
+            <Text
+              style={[
+                styles.creditsTitle,
+                textStyle,
+                { fontSize: titleSize, lineHeight: titleLine },
+                androidFontPad,
+              ]}
+            >
+              {copy.title}
+            </Text>
+            <View style={styles.creditsRule} />
+          </View>
+          <Text
+            style={[
+              styles.creditsIntro,
+              textStyle,
+              { fontSize: bodySize, lineHeight: bodyLine },
+              androidFontPad,
+            ]}
+          >
+            {copy.intro}
+          </Text>
+          <View style={styles.creditsNames}>
+            {copy.names.map((name) => (
+              <Text
+                key={name}
+                style={[
+                  styles.creditsName,
+                  textStyle,
+                  { fontSize: bodySize, lineHeight: bodyLine },
+                  androidFontPad,
+                ]}
+              >
+                {name}
+              </Text>
+            ))}
+          </View>
+          <Text
+            style={[
+              styles.creditsClosing,
+              textStyle,
+              { fontSize: bodySize, lineHeight: bodyLine },
+              androidFontPad,
+            ]}
+          >
+            {copy.closing}
+          </Text>
         </View>
       </View>
     </Pressable>
@@ -2495,7 +2681,7 @@ export const Hifz16View = memo(function Hifz16View({
   const scrollToPage = useCallback(
     (page: number, animated: boolean) => {
       const first = HAS_HIFZ_DEDICATION ? HIFZ_DEDICATION_PAGE : 1;
-      const target = Math.min(HIFZ_KHATM_PAGE, Math.max(first, page));
+      const target = Math.min(HIFZ_CREDITS_PAGE, Math.max(first, page));
       const current = visiblePageRef.current;
       const width = layoutWidthRef.current;
       cancelAnimation(drag);
@@ -2600,7 +2786,7 @@ export const Hifz16View = memo(function Hifz16View({
 
     const jumpToNearestContainingPage = () => {
       const visible = visiblePageRef.current;
-      if (visible === HIFZ_DEDICATION_PAGE || visible === HIFZ_KHATM_PAGE) return;
+      if (isHifzExtraLeaf(visible)) return;
       if (pages.includes(visible)) return;
       const target =
         visible < firstPage ? firstPage : visible > lastPage ? lastPage : firstPage;
@@ -2630,7 +2816,7 @@ export const Hifz16View = memo(function Hifz16View({
     };
 
     const followProgress = (position: number, duration: number) => {
-      if (visiblePageRef.current === HIFZ_DEDICATION_PAGE || visiblePageRef.current === HIFZ_KHATM_PAGE) return;
+      if (isHifzExtraLeaf(visiblePageRef.current)) return;
       const target = pageForProgress(position, duration);
       if (userInterruptedFollowRef.current) {
         if (target === visiblePageRef.current) {
@@ -2677,7 +2863,7 @@ export const Hifz16View = memo(function Hifz16View({
     pageNumber: number,
     preferred?: { surah: number; ayah: number },
   ) => {
-    if (pageNumber === HIFZ_DEDICATION_PAGE || pageNumber === HIFZ_KHATM_PAGE) {
+    if (isHifzExtraLeaf(pageNumber)) {
       // Extra leaves are not mushaf pages and must not replace the saved reading position.
       onVisiblePositionChangeRef.current?.(0, 0, pageNumber);
       return;
@@ -2909,6 +3095,21 @@ export const Hifz16View = memo(function Hifz16View({
           </View>
         );
       }
+      if (pageNumber === HIFZ_CREDITS_PAGE) {
+        return (
+          <View style={{ flex: 1 }}>
+            <HifzCreditsPage
+              background={readerTokens.page}
+              ink={readerTokens.arabic}
+              contentPaddingTop={contentPaddingTop}
+              contentPaddingBottom={contentPaddingBottom}
+              pageHeight={pageHeight}
+              pageWidth={layoutWidth}
+              onToggleControls={() => setControlsVisible((visible) => !visible)}
+            />
+          </View>
+        );
+      }
       const page = getHifzPage(pageNumber);
       if (!page) {
         return (
@@ -2927,6 +3128,7 @@ export const Hifz16View = memo(function Hifz16View({
               contentBottom={contentPaddingBottom}
               activePlayingSurah={activePlayingSurah}
               activePlayingAyah={activePlayingAyah}
+              pageActive={pageNumber === visiblePage && !gliding}
               onAyahPress={handleAyahPress}
               onPagePress={() => setControlsVisible((visible) => !visible)}
             />
@@ -2960,6 +3162,7 @@ export const Hifz16View = memo(function Hifz16View({
       activePlayingSurah,
       contentPaddingBottom,
       contentPaddingTop,
+      gliding,
       handleAyahPress,
       isAyahBookmarked,
       layoutWidth,
@@ -2968,6 +3171,7 @@ export const Hifz16View = memo(function Hifz16View({
       readerTokens.arabic,
       readerTokens.page,
       readerTokens.text,
+      visiblePage,
     ]
   );
 
@@ -2977,7 +3181,9 @@ export const Hifz16View = memo(function Hifz16View({
     ? t('quran.hifz.dedicationTitle')
     : visiblePage === HIFZ_KHATM_PAGE
       ? t('quran.hifz.khatmTitle')
-      : null;
+      : visiblePage === HIFZ_CREDITS_PAGE
+        ? t('quran.hifz.creditsTitle')
+        : null;
 
   const pageSlots = layoutWidth > 0
     ? [neighborHifzPage(visiblePage, 1), neighborHifzPage(visiblePage, -1), visiblePage]
@@ -2995,7 +3201,9 @@ export const Hifz16View = memo(function Hifz16View({
                 ? 'hifz16-dedication-slot'
                 : page === HIFZ_KHATM_PAGE
                   ? 'hifz16-khatm-slot'
-                  : `hifz16-slot-${page}`}
+                  : page === HIFZ_CREDITS_PAGE
+                    ? 'hifz16-credits-slot'
+                    : `hifz16-slot-${page}`}
               page={page}
               width={layoutWidth}
               settled={settled}
@@ -3055,7 +3263,9 @@ export const Hifz16View = memo(function Hifz16View({
                   ? 'hifz16-dedication-title'
                   : visiblePage === HIFZ_KHATM_PAGE
                     ? 'hifz16-khatm-title'
-                    : 'hifz16-page-meta'}
+                    : visiblePage === HIFZ_CREDITS_PAGE
+                      ? 'hifz16-credits-title'
+                      : 'hifz16-page-meta'}
                 style={[styles.readerPageText, { color: readerTokens.text }]}
               >
                 {leafTitle ?? `\u200E${n(visiblePage)} / ${n(HIFZ16_PAGE_COUNT)}\u200E`}
@@ -3090,12 +3300,12 @@ export const Hifz16View = memo(function Hifz16View({
               testID="hifz16-next-page"
               accessibilityRole="button"
               accessibilityLabel={t('quran.page.next')}
-              disabled={visiblePage >= HIFZ_KHATM_PAGE}
+              disabled={visiblePage >= HIFZ_CREDITS_PAGE}
               onPress={() => scrollToPage(
                 visiblePage + 1,
                 true,
               )}
-              style={[styles.readerAction, visiblePage >= HIFZ_KHATM_PAGE && styles.readerActionDisabled]}
+              style={[styles.readerAction, visiblePage >= HIFZ_CREDITS_PAGE && styles.readerActionDisabled]}
             >
               <MaterialIcons name="chevron-left" size={25} color={readerTokens.accent} />
             </Pressable>
@@ -3824,12 +4034,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     marginBottom: 6,
+    paddingBottom: 4,
   },
   khatmBodySlot: {
     flex: 1,
     minHeight: 0,
     justifyContent: 'center',
     overflow: 'hidden',
+    direction: 'rtl',
   },
   khatmBody: {
     textAlign: 'justify',
@@ -3843,6 +4055,36 @@ const styles = StyleSheet.create({
   khatmMedallion: {
     alignItems: 'center',
     marginTop: 6,
+  },
+  creditsInner: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 28,
+    paddingVertical: 24,
+    zIndex: 1,
+    gap: 16,
+  },
+  creditsHeading: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  creditsTitle: {
+    marginBottom: 0,
+  },
+  creditsRule: {
+    width: 72,
+    height: 1,
+    backgroundColor: ILLUM.gold,
+  },
+  creditsIntro: {},
+  creditsNames: {
+    gap: 10,
+    marginTop: 14,
+    marginBottom: 14,
+  },
+  creditsName: {},
+  creditsClosing: {
+    marginTop: 4,
   },
   openingMetaBand: {
     flexDirection: 'row',

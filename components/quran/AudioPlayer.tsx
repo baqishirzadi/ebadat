@@ -147,7 +147,10 @@ export function AudioPlayer({
   if (!isVisible) return null;
 
   const isPreparing = playback.status === 'preparing' || playback.status === 'buffering';
-  const statusText = playback.errorMessage || (isPreparing ? playback.statusMessage : '');
+  // Preparing and buffering copy sits under the controls and changes the
+  // player height, so the page jumps up and back down. The spinner on the
+  // play button is the loading indicator. Errors stay, because they are rare.
+  const statusText = playback.errorMessage ?? '';
 
   return (
     <View

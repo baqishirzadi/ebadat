@@ -2,8 +2,8 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
 import { NumericText } from '@/components/ui/NumericText';
 import { useApp } from '@/context/AppContext';
-import { toArabicNumerals } from '@/data/surahNames';
 import { getUthmaniFont } from '@/hooks/useFonts';
+import { useI18n } from '@/utils/i18n/useI18n';
 import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
@@ -39,6 +39,7 @@ export function SurahDecoratedCard({
   style,
 }: SurahDecoratedCardProps) {
   const { theme, state } = useApp();
+  const { n } = useI18n();
   const language = state.preferences.appLanguage;
   const directionalRow = rowStyle(language);
   const actionIconName = actionIcon || forwardChevronName(language);
@@ -61,7 +62,7 @@ export function SurahDecoratedCard({
         <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
         <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
         <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <NumericText style={styles.numberText}>{toArabicNumerals(surahNumber)}</NumericText>
+          <NumericText style={styles.numberText}>{n(surahNumber)}</NumericText>
         </View>
         <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
         <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />

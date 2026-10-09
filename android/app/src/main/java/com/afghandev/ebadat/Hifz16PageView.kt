@@ -60,6 +60,14 @@ class Hifz16PageView(context: Context) : View(context) {
   private var accentColor = Color.rgb(14, 107, 79)
   private var highlightSurah: Int? = null
   private var highlightAyah: Int? = null
+  /** True only for the page under the finger. Neighbors keep their texture. */
+  private var pageActive = false
+  private val redrawAfterLayerDrop = Runnable {
+    if (!pageActive) return@Runnable
+    dropHardwareLayers()
+    invalidate()
+    postInvalidateOnAnimation()
+  }
   private var topInset = 0f
   private var bottomInset = 0f
   private val mushafTypeface: Typeface = Typeface.createFromAsset(context.assets, "fonts/ScheherazadeNew-Regular.ttf")
@@ -109,7 +117,13 @@ class Hifz16PageView(context: Context) : View(context) {
       override fun getAccessibilityNodeProvider(host: View): AccessibilityNodeProvider = ayahAccessibility
     }
     // A prop update before attachment marks the view dirty and then drops it.
-    postInvalidateOnAnimation()
+    // The page being read also drops any hardware layer it still carries.
+    if (pageActive) forceRedraw() else postInvalidateOnAnimation()
+  }
+
+  override fun onDetachedFromWindow() {
+    removeCallbacks(redrawAfterLayerDrop)
+    super.onDetachedFromWindow()
   }
 
   fun setPaperColor(value: String?) {
@@ -137,6 +151,16 @@ class Hifz16PageView(context: Context) : View(context) {
     invalidate()
   }
 
+  fun setPageActive(value: Boolean) {
+    val becameActive = value && !pageActive
+    pageActive = value
+    if (!value) {
+      removeCallbacks(redrawAfterLayerDrop)
+      return
+    }
+    if (becameActive) forceRedraw()
+  }
+
   fun setActiveSurah(value: Int?) {
     if (highlightSurah == value) return
     highlightSurah = value
@@ -150,34 +174,35 @@ class Hifz16PageView(context: Context) : View(context) {
   }
 
   /**
-   * The page is often held in a hardware layer so the next sheet can slide in
-   * already drawn. invalidate() marks that layer dirty and Android then drops
-   * the update, which is why a tapped ayah stays unhighlighted until the page
-   * is created again. Drop the layer on the visible sheet and draw now.
+   * Neighbor pages stay in a hardware layer so the next sheet is already
+   * drawn. That layer survives after the sheet becomes the page on screen,
+   * and invalidate() then never reaches the display, so a tapped ayah stays
+   * unhighlighted. The page being read drops the layer on itself and its
+   * slot, including while a leftover translation is still on that slot, and
+   * draws again on the next frame in case React Native puts the layer back
+   * in the same commit.
    */
   private fun forceRedraw() {
-    val slideParent = findSlidingParent()
-    if (slideParent == null || (slideParent.translationX == 0f && slideParent.translationY == 0f)) {
-      var ancestor = parent
-      while (ancestor is View) {
-        if (ancestor.layerType != LAYER_TYPE_NONE) {
-          ancestor.setLayerType(LAYER_TYPE_NONE, null)
-        }
-        ancestor.invalidate()
-        ancestor = ancestor.parent
-      }
-    }
+    if (pageActive) dropHardwareLayers()
     invalidate()
     postInvalidateOnAnimation()
+    if (!pageActive) return
+    removeCallbacks(redrawAfterLayerDrop)
+    post(redrawAfterLayerDrop)
   }
 
-  private fun findSlidingParent(): View? {
+  private fun dropHardwareLayers() {
+    if (layerType != LAYER_TYPE_NONE) {
+      setLayerType(LAYER_TYPE_NONE, null)
+    }
     var ancestor = parent
     while (ancestor is View) {
-      if (ancestor.translationX != 0f || ancestor.translationY != 0f) return ancestor
+      if (ancestor.layerType != LAYER_TYPE_NONE) {
+        ancestor.setLayerType(LAYER_TYPE_NONE, null)
+      }
+      ancestor.invalidate()
       ancestor = ancestor.parent
     }
-    return parent as? View
   }
 
   override fun onDraw(canvas: Canvas) {

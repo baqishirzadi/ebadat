@@ -32,6 +32,7 @@ import { CityKey, getCity, localizeCityName, normalizeCityKey } from '@/utils/ci
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
 import { getDisplayQiblaBearing, distanceToKaaba } from '@/utils/prayerTimes';
 import { hydratePrayerCityFromStorage } from '@/utils/qiblaLocationReady';
+import { backIconName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 const { width } = Dimensions.get('window');
@@ -238,7 +239,9 @@ export default function QiblaScreen() {
         hitSlop={10}
         style={styles.headerBack}
       >
-        <MaterialIcons name="arrow-forward" size={24} color="#fff" />
+        <View style={styles.iconUnmirrored}>
+          <MaterialIcons name={backIconName(language)} size={24} color="#fff" />
+        </View>
       </Pressable>
       <RtlText align="center" style={styles.headerTitle}>{t('qibla.title')}</RtlText>
       <View style={styles.headerBack} />
@@ -434,6 +437,9 @@ const styles = StyleSheet.create({
     height: 36,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  iconUnmirrored: {
+    direction: 'ltr',
   },
   headerTitle: {
     flex: 1,

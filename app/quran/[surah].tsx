@@ -105,6 +105,7 @@ export default function QuranReaderScreen() {
   );
   const [hifzOnDedication, setHifzOnDedication] = useState(false);
   const [hifzOnKhatm, setHifzOnKhatm] = useState(false);
+  const [hifzOnCredits, setHifzOnCredits] = useState(false);
   const [forcedHifzPage, setForcedHifzPage] = useState<number | null>(null);
   const headerSurahNumber = hifz16Line ? hifzVisibleSurah : surahNumber;
   const surahNameData = getSurahName(headerSurahNumber);
@@ -113,15 +114,24 @@ export default function QuranReaderScreen() {
     if (page === 0) {
       setHifzOnDedication(true);
       setHifzOnKhatm(false);
+      setHifzOnCredits(false);
       return;
     }
-    if (typeof page === 'number' && page > HIFZ16_PAGE_COUNT) {
+    if (page === HIFZ16_PAGE_COUNT + 1) {
       setHifzOnKhatm(true);
       setHifzOnDedication(false);
+      setHifzOnCredits(false);
+      return;
+    }
+    if (page === HIFZ16_PAGE_COUNT + 2) {
+      setHifzOnCredits(true);
+      setHifzOnDedication(false);
+      setHifzOnKhatm(false);
       return;
     }
     setHifzOnDedication(false);
     setHifzOnKhatm(false);
+    setHifzOnCredits(false);
     setHifzVisibleSurah(nextSurah);
     setHifzVisibleAyah(ayah);
     if (typeof page === 'number' && page > 0) setHifzVisiblePage(page);
@@ -134,12 +144,14 @@ export default function QuranReaderScreen() {
     setHifzVisiblePage(requestedHifzPage ?? findHifzPageForAyah(surahNumber, initialAyah));
     setHifzOnDedication(false);
     setHifzOnKhatm(false);
+    setHifzOnCredits(false);
   }, [initialAyah, requestedHifzPage, surahNumber]);
 
   useEffect(() => {
     if (!hifz16Line) {
       setHifzOnDedication(false);
       setHifzOnKhatm(false);
+      setHifzOnCredits(false);
     }
   }, [hifz16Line]);
 
@@ -483,9 +495,11 @@ export default function QuranReaderScreen() {
     ? t('quran.hifz.dedicationTitle')
     : hifz16Line && hifzOnKhatm
       ? t('quran.hifz.khatmTitle')
-      : surahNameData
-      ? `سورة ${surahNameData.arabic}`
-      : `سوره ${toArabicNumerals(headerSurahNumber)}`;
+      : hifz16Line && hifzOnCredits
+        ? t('quran.hifz.creditsTitle')
+        : surahNameData
+          ? `سورة ${surahNameData.arabic}`
+          : `سوره ${toArabicNumerals(headerSurahNumber)}`;
 
   const contentPaddingTop = insets.top + SURAH_TOP_BAR_HEIGHT + Spacing.sm;
   const contentPaddingBottom = hifz16Line

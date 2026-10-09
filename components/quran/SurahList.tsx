@@ -88,7 +88,7 @@ const SurahItem = React.memo(function SurahItem({
         <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
         <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
         <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <NumericText style={styles.numberText}>{toArabicNumerals(surah.number)}</NumericText>
+          <NumericText style={styles.numberText}>{n(surah.number)}</NumericText>
         </View>
         <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
         <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />

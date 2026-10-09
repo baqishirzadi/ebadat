@@ -11,6 +11,7 @@ import { useApp } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
 import { pickContent } from '@/utils/i18n/content';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface CategorySelectorProps {
   selectedCategory: DuaCategory | null;
@@ -19,6 +20,7 @@ interface CategorySelectorProps {
 
 export function CategorySelector({ selectedCategory, onSelect }: CategorySelectorProps) {
   const { theme, state } = useApp();
+  const { fontFamily, isLatin } = useI18n();
   const language = state.preferences.appLanguage;
 
   return (
@@ -46,7 +48,7 @@ export function CategorySelector({ selectedCategory, onSelect }: CategorySelecto
                 color={isSelected ? theme.tint : theme.textSecondary}
               />
             </View>
-            <CenteredText style={[styles.name, { color: isSelected ? theme.tint : theme.text }]}>
+            <CenteredText style={[styles.name, !isLatin && { fontFamily }, isLatin && styles.nameLatin, { color: isSelected ? theme.tint : theme.text }]}>
               {pickContent(category, 'name', language)}
             </CenteredText>
             {isSelected && (
@@ -90,12 +92,14 @@ const styles = StyleSheet.create({
   name: {
     fontSize: Typography.ui.body,
     fontWeight: '600',
-    fontFamily: 'Vazirmatn',
+  },
+  nameLatin: {
+    fontFamily: undefined,
   },
   checkmark: {
     position: 'absolute',
     top: Spacing.xs,
-    left: Spacing.xs,
+    start: Spacing.xs,
     width: 24,
     height: 24,
     borderRadius: 12,

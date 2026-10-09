@@ -23,6 +23,7 @@ type NativeHifz16PageProps = ViewProps & {
   contentBottom: number;
   activeSurah?: number;
   activeAyah?: number;
+  pageActive?: boolean;
   onHifzLinePress?: (event: NativeSyntheticEvent<NativePressPayload>) => void;
   onHifzPagePress?: (event: NativeSyntheticEvent<NativePressPayload>) => void;
 };
@@ -38,6 +39,7 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
   contentBottom,
   activePlayingSurah,
   activePlayingAyah,
+  pageActive = false,
   onAyahPress,
   onPagePress,
 }: {
@@ -49,6 +51,7 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
   contentBottom: number;
   activePlayingSurah?: number | null;
   activePlayingAyah?: number | null;
+  pageActive?: boolean;
   onAyahPress: (surah: number, ayah: number) => void;
   onPagePress: () => void;
 }) {
@@ -70,6 +73,7 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
       contentBottom={contentBottom}
       activeSurah={activePlayingSurah ?? 0}
       activeAyah={activePlayingAyah ?? 0}
+      pageActive={pageActive}
       onHifzLinePress={(event) => {
         const { surah, ayah } = event.nativeEvent;
         if (surah && ayah) onAyahPress(surah, ayah);

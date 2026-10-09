@@ -96,6 +96,7 @@ export const quranMessages = {
   },
   'quran.hifz.dedicationTitle': { dari: 'مقدمه', pashto: 'مقدمه', english: 'Preface', turkish: 'Önsöz', arabic: 'مقدمة' },
   'quran.hifz.khatmTitle': { dari: 'دعای ختم', pashto: 'د قرآن ختم دعا', english: 'Completion prayer', turkish: 'Hatim duası', arabic: 'دعاء الختم' },
+  'quran.hifz.creditsTitle': { dari: 'التماس دعا', pashto: 'د خیر دعا التماس', english: 'A request for prayers', turkish: 'Hayır duası', arabic: 'التماس الدعاء' },
   'quran.hifz.dock.play': { dari: 'شروع تلاوت', pashto: 'تلاوت پیل', english: 'Start recitation', turkish: 'Tilaveti başlat', arabic: 'بدء التلاوة' },
   'quran.hifz.dock.bookmark': { dari: 'نشانه‌گذاری آیه', pashto: 'آیت نښه کول', english: 'Bookmark ayah', turkish: 'Ayeti yer imlerine ekle', arabic: 'وضع علامة على الآية' },
   'quran.hifz.dock.unbookmark': { dari: 'حذف نشانه', pashto: 'نښه لرې کول', english: 'Remove bookmark', turkish: 'Yer imini kaldır', arabic: 'حذف العلامة' },

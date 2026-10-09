@@ -13,7 +13,6 @@ import CenteredText from '@/components/CenteredText';
 import { NumericText } from '@/components/ui/NumericText';
 import { RtlView } from '@/components/ui/RtlView';
 import { TranslationToggle } from './TranslationToggle';
-import { toArabicNumerals } from '@/utils/numbers';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { QuranText } from './QuranText';
 import { QuranDownloadCard } from './QuranDownloadCard';
@@ -55,7 +54,7 @@ export const SurahHeader = memo(function SurahHeader({
   readerTokens,
 }: SurahHeaderProps) {
   const { theme, state } = useApp();
-  const { isPashto, t } = useI18n();
+  const { isPashto, n, t } = useI18n();
   const metadata = getSurah(number);
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
   const selectedArabicSize = Typography.arabic[arabicFontSize ?? state.preferences.arabicFontSize];
@@ -99,7 +98,7 @@ export const SurahHeader = memo(function SurahHeader({
       <View style={[styles.compactWrapper, { backgroundColor: pageColor, borderBottomColor: readerTokens?.divider ?? theme.divider }]}>
         <View style={styles.compactHeader}>
           <View style={[styles.compactNumber, { backgroundColor: readerTokens?.surface ?? theme.backgroundSecondary }]}>
-            <NumericText style={[styles.compactNumberText, { color: accentColor }]}>{toArabicNumerals(number)}</NumericText>
+            <NumericText style={[styles.compactNumberText, { color: accentColor }]}>{n(number)}</NumericText>
           </View>
           <View style={styles.compactTitleBlock}>
             <QuranText
@@ -111,7 +110,7 @@ export const SurahHeader = memo(function SurahHeader({
             <CenteredText style={[styles.compactMeta, { color: secondaryColor }]}>
               {t(revelationType === 'Meccan' ? 'quran.meccan' : 'quran.medinan')}
               {' · '}
-              {toArabicNumerals(ayahCount)} آیه
+              {t('quran.ayahs', { count: n(ayahCount) })}
             </CenteredText>
           </View>
           {onPlayPress ? (
@@ -153,7 +152,7 @@ export const SurahHeader = memo(function SurahHeader({
         {/* Surah Number */}
         <View style={[styles.numberBadge, { backgroundColor: `${readerAccent}18` }]}>
           <NumericText style={[styles.numberText, { color: readerAccent }]}>
-            {toArabicNumerals(number)}
+            {n(number)}
           </NumericText>
         </View>
 
@@ -196,7 +195,7 @@ export const SurahHeader = memo(function SurahHeader({
           <View style={[styles.metaItem, { backgroundColor: `${readerAccent}18` }]}>
             <MaterialIcons name="format-list-numbered" size={14} color={readerAccent} />
             <CenteredText style={[styles.metaText, { color: readerSecondary }]}>
-              {toArabicNumerals(ayahCount)} آیه
+              {t('quran.ayahs', { count: n(ayahCount) })}
             </CenteredText>
           </View>
           <View style={[styles.metaItem, { backgroundColor: `${readerAccent}18` }]}>
@@ -206,9 +205,7 @@ export const SurahHeader = memo(function SurahHeader({
               color={readerAccent}
             />
             <CenteredText style={[styles.metaText, { color: readerSecondary }]}>
-              {isPashto
-                ? t(revelationType === 'Meccan' ? 'quran.meccan' : 'quran.medinan')
-                : revelationType === 'Meccan' ? 'مکی' : 'مدنی'}
+              {t(revelationType === 'Meccan' ? 'quran.meccan' : 'quran.medinan')}
             </CenteredText>
           </View>
           <Pressable

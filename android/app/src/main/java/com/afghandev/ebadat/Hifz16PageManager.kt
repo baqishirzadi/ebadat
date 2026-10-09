@@ -18,6 +18,8 @@ class Hifz16PageManager : SimpleViewManager<Hifz16PageView>() {
   @ReactProp(name = "contentBottom") fun setContentBottom(view: Hifz16PageView, value: Float) = view.setBottomInset(value)
   @ReactProp(name = "activeSurah") fun setActiveSurah(view: Hifz16PageView, value: Int) = view.setActiveSurah(value.takeIf { it > 0 })
   @ReactProp(name = "activeAyah") fun setActiveAyah(view: Hifz16PageView, value: Int) = view.setActiveAyah(value.takeIf { it > 0 })
+  @ReactProp(name = "pageActive", defaultBoolean = false)
+  fun setPageActive(view: Hifz16PageView, value: Boolean) = view.setPageActive(value)
 
   override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> =
     MapBuilder.builder<String, Any>()

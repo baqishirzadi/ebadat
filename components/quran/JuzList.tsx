@@ -1,7 +1,7 @@
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { JuzRange } from '@/data/juzRanges';
-import { SURAH_NAMES, toArabicNumerals } from '@/data/surahNames';
+import { SURAH_NAMES } from '@/data/surahNames';
 import { getUthmaniFont } from '@/hooks/useFonts';
 import { directionStyle, textCenterStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
@@ -38,7 +38,7 @@ function isPositionInsideJuz(position: ReadingPosition, juz: JuzRange): boolean 
 
 export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps) {
   const { theme } = useApp();
-  const { t, content, language } = useI18n();
+  const { t, n, content, language } = useI18n();
   const direction = directionStyle(language);
   const textCenter = textCenterStyle(language);
   const surahNameMap = useMemo(
@@ -58,16 +58,16 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
     <View style={[styles.grid, direction]}>
       {juzItems.map((juz) => {
         const isCurrent = currentPosition ? isPositionInsideJuz(currentPosition, juz) : false;
-        const title = t('quran.juzTitle', { number: toArabicNumerals(juz.juzNumber) });
+        const title = t('quran.juzTitle', { number: n(juz.juzNumber) });
         const pageLine = t('quran.pageRange', {
-          start: toArabicNumerals(juz.startPage),
-          end: toArabicNumerals(juz.endPage),
+          start: n(juz.startPage),
+          end: n(juz.endPage),
         });
         const rangeLine = t('quran.surahAyahRange', {
-          startSurah: surahNameMap.get(juz.startSurah) || toArabicNumerals(juz.startSurah),
-          startAyah: toArabicNumerals(juz.startAyah),
-          endSurah: surahNameMap.get(juz.endSurah) || toArabicNumerals(juz.endSurah),
-          endAyah: toArabicNumerals(juz.endAyah),
+          startSurah: surahNameMap.get(juz.startSurah) || n(juz.startSurah),
+          startAyah: n(juz.startAyah),
+          endSurah: surahNameMap.get(juz.endSurah) || n(juz.endSurah),
+          endAyah: n(juz.endAyah),
         });
 
         return (
@@ -105,7 +105,7 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
                   style={[styles.medallionNumber, { color: theme.playing }]}
                   numberOfLines={1}
                 >
-                  {toArabicNumerals(juz.juzNumber)}
+                  {n(juz.juzNumber)}
                 </LocalizedText>
               </View>
               <View style={styles.info}>
