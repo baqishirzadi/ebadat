@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Path
+import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.os.Bundle
@@ -430,30 +431,28 @@ class Hifz16PageView(context: Context) : View(context) {
     }
     val center = width / 2f
     var cursorRight = if (centered) center + measuredWidth / 2f else textRight
-    // The end sign sits on the left of its ayah. A small pad on the right keeps
-    // the border off the previous sign; the left grows enough to hold the circle.
+    // The band follows the glyph ink. Advance is wider than the ink, so the old
+    // box ran past the last letter. Hit testing still uses the advance.
     val hitPad = 2f * density
-    val edgePad = 2f * density
-    val plainPad = 3f * density
-    val insetY = 4f * density
+    val side = 4f * density
     val highlights = mutableListOf<RectF>()
+    val ink = Rect()
 
     for ((index, span) in spans.withIndex()) {
       val spanWidth = max(0f, segmentWidths[index])
       val spanLeft = cursorRight - spanWidth
       val hitBounds = RectF(spanLeft - hitPad, top, cursorRight + hitPad, bottom)
-      if (highlightSurah == surah && highlightAyah == span.ayah) {
-        val hasMarker = span.end > span.start && text[span.end - 1] == '﴾'
-        // The measured span stops short of the closing ornament, so the band
-        // grows by that glyph until the whole circle is inside.
-        val ornament = if (hasMarker) arabicPaint.measureText(text, span.end - 1, span.end) else 0f
-        val leftPad = if (hasMarker) max(10f * density, ornament * 2.5f) else plainPad
-        val rightPad = if (hasMarker) edgePad else plainPad
+      if (highlightSurah == surah && highlightAyah == span.ayah && span.end > span.start) {
+        arabicPaint.getTextBounds(text, span.start, span.end, ink)
+        val advance = max(spanWidth, arabicPaint.measureText(text, span.start, span.end))
+        // Bounds are measured from the left of the run. The right-aligned draw
+        // point is cursorRight, so the ink's right edge stays on that point.
+        val originLeft = cursorRight - advance
         val visual = RectF(
-          spanLeft - leftPad,
-          top + insetY,
-          cursorRight + rightPad,
-          bottom - insetY,
+          originLeft + ink.left - side,
+          top,
+          originLeft + ink.right + side,
+          bottom,
         )
         if (visual.width() > density && visual.height() > density) {
           val previous = highlights.lastOrNull()

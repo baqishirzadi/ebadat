@@ -2786,8 +2786,9 @@ export const Hifz16View = memo(function Hifz16View({
     userInterruptedFollowRef.current = false;
   }, [drag, settled, startPage, surahNumber, turnToken]);
 
-  // Follow the playing ayah in both directions. Mid-ayah multi-page turns
-  // follow audio progress. Manual paging pauses follow until audio catches up.
+  // Follow the playing ayah. A new ayah snaps onto a full page; progress
+  // through a multi-page ayah only moves forward. Manual paging pauses follow
+  // until audio catches up.
   useEffect(() => {
     if (activePlayingSurah == null || activePlayingAyah == null) {
       userInterruptedFollowRef.current = false;
@@ -2802,6 +2803,23 @@ export const Hifz16View = memo(function Hifz16View({
     const firstPage = pages[0];
     const lastPage = pages[pages.length - 1];
     userInterruptedFollowRef.current = false;
+    // Furthest page this ayah has already shown. Progress ticks never turn
+    // backward, so a position wobble at a page boundary cannot flash the
+    // previous page. A new ayah starts this effect over and clears the lock.
+    let audioPage = pages.includes(visiblePageRef.current)
+      ? visiblePageRef.current
+      : firstPage - 1;
+
+    const revealFullPage = (target: number) => {
+      if (target === visiblePageRef.current) {
+        audioPage = Math.max(audioPage, target);
+        return;
+      }
+      // Instant settle. A 220ms glide was restarted by the next 250ms progress
+      // tick before visiblePageRef committed, which left a half page on screen.
+      scrollToPage(target, false);
+      audioPage = Math.max(audioPage, visiblePageRef.current);
+    };
 
     const jumpToNearestContainingPage = () => {
       const visible = visiblePageRef.current;
@@ -2809,7 +2827,7 @@ export const Hifz16View = memo(function Hifz16View({
       if (pages.includes(visible)) return;
       const target =
         visible < firstPage ? firstPage : visible > lastPage ? lastPage : firstPage;
-      scrollToPage(target, true);
+      revealFullPage(target);
     };
 
     jumpToNearestContainingPage();
@@ -2840,12 +2858,12 @@ export const Hifz16View = memo(function Hifz16View({
       if (userInterruptedFollowRef.current) {
         if (target === visiblePageRef.current) {
           userInterruptedFollowRef.current = false;
+          audioPage = target;
         }
         return;
       }
-      if (target !== visiblePageRef.current) {
-        scrollToPage(target, true);
-      }
+      if (target <= audioPage) return;
+      revealFullPage(target);
     };
 
     const snap = audioManager.getPlaybackSnapshot();
