@@ -4,7 +4,7 @@
  * No English - All Arabic/Dari
  */
 
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 
 import { View, StyleSheet, Pressable, Alert, BackHandler } from 'react-native';
 import { LocalizedText } from '@/components/ui/LocalizedText';
@@ -38,6 +38,12 @@ import { useQuranReaderSettings } from '@/hooks/useQuranReaderSettings';
 const SURAH_TOP_BAR_HEIGHT = 56;
 const QURAN_AUDIO_PLAYER_RESERVED_HEIGHT = 148;
 const QURAN_FONT_SIZES = ['small', 'medium', 'large', 'xlarge'] as const;
+
+type ForcedHifzTarget = {
+  page: number;
+  surah: number;
+  ayah: number;
+};
 
 export default function QuranReaderScreen() {
   const {
@@ -106,7 +112,10 @@ export default function QuranReaderScreen() {
   const [hifzOnDedication, setHifzOnDedication] = useState(false);
   const [hifzOnKhatm, setHifzOnKhatm] = useState(false);
   const [hifzOnCredits, setHifzOnCredits] = useState(false);
-  const [forcedHifzPage, setForcedHifzPage] = useState<number | null>(null);
+  const [forcedHifz, setForcedHifz] = useState<ForcedHifzTarget | null>(null);
+  // Surah whose recitation this screen started. Playback of that surah keeps
+  // the highlight and the player even after a swipe leaves the route surah.
+  const followedPlaybackSurahRef = useRef<number | null>(null);
   const headerSurahNumber = hifz16Line ? hifzVisibleSurah : surahNumber;
   const surahNameData = getSurahName(headerSurahNumber);
 
@@ -145,6 +154,13 @@ export default function QuranReaderScreen() {
     setHifzOnDedication(false);
     setHifzOnKhatm(false);
     setHifzOnCredits(false);
+    setForcedHifz((current) => {
+      if (!current) return null;
+      const sameTarget = current.surah === surahNumber
+        && current.ayah === initialAyah
+        && (requestedHifzPage == null || current.page === requestedHifzPage);
+      return sameTarget ? current : null;
+    });
   }, [initialAyah, requestedHifzPage, surahNumber]);
 
   useEffect(() => {
@@ -223,14 +239,18 @@ export default function QuranReaderScreen() {
     };
   }, [downloadBadgeNonce, surahScope]);
 
+  const isFollowedSurah = useCallback((surah: number) => (
+    surah === surahNumber || surah === followedPlaybackSurahRef.current
+  ), [surahNumber]);
+
   const syncFromAudioSnapshot = useCallback(() => {
     const snapshot = audioManager.getPlaybackSnapshot();
     const hasAudioPosition =
       snapshot.isActive && snapshot.scopeType != null && snapshot.surah > 0 && snapshot.ayah > 0;
     const isMatchingSurah = hasAudioPosition && snapshot.surah === surahNumber;
     // A surah opened from the list stays on its own page. Audio from another
-    // surah must not pull the 16-line reader to that other page.
-    const hifzFollows = hifz16Line && isMatchingSurah;
+    // surah pulls the 16-line reader only when this screen started it.
+    const hifzFollows = hifz16Line && hasAudioPosition && isFollowedSurah(snapshot.surah);
 
     // Translation keeps the opened surah. Playing a different surah must not
     // rewrite this route, or picking another item from the list snaps back.
@@ -254,7 +274,7 @@ export default function QuranReaderScreen() {
     ));
     setShowAudioPlayer(true);
     setIsPlaying(snapshot.isPlaying);
-  }, [hifz16Line, surahNumber]);
+  }, [hifz16Line, isFollowedSurah, surahNumber]);
 
   const handleTranslationPositionChange = useCallback((nextSurah: number, nextAyah: number) => {
     if (nextSurah === surahNumber && nextAyah > 0) setTranslationVisibleAyah(nextAyah);
@@ -307,7 +327,7 @@ export default function QuranReaderScreen() {
   useFocusEffect(
     useCallback(() => {
       audioManager.setOnAyahChange((s, a) => {
-        if (s !== surahNumber) return;
+        if (!isFollowedSurah(s)) return;
         setCurrentlyPlaying((previous) => (
           previous?.surah === s && previous.ayah === a
             ? previous
@@ -318,6 +338,7 @@ export default function QuranReaderScreen() {
       });
 
       audioManager.setOnPlaybackEnd(() => {
+        followedPlaybackSurahRef.current = null;
         setIsPlaying(false);
         setCurrentlyPlaying(null);
         setShowAudioPlayer(false);
@@ -334,7 +355,7 @@ export default function QuranReaderScreen() {
         audioManager.setOnAyahChange(null);
         audioManager.setOnPlaybackEnd(null);
       };
-    }, [hifz16Line, surahNumber, syncFromAudioSnapshot])
+    }, [isFollowedSurah, syncFromAudioSnapshot])
   );
 
   const handlePlayAyah = useCallback((surahNum: number, ayahNum: number) => {
@@ -344,6 +365,7 @@ export default function QuranReaderScreen() {
       currentlyPlaying?.surah === surahNum && currentlyPlaying?.ayah === ayahNum;
 
     if (isSameAyah && audioManager.getIsPlaying()) {
+      followedPlaybackSurahRef.current = null;
       setIsPlaying(false);
       setCurrentlyPlaying(null);
       setShowAudioPlayer(false);
@@ -358,12 +380,14 @@ export default function QuranReaderScreen() {
       audioManager.getCurrentSurah() === surahNum &&
       audioManager.getCurrentAyah() === ayahNum
     ) {
+      followedPlaybackSurahRef.current = surahNum;
       setIsPlaying(true);
       setShowAudioPlayer(true);
       void audioManager.resume();
       return;
     }
 
+    followedPlaybackSurahRef.current = surahNum;
     setCurrentlyPlaying({ surah: surahNum, ayah: ayahNum });
     setShowAudioPlayer(true);
     setIsPlaying(true);
@@ -387,6 +411,7 @@ export default function QuranReaderScreen() {
       currentlyPlaying?.surah === surahNum && currentlyPlaying?.ayah === ayahNum;
 
     if (isSameAyah && audioManager.getIsPlaying()) {
+      followedPlaybackSurahRef.current = null;
       setIsPlaying(false);
       setCurrentlyPlaying(null);
       setShowAudioPlayer(false);
@@ -400,12 +425,14 @@ export default function QuranReaderScreen() {
       audioManager.getCurrentSurah() === surahNum &&
       audioManager.getCurrentAyah() === ayahNum
     ) {
+      followedPlaybackSurahRef.current = surahNum;
       setIsPlaying(true);
       setShowAudioPlayer(true);
       void audioManager.resume();
       return;
     }
 
+    followedPlaybackSurahRef.current = surahNum;
     setCurrentlyPlaying({ surah: surahNum, ayah: ayahNum });
     setShowAudioPlayer(true);
     setIsPlaying(true);
@@ -426,6 +453,7 @@ export default function QuranReaderScreen() {
     const ayahCount = getSurahName(playSurah)?.ayahCount ?? surah?.ayahs.length;
     if (!ayahCount) return;
 
+    followedPlaybackSurahRef.current = playSurah;
     setCurrentlyPlaying({ surah: playSurah, ayah: playAyah });
     setShowAudioPlayer(true);
     setIsPlaying(true);
@@ -451,6 +479,7 @@ export default function QuranReaderScreen() {
   }, []);
 
   const handleStop = useCallback(() => {
+    followedPlaybackSurahRef.current = null;
     setIsPlaying(false);
     setCurrentlyPlaying(null);
     setShowAudioPlayer(false);
@@ -466,10 +495,11 @@ export default function QuranReaderScreen() {
   const goToNextSurah = useCallback(async () => {
     if (surahNumber < 114) {
       await audioManager.stop();
+      followedPlaybackSurahRef.current = null;
       setShowAudioPlayer(false);
       setCurrentlyPlaying(null);
       setIsPlaying(false);
-      setForcedHifzPage(null);
+      setForcedHifz(null);
       const nextSurah = surahNumber + 1;
       router.replace(hifz16Line
         ? `/quran/${nextSurah}?ayah=1&hifzPage=${getHifzSurahStartPage(nextSurah)}`
@@ -480,16 +510,91 @@ export default function QuranReaderScreen() {
   const goToPrevSurah = useCallback(async () => {
     if (surahNumber > 1) {
       await audioManager.stop();
+      followedPlaybackSurahRef.current = null;
       setShowAudioPlayer(false);
       setCurrentlyPlaying(null);
       setIsPlaying(false);
-      setForcedHifzPage(null);
+      setForcedHifz(null);
       const previousSurah = surahNumber - 1;
       router.replace(hifz16Line
         ? `/quran/${previousSurah}?ayah=1&hifzPage=${getHifzSurahStartPage(previousSurah)}`
         : `/quran/${previousSurah}`);
     }
   }, [hifz16Line, surahNumber, router]);
+
+  const resolveModeSwitchTarget = useCallback(() => {
+    const snapshot = audioManager.getPlaybackSnapshot();
+    const hasAudioPosition = snapshot.isActive
+      && snapshot.scopeType != null
+      && snapshot.surah > 0
+      && snapshot.ayah > 0;
+    const audioFollowed = hasAudioPosition && isFollowedSurah(snapshot.surah);
+    if (audioFollowed) {
+      return {
+        surah: snapshot.surah,
+        ayah: snapshot.ayah,
+        audioFollowed: true,
+        isPlaying: snapshot.isPlaying,
+      };
+    }
+    if (hifz16Line) {
+      return {
+        surah: hifzVisibleSurah,
+        ayah: Math.max(1, hifzVisibleAyah),
+        audioFollowed: false,
+        isPlaying: false,
+      };
+    }
+    return {
+      surah: surahNumber,
+      ayah: Math.max(1, translationVisibleAyah),
+      audioFollowed: false,
+      isPlaying: false,
+    };
+  }, [
+    hifz16Line,
+    hifzVisibleAyah,
+    hifzVisibleSurah,
+    isFollowedSurah,
+    surahNumber,
+    translationVisibleAyah,
+  ]);
+
+  const switchToTranslation = useCallback(() => {
+    if (!hifz16Line) return;
+    const target = resolveModeSwitchTarget();
+    setCurrentlyPlaying(target.audioFollowed ? { surah: target.surah, ayah: target.ayah } : null);
+    setIsPlaying(target.audioFollowed && target.isPlaying);
+    setShowAudioPlayer(target.audioFollowed);
+    setForcedHifz(null);
+    setHifz16Line(false);
+    router.setParams({
+      surah: String(target.surah),
+      ayah: String(target.ayah),
+      jump: 'exact',
+      jumpToken: `mode-${target.surah}-${target.ayah}-${Date.now()}`,
+      hifzPage: undefined,
+    });
+  }, [hifz16Line, resolveModeSwitchTarget, router, setHifz16Line]);
+
+  const switchToHifz16 = useCallback(() => {
+    if (hifz16Line) return;
+    const target = resolveModeSwitchTarget();
+    setCurrentlyPlaying(target.audioFollowed ? { surah: target.surah, ayah: target.ayah } : null);
+    setIsPlaying(target.audioFollowed && target.isPlaying);
+    setShowAudioPlayer(target.audioFollowed);
+    const targetPage = findHifzPageForAyah(target.surah, target.ayah)
+      ?? getHifzSurahStartPage(target.surah);
+    // Set the page before flipping the view so Hifz16 never mounts on a stale
+    // URL hifzPage (index 0 used to be mushaf page 548).
+    setForcedHifz({ page: targetPage, surah: target.surah, ayah: target.ayah });
+    setHifz16Line(true);
+    router.setParams({
+      surah: String(target.surah),
+      ayah: String(target.ayah),
+      hifzPage: String(targetPage),
+    });
+  }, [hifz16Line, resolveModeSwitchTarget, router, setHifz16Line]);
 
   const surahName = hifz16Line && hifzOnDedication
     ? t('quran.hifz.dedicationTitle')
@@ -576,28 +681,7 @@ export default function QuranReaderScreen() {
               testID="quran-reader-translation"
               accessibilityLabel={t('quran.reading.translation')}
               accessibilityState={{ selected: !hifz16Line }}
-              onPress={() => {
-                if (!hifz16Line) return;
-                const snapshot = audioManager.getPlaybackSnapshot();
-                // The page on screen decides the destination. Audio only follows
-                // along when it belongs to the surah the reader is showing;
-                // playback from an earlier surah must not move the reader.
-                const hasAudioPosition = snapshot.isActive && snapshot.scopeType != null && snapshot.surah > 0 && snapshot.ayah > 0;
-                const audioMatchesVisible = hasAudioPosition && snapshot.surah === hifzVisibleSurah;
-                const targetSurah = hifzVisibleSurah;
-                const targetAyah = audioMatchesVisible ? snapshot.ayah : Math.max(1, hifzVisibleAyah);
-                setCurrentlyPlaying(audioMatchesVisible ? { surah: targetSurah, ayah: targetAyah } : null);
-                setIsPlaying(audioMatchesVisible && snapshot.isPlaying);
-                setShowAudioPlayer(audioMatchesVisible);
-                setForcedHifzPage(null);
-                setHifz16Line(false);
-                requestAnimationFrame(() => router.setParams({
-                  surah: String(targetSurah),
-                  ayah: String(targetAyah),
-                  jump: 'exact',
-                  jumpToken: `mode-${targetSurah}-${targetAyah}-${Date.now()}`,
-                }));
-              }}
+              onPress={switchToTranslation}
               hitSlop={4}
               style={[
                 styles.modeSegment,
@@ -619,28 +703,7 @@ export default function QuranReaderScreen() {
               testID="quran-reader-hifz16"
               accessibilityLabel={t('quran.reading.hifz16')}
               accessibilityState={{ selected: hifz16Line }}
-              onPress={() => {
-                if (hifz16Line) return;
-                const snapshot = audioManager.getPlaybackSnapshot();
-                const hasAudioPosition = snapshot.isActive && snapshot.scopeType != null && snapshot.surah > 0 && snapshot.ayah > 0;
-                const audioMatchesVisible = hasAudioPosition && snapshot.surah === surahNumber;
-                const targetSurah = surahNumber;
-                const targetAyah = audioMatchesVisible ? snapshot.ayah : Math.max(1, translationVisibleAyah);
-                setCurrentlyPlaying(audioMatchesVisible ? { surah: targetSurah, ayah: targetAyah } : null);
-                setIsPlaying(audioMatchesVisible && snapshot.isPlaying);
-                setShowAudioPlayer(audioMatchesVisible);
-                const targetPage = findHifzPageForAyah(targetSurah, targetAyah)
-                  ?? getHifzSurahStartPage(targetSurah);
-                // Set the page before flipping the view so Hifz16 never mounts
-                // on a stale URL hifzPage (index 0 is mushaf page 548).
-                setForcedHifzPage(targetPage);
-                setHifz16Line(true);
-                requestAnimationFrame(() => router.setParams({
-                  surah: String(targetSurah),
-                  ayah: String(targetAyah),
-                  hifzPage: String(targetPage),
-                }));
-              }}
+              onPress={switchToHifz16}
               hitSlop={4}
               style={[
                 styles.modeSegment,
@@ -695,10 +758,10 @@ export default function QuranReaderScreen() {
 
       {hifz16Line ? (
         <Hifz16View
-          key={`hifz16-${surahNumber}-${initialAyah}-${forcedHifzPage ?? requestedHifzPage ?? 'ayah'}`}
-          surahNumber={surahNumber}
-          initialAyah={initialAyah}
-          initialPage={forcedHifzPage ?? requestedHifzPage}
+          key={`hifz16-${forcedHifz?.surah ?? surahNumber}-${forcedHifz?.ayah ?? initialAyah}-${forcedHifz?.page ?? requestedHifzPage ?? 'ayah'}`}
+          surahNumber={forcedHifz?.surah ?? surahNumber}
+          initialAyah={forcedHifz?.ayah ?? initialAyah}
+          initialPage={forcedHifz?.page ?? requestedHifzPage}
           contentPaddingTop={contentPaddingTop}
           contentPaddingBottom={contentPaddingBottom}
           activePlayingSurah={currentlyPlaying?.surah ?? null}

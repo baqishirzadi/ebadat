@@ -1,13 +1,21 @@
 /**
- * Quran text utilities
- * Strips Quranic annotation marks (waqf signs) that render as black circles in some fonts.
- * Removes U+06D6-U+06ED. Does NOT touch core letters or standard harakat.
+ * Quran text utilities.
+ * Annotation marks live in U+06D6–U+06ED. Pause signs and the sajdah mark stay
+ * in the reader. Ayah-end ornaments, hizb markers, and filled circles do not.
+ * Core letters and standard harakat are never touched.
  */
 const QURANIC_MARKS_REGEX = /[\u06D6-\u06ED]/g;
+/** Ayah-end, rub el hizb, and decorative dots. Pause signs U+06D6–U+06DC and sajdah U+06E9 stay. */
+const DECORATIVE_QURANIC_MARKS_REGEX = /[\u06DD\u06DE\u06DF-\u06E8\u06EA-\u06ED]/g;
 
-/** Remove optional waqf markers. Core Uthmani text unchanged. */
+/** Remove every annotation mark, including waqf signs. Used by search and bookmarks. */
 export function stripQuranicMarks(text: string, _quranFont?: string): string {
   return text.replace(QURANIC_MARKS_REGEX, '');
+}
+
+/** Reader text: keep ج، م، لا، قلی، صلی، س and the sajdah sign. */
+export function keepWaqfMarks(text: string): string {
+  return text.replace(DECORATIVE_QURANIC_MARKS_REGEX, '');
 }
 
 // Some source entries join the coordinate directly to the first Pashto word

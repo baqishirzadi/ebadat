@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.accessibility.AccessibilityNodeInfo
 import android.view.accessibility.AccessibilityNodeProvider
 import com.facebook.react.bridge.Arguments
@@ -60,14 +61,10 @@ class Hifz16PageView(context: Context) : View(context) {
   private var accentColor = Color.rgb(14, 107, 79)
   private var highlightSurah: Int? = null
   private var highlightAyah: Int? = null
-  /** True only for the page under the finger. Neighbors keep their texture. */
-  private var pageActive = false
-  private val redrawAfterLayerDrop = Runnable {
-    if (!pageActive) return@Runnable
-    dropHardwareLayers()
-    invalidate()
-    postInvalidateOnAnimation()
-  }
+  private var touchDownX = 0f
+  private var touchDownY = 0f
+  private var touchMoved = false
+  private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
   private var topInset = 0f
   private var bottomInset = 0f
   private val mushafTypeface: Typeface = Typeface.createFromAsset(context.assets, "fonts/ScheherazadeNew-Regular.ttf")
@@ -116,14 +113,7 @@ class Hifz16PageView(context: Context) : View(context) {
     accessibilityDelegate = object : AccessibilityDelegate() {
       override fun getAccessibilityNodeProvider(host: View): AccessibilityNodeProvider = ayahAccessibility
     }
-    // A prop update before attachment marks the view dirty and then drops it.
-    // The page being read also drops any hardware layer it still carries.
-    if (pageActive) forceRedraw() else postInvalidateOnAnimation()
-  }
-
-  override fun onDetachedFromWindow() {
-    removeCallbacks(redrawAfterLayerDrop)
-    super.onDetachedFromWindow()
+    postInvalidateOnAnimation()
   }
 
   fun setPaperColor(value: String?) {
@@ -151,60 +141,16 @@ class Hifz16PageView(context: Context) : View(context) {
     invalidate()
   }
 
-  fun setPageActive(value: Boolean) {
-    val becameActive = value && !pageActive
-    pageActive = value
-    if (!value) {
-      removeCallbacks(redrawAfterLayerDrop)
-      return
-    }
-    if (becameActive) forceRedraw()
-  }
-
   fun setActiveSurah(value: Int?) {
     if (highlightSurah == value) return
     highlightSurah = value
-    if (!pageActive) return
-    forceRedraw()
+    invalidate()
   }
 
   fun setActiveAyah(value: Int?) {
     if (highlightAyah == value) return
     highlightAyah = value
-    if (!pageActive) return
-    forceRedraw()
-  }
-
-  /**
-   * Neighbor pages stay in a hardware layer so the next sheet is already
-   * drawn. That layer survives after the sheet becomes the page on screen,
-   * and invalidate() then never reaches the display, so a tapped ayah stays
-   * unhighlighted. The page being read drops the layer on itself and its
-   * slot, including while a leftover translation is still on that slot, and
-   * draws again on the next frame in case React Native puts the layer back
-   * in the same commit.
-   */
-  private fun forceRedraw() {
-    if (pageActive) dropHardwareLayers()
     invalidate()
-    postInvalidateOnAnimation()
-    if (!pageActive) return
-    removeCallbacks(redrawAfterLayerDrop)
-    post(redrawAfterLayerDrop)
-  }
-
-  private fun dropHardwareLayers() {
-    if (layerType != LAYER_TYPE_NONE) {
-      setLayerType(LAYER_TYPE_NONE, null)
-    }
-    var ancestor = parent
-    while (ancestor is View) {
-      if (ancestor.layerType != LAYER_TYPE_NONE) {
-        ancestor.setLayerType(LAYER_TYPE_NONE, null)
-      }
-      ancestor.invalidate()
-      ancestor = ancestor.parent
-    }
   }
 
   override fun onDraw(canvas: Canvas) {
@@ -309,21 +255,21 @@ class Hifz16PageView(context: Context) : View(context) {
       }
       arabicPaint.textAlign = if (centered) Paint.Align.CENTER else Paint.Align.RIGHT
       val text = if (centered) line.text else stretchToWidth(line.text, textWidth)
+      var drawBaseline = baseline
       if (!centered) {
         val measured = arabicPaint.measureText(text)
         arabicPaint.textScaleX = (textWidth / max(1f, measured)).coerceIn(0.94f, 1.10f)
       } else if (arabicPaint.measureText(text) > textWidth) {
-        if (line.type == "ayah" && line.surah != null) {
-          drawAyahSpans(canvas, line, text, top, bottom, centered, textRight, density)
-        }
-        drawFitted(canvas, text, (left + right) / 2f, baseline, textWidth, lineSize, Paint.Align.CENTER)
-        continue
+        // Fit first so the highlight and the hit box match the drawn glyphs.
+        applyFit(text, textWidth, lineSize)
+        drawBaseline = top + (rowHeight - (arabicPaint.descent() + arabicPaint.ascent())) / 2f
       }
       if (line.type == "ayah" && line.surah != null) {
         drawAyahSpans(canvas, line, text, top, bottom, centered, textRight, density)
       }
-      canvas.drawText(text, if (centered) (left + right) / 2f else textRight, baseline, arabicPaint)
+      canvas.drawText(text, if (centered) (left + right) / 2f else textRight, drawBaseline, arabicPaint)
       arabicPaint.textScaleX = 1f
+      arabicPaint.textSize = lineSize
     }
   }
 
@@ -418,6 +364,22 @@ class Hifz16PageView(context: Context) : View(context) {
     close()
   }
 
+  /** Shrink text size down to 72%, then scale horizontally no lower than 0.92. Leaves the paint fitted. */
+  private fun applyFit(text: String, available: Float, baseSize: Float) {
+    var size = baseSize
+    val floor = baseSize * 0.72f
+    arabicPaint.textScaleX = 1f
+    arabicPaint.textSize = size
+    while (size > floor && arabicPaint.measureText(text) > available) {
+      size -= resources.displayMetrics.scaledDensity
+      arabicPaint.textSize = size
+    }
+    val measured = arabicPaint.measureText(text)
+    if (measured > available) {
+      arabicPaint.textScaleX = (available / max(1f, measured)).coerceIn(0.92f, 1f)
+    }
+  }
+
   /** Shrink text size down to 72%, then scale horizontally no lower than 0.92. */
   private fun drawFitted(
     canvas: Canvas,
@@ -428,19 +390,8 @@ class Hifz16PageView(context: Context) : View(context) {
     baseSize: Float,
     align: Paint.Align,
   ) {
-    var size = baseSize
-    val floor = baseSize * 0.72f
-    arabicPaint.textScaleX = 1f
     arabicPaint.textAlign = align
-    arabicPaint.textSize = size
-    while (size > floor && arabicPaint.measureText(text) > available) {
-      size -= resources.displayMetrics.scaledDensity
-      arabicPaint.textSize = size
-    }
-    val measured = arabicPaint.measureText(text)
-    if (measured > available) {
-      arabicPaint.textScaleX = (available / max(1f, measured)).coerceIn(0.92f, 1f)
-    }
+    applyFit(text, available, baseSize)
     canvas.drawText(text, x, baseline, arabicPaint)
     arabicPaint.textScaleX = 1f
     arabicPaint.textSize = baseSize
@@ -462,35 +413,46 @@ class Hifz16PageView(context: Context) : View(context) {
     if (spans.isEmpty()) return
 
     val measuredWidth = arabicPaint.measureText(text)
-    // Measure visual segments separately, then normalize them to the complete
-    // context-shaped row. Paint's RTL advance array is not in display order on
-    // every Android release, while normalized positive segment widths keep
-    // hit targets aligned with the visible right-to-left text.
-    val segmentWidths = spans.map { span ->
-      arabicPaint.measureText(text.substring(span.start, span.end))
+    // Advance is measured inside the shaped line, so kashida and textScaleX
+    // stay in the same boxes as the glyphs. Isolated substring widths drift.
+    val shapedWidths = spans.map { span ->
+      val toEnd = arabicPaint.getRunAdvance(text, 0, text.length, 0, text.length, true, span.end)
+      val toStart = arabicPaint.getRunAdvance(text, 0, text.length, 0, text.length, true, span.start)
+      abs(toEnd - toStart)
     }
-    val widthCorrection = measuredWidth / max(1f, segmentWidths.sum())
+    val shapedSum = shapedWidths.sum()
+    val segmentWidths = if (shapedSum > 1f && abs(shapedSum - measuredWidth) <= measuredWidth * 0.25f) {
+      shapedWidths
+    } else {
+      val isolated = spans.map { span -> arabicPaint.measureText(text.substring(span.start, span.end)) }
+      val isolatedSum = max(1f, isolated.sum())
+      isolated.map { it * measuredWidth / isolatedSum }
+    }
     val center = width / 2f
     var cursorRight = if (centered) center + measuredWidth / 2f else textRight
-    val hitHeight = max((bottom - top) * 1.08f, 18f * density)
-    val hitTop = (top + bottom - hitHeight) / 2f
-    val hitBottom = hitTop + hitHeight
-    // Vertical inset keeps one line's border off the next line. Horizontal
-    // pad does the opposite: Scheherazade draws the last letter and the ayah
-    // mark past measureText, so the wash has to run a little past the span.
-    val padX = 6f * density
-    val insetY = 3f * density
+    // The end sign sits on the left of its ayah. A small pad on the right keeps
+    // the border off the previous sign; the left grows enough to hold the circle.
+    val hitPad = 2f * density
+    val edgePad = 2f * density
+    val plainPad = 3f * density
+    val insetY = 4f * density
     val highlights = mutableListOf<RectF>()
 
     for ((index, span) in spans.withIndex()) {
-      val spanWidth = max(0f, segmentWidths[index] * widthCorrection)
+      val spanWidth = max(0f, segmentWidths[index])
       val spanLeft = cursorRight - spanWidth
-      val hitBounds = RectF(spanLeft, hitTop, cursorRight, hitBottom)
+      val hitBounds = RectF(spanLeft - hitPad, top, cursorRight + hitPad, bottom)
       if (highlightSurah == surah && highlightAyah == span.ayah) {
+        val hasMarker = span.end > span.start && text[span.end - 1] == '﴾'
+        // The measured span stops short of the closing ornament, so the band
+        // grows by that glyph until the whole circle is inside.
+        val ornament = if (hasMarker) arabicPaint.measureText(text, span.end - 1, span.end) else 0f
+        val leftPad = if (hasMarker) max(10f * density, ornament * 2.5f) else plainPad
+        val rightPad = if (hasMarker) edgePad else plainPad
         val visual = RectF(
-          spanLeft - padX,
+          spanLeft - leftPad,
           top + insetY,
-          cursorRight + padX,
+          cursorRight + rightPad,
           bottom - insetY,
         )
         if (visual.width() > density && visual.height() > density) {
@@ -513,13 +475,13 @@ class Hifz16PageView(context: Context) : View(context) {
     highlights.forEach { drawAyahHighlight(canvas, it, density) }
   }
 
-  /** A light mint pill. The border is drawn inside the fill so it cannot meet the next line. */
+  /** Light mint band. The border is drawn inside the fill so it cannot meet the next line. */
   private fun drawAyahHighlight(canvas: Canvas, rect: RectF, density: Float) {
-    val radius = 7f * density
+    val radius = 6f * density
     highlightPaint.style = Paint.Style.FILL
-    highlightPaint.color = Color.argb(92, 176, 222, 196)
+    highlightPaint.color = Color.argb(100, 184, 230, 204)
     canvas.drawRoundRect(rect, radius, radius, highlightPaint)
-    val stroke = density
+    val stroke = 1.25f * density
     val border = RectF(
       rect.left + stroke / 2f,
       rect.top + stroke / 2f,
@@ -529,7 +491,7 @@ class Hifz16PageView(context: Context) : View(context) {
     if (border.width() <= stroke || border.height() <= stroke) return
     highlightPaint.style = Paint.Style.STROKE
     highlightPaint.strokeWidth = stroke
-    highlightPaint.color = Color.argb(168, 46, 138, 104)
+    highlightPaint.color = Color.argb(210, 36, 140, 100)
     canvas.drawRoundRect(border, max(0f, radius - stroke / 2f), max(0f, radius - stroke / 2f), highlightPaint)
   }
 
@@ -569,13 +531,38 @@ class Hifz16PageView(context: Context) : View(context) {
   }
 
   override fun onTouchEvent(event: MotionEvent): Boolean {
-    if (event.action != MotionEvent.ACTION_UP) return true
-    val ayahHit = ayahHitTargets.firstOrNull { it.bounds.contains(event.x, event.y) }
-    if (ayahHit != null) {
-      emit("topHifzLinePress", ayahHit.surah, ayahHit.ayah)
-    } else {
-      performClick()
-      emit("topHifzPagePress", null, null)
+    when (event.actionMasked) {
+      MotionEvent.ACTION_DOWN -> {
+        touchDownX = event.x
+        touchDownY = event.y
+        touchMoved = false
+        return true
+      }
+      MotionEvent.ACTION_MOVE -> {
+        if (abs(event.x - touchDownX) > touchSlop || abs(event.y - touchDownY) > touchSlop) {
+          touchMoved = true
+        }
+        return true
+      }
+      MotionEvent.ACTION_CANCEL -> {
+        touchMoved = true
+        return true
+      }
+      MotionEvent.ACTION_UP -> {
+        val moved = touchMoved
+          || abs(event.x - touchDownX) > touchSlop
+          || abs(event.y - touchDownY) > touchSlop
+        touchMoved = false
+        if (moved) return true
+        val ayahHit = ayahHitTargets.firstOrNull { it.bounds.contains(event.x, event.y) }
+        if (ayahHit != null) {
+          emit("topHifzLinePress", ayahHit.surah, ayahHit.ayah)
+        } else {
+          performClick()
+          emit("topHifzPagePress", null, null)
+        }
+        return true
+      }
     }
     return true
   }

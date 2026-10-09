@@ -13,7 +13,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>fa</string>
 	<key>CFBundleDisplayName</key>
-	<string>عبادت</string>
+	<string>عبادت | ibadet</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIcons</key>

@@ -7,6 +7,7 @@ import {
   getAyahCachePath,
   getAyahUrlCandidates,
   hasMp3Header,
+  DEFAULT_QURAN_RECITER,
   migrateStoredReciterKey,
   RECITERS,
   type ReciterKey,
@@ -57,7 +58,7 @@ export async function getSavedDownloadReciter(): Promise<ReciterKey | null> {
   }
 }
 
-export async function getPreferredDownloadReciter(fallback: ReciterKey = 'minshawy_murattal'): Promise<ReciterKey> {
+export async function getPreferredDownloadReciter(fallback: ReciterKey = DEFAULT_QURAN_RECITER): Promise<ReciterKey> {
   return (await getSavedDownloadReciter()) ?? fallback;
 }
 

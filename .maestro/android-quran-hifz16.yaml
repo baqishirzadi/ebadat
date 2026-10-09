@@ -69,6 +69,13 @@ appId: com.afghandev.ebadat
     id: hifz16-reader-controls
 - assertVisible:
     id: hifz16-page-meta
+- runFlow:
+    when:
+      visible:
+        text: "Open debugger to view warnings."
+    commands:
+      - tapOn:
+          point: "7%, 94%"
 - tapOn:
     id: hifz16-previous-page
 - extendedWaitUntil:
@@ -149,6 +156,41 @@ appId: com.afghandev.ebadat
     id: hifz16-page-2
 - assertVisible:
     text: "٢:٢"
+# Page 3 is still Al-Baqarah, while playback started on the route of surah 1.
+# The tapped ayah must stay highlighted and keep the same player text across modes.
+- swipe:
+    start: "20%, 50%"
+    end: "80%, 50%"
+    duration: 300
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: hifz16-page-3
+- tapOn:
+    point: "45%, 50%"
+- extendedWaitUntil:
+    visible:
+      id: quran-audio-current-ayah
+    timeout: 10000
+- copyTextFrom:
+    id: quran-audio-current-ayah
+- evalScript: ${output.hifzAyah = maestro.copiedText}
+- tapOn:
+    id: quran-reader-translation
+- extendedWaitUntil:
+    visible:
+      id: quran-translation-reader
+    timeout: 10000
+- assertVisible:
+    id: quran-audio-current-ayah
+- tapOn:
+    id: quran-reader-hifz16
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-3
+    timeout: 10000
+- assertVisible:
+    text: ${output.hifzAyah}
 - tapOn:
     id: quran-audio-close
 - tapOn:

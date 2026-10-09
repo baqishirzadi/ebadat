@@ -15,7 +15,7 @@ import { useApp, useBookmarks } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { getArabicFontFamily, getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
-import { stripPashtoAyahReference, stripQuranicMarks } from '@/utils/quranText';
+import { keepWaqfMarks, stripPashtoAyahReference } from '@/utils/quranText';
 import { rowStyle } from '@/utils/i18n/direction';
 import { QuranText } from './QuranText';
 import { toArabicNumerals } from '@/utils/numbers';
@@ -167,7 +167,7 @@ export const AyahRow = memo(function AyahRow({
             },
           ]}
         >
-          {stripBismillah(stripQuranicMarks(ayah.text, state.preferences.quranFont), surahNumber, ayah.number)}
+          {stripBismillah(keepWaqfMarks(ayah.text), surahNumber, ayah.number)}
           <Text
             style={[
               styles.ayahMarker,

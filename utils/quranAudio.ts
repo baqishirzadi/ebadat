@@ -14,7 +14,7 @@ export type ReciterKey =
   | 'abdul_basit';
 
 /** Default for new installs and unconfigured players; persisted user choices win. */
-export const DEFAULT_QURAN_RECITER: ReciterKey = 'minshawy_murattal';
+export const DEFAULT_QURAN_RECITER: ReciterKey = 'alafasy';
 
 export type QuranPlaybackScopeType = 'surah' | 'juz';
 export type QuranPlaybackStatus = 'idle' | 'preparing' | 'buffering' | 'playing' | 'paused' | 'error';

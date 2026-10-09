@@ -30,8 +30,9 @@ import Reanimated, {
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
 import { BorderRadius, Spacing } from '@/constants/theme';
-import { useAppLanguage, useBookmarks, useReadingPosition } from '@/context/AppContext';
+import { useAppLanguage, useBookmarks, useLocalizedFontPreferences, useReadingPosition } from '@/context/AppContext';
 import { getSurah, SURAH_NAMES } from '@/data/surahNames';
+import { getArabicBoldFontFamily, getArabicFontFamily, getDariFontFamily, getPashtoBoldFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { getPortraitWindowSize } from '@/hooks/usePortraitLock';
 import { useQuranReaderSettings } from '@/hooks/useQuranReaderSettings';
 import type { AppLanguage } from '@/types/quran';
@@ -107,7 +108,6 @@ const HifzPageSlot = memo(function HifzPageSlot({
   settled,
   drag,
   resting,
-  hardwareTexture,
   interactive,
   children,
 }: {
@@ -116,7 +116,6 @@ const HifzPageSlot = memo(function HifzPageSlot({
   settled: SharedValue<number>;
   drag: SharedValue<number>;
   resting: boolean;
-  hardwareTexture: boolean;
   interactive: boolean;
   children: React.ReactNode;
 }) {
@@ -127,7 +126,6 @@ const HifzPageSlot = memo(function HifzPageSlot({
     <Reanimated.View
       collapsable={false}
       pointerEvents={interactive ? 'auto' : 'none'}
-      renderToHardwareTextureAndroid={hardwareTexture}
       style={[
         { position: 'absolute', top: 0, bottom: 0, left: 0, width },
         resting ? null : animatedStyle,
@@ -149,7 +147,7 @@ const BASMALLAH_LINE_HEIGHT_RATIO = 2.35;
  */
 const LINE_INK_PAD = 6;
 const BISMILLAH = 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ';
-const AYAH_HIGHLIGHT = 'rgba(14, 107, 79, 0.12)';
+const AYAH_HIGHLIGHT = 'rgba(36, 140, 100, 0.28)';
 /**
  * Conjunction «وَ» before a hamza-alef word (وَاِذَا، وَاِذْ، وَاِیَّایَ، وَاَنِّیْ…)
  * must read as two words on a physical iPhone. Scheherazade swallows the
@@ -2377,15 +2375,15 @@ type CreditsCopy = {
 const CREDITS_BY_LANGUAGE: Record<AppLanguage, CreditsCopy> = {
   dari: {
     title: 'التماس دعا',
-    intro: 'الحمد لله الذي بنعمته تتم الصالحات.\n\nاین مصحف شریف به سعی و اهتمام، به تمویل و تحت نظارت این برادران گرامی تهیه و ترتیب یافته است.',
+    intro: 'الحمد لله الذي بنعمته تتم الصالحات.\n\nاین قرآن شریف را این برادران گرامی تهیه و طراحی کرده‌اند و هزینهٔ آن را نیز پرداخته‌اند.',
     names: CREDITS_NAMES_AR,
-    closing: 'از تلاوت‌کنندگان التماس دعا است که ایشان را در دعای خیر فراموش نفرمایند. خداوند این خدمت را از آنان بپذیرد، بیامرزدشان، و برای آخرتشان ذخیره گرداند. آمین.',
+    closing: 'از کسانی که این قرآن را می‌خوانند التماس دعا است که این برادران را در دعای خیر فراموش نکنند و ثواب تلاوت خود را به ایشان هدیه کنند. خداوند این خدمت را بپذیرد و ثواب آن را به آنان برساند. آمین.',
   },
   pashto: {
-    title: 'د خیر دعا التماس',
-    intro: 'حمد هغه الله لره دی چې په نعمت یې نیک عملونه بشپړېږي.\n\nدا مبارک مصحف د دې درنو وروڼو په هڅه او اهتمام، په تمويل او د هغوی تر څارنې لاندې برابر او ترتیب شوی دی.',
+    title: 'د خیر دعا غوښتنه',
+    intro: 'حمد هغه الله لره دی چې نیک کارونه په نعمت یې پای ته رسېږي.\n\nدا مبارک قرآن دغو ګرانو وروڼو برابر او طرحه کړی او لګښت یې هم ورکړی دی.',
     names: CREDITS_NAMES_AR,
-    closing: 'له تلاوت کوونکو التماس دی چې دوی په خیر دعا کې هېر نه کړي. الله دې دا خدمت ترې ومني، وبښي یې، او د آخرت ذخیره دې یې وګرځوي. آمین.',
+    closing: 'له لوستونکو التماس دی چې دا وروڼه په خیر دعا کې هېر نه کړي او د دې تلاوت ثواب دې ورته ډالۍ کړي. الله دې دا خدمت قبول کړي او ثواب دې ورته ورسوي. آمین.',
   },
   arabic: {
     title: 'التماس الدعاء',
@@ -2441,15 +2439,30 @@ const HifzCreditsPage = memo(function HifzCreditsPage({
   onToggleControls: () => void;
 }) {
   const language = useAppLanguage();
+  const fontPrefs = useLocalizedFontPreferences();
   const copy = CREDITS_BY_LANGUAGE[language] ?? CREDITS_BY_LANGUAGE.dari;
   const latin = isLatinLanguage(language);
-  const arabicScript = language === 'arabic';
-  const font = latin ? undefined : arabicScript ? HIFZ_FONT : NASTALIQ_FONT;
+  const dariFace = getDariFontFamily(fontPrefs?.dariFont ?? 'vazirmatn');
+  const bodyFont = latin
+    ? undefined
+    : language === 'pashto'
+      ? getPashtoFontFamily(fontPrefs?.pashtoFont)
+      : language === 'arabic'
+        ? getArabicFontFamily()
+        : dariFace;
+  const titleFont = latin
+    ? undefined
+    : language === 'pashto'
+      ? getPashtoBoldFontFamily(fontPrefs?.pashtoFont)
+      : language === 'arabic'
+        ? getArabicBoldFontFamily()
+        : `${dariFace}-Bold`;
   const direction = latin ? ('ltr' as const) : ('rtl' as const);
-  const bodySize = latin ? 16 : arabicScript ? 18 : 16;
-  const bodyLine = Math.round(bodySize * (latin ? 1.45 : arabicScript ? ARABIC_LINE_RATIO : NASTALIQ_LINE_RATIO));
+  const readableLine = 1.8;
+  const bodySize = latin ? 16 : language === 'arabic' ? 18 : 16;
+  const bodyLine = Math.round(bodySize * (latin ? 1.45 : readableLine));
   const titleSize = latin ? 22 : 26;
-  const titleLine = Math.round(titleSize * (latin ? 1.35 : arabicScript ? ARABIC_LINE_RATIO : NASTALIQ_LINE_RATIO));
+  const titleLine = Math.round(titleSize * (latin ? 1.35 : readableLine));
   const [frameSize, setFrameSize] = useState({ width: Math.floor(pageWidth), height: 0 });
 
   const onFrameLayout = useCallback((event: LayoutChangeEvent) => {
@@ -2462,7 +2475,7 @@ const HifzCreditsPage = memo(function HifzCreditsPage({
   }, []);
 
   const textStyle = {
-    fontFamily: font,
+    fontFamily: bodyFont,
     color: ink,
     textAlign: 'center' as const,
     writingDirection: direction,
@@ -2491,7 +2504,7 @@ const HifzCreditsPage = memo(function HifzCreditsPage({
               style={[
                 styles.creditsTitle,
                 textStyle,
-                { fontSize: titleSize, lineHeight: titleLine },
+                { fontFamily: titleFont, fontSize: titleSize, lineHeight: titleLine },
                 androidFontPad,
               ]}
             >
@@ -3134,7 +3147,6 @@ export const Hifz16View = memo(function Hifz16View({
               contentBottom={contentPaddingBottom}
               activePlayingSurah={activePlayingSurah}
               activePlayingAyah={activePlayingAyah}
-              pageActive={pageNumber === visiblePage && !gliding}
               onAyahPress={handleAyahPress}
               onPagePress={() => setControlsVisible((visible) => !visible)}
             />
@@ -3168,7 +3180,6 @@ export const Hifz16View = memo(function Hifz16View({
       activePlayingSurah,
       contentPaddingBottom,
       contentPaddingTop,
-      gliding,
       handleAyahPress,
       isAyahBookmarked,
       layoutWidth,
@@ -3177,7 +3188,6 @@ export const Hifz16View = memo(function Hifz16View({
       readerTokens.arabic,
       readerTokens.page,
       readerTokens.text,
-      visiblePage,
     ]
   );
 
@@ -3215,10 +3225,6 @@ export const Hifz16View = memo(function Hifz16View({
               settled={settled}
               drag={drag}
               resting={resting}
-              // Neighbors keep a texture so the next page is already drawn while
-              // it slides in. The page under the finger never gains one, or the
-              // native text pops and a new ayah highlight stays invisible.
-              hardwareTexture={page !== visiblePage}
               interactive={page === visiblePage}
             >
               <View
@@ -3278,8 +3284,12 @@ export const Hifz16View = memo(function Hifz16View({
                     : visiblePage === HIFZ_CREDITS_PAGE
                       ? 'hifz16-credits-title'
                       : 'hifz16-page-meta'}
+                numberOfLines={1}
+                adjustsFontSizeToFit
+                minimumFontScale={0.75}
                 style={[
                   leafTitle == null && latinCard ? styles.readerLatinText : styles.readerPageText,
+                  styles.readerMetaLine,
                   { color: readerTokens.text },
                 ]}
               >
@@ -3711,7 +3721,12 @@ const styles = StyleSheet.create({
   },
   readerPageMeta: {
     flex: 1,
+    minWidth: 0,
     alignItems: 'center',
+  },
+  readerMetaLine: {
+    width: '100%',
+    textAlign: 'center',
   },
   readerPageText: {
     fontFamily: 'Vazirmatn-Bold',
@@ -4116,21 +4131,27 @@ const styles = StyleSheet.create({
   },
   creditsTitle: {
     marginBottom: 0,
+    paddingVertical: 4,
   },
   creditsRule: {
     width: 72,
     height: 1,
     backgroundColor: ILLUM.gold,
   },
-  creditsIntro: {},
+  creditsIntro: {
+    paddingVertical: 4,
+  },
   creditsNames: {
     gap: 10,
     marginTop: 14,
     marginBottom: 14,
   },
-  creditsName: {},
+  creditsName: {
+    paddingVertical: 2,
+  },
   creditsClosing: {
     marginTop: 4,
+    paddingVertical: 4,
   },
   openingMetaBand: {
     flexDirection: 'row',
@@ -4423,9 +4444,10 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     width: '100%',
   },
-  // Soft wash + hairline gold frame on the playing ayah span only.
+  // Soft mint wash on the playing ayah span. No padding, so the line does not reflow.
   ayahHighlight: {
     backgroundColor: AYAH_HIGHLIGHT,
+    borderRadius: 6,
   },
   lineRow: {
     flex: 1,

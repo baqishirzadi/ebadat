@@ -14,7 +14,7 @@ import { AyahRow } from './AyahRow';
 import { SurahHeader } from './SurahHeader';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { Surah, Ayah } from '@/types/quran';
-import { stripQuranicMarks } from '@/utils/quranText';
+import { keepWaqfMarks } from '@/utils/quranText';
 import { QuranText } from './QuranText';
 import CenteredText from '@/components/CenteredText';
 import { toArabicNumerals } from '@/utils/numbers';
@@ -727,7 +727,7 @@ export const MushafView = React.memo(function MushafView({
                       },
                     ]}
                   >
-                    {stripBismillah(stripQuranicMarks(ayah.text, state.preferences.quranFont), surahNumber, ayah.number)}
+                    {stripBismillah(keepWaqfMarks(ayah.text), surahNumber, ayah.number)}
                     {state.preferences.quranFont === 'qpcHafs'
                       ? ` ${toArabicNumerals(ayah.number)}`
                       : ` ﴿${toArabicNumerals(ayah.number)}﴾`}
