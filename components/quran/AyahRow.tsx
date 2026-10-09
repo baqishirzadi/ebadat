@@ -15,7 +15,7 @@ import { useApp, useBookmarks } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
-import { stripQuranicMarks } from '@/utils/quranText';
+import { stripPashtoAyahReference, stripQuranicMarks } from '@/utils/quranText';
 import { rowStyle } from '@/utils/i18n/direction';
 import { QuranText } from './QuranText';
 import { toArabicNumerals } from '@/utils/numbers';
@@ -97,9 +97,13 @@ export const AyahRow = memo(function AyahRow({
     if (!text || text.trim() === '') return null;
 
     const fontFamily = lang === 'pashto' ? pashtoFontFamily : lang === 'dari' ? dariFontFamily : undefined;
+    const displayText = lang === 'pashto'
+      ? stripPashtoAyahReference(text, surahNumber, ayah.number)
+      : text;
     return (
       <View style={styles.translationContainer}>
         <QuranText
+          testID={lang === 'pashto' ? `quran-pashto-translation-${surahNumber}-${ayah.number}` : undefined}
           style={[
             styles.translationText,
             lang === 'english' && styles.translationTextEnglish,
@@ -111,7 +115,7 @@ export const AyahRow = memo(function AyahRow({
             },
           ]}
         >
-          {text}
+          {displayText}
         </QuranText>
       </View>
     );
@@ -119,14 +123,17 @@ export const AyahRow = memo(function AyahRow({
 
   return (
     <Pressable
+      testID={`quran-ayah-row-${surahNumber}-${ayah.number}`}
       onPress={onPress}
       onLongPress={onLongPress}
       style={({ pressed }) => [
         styles.container,
         {
-          backgroundColor: isPlaying ? `${theme.playing}10` : 'transparent',
-          borderBottomColor: dividerColor,
-          borderStartColor: isPlaying ? theme.playing : 'transparent',
+          backgroundColor: isPlaying ? `${readerTokens?.accent ?? theme.playing}12` : 'transparent',
+          borderColor: isPlaying ? `${readerTokens?.accent ?? theme.playing}72` : 'transparent',
+          borderWidth: isPlaying ? 1 : 0,
+          borderBottomWidth: isPlaying ? 1 : StyleSheet.hairlineWidth,
+          borderBottomColor: isPlaying ? `${readerTokens?.accent ?? theme.playing}72` : dividerColor,
           opacity: pressed ? 0.9 : 1,
         },
       ]}
@@ -141,6 +148,7 @@ export const AyahRow = memo(function AyahRow({
             {
               fontFamily: quranFontFamily,
               color: arabicColor,
+              includeFontPadding: true,
               fontSize: arabicSize,
               lineHeight: arabicLineHeight,
               paddingBottom: Math.round(arabicSize * 0.15),
@@ -152,13 +160,15 @@ export const AyahRow = memo(function AyahRow({
             style={[
               styles.ayahMarker,
               {
-                color: readerTokens?.accent ?? theme.tint,
+                color: arabicColor,
                 fontFamily: quranFontFamily,
                 fontSize: Math.round(arabicSize * 0.72),
               },
             ]}
           >
-            {' '}﴿{toArabicNumerals(ayah.number)}﴾
+            {state.preferences.quranFont === 'qpcHafs'
+              ? ` ${toArabicNumerals(ayah.number)}`
+              : ` ﴿${toArabicNumerals(ayah.number)}﴾`}
           </Text>
         </QuranText>
       </View>
@@ -182,6 +192,7 @@ export const AyahRow = memo(function AyahRow({
 
       <View style={[styles.actionBar, rowStyle(language)]}>
         <Pressable
+          testID={`quran-play-ayah-${surahNumber}-${ayah.number}`}
           onPress={onPlayPress}
           accessibilityRole="button"
           accessibilityLabel={t('quran.reader.play')}
@@ -215,11 +226,6 @@ export const AyahRow = memo(function AyahRow({
           />
         </Pressable>
 
-        <View style={styles.metaInfo}>
-          <Text style={[styles.metaText, { color: readerTokens?.textSecondary ?? theme.textSecondary }]}>
-            صفحه {toArabicNumerals(ayah.page)} • جز {toArabicNumerals(ayah.juz)}
-          </Text>
-        </View>
       </View>
 
       {ayah.sajda && (
@@ -233,10 +239,13 @@ export const AyahRow = memo(function AyahRow({
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: Spacing.md,
+    marginHorizontal: Spacing.sm,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.md,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderStartWidth: 3,
+    borderWidth: 0,
+    borderColor: 'transparent',
+    borderRadius: BorderRadius.md,
   },
   arabicContainer: {
     paddingHorizontal: Spacing.xs,
@@ -245,7 +254,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   arabicText: {
-    textAlign: 'right',
+    textAlign: 'center',
     writingDirection: 'rtl',
     width: '100%',
   },
@@ -285,15 +294,6 @@ const styles = StyleSheet.create({
   },
   actionButtonPressed: {
     opacity: 0.7,
-  },
-  metaInfo: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  metaText: {
-    fontSize: Typography.ui.caption,
-    fontFamily: 'Vazirmatn',
-    textAlign: 'center',
   },
   sajdaIndicator: {
     alignSelf: 'flex-start',

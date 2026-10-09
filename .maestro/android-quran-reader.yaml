@@ -3,6 +3,16 @@ appId: com.afghandev.ebadat
 - openLink: "ebadat://quran/1"
 - waitForAnimationToEnd:
     timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: quran-reader-ready
+    timeout: 30000
+- waitForAnimationToEnd:
+    timeout: 5000
+- tapOn:
+    id: quran-reader-translation
+- waitForAnimationToEnd:
+    timeout: 10000
 - assertVisible:
     id: quran-reader-settings
 - tapOn:
@@ -10,7 +20,7 @@ appId: com.afghandev.ebadat
 - extendedWaitUntil:
     visible:
       id: quran-reader-settings-sheet
-    timeout: 5000
+    timeout: 10000
 - takeScreenshot: android-quran-reader-settings-open
 - assertVisible:
     id: quran-reader-size-increase
@@ -36,43 +46,275 @@ appId: com.afghandev.ebadat
 - tapOn:
     id: quran-reader-font-qpcHafs
 - tapOn:
+    id: quran-reader-settings-done
+- extendedWaitUntil:
+    visible:
+      id: quran-translation-reader
+    timeout: 10000
+- takeScreenshot: android-quran-translation-qpc-font
+- tapOn:
+    id: quran-reader-settings
+- scrollUntilVisible:
+    element:
+      id: quran-reader-font-scheherazade
+    direction: DOWN
+    timeout: 5000
+- tapOn:
     id: quran-reader-font-scheherazade
 - tapOn:
     id: quran-reader-size-preset-large
 - tapOn:
     id: quran-reader-spacing-normal
 - tapOn:
-    id: quran-reader-page-auto
-- tapOn:
     id: quran-reader-font-scheherazade
+- scrollUntilVisible:
+    element:
+      id: quran-reader-translation-english
+    direction: DOWN
+    timeout: 5000
 - tapOn:
     id: quran-reader-translation-english
 - tapOn:
     id: quran-reader-translation-pashto
 - tapOn:
     id: quran-reader-settings-done
-- takeScreenshot: android-quran-reader-settings
-- tapOn:
-    id: quran-reader-mode-mushaf
 - extendedWaitUntil:
     visible:
-      id: quran-mushaf-page-1
+      id: quran-translation-reader
     timeout: 10000
-- takeScreenshot: android-quran-mushaf-page-1
+- assertNotVisible:
+    text: "1-1"
+- takeScreenshot: android-quran-translation-reader-sepia
 - tapOn:
-    id: quran-mushaf-next-page
+    id: quran-reader-settings
+- tapOn:
+    id: quran-reader-page-dark
+- tapOn:
+    id: quran-reader-settings-done
+- takeScreenshot: android-quran-translation-reader-dark
+- tapOn:
+    id: quran-reader-settings
+- tapOn:
+    id: quran-reader-page-auto
+- tapOn:
+    id: quran-reader-settings-done
+- takeScreenshot: android-quran-reader-settings
 - extendedWaitUntil:
     visible:
-      id: quran-mushaf-page-2
+      id: quran-translation-reader
+    timeout: 10000
+- assertNotVisible:
+    id: hifz16-reader-controls
+- takeScreenshot: android-quran-translation-reader
+- openLink: "ebadat://quran/2?ayah=2"
+- waitForAnimationToEnd:
+    timeout: 10000
+- assertVisible:
+    id: quran-ayah-row-2-2
+- assertVisible:
+    id: quran-pashto-translation-2-2
+- assertNotVisible:
+    text: "2-2"
+- takeScreenshot: android-quran-pashto-prefix-hidden
+- stopApp
+- openLink: "ebadat://quran/1"
+- waitForAnimationToEnd:
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: quran-reader-ready
+    timeout: 20000
+- tapOn:
+    id: quran-reader-translation
+- waitForAnimationToEnd:
+    timeout: 3000
+- tapOn:
+    id: quran-audio-close
+    optional: true
+- tapOn:
+    id: quran-play-ayah-1-1
+- extendedWaitUntil:
+    visible:
+      id: quran-audio-current-ayah
+    timeout: 15000
+- assertVisible:
+    text: "سوره ١ · آیه ١"
+- tapOn:
+    id: quran-audio-toggle
+- assertVisible:
+    text: "سوره ١ · آیه ١"
+- tapOn:
+    id: quran-reader-back-to-list
+- extendedWaitUntil:
+    visible:
+      id: ios-home-ready
+    timeout: 10000
+- scrollUntilVisible:
+    element:
+      id: quran-surah-2
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: quran-surah-2
+- extendedWaitUntil:
+    visible:
+      id: quran-reader-ready
+    timeout: 15000
+- assertVisible:
+    id: quran-reader-surah-title
+- assertVisible:
+    text: "سورة البقرة"
+- assertVisible:
+    id: quran-translation-reader
+- assertVisible:
+    id: quran-ayah-row-2-1
+- assertVisible:
+    text: "سوره ١ · آیه ١"
+- takeScreenshot: android-quran-audio-keeps-open-surah
+- tapOn:
+    id: quran-audio-close
+- openLink: "ebadat://quran/1"
+- waitForAnimationToEnd:
+    timeout: 5000
+- extendedWaitUntil:
+    visible:
+      id: quran-reader-surah-title
+    timeout: 15000
+- assertVisible:
+    text: "سورة الفاتحة"
+- openLink: "ebadat://quran/2?ayah=255&jump=exact&jumpToken=reader-typography-audio"
+- waitForAnimationToEnd:
+    timeout: 2000
+- waitForAnimationToEnd:
+    timeout: 10000
+- extendedWaitUntil:
+    visible:
+      id: quran-ayah-row-2-255
+    timeout: 15000
+# A long ayah is pinned at the top, so its play control can sit below the fold.
+- scrollUntilVisible:
+    element:
+      id: quran-play-ayah-2-255
+    direction: DOWN
+    timeout: 10000
+- tapOn:
+    id: quran-play-ayah-2-255
+- extendedWaitUntil:
+    visible:
+      id: quran-audio-current-ayah
+    timeout: 15000
+- assertVisible:
+    text: "سوره ٢ · آیه ٢٥٥"
+- tapOn:
+    id: quran-reader-settings
+- tapOn:
+    id: quran-reader-size-preset-small
+- scrollUntilVisible:
+    element:
+      id: quran-reader-font-qpcHafs
+    direction: DOWN
     timeout: 5000
 - tapOn:
-    id: quran-reader-mode-reading
-- assertNotVisible:
-    id: quran-mushaf-pages
+    id: quran-reader-font-qpcHafs
 - tapOn:
-    id: quran-reader-mode-mushaf
+    id: quran-reader-spacing-compact
+- tapOn:
+    id: quran-reader-settings-done
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: quran-ayah-row-2-255
+- assertVisible:
+    id: quran-audio-current-ayah
+- assertVisible:
+    text: "سوره ٢ · آیه ٢٥٥"
+- takeScreenshot: android-quran-playing-follow-after-font-change
+- tapOn:
+    id: quran-audio-close
+# Exact jumps at the start, middle and end of the surah.
+- openLink: "ebadat://quran/2?ayah=1&jump=exact&jumpToken=reader-jump-start"
 - extendedWaitUntil:
     visible:
-      id: quran-mushaf-page-2
+      id: quran-ayah-row-2-1
+    timeout: 20000
+- openLink: "ebadat://quran/2?ayah=142&jump=exact&jumpToken=reader-jump-middle"
+- extendedWaitUntil:
+    visible:
+      id: quran-ayah-row-2-142
+    timeout: 20000
+- openLink: "ebadat://quran/2?ayah=286&jump=exact&jumpToken=reader-jump-end"
+- extendedWaitUntil:
+    visible:
+      id: quran-ayah-row-2-286
+    timeout: 20000
+- takeScreenshot: android-quran-jump-end-of-surah
+# Mode round trip on page 1, with audio stopped.
+- openLink: "ebadat://quran/1?ayah=1&jump=exact&jumpToken=reader-mode-page1"
+- extendedWaitUntil:
+    visible:
+      id: quran-reader-ready
+    timeout: 20000
+- tapOn:
+    id: quran-reader-hifz16
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-1
+    timeout: 15000
+- tapOn:
+    id: quran-reader-translation
+- extendedWaitUntil:
+    visible:
+      id: quran-ayah-row-1-1
+    timeout: 15000
+# Mode round trip on a middle page, with audio playing.
+- openLink: "ebadat://quran/2?ayah=142&jump=exact&jumpToken=reader-mode-middle"
+- extendedWaitUntil:
+    visible:
+      id: quran-ayah-row-2-142
+    timeout: 20000
+- scrollUntilVisible:
+    element:
+      id: quran-play-ayah-2-142
+    direction: DOWN
     timeout: 10000
-- takeScreenshot: android-quran-mushaf-return
+- tapOn:
+    id: quran-play-ayah-2-142
+- extendedWaitUntil:
+    visible:
+      id: quran-audio-current-ayah
+    timeout: 15000
+- tapOn:
+    id: quran-reader-hifz16
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-20
+    timeout: 15000
+- tapOn:
+    id: quran-reader-translation
+- extendedWaitUntil:
+    visible:
+      id: quran-ayah-row-2-142
+    timeout: 15000
+- assertVisible:
+    text: "سوره ٢ · آیه ١٤٢"
+- tapOn:
+    id: quran-audio-close
+# Mode round trip on the last mushaf page, with audio stopped.
+- openLink: "ebadat://quran/113?ayah=1&jump=exact&jumpToken=reader-mode-page548"
+- extendedWaitUntil:
+    visible:
+      id: quran-reader-ready
+    timeout: 20000
+- tapOn:
+    id: quran-reader-hifz16
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-548
+    timeout: 15000
+- tapOn:
+    id: quran-reader-translation
+- extendedWaitUntil:
+    visible:
+      id: quran-ayah-row-113-1
+    timeout: 15000
+- takeScreenshot: android-quran-mode-round-trip-page548

@@ -23,7 +23,7 @@ import {
   getPreferredDownloadReciter,
   getSurahDownloadScope,
 } from '@/utils/quranDownloadService';
-import type { ReciterKey } from '@/utils/quranAudio';
+import { DEFAULT_QURAN_RECITER, type ReciterKey } from '@/utils/quranAudio';
 import { getSurah } from '@/data/surahNames';
 import { useI18n } from '@/utils/i18n/useI18n';
 import type { QuranReaderTokens } from '@/hooks/useQuranReaderSettings';
@@ -38,6 +38,7 @@ interface SurahHeaderProps {
   onInfoPress?: () => void;
   onSettingsPress?: () => void;
   compactReader?: boolean;
+  arabicFontSize?: keyof typeof Typography.arabic;
   readerTokens?: QuranReaderTokens;
 }
 
@@ -50,15 +51,25 @@ export const SurahHeader = memo(function SurahHeader({
   onPlayPress,
   onSettingsPress,
   compactReader = false,
+  arabicFontSize,
   readerTokens,
 }: SurahHeaderProps) {
   const { theme, state } = useApp();
   const { isPashto, t } = useI18n();
   const metadata = getSurah(number);
   const quranFontFamily = getQuranFontFamily(state.preferences.quranFont);
+  const selectedArabicSize = Typography.arabic[arabicFontSize ?? state.preferences.arabicFontSize];
+  const bismillahLineHeight = Math.round(selectedArabicSize * 2.25);
+  const readerText = readerTokens?.text ?? theme.text;
+  const readerSecondary = readerTokens?.textSecondary ?? theme.textSecondary;
+  const readerAccent = readerTokens?.accent ?? theme.tint;
+  const readerPage = readerTokens?.page ?? theme.background;
+  const readerSurface = readerTokens?.surface ?? theme.surahHeader;
+  const readerBorder = readerTokens?.border ?? theme.cardBorder;
+  const readerArabic = readerTokens?.arabic ?? theme.arabicText;
   const [surahDownloaded, setSurahDownloaded] = useState(false);
   const [showDownloadSheet, setShowDownloadSheet] = useState(false);
-  const [downloadReciter, setDownloadReciter] = useState<ReciterKey>('yasser_ad_dussary');
+  const [downloadReciter, setDownloadReciter] = useState<ReciterKey>(DEFAULT_QURAN_RECITER);
   const surahDownloadKey = getDownloadManifestKey(downloadReciter, { type: 'surah', id: number });
 
   useEffect(() => {
@@ -116,7 +127,11 @@ export const SurahHeader = memo(function SurahHeader({
         </View>
         {showBismillah && number !== 1 && number !== 9 ? (
           <QuranText
-            style={[styles.compactBismillah, { color: readerTokens?.arabic ?? theme.bismillah, fontFamily: quranFontFamily }]}
+            allowFontScaling={false}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.78}
+            style={[styles.compactBismillah, { color: readerTokens?.arabic ?? theme.bismillah, fontFamily: quranFontFamily, fontSize: selectedArabicSize, lineHeight: bismillahLineHeight }]}
           >
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </QuranText>
@@ -126,18 +141,18 @@ export const SurahHeader = memo(function SurahHeader({
   }
 
   return (
-    <RtlView style={styles.wrapper}>
+    <RtlView style={[styles.wrapper, { backgroundColor: readerPage }]}>
       {/* Main Header Card */}
-      <View style={[styles.container, { backgroundColor: theme.surahHeader }]}>
+      <View style={[styles.container, { backgroundColor: readerSurface, borderColor: readerBorder }]}>
         {/* Decorative Corner Elements */}
-        <View style={[styles.cornerTopLeft, { borderColor: `${theme.surahHeaderText}40` }]} />
-        <View style={[styles.cornerTopRight, { borderColor: `${theme.surahHeaderText}40` }]} />
-        <View style={[styles.cornerBottomLeft, { borderColor: `${theme.surahHeaderText}40` }]} />
-        <View style={[styles.cornerBottomRight, { borderColor: `${theme.surahHeaderText}40` }]} />
+        <View style={[styles.cornerTopLeft, { borderColor: `${readerAccent}40` }]} />
+        <View style={[styles.cornerTopRight, { borderColor: `${readerAccent}40` }]} />
+        <View style={[styles.cornerBottomLeft, { borderColor: `${readerAccent}40` }]} />
+        <View style={[styles.cornerBottomRight, { borderColor: `${readerAccent}40` }]} />
 
         {/* Surah Number */}
-        <View style={[styles.numberBadge, { backgroundColor: `${theme.surahHeaderText}20` }]}>
-          <NumericText style={[styles.numberText, { color: theme.surahHeaderText }]}>
+        <View style={[styles.numberBadge, { backgroundColor: `${readerAccent}18` }]}>
+          <NumericText style={[styles.numberText, { color: readerAccent }]}>
             {toArabicNumerals(number)}
           </NumericText>
         </View>
@@ -147,7 +162,7 @@ export const SurahHeader = memo(function SurahHeader({
           <View style={styles.arabicNameWrapper}>
             <View style={styles.arabicIsolate}>
               <QuranText
-                style={[styles.arabicName, { color: theme.surahHeaderText, fontFamily: quranFontFamily }]}
+                style={[styles.arabicName, { color: readerText, fontFamily: quranFontFamily }]}
                 numberOfLines={1}
                 adjustsFontSizeToFit
                 minimumFontScale={0.65}
@@ -161,36 +176,36 @@ export const SurahHeader = memo(function SurahHeader({
               onPress={onPlayPress}
               style={({ pressed }) => [
                 styles.playButton,
-                { backgroundColor: `${theme.surahHeaderText}20` },
+                { backgroundColor: `${readerAccent}18` },
                 pressed && styles.playButtonPressed,
               ]}
             >
-              <MaterialIcons name="play-arrow" size={28} color={theme.surahHeaderText} />
+              <MaterialIcons name="play-arrow" size={28} color={readerAccent} />
             </Pressable>
           )}
         </View>
 
         {isPashto && metadata ? (
-          <CenteredText style={[styles.pashtoName, { color: theme.surahHeaderText }]} numberOfLines={2}>
+          <CenteredText style={[styles.pashtoName, { color: readerSecondary }]} numberOfLines={2}>
             {metadata.pashto} ({metadata.meaningPashto})
           </CenteredText>
         ) : null}
 
         {/* Meta Info */}
         <View style={styles.metaContainer}>
-          <View style={[styles.metaItem, { backgroundColor: `${theme.surahHeaderText}20` }]}>
-            <MaterialIcons name="format-list-numbered" size={14} color={theme.surahHeaderText} />
-            <CenteredText style={[styles.metaText, { color: theme.surahHeaderText }]}>
+          <View style={[styles.metaItem, { backgroundColor: `${readerAccent}18` }]}>
+            <MaterialIcons name="format-list-numbered" size={14} color={readerAccent} />
+            <CenteredText style={[styles.metaText, { color: readerSecondary }]}>
               {toArabicNumerals(ayahCount)} آیه
             </CenteredText>
           </View>
-          <View style={[styles.metaItem, { backgroundColor: `${theme.surahHeaderText}20` }]}>
+          <View style={[styles.metaItem, { backgroundColor: `${readerAccent}18` }]}>
             <MaterialIcons
               name={revelationType === 'Meccan' ? 'brightness-5' : 'brightness-2'}
               size={14}
-              color={theme.surahHeaderText}
+              color={readerAccent}
             />
-            <CenteredText style={[styles.metaText, { color: theme.surahHeaderText }]}>
+            <CenteredText style={[styles.metaText, { color: readerSecondary }]}>
               {isPashto
                 ? t(revelationType === 'Meccan' ? 'quran.meccan' : 'quran.medinan')
                 : revelationType === 'Meccan' ? 'مکی' : 'مدنی'}
@@ -200,14 +215,14 @@ export const SurahHeader = memo(function SurahHeader({
             testID="quran-download-surah-header"
             accessibilityLabel={surahDownloaded ? t('quran.downloaded') : t('quran.downloadAll')}
             onPress={handleHeaderDownload}
-            style={[styles.metaDownload, { backgroundColor: surahDownloaded ? `${theme.surahHeaderText}35` : theme.surahHeaderText }]}
+            style={[styles.metaDownload, { backgroundColor: surahDownloaded ? `${readerAccent}20` : readerAccent }]}
           >
             <MaterialIcons
               name={surahDownloaded ? 'check-circle' : 'download'}
               size={14}
-              color={surahDownloaded ? theme.surahHeaderText : theme.surahHeader}
+              color={surahDownloaded ? readerAccent : readerSurface}
             />
-            <CenteredText style={[styles.metaText, { color: surahDownloaded ? theme.surahHeaderText : theme.surahHeader }]}>
+            <CenteredText style={[styles.metaText, { color: surahDownloaded ? readerAccent : readerSurface }]}>
               {surahDownloaded ? t('quran.downloaded') : t('quran.download.action')}
             </CenteredText>
           </Pressable>
@@ -218,14 +233,20 @@ export const SurahHeader = memo(function SurahHeader({
           - Surah Al-Fatiha (1) - because Bismillah IS ayah 1
           - Surah At-Tawbah (9) - no Bismillah by divine order */}
       {showBismillah && number !== 1 && number !== 9 && (
-        <View style={[styles.bismillahContainer, { backgroundColor: theme.backgroundSecondary }]}>
-          <QuranText style={[styles.bismillah, { color: theme.bismillah, fontFamily: quranFontFamily }]}>
+        <View style={[styles.bismillahContainer, { backgroundColor: readerSurface }]}>
+          <QuranText
+            allowFontScaling={false}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.78}
+            style={[styles.bismillah, { color: readerArabic, fontFamily: quranFontFamily, fontSize: selectedArabicSize, lineHeight: bismillahLineHeight }]}
+          >
             بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
           </QuranText>
         </View>
       )}
 
-      <TranslationToggle />
+      <TranslationToggle readerTokens={readerTokens} />
       <QuranDownloadCard
         visible={showDownloadSheet}
         scope={getSurahDownloadScope(number, ayahCount)}
@@ -290,9 +311,10 @@ const styles = StyleSheet.create({
   },
   compactBismillah: {
     marginTop: Spacing.sm,
-    fontSize: 22,
-    lineHeight: 48,
+    width: '100%',
     textAlign: 'center',
+    includeFontPadding: true,
+    paddingVertical: 2,
   },
   wrapper: {
     marginBottom: Spacing.md,
@@ -436,10 +458,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   bismillah: {
-    fontSize: Typography.arabic.large,
+    width: '100%',
     textAlign: 'center',
-    lineHeight: 68,
-    includeFontPadding: false,
-    paddingVertical: 2,
+    includeFontPadding: true,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
   },
 });

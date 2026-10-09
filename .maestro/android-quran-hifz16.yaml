@@ -1,19 +1,173 @@
 appId: com.afghandev.ebadat
 ---
-- openLink: "ebadat://quran/1"
+- stopApp
+- openLink: "ebadat://quran/1?hifzPage=1"
+- waitForAnimationToEnd:
+    timeout: 15000
+- extendedWaitUntil:
+    visible:
+      id: quran-reader-ready
+    timeout: 30000
+- waitForAnimationToEnd:
+    timeout: 5000
+- extendedWaitUntil:
+    notVisible:
+      id: spiritual-splash-overlay
+    timeout: 20000
+- tapOn:
+    id: quran-reader-hifz16
+- tapOn:
+    id: quran-audio-close
+    optional: true
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-meta
+    timeout: 30000
+- runFlow:
+    when:
+      visible:
+        text: "Open debugger to view warnings."
+    commands:
+      - tapOn:
+          point: "7%, 94%"
+- assertVisible:
+    id: hifz16-page-meta
+- takeScreenshot: android-quran-hifz16-page-one
+- tapOn:
+    id: quran-reader-translation
+- extendedWaitUntil:
+    visible:
+      id: quran-translation-reader
+    timeout: 10000
 - tapOn:
     id: quran-reader-hifz16
 - extendedWaitUntil:
     visible:
       id: hifz16-page-1
+    timeout: 10000
+- assertNotVisible:
+    id: hifz16-page-548
+- tapOn:
+    id: hifz16-navigator-open
+- extendedWaitUntil:
+    visible:
+      id: hifz16-navigator-sheet
+    timeout: 5000
+- tapOn:
+    id: hifz16-navigator-tab-page
+- tapOn:
+    id: hifz16-navigator-page
+- eraseText: 3
+- inputText: "1"
+- tapOn:
+    id: hifz16-navigator-page-go
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-meta
     timeout: 15000
 - assertVisible:
     id: hifz16-reader-controls
+- assertVisible:
+    id: hifz16-page-meta
+- tapOn:
+    id: hifz16-previous-page
+- extendedWaitUntil:
+    visible:
+      id: hifz16-dedication
+    timeout: 5000
+- assertVisible:
+    id: hifz16-dedication-title
+- takeScreenshot: android-quran-hifz16-dedication
 - tapOn:
     id: hifz16-next-page
 - extendedWaitUntil:
     visible:
-      id: hifz16-page-2
+      id: hifz16-page-meta
+    timeout: 5000
+- tapOn:
+    id: hifz16-next-page
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-meta
+    timeout: 5000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: android-quran-hifz16-page-two
+- swipe:
+    start: "20%, 50%"
+    end: "80%, 50%"
+    duration: 300
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: hifz16-page-3
+- takeScreenshot: android-quran-hifz16-page-three-after-swipe
+- swipe:
+    start: "80%, 50%"
+    end: "20%, 50%"
+    duration: 300
+- waitForAnimationToEnd:
+    timeout: 3000
+- assertVisible:
+    id: hifz16-page-2
+- takeScreenshot: android-quran-hifz16-page-two-after-swipe-back
+- tapOn:
+    # Ayah 2 sits on the centered page-2 row just below mid-screen.
+    # A finger tap here plays ٢:٢. Maestro's hierarchy click does not.
+    point: "62%, 54%"
+- extendedWaitUntil:
+    visible:
+      id: quran-audio-current-ayah
+    timeout: 10000
+- assertVisible:
+    text: "٢:٢"
+- takeScreenshot: android-quran-hifz16-current-ayah
+- tapOn:
+    id: quran-audio-toggle
+- assertVisible:
+    text: "٢:٢"
+- tapOn:
+    id: quran-reader-translation
+- extendedWaitUntil:
+    visible:
+      id: quran-translation-reader
+    timeout: 10000
+- assertVisible:
+    id: quran-ayah-row-2-2
+- assertVisible:
+    id: quran-audio-current-ayah
+- assertVisible:
+    text: "سوره ٢ · آیه ٢"
+- takeScreenshot: android-quran-translation-playing-ayah
+- tapOn:
+    id: quran-reader-hifz16
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-meta
+    timeout: 10000
+- assertVisible:
+    id: hifz16-page-2
+- assertVisible:
+    text: "٢:٢"
+- tapOn:
+    id: quran-audio-close
+- tapOn:
+    id: hifz16-navigator-open
+- extendedWaitUntil:
+    visible:
+      id: hifz16-navigator-sheet
+    timeout: 5000
+- tapOn:
+    id: hifz16-navigator-tab-page
+- tapOn:
+    id: hifz16-navigator-page
+- eraseText: 3
+- inputText: "2"
+- tapOn:
+    id: hifz16-navigator-page-go
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-meta
     timeout: 5000
 - tapOn:
     id: hifz16-navigator-open
@@ -22,14 +176,54 @@ appId: com.afghandev.ebadat
       id: hifz16-navigator-sheet
     timeout: 5000
 - tapOn:
+    id: hifz16-navigator-tab-surah
+- tapOn:
+    id: hifz16-navigator-surah
+- eraseText: 3
+- inputText: "2"
+- tapOn:
+    id: hifz16-navigator-surah-result-2
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-meta
+    timeout: 5000
+- assertVisible:
+    id: hifz16-page-2
+- tapOn:
+    id: hifz16-navigator-open
+- extendedWaitUntil:
+    visible:
+      id: hifz16-navigator-sheet
+    timeout: 5000
+- tapOn:
+    id: hifz16-navigator-tab-juz
+- tapOn:
     id: hifz16-navigator-juz
+- eraseText: 2
 - inputText: "2"
 - tapOn:
     id: hifz16-navigator-juz-go
 - extendedWaitUntil:
     visible:
-      id: hifz16-reader-controls
+      id: hifz16-page-meta
     timeout: 5000
+- tapOn:
+    id: hifz16-navigator-open
+- tapOn:
+    id: hifz16-navigator-tab-page
+- tapOn:
+    id: hifz16-navigator-page
+- eraseText: 2
+- inputText: "548"
+- tapOn:
+    id: hifz16-navigator-page-go
+- extendedWaitUntil:
+    visible:
+      id: hifz16-page-meta
+    timeout: 10000
+- waitForAnimationToEnd:
+    timeout: 5000
+- takeScreenshot: android-quran-hifz16-final-page
 - tapOn:
     id: hifz16-bookmark
 - tapOn:
@@ -42,3 +236,33 @@ appId: com.afghandev.ebadat
     visible:
       id: hifz16-reader-controls
     timeout: 10000
+- assertVisible:
+    id: hifz16-page-meta
+- assertVisible:
+    id: hifz16-page-548
+- tapOn:
+    id: quran-reader-settings
+- assertVisible:
+    id: quran-reader-page-sepia
+- assertVisible:
+    id: quran-reader-page-dark
+- assertNotVisible:
+    id: quran-reader-font-scheherazade
+- tapOn:
+    id: quran-reader-page-sepia
+- tapOn:
+    id: quran-reader-settings-done
+- takeScreenshot: android-quran-hifz16-sepia
+- tapOn:
+    id: quran-reader-settings
+- tapOn:
+    id: quran-reader-page-dark
+- tapOn:
+    id: quran-reader-settings-done
+- takeScreenshot: android-quran-hifz16-dark
+- tapOn:
+    id: quran-reader-settings
+- tapOn:
+    id: quran-reader-page-auto
+- tapOn:
+    id: quran-reader-settings-done

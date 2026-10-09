@@ -13,6 +13,9 @@ export type ReciterKey =
   | 'minshawy_murattal'
   | 'abdul_basit';
 
+/** Default for new installs and unconfigured players; persisted user choices win. */
+export const DEFAULT_QURAN_RECITER: ReciterKey = 'minshawy_murattal';
+
 export type QuranPlaybackScopeType = 'surah' | 'juz';
 export type QuranPlaybackStatus = 'idle' | 'preparing' | 'buffering' | 'playing' | 'paused' | 'error';
 export type QuranPlaybackRate = 1 | 1.25 | 1.5 | 2;
@@ -131,7 +134,7 @@ function isReciterKey(value: string): value is ReciterKey {
 export function getAyahUrl(
   surah: number,
   ayah: number,
-  reciter: ReciterKey = 'yasser_ad_dussary'
+  reciter: ReciterKey = DEFAULT_QURAN_RECITER
 ): string {
   return getAyahUrlCandidates(surah, ayah, reciter)[0];
 }
@@ -139,7 +142,7 @@ export function getAyahUrl(
 export function getAyahUrlCandidates(
   surah: number,
   ayah: number,
-  reciter: ReciterKey = 'yasser_ad_dussary'
+  reciter: ReciterKey = DEFAULT_QURAN_RECITER
 ): string[] {
   const s = String(surah).padStart(3, '0');
   const a = String(ayah).padStart(3, '0');
@@ -296,8 +299,8 @@ function isQuranTrack(track: unknown): track is QuranTrack {
 }
 
 class QuranAudioManager {
-  private currentReciter: ReciterKey = 'yasser_ad_dussary';
-  private snapshot: QuranPlaybackSnapshot = createDefaultSnapshot('yasser_ad_dussary');
+  private currentReciter: ReciterKey = DEFAULT_QURAN_RECITER;
+  private snapshot: QuranPlaybackSnapshot = createDefaultSnapshot(DEFAULT_QURAN_RECITER);
   private playbackRate: QuranPlaybackRate = 1;
   private initialized = false;
   private listenersRegistered = false;

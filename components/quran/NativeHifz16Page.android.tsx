@@ -18,6 +18,7 @@ type NativeHifz16PageProps = ViewProps & {
   pageJson: string;
   paperColor: string;
   inkColor: string;
+  accentColor: string;
   contentTop: number;
   contentBottom: number;
   activeSurah?: number;
@@ -32,6 +33,7 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
   page,
   paperColor,
   inkColor,
+  accentColor,
   contentTop,
   contentBottom,
   activePlayingSurah,
@@ -42,6 +44,7 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
   page: HifzPage;
   paperColor: string;
   inkColor: string;
+  accentColor: string;
   contentTop: number;
   contentBottom: number;
   activePlayingSurah?: number | null;
@@ -59,9 +62,11 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
       pageJson={pageJson}
       paperColor={paperColor}
       inkColor={inkColor}
-      // The native frame draws its own metadata strip. Keep its first Quran
-      // row below the React Native reader header on tall and short Androids.
-      contentTop={contentTop + 28}
+      accentColor={accentColor}
+      // The screen header and bottom controls are absolute overlays over the
+      // full-screen page. Pass their layout insets in React Native dp; the
+      // native view converts them to physical pixels before drawing.
+      contentTop={contentTop}
       contentBottom={contentBottom}
       activeSurah={activePlayingSurah ?? 0}
       activeAyah={activePlayingAyah ?? 0}

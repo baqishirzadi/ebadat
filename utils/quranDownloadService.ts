@@ -56,7 +56,7 @@ export async function getSavedDownloadReciter(): Promise<ReciterKey | null> {
   }
 }
 
-export async function getPreferredDownloadReciter(fallback: ReciterKey = 'yasser_ad_dussary'): Promise<ReciterKey> {
+export async function getPreferredDownloadReciter(fallback: ReciterKey = 'minshawy_murattal'): Promise<ReciterKey> {
   return (await getSavedDownloadReciter()) ?? fallback;
 }
 

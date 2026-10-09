@@ -14,6 +14,8 @@ import { QuranText } from './QuranText';
 interface QuranReaderSettingsSheetProps {
   visible: boolean;
   onClose: () => void;
+  /** Hide controls that cannot change the fixed 16-line Hafiz page geometry. */
+  fixedMushaf?: boolean;
 }
 
 const FONT_SIZES = ['small', 'medium', 'large', 'xlarge'] as const;
@@ -26,7 +28,7 @@ const PAGE_TONES: { id: QuranPageTone; colors: string[] }[] = [
 ];
 const TRANSLATIONS = ['none', 'dari', 'pashto', 'english', 'both'] as const;
 
-export function QuranReaderSettingsSheet({ visible, onClose }: QuranReaderSettingsSheetProps) {
+export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false }: QuranReaderSettingsSheetProps) {
   const insets = useSafeAreaInsets();
   const { theme, state, setArabicFontSize, setQuranFont, setTranslationLanguage } = useApp();
   const { t, language } = useI18n();
@@ -79,14 +81,20 @@ export function QuranReaderSettingsSheet({ visible, onClose }: QuranReaderSettin
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
+            {!fixedMushaf ? <>
             <View style={[styles.preview, { backgroundColor: tokens.page, borderColor: tokens.border }]}>
               <QuranText
                 allowFontScaling={false}
                 style={{
                   color: tokens.arabic,
                   fontFamily: getQuranFontFamily(state.preferences.quranFont),
-                  fontSize: 23,
-                  lineHeight: Math.round(23 * tokens.lineHeightRatio),
+                  fontSize: Typography.arabic[selectedSize],
+                  lineHeight: Math.round(Typography.arabic[selectedSize] * Math.max(tokens.lineHeightRatio, 2.25)),
+                  width: '100%',
+                  textAlign: 'center',
+                  writingDirection: 'rtl',
+                  includeFontPadding: true,
+                  paddingVertical: 4,
                 }}
               >
                 بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
@@ -183,6 +191,7 @@ export function QuranReaderSettingsSheet({ visible, onClose }: QuranReaderSettin
               })}
             </View>
 
+            </> : null}
             <SettingLabel>{t('quran.reader.page')}</SettingLabel>
             <View style={styles.pageRow}>
               {PAGE_TONES.map((tone) => {
@@ -210,6 +219,7 @@ export function QuranReaderSettingsSheet({ visible, onClose }: QuranReaderSettin
               })}
             </View>
 
+            {!fixedMushaf ? <>
             <SettingLabel>{t('quran.reader.font')}</SettingLabel>
             <View style={styles.fontRow}>
               {fontOptions.map(([font, details]) => {
@@ -239,6 +249,7 @@ export function QuranReaderSettingsSheet({ visible, onClose }: QuranReaderSettin
                 );
               })}
             </View>
+            </> : null}
 
             <SettingLabel>{t('quran.reader.translation')}</SettingLabel>
             <View style={styles.translationGrid}>
@@ -277,7 +288,8 @@ function SettingLabel({ children }: { children: React.ReactNode }) {
 
 const styles = StyleSheet.create({
   root: { flex: 1, justifyContent: 'flex-end' },
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.4)' },
+  // Keep the Quran page fully visible behind the settings card.
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'transparent' },
   sheet: { maxHeight: '92%', borderTopLeftRadius: 20, borderTopRightRadius: 20, borderWidth: StyleSheet.hairlineWidth, paddingHorizontal: 18, paddingTop: 10 },
   grabber: { alignSelf: 'center', width: 38, height: 4, borderRadius: 2, marginBottom: 8 },
   header: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },

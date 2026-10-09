@@ -4,31 +4,33 @@
  * Pages 1–2 use a repeating green–blue floral tazhib border with a surah cartouche.
  */
 
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
-    FlatList,
-    I18nManager,
-    Modal,
-    Platform,
-    Pressable,
-    StyleSheet,
+  Animated,
+  Modal,
+  PanResponder,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
     Text,
-    TextInput,
-    View,
+  TextInput,
+  View,
+  useWindowDimensions,
     type LayoutChangeEvent,
-    type ListRenderItemInfo,
 } from 'react-native';
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
 import { BorderRadius, Spacing } from '@/constants/theme';
 import { useAppLanguage, useBookmarks, useReadingPosition } from '@/context/AppContext';
-import { getSurah } from '@/data/surahNames';
+import { getSurah, SURAH_NAMES } from '@/data/surahNames';
 import { getPortraitWindowSize } from '@/hooks/usePortraitLock';
 import { useQuranReaderSettings } from '@/hooks/useQuranReaderSettings';
 import type { AppLanguage } from '@/types/quran';
 import {
     getHifzPage,
     getHifzJuzPageRange,
+    findHifzJuzStartAyah,
     getHifzSurahStartPage,
     HIFZ16_PAGE_COUNT,
     hifzAyahVisibleLengthOnPage,
@@ -47,16 +49,35 @@ import {
     splitLineBodyAndMarkers,
     visibleLength,
 } from '@/utils/hifzKashida';
-import { toArabicNumerals } from '@/utils/numbers';
+import { toArabicNumerals, toLatinNumeralsString } from '@/utils/numbers';
 import audioManager from '@/utils/quranAudio';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useI18n } from '@/utils/i18n/useI18n';
+import {
+  normalizeArabicForSearch,
+  normalizeDariForSearch,
+  normalizeEnglishForSearch,
+  normalizePashtoForSearch,
+} from '@/utils/quranSearchNormalize';
 import { NativeHifz16Page } from './NativeHifz16Page';
 
 const HIFZ_FONT = Platform.OS === 'ios' ? 'Scheherazade New' : 'ScheherazadeNew';
-const { width: PAGE_WIDTH, height: WINDOW_HEIGHT } = getPortraitWindowSize();
-/** Android mirrors horizontal FlatLists under RTL; undo that for physical LTR paging. */
-const UNMIRROR_RTL = I18nManager.isRTL ? ({ transform: [{ scaleX: -1 }] } as const) : null;
+const { width: PAGE_WIDTH } = getPortraitWindowSize();
+/** Android's non-numbered dedication leaf immediately before Quran page 1. */
+const HIFZ_DEDICATION_PAGE = 0;
+const HAS_HIFZ_DEDICATION = Platform.OS === 'android';
+// translateX, not `left`: a layout pass on every finger move is what made the
+// sheet lag. Each page is laid out on screen and then slid with its own
+// translateX, so the neighbor is already drawn when the finger moves.
+const HIFZ_PAGE_DRAG_NATIVE_DRIVER = true;
+
+/** Next (+1) or previous (-1) mushaf page. Dedication 0 sits immediately before page 1. */
+function neighborHifzPage(page: number, delta: 1 | -1): number | null {
+  const next = page + delta;
+  const first = HAS_HIFZ_DEDICATION ? HIFZ_DEDICATION_PAGE : 1;
+  if (next < first || next > HIFZ16_PAGE_COUNT) return null;
+  return next;
+}
 /** One body size for every mushaf page (stable across a surah). */
 const BASE_FONT = 17;
 /** Tall enough for Scheherazade harakat and letter tails. */
@@ -1838,14 +1859,24 @@ const ARABIC_LINE_RATIO = 1.7;
 /** Waqf / dedication leaf past Fatiha — not part of the 548-page mushaf. */
 const HifzDedicationPage = memo(function HifzDedicationPage({
   background,
+  ink,
+  textColor,
+  accent,
   contentPaddingTop,
   contentPaddingBottom,
   pageHeight,
+  pageWidth,
+  onToggleControls,
 }: {
   background: string;
+  ink: string;
+  textColor: string;
+  accent: string;
   contentPaddingTop: number;
   contentPaddingBottom: number;
   pageHeight: number;
+  pageWidth: number;
+  onToggleControls: () => void;
 }) {
   const language = useAppLanguage();
   const copy = DEDICATION_BY_LANGUAGE[language] ?? DEDICATION_BY_LANGUAGE.dari;
@@ -1862,7 +1893,7 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
   const writingDirection = isEnglish ? ('ltr' as const) : ('rtl' as const);
 
   const [frameSize, setFrameSize] = useState(() => ({
-    width: Math.floor(PAGE_WIDTH),
+    width: Math.floor(pageWidth),
     height: 0,
   }));
 
@@ -1876,11 +1907,13 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
   }, []);
 
   return (
-    <View
+    <Pressable
+      testID="hifz16-dedication"
+      onPress={onToggleControls}
       style={[
         styles.page,
         {
-          width: PAGE_WIDTH,
+          width: pageWidth,
           height: pageHeight > 0 ? pageHeight : undefined,
           backgroundColor: background,
           paddingTop: contentPaddingTop,
@@ -1889,7 +1922,7 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
       ]}
     >
       <View style={styles.ltr}>
-        <View style={styles.openingFrame} onLayout={onFrameLayout}>
+        <View style={[styles.openingFrame, { backgroundColor: background }]} onLayout={onFrameLayout}>
           <FloralOpeningBorder
             width={frameSize.width}
             height={frameSize.height}
@@ -1904,6 +1937,7 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
                     fontFamily: HIFZ_FONT,
                     fontSize: bismillahSize,
                     lineHeight: bismillahLine,
+                    color: accent,
                     paddingBottom: 4,
                   },
                   androidFontPad,
@@ -1911,7 +1945,7 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
               >
                 {DEDICATION_BISMILLAH}
               </Text>
-              <View style={styles.dedicationRule} />
+              <View style={[styles.dedicationRule, { backgroundColor: accent }]} />
               <Text
                 style={[
                   styles.dedicationArabic,
@@ -1919,6 +1953,7 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
                     fontFamily: HIFZ_FONT,
                     fontSize: arabicSize,
                     lineHeight: arabicLine,
+                    color: ink,
                     paddingBottom: 4,
                   },
                   androidFontPad,
@@ -1935,6 +1970,7 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
                       fontFamily: localFont,
                       fontSize: localSize,
                       lineHeight: localLine,
+                      color: textColor,
                       textAlign: align,
                       writingDirection,
                       paddingBottom: isEnglish ? 2 : 6,
@@ -1945,12 +1981,13 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
                   {para}
                 </Text>
               ))}
-              <View style={styles.dedicationRule} />
+              <View style={[styles.dedicationRule, { backgroundColor: accent }]} />
               <Text
                 style={[
                   styles.dedicationFromLabel,
                   {
                     fontFamily: localFont,
+                    color: accent,
                     writingDirection,
                     paddingBottom: isEnglish ? 0 : 4,
                   },
@@ -1964,6 +2001,7 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
                   styles.dedicationName,
                   {
                     fontFamily: localFont,
+                    color: accent,
                     fontSize: isEnglish ? 15 : 16,
                     lineHeight: Math.round(
                       (isEnglish ? 15 : 16) * (isEnglish ? 1.35 : NASTALIQ_LINE_RATIO),
@@ -1983,6 +2021,7 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
                     fontFamily: HIFZ_FONT,
                     fontSize: 14,
                     lineHeight: Math.round(14 * ARABIC_LINE_RATIO),
+                    color: accent,
                     paddingBottom: 4,
                   },
                   androidFontPad,
@@ -1994,7 +2033,7 @@ const HifzDedicationPage = memo(function HifzDedicationPage({
           </View>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 });
 
@@ -2009,17 +2048,14 @@ export const Hifz16View = memo(function Hifz16View({
   onPlayAyah,
   onVisiblePositionChange,
 }: Props) {
+  // Read the viewport reactively. At cold launch Android can report a zero
+  // Dimensions.get('window').width while the activity is still measuring; a
+  // module-level width then makes every horizontal page zero-width forever.
+  const viewport = useWindowDimensions();
   const { tokens: readerTokens } = useQuranReaderSettings();
   const { position, updatePosition } = useReadingPosition();
   const { addBookmark, getBookmark, isBookmarked, removeBookmark } = useBookmarks();
-  const { t, n } = useI18n();
-  const listRef = useRef<FlatList<number>>(null);
-
-  const pageNumbers = useMemo(
-    () => Array.from({ length: HIFZ16_PAGE_COUNT }, (_, index) => HIFZ16_PAGE_COUNT - index),
-    []
-  );
-
+  const { t, n, language } = useI18n();
   const startPage = useMemo(() => {
     if (initialPage != null && initialPage >= 1 && initialPage <= HIFZ16_PAGE_COUNT) {
       return initialPage;
@@ -2027,9 +2063,6 @@ export const Hifz16View = memo(function Hifz16View({
     return listHifzPagesForAyah(surahNumber, initialAyah)[0] ?? getHifzSurahStartPage(surahNumber);
   }, [initialAyah, initialPage, surahNumber]);
 
-  /** Reversed page order keeps Quran reading direction natural in the horizontal list. */
-  const pageIndex = useCallback((page: number) => HIFZ16_PAGE_COUNT - page, []);
-  const startIndex = Math.max(0, pageIndex(startPage));
   const visiblePageRef = useRef(startPage);
   const [visiblePage, setVisiblePage] = useState(startPage);
   const [controlsVisible, setControlsVisible] = useState(true);
@@ -2037,32 +2070,185 @@ export const Hifz16View = memo(function Hifz16View({
   const [navigatorPage, setNavigatorPage] = useState('');
   const [navigatorJuz, setNavigatorJuz] = useState('');
   const [navigatorSurah, setNavigatorSurah] = useState('');
+  const [navigatorTab, setNavigatorTab] = useState<'page' | 'juz' | 'surah'>('page');
   const [navigatorError, setNavigatorError] = useState<string | null>(null);
   const userInterruptedFollowRef = useRef(false);
-  const followProgrammaticRef = useRef(false);
+  const swipeAnchorPageRef = useRef(0);
+  const playingRef = useRef({ surah: activePlayingSurah, ayah: activePlayingAyah });
+  playingRef.current = { surah: activePlayingSurah, ayah: activePlayingAyah };
+  const [measuredPageWidth, setMeasuredPageWidth] = useState(0);
+  const layoutWidth = measuredPageWidth > 0 ? measuredPageWidth : 0;
+  const layoutWidthRef = useRef(layoutWidth);
+  layoutWidthRef.current = layoutWidth;
+  const drag = useRef(new Animated.Value(0, { useNativeDriver: HIFZ_PAGE_DRAG_NATIVE_DRIVER })).current;
+  const dragAnimRef = useRef<Animated.CompositeAnimation | null>(null);
+  const pageShiftRef = useRef(new Map<number, Animated.AnimatedInterpolation<number>>());
+  const pageShift = (offset: number) => {
+    const cached = pageShiftRef.current.get(offset);
+    if (cached) return cached;
+    const node = drag.interpolate({
+      inputRange: [-1, 0, 1],
+      outputRange: [offset - 1, offset, offset + 1],
+      extrapolate: 'extend',
+    });
+    pageShiftRef.current.set(offset, node);
+    return node;
+  };
+  // Zero the drag in the same render that swaps the centered page, so the
+  // incoming page does not flash back to the side it slid in from.
+  const resetDragForPageRef = useRef<number | null>(null);
+  const reportPageRef = useRef<(page: number) => void>(() => {});
+  // The centered page has no transform while it is still, so a tap reaches the
+  // canvas. Neighbors stay translated one page aside; that is what gets drawn.
+  const [gliding, setGliding] = useState(false);
+  const glidingRef = useRef(false);
+  const queuedAnimRef = useRef<(() => void) | null>(null);
+  const [glideEpoch, setGlideEpoch] = useState(0);
+
+  const endGlide = useCallback(() => {
+    glidingRef.current = false;
+    setGliding(false);
+  }, []);
+
+  const playDragAnim = useCallback((anim: Animated.CompositeAnimation, after?: () => void) => {
+    dragAnimRef.current = anim;
+    const run = () => {
+      anim.start(({ finished }) => {
+        if (!finished || dragAnimRef.current !== anim) return;
+        after?.();
+      });
+    };
+    if (glidingRef.current) {
+      run();
+      return;
+    }
+    queuedAnimRef.current = run;
+    glidingRef.current = true;
+    setGliding(true);
+    setGlideEpoch((epoch) => epoch + 1);
+  }, []);
+
+  useLayoutEffect(() => {
+    const run = queuedAnimRef.current;
+    if (!run) return;
+    queuedAnimRef.current = null;
+    run();
+  }, [glideEpoch]);
+
+  const commitPage = useCallback((page: number) => {
+    resetDragForPageRef.current = page;
+    visiblePageRef.current = page;
+    glidingRef.current = false;
+    setGliding(false);
+    setVisiblePage(page);
+    reportPageRef.current(page);
+  }, []);
 
   const scrollToPage = useCallback(
     (page: number, animated: boolean) => {
-      const index = Math.max(0, pageIndex(page));
-      visiblePageRef.current = page;
-      setVisiblePage(page);
-      followProgrammaticRef.current = true;
-      requestAnimationFrame(() => {
-        listRef.current?.scrollToIndex({ index, animated });
-        // FlatList settle; clear flag after animation window.
-        setTimeout(() => {
-          followProgrammaticRef.current = false;
-        }, animated ? 450 : 80);
-      });
+      const first = HAS_HIFZ_DEDICATION ? HIFZ_DEDICATION_PAGE : 1;
+      const target = Math.min(HIFZ16_PAGE_COUNT, Math.max(first, page));
+      const current = visiblePageRef.current;
+      const width = layoutWidthRef.current;
+      dragAnimRef.current?.stop();
+      dragAnimRef.current = null;
+      queuedAnimRef.current = null;
+      if (target === current) {
+        if (!glidingRef.current) return;
+        playDragAnim(
+          Animated.spring(drag, { toValue: 0, useNativeDriver: HIFZ_PAGE_DRAG_NATIVE_DRIVER, speed: 20, bounciness: 0 }),
+          endGlide,
+        );
+        return;
+      }
+      if (!animated || Math.abs(target - current) !== 1 || width <= 0) {
+        drag.setValue(0);
+        commitPage(target);
+        return;
+      }
+      // The next page sits on the physical left. Positive translateX reveals
+      // it, matching a rightward finger. translateX is not mirrored.
+      const toValue = target > current ? width : -width;
+      playDragAnim(
+        Animated.timing(drag, { toValue, duration: 220, useNativeDriver: HIFZ_PAGE_DRAG_NATIVE_DRIVER }),
+        () => commitPage(target),
+      );
     },
-    [pageIndex],
+    [commitPage, drag, endGlide, playDragAnim],
+  );
+  // Physical right (positive dx) opens the next mushaf page.
+  const swipeResponder = useMemo(
+    () => PanResponder.create({
+      onMoveShouldSetPanResponderCapture: (_event, gesture) =>
+        !navigatorOpen &&
+        Math.abs(gesture.dx) > 10 &&
+        Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.25,
+      onPanResponderGrant: () => {
+        dragAnimRef.current?.stop();
+        dragAnimRef.current = null;
+        queuedAnimRef.current = null;
+        swipeAnchorPageRef.current = visiblePageRef.current;
+        glidingRef.current = true;
+        setGliding(true);
+        if (playingRef.current.surah != null && playingRef.current.ayah != null) {
+          userInterruptedFollowRef.current = true;
+        }
+      },
+      onPanResponderMove: (_event, gesture) => {
+        const width = layoutWidthRef.current;
+        if (width <= 0) return;
+        const current = swipeAnchorPageRef.current;
+        let dx = gesture.dx;
+        if (dx > 0 && neighborHifzPage(current, 1) == null) dx *= 0.2;
+        if (dx < 0 && neighborHifzPage(current, -1) == null) dx *= 0.2;
+        drag.setValue(Math.max(-width, Math.min(width, dx)));
+      },
+      onPanResponderRelease: (_event, gesture) => {
+        const width = layoutWidthRef.current;
+        const threshold = Math.max(42, width * 0.12);
+        const current = swipeAnchorPageRef.current;
+        const springBack = () => {
+          playDragAnim(
+            Animated.spring(drag, { toValue: 0, useNativeDriver: HIFZ_PAGE_DRAG_NATIVE_DRIVER, speed: 20, bounciness: 0 }),
+            endGlide,
+          );
+        };
+        if (width <= 0 || Math.abs(gesture.dx) < threshold) {
+          springBack();
+          return;
+        }
+        const target = gesture.dx > 0 ? neighborHifzPage(current, 1) : neighborHifzPage(current, -1);
+        if (target == null) {
+          springBack();
+          return;
+        }
+        const toValue = gesture.dx > 0 ? width : -width;
+        playDragAnim(
+          Animated.timing(drag, { toValue, duration: 180, useNativeDriver: HIFZ_PAGE_DRAG_NATIVE_DRIVER }),
+          () => commitPage(target),
+        );
+      },
+      onPanResponderTerminate: () => {
+        playDragAnim(
+          Animated.spring(drag, { toValue: 0, useNativeDriver: HIFZ_PAGE_DRAG_NATIVE_DRIVER, speed: 20, bounciness: 0 }),
+          endGlide,
+        );
+      },
+      onPanResponderTerminationRequest: () => true,
+    }),
+    [commitPage, drag, endGlide, navigatorOpen, playDragAnim],
   );
   useEffect(() => {
+    dragAnimRef.current?.stop();
+    dragAnimRef.current = null;
+    queuedAnimRef.current = null;
+    drag.setValue(0);
+    glidingRef.current = false;
+    setGliding(false);
     visiblePageRef.current = startPage;
     setVisiblePage(startPage);
     userInterruptedFollowRef.current = false;
-    scrollToPage(startPage, false);
-  }, [scrollToPage, startPage, surahNumber]);
+  }, [drag, startPage, surahNumber]);
 
   // Follow the playing ayah in both directions. Mid-ayah multi-page turns
   // follow audio progress. Manual paging pauses follow until audio catches up.
@@ -2083,6 +2269,7 @@ export const Hifz16View = memo(function Hifz16View({
 
     const jumpToNearestContainingPage = () => {
       const visible = visiblePageRef.current;
+      if (visible === HIFZ_DEDICATION_PAGE) return;
       if (pages.includes(visible)) return;
       const target =
         visible < firstPage ? firstPage : visible > lastPage ? lastPage : firstPage;
@@ -2112,6 +2299,7 @@ export const Hifz16View = memo(function Hifz16View({
     };
 
     const followProgress = (position: number, duration: number) => {
+      if (visiblePageRef.current === HIFZ_DEDICATION_PAGE) return;
       const target = pageForProgress(position, duration);
       if (userInterruptedFollowRef.current) {
         if (target === visiblePageRef.current) {
@@ -2148,9 +2336,6 @@ export const Hifz16View = memo(function Hifz16View({
   updatePositionRef.current = updatePosition;
   const positionRef = useRef(position);
   positionRef.current = position;
-  const playingRef = useRef({ surah: activePlayingSurah, ayah: activePlayingAyah });
-  playingRef.current = { surah: activePlayingSurah, ayah: activePlayingAyah };
-
   // The ayah this reader was opened on; a shared start page resolves to it
   // instead of the previous surah's first line.
   const openTargetRef = useRef({ page: startPage, surah: surahNumber, ayah: Math.max(1, initialAyah) });
@@ -2161,6 +2346,11 @@ export const Hifz16View = memo(function Hifz16View({
     pageNumber: number,
     preferred?: { surah: number; ayah: number },
   ) => {
+    if (pageNumber === HIFZ_DEDICATION_PAGE) {
+      // The dedication leaf must not replace the saved Quran reading position.
+      onVisiblePositionChangeRef.current?.(0, 0, HIFZ_DEDICATION_PAGE);
+      return;
+    }
     const playing = playingRef.current;
     const saved = positionRef.current;
     const open = openTargetRef.current;
@@ -2207,27 +2397,7 @@ export const Hifz16View = memo(function Hifz16View({
     reportVisiblePosition(visiblePageRef.current);
   }, [activePlayingAyah, activePlayingSurah, reportVisiblePosition]);
 
-  const reportVisiblePositionLive = useRef(reportVisiblePosition);
-  reportVisiblePositionLive.current = reportVisiblePosition;
-
-  const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: Array<{ item: number }> }) => {
-      const first = viewableItems[0]?.item;
-      if (typeof first !== 'number') return;
-      visiblePageRef.current = first;
-      setVisiblePage(first);
-      reportVisiblePositionLive.current(first);
-    }
-  ).current;
-
-  const viewabilityConfig = useRef({ itemVisiblePercentThreshold: 60 }).current;
-
-  const handleScrollBeginDrag = useCallback(() => {
-    if (followProgrammaticRef.current) return;
-    if (playingRef.current.surah != null && playingRef.current.ayah != null) {
-      userInterruptedFollowRef.current = true;
-    }
-  }, []);
+  reportPageRef.current = reportVisiblePosition;
 
   const isAyahBookmarked = useCallback(
     (surah: number, ayah: number) => isBookmarked(surah, ayah),
@@ -2263,29 +2433,85 @@ export const Hifz16View = memo(function Hifz16View({
   }, [addBookmark, getBookmark, removeBookmark, targetBookmarked, visibleTarget]);
 
   const openNavigator = useCallback(() => {
-    setNavigatorPage(String(visiblePage));
+    setNavigatorPage(String(visiblePage || 1));
     setNavigatorJuz(String(visiblePageData?.juz ?? ''));
-    setNavigatorSurah(String(visibleTarget?.surah ?? ''));
+    setNavigatorSurah('');
+    setNavigatorTab('page');
     setNavigatorError(null);
     setNavigatorOpen(true);
-  }, [visiblePage, visiblePageData?.juz, visibleTarget?.surah]);
+  }, [visiblePage, visiblePageData?.juz]);
 
-  const navigateFromReader = useCallback((kind: 'page' | 'juz' | 'surah') => {
-    const raw = kind === 'page' ? navigatorPage : kind === 'juz' ? navigatorJuz : navigatorSurah;
-    const value = Number.parseInt(raw, 10);
-    const page =
-      kind === 'page'
-        ? value
-        : kind === 'juz'
-          ? getHifzJuzPageRange(value)?.start
-          : getHifzSurahStartPage(value);
-    const valid =
-      Number.isFinite(value) &&
-      page != null &&
-      page >= 1 &&
-      page <= HIFZ16_PAGE_COUNT &&
-      (kind !== 'juz' || value <= 30) &&
-      (kind !== 'surah' || value <= 114);
+  const navigatorSurahMatches = useMemo(() => {
+    const query = toLatinNumeralsString(navigatorSurah.trim());
+    if (!query) return SURAH_NAMES.slice(0, 6);
+    if (/^\d+$/.test(query)) {
+      return SURAH_NAMES.filter((surah) => String(surah.number).startsWith(query)).slice(0, 6);
+    }
+    const queries = [
+      normalizeArabicForSearch(query),
+      normalizeDariForSearch(query),
+      normalizePashtoForSearch(query),
+      normalizeEnglishForSearch(query),
+    ].filter(Boolean);
+    return SURAH_NAMES.filter((surah) => {
+      const fields = [surah.arabic, surah.dari, surah.pashto, surah.english];
+      return fields.some((field) => {
+        const variants = [
+          normalizeArabicForSearch(field),
+          normalizeDariForSearch(field),
+          normalizePashtoForSearch(field),
+          normalizeEnglishForSearch(field),
+        ].filter(Boolean);
+        return variants.some((value) => queries.some((needle) => value.includes(needle)));
+      });
+    }).slice(0, 6);
+  }, [navigatorSurah]);
+
+  const navigateFromReader = useCallback((kind: 'page' | 'juz' | 'surah', valueOverride?: string) => {
+    const raw = valueOverride ?? (kind === 'page' ? navigatorPage : kind === 'juz' ? navigatorJuz : navigatorSurah);
+    const normalizedRaw = toLatinNumeralsString(raw.trim());
+    let value = /^\d+$/.test(normalizedRaw) ? Number.parseInt(normalizedRaw, 10) : Number.NaN;
+    let surahTarget: number | null = null;
+    let juzTarget: { surah: number; ayah: number; page: number } | null = null;
+    if (kind === 'surah' && !/^\d+$/.test(normalizedRaw)) {
+      const query = normalizedRaw;
+      const queries = [
+        normalizeArabicForSearch(query),
+        normalizeDariForSearch(query),
+        normalizePashtoForSearch(query),
+        normalizeEnglishForSearch(query),
+      ].filter(Boolean);
+      const match = SURAH_NAMES.find((surah) =>
+        [surah.arabic, surah.dari, surah.pashto, surah.english].some((field) => {
+          const variants = [
+            normalizeArabicForSearch(field),
+            normalizeDariForSearch(field),
+            normalizePashtoForSearch(field),
+            normalizeEnglishForSearch(field),
+          ].filter(Boolean);
+          return variants.some((fieldValue) => queries.some((needle) => fieldValue === needle));
+        })
+      );
+      // An empty field must not fall through to the first suggestion, which
+      // would open surah 1. Suggestions are chosen by tapping their row.
+      value = match?.number ?? Number.NaN;
+    }
+    if (kind === 'surah' && value >= 1 && value <= 114) surahTarget = value;
+    if (kind === 'juz' && value >= 1 && value <= 30) {
+      // Carry the exact opening ayah when a juz begins in the middle of a page.
+      const range = getHifzJuzPageRange(value);
+      const start = findHifzJuzStartAyah(value);
+      if (range && start) {
+        juzTarget = { page: range.start, surah: start.surah, ayah: start.ayah };
+      }
+    }
+    const page = kind === 'page'
+      ? value
+      : kind === 'juz'
+        ? getHifzJuzPageRange(value)?.start
+        : surahTarget == null ? null : getHifzSurahStartPage(surahTarget);
+    const valid = Number.isFinite(value) && page != null && page >= 1 && page <= HIFZ16_PAGE_COUNT &&
+      (kind !== 'juz' || value <= 30) && (kind !== 'surah' || value <= 114);
     if (!valid || page == null) {
       setNavigatorError(t('quran.hifz.navigator.invalid'));
       return;
@@ -2293,32 +2519,59 @@ export const Hifz16View = memo(function Hifz16View({
     setNavigatorOpen(false);
     setControlsVisible(true);
     scrollToPage(page, true);
-  }, [navigatorJuz, navigatorPage, navigatorSurah, scrollToPage, t]);
+    const target = kind === 'surah' && surahTarget != null
+      ? { page, surah: surahTarget, ayah: 1 }
+      : kind === 'juz' ? juzTarget : null;
+    if (target) {
+      openTargetRef.current = { page: target.page, surah: target.surah, ayah: target.ayah };
+      leftStartPageRef.current = false;
+      reportVisiblePosition(target.page, { surah: target.surah, ayah: target.ayah });
+    }
+  }, [navigatorJuz, navigatorPage, navigatorSurah, navigatorSurahMatches, reportVisiblePosition, scrollToPage, t]);
 
-  const [listHeight, setListHeight] = useState(() => Math.floor(WINDOW_HEIGHT));
+  const [listHeight, setListHeight] = useState(() => Math.max(1, Math.floor(Math.max(viewport.width, viewport.height))));
   const onListLayout = useCallback((event: LayoutChangeEvent) => {
-    const next = Math.floor(event.nativeEvent.layout.height);
-    if (next <= 0) return;
-    setListHeight((prev) => (prev === next ? prev : next));
+    const nextHeight = Math.floor(event.nativeEvent.layout.height);
+    const nextWidth = Math.ceil(event.nativeEvent.layout.width);
+    if (nextHeight > 0) setListHeight((prev) => (prev === nextHeight ? prev : nextHeight));
+    if (nextWidth > 0) setMeasuredPageWidth((prev) => (prev === nextWidth ? prev : nextWidth));
   }, []);
 
   const pageHeight = listHeight;
 
   const renderPage = useCallback(
-    ({ item: pageNumber }: ListRenderItemInfo<number>) => {
+    (pageNumber: number) => {
+      if (pageNumber === HIFZ_DEDICATION_PAGE) {
+        return (
+          <View style={{ flex: 1 }}>
+            <HifzDedicationPage
+              background={readerTokens.page}
+              ink={readerTokens.arabic}
+              textColor={readerTokens.text}
+              accent={readerTokens.accent}
+              contentPaddingTop={contentPaddingTop}
+              contentPaddingBottom={contentPaddingBottom}
+              pageHeight={pageHeight}
+              pageWidth={layoutWidth}
+              onToggleControls={() => setControlsVisible((visible) => !visible)}
+            />
+          </View>
+        );
+      }
       const page = getHifzPage(pageNumber);
       if (!page) {
         return (
-          <View style={[{ width: PAGE_WIDTH, height: pageHeight }, UNMIRROR_RTL]} />
+          <View style={{ flex: 1, backgroundColor: readerTokens.page }} />
         );
       }
       return (
-        <View testID={`hifz16-page-${page.page}`} style={[{ width: PAGE_WIDTH, height: pageHeight }, UNMIRROR_RTL]}>
+        <View testID={`hifz16-page-${page.page}`} collapsable={false} style={{ flex: 1, backgroundColor: readerTokens.page }}>
           {Platform.OS === 'android' ? (
             <NativeHifz16Page
               page={page}
               paperColor={readerTokens.page}
               inkColor={readerTokens.arabic}
+              accentColor={readerTokens.accent}
               contentTop={contentPaddingTop}
               contentBottom={contentPaddingBottom}
               activePlayingSurah={activePlayingSurah}
@@ -2326,8 +2579,7 @@ export const Hifz16View = memo(function Hifz16View({
               onAyahPress={handleAyahPress}
               onPagePress={() => setControlsVisible((visible) => !visible)}
             />
-          ) : (
-            <HifzPageCard
+          ) : <HifzPageCard
               page={page}
               background={readerTokens.page}
               ink={readerTokens.arabic}
@@ -2339,8 +2591,7 @@ export const Hifz16View = memo(function Hifz16View({
               onAyahPress={handleAyahPress}
               isAyahBookmarked={isAyahBookmarked}
               onToggleControls={() => setControlsVisible((visible) => !visible)}
-            />
-          )}
+          />}
         </View>
       );
     },
@@ -2351,75 +2602,103 @@ export const Hifz16View = memo(function Hifz16View({
       contentPaddingTop,
       handleAyahPress,
       isAyahBookmarked,
+      layoutWidth,
       pageHeight,
+      readerTokens.accent,
       readerTokens.arabic,
       readerTokens.page,
+      readerTokens.text,
     ]
   );
 
+  if (resetDragForPageRef.current != null && resetDragForPageRef.current === visiblePage) {
+    drag.setValue(0);
+    resetDragForPageRef.current = null;
+  }
+  // Neighbors first, the visible page last. A later native page was covering
+  // the centered one: its canvas drew, then never reached the screen.
+  const pageSlots = layoutWidth > 0
+    ? [
+        { page: neighborHifzPage(visiblePage, 1), left: -layoutWidth },
+        { page: neighborHifzPage(visiblePage, -1), left: layoutWidth },
+        { page: visiblePage as number | null, left: 0 },
+      ].filter((slot): slot is { page: number; left: number } => slot.page != null)
+    : [];
+
   return (
-    <View style={[styles.readerRoot, { backgroundColor: readerTokens.page }]}>
-      <FlatList
-        ref={listRef}
-        style={[styles.list, UNMIRROR_RTL]}
-        data={pageNumbers}
-        keyExtractor={(page) => `hifz16-${page}`}
-        horizontal
-        pagingEnabled
-        decelerationRate="fast"
-        disableIntervalMomentum
-        showsHorizontalScrollIndicator={false}
-        initialScrollIndex={startIndex}
-        getItemLayout={(_, index) => ({
-          length: PAGE_WIDTH,
-          offset: PAGE_WIDTH * index,
-          index,
-        })}
-        onLayout={onListLayout}
-        onScrollToIndexFailed={({ index }) => {
-          requestAnimationFrame(() => {
-            listRef.current?.scrollToIndex({ index, animated: false });
-          });
-        }}
-        renderItem={renderPage}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig}
-        onScrollBeginDrag={handleScrollBeginDrag}
-        windowSize={3}
-        initialNumToRender={2}
-        maxToRenderPerBatch={2}
-        removeClippedSubviews={Platform.OS === 'android'}
-      />
+    <View {...swipeResponder.panHandlers} style={[styles.readerRoot, { backgroundColor: readerTokens.page }]}>
+      <View collapsable={false} style={styles.list} onLayout={onListLayout}>
+        {layoutWidth > 0 ? pageSlots.map((slot) => {
+          const resting = slot.page === visiblePage && !gliding;
+          return (
+            <Animated.View
+              key={slot.page === HIFZ_DEDICATION_PAGE ? 'hifz16-dedication-slot' : `hifz16-slot-${slot.page}`}
+              pointerEvents={slot.page === visiblePage ? 'auto' : 'none'}
+              accessibilityElementsHidden={slot.page !== visiblePage}
+              importantForAccessibility={slot.page === visiblePage ? 'auto' : 'no-hide-descendants'}
+              renderToHardwareTextureAndroid
+              collapsable={false}
+              style={{
+                position: 'absolute',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                width: layoutWidth,
+                // Laid out on the screen so the canvas is drawn, then slid.
+                // The centered page has no transform at rest, so taps still hit it.
+                ...(resting ? null : { transform: [{ translateX: pageShift(slot.left) }] }),
+              }}
+            >
+              {renderPage(slot.page)}
+            </Animated.View>
+          );
+        }) : null}
+      </View>
 
       {controlsVisible ? (
         <View testID="hifz16-reader-controls" pointerEvents="box-none" style={styles.readerControls}>
-          <View style={[styles.readerInfoBar, { backgroundColor: readerTokens.surface, borderColor: readerTokens.border }]}>
-            <Pressable testID="hifz16-navigator-open" accessibilityRole="button" accessibilityLabel={t('quran.hifz.navigator.open')} onPress={openNavigator} style={styles.readerIconButton}>
-              <MaterialIcons name="menu-book" size={20} color={readerTokens.accent} />
-            </Pressable>
-            <View style={styles.readerPageMeta}>
-              <Text style={[styles.readerPageText, { color: readerTokens.text }]}>
-                {t('quran.hifz.pageOf', { page: n(visiblePage), total: n(HIFZ16_PAGE_COUNT) })}
-              </Text>
-              <Text style={[styles.readerJuzText, { color: readerTokens.textSecondary }]}>
-                {t('quran.mushaf.juz', { number: n(visiblePageData?.juz ?? 1) })}
-              </Text>
-            </View>
-            <Pressable accessibilityRole="button" accessibilityLabel={t('quran.reader.done')} onPress={() => setControlsVisible(false)} style={styles.readerIconButton}>
-              <MaterialIcons name="visibility-off" size={20} color={readerTokens.textSecondary} />
-            </Pressable>
-          </View>
-          <View style={[styles.readerActionBar, { backgroundColor: readerTokens.surface, borderColor: readerTokens.border }]}>
+          <View style={[styles.readerActionBar, { backgroundColor: readerTokens.page, borderColor: readerTokens.border }]}>
             <Pressable
               testID="hifz16-previous-page"
               accessibilityRole="button"
               accessibilityLabel={t('quran.page.previous')}
-              disabled={visiblePage <= 1}
-              onPress={() => scrollToPage(visiblePage - 1, true)}
-              style={[styles.readerAction, visiblePage <= 1 && styles.readerActionDisabled]}
+              disabled={HAS_HIFZ_DEDICATION
+                ? visiblePage === HIFZ_DEDICATION_PAGE
+                : visiblePage <= 1}
+              onPress={() => scrollToPage(
+                visiblePage - 1,
+                true,
+              )}
+              style={[styles.readerAction, (HAS_HIFZ_DEDICATION
+                ? visiblePage === HIFZ_DEDICATION_PAGE
+                : visiblePage <= 1) && styles.readerActionDisabled]}
             >
               <MaterialIcons name="chevron-right" size={25} color={readerTokens.accent} />
             </Pressable>
+            <Pressable
+              testID="hifz16-navigator-open"
+              accessibilityRole="button"
+              accessibilityLabel={t('quran.hifz.navigator.open')}
+              onPress={openNavigator}
+              style={styles.readerAction}
+            >
+              <MaterialIcons name="menu-book" size={20} color={readerTokens.accent} />
+            </Pressable>
+            <View style={styles.readerPageMeta}>
+              <Text
+                testID={visiblePage === HIFZ_DEDICATION_PAGE ? 'hifz16-dedication-title' : 'hifz16-page-meta'}
+                style={[styles.readerPageText, { color: readerTokens.text }]}
+              >
+                {visiblePage === HIFZ_DEDICATION_PAGE
+                  ? t('quran.hifz.dedicationTitle')
+                  : `\u200E${n(visiblePage)} / ${n(HIFZ16_PAGE_COUNT)}\u200E`}
+              </Text>
+              {visiblePage !== HIFZ_DEDICATION_PAGE ? (
+                <Text style={[styles.readerJuzText, { color: readerTokens.textSecondary }]}>
+                  {t('quran.mushaf.juz', { number: n(visiblePageData?.juz ?? 1) })}
+                </Text>
+              ) : null}
+            </View>
             <Pressable
               testID="hifz16-play"
               accessibilityRole="button"
@@ -2445,7 +2724,10 @@ export const Hifz16View = memo(function Hifz16View({
               accessibilityRole="button"
               accessibilityLabel={t('quran.page.next')}
               disabled={visiblePage >= HIFZ16_PAGE_COUNT}
-              onPress={() => scrollToPage(visiblePage + 1, true)}
+              onPress={() => scrollToPage(
+                visiblePage + 1,
+                true,
+              )}
               style={[styles.readerAction, visiblePage >= HIFZ16_PAGE_COUNT && styles.readerActionDisabled]}
             >
               <MaterialIcons name="chevron-left" size={25} color={readerTokens.accent} />
@@ -2456,29 +2738,83 @@ export const Hifz16View = memo(function Hifz16View({
 
       <Modal transparent animationType="fade" visible={navigatorOpen} onRequestClose={() => setNavigatorOpen(false)}>
         <View style={styles.navigatorBackdrop}>
-          <View testID="hifz16-navigator-sheet" style={[styles.navigatorSheet, { backgroundColor: readerTokens.surface, borderColor: readerTokens.border }]}>
+          <Pressable style={styles.navigatorScrim} onPress={() => setNavigatorOpen(false)} />
+          <View
+            testID="hifz16-navigator-sheet"
+            style={[styles.navigatorSheet, { backgroundColor: readerTokens.surface, borderColor: readerTokens.border }]}
+          >
+            <View style={[styles.navigatorGrabber, { backgroundColor: readerTokens.border }]} />
             <Text style={[styles.navigatorTitle, { color: readerTokens.text }]}>{t('quran.hifz.navigator.title')}</Text>
-            {([
-              ['page', navigatorPage, setNavigatorPage, t('quran.hifz.navigator.page')],
-              ['juz', navigatorJuz, setNavigatorJuz, t('quran.hifz.navigator.juz')],
-              ['surah', navigatorSurah, setNavigatorSurah, t('quran.hifz.navigator.surah')],
-            ] as const).map(([kind, value, setValue, label]) => (
-              <View key={kind} style={styles.navigatorRow}>
-                <Text style={[styles.navigatorLabel, { color: readerTokens.textSecondary }]}>{label}</Text>
-                <TextInput
-                  value={value}
-                  testID={`hifz16-navigator-${kind}`}
-                  onChangeText={setValue}
-                  keyboardType="number-pad"
-                  style={[styles.navigatorInput, { color: readerTokens.text, borderColor: readerTokens.border }]}
-                  accessibilityLabel={label}
-                />
-                <Pressable testID={`hifz16-navigator-${kind}-go`} onPress={() => navigateFromReader(kind)} style={[styles.navigatorGo, { backgroundColor: readerTokens.accent }]}>
-                  <Text style={styles.navigatorGoText}>{t('quran.hifz.navigator.go')}</Text>
-                </Pressable>
-              </View>
-            ))}
-            {navigatorError ? <Text style={styles.navigatorError}>{navigatorError}</Text> : null}
+            <Text style={[styles.navigatorCurrent, { color: readerTokens.textSecondary }]} numberOfLines={2}>
+              {t('quran.hifz.navigator.current')}: {n(Math.max(1, visiblePage))} · {t('quran.hifz.navigator.juz')} {n(visiblePageData?.juz ?? 1)}
+              {visibleTarget ? ` · ${getSurah(visibleTarget.surah)?.[language] ?? getSurah(visibleTarget.surah)?.arabic ?? ''} ${n(visibleTarget.ayah)}` : ''}
+            </Text>
+            <View style={[styles.navigatorTabs, { backgroundColor: readerTokens.page, borderColor: readerTokens.border }]}>
+              {(['page', 'juz', 'surah'] as const).map((kind) => {
+                const selected = navigatorTab === kind;
+                return (
+                  <Pressable
+                    key={kind}
+                    testID={`hifz16-navigator-tab-${kind}`}
+                    accessibilityRole="tab"
+                    accessibilityState={{ selected }}
+                    onPress={() => { setNavigatorTab(kind); setNavigatorError(null); }}
+                    style={[styles.navigatorTab, selected && { backgroundColor: readerTokens.accent }]}
+                  >
+                    <Text style={[styles.navigatorTabText, { color: selected ? '#fff' : readerTokens.textSecondary }]}>
+                      {t(`quran.hifz.navigator.${kind}`)}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <ScrollView
+              style={styles.navigatorBody}
+              contentContainerStyle={styles.navigatorBodyContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              <TextInput
+                value={navigatorTab === 'page' ? navigatorPage : navigatorTab === 'juz' ? navigatorJuz : navigatorSurah}
+                testID={`hifz16-navigator-${navigatorTab}`}
+                onChangeText={navigatorTab === 'page' ? setNavigatorPage : navigatorTab === 'juz' ? setNavigatorJuz : setNavigatorSurah}
+                selectTextOnFocus
+                keyboardType={navigatorTab === 'surah' ? 'default' : 'number-pad'}
+                returnKeyType={navigatorTab === 'surah' ? 'search' : 'go'}
+                onSubmitEditing={() => navigateFromReader(navigatorTab)}
+                autoCorrect={false}
+                placeholder={navigatorTab === 'surah' ? t('quran.search.surahPlaceholder') : t(`quran.hifz.navigator.${navigatorTab}`)}
+                placeholderTextColor={readerTokens.textSecondary}
+                style={[styles.navigatorInput, { color: readerTokens.text, borderColor: readerTokens.border, textAlign: navigatorTab === 'surah' ? (language === 'english' ? 'left' : 'right') : 'center' }]}
+                accessibilityLabel={t(`quran.hifz.navigator.${navigatorTab}`)}
+              />
+              <Pressable
+                testID={`hifz16-navigator-${navigatorTab}-go`}
+                onPress={() => navigateFromReader(navigatorTab)}
+                style={[styles.navigatorGo, { backgroundColor: readerTokens.accent }]}
+              >
+                <Text style={styles.navigatorGoText}>{t('quran.hifz.navigator.go')}</Text>
+              </Pressable>
+              {navigatorTab === 'surah' ? (
+                <View style={styles.navigatorSurahResults}>
+                  {navigatorSurahMatches.length > 0 ? navigatorSurahMatches.map((surah) => (
+                    <Pressable
+                      key={surah.number}
+                      testID={`hifz16-navigator-surah-result-${surah.number}`}
+                      onPress={() => navigateFromReader('surah', String(surah.number))}
+                      style={({ pressed }) => [styles.navigatorSurahResult, { borderBottomColor: readerTokens.border, opacity: pressed ? 0.72 : 1 }]}
+                    >
+                      <Text style={[styles.navigatorSurahNumber, { color: readerTokens.accent }]}>{n(surah.number)}</Text>
+                      <Text style={[styles.navigatorSurahName, { color: readerTokens.text }]}>{surah[language] ?? surah.arabic}</Text>
+                      <Text style={[styles.navigatorSurahArabic, { color: readerTokens.textSecondary }]}>{surah.arabic}</Text>
+                    </Pressable>
+                  )) : (
+                    <Text style={[styles.navigatorNoResults, { color: readerTokens.textSecondary }]}>{t('quran.hifz.navigator.noResults')}</Text>
+                  )}
+                </View>
+              ) : null}
+              {navigatorError ? <Text style={styles.navigatorError}>{navigatorError}</Text> : null}
+            </ScrollView>
             <Pressable onPress={() => setNavigatorOpen(false)} style={styles.navigatorClose}>
               <Text style={[styles.navigatorCloseText, { color: readerTokens.accent }]}>{t('quran.reader.done')}</Text>
             </Pressable>
@@ -2749,10 +3085,16 @@ const styles = StyleSheet.create({
   },
   list: {
     flex: 1,
+    overflow: 'hidden',
+    direction: 'ltr',
   },
   readerControls: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'space-between',
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 10,
+    elevation: 10,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
   },
@@ -2772,6 +3114,7 @@ const styles = StyleSheet.create({
   readerPageText: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 13,
+    writingDirection: 'ltr',
   },
   readerJuzText: {
     fontFamily: 'Vazirmatn',
@@ -2786,7 +3129,7 @@ const styles = StyleSheet.create({
   },
   readerActionBar: {
     alignSelf: 'center',
-    minWidth: 208,
+    minWidth: Math.min(PAGE_WIDTH - Spacing.md * 2, 292),
     height: 52,
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: BorderRadius.full,
@@ -2808,46 +3151,115 @@ const styles = StyleSheet.create({
   navigatorBackdrop: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.42)',
+    backgroundColor: 'rgba(0,0,0,0.28)',
+  },
+  navigatorScrim: {
+    ...StyleSheet.absoluteFillObject,
   },
   navigatorSheet: {
+    flexShrink: 1,
+    width: '100%',
+    maxHeight: '82%',
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopLeftRadius: BorderRadius.xl,
     borderTopRightRadius: BorderRadius.xl,
-    padding: Spacing.lg,
-    gap: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.sm,
+    paddingBottom: Spacing.sm,
+  },
+  navigatorGrabber: {
+    alignSelf: 'center',
+    width: 38,
+    height: 4,
+    borderRadius: 2,
+    marginBottom: Spacing.sm,
   },
   navigatorTitle: {
     textAlign: 'center',
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 17,
-    marginBottom: Spacing.xs,
   },
-  navigatorRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  navigatorLabel: {
-    width: 72,
+  navigatorCurrent: {
+    textAlign: 'center',
     fontFamily: 'Vazirmatn',
-    fontSize: 13,
+    fontSize: 12,
+    lineHeight: 19,
+    marginTop: 3,
+    marginBottom: Spacing.sm,
   },
-  navigatorInput: {
-    flex: 1,
-    height: 42,
+  navigatorTabs: {
+    flexDirection: 'row',
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.sm,
+    padding: 3,
+    gap: 3,
+  },
+  navigatorTab: {
+    flex: 1,
+    minHeight: 40,
+    borderRadius: BorderRadius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  navigatorTabText: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 12,
+  },
+  navigatorBody: {
+    flexShrink: 1,
+    marginTop: Spacing.sm,
+  },
+  navigatorBodyContent: {
+    gap: Spacing.sm,
+  },
+  navigatorInput: {
+    width: '100%',
+    minHeight: 48,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
     fontFamily: 'Vazirmatn',
-    textAlign: 'center',
+    fontSize: 15,
   },
   navigatorGo: {
-    minWidth: 56,
-    height: 40,
+    minHeight: 44,
     borderRadius: BorderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 2,
+  },
+  navigatorSurahResults: {
+    borderRadius: BorderRadius.md,
+    overflow: 'hidden',
+  },
+  navigatorSurahResult: {
+    minHeight: 42,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    paddingHorizontal: Spacing.sm,
+  },
+  navigatorSurahNumber: {
+    minWidth: 28,
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: 13,
+  },
+  navigatorSurahName: {
+    flex: 1,
+    fontFamily: 'Vazirmatn',
+    fontSize: 14,
+  },
+  navigatorSurahArabic: {
+    fontFamily: 'ScheherazadeNew',
+    fontSize: 19,
+  },
+  navigatorNoResults: {
+    textAlign: 'center',
+    fontFamily: 'Vazirmatn',
+    fontSize: 13,
+    paddingVertical: Spacing.sm,
   },
   navigatorGoText: {
     color: '#fff',
@@ -2862,7 +3274,7 @@ const styles = StyleSheet.create({
   },
   navigatorClose: {
     alignSelf: 'center',
-    minHeight: 42,
+    minHeight: 36,
     justifyContent: 'center',
     paddingHorizontal: Spacing.xl,
   },

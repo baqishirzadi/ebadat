@@ -6,6 +6,7 @@
 import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import type { QuranReaderTokens } from '@/hooks/useQuranReaderSettings';
 import audioManager, {
   ReciterKey,
   RECITERS,
@@ -14,6 +15,7 @@ import audioManager, {
   QuranPlaybackScopeType,
   type QuranPlaybackSnapshot,
   getQuranPlaybackErrorMessage,
+  DEFAULT_QURAN_RECITER,
 } from '@/utils/quranAudio';
 import { toArabicNumerals } from '@/utils/numbers';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -33,7 +35,11 @@ interface AudioPlayerProps {
   isVisible?: boolean;
   /** Compact docked bar under the mushaf (hifz) — does not reserve page height. */
   compact?: boolean;
+  /** Page-tone palette shared with the active Quran reader. */
+  readerTokens?: QuranReaderTokens;
   isPlaying: boolean;
+  /** Reports the rendered bar height so the reader can pad content exactly. */
+  onHeightChange?: (height: number) => void;
   onPlayContinuous: () => void;
   onPause: () => void;
   onResume: () => void;
@@ -47,11 +53,13 @@ export function AudioPlayer({
   totalAyahs,
   isVisible = true,
   compact = false,
+  readerTokens,
   scopeType = 'surah',
   scopeStartAyah = 1,
   scopeEndAyah,
   juzNumber = null,
   isPlaying,
+  onHeightChange,
   onPlayContinuous,
   onPause,
   onResume,
@@ -61,11 +69,20 @@ export function AudioPlayer({
   const { theme } = useApp();
   const { t } = useI18n();
   const insets = useSafeAreaInsets();
-  const [currentReciter, setCurrentReciter] = useState<ReciterKey>('yasser_ad_dussary');
+  const [currentReciter, setCurrentReciter] = useState<ReciterKey>(() => audioManager.getReciter() || DEFAULT_QURAN_RECITER);
   const [showReciterModal, setShowReciterModal] = useState(false);
   const [showSpeedModal, setShowSpeedModal] = useState(false);
   const [playback, setPlayback] = useState<QuranPlaybackSnapshot>(() => audioManager.getPlaybackSnapshot());
   const [playbackRate, setPlaybackRate] = useState<QuranPlaybackRate>(() => audioManager.getPlaybackRate());
+  const palette = readerTokens ?? {
+    page: theme.background,
+    surface: theme.backgroundSecondary,
+    border: theme.cardBorder,
+    text: theme.text,
+    textSecondary: theme.textSecondary,
+    accent: theme.tint,
+    divider: theme.divider,
+  };
 
   useEffect(() => {
     setCurrentReciter(audioManager.getReciter());
@@ -130,7 +147,7 @@ export function AudioPlayer({
   if (!isVisible) return null;
 
   const isPreparing = playback.status === 'preparing' || playback.status === 'buffering';
-  const statusText = playback.statusMessage || playback.errorMessage || ' ';
+  const statusText = playback.errorMessage || (isPreparing ? playback.statusMessage : '');
 
   return (
     <View
@@ -138,22 +155,24 @@ export function AudioPlayer({
         styles.container,
         compact && styles.containerCompact,
         {
-          backgroundColor: theme.card,
-          borderTopColor: theme.divider,
-          paddingBottom: compact ? insets.bottom : Math.max(insets.bottom, 8),
+          backgroundColor: palette.page,
+          borderTopColor: palette.divider,
+          paddingBottom: compact ? insets.bottom : Math.max(insets.bottom - 6, 0),
         },
       ]}
       pointerEvents="box-none"
+      onLayout={(event) => onHeightChange?.(event.nativeEvent.layout.height)}
     >
       <View style={[styles.content, compact && styles.contentCompact]} pointerEvents="auto">
         {compact ? (
           <View style={styles.compactRow}>
             <Pressable
+              testID="quran-audio-toggle"
               onPress={handlePlayPause}
               disabled={playback.status === 'preparing'}
               style={({ pressed }) => [
                 styles.playButtonCompact,
-                { backgroundColor: theme.playing, opacity: playback.status === 'preparing' ? 0.75 : 1 },
+                { backgroundColor: palette.accent, opacity: playback.status === 'preparing' ? 0.75 : 1 },
                 pressed && styles.playButtonPressed,
               ]}
             >
@@ -166,20 +185,21 @@ export function AudioPlayer({
 
             <Pressable
               onPress={() => setShowReciterModal(true)}
-              style={[styles.reciterButtonCompact, { backgroundColor: theme.backgroundSecondary }]}
+              style={[styles.reciterButtonCompact, { backgroundColor: palette.surface }]}
             >
-              <MaterialIcons name="person" size={15} color={theme.tint} />
+              <MaterialIcons name="person" size={15} color={palette.accent} />
               <CenteredText
-                style={[styles.reciterNameCompact, { color: theme.text }]}
+                style={[styles.reciterNameCompact, { color: palette.text }]}
                 numberOfLines={1}
               >
                 {RECITERS[currentReciter].name}
               </CenteredText>
-              <MaterialIcons name="arrow-drop-down" size={16} color={theme.icon} />
+              <MaterialIcons name="arrow-drop-down" size={16} color={palette.accent} />
             </Pressable>
 
             <CenteredText
-              style={[styles.ayahInfoCompact, { color: theme.textSecondary }]}
+              testID="quran-audio-current-ayah"
+              style={[styles.ayahInfoCompact, { color: palette.textSecondary }]}
               numberOfLines={1}
             >
               {toArabicNumerals(surahNumber)}:{toArabicNumerals(ayahNumber)}
@@ -190,11 +210,11 @@ export function AudioPlayer({
               onPress={() => setShowSpeedModal(true)}
               style={({ pressed }) => [
                 styles.speedButtonCompact,
-                { borderColor: theme.divider, backgroundColor: theme.backgroundSecondary },
+                { borderColor: palette.divider, backgroundColor: palette.surface },
                 pressed && styles.controlButtonPressed,
               ]}
             >
-              <CenteredText style={[styles.speedButtonText, { color: theme.text }]}>
+              <CenteredText style={[styles.speedButtonText, { color: palette.text }]}>
                 {playbackRate === 1 ? '1x' : `${playbackRate}x`}
               </CenteredText>
             </Pressable>
@@ -203,38 +223,40 @@ export function AudioPlayer({
               onPress={onStop}
               style={({ pressed }) => [styles.controlButtonCompact, pressed && styles.controlButtonPressed]}
             >
-              <MaterialIcons name="stop" size={20} color={theme.icon} />
+              <MaterialIcons name="stop" size={20} color={palette.accent} />
             </Pressable>
 
             <Pressable
+              testID="quran-audio-close"
               onPress={handleClose}
               style={({ pressed }) => [styles.controlButtonCompact, pressed && styles.controlButtonPressed]}
             >
-              <MaterialIcons name="close" size={20} color={theme.icon} />
+              <MaterialIcons name="close" size={20} color={palette.accent} />
             </Pressable>
           </View>
         ) : (
           <>
             <Pressable
               onPress={() => setShowReciterModal(true)}
-              style={[styles.reciterButton, { backgroundColor: theme.backgroundSecondary }]}
+              style={[styles.reciterButton, { backgroundColor: palette.surface }]}
             >
-              <MaterialIcons name="person" size={15} color={theme.tint} />
+              <MaterialIcons name="person" size={15} color={palette.accent} />
               <View style={styles.reciterTextWrap}>
                 <CenteredText
-                  style={[styles.reciterName, { color: theme.text }]}
+                  style={[styles.reciterName, { color: palette.text }]}
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
                   {RECITERS[currentReciter].name}
                 </CenteredText>
               </View>
-              <MaterialIcons name="arrow-drop-down" size={16} color={theme.icon} />
+              <MaterialIcons name="arrow-drop-down" size={16} color={palette.accent} />
             </Pressable>
 
             <View style={styles.bottomRow}>
-              <CenteredText
-                style={[styles.ayahInfo, { color: theme.textSecondary }]}
+            <CenteredText
+              testID="quran-audio-current-ayah"
+              style={[styles.ayahInfo, { color: palette.textSecondary }]}
                 numberOfLines={1}
                 ellipsizeMode="tail"
               >
@@ -247,22 +269,23 @@ export function AudioPlayer({
                   onPress={() => setShowSpeedModal(true)}
                   style={({ pressed }) => [
                     styles.speedButton,
-                    { borderColor: theme.divider, backgroundColor: theme.backgroundSecondary },
+                    { borderColor: palette.divider, backgroundColor: palette.surface },
                     pressed && styles.controlButtonPressed,
                   ]}
                 >
-                  <CenteredText style={[styles.speedButtonText, { color: theme.text }]}>
+                  <CenteredText style={[styles.speedButtonText, { color: palette.text }]}>
                     {playbackRate === 1 ? '1x' : `${playbackRate}x`}
                   </CenteredText>
                 </Pressable>
 
                 <Pressable
+                  testID="quran-audio-toggle"
                   onPress={handlePlayPause}
                   disabled={playback.status === 'preparing'}
                   style={({ pressed }) => [
                     styles.playButton,
                     {
-                      backgroundColor: theme.playing,
+                      backgroundColor: palette.accent,
                       opacity: playback.status === 'preparing' ? 0.75 : 1,
                     },
                     pressed && styles.playButtonPressed,
@@ -279,26 +302,29 @@ export function AudioPlayer({
                   onPress={onStop}
                   style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
                 >
-                  <MaterialIcons name="stop" size={24} color={theme.icon} />
+                  <MaterialIcons name="stop" size={24} color={palette.accent} />
                 </Pressable>
 
                 <Pressable
+                  testID="quran-audio-close"
                   onPress={handleClose}
                   style={({ pressed }) => [styles.controlButton, pressed && styles.controlButtonPressed]}
                 >
-                  <MaterialIcons name="close" size={24} color={theme.icon} />
+                  <MaterialIcons name="close" size={24} color={palette.accent} />
                 </Pressable>
               </View>
             </View>
-            <CenteredText
-              style={[
-                styles.statusText,
-                { color: playback.status === 'error' ? '#DC2626' : theme.textSecondary },
-              ]}
-              numberOfLines={1}
-            >
-              {statusText}
-            </CenteredText>
+            {statusText ? (
+              <CenteredText
+                style={[
+                  styles.statusText,
+                  { color: playback.status === 'error' ? '#DC2626' : palette.textSecondary },
+                ]}
+                numberOfLines={1}
+              >
+                {statusText}
+              </CenteredText>
+            ) : null}
           </>
         )}
       </View>
@@ -310,9 +336,9 @@ export function AudioPlayer({
         onRequestClose={() => setShowReciterModal(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setShowReciterModal(false)}>
-          <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
-            <CenteredText style={[styles.modalTitle, { color: theme.text }]}>انتخاب قاری</CenteredText>
-            <CenteredText style={[styles.modalSubtitle, { color: theme.textSecondary }]}>
+          <View style={[styles.modalContent, { backgroundColor: palette.page }]}>
+            <CenteredText style={[styles.modalTitle, { color: palette.text }]}>انتخاب قاری</CenteredText>
+            <CenteredText style={[styles.modalSubtitle, { color: palette.textSecondary }]}>
               برای تغییر قاری، یکی از گزینه‌ها را انتخاب کنید
             </CenteredText>
 
@@ -322,15 +348,15 @@ export function AudioPlayer({
                 onPress={() => void handleReciterChange(reciter.key)}
                 style={[
                   styles.modalOption,
-                  { borderBottomColor: theme.divider },
-                  currentReciter === reciter.key && { backgroundColor: theme.backgroundSecondary },
+                  { borderBottomColor: palette.divider },
+                  currentReciter === reciter.key && { backgroundColor: palette.surface },
                 ]}
               >
-                <CenteredText style={[styles.reciterOptionName, { color: theme.text }]}>
+                <CenteredText style={[styles.reciterOptionName, { color: palette.text }]}>
                   {reciter.name}
                 </CenteredText>
                 {currentReciter === reciter.key && (
-                  <MaterialIcons name="check" size={24} color={theme.tint} />
+                  <MaterialIcons name="check" size={24} color={palette.accent} />
                 )}
               </Pressable>
             ))}
@@ -345,8 +371,8 @@ export function AudioPlayer({
         onRequestClose={() => setShowSpeedModal(false)}
       >
         <Pressable style={styles.modalOverlay} onPress={() => setShowSpeedModal(false)}>
-          <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
-            <CenteredText style={[styles.modalTitle, { color: theme.text }]}>سرعت پخش</CenteredText>
+          <View style={[styles.modalContent, { backgroundColor: palette.page }]}>
+            <CenteredText style={[styles.modalTitle, { color: palette.text }]}>سرعت پخش</CenteredText>
             <View style={styles.speedOptions}>
               {QURAN_PLAYBACK_RATES.map((rate) => (
                 <Pressable
@@ -356,12 +382,12 @@ export function AudioPlayer({
                   style={[
                     styles.speedOption,
                     {
-                      borderColor: rate === playbackRate ? theme.tint : theme.divider,
-                      backgroundColor: rate === playbackRate ? `${theme.tint}22` : theme.backgroundSecondary,
+                      borderColor: rate === playbackRate ? palette.accent : palette.divider,
+                      backgroundColor: rate === playbackRate ? `${palette.accent}22` : palette.surface,
                     },
                   ]}
                 >
-                  <CenteredText style={[styles.speedOptionText, { color: rate === playbackRate ? theme.tint : theme.text }]}>
+                  <CenteredText style={[styles.speedOptionText, { color: rate === playbackRate ? palette.accent : palette.text }]}>
                     {rate === 1 ? '1x' : `${rate}x`}
                   </CenteredText>
                 </Pressable>
@@ -389,10 +415,9 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'column',
     paddingHorizontal: Spacing.md,
-    paddingTop: Spacing.xs,
-    paddingBottom: Spacing.xs,
-    minHeight: 122,
-    gap: 5,
+    paddingTop: 2,
+    paddingBottom: 0,
+    gap: 2,
   },
   contentCompact: {
     minHeight: 48,

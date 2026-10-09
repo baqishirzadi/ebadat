@@ -26,7 +26,7 @@ export interface QuranReaderTokens {
 }
 
 const STORAGE_KEY = '@ebadat/quran_reader_settings';
-const DEFAULT_SETTINGS: QuranReaderSettings = { lineSpacing: 'normal', pageTone: 'auto' };
+const DEFAULT_SETTINGS: QuranReaderSettings = { lineSpacing: 'compact', pageTone: 'auto' };
 const LINE_HEIGHTS: Record<QuranLineSpacing, number> = {
   compact: 2.0,
   normal: 2.2,
@@ -72,6 +72,7 @@ const FIXED_PAGES: Record<Exclude<QuranPageTone, 'auto'>, Omit<QuranReaderTokens
 let current = DEFAULT_SETTINGS;
 let loadStarted = false;
 const listeners = new Set<() => void>();
+const editedSettings = new Set<keyof QuranReaderSettings>();
 
 function emit() {
   listeners.forEach((listener) => listener());
@@ -94,10 +95,14 @@ function loadOnce() {
       if (!raw) return;
       const saved = JSON.parse(raw) as Partial<QuranReaderSettings>;
       current = {
-        lineSpacing: isOneOf(saved.lineSpacing, ['compact', 'normal', 'relaxed'])
+        lineSpacing: editedSettings.has('lineSpacing')
+          ? current.lineSpacing
+          : isOneOf(saved.lineSpacing, ['compact', 'normal', 'relaxed'])
           ? saved.lineSpacing
           : DEFAULT_SETTINGS.lineSpacing,
-        pageTone: isOneOf(saved.pageTone, ['auto', 'light', 'sepia', 'dark'])
+        pageTone: editedSettings.has('pageTone')
+          ? current.pageTone
+          : isOneOf(saved.pageTone, ['auto', 'light', 'sepia', 'dark'])
           ? saved.pageTone
           : DEFAULT_SETTINGS.pageTone,
       };
@@ -113,6 +118,7 @@ export function useQuranReaderSettings() {
   useEffect(loadOnce, []);
 
   const update = useCallback((patch: Partial<QuranReaderSettings>) => {
+    Object.keys(patch).forEach((key) => editedSettings.add(key as keyof QuranReaderSettings));
     current = { ...current, ...patch };
     emit();
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(current)).catch(() => {});
@@ -135,7 +141,11 @@ export function useQuranReaderSettings() {
 
     return {
       ...colors,
-      accent: theme.tint,
+      accent: settings.pageTone === 'dark' || (settings.pageTone === 'auto' && themeMode === 'night')
+        ? '#77D5AB'
+        : settings.pageTone === 'light' || settings.pageTone === 'sepia'
+          ? '#0E6B4F'
+          : theme.tint,
       lineHeightRatio: LINE_HEIGHTS[settings.lineSpacing],
     };
   }, [settings, theme, themeMode]);

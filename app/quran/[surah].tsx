@@ -18,7 +18,7 @@ import { pinSurahInCache } from '@/hooks/useSurahData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { MushafView, AudioPlayer, Hifz16View, QuranDownloadCard } from '@/components/quran';
 import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
-import { findHifzPageForAyah, getHifzPage } from '@/utils/hifz16';
+import { findHifzPageForAyah, getHifzPage, getHifzSurahStartPage } from '@/utils/hifz16';
 import {
   getDownloadManifest,
   getDownloadManifestKey,
@@ -36,7 +36,7 @@ import { QuranReaderSettingsSheet } from '@/components/quran/QuranReaderSettings
 import { useQuranReaderSettings } from '@/hooks/useQuranReaderSettings';
 
 const SURAH_TOP_BAR_HEIGHT = 56;
-const QURAN_AUDIO_PLAYER_RESERVED_HEIGHT = 170;
+const QURAN_AUDIO_PLAYER_RESERVED_HEIGHT = 148;
 const QURAN_FONT_SIZES = ['small', 'medium', 'large', 'xlarge'] as const;
 
 export default function QuranReaderScreen() {
@@ -99,10 +99,12 @@ export default function QuranReaderScreen() {
   const surah = useMemo(() => getSurah(surahNumber), [getSurah, surahNumber]);
   const [hifzVisibleSurah, setHifzVisibleSurah] = useState(surahNumber);
   const [hifzVisibleAyah, setHifzVisibleAyah] = useState(initialAyah);
+  const [translationVisibleAyah, setTranslationVisibleAyah] = useState(initialAyah);
   const [hifzVisiblePage, setHifzVisiblePage] = useState<number | null>(() =>
     requestedHifzPage ?? findHifzPageForAyah(surahNumber, initialAyah),
   );
   const [hifzOnDedication, setHifzOnDedication] = useState(false);
+  const [forcedHifzPage, setForcedHifzPage] = useState<number | null>(null);
   const headerSurahNumber = hifz16Line ? hifzVisibleSurah : surahNumber;
   const surahNameData = getSurahName(headerSurahNumber);
 
@@ -120,6 +122,7 @@ export default function QuranReaderScreen() {
   useEffect(() => {
     setHifzVisibleSurah(surahNumber);
     setHifzVisibleAyah(initialAyah);
+    setTranslationVisibleAyah(initialAyah);
     setHifzVisiblePage(requestedHifzPage ?? findHifzPageForAyah(surahNumber, initialAyah));
     setHifzOnDedication(false);
   }, [initialAyah, requestedHifzPage, surahNumber]);
@@ -136,6 +139,7 @@ export default function QuranReaderScreen() {
   }, [surahNumber]);
 
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
+  const [playerHeight, setPlayerHeight] = useState(QURAN_AUDIO_PLAYER_RESERVED_HEIGHT);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentlyPlaying, setCurrentlyPlaying] = useState<{
     surah: number;
@@ -193,28 +197,40 @@ export default function QuranReaderScreen() {
 
   const syncFromAudioSnapshot = useCallback(() => {
     const snapshot = audioManager.getPlaybackSnapshot();
-    const hifzFollows =
-      hifz16Line && snapshot.isActive && snapshot.scopeType === 'surah' && snapshot.surah != null;
-    const isMatchingSurah =
-      snapshot.isActive && snapshot.scopeType === 'surah' && snapshot.surah === surahNumber;
+    const hasAudioPosition =
+      snapshot.isActive && snapshot.scopeType != null && snapshot.surah > 0 && snapshot.ayah > 0;
+    const isMatchingSurah = hasAudioPosition && snapshot.surah === surahNumber;
+    // A surah opened from the list stays on its own page. Audio from another
+    // surah must not pull the 16-line reader to that other page.
+    const hifzFollows = hifz16Line && isMatchingSurah;
 
+    // Translation keeps the opened surah. Playing a different surah must not
+    // rewrite this route, or picking another item from the list snaps back.
     if (!hifzFollows && !isMatchingSurah) {
+      if (!hifz16Line && hasAudioPosition) {
+        setCurrentlyPlaying({ surah: snapshot.surah, ayah: snapshot.ayah });
+        setShowAudioPlayer(true);
+        setIsPlaying(snapshot.isPlaying);
+        return;
+      }
       setIsPlaying(false);
       setCurrentlyPlaying(null);
       setShowAudioPlayer(false);
       return;
     }
 
-    const surah = snapshot.surah as number;
-    const ayah = snapshot.ayah;
     setCurrentlyPlaying((previous) => (
-      previous?.surah === surah && previous.ayah === ayah
+      previous?.surah === snapshot.surah && previous.ayah === snapshot.ayah
         ? previous
-        : { surah, ayah }
+        : { surah: snapshot.surah, ayah: snapshot.ayah }
     ));
     setShowAudioPlayer(true);
     setIsPlaying(snapshot.isPlaying);
   }, [hifz16Line, surahNumber]);
+
+  const handleTranslationPositionChange = useCallback((nextSurah: number, nextAyah: number) => {
+    if (nextSurah === surahNumber && nextAyah > 0) setTranslationVisibleAyah(nextAyah);
+  }, [surahNumber]);
 
   useEffect(() => {
     if (!surah && !shouldGoBack) {
@@ -263,7 +279,7 @@ export default function QuranReaderScreen() {
   useFocusEffect(
     useCallback(() => {
       audioManager.setOnAyahChange((s, a) => {
-        if (!hifz16Line && s !== surahNumber) return;
+        if (s !== surahNumber) return;
         setCurrentlyPlaying((previous) => (
           previous?.surah === s && previous.ayah === a
             ? previous
@@ -425,9 +441,13 @@ export default function QuranReaderScreen() {
       setShowAudioPlayer(false);
       setCurrentlyPlaying(null);
       setIsPlaying(false);
-      router.replace(`/quran/${surahNumber + 1}`);
+      setForcedHifzPage(null);
+      const nextSurah = surahNumber + 1;
+      router.replace(hifz16Line
+        ? `/quran/${nextSurah}?ayah=1&hifzPage=${getHifzSurahStartPage(nextSurah)}`
+        : `/quran/${nextSurah}`);
     }
-  }, [surahNumber, router]);
+  }, [hifz16Line, surahNumber, router]);
 
   const goToPrevSurah = useCallback(async () => {
     if (surahNumber > 1) {
@@ -435,9 +455,13 @@ export default function QuranReaderScreen() {
       setShowAudioPlayer(false);
       setCurrentlyPlaying(null);
       setIsPlaying(false);
-      router.replace(`/quran/${surahNumber - 1}`);
+      setForcedHifzPage(null);
+      const previousSurah = surahNumber - 1;
+      router.replace(hifz16Line
+        ? `/quran/${previousSurah}?ayah=1&hifzPage=${getHifzSurahStartPage(previousSurah)}`
+        : `/quran/${previousSurah}`);
     }
-  }, [surahNumber, router]);
+  }, [hifz16Line, surahNumber, router]);
 
   const surahName = hifz16Line && hifzOnDedication
     ? t('quran.hifz.dedicationTitle')
@@ -449,12 +473,15 @@ export default function QuranReaderScreen() {
   const contentPaddingBottom = hifz16Line
     ? insets.bottom + 64
     : showAudioPlayer
-      ? insets.bottom + QURAN_AUDIO_PLAYER_RESERVED_HEIGHT
+      ? playerHeight
       : Spacing.xxl;
 
-  if (!surah || shouldGoBack) {
+  // Reader mode is a persisted Quran preference. Keep the screen inert until
+  // AsyncStorage has resolved it so a launch-time tap cannot be applied to
+  // the temporary default and then overwritten by hydration.
+  if (!state.isInitialized || !surah || shouldGoBack) {
     return (
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View testID="quran-reader-loading" style={[styles.container, { backgroundColor: readerTokens.page }]}>
         <AppCenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>
           در حال بارگذاری...
         </AppCenteredText>
@@ -463,8 +490,11 @@ export default function QuranReaderScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar style="light" />
+    <View
+      testID="quran-reader-ready"
+      style={[styles.container, { backgroundColor: readerTokens.page }]}
+    >
+      <StatusBar style={readerTokens.isDark ? 'light' : 'dark'} />
 
       <View
         style={[
@@ -473,20 +503,22 @@ export default function QuranReaderScreen() {
           {
             paddingTop: insets.top,
             height: insets.top + SURAH_TOP_BAR_HEIGHT,
-            backgroundColor: theme.surahHeader,
+            backgroundColor: readerTokens.page,
           },
         ]}
       >
         <Pressable
+          testID="quran-reader-back-to-list"
+          accessibilityRole="button"
           onPress={goBackToList}
           hitSlop={8}
           style={styles.topBarBackButton}
         >
           <View style={styles.iconLtr}>
-            <MaterialIcons name={backIcon} size={24} color="#fff" />
+            <MaterialIcons name={backIcon} size={24} color={readerTokens.text} />
           </View>
         </Pressable>
-        <LocalizedText style={[styles.topBarTitle, { fontFamily: quranFontFamily }]} numberOfLines={1} ellipsizeMode="tail">
+        <LocalizedText testID="quran-reader-surah-title" style={[styles.topBarTitle, { fontFamily: quranFontFamily, color: readerTokens.text }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.65}>
           {surahName}
         </LocalizedText>
         <View style={styles.topBarNav}>
@@ -500,14 +532,14 @@ export default function QuranReaderScreen() {
             style={[
               styles.topBarDownloadButton,
               {
-                backgroundColor: surahDownloaded ? 'rgba(255,255,255,0.24)' : 'rgba(255,255,255,0.14)',
+                backgroundColor: readerTokens.surface,
                 opacity: downloadDisabled ? 0.4 : 1,
               },
             ]}
           >
-            <MaterialIcons name={surahDownloaded ? 'check-circle' : 'download'} size={20} color="#fff" />
+            <MaterialIcons name={surahDownloaded ? 'check-circle' : 'download'} size={20} color={readerTokens.accent} />
           </Pressable>
-          <View style={styles.modeSwitch}>
+          <View style={[styles.modeSwitch, { borderColor: readerTokens.border }]}>
             <Pressable
               testID="quran-reader-translation"
               accessibilityLabel={t('quran.reading.translation')}
@@ -515,22 +547,37 @@ export default function QuranReaderScreen() {
               onPress={() => {
                 if (!hifz16Line) return;
                 const snapshot = audioManager.getPlaybackSnapshot();
-                const playing = snapshot.isActive && snapshot.surah > 0 && snapshot.ayah > 0;
-                const targetSurah = playing ? snapshot.surah : hifzVisibleSurah;
-                const targetAyah = playing ? snapshot.ayah : Math.max(1, hifzVisibleAyah);
+                // The page on screen decides the destination. Audio only follows
+                // along when it belongs to the surah the reader is showing;
+                // playback from an earlier surah must not move the reader.
+                const hasAudioPosition = snapshot.isActive && snapshot.scopeType != null && snapshot.surah > 0 && snapshot.ayah > 0;
+                const audioMatchesVisible = hasAudioPosition && snapshot.surah === hifzVisibleSurah;
+                const targetSurah = hifzVisibleSurah;
+                const targetAyah = audioMatchesVisible ? snapshot.ayah : Math.max(1, hifzVisibleAyah);
+                setCurrentlyPlaying(audioMatchesVisible ? { surah: targetSurah, ayah: targetAyah } : null);
+                setIsPlaying(audioMatchesVisible && snapshot.isPlaying);
+                setShowAudioPlayer(audioMatchesVisible);
+                setForcedHifzPage(null);
                 setHifz16Line(false);
-                if (targetSurah !== surahNumber || targetAyah !== initialAyah) {
-                  router.setParams({
-                    surah: String(targetSurah),
-                    ayah: String(targetAyah),
-                  });
-                }
+                requestAnimationFrame(() => router.setParams({
+                  surah: String(targetSurah),
+                  ayah: String(targetAyah),
+                  jump: 'exact',
+                  jumpToken: `mode-${targetSurah}-${targetAyah}-${Date.now()}`,
+                }));
               }}
               hitSlop={4}
-              style={[styles.modeSegment, !hifz16Line && styles.modeSegmentActive]}
+              style={[
+                styles.modeSegment,
+                !hifz16Line && [styles.modeSegmentActive, { backgroundColor: readerTokens.surface }],
+              ]}
             >
               <LocalizedText
-                style={[styles.modeSegmentText, !hifz16Line && styles.modeSegmentTextActive]}
+                style={[
+                  styles.modeSegmentText,
+                  { color: !hifz16Line ? readerTokens.accent : readerTokens.textSecondary },
+                  !hifz16Line && styles.modeSegmentTextActive,
+                ]}
                 numberOfLines={1}
               >
                 {t('quran.reading.translation')}
@@ -542,49 +589,84 @@ export default function QuranReaderScreen() {
               accessibilityState={{ selected: hifz16Line }}
               onPress={() => {
                 if (hifz16Line) return;
+                const snapshot = audioManager.getPlaybackSnapshot();
+                const hasAudioPosition = snapshot.isActive && snapshot.scopeType != null && snapshot.surah > 0 && snapshot.ayah > 0;
+                const audioMatchesVisible = hasAudioPosition && snapshot.surah === surahNumber;
+                const targetSurah = surahNumber;
+                const targetAyah = audioMatchesVisible ? snapshot.ayah : Math.max(1, translationVisibleAyah);
+                setCurrentlyPlaying(audioMatchesVisible ? { surah: targetSurah, ayah: targetAyah } : null);
+                setIsPlaying(audioMatchesVisible && snapshot.isPlaying);
+                setShowAudioPlayer(audioMatchesVisible);
+                const targetPage = findHifzPageForAyah(targetSurah, targetAyah)
+                  ?? getHifzSurahStartPage(targetSurah);
+                // Set the page before flipping the view so Hifz16 never mounts
+                // on a stale URL hifzPage (index 0 is mushaf page 548).
+                setForcedHifzPage(targetPage);
                 setHifz16Line(true);
+                requestAnimationFrame(() => router.setParams({
+                  surah: String(targetSurah),
+                  ayah: String(targetAyah),
+                  hifzPage: String(targetPage),
+                }));
               }}
               hitSlop={4}
-              style={[styles.modeSegment, hifz16Line && styles.modeSegmentActive]}
+              style={[
+                styles.modeSegment,
+                hifz16Line && [styles.modeSegmentActive, { backgroundColor: readerTokens.surface }],
+              ]}
             >
               <LocalizedText
-                style={[styles.modeSegmentText, hifz16Line && styles.modeSegmentTextActive]}
+                style={[
+                  styles.modeSegmentText,
+                  { color: hifz16Line ? readerTokens.accent : readerTokens.textSecondary },
+                  hifz16Line && styles.modeSegmentTextActive,
+                ]}
                 numberOfLines={1}
               >
-                {t('quran.reading.hifz16')}
+                {t('quran.reading.hifz16.chip')}
               </LocalizedText>
             </Pressable>
           </View>
           <Pressable testID="quran-reader-settings" onPress={() => setSettingsOpen(true)} hitSlop={8}>
-            <MaterialIcons name="tune" size={22} color="#fff" />
+            <MaterialIcons name="tune" size={22} color={readerTokens.accent} />
           </Pressable>
-          {surahNumber > 1 ? (
-            <Pressable onPress={goToPrevSurah} hitSlop={8}>
+          <View style={[styles.surahNavigationGroup, { backgroundColor: readerTokens.surface, borderColor: readerTokens.border }]}>
+            <Pressable
+              testID="quran-reader-previous-surah"
+              accessibilityRole="button"
+              accessibilityLabel={t('quran.surah.previous')}
+              disabled={surahNumber <= 1}
+              onPress={goToPrevSurah}
+              hitSlop={4}
+              style={[styles.surahNavigationButton, surahNumber <= 1 && styles.surahNavigationDisabled]}
+            >
               <View style={styles.iconLtr}>
-                <MaterialIcons name={prevSurahIcon} size={28} color="#fff" />
+                <MaterialIcons name={prevSurahIcon} size={22} color={readerTokens.text} />
               </View>
             </Pressable>
-          ) : (
-            <View style={styles.navPlaceholder} />
-          )}
-          {surahNumber < 114 ? (
-            <Pressable onPress={goToNextSurah} hitSlop={8}>
+            <Pressable
+              testID="quran-reader-next-surah"
+              accessibilityRole="button"
+              accessibilityLabel={t('quran.surah.next')}
+              disabled={surahNumber >= 114}
+              onPress={goToNextSurah}
+              hitSlop={4}
+              style={[styles.surahNavigationButton, surahNumber >= 114 && styles.surahNavigationDisabled]}
+            >
               <View style={styles.iconLtr}>
-                <MaterialIcons name={nextSurahIcon} size={28} color="#fff" />
+                <MaterialIcons name={nextSurahIcon} size={22} color={readerTokens.text} />
               </View>
             </Pressable>
-          ) : (
-            <View style={styles.navPlaceholder} />
-          )}
+          </View>
         </View>
       </View>
 
       {hifz16Line ? (
         <Hifz16View
-          key={`hifz16-${surahNumber}-${initialAyah}-${requestedHifzPage ?? 'ayah'}`}
+          key={`hifz16-${surahNumber}-${initialAyah}-${forcedHifzPage ?? requestedHifzPage ?? 'ayah'}`}
           surahNumber={surahNumber}
           initialAyah={initialAyah}
-          initialPage={requestedHifzPage}
+          initialPage={forcedHifzPage ?? requestedHifzPage}
           contentPaddingTop={contentPaddingTop}
           contentPaddingBottom={contentPaddingBottom}
           activePlayingSurah={currentlyPlaying?.surah ?? null}
@@ -601,6 +683,7 @@ export default function QuranReaderScreen() {
           jumpToken={normalizedJumpToken}
           resumeSource={normalizedResumeSource === 'notification' ? 'notification' : undefined}
           onPlayAyah={handlePlayAyah}
+          onAyahChange={handleTranslationPositionChange}
           onSettingsPress={() => setSettingsOpen(true)}
           activePlayingAyah={activeAyahNumber}
           contentPaddingTop={contentPaddingTop}
@@ -619,7 +702,9 @@ export default function QuranReaderScreen() {
           scopeEndAyah={getSurahName(currentlyPlaying.surah)?.ayahCount ?? surah.ayahs.length}
           isVisible={showAudioPlayer}
           compact={hifz16Line}
+          readerTokens={readerTokens}
           isPlaying={isPlaying}
+          onHeightChange={setPlayerHeight}
           onPlayContinuous={handlePlayContinuous}
           onPause={handlePause}
           onResume={handleResume}
@@ -641,7 +726,11 @@ export default function QuranReaderScreen() {
         }}
         onCompleted={() => setDownloadBadgeNonce((value) => value + 1)}
       />
-      <QuranReaderSettingsSheet visible={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <QuranReaderSettingsSheet
+        visible={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        fixedMushaf={hifz16Line}
+      />
     </View>
   );
 }
@@ -676,8 +765,9 @@ const styles = StyleSheet.create({
   },
   topBarTitle: {
     flex: 1,
+    flexShrink: 1,
+    minWidth: 72,
     marginHorizontal: Spacing.xs,
-    color: '#fff',
     fontSize: 17,
     textAlign: 'center',
     writingDirection: 'rtl',
@@ -685,7 +775,23 @@ const styles = StyleSheet.create({
   topBarNav: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
+  },
+  surahNavigationGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 18,
+    overflow: 'hidden',
+  },
+  surahNavigationButton: {
+    width: 36,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  surahNavigationDisabled: {
+    opacity: 0.35,
   },
   topBarDownloadButton: {
     width: 32,
@@ -699,7 +805,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.55)',
+    borderColor: 'rgba(14,107,79,0.25)',
     padding: 1,
     gap: 1,
   },
@@ -711,19 +817,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   modeSegmentActive: {
-    backgroundColor: '#fff',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   modeSegmentText: {
-    color: 'rgba(255,255,255,0.92)',
     fontFamily: 'Vazirmatn-Bold',
     fontSize: 11,
   },
   modeSegmentTextActive: {
-    color: '#0E6B4F',
-  },
-  navPlaceholder: {
-    width: 28,
-    height: 28,
+    fontWeight: '700',
   },
   loadingText: {
     fontSize: 16,

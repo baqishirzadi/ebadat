@@ -23,7 +23,7 @@ import { NumericText } from '@/components/ui/NumericText';
 import { getUthmaniFont } from '@/hooks/useFonts';
 import { RtlView } from '@/components/ui/RtlView';
 import { normalizeArabicForSearch, normalizeDariForSearch, normalizePashtoForSearch } from '@/utils/quranSearchNormalize';
-import { findHifzJuzStartAyah, getHifzJuzPageRange } from '@/utils/hifz16';
+import { findHifzJuzStartAyah, getHifzJuzPageRange, getHifzSurahStartPage } from '@/utils/hifz16';
 import { SearchButton } from './SearchButton';
 import { JuzList } from './JuzList';
 import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
@@ -36,12 +36,14 @@ const TOTAL_ROW_HEIGHT = ITEM_HEIGHT + SEPARATOR_HEIGHT;
 interface SurahItemProps {
   surah: SurahNameData;
   isLastRead?: boolean;
+  testID?: string;
   onPress: () => void;
 }
 
 const SurahItem = React.memo(function SurahItem({
   surah,
   isLastRead,
+  testID,
   onPress,
 }: SurahItemProps) {
   const { theme } = useApp();
@@ -50,6 +52,7 @@ const SurahItem = React.memo(function SurahItem({
 
   return (
     <Pressable
+      testID={testID}
       onPress={onPress}
       style={({ pressed }) => [
         styles.surahItem,
@@ -135,32 +138,43 @@ function GlassSegment({ options, direction }: { options: GlassOption[]; directio
   return (
     <View style={[styles.glassToggle, direction]} accessibilityRole="tablist">
       {options.map((option) => (
-        <Pressable
+        <View
           key={option.key}
-          testID={option.testID}
-          accessibilityRole="tab"
-          accessibilityLabel={option.a11y ?? option.label}
-          accessibilityState={{ selected: option.active }}
-          onPress={option.onPress}
-          style={({ pressed }) => [
-            styles.glassButton,
-            direction,
-            option.active && styles.glassButtonActive,
-            pressed && styles.glassButtonPressed,
+          style={[
+            styles.glassButtonShadow,
+            option.active && styles.glassButtonShadowActive,
           ]}
         >
-          {option.active ? <View style={styles.glassSheen} pointerEvents="none" /> : null}
-          <MaterialIcons
-            name={option.active ? 'check-circle' : option.icon}
-            size={18}
-            color={option.active ? '#fff' : 'rgba(255,255,255,0.78)'}
-          />
-          <CenteredText
-            style={[styles.glassButtonText, option.active && styles.glassButtonTextActive]}
+          <Pressable
+            testID={option.testID}
+            accessibilityRole="tab"
+            accessibilityLabel={option.a11y ?? option.label}
+            accessibilityState={{ selected: option.active }}
+            onPress={option.onPress}
+            style={({ pressed }) => [
+              styles.glassButton,
+              direction,
+              option.active && styles.glassButtonActive,
+              pressed && styles.glassButtonPressed,
+            ]}
           >
-            {option.label}
-          </CenteredText>
-        </Pressable>
+            {option.active ? (
+              <View style={styles.glassSheenClip} pointerEvents="none">
+                <View style={styles.glassSheen} />
+              </View>
+            ) : null}
+            <MaterialIcons
+              name={option.active ? 'check-circle' : option.icon}
+              size={18}
+              color={option.active ? '#fff' : 'rgba(255,255,255,0.78)'}
+            />
+            <CenteredText
+              style={[styles.glassButtonText, option.active && styles.glassButtonTextActive]}
+            >
+              {option.label}
+            </CenteredText>
+          </Pressable>
+        </View>
       ))}
     </View>
   );
@@ -244,8 +258,15 @@ export function SurahList() {
   }, [filteredJuzs, hifz16Line]);
 
   const handleSurahPress = useCallback((surahNumber: number) => {
+    if (hifz16Line) {
+      const page = getHifzSurahStartPage(surahNumber);
+      // Make the 548-page mushaf index explicit. A surah can start midway
+      // through a shared page, so an ayah-only route is ambiguous.
+      router.push(`/quran/${surahNumber}?ayah=1&hifzPage=${page}`);
+      return;
+    }
     router.push(`/quran/${surahNumber}`);
-  }, [router]);
+  }, [hifz16Line, router]);
 
   const handleJuzPress = useCallback((juzNumber: number) => {
     if (hifz16Line) {
@@ -287,6 +308,7 @@ export function SurahList() {
       <SurahItem
         surah={item}
         isLastRead={item.number === position.surahNumber}
+        testID={`quran-surah-${item.number}`}
         onPress={() => handleSurahPress(item.number)}
       />
     ),
@@ -606,14 +628,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.05)',
     overflow: 'hidden',
   },
+  glassButtonShadow: {
+    flex: 1,
+    minHeight: 46,
+    borderRadius: BorderRadius.lg,
+  },
   glassButtonActive: {
     borderColor: 'rgba(190,255,220,0.75)',
     backgroundColor: 'rgba(52,178,122,0.55)',
-    shadowColor: '#3DDC97',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.45,
-    shadowRadius: 10,
-    elevation: 4,
+  },
+  glassButtonShadowActive: {
+    backgroundColor: 'rgba(14,107,79,0.015)',
+    shadowColor: '#155E43',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 4,
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   glassButtonPressed: {
     opacity: 0.85,
@@ -627,6 +657,15 @@ const styles = StyleSheet.create({
     right: 0,
     height: '50%',
     backgroundColor: 'rgba(255,255,255,0.16)',
+  },
+  glassSheenClip: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: BorderRadius.lg,
+    overflow: 'hidden',
   },
   glassButtonText: {
     fontSize: Typography.ui.subtitle,

@@ -13,6 +13,7 @@ if (payload.pageCount !== 548 || payload.pages.length !== 548) {
 }
 
 const firstPageByJuz = new Map();
+const firstPageBySurah = new Map();
 const ayahs = new Set();
 for (const [index, page] of payload.pages.entries()) {
   if (page.page !== index + 1) fail(`page order breaks at index ${index}`);
@@ -31,13 +32,23 @@ for (const [index, page] of payload.pages.entries()) {
     for (let ayah = line.ayahStart; ayah <= line.ayahEnd; ayah += 1) {
       ayahs.add(`${line.surahNumber}:${ayah}`);
     }
+    if (!firstPageBySurah.has(line.surahNumber)) {
+      firstPageBySurah.set(line.surahNumber, { page: page.page, startsAtAyahOne: line.ayahStart === 1 });
+    }
   }
 }
 
 if (firstPageByJuz.size !== 30) fail(`expected 30 juz starts, got ${firstPageByJuz.size}`);
+if (firstPageBySurah.size !== 114) fail(`expected 114 surah starts, got ${firstPageBySurah.size}`);
+for (let surah = 1; surah <= 114; surah += 1) {
+  const start = firstPageBySurah.get(surah);
+  if (!start || !start.startsAtAyahOne || start.page < 1 || start.page > 548) {
+    fail(`surah ${surah} has invalid start page ${start?.page ?? 'missing'}`);
+  }
+}
 if (ayahs.size !== 6236) fail(`expected all 6236 ayahs, got ${ayahs.size}`);
 if (firstPageByJuz.get(2) !== 20 || firstPageByJuz.get(30) !== 528) {
   fail(`unexpected juz starts: 2=${firstPageByJuz.get(2)}, 30=${firstPageByJuz.get(30)}`);
 }
 
-console.log(`[verify:hifz16] PASS: 548 pages, 30 juz starts, ${ayahs.size} ayahs, 16 rows per page.`);
+console.log(`[verify:hifz16] PASS: 548 pages, 30 juz starts, 114 surah starts, ${ayahs.size} ayahs, 16 rows per page.`);

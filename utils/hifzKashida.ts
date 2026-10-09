@@ -9,8 +9,8 @@ const MARKS_RE = /[\u064B-\u065F\u0670\u06D6-\u06ED\u08D3-\u08FF\u0610-\u061A]/;
 const AYAH_MARKER_RE = /﴿([٠-٩0-9]+)﴾/g;
 const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
 
-/** Letters that do not join to the following letter. */
-const NON_JOINING_BASE = new Set([
+/** Letters that cannot connect to the next logical letter in Quranic Arabic. */
+const CANNOT_JOIN_TO_NEXT = new Set([
   'ا',
   'أ',
   'إ',
@@ -24,8 +24,13 @@ const NON_JOINING_BASE = new Set([
   'ؤ',
   'ء',
   'ة',
-  'ى',
 ]);
+
+/** Hamza is a letter but has no cursive joining form on either side. */
+const NON_JOINING_LETTER = new Set(['ء', 'ٴ']);
+
+/** Arabic-script base letters accepted on both sides of an elongation point. */
+const ARABIC_BASE_LETTER_RE = /^[\u0621-\u064A\u0671\u067E\u06CC]$/u;
 
 /** Letters whose connecting stroke looks like a real mushaf kashida when elongated. */
 const PREFERRED_STRETCH = new Set([
@@ -162,7 +167,7 @@ function skipMarksForward(text: string, index: number): number {
   return i;
 }
 
-type Slot = { insertAt: number; letter: string; score: number };
+type Slot = { insertAt: number; letter: string; score: number; wordStart: number };
 
 export function kashidaSlots(text: string): number[] {
   return scoredSlots(text).map((slot) => slot.insertAt);
@@ -175,42 +180,50 @@ function scoredSlots(text: string): Slot[] {
     if (MARKS_RE.test(ch) || ch === KASHIDA || ch === ' ' || ch === '\u00A0') continue;
     if (ch === '﴿' || ch === '﴾' || /[0-9٠-٩]/.test(ch)) continue;
     if (isAyahMarkerContext(text, i)) continue;
-    if (NON_JOINING_BASE.has(ch)) continue;
+    // The current letter must be a font-approved kashida carrier and must be
+    // able to join forward in logical order. This intentionally keeps the
+    // choice font/style-specific instead of stretching every medial join.
+    if (!PREFERRED_STRETCH.has(ch) || CANNOT_JOIN_TO_NEXT.has(ch)) continue;
 
     const j = skipMarksForward(text, i + 1);
     if (j >= text.length) continue;
     const next = text[j];
     if (next === ' ' || next === '\u00A0' || next === '﴿' || next === KASHIDA) continue;
     if (next === '﴾' || /[0-9٠-٩]/.test(next)) continue;
+    if (!ARABIC_BASE_LETTER_RE.test(next) || NON_JOINING_LETTER.has(next)) continue;
 
     const prev = skipMarksBack(text, i - 1);
     const atWordStart = prev < 0 || text[prev] === ' ' || text[prev] === '\u00A0';
-    // Mid-word joins first; preferred letters may also stretch at a word start so
-    // short lines still have enough slots to reach the column edge.
-    if (atWordStart && !PREFERRED_STRETCH.has(ch)) continue;
-
     let score = 1;
     if (PREFERRED_STRETCH.has(ch)) score += 4;
     if (atWordStart) score -= 1.25;
     // Prefer mid-line joins so elongation looks balanced.
     const dist = Math.abs(i - text.length / 2) / Math.max(text.length, 1);
     score += 1 - dist;
-    slots.push({ insertAt: j, letter: ch, score });
+    let wordStart = i;
+    while (wordStart > 0 && text[wordStart - 1] !== ' ' && text[wordStart - 1] !== '\u00A0') {
+      wordStart -= 1;
+    }
+    slots.push({ insertAt: j, letter: ch, score, wordStart });
   }
   return slots;
 }
 
 /**
- * Pick up to `letterCount` slots spread along the line: best-scoring join in
- * each positional slice so stretch is balanced, not piled in the middle.
+ * Pick up to `letterCount` slots spread along the line, with at most one
+ * kashida point per word to avoid piling elongations into a single word.
  */
 function pickSpreadSlots(slots: Slot[], letterCount: number): Slot[] {
   if (slots.length === 0 || letterCount <= 0) return [];
-  const byPos = [...slots].sort((a, b) => a.insertAt - b.insertAt);
+  const bestByWord = new Map<number, Slot>();
+  for (const slot of slots) {
+    const current = bestByWord.get(slot.wordStart);
+    if (!current || slot.score > current.score) bestByWord.set(slot.wordStart, slot);
+  }
+  const byPos = [...bestByWord.values()].sort((a, b) => a.insertAt - b.insertAt);
   if (byPos.length <= letterCount) return byPos;
 
   const chosen: Slot[] = [];
-  const seen = new Set<number>();
   for (let i = 0; i < letterCount; i += 1) {
     const start = Math.floor((i * byPos.length) / letterCount);
     const end = Math.floor(((i + 1) * byPos.length) / letterCount);
@@ -220,8 +233,6 @@ function pickSpreadSlots(slots: Slot[], letterCount: number): Slot[] {
     for (let j = 1; j < slice.length; j += 1) {
       if (slice[j].score > best.score) best = slice[j];
     }
-    if (seen.has(best.insertAt)) continue;
-    seen.add(best.insertAt);
     chosen.push(best);
   }
   return chosen.sort((a, b) => a.insertAt - b.insertAt);

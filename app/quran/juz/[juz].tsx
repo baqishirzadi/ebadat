@@ -8,7 +8,7 @@ import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import { getUthmaniFont } from '@/hooks/useFonts';
 import { useQuranData } from '@/hooks/useQuranData';
 import { Ayah } from '@/types/quran';
-import { audioManager, getQuranPlaybackErrorMessage, type ReciterKey } from '@/utils/quranAudio';
+import { audioManager, DEFAULT_QURAN_RECITER, getQuranPlaybackErrorMessage, type ReciterKey } from '@/utils/quranAudio';
 import {
   getDownloadManifest,
   getDownloadManifestKey,
@@ -116,7 +116,7 @@ export default function JuzReaderScreen() {
   const [showAudioPlayer, setShowAudioPlayer] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showDownloadSheet, setShowDownloadSheet] = useState(false);
-  const [downloadReciter, setDownloadReciter] = useState<ReciterKey>('yasser_ad_dussary');
+  const [downloadReciter, setDownloadReciter] = useState<ReciterKey>(DEFAULT_QURAN_RECITER);
   const [juzDownloaded, setJuzDownloaded] = useState(false);
   const flatListRef = useRef<FlatList<JuzListItem>>(null);
   const pendingScrollTargetRef = useRef<{ surah: number; ayah: number } | null>(null);
