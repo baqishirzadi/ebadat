@@ -20,6 +20,7 @@ struct PrayerTimesWidgetView: View {
   private var isDari: Bool { !isLatin && !isPashto && !isArabic }
   private var uiFontRegular: String {
     if isLatin { return "Vazirmatn" }
+    if isArabic { return "NotoNaskhArabic-Regular" }
     if isDari { return "NotoNastaliqUrdu" }
     guard let snapshot, snapshot.version >= 7 else { return "NotoNaskhArabic-Regular" }
     return snapshot.pashtoFont == "amiri" ? "Amiri" : "NotoNaskhArabic-Regular"

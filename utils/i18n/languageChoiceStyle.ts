@@ -18,7 +18,7 @@ export function languageChoiceStyle(
     fonts,
   );
   const latin = isLatinLanguage(language);
-  const lineHeight = Math.round(fontSize * (language === 'pashto' ? 2.2 : latin ? 1.45 : 1.8));
+  const lineHeight = Math.round(fontSize * (language === 'pashto' ? 2.2 : language === 'arabic' ? 2 : latin ? 1.45 : 1.8));
   return {
     ...font,
     fontSize,

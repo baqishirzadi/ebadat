@@ -205,7 +205,7 @@ export function SpiritualSplash({
               resizeMode="contain"
               accessibilityIgnoresInvertColors
             />
-            <LocalizedText style={styles.appName}>عبادت</LocalizedText>
+            <LocalizedText style={styles.appName}>{t('app.brandName')}</LocalizedText>
             <CenteredText style={styles.appSubtitle}>{t('app.splash.subtitle')}</CenteredText>
           </View>
 
@@ -249,7 +249,7 @@ export function SpiritualSplash({
               resizeMode="contain"
               accessibilityIgnoresInvertColors
             />
-            <LocalizedText style={styles.appName}>عبادت</LocalizedText>
+            <LocalizedText style={styles.appName}>{t('app.brandName')}</LocalizedText>
             <Animated.View style={[styles.loadingRing, ringStyle]} />
             <CenteredText style={styles.loadingText}>{t('common.loading')}</CenteredText>
           </View>

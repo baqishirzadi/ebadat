@@ -134,11 +134,11 @@ export const prayerMessages = {
     arabic: 'الوصول إلى الإشعارات',
   },
   'home.adhan.notificationsAccessBody': {
-    dari: 'برای فعال‌کردن اعلان‌های اذان، به Settings → Apps → Ebadat → Notifications بروید و Allow Notifications را روشن کنید.',
-    pashto: 'د اذان خبرتیاوو د فعالولو لپاره Settings → Apps → Ebadat → Notifications ته لاړ شئ او Allow Notifications روښانه کړئ.',
-    english: 'To enable Adhan notifications, go to Settings → Apps → Ebadat → Notifications and turn on Allow Notifications.',
-    turkish: 'Ezan bildirimlerini etkinleştirmek için Settings → Apps → Ebadat → Notifications yoluna gidin ve Allow Notifications seçeneğini açın.',
-    arabic: 'لتفعيل إشعارات الأذان، انتقل إلى Settings → Apps → Ebadat → Notifications وقم بتشغيل Allow Notifications.',
+    dari: 'برای فعال‌کردن اعلان‌های اذان، به Settings → Apps → Ibadet → Notifications بروید و Allow Notifications را روشن کنید.',
+    pashto: 'د اذان خبرتیاوو د فعالولو لپاره Settings → Apps → Ibadet → Notifications ته لاړ شئ او Allow Notifications روښانه کړئ.',
+    english: 'To enable Adhan notifications, go to Settings → Apps → Ibadet → Notifications and turn on Allow Notifications.',
+    turkish: 'Ezan bildirimlerini etkinleştirmek için Settings → Apps → Ibadet → Notifications yoluna gidin ve Allow Notifications seçeneğini açın.',
+    arabic: 'لتفعيل إشعارات الأذان، انتقل إلى Settings → Apps → Ibadet → Notifications وقم بتشغيل Allow Notifications.',
   },
   'common.ok': { dari: 'باشه', pashto: 'سمه ده', english: 'OK', turkish: 'Tamam', arabic: 'حسنًا' },
 

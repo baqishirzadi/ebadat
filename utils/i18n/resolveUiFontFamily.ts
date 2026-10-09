@@ -1,7 +1,7 @@
 import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
 import type { DariFontFamily, PashtoFontFamily } from '@/constants/theme';
-import { getDariFontFamily, getPashtoBoldFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
+import { getArabicBoldFontFamily, getArabicFontFamily, getDariFontFamily, getPashtoBoldFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import type { AppLanguage } from '@/types/quran';
 import { isLatinLanguage } from '@/utils/i18n/languages';
 
@@ -46,7 +46,8 @@ function isBoldRequest(flattened: TextStyle | undefined, requested: string | und
  *
  * Latin-script languages (English and Turkish) return `undefined`, which
  * renders in the platform system face (San Francisco / Roboto). Arabic uses
- * the Dari face. Pashto keeps its own Nastaliq or Naskh preference.
+ * Noto Naskh Arabic. Pashto keeps its own Naskh or Amiri preference, and
+ * Dari keeps Vazirmatn or Amiri.
  */
 export function resolveUiFontFamily(
   style: StyleProp<TextStyle>,
@@ -66,6 +67,10 @@ export function resolveUiFontFamily(
     return isBold
       ? getPashtoBoldFontFamily(preferences?.pashtoFont)
       : getPashtoFontFamily(preferences?.pashtoFont);
+  }
+
+  if (language === 'arabic') {
+    return isBold ? getArabicBoldFontFamily() : getArabicFontFamily();
   }
 
   const font = getDariFontFamily(preferences?.dariFont ?? 'vazirmatn');

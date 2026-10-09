@@ -40,12 +40,13 @@ const HEADER_SUBTITLE_ENGLISH = 'In memory of Langar Shirzad';
 const HEADER_DESCRIPTION_ENGLISH =
   'Inspired by gatherings of naat and dhikr at Langar Shirzad, blessed by Khalifa Sahib Sayyid Abdul Baqi Jan (may Allah have mercy on him). These voices offer peace of heart and remembrance of Allah.';
 const HEADER_TITLE_TURKISH = 'Naat ve Münacat';
-const HEADER_SUBTITLE_TURKISH = 'Langar Şirzad anısına';
+const HEADER_SUBTITLE_TURKISH = 'Han Ağa Şirzad anısına';
 const HEADER_DESCRIPTION_TURKISH =
-  'Halife Sahib Seyyid Abdülbaki Can’ın bereketiyle Langar Şirzad’daki naat ve zikir meclislerinden ilham alır. Bu sesler kalplere huzur ve Allah’ı anmak içindir.';
+  'Halife Sahib Seyyid Abdülbaki Can’ın bereketiyle Han Ağa Şirzad’ın naat ve zikir meclislerinden ilham alır. Bu sesler kalplere huzur ve Allah’ı anmak içindir.';
 const HEADER_TITLE_ARABIC = 'النعت والمناجاة';
+const HEADER_SUBTITLE_ARABIC = 'في ذكرى خان آقا شيرزاد';
 const HEADER_DESCRIPTION_ARABIC =
-  'هذا القسم مستلهم من مجالس النعت والذكر في لنگر شيرزاد، ببركة الخليفة السيد عبدالباقي جان رحمه الله. هذه الأصوات امتداد لتلك الطريق، لطمأنينة القلوب وذكر الله.';
+  'هذا القسم مستلهم من مجالس النعت والذكر عند خان آقا شيرزاد، ببركة الخليفة السيد عبدالباقي جان رحمه الله. هذه الأصوات امتداد لتلك الطريق، لطمأنينة القلوب وذكر الله.';
 const ALL_RECITER_FILTER = 'همه';
 const TAB_BAR_CLEARANCE = 82;
 
@@ -85,7 +86,9 @@ export default function NaatScreen() {
     ? HEADER_SUBTITLE_TURKISH
     : language === 'english'
       ? HEADER_SUBTITLE_ENGLISH
-      : null;
+      : language === 'arabic'
+        ? HEADER_SUBTITLE_ARABIC
+        : null;
   const headerDescription = language === 'turkish'
     ? HEADER_DESCRIPTION_TURKISH
     : language === 'english'
@@ -262,7 +265,10 @@ export default function NaatScreen() {
                       <RtlText
                         testID="naat-header-subtitle"
                         align="center"
-                        style={[styles.headerSubtitleEnglish, { color: theme.surahHeaderText }]}
+                        style={[
+                          isEnglish ? styles.headerSubtitleEnglish : styles.headerSubtitleArabic,
+                          { color: theme.surahHeaderText },
+                        ]}
                       >
                         {headerSubtitle}
                       </RtlText>
@@ -622,6 +628,15 @@ const styles = StyleSheet.create({
     lineHeight: 34,
     letterSpacing: 0.2,
     writingDirection: 'ltr',
+  },
+  headerSubtitleArabic: {
+    marginTop: Spacing.xs,
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.body,
+    lineHeight: 28,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+    opacity: 0.92,
   },
   headerSubtitleEnglish: {
     marginTop: Spacing.xs,

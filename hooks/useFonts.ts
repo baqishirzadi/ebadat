@@ -46,6 +46,15 @@ export function getPashtoBoldFontFamily(fontKey: PashtoFontFamily | undefined): 
   return (fontKey && PashtoFonts[fontKey]?.boldName) || PashtoFonts.naskh.boldName;
 }
 
+/** Standard Arabic naskh. Independent of the Dari and Pashto font choices. */
+export function getArabicFontFamily(): string {
+  return PashtoFonts.naskh.name;
+}
+
+export function getArabicBoldFontFamily(): string {
+  return PashtoFonts.naskh.boldName;
+}
+
 /**
  * Get font display names for UI
  */

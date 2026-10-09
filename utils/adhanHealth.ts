@@ -417,7 +417,7 @@ export async function buildAdhanHealthReport(locale: AdhanPermissionLocale = 'fa
       id: 'battery',
       title: tAdhanPermission('adhanPermissions.health.battery', locale),
       body: health.isIgnoringBatteryOptimizations
-        ? healthText(locale, 'محدودیت باتری برای عبادت اعمال نشده است.', 'په عبادت اپ د بیټرۍ محدودیت نشته.', 'No battery restriction is applied to Ebadat.')
+        ? healthText(locale, 'محدودیت باتری برای عبادت اعمال نشده است.', 'په عبادت اپ د بیټرۍ محدودیت نشته.', 'No battery restriction is applied to Ibadet.')
         : healthText(locale, 'بهینه‌سازی باتری ممکن است اذان را متوقف کند.', 'د بیټرۍ سپما ښايي اذان ودروي.', 'Battery optimization may stop the adhan.'),
       status: health.isIgnoringBatteryOptimizations ? 'pass' : 'warn',
       fixLabel: health.isIgnoringBatteryOptimizations ? undefined : tAdhanPermission('adhanPermissions.health.fix', locale),

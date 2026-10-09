@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 
-import { getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
+import { getArabicFontFamily, getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { useAppLanguage, useLocalizedFontPreferences } from '@/context/AppContext';
 import type { AppLanguage } from '@/types/quran';
 import { formatNumber, localizeDigits } from '@/utils/numbers';
@@ -18,9 +18,9 @@ export function useI18n() {
 
   const fontFamily = useMemo(() => {
     if (isLatinLanguage(language)) return undefined;
-    return language === 'pashto'
-      ? getPashtoFontFamily(fonts?.pashtoFont)
-      : getDariFontFamily(fonts?.dariFont ?? 'vazirmatn');
+    if (language === 'pashto') return getPashtoFontFamily(fonts?.pashtoFont);
+    if (language === 'arabic') return getArabicFontFamily();
+    return getDariFontFamily(fonts?.dariFont ?? 'vazirmatn');
   }, [fonts?.dariFont, fonts?.pashtoFont, language]);
 
   const t = useCallback(

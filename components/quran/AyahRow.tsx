@@ -13,7 +13,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp, useBookmarks } from '@/context/AppContext';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
+import { getArabicFontFamily, getDariFontFamily, getPashtoFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 import { Ayah } from '@/types/quran';
 import { stripPashtoAyahReference, stripQuranicMarks } from '@/utils/quranText';
 import { rowStyle } from '@/utils/i18n/direction';
@@ -103,9 +103,11 @@ export const AyahRow = memo(function AyahRow({
     const latin = lang === 'english' || lang === 'turkish';
     const fontFamily = lang === 'pashto'
       ? pashtoFontFamily
-      : lang === 'dari' || lang === 'arabic'
-        ? dariFontFamily
-        : undefined;
+      : lang === 'arabic'
+        ? getArabicFontFamily()
+        : lang === 'dari'
+          ? dariFontFamily
+          : undefined;
     const displayText = lang === 'pashto'
       ? stripPashtoAyahReference(text, surahNumber, ayah.number)
       : text;

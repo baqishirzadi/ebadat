@@ -62,7 +62,7 @@ export function HomeHeader({ onCityPress }: HomeHeaderProps) {
               isEnglish ? styles.titleEnglish : { fontFamily },
             ]}
           >
-            {isEnglish ? 'Ebadat' : 'عبادت'}
+            {t('app.brandName')}
           </RtlText>
         </RtlView>
         <Pressable

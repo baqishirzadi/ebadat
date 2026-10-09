@@ -80,13 +80,15 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
   const isTurkish = language === 'turkish';
   const isArabic = language === 'arabic';
   const isLatin = language === 'english' || isTurkish;
-  // Dari follows the app's non-Nastaliq font preference. English and Pashto
-  // keep their existing font behavior.
+  // Dari follows the app's non-Nastaliq font preference. Arabic always uses
+  // Noto Naskh. English and Pashto keep their existing font behavior.
   const regularFontFamily = isLatin
     ? 'Vazirmatn'
-    : isPashto
-      ? snapshot?.pashtoFont === 'amiri' ? 'Amiri' : 'NotoNaskhArabic-Regular'
-      : snapshot?.dariFont === 'amiri' ? 'Amiri' : 'Vazirmatn';
+    : isArabic
+      ? 'NotoNaskhArabic-Regular'
+      : isPashto
+        ? snapshot?.pashtoFont === 'amiri' ? 'Amiri' : 'NotoNaskhArabic-Regular'
+        : snapshot?.dariFont === 'amiri' ? 'Amiri' : 'Vazirmatn';
   const boldFontFamily = isLatin
     ? 'Vazirmatn-Bold'
     : regularFontFamily === 'Amiri'
@@ -99,14 +101,20 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
   // A narrow legacy placement can shrink down to 0.76 while keeping all rows.
   const scale = Math.min(0.88, Math.max(0.76, height / 125));
   // Android sizes each line from the font's Windows metrics. Noto Naskh and
-  // Amiri boxes are taller than Dari's Vazirmatn, so Pashto type is scaled
-  // down until the wrap_content card fits the same launcher cell as Dari.
-  const pashtoLineScale = !isPashto ? 1 : snapshot?.pashtoFont === 'amiri' ? 0.62 : 0.84;
+  // Amiri boxes are taller than Dari's Vazirmatn, so Arabic and Pashto type
+  // is scaled down until the wrap_content card fits the same launcher cell.
+  const pashtoLineScale = isArabic
+    ? 0.84
+    : !isPashto
+      ? 1
+      : snapshot?.pashtoFont === 'amiri'
+        ? 0.62
+        : 0.84;
   const typeScale = scale * pashtoLineScale;
   // At that smaller size the bold Naskh strokes read thin. A tight shadow in
   // the text color thickens them without changing the line box.
   const pashtoWeight = (color: `#${string}`) =>
-    isPashto
+    isPashto || isArabic
       ? {
           fontWeight: '700' as const,
           textShadowColor: color,
@@ -140,7 +148,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         clickAction="OPEN_APP"
       >
         <TextWidget
-          text={isLatin ? 'Ebadat' : 'عبادت'}
+          text={isLatin ? 'Ibadet' : 'عبادت'}
           style={{ fontSize: 18 * typeScale, fontFamily: boldFontFamily, color: TEXT_PRIMARY, ...pashtoWeight(TEXT_PRIMARY) }}
         />
         <TextWidget

@@ -54,7 +54,7 @@ export function CitySelectorModal({
   initialCategory = 'afghanistan',
 }: CitySelectorModalProps) {
   const { theme } = useApp();
-  const { t, isPashto, language } = useI18n();
+  const { t, language, isLatin } = useI18n();
   const modalTitle = title || t('qibla.chooseCity');
   const insets = useSafeAreaInsets();
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
@@ -103,16 +103,15 @@ export function CitySelectorModal({
       const result = await detectLocationAndFindCity();
       if (result.success && result.cityKey) {
         const city = getCity(result.cityKey);
+        const cityName = city?.name || result.cityName || t('onboarding.location.unknownCity');
         const warning = result.warning ? `\n\n${result.error}` : '';
         Alert.alert(
-          isPashto ? 'ځای وموندل شو' : 'موقعیت یافت شد',
-          isPashto
-            ? `نږدې ښار/ولایت: ${city?.name || result.cityName || 'ناڅرګند'}${warning}\nدا ځای ټاکل غواړئ؟`
-            : `شهر/استان نزدیک: ${city?.name || result.cityName || 'نامشخص'}${warning}\nآیا می‌خواهید این مکان را انتخاب کنید؟`,
+          t('onboarding.location.gpsFound'),
+          `${t('onboarding.location.gpsFoundBody', { city: cityName })}${warning}`,
           [
-            { text: isPashto ? 'لغوه' : 'لغو', style: 'cancel' },
+            { text: t('common.cancel'), style: 'cancel' },
             {
-              text: isPashto ? 'ټاکل' : 'انتخاب',
+              text: t('onboarding.location.select'),
               onPress: () => {
                 if (result.cityKey) {
                   onSelectCity(result.cityKey);
@@ -126,14 +125,14 @@ export function CitySelectorModal({
           ],
         );
       } else {
-        Alert.alert(isPashto ? 'تېروتنه' : 'خطا', result.error || (isPashto ? 'ځای ونه موندل شو' : 'امکان تشخیص موقعیت وجود ندارد'));
+        Alert.alert(t('common.error'), result.error || t('onboarding.location.gpsNotFound'));
       }
     } catch {
-      Alert.alert(isPashto ? 'تېروتنه' : 'خطا', isPashto ? 'د ځای په موندلو کې تېروتنه وشوه.' : 'خطا در تشخیص موقعیت');
+      Alert.alert(t('common.error'), t('onboarding.location.gpsFailed'));
     } finally {
       setGpsLoading(false);
     }
-  }, [onSelectCity, isPashto]);
+  }, [onSelectCity, t]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -150,18 +149,18 @@ export function CitySelectorModal({
         ({ key }) => !featuredProvinceKeys.has(key),
       );
       return [
-        ...(featured.length > 0 ? [{ title: isPashto ? 'ډېر کارېدونکي ښارونه' : 'شهرهای پرکاربرد', data: featured }] : []),
-        ...(provinces.length > 0 ? [{ title: isPashto ? 'ولایتونه' : 'ولایت‌ها', data: provinces }] : []),
+        ...(featured.length > 0 ? [{ title: t('onboarding.location.featuredCities'), data: featured }] : []),
+        ...(provinces.length > 0 ? [{ title: t('onboarding.location.provinces'), data: provinces }] : []),
       ];
     }
 
     const provinces = getProvincesForRegion(selectedCategory);
     const majors = getMajorCitiesForRegion(selectedCategory);
     const sections: Array<{ title: string; data: CityRow[] }> = [];
-    if (provinces.length > 0) sections.push({ title: isPashto ? 'ولایتونه / ایالتونه' : 'استان‌ها / ایالت‌ها', data: provinces });
-    if (majors.length > 0) sections.push({ title: isPashto ? 'لوی ښارونه' : 'شهرهای بزرگ', data: majors });
+    if (provinces.length > 0) sections.push({ title: t('onboarding.location.states'), data: provinces });
+    if (majors.length > 0) sections.push({ title: t('onboarding.location.majorCities'), data: majors });
     return sections;
-  }, [selectedCategory, searchQuery, regionReady, isPashto]);
+  }, [selectedCategory, searchQuery, regionReady, t]);
 
   const renderCity = useCallback(
     ({ item }: { item: CityRow }) => {
@@ -245,11 +244,11 @@ export function CitySelectorModal({
           <MaterialIcons name="search" size={20} color={theme.icon} />
           <LocalizedTextInput
             style={[styles.searchInput, { color: theme.text }]}
-            placeholder={isPashto ? 'ښار یا ولایت ولټوئ...' : 'جستجوی شهر یا استان...'}
+            placeholder={t('onboarding.location.searchPlaceholder')}
             placeholderTextColor={theme.textSecondary}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            textAlign="right"
+            textAlign={isLatin ? 'left' : 'right'}
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery('')}>
@@ -299,7 +298,7 @@ export function CitySelectorModal({
 
         <SectionList
           testID="city-selector-list"
-          sections={searchQuery.trim() ? [{ title: isPashto ? 'د لټون پایلې' : 'نتایج جستجو', data: searchResults }] : browseSections}
+          sections={searchQuery.trim() ? [{ title: t('onboarding.location.searchResults'), data: searchResults }] : browseSections}
           keyExtractor={(item) => item.key}
           renderItem={renderCity}
           renderSectionHeader={({ section: { title } }) => (
@@ -314,7 +313,7 @@ export function CitySelectorModal({
             <RtlView style={styles.emptyContainer}>
               <MaterialIcons name="location-off" size={48} color={theme.textSecondary} />
               <RtlText align="center" style={[styles.emptyText, { color: theme.textSecondary }]}>
-                {isPashto ? (searchQuery.trim() ? 'ښار ونه موندل شو' : 'په دې ډله کې ښار نشته') : (searchQuery.trim() ? 'شهری یافت نشد' : 'شهری در این دسته وجود ندارد')}
+                {searchQuery.trim() ? t('onboarding.location.emptySearch') : t('onboarding.location.emptyCategory')}
               </RtlText>
             </RtlView>
           }

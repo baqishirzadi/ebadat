@@ -225,11 +225,11 @@ export const miscMessages = {
     arabic: 'الوصول إلى الإشعارات',
   },
   'widget.adhanStatus.permissionBody': {
-    dari: 'برای فعال‌کردن اعلان‌های اذان، به Settings → Apps → Ebadat → Notifications بروید و Allow Notifications را روشن کنید.',
-    pashto: 'د اذان د خبرتیاوو فعالولو لپاره Settings → Apps → Ebadat → Notifications ته لاړ شئ او Allow Notifications فعال کړئ.',
-    english: 'To turn on Adhan notifications, go to Settings → Apps → Ebadat → Notifications and switch on Allow Notifications.',
-    turkish: 'Ezan bildirimlerini açmak için Settings → Apps → Ebadat → Notifications yoluna gidin ve Allow Notifications anahtarını açın.',
-    arabic: 'لتفعيل إشعارات الأذان، انتقل إلى Settings → Apps → Ebadat → Notifications وقم بتشغيل Allow Notifications.',
+    dari: 'برای فعال‌کردن اعلان‌های اذان، به Settings → Apps → Ibadet → Notifications بروید و Allow Notifications را روشن کنید.',
+    pashto: 'د اذان د خبرتیاوو فعالولو لپاره Settings → Apps → Ibadet → Notifications ته لاړ شئ او Allow Notifications فعال کړئ.',
+    english: 'To turn on Adhan notifications, go to Settings → Apps → Ibadet → Notifications and switch on Allow Notifications.',
+    turkish: 'Ezan bildirimlerini açmak için Settings → Apps → Ibadet → Notifications yoluna gidin ve Allow Notifications anahtarını açın.',
+    arabic: 'لتفعيل إشعارات الأذان، انتقل إلى Settings → Apps → Ibadet → Notifications وقم بتشغيل Allow Notifications.',
   },
   'widget.ok': { dari: 'باشه', pashto: 'سمه ده', english: 'OK', turkish: 'Tamam', arabic: 'حسنًا' },
 } as const satisfies Record<string, UiMessage>;
