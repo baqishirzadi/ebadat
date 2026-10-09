@@ -18,6 +18,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.uimanager.events.RCTEventEmitter
 import org.json.JSONArray
 import org.json.JSONObject
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -46,7 +47,10 @@ class Hifz16PageView(context: Context) : View(context) {
   private val arabicPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG)
   private val metaPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG)
   private val framePaint = Paint(Paint.ANTI_ALIAS_FLAG)
-  private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+  private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    strokeJoin = Paint.Join.ROUND
+    strokeCap = Paint.Cap.ROUND
+  }
   private val ayahHitTargets = mutableListOf<AyahHitTarget>()
   private var lines: List<Line> = emptyList()
   private var pageNumber = 1
@@ -134,13 +138,46 @@ class Hifz16PageView(context: Context) : View(context) {
   }
 
   fun setActiveSurah(value: Int?) {
+    if (highlightSurah == value) return
     highlightSurah = value
-    invalidate()
+    forceRedraw()
   }
 
   fun setActiveAyah(value: Int?) {
+    if (highlightAyah == value) return
     highlightAyah = value
+    forceRedraw()
+  }
+
+  /**
+   * The page is often held in a hardware layer so the next sheet can slide in
+   * already drawn. invalidate() marks that layer dirty and Android then drops
+   * the update, which is why a tapped ayah stays unhighlighted until the page
+   * is created again. Drop the layer on the visible sheet and draw now.
+   */
+  private fun forceRedraw() {
+    val slideParent = findSlidingParent()
+    if (slideParent == null || (slideParent.translationX == 0f && slideParent.translationY == 0f)) {
+      var ancestor = parent
+      while (ancestor is View) {
+        if (ancestor.layerType != LAYER_TYPE_NONE) {
+          ancestor.setLayerType(LAYER_TYPE_NONE, null)
+        }
+        ancestor.invalidate()
+        ancestor = ancestor.parent
+      }
+    }
     invalidate()
+    postInvalidateOnAnimation()
+  }
+
+  private fun findSlidingParent(): View? {
+    var ancestor = parent
+    while (ancestor is View) {
+      if (ancestor.translationX != 0f || ancestor.translationY != 0f) return ancestor
+      ancestor = ancestor.parent
+    }
+    return parent as? View
   }
 
   override fun onDraw(canvas: Canvas) {
@@ -176,44 +213,45 @@ class Hifz16PageView(context: Context) : View(context) {
     val textBottom = outerBottom - 5f * density
     val rowHeight = (textBottom - textTop) / 16f
     if (rowHeight <= 0f) return
-    val textWidth = right - left - 18f * density
-    val textRight = right - 9f * density
-    val textLeft = left + 9f * density
+    // Pages 1–2 sit inside the dedication page's floral frame, which React
+    // Native draws over this view. The insets must match Hifz16View's OPENING_* values.
+    val textLeft = if (opening) OPENING_SIDE_INSET * density else left + 9f * density
+    val textRight = if (opening) width - OPENING_SIDE_INSET * density else right - 9f * density
+    val textWidth = textRight - textLeft
     val normalLines = lines.filter { it.type == "ayah" && it.text.isNotBlank() }
     val fontSize = pageFontSize(normalLines, textWidth, rowHeight)
-    // Pages 1–2 keep the same row height as the rest of the mushaf and sit
-    // as one centered block inside the mihrab. The space above and below is illumination.
-    val openingLines = if (opening) lines.filter { it.type != "spacer" && it.text.isNotBlank() } else emptyList()
-    val openingBlockTop = textTop + ((textBottom - textTop) - openingLines.size * rowHeight) / 2f
-    val openingRows = openingLines.mapIndexed { index, line ->
-      line.number to (openingBlockTop + index * rowHeight)
-    }.toMap()
-    if (opening && openingLines.isNotEmpty()) {
-      val blockBottom = openingBlockTop + openingLines.size * rowHeight
-      HifzOpeningIllumination.draw(
-        canvas,
-        RectF(left, outerTop, right, outerBottom),
-        RectF(textLeft, openingBlockTop, textRight, blockBottom),
-        density,
-        accentColor,
-        paperColor,
-      )
+    // Both opening pages share page 2's block height, so the surah plaque and
+    // the bismillah start at the same Y. Page 2 still keeps the extra gap
+    // before its ayahs, and page 1 simply ends half a row higher.
+    val openingRows = mutableMapOf<Int, Float>()
+    if (opening) {
+      val openingLines = lines.filter { it.type != "spacer" && it.text.isNotBlank() }
+      val areaTop = topInset + OPENING_TEXT_TOP * density
+      val areaBottom = height - bottomInset - OPENING_TEXT_BOTTOM * density
+      var y = areaTop + ((areaBottom - areaTop) - OPENING_SHARED_ROWS * rowHeight) / 2f
+      for (line in openingLines) {
+        openingRows[line.number] = y
+        y += openingRowSpan(line) * rowHeight
+      }
     }
     metaPaint.color = accentColor
     metaPaint.textSize = 11f * resources.displayMetrics.scaledDensity
+    val metaBaseline = if (opening) topInset + OPENING_META_BASELINE * density else outerTop + 19f * density
+    val metaLeft = if (opening) textLeft else left + 8f * density
+    val metaRight = if (opening) textRight else right - 8f * density
     metaPaint.textAlign = Paint.Align.LEFT
-    canvas.drawText(toArabicNumerals(pageNumber), left + 8f * density, outerTop + 19f * density, metaPaint)
+    canvas.drawText(toArabicNumerals(pageNumber), metaLeft, metaBaseline, metaPaint)
     metaPaint.textAlign = Paint.Align.RIGHT
-    canvas.drawText("الجزء ${toArabicNumerals(juzNumber)}", right - 8f * density, outerTop + 19f * density, metaPaint)
+    canvas.drawText("الجزء ${toArabicNumerals(juzNumber)}", metaRight, metaBaseline, metaPaint)
     if (!opening) {
       canvas.drawLine(left + 7f * density, outerTop + 25f * density, right - 7f * density, outerTop + 25f * density, framePaint)
     }
     ayahHitTargets.clear()
 
     for (line in lines) {
+      if (line.type == "spacer" || line.text.isBlank()) continue
       val top = openingRows[line.number] ?: (textTop + (line.number - 1).coerceIn(0, 15) * rowHeight)
       val bottom = top + rowHeight
-      if (line.type == "spacer" || line.text.isBlank()) continue
 
       val lineSize = when (line.type) {
         "surah_name" -> fontSize * 0.92f
@@ -235,8 +273,9 @@ class Hifz16PageView(context: Context) : View(context) {
         continue
       }
 
-      var centered = line.centered || line.type == "basmallah"
-      if (line.type == "ayah" && centered) {
+      val fatihaBismillah = isFatihaBismillah(line)
+      var centered = line.centered || line.type == "basmallah" || fatihaBismillah
+      if (line.type == "ayah" && centered && !fatihaBismillah) {
         val natural = arabicPaint.measureText(line.text)
         // A short closing phrase stays centered at the page's normal size.
         if (natural >= textWidth * 0.55f) centered = false
@@ -260,6 +299,13 @@ class Hifz16PageView(context: Context) : View(context) {
       arabicPaint.textScaleX = 1f
     }
   }
+
+  /** Al-Fatiha's first ayah is the bismillah. It stays centered at its natural width. */
+  private fun isFatihaBismillah(line: Line): Boolean =
+    pageNumber == 1 && line.type == "ayah" && line.surah == 1 && line.ayahStart == 1 && line.ayahEnd == 1
+
+  private fun openingRowSpan(line: Line): Float =
+    if (line.type == "basmallah") 1f + OPENING_BASMALLAH_GAP else 1f
 
   /** Surah headings that the 16-line source left without their own bismillah row. */
   private fun needsInlineBismillah(line: Line): Boolean {
@@ -402,18 +448,62 @@ class Hifz16PageView(context: Context) : View(context) {
     val hitHeight = max((bottom - top) * 1.08f, 18f * density)
     val hitTop = (top + bottom - hitHeight) / 2f
     val hitBottom = hitTop + hitHeight
+    // Vertical inset keeps one line's border off the next line. Horizontal
+    // pad does the opposite: Scheherazade draws the last letter and the ayah
+    // mark past measureText, so the wash has to run a little past the span.
+    val padX = 6f * density
+    val insetY = 3f * density
+    val highlights = mutableListOf<RectF>()
 
     for ((index, span) in spans.withIndex()) {
       val spanWidth = max(0f, segmentWidths[index] * widthCorrection)
       val spanLeft = cursorRight - spanWidth
       val hitBounds = RectF(spanLeft, hitTop, cursorRight, hitBottom)
       if (highlightSurah == surah && highlightAyah == span.ayah) {
-        highlightPaint.color = Color.argb(68, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor))
-        canvas.drawRoundRect(hitBounds, 5f * density, 5f * density, highlightPaint)
+        val visual = RectF(
+          spanLeft - padX,
+          top + insetY,
+          cursorRight + padX,
+          bottom - insetY,
+        )
+        if (visual.width() > density && visual.height() > density) {
+          val previous = highlights.lastOrNull()
+          if (
+            previous != null &&
+            abs(previous.top - visual.top) < 1f &&
+            visual.right >= previous.left - density
+          ) {
+            previous.left = min(previous.left, visual.left)
+            previous.right = max(previous.right, visual.right)
+          } else {
+            highlights += visual
+          }
+        }
       }
       ayahHitTargets += AyahHitTarget(surah, span.ayah, hitBounds)
       cursorRight = spanLeft
     }
+    highlights.forEach { drawAyahHighlight(canvas, it, density) }
+  }
+
+  /** A light mint pill. The border is drawn inside the fill so it cannot meet the next line. */
+  private fun drawAyahHighlight(canvas: Canvas, rect: RectF, density: Float) {
+    val radius = 7f * density
+    highlightPaint.style = Paint.Style.FILL
+    highlightPaint.color = Color.argb(92, 176, 222, 196)
+    canvas.drawRoundRect(rect, radius, radius, highlightPaint)
+    val stroke = density
+    val border = RectF(
+      rect.left + stroke / 2f,
+      rect.top + stroke / 2f,
+      rect.right - stroke / 2f,
+      rect.bottom - stroke / 2f,
+    )
+    if (border.width() <= stroke || border.height() <= stroke) return
+    highlightPaint.style = Paint.Style.STROKE
+    highlightPaint.strokeWidth = stroke
+    highlightPaint.color = Color.argb(168, 46, 138, 104)
+    canvas.drawRoundRect(border, max(0f, radius - stroke / 2f), max(0f, radius - stroke / 2f), highlightPaint)
   }
 
   private fun pageFontSize(pageLines: List<Line>, textWidth: Float, rowHeight: Float): Float {
@@ -543,6 +633,12 @@ class Hifz16PageView(context: Context) : View(context) {
 
   private companion object {
     const val TAG = "Hifz16Draw"
+    const val OPENING_SIDE_INSET = 44f
+    const val OPENING_TEXT_TOP = 60f
+    const val OPENING_TEXT_BOTTOM = 46f
+    const val OPENING_META_BASELINE = 52f
+    const val OPENING_BASMALLAH_GAP = 0.5f
+    const val OPENING_SHARED_ROWS = 7.5f
     const val INLINE_BISMILLAH = "بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِیْمِ"
   }
 }

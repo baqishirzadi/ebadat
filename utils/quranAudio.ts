@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Network from 'expo-network';
-import TrackPlayer, { Event, State as TrackPlayerState, type AddTrack } from 'react-native-track-player';
+import TrackPlayer, { Event, RepeatMode, State as TrackPlayerState, type AddTrack } from 'react-native-track-player';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
 import { ensureSharedTrackPlayerReady, isSharedTrackPlayerReady } from '@/utils/sharedTrackPlayer';
 
@@ -307,6 +307,10 @@ class QuranAudioManager {
   private backgroundCacheInFlight = new Set<string>();
   private onAyahChangeCb: ((surah: number, ayah: number) => void) | null = null;
   private onPlaybackEndCb: (() => void) | null = null;
+  /** Last ayah actually placed in the current queue. The player can rewind to the first track when the queue ends. */
+  private queuedTailAyah = 0;
+  private queuedScopeEndAyah = 0;
+  private queuedSurah = 0;
   private subscribers = new Set<(snapshot: QuranPlaybackSnapshot) => void>();
   private lastKnownTrackId: string | null = null;
   private playRequestId = 0;
@@ -511,24 +515,7 @@ class QuranAudioManager {
 
     TrackPlayer.addEventListener(Event.PlaybackQueueEnded, async () => {
       if (!this.snapshot.isActive || this.loadingRequestId !== null) return;
-      const snapshot = this.getPlaybackSnapshot();
-      if (snapshot.ayah > 0 && snapshot.ayah < snapshot.scopeEndAyah && snapshot.totalAyahs > 0) {
-        this.playAyah(snapshot.surah, snapshot.ayah + 1, snapshot.totalAyahs, true, true, {
-          type: snapshot.scopeType ?? 'surah',
-          startAyah: snapshot.scopeStartAyah,
-          endAyah: snapshot.scopeEndAyah,
-          juzNumber: snapshot.juzNumber,
-        }).catch(() => {
-          // playAyah already moved the snapshot to the error state.
-        });
-        return;
-      }
-      try {
-        await TrackPlayer.reset();
-      } catch {
-        // ignore
-      }
-      this.clearQuranPlayback(true);
+      await this.continueOrStopAfterQueueEnded();
     });
 
     TrackPlayer.addEventListener(Event.PlaybackError, async (event) => {
@@ -541,6 +528,35 @@ class QuranAudioManager {
       }
       if (!isQuranTrack(activeTrack)) return;
       await this.recoverFromPlaybackError(activeTrack, event?.message);
+    });
+  }
+
+  /**
+   * The 8-ayah window ending is not the end of the surah. Continue from the
+   * next ayah after the last one that was queued. The scope's last ayah stops.
+   */
+  private async continueOrStopAfterQueueEnded(): Promise<void> {
+    const tailAyah = this.queuedTailAyah;
+    const scopeEndAyah = this.queuedScopeEndAyah;
+    const surah = this.queuedSurah;
+    const snapshot = this.getPlaybackSnapshot();
+    if (tailAyah <= 0 || surah <= 0 || tailAyah >= scopeEndAyah || snapshot.totalAyahs <= 0) {
+      try {
+        await TrackPlayer.reset();
+      } catch {
+        // ignore
+      }
+      this.clearQuranPlayback(true);
+      return;
+    }
+
+    this.playAyah(surah, tailAyah + 1, snapshot.totalAyahs, true, true, {
+      type: snapshot.scopeType ?? 'surah',
+      startAyah: snapshot.scopeStartAyah,
+      endAyah: scopeEndAyah,
+      juzNumber: snapshot.juzNumber,
+    }).catch(() => {
+      // playAyah already moved the snapshot to the error state.
     });
   }
 
@@ -659,6 +675,9 @@ class QuranAudioManager {
   private clearQuranPlayback(notifyEnd: boolean): void {
     const wasActive = this.snapshot.isActive;
     this.lastKnownTrackId = null;
+    this.queuedTailAyah = 0;
+    this.queuedScopeEndAyah = 0;
+    this.queuedSurah = 0;
     this.snapshot = { ...createDefaultSnapshot(this.currentReciter), playbackRate: this.playbackRate };
     this.emitSnapshot();
     if (notifyEnd && wasActive) {
@@ -1015,6 +1034,7 @@ class QuranAudioManager {
       }
       await ensureSharedTrackPlayerReady('quran-play');
       this.registerTrackPlayerListeners();
+      await TrackPlayer.setRepeatMode(RepeatMode.Off).catch(() => undefined);
 
       if (requestId !== this.playRequestId) return;
 
@@ -1031,6 +1051,7 @@ class QuranAudioManager {
       const started = await this.runQueueOperation(async () => {
         if (requestId !== this.playRequestId) return null;
         await TrackPlayer.reset();
+        await TrackPlayer.setRepeatMode(RepeatMode.Off);
         await TrackPlayer.add(queue.tracks);
         await TrackPlayer.skip(queue.selectedIndex);
         await this.applyPlaybackRate();
@@ -1053,6 +1074,10 @@ class QuranAudioManager {
       if (!started || requestId !== this.playRequestId) return;
       const startPaused = started.paused;
 
+      const tailTrack = [...queue.tracks].reverse().find(isQuranTrack);
+      this.queuedTailAyah = tailTrack?.ayah ?? ayah;
+      this.queuedScopeEndAyah = queue.scopeEndAyah;
+      this.queuedSurah = surah;
       this.lastKnownTrackId = this.getTrackId(queue.tracks[queue.selectedIndex]);
       this.snapshot = {
         isActive: true,
