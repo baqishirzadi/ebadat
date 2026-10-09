@@ -7,8 +7,8 @@ import { ensureSharedTrackPlayerReady, isSharedTrackPlayerReady } from '@/utils/
 
 export type ReciterKey =
   | 'yasser_ad_dussary'
-  | 'ghamidi'
-  | 'muaiqly'
+  | 'alafasy'
+  | 'husary'
   | 'minshawy_mujawwad'
   | 'minshawy_murattal'
   | 'abdul_basit';
@@ -95,17 +95,17 @@ export const RECITERS: Record<ReciterKey, ReciterInfo> = {
     baseUrl: 'https://everyayah.com/data/Yasser_Ad-Dussary_128kbps',
     quality: '128 kbps',
   },
-  ghamidi: {
-    key: 'ghamidi',
-    name: 'قاری سعد الغامدی',
-    baseUrl: 'https://everyayah.com/data/Ghamadi_40kbps',
-    quality: '40 kbps',
+  alafasy: {
+    key: 'alafasy',
+    name: 'قاری مشاری العفاسی',
+    baseUrl: 'https://everyayah.com/data/Alafasy_128kbps',
+    quality: '128 kbps',
   },
-  muaiqly: {
-    key: 'muaiqly',
-    name: 'قاری ماهر المعیقلی',
-    baseUrl: 'https://everyayah.com/data/Maher_AlMuaiqly_64kbps',
-    quality: '64 kbps',
+  husary: {
+    key: 'husary',
+    name: 'قاری محمود خلیل الحصري',
+    baseUrl: 'https://everyayah.com/data/Husary_128kbps',
+    quality: '128 kbps',
   },
   minshawy_mujawwad: {
     key: 'minshawy_mujawwad',
@@ -129,6 +129,14 @@ export const RECITERS: Record<ReciterKey, ReciterInfo> = {
 
 function isReciterKey(value: string): value is ReciterKey {
   return value in RECITERS;
+}
+
+/** Old low-bitrate seats. Their cache folders stay unused so a clipped file cannot play under the new name. */
+export function migrateStoredReciterKey(saved: string | null): ReciterKey | null {
+  if (saved === 'ghamidi') return 'alafasy';
+  if (saved === 'muaiqly') return 'husary';
+  if (saved && isReciterKey(saved)) return saved;
+  return null;
 }
 
 export function getAyahUrl(
@@ -323,9 +331,13 @@ class QuranAudioManager {
   async initialize(): Promise<void> {
     try {
       const saved = await AsyncStorage.getItem(RECITER_KEY);
-      if (saved && isReciterKey(saved)) {
-        this.currentReciter = saved;
-        this.snapshot = { ...this.snapshot, reciter: saved };
+      const migrated = migrateStoredReciterKey(saved);
+      if (migrated) {
+        this.currentReciter = migrated;
+        this.snapshot = { ...this.snapshot, reciter: migrated };
+        if (migrated !== saved) {
+          await AsyncStorage.setItem(RECITER_KEY, migrated);
+        }
       }
       const savedRate = Number(await AsyncStorage.getItem(PLAYBACK_RATE_KEY));
       if (isQuranPlaybackRate(savedRate)) {

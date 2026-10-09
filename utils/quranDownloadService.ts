@@ -7,6 +7,7 @@ import {
   getAyahCachePath,
   getAyahUrlCandidates,
   hasMp3Header,
+  migrateStoredReciterKey,
   RECITERS,
   type ReciterKey,
 } from '@/utils/quranAudio';
@@ -43,14 +44,14 @@ const MIN_VALID_AUDIO_BYTES = 1024;
 const DOWNLOAD_ATTEMPTS_PER_AYAH = 3;
 const DOWNLOAD_RETRY_DELAY_MS = 500;
 
-function isReciterKey(value: string | null): value is ReciterKey {
-  return Boolean(value && value in RECITERS);
-}
-
 export async function getSavedDownloadReciter(): Promise<ReciterKey | null> {
   try {
     const saved = await AsyncStorage.getItem(QURAN_DOWNLOAD_RECITER_KEY);
-    return isReciterKey(saved) ? saved : null;
+    const migrated = migrateStoredReciterKey(saved);
+    if (migrated && migrated !== saved) {
+      await AsyncStorage.setItem(QURAN_DOWNLOAD_RECITER_KEY, migrated);
+    }
+    return migrated;
   } catch {
     return null;
   }
