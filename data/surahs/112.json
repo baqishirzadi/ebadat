@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "(ای پیغمبر)! بگو: او الله یگانه است.",
       "translation_pashto": "112-1 (اى نبي!) ته (دوى ته) ووایه: شان دا دى چی الله یو دى ",
-      "translation_english": "Say: “He is Allah, the One;"
+      "translation_english": "Say: “He is Allah, the One;",
+      "translation_turkish": "De ki: “O, bir olan Allah'tır;",
+      "translation_arabic": "(أيها النبي)! قل: هو الله وحده."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "(و) الله از هرچیز بی‌نیاز (و برطرف کنندۀ نیازها) است.",
       "translation_pashto": "112-2 هم دا الله بې نیاز (بې حاجته) دى",
-      "translation_english": "Allah, the Eternal Refuge."
+      "translation_english": "Allah, the Eternal Refuge.",
+      "translation_turkish": "Sonsuz sığınak olan Allah.",
+      "translation_arabic": "(و) إن الله في كل شيء محتاج (ومزيل الحاجات)."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "نه کسی را زاده و نه او زاده شده است.",
       "translation_pashto": "112-3 نه يې (څوك) زېږولى دى او نه دى (له چا) زېږول شوى دى",
-      "translation_english": "He neither begets nor is He begotten,"
+      "translation_english": "He neither begets nor is He begotten,",
+      "translation_turkish": "O ne doğurur ne de doğurulur.",
+      "translation_arabic": "لم يلد أحدا ولم يولد."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "و هیچکس مانند و همتای او نیست.",
       "translation_pashto": "112-4 او د ده هیڅوك سیال (او) برابر نشته",
-      "translation_english": "and there is none comparable to Him.”"
+      "translation_english": "and there is none comparable to Him.”",
+      "translation_turkish": "ve O'nun benzeri hiçbir şey yoktur.\"",
+      "translation_arabic": "ولا أحد مثله."
     }
   ]
 }

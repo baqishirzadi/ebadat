@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import { useAppLanguage, useLocalizedFontPreferences } from '@/context/AppContext';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 import { isAppUiFontStyle, resolveUiFontStyle } from '@/utils/i18n/resolveUiFontFamily';
 import { localizeUiNode } from '@/utils/i18n/ui';
 
@@ -33,7 +34,7 @@ export const LocalizedText = forwardRef<NativeText, LocalizedTextProps>(function
     ? { fontFamily: explicitFontFamily }
     : resolveUiFontStyle(style, language, fonts);
   const latinDigits =
-    language === 'english' && !preserveFontFamily && isAppUiFontStyle(style);
+    isLatinLanguage(language) && !preserveFontFamily && isAppUiFontStyle(style);
 
   return (
     <NativeText ref={ref} {...props} style={[style, fontStyle]}>

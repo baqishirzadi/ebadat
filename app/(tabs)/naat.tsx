@@ -15,6 +15,8 @@ import { useApp } from '@/context/AppContext';
 import { useNaatCatalog, useNaatPlayer, type NaatQueueSource } from '@/context/NaatContext';
 import { BorderRadius, Spacing, Typography, NAAT_GRADIENT } from '@/constants/theme';
 import { Naat } from '@/types/naat';
+import type { AppLanguage } from '@/types/quran';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 import { NaatCard } from '@/components/naat/NaatCard';
 import { NaatProgressBar } from '@/components/naat/NaatProgressBar';
 import { NaatQueueSheet } from '@/components/naat/NaatQueueSheet';
@@ -37,6 +39,13 @@ const HEADER_TITLE_ENGLISH = 'Naat & Munajat';
 const HEADER_SUBTITLE_ENGLISH = 'In memory of Langar Shirzad';
 const HEADER_DESCRIPTION_ENGLISH =
   'Inspired by gatherings of naat and dhikr at Langar Shirzad, blessed by Khalifa Sahib Sayyid Abdul Baqi Jan (may Allah have mercy on him). These voices offer peace of heart and remembrance of Allah.';
+const HEADER_TITLE_TURKISH = 'Naat ve Münacat';
+const HEADER_SUBTITLE_TURKISH = 'Langar Şirzad anısına';
+const HEADER_DESCRIPTION_TURKISH =
+  'Halife Sahib Seyyid Abdülbaki Can’ın bereketiyle Langar Şirzad’daki naat ve zikir meclislerinden ilham alır. Bu sesler kalplere huzur ve Allah’ı anmak içindir.';
+const HEADER_TITLE_ARABIC = 'النعت والمناجاة';
+const HEADER_DESCRIPTION_ARABIC =
+  'هذا القسم مستلهم من مجالس النعت والذكر في لنگر شيرزاد، ببركة الخليفة السيد عبدالباقي جان رحمه الله. هذه الأصوات امتداد لتلك الطريق، لطمأنينة القلوب وذكر الله.';
 const ALL_RECITER_FILTER = 'همه';
 const TAB_BAR_CLEARANCE = 82;
 
@@ -61,15 +70,31 @@ export default function NaatScreen() {
   const { theme, state } = useApp();
   const themeMode = state.preferences.theme;
   const isPashto = state.preferences.appLanguage === 'pashto';
-  const isEnglish = state.preferences.appLanguage === 'english';
-  const language = state.preferences.appLanguage;
-  const headerTitle = isEnglish ? HEADER_TITLE_ENGLISH : isPashto ? HEADER_TITLE_PASHTO : HEADER_TITLE;
-  const headerSubtitle = isEnglish ? HEADER_SUBTITLE_ENGLISH : null;
-  const headerDescription = isEnglish
-    ? HEADER_DESCRIPTION_ENGLISH
-    : isPashto
-      ? HEADER_DESCRIPTION_PASHTO
-      : HEADER_DESCRIPTION;
+  const language: AppLanguage = state.preferences.appLanguage;
+  const isEnglish = isLatinLanguage(language);
+  const headerTitle = language === 'turkish'
+    ? HEADER_TITLE_TURKISH
+    : language === 'english'
+      ? HEADER_TITLE_ENGLISH
+      : language === 'arabic'
+        ? HEADER_TITLE_ARABIC
+        : isPashto
+          ? HEADER_TITLE_PASHTO
+          : HEADER_TITLE;
+  const headerSubtitle = language === 'turkish'
+    ? HEADER_SUBTITLE_TURKISH
+    : language === 'english'
+      ? HEADER_SUBTITLE_ENGLISH
+      : null;
+  const headerDescription = language === 'turkish'
+    ? HEADER_DESCRIPTION_TURKISH
+    : language === 'english'
+      ? HEADER_DESCRIPTION_ENGLISH
+      : language === 'arabic'
+        ? HEADER_DESCRIPTION_ARABIC
+        : isPashto
+          ? HEADER_DESCRIPTION_PASHTO
+          : HEADER_DESCRIPTION;
   const headerGradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -114,11 +139,15 @@ export default function NaatScreen() {
 
   const queueLabel =
     player.current && session.totalCount > 0 && session.currentIndex >= 0
-      ? isEnglish
-        ? `${session.currentIndex + 1} of ${session.totalCount}`
-        : isPashto
-          ? `${session.currentIndex + 1} له ${session.totalCount}`
-          : `${session.currentIndex + 1} از ${session.totalCount}`
+      ? language === 'turkish'
+        ? `${session.currentIndex + 1} / ${session.totalCount}`
+        : language === 'english'
+          ? `${session.currentIndex + 1} of ${session.totalCount}`
+          : language === 'arabic'
+            ? `${session.currentIndex + 1} من ${session.totalCount}`
+            : isPashto
+              ? `${session.currentIndex + 1} له ${session.totalCount}`
+              : `${session.currentIndex + 1} از ${session.totalCount}`
       : tUi('صف پخش', language);
   const listBottomPadding = player.current
     ? playerDockHeight + insets.bottom + TAB_BAR_CLEARANCE + Spacing.lg
@@ -424,7 +453,7 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
   player: ReturnType<typeof useNaatPlayer>['player'];
   session: ReturnType<typeof useNaatPlayer>['session'];
   isPashto: boolean;
-  language: 'dari' | 'pashto' | 'english';
+  language: AppLanguage;
   queueLabel: string;
   bottomInset: number;
   onHeightChange: (height: number) => void;

@@ -174,7 +174,15 @@ export function formatEventDateParts(
   language: AppLanguage = 'dari',
 ): { day: string; month?: string; year?: string } {
   const digits = (value: number) => formatNumber(value, language);
-  const key = language === 'pashto' ? 'pashto' : language === 'english' ? 'english' : 'dari';
+  const key = language === 'pashto'
+    ? 'pashto'
+    : language === 'english'
+      ? 'english'
+      : language === 'turkish'
+        ? 'turkish'
+        : language === 'arabic'
+          ? 'arabic'
+          : 'dari';
 
   if (event.category === 'islamic' && event.hijriMonth && event.hijriDay) {
     const monthName = HIJRI_MONTHS[event.hijriMonth - 1]?.[key] ?? '';

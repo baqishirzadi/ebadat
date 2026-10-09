@@ -18,8 +18,8 @@ import { useI18n } from '@/utils/i18n/useI18n';
 
 export default function DuaRequestsScreen() {
   const { theme } = useApp();
-  const { t, language } = useI18n();
-  const isEnglish = language === 'english';
+  const { t, isLatin } = useI18n();
+  const isEnglish = isLatin;
   const { state, refreshRequests, syncPending, isRequestUnread } = useDua();
   const router = useRouter();
   const navigation = useNavigation();

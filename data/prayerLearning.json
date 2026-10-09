@@ -4,6 +4,9 @@
       "id": "wudu",
       "title_dari": "وضو",
       "title_pashto": "اودس",
+      "title_turkish": "Abdest",
+      "title_arabic": "الوضوء",
+      "title_english": "Wudu",
       "icon": "water-drop",
       "color": "#4FC3F7",
       "sections": [
@@ -11,34 +14,54 @@
           "id": "wudu_conditions",
           "title_dari": "شرایط وضو",
           "title_pashto": "د اودس شرطونه",
+          "title_turkish": "Abdestin şartları",
+          "title_arabic": "شروط الوضوء",
+          "title_english": "Conditions of wudu",
           "content_dari": "برای صحت وضو باید آب پاک باشد، نیت داشته باشید، و مانعی بر اعضای وضو نباشد مانند لاک ناخن یا موم.",
-          "content_pashto": "د اودس د سموالي لپاره باید اوبه پاکې وي، نیت ولرئ، او د اودس په غړو باندې کوم خنډ ونه وي لکه د نوک رنګ یا موم."
+          "content_pashto": "د اودس د سموالي لپاره باید اوبه پاکې وي، نیت ولرئ، او د اودس په غړو باندې کوم خنډ ونه وي لکه د نوک رنګ یا موم.",
+          "content_turkish": "Abdestin geçerli olabilmesi için suyun temiz olması, niyet edilmesi, oje, ağda gibi hiçbir şeyin abdest uzvunu kapatmaması gerekir.",
+          "content_arabic": "ولكي يكون الوضوء صحيحاً، يجب أن يكون الماء طاهراً، ويجب النية، وألا يكون هناك عائق على أجزاء الوضوء، مثل طلاء الأظافر أو الشمع.",
+          "content_english": "For wudu to be valid, the water must be pure, you must have an intention, and nothing such as nail polish or wax may cover the limbs of wudu."
         },
         {
           "id": "wudu_fardh",
           "title_dari": "فرض‌های وضو (۴ فرض)",
           "title_pashto": "د اودس فرضونه (۴ فرضه)",
+          "title_turkish": "Abdestin farzları (4 farz)",
+          "title_arabic": "قرائن الوضوء (4 قرائن)",
+          "title_english": "Obligatory acts of wudu (4 obligations)",
           "items": [
             {
               "number": 1,
               "arabic": "",
               "dari": "شستن صورت یکبار (از بالای پیشانی تا زیر چانه و از یک گوش تا گوش دیگر)",
-              "pashto": "د مخ مینځل یو ځل (د تندي له پورتنۍ برخې نه تر زنې لاندې او له یوې غوږې نه تر بلې غوږې)"
+              "pashto": "د مخ مینځل یو ځل (د تندي له پورتنۍ برخې نه تر زنې لاندې او له یوې غوږې نه تر بلې غوږې)",
+              "turkish": "Yüzü bir defa yıkamak (alnın üstünden çenenin altına ve bir kulağından diğerine kadar)",
+              "meaningArabic": "غسل الوجه مرة واحدة (من أعلى الجبهة إلى أسفل الذقن ومن الأذن إلى الأخرى)"
             },
             {
               "number": 2,
               "dari": "شستن دو دست تا آرنج‌ها یکبار (شامل آرنج)",
-              "pashto": "د دواړو لاسونو مینځل تر څنګلو (د څنګل په ګډون)"
+              "pashto": "د دواړو لاسونو مینځل تر څنګلو (د څنګل په ګډون)",
+              "turkish": "Her iki elin dirseklere kadar bir defa yıkanması (dirsekler dahil)",
+              "arabic": "غسل اليدين إلى المرفقين مرة واحدة (مع المرفقين)",
+              "meaningArabic": "غسل اليدين إلى المرفقين مرة واحدة (بما في ذلك المرفقين)"
             },
             {
               "number": 3,
               "dari": "مسح یک چهارم سر یکبار",
-              "pashto": "د سر د څلورمې برخې مسح کول یو ځل"
+              "pashto": "د سر د څلورمې برخې مسح کول یو ځل",
+              "turkish": "Başın dörtte birini bir defa mesh etmek",
+              "arabic": "مسح ربع الرأس مرة واحدة",
+              "meaningArabic": "مسح ربع الرأس مرة واحدة"
             },
             {
               "number": 4,
               "dari": "شستن دو پا تا قوزک‌ها یکبار (شامل قوزک)",
-              "pashto": "د دواړو پښو مینځل تر پونډو (د پونډ په ګډون)"
+              "pashto": "د دواړو پښو مینځل تر پونډو (د پونډ په ګډون)",
+              "turkish": "Her iki ayağı, bileklere kadar birer defa yıkamak (ayak bilekleri dahil)",
+              "arabic": "غسل القدمين إلى الكعبين مرة واحدة (مع الكعبين)",
+              "meaningArabic": "غسل القدمين إلى الكعبين مرة واحدة (بما في ذلك الكعبين)"
             }
           ]
         },
@@ -46,88 +69,206 @@
           "id": "wudu_sunnah",
           "title_dari": "سنت‌های وضو",
           "title_pashto": "د اودس سنتونه",
+          "title_turkish": "Abdestin sünnetleri",
+          "title_arabic": "تقاليد الوضوء",
+          "title_english": "Sunnahs of wudu",
           "items": [
-            {"dari": "نیت کردن", "pashto": "نیت کول"},
-            {"dari": "بسم الله گفتن", "pashto": "بسم الله ویل"},
-            {"dari": "شستن دست‌ها تا مچ سه بار", "pashto": "د لاسونو مینځل تر مټو درې ځلې"},
-            {"dari": "مسواک کردن یا انگشت کشیدن بر دندان‌ها", "pashto": "مسواک کول یا په غاښونو باندې ګوته کشول"},
-            {"dari": "مضمضه (آب در دهان گرداندن) سه بار", "pashto": "مضمضه (په خوله کې د اوبو ګرځول) درې ځلې"},
-            {"dari": "استنشاق (آب در بینی کشیدن) سه بار", "pashto": "استنشاق (په پوزه کې د اوبو ایستل) درې ځلې"},
-            {"dari": "شستن هر عضو سه بار", "pashto": "د هر غړي مینځل درې ځلې"},
-            {"dari": "مسح تمام سر", "pashto": "د ټول سر مسح کول"},
-            {"dari": "مسح گوش‌ها", "pashto": "د غوږونو مسح کول"},
-            {"dari": "خلال انگشتان دست و پا", "pashto": "د لاسونو او پښو د ګوتو خلال کول"},
-            {"dari": "ترتیب (به ترتیب انجام دادن)", "pashto": "ترتیب (په ترتیب سره ترسره کول)"},
-            {"dari": "موالات (پی در پی انجام دادن)", "pashto": "موالات (پرله پسې ترسره کول)"}
+            {
+              "dari": "نیت کردن",
+              "pashto": "نیت کول",
+              "turkish": "niyet etmek",
+              "arabic": "النية",
+              "meaningArabic": "لتنوي"
+            },
+            {
+              "dari": "بسم الله گفتن",
+              "pashto": "بسم الله ویل",
+              "turkish": "Allah'ın adıyla söylüyorum",
+              "arabic": "قول بسم الله",
+              "meaningArabic": "القول بسم الله"
+            },
+            {
+              "dari": "شستن دست‌ها تا مچ سه بار",
+              "pashto": "د لاسونو مینځل تر مټو درې ځلې",
+              "turkish": "Elleri bileklere kadar üç defa yıkamak",
+              "arabic": "غسل اليدين إلى الرسغين ثلاث مرات",
+              "meaningArabic": "غسل اليدين إلى الرسغين ثلاث مرات"
+            },
+            {
+              "dari": "مسواک کردن یا انگشت کشیدن بر دندان‌ها",
+              "pashto": "مسواک کول یا په غاښونو باندې ګوته کشول",
+              "turkish": "Dişleri fırçalamak veya fırçalamak",
+              "arabic": "السواك أو تمرير الإصبع على الأسنان",
+              "meaningArabic": "تنظيف الأسنان بالفرشاة أو بالفرشاة"
+            },
+            {
+              "dari": "مضمضه (آب در دهان گرداندن) سه بار",
+              "pashto": "مضمضه (په خوله کې د اوبو ګرځول) درې ځلې",
+              "turkish": "Üç defa Mudza (ağzının sulanması)",
+              "arabic": "المضمضة (إدارة الماء في الفم) ثلاث مرات",
+              "meaningArabic": "المزاح (السقي في الفم) ثلاث مرات"
+            },
+            {
+              "dari": "استنشاق (آب در بینی کشیدن) سه بار",
+              "pashto": "استنشاق (په پوزه کې د اوبو ایستل) درې ځلې",
+              "turkish": "Üç kez nefes alın",
+              "arabic": "الاستنشاق (إدخال الماء في الأنف) ثلاث مرات",
+              "meaningArabic": "يستنشق ثلاث مرات"
+            },
+            {
+              "dari": "شستن هر عضو سه بار",
+              "pashto": "د هر غړي مینځل درې ځلې",
+              "turkish": "Her üyeyi üç kez yıkayın",
+              "arabic": "غسل كل عضو ثلاث مرات",
+              "meaningArabic": "غسل كل عضو ثلاث مرات"
+            },
+            {
+              "dari": "مسح تمام سر",
+              "pashto": "د ټول سر مسح کول",
+              "turkish": "Bütün kafayı sil",
+              "arabic": "مسح الرأس كله",
+              "meaningArabic": "مسح الرأس كله"
+            },
+            {
+              "dari": "مسح گوش‌ها",
+              "pashto": "د غوږونو مسح کول",
+              "turkish": "Kulakları silin",
+              "arabic": "مسح الأذنين",
+              "meaningArabic": "امسح الأذنين"
+            },
+            {
+              "dari": "خلال انگشتان دست و پا",
+              "pashto": "د لاسونو او پښو د ګوتو خلال کول",
+              "turkish": "El ve ayak parmakları arasında",
+              "arabic": "تخليل أصابع اليدين والقدمين",
+              "meaningArabic": "بين أصابع اليدين والقدمين"
+            },
+            {
+              "dari": "ترتیب (به ترتیب انجام دادن)",
+              "pashto": "ترتیب (په ترتیب سره ترسره کول)",
+              "turkish": "sipariş (sırayla yapmak)",
+              "arabic": "الترتيب (أداؤها بالترتيب)",
+              "meaningArabic": "أمر (للقيام بالترتيب)"
+            },
+            {
+              "dari": "موالات (پی در پی انجام دادن)",
+              "pashto": "موالات (پرله پسې ترسره کول)",
+              "turkish": "Mevâlat (ard arda yapmak)",
+              "arabic": "الموالاة (أداؤها متتابعة)",
+              "meaningArabic": "الموالات (للقيام على التوالي)"
+            }
           ]
         },
         {
           "id": "wudu_steps",
           "title_dari": "مراحل وضو",
           "title_pashto": "د اودس مرحلې",
+          "title_turkish": "Abdest adımları",
+          "title_arabic": "خطوات الوضوء",
+          "title_english": "Steps of wudu",
           "steps": [
             {
               "number": 1,
               "title_dari": "نیت و بسم الله",
               "title_pashto": "نیت او بسم الله",
+              "title_turkish": "Niyet ve Bismillah",
+              "title_arabic": "نية وبسم الله",
+              "title_english": "Intention and Bismillah",
               "description_dari": "در دل نیت کنید که برای طهارت وضو می‌گیرید و بگویید: بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ",
               "description_pashto": "په زړه کې نیت وکړئ چې د پاکوالي لپاره اودس اخلئ او ووایاست: بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ",
+              "description_turkish": "Temizlik için abdest aldığınıza kalbinizle niyet edin ve şöyle deyin: Rahman olan Allah'ın adıyla.",
+              "description_arabic": "نوِّي بقلبك أنك تتوضأ على الطهارة وقل: بسم الله الرحمن الرحيم.",
               "illustration": "wudu-1"
             },
             {
               "number": 2,
               "title_dari": "شستن دست‌ها",
               "title_pashto": "د لاسونو مینځل",
+              "title_turkish": "Elleri yıkamak",
+              "title_arabic": "غسل اليدين",
+              "title_english": "Washing the hands",
               "description_dari": "دست‌ها را تا مچ سه بار بشویید و بین انگشتان خلال کنید",
               "description_pashto": "لاسونه تر مټو درې ځلې ومینځئ او د ګوتو ترمنځ خلال وکړئ",
+              "description_turkish": "Ellerinizi üç defa bileğe kadar yıkayın ve parmaklarınızın arasında sıkın.",
+              "description_arabic": "اغسل يديك إلى الرسغ ثلاث مرات، ثم اضغط عليهما بين أصابعك",
               "illustration": "wudu-2"
             },
             {
               "number": 3,
               "title_dari": "مضمضه و استنشاق",
               "title_pashto": "مضمضه او استنشاق",
+              "title_turkish": "Ağzı ve burnu durulamak",
+              "title_arabic": "الإحراج والاستنشاق",
+              "title_english": "Rinsing the mouth and nose",
               "description_dari": "سه بار آب در دهان بگردانید (مضمضه) و سه بار آب در بینی بکشید (استنشاق)",
               "description_pashto": "درې ځلې اوبه په خوله کې وګرځوئ (مضمضه) او درې ځلې اوبه په پوزه کې وباسئ (استنشاق)",
+              "description_turkish": "Suyu ağzınıza üç kez çalkalayın (mudzah) ve burnunuza üç kez su çekin (nefes alın).",
+              "description_arabic": "تمضمض في فمك بالماء ثلاث مرات (المزاح) واستنشق الماء في أنفك ثلاث مرات (الاستنشاق).",
               "illustration": "wudu-3"
             },
             {
               "number": 4,
               "title_dari": "شستن صورت",
               "title_pashto": "د مخ مینځل",
+              "title_turkish": "Yüzü yıkamak",
+              "title_arabic": "غسل الوجه",
+              "title_english": "Washing the face",
               "description_dari": "صورت را از بالای پیشانی (جایی که موی سر می‌روید) تا زیر چانه و از گوش تا گوش سه بار بشویید",
               "description_pashto": "مخ له تندي له پورتنۍ برخې (چېرته چې د سر ویښتان وي) تر زنې لاندې او له غوږ تر غوږ درې ځلې ومینځئ",
+              "description_turkish": "Yüzü, alnın üstünden (saçların çıktığı yer) çene altına ve kulaktan kulağa kadar üç kez yıkayın.",
+              "description_arabic": "غسل الوجه ثلاث مرات من أعلى الجبهة (حيث ينبت الشعر) إلى تحت الذقن، ومن الأذن إلى الأذن.",
               "illustration": "wudu-4"
             },
             {
               "number": 5,
               "title_dari": "شستن دست‌ها تا آرنج",
               "title_pashto": "د لاسونو مینځل تر څنګلو",
+              "title_turkish": "Kolları dirseklere kadar yıkamak",
+              "title_arabic": "غسل اليدين إلى المرفقين",
+              "title_english": "Washing the arms up to the elbows",
               "description_dari": "ابتدا دست راست و سپس دست چپ را تا آرنج (شامل آرنج) سه بار بشویید",
               "description_pashto": "لومړی ښی لاس او بیا کیڼ لاس تر څنګل (د څنګل په ګډون) درې ځلې ومینځئ",
+              "description_turkish": "Önce sağ eli, sonra sol eli dirseğe kadar (dirsek dahil) üç defa yıkamak",
+              "description_arabic": "أولاً: غسل اليد اليمنى، ثم اليد اليسرى إلى المرفق (بما في ذلك المرفق) ثلاث مرات",
               "illustration": "wudu-5"
             },
             {
               "number": 6,
               "title_dari": "مسح سر",
               "title_pashto": "د سر مسح",
+              "title_turkish": "Kafayı silmek",
+              "title_arabic": "امسح الرأس",
+              "title_english": "Wiping the head",
               "description_dari": "دست‌های تر را از پیشانی به پشت سر و از پشت سر به پیشانی بکشید (یکبار کافی است)",
               "description_pashto": "لوند لاسونه له تندي نه شاته او له شا نه مخ ته وکاږئ (یو ځل کافي دی)",
+              "description_turkish": "Islak ellerinizi alından başın arkasına ve başın arkasından alına doğru çekin (bir kez yeterlidir)",
+              "description_arabic": "ارسم أيديًا مبللة من الجبهة إلى مؤخرة الرأس ومن مؤخرة الرأس إلى الجبهة (مرة واحدة كافية)",
               "illustration": "wudu-6"
             },
             {
               "number": 7,
               "title_dari": "مسح گوش‌ها",
               "title_pashto": "د غوږونو مسح",
+              "title_turkish": "Kulakları silmek",
+              "title_arabic": "امسح الأذنين",
+              "title_english": "Wiping the ears",
               "description_dari": "با انگشتان شهادت داخل گوش و با انگشتان شست پشت گوش را مسح کنید",
               "description_pashto": "د شهادت ګوتو سره د غوږ دننه او د ابهام ګوتو سره د غوږ شا مسح کړئ",
+              "description_turkish": "İşaret parmağıyla kulağın içini, başparmağıyla kulağın arkasını mesh edin.",
+              "description_arabic": "- مسح بطن الأذن بالسبابة، وظاهر الأذن بالإبهام",
               "illustration": "wudu-7"
             },
             {
               "number": 8,
               "title_dari": "شستن پاها",
               "title_pashto": "د پښو مینځل",
+              "title_turkish": "Ayakları yıkamak",
+              "title_arabic": "غسل القدمين",
+              "title_english": "Washing the feet",
               "description_dari": "ابتدا پای راست و سپس پای چپ را تا قوزک (شامل قوزک) سه بار بشویید و بین انگشتان خلال کنید",
               "description_pashto": "لومړی ښی پښه او بیا کیڼ پښه تر پونډ (د پونډ په ګډون) درې ځلې ومینځئ او د ګوتو ترمنځ خلال وکړئ",
+              "description_turkish": "Önce sağ ayağı, sonra sol ayağı ayak bileğine kadar (ayak bileği dahil) üç defa yıkayıp parmak aralarını çaprazlayın.",
+              "description_arabic": "أولاً: غسل القدم اليمنى ثم اليسرى إلى الكعبين (بما في ذلك الكاحل) ثلاث مرات وتقاطع بين أصابع القدمين.",
               "illustration": "wudu-8"
             }
           ]
@@ -136,9 +277,14 @@
           "id": "wudu_dua",
           "title_dari": "دعای بعد از وضو",
           "title_pashto": "د اودس وروسته دعا",
+          "title_turkish": "Abdest sonrası dua",
+          "title_arabic": "الصلاة بعد الوضوء",
+          "title_english": "Supplication after wudu",
           "arabic": "أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ، اللّٰهُمَّ اجْعَلْنِي مِنَ التَّوَّابِينَ وَاجْعَلْنِي مِنَ الْمُتَطَهِّرِينَ",
           "translation_dari": "گواهی می‌دهم که هیچ معبودی جز الله نیست، یکتاست و شریکی ندارد، و گواهی می‌دهم که محمد بنده و فرستاده اوست. خدایا مرا از توبه‌کنندگان و پاکیزگان قرار ده.",
-          "translation_pashto": "ګواهي ورکوم چې هیڅ معبود نشته پرته له الله نه، یو دی او شریک نه لري، او ګواهي ورکوم چې محمد د هغه بنده او رسول دی. خدایه ما د توبه کوونکو او پاکانو څخه وګرځوه."
+          "translation_pashto": "ګواهي ورکوم چې هیڅ معبود نشته پرته له الله نه، یو دی او شریک نه لري، او ګواهي ورکوم چې محمد د هغه بنده او رسول دی. خدایه ما د توبه کوونکو او پاکانو څخه وګرځوه.",
+          "translation_turkish": "Allah'tan başka ilah olmadığına, O'nun bir olduğuna, ortağı olmadığına ve Muhammed'in O'nun kulu ve elçisi olduğuna şahitlik ederim. Allah'ım beni tövbe edenlerden ve temiz olanlardan eyle.",
+          "translation_arabic": "وأشهد أن لا إله إلا الله وحده لا شريك له، وأشهد أن محمداً عبده ورسوله. اللهم اجعلني من التوابين الطاهرين."
         }
       ]
     },
@@ -146,6 +292,9 @@
       "id": "ghusl",
       "title_dari": "غسل",
       "title_pashto": "غسل",
+      "title_turkish": "Gusül",
+      "title_arabic": "الغسل",
+      "title_english": "Ghusl",
       "icon": "shower",
       "color": "#29B6F6",
       "sections": [
@@ -153,41 +302,185 @@
           "id": "ghusl_reasons",
           "title_dari": "موجبات غسل",
           "title_pashto": "د غسل موجبات",
+          "title_turkish": "Guslü farz kılan şey nedir",
+          "title_arabic": "أسباب الاستحمام",
+          "title_english": "What makes ghusl obligatory",
           "items": [
-            {"dari": "جنابت (خروج منی در بیداری یا خواب)", "pashto": "جنابت (د منی وتل په ویښتوب یا خوب کې)"},
-            {"dari": "حیض (عادت ماهانه زنان)", "pashto": "حیض (د ښځو میاشتنۍ عادت)"},
-            {"dari": "نفاس (خون بعد از زایمان)", "pashto": "نفاس (د زیږون وروسته وینه)"},
-            {"dari": "مرگ (غسل میت)", "pashto": "مړینه (د مړي غسل)"},
-            {"dari": "اسلام آوردن کافر", "pashto": "د کافر اسلام راوړل"}
+            {
+              "dari": "جنابت (خروج منی در بیداری یا خواب)",
+              "pashto": "جنابت (د منی وتل په ویښتوب یا خوب کې)",
+              "turkish": "Janabat (uyanıkken veya uykudayken boşalmak)",
+              "arabic": "الجنابة (خروج المني في اليقظة أو في النوم)",
+              "meaningArabic": "الجنابة (القذف أثناء اليقظة أو النوم)"
+            },
+            {
+              "dari": "حیض (عادت ماهانه زنان)",
+              "pashto": "حیض (د ښځو میاشتنۍ عادت)",
+              "turkish": "Menstruasyon (kadının aylık dönemi)",
+              "arabic": "الحيض (عادة النساء الشهرية)",
+              "meaningArabic": "الحيض (الدورة الشهرية للمرأة)"
+            },
+            {
+              "dari": "نفاس (خون بعد از زایمان)",
+              "pashto": "نفاس (د زیږون وروسته وینه)",
+              "turkish": "Nifas (doğum sonrası kan)",
+              "arabic": "النفاس (الدم بعد الولادة)",
+              "meaningArabic": "النفاس (الدم بعد الولادة)"
+            },
+            {
+              "dari": "مرگ (غسل میت)",
+              "pashto": "مړینه (د مړي غسل)",
+              "turkish": "ölüm",
+              "arabic": "الموت (غسل الميت)",
+              "meaningArabic": "الموت"
+            },
+            {
+              "dari": "اسلام آوردن کافر",
+              "pashto": "د کافر اسلام راوړل",
+              "turkish": "Bir kafiri İslam'a döndürmek",
+              "arabic": "إسلام الكافر",
+              "meaningArabic": "تحويل الكافر إلى الإسلام"
+            }
           ]
         },
         {
           "id": "ghusl_fardh",
           "title_dari": "فرض‌های غسل (۳ فرض)",
           "title_pashto": "د غسل فرضونه (۳ فرضه)",
+          "title_turkish": "Guslün farzları (3 farz)",
+          "title_arabic": "قواعد الغسل (3 قواعد)",
+          "title_english": "Obligatory acts of ghusl (3 obligations)",
           "items": [
-            {"number": 1, "dari": "مضمضه - آب در تمام دهان رساندن", "pashto": "مضمضه - اوبه ټولې خولې ته رسول"},
-            {"number": 2, "dari": "استنشاق - آب در تمام بینی رساندن", "pashto": "استنشاق - اوبه ټولې پوزې ته رسول"},
-            {"number": 3, "dari": "آب به تمام بدن رساندن؛ اگر حتی به اندازهٔ جای سوزن خشک بماند غسل صحیح نیست", "pashto": "اوبه ټول بدن ته رسول؛ که حتی د سوزن د ځای په اندازه هم وچه پاتې شي غسل سم نه دی"}
+            {
+              "number": 1,
+              "dari": "مضمضه - آب در تمام دهان رساندن",
+              "pashto": "مضمضه - اوبه ټولې خولې ته رسول",
+              "turkish": "Zamzah - ağzın her yerinin sulanması",
+              "arabic": "المضمضة: إيصال الماء إلى جميع الفم",
+              "meaningArabic": "\"زمزة\" - الماء في جميع أنحاء الفم"
+            },
+            {
+              "number": 2,
+              "dari": "استنشاق - آب در تمام بینی رساندن",
+              "pashto": "استنشاق - اوبه ټولې پوزې ته رسول",
+              "turkish": "Solunum - burnun her yerine su getirin",
+              "arabic": "الاستنشاق: إيصال الماء إلى جميع الأنف",
+              "meaningArabic": "الاستنشاق - جلب الماء إلى جميع أنحاء الأنف"
+            },
+            {
+              "number": 3,
+              "dari": "آب به تمام بدن رساندن؛ اگر حتی به اندازهٔ جای سوزن خشک بماند غسل صحیح نیست",
+              "pashto": "اوبه ټول بدن ته رسول؛ که حتی د سوزن د ځای په اندازه هم وچه پاتې شي غسل سم نه دی",
+              "turkish": "tüm vücuda su; İğne kadar kuru kalırsa gusül geçerli olmaz.",
+              "arabic": "إيصال الماء إلى جميع البدن؛ فإن بقي موضع جاف ولو بقدر رأس إبرة لم يصح الغسل",
+              "meaningArabic": "الماء للجسم كله. ولا يصح الغسل إذا بقي جافاً مثل الإبرة"
+            }
           ]
         },
         {
           "id": "ghusl_method",
           "title_dari": "طریقه غسل",
           "title_pashto": "د غسل طریقه",
+          "title_turkish": "Gusül nasıl yapılır",
+          "title_arabic": "طريقة الاستحمام",
+          "title_english": "How to perform ghusl",
           "steps": [
-            {"number": 1, "dari": "نیت غسل کنید", "pashto": "د غسل نیت وکړئ"},
-            {"number": 2, "dari": "بسم الله بگویید", "pashto": "بسم الله ووایاست"},
-            {"number": 3, "dari": "دست‌ها را تا مچ سه بار بشویید", "pashto": "لاسونه تر مټو درې ځلې ومینځئ"},
-            {"number": 4, "dari": "نجاست را از بدن پاک کنید", "pashto": "له بدن نه نجاست پاکه کړئ"},
-            {"number": 5, "dari": "وضو کامل بگیرید (بدون شستن پاها)", "pashto": "بشپړ اودس واخلئ (د پښو پرته)"},
-            {"number": 6, "dari": "سه مرتبطه آب را در دهان چرخاندن (مضمضه)", "pashto": "درې ځلې اوبه په خوله کې وګرځوئ (مضمضه)"},
-            {"number": 7, "dari": "سه مرتبطه آب را به بینی رساندن (استنشاق)", "pashto": "درې ځلې اوبه په پوزه کې رسول (استنشاق)"},
-            {"number": 8, "dari": "سه بار آب بر سر بریزید تا به ریشه موها برسد", "pashto": "درې ځلې اوبه پر سر توی کړئ تر څو د ویښتو ریښو ته ورسیږي"},
-            {"number": 9, "dari": "سه بار آب بر شانه راست بریزید", "pashto": "درې ځلې اوبه پر ښي اوږه توی کړئ"},
-            {"number": 10, "dari": "سه بار آب بر شانه چپ بریزید", "pashto": "درې ځلې اوبه پر کیڼ اوږه توی کړئ"},
-            {"number": 11, "dari": "تمام بدن را بشویید و ماساژ دهید", "pashto": "ټول بدن ومینځئ او موښ یې کړئ"},
-            {"number": 12, "dari": "پاها را بشویید", "pashto": "پښې ومینځئ"}
+            {
+              "number": 1,
+              "dari": "نیت غسل کنید",
+              "pashto": "د غسل نیت وکړئ",
+              "turkish": "Banyo yapma niyeti",
+              "arabic": "انوِ الغسل",
+              "meaningArabic": "نية الاستحمام"
+            },
+            {
+              "number": 2,
+              "dari": "بسم الله بگویید",
+              "pashto": "بسم الله ووایاست",
+              "turkish": "Allah'ın adıyla söyle",
+              "arabic": "قل بسم الله",
+              "meaningArabic": "قل بسم الله"
+            },
+            {
+              "number": 3,
+              "dari": "دست‌ها را تا مچ سه بار بشویید",
+              "pashto": "لاسونه تر مټو درې ځلې ومینځئ",
+              "turkish": "Ellerinizi bileklerinize kadar üç defa yıkayın",
+              "arabic": "اغسل اليدين إلى الرسغين ثلاث مرات",
+              "meaningArabic": "اغسل يديك إلى الرسغ ثلاث مرات"
+            },
+            {
+              "number": 4,
+              "dari": "نجاست را از بدن پاک کنید",
+              "pashto": "له بدن نه نجاست پاکه کړئ",
+              "turkish": "Vücuttaki yabancı maddeleri çıkarın",
+              "arabic": "أزل النجاسة عن البدن",
+              "meaningArabic": "إزالة الشوائب من الجسم"
+            },
+            {
+              "number": 5,
+              "dari": "وضو کامل بگیرید (بدون شستن پاها)",
+              "pashto": "بشپړ اودس واخلئ (د پښو پرته)",
+              "turkish": "Tam abdest alın (ayaklarınızı yıkamadan)",
+              "arabic": "توضأ وضوءًا كاملًا (من غير غسل القدمين)",
+              "meaningArabic": "الوضوء الكامل (دون غسل القدمين)"
+            },
+            {
+              "number": 6,
+              "dari": "سه مرتبطه آب را در دهان چرخاندن (مضمضه)",
+              "pashto": "درې ځلې اوبه په خوله کې وګرځوئ (مضمضه)",
+              "turkish": "Birbiriyle bağlantılı üç şey: Ağızda dönen su (muzmaza)",
+              "arabic": "أدر الماء في فمك ثلاث مرات (مضمضة)",
+              "meaningArabic": "ثلاثة أشياء مترابطة: دوام الماء في الفم (المزمزة)"
+            },
+            {
+              "number": 7,
+              "dari": "سه مرتبطه آب را به بینی رساندن (استنشاق)",
+              "pashto": "درې ځلې اوبه په پوزه کې رسول (استنشاق)",
+              "turkish": "Birbiriyle bağlantılı üç şey: burnuna su getirmek (teneffüs etmek)",
+              "arabic": "أوصل الماء إلى أنفك ثلاث مرات (استنشاق)",
+              "meaningArabic": "ثلاثة أشياء مرتبطة: إدخال الماء إلى الأنف (الاستنشاق)"
+            },
+            {
+              "number": 8,
+              "dari": "سه بار آب بر سر بریزید تا به ریشه موها برسد",
+              "pashto": "درې ځلې اوبه پر سر توی کړئ تر څو د ویښتو ریښو ته ورسیږي",
+              "turkish": "Saç köklerine ulaşıncaya kadar başınıza üç kez su dökün.",
+              "arabic": "صبّ الماء على الرأس ثلاث مرات حتى يصل إلى أصول الشعر",
+              "meaningArabic": "صب الماء على الرأس ثلاث مرات حتى يصل إلى جذور الشعر"
+            },
+            {
+              "number": 9,
+              "dari": "سه بار آب بر شانه راست بریزید",
+              "pashto": "درې ځلې اوبه پر ښي اوږه توی کړئ",
+              "turkish": "Sağ omuza üç kez su dökün",
+              "arabic": "صبّ الماء على الكتف الأيمن ثلاث مرات",
+              "meaningArabic": "صب الماء على الكتف الأيمن ثلاث مرات"
+            },
+            {
+              "number": 10,
+              "dari": "سه بار آب بر شانه چپ بریزید",
+              "pashto": "درې ځلې اوبه پر کیڼ اوږه توی کړئ",
+              "turkish": "Sol omuza üç kez su dökün",
+              "arabic": "صبّ الماء على الكتف الأيسر ثلاث مرات",
+              "meaningArabic": "صب الماء على الكتف الأيسر ثلاث مرات"
+            },
+            {
+              "number": 11,
+              "dari": "تمام بدن را بشویید و ماساژ دهید",
+              "pashto": "ټول بدن ومینځئ او موښ یې کړئ",
+              "turkish": "Tüm vücudunuzu yıkayıp masaj yapın",
+              "arabic": "اغسل البدن كله ودلّكه",
+              "meaningArabic": "غسل وتدليك الجسم كله"
+            },
+            {
+              "number": 12,
+              "dari": "پاها را بشویید",
+              "pashto": "پښې ومینځئ",
+              "turkish": "Ayaklarını yıka",
+              "arabic": "اغسل القدمين",
+              "meaningArabic": "اغسل قدميك"
+            }
           ]
         }
       ]
@@ -196,6 +489,9 @@
       "id": "prayer_basics",
       "title_dari": "اصول نماز",
       "title_pashto": "د لمانځه اصول",
+      "title_turkish": "Duanın esasları",
+      "title_arabic": "مبادئ الصلاة",
+      "title_english": "Essentials of prayer",
       "icon": "mosque",
       "color": "#66BB6A",
       "sections": [
@@ -203,71 +499,308 @@
           "id": "prayer_conditions",
           "title_dari": "شرایط نماز",
           "title_pashto": "د لمانځه شرطونه",
+          "title_turkish": "Namazın şartları",
+          "title_arabic": "شروط الصلاة",
+          "title_english": "Conditions of prayer",
           "items": [
-            {"dari": "طهارت از حدث (وضو یا غسل)", "pashto": "له حدث نه پاکوالی (اودس یا غسل)"},
-            {"dari": "طهارت از نجاست (بدن، لباس، مکان)", "pashto": "له نجاست نه پاکوالی (بدن، جامې، ځای)"},
-            {"dari": "ستر عورت", "pashto": "د عورت پټول"},
-            {"dari": "استقبال قبله", "pashto": "قبلې ته مخ کول"},
-            {"dari": "وقت نماز داخل شده باشد", "pashto": "د لمانځه وخت داخل شوی وي"},
-            {"dari": "نیت", "pashto": "نیت"}
+            {
+              "dari": "طهارت از حدث (وضو یا غسل)",
+              "pashto": "له حدث نه پاکوالی (اودس یا غسل)",
+              "turkish": "Hadat (Abdest veya Gusül) temizliği",
+              "arabic": "الطهارة من الحدث (بالوضوء أو الغسل)",
+              "meaningArabic": "النظافة من الحدث (الوضوء أو الغسل)"
+            },
+            {
+              "dari": "طهارت از نجاست (بدن، لباس، مکان)",
+              "pashto": "له نجاست نه پاکوالی (بدن، جامې، ځای)",
+              "turkish": "Necasetten arınma (beden, elbise, mekan)",
+              "arabic": "الطهارة من النجاسة (البدن والثوب والمكان)",
+              "meaningArabic": "الطهارة من النجاسة (البدن، الملابس، المكان)"
+            },
+            {
+              "dari": "ستر عورت",
+              "pashto": "د عورت پټول",
+              "turkish": "Aurat kapağı",
+              "arabic": "ستر العورة",
+              "meaningArabic": "غطاء عورات"
+            },
+            {
+              "dari": "استقبال قبله",
+              "pashto": "قبلې ته مخ کول",
+              "turkish": "Hoş geldin Kıble",
+              "arabic": "استقبال القبلة",
+              "meaningArabic": "مرحبا بالقبلة"
+            },
+            {
+              "dari": "وقت نماز داخل شده باشد",
+              "pashto": "د لمانځه وخت داخل شوی وي",
+              "turkish": "Dua vakti geldi",
+              "arabic": "أن يكون وقت الصلاة قد دخل",
+              "meaningArabic": "لقد حان وقت الصلاة"
+            },
+            {
+              "dari": "نیت",
+              "pashto": "نیت",
+              "turkish": "niyet",
+              "arabic": "النية",
+              "meaningArabic": "نية"
+            }
           ]
         },
         {
           "id": "prayer_pillars",
           "title_dari": "ارکان نماز (فرض‌ها) - ۶ رکن",
           "title_pashto": "د لمانځه ارکان (فرضونه) - ۶ رکنه",
+          "title_turkish": "Duanın sütunları (yükümlülükleri): 6 sütun",
+          "title_arabic": "أركان الصلاة (الالتزامات) - 6 أركان",
+          "title_english": "Pillars of prayer (obligations): 6 pillars",
           "items": [
-            {"number": 1, "dari": "تکبیر تحریمه (الله اکبر گفتن در شروع)", "pashto": "تکبیر تحریمه (په پیل کې الله اکبر ویل)"},
-            {"number": 2, "dari": "قیام (ایستادن)", "pashto": "قیام (ولاړیدل)"},
-            {"number": 3, "dari": "قرائت (خواندن قرآن)", "pashto": "قرائت (د قرآن لوستل)"},
-            {"number": 4, "dari": "رکوع (خم شدن)", "pashto": "رکوع (کوږیدل)"},
-            {"number": 5, "dari": "سجده (دو سجده)", "pashto": "سجده (دوه سجدې)"},
-            {"number": 6, "dari": "قعده اخیره (نشستن آخر به اندازه تشهد)", "pashto": "قعده اخیره (وروستی ناست د تشهد په اندازه)"}
+            {
+              "number": 1,
+              "dari": "تکبیر تحریمه (الله اکبر گفتن در شروع)",
+              "pashto": "تکبیر تحریمه (په پیل کې الله اکبر ویل)",
+              "turkish": "Tekbir Tahrimeh (başlangıçta Allahu Ekber diyerek)",
+              "arabic": "تكبيرة الإحرام (قول الله أكبر عند البدء)",
+              "meaningArabic": "تكبير التحريم (قول الله أكبر في البداية)"
+            },
+            {
+              "number": 2,
+              "dari": "قیام (ایستادن)",
+              "pashto": "قیام (ولاړیدل)",
+              "turkish": "ayağa kalk",
+              "arabic": "القيام (الوقوف)",
+              "meaningArabic": "قف"
+            },
+            {
+              "number": 3,
+              "dari": "قرائت (خواندن قرآن)",
+              "pashto": "قرائت (د قرآن لوستل)",
+              "turkish": "Okumak (Kuran okumak)",
+              "arabic": "القراءة (تلاوة القرآن)",
+              "meaningArabic": "القراءة (قراءة القرآن)"
+            },
+            {
+              "number": 4,
+              "dari": "رکوع (خم شدن)",
+              "pashto": "رکوع (کوږیدل)",
+              "turkish": "Eğilme",
+              "arabic": "الركوع (الانحناء)",
+              "meaningArabic": "الركوع"
+            },
+            {
+              "number": 5,
+              "dari": "سجده (دو سجده)",
+              "pashto": "سجده (دوه سجدې)",
+              "turkish": "secde (iki secde)",
+              "arabic": "السجود (سجدتان)",
+              "meaningArabic": "السجود (سجدتان)"
+            },
+            {
+              "number": 6,
+              "dari": "قعده اخیره (نشستن آخر به اندازه تشهد)",
+              "pashto": "قعده اخیره (وروستی ناست د تشهد په اندازه)",
+              "turkish": "Kadeh Ahiret (son oturuş teşehhüde denktir)",
+              "arabic": "القعدة الأخيرة (الجلوس في آخر الصلاة بقدر التشهد)",
+              "meaningArabic": "قضاء الآخرة (الجلسة الأخيرة تساوي التشهد)"
+            }
           ]
         },
         {
           "id": "prayer_wajib",
           "title_dari": "واجبات نماز",
           "title_pashto": "د لمانځه واجبات",
+          "title_turkish": "Vacip namaz fiilleri",
+          "title_arabic": "واجبات الصلاة",
+          "title_english": "Wajib acts of prayer",
           "items": [
-            {"dari": "خواندن سوره فاتحه", "pashto": "د فاتحې سورت لوستل"},
-            {"dari": "ضمیمه کردن سوره یا سه آیه بعد از فاتحه", "pashto": "د فاتحې وروسته سورت یا درې آیات زیاتول"},
-            {"dari": "تعیین رکعات (فاتحه و سوره در دو رکعت اول)", "pashto": "د رکعاتو ټاکل (فاتحه او سورت په لومړیو دوو رکعاتو کې)"},
-            {"dari": "طمأنینه در رکوع و سجود", "pashto": "په رکوع او سجود کې طمأنینه"},
-            {"dari": "قومه (ایستادن بعد از رکوع)", "pashto": "قومه (له رکوع وروسته ولاړیدل)"},
-            {"dari": "جلسه (نشستن بین دو سجده)", "pashto": "جلسه (د دوو سجدو ترمنځ ناستل)"},
-            {"dari": "قعده اولی (در نماز سه و چهار رکعتی)", "pashto": "قعده اولی (په درې او څلور رکعتي لمانځ کې)"},
-            {"dari": "خواندن تشهد", "pashto": "د تشهد لوستل"},
-            {"dari": "سلام دادن", "pashto": "سلام ورکول"}
+            {
+              "dari": "خواندن سوره فاتحه",
+              "pashto": "د فاتحې سورت لوستل",
+              "turkish": "Fatiha suresini okumak",
+              "arabic": "قراءة سورة الفاتحة",
+              "meaningArabic": "قراءة سورة الفاتحة"
+            },
+            {
+              "dari": "ضمیمه کردن سوره یا سه آیه بعد از فاتحه",
+              "pashto": "د فاتحې وروسته سورت یا درې آیات زیاتول",
+              "turkish": "Fatiha'dan sonra bir sure veya üç ayet eklenmesi",
+              "arabic": "ضم سورة أو ثلاث آيات بعد الفاتحة",
+              "meaningArabic": "إضافة سورة أو ثلاث آيات بعد الفاتحة"
+            },
+            {
+              "dari": "تعیین رکعات (فاتحه و سوره در دو رکعت اول)",
+              "pashto": "د رکعاتو ټاکل (فاتحه او سورت په لومړیو دوو رکعاتو کې)",
+              "turkish": "Rekatların belirlenmesi (İlk iki rekatta Fatiha ve Sure)",
+              "arabic": "تعيين الركعات (الفاتحة والسورة في الركعتين الأوليين)",
+              "meaningArabic": "تحديد الركعات (الفاتحة وسورة في الركعتين الأوليين)"
+            },
+            {
+              "dari": "طمأنینه در رکوع و سجود",
+              "pashto": "په رکوع او سجود کې طمأنینه",
+              "turkish": "Rüku ve secdede gönül rahatlığı",
+              "arabic": "الطمأنينة في الركوع والسجود",
+              "meaningArabic": "الطمأنينة في الركوع والسجود"
+            },
+            {
+              "dari": "قومه (ایستادن بعد از رکوع)",
+              "pashto": "قومه (له رکوع وروسته ولاړیدل)",
+              "turkish": "Kumah (rükûdan sonra ayakta durmak)",
+              "arabic": "القومة (القيام بعد الركوع)",
+              "meaningArabic": "قمه (يقوم بعد الركوع)"
+            },
+            {
+              "dari": "جلسه (نشستن بین دو سجده)",
+              "pashto": "جلسه (د دوو سجدو ترمنځ ناستل)",
+              "turkish": "Toplantı (iki secde arasında oturarak)",
+              "arabic": "الجلسة (الجلوس بين السجدتين)",
+              "meaningArabic": "الاجتماع (الجلوس بين السجدتين)"
+            },
+            {
+              "dari": "قعده اولی (در نماز سه و چهار رکعتی)",
+              "pashto": "قعده اولی (په درې او څلور رکعتي لمانځ کې)",
+              "turkish": "İlk Kaza (Üç ve dört rekâtlı namazlarda)",
+              "arabic": "القعدة الأولى (في الصلاة الثلاثية والرباعية)",
+              "meaningArabic": "القضاء الأول (في ثلاث وأربع ركعات)"
+            },
+            {
+              "dari": "خواندن تشهد",
+              "pashto": "د تشهد لوستل",
+              "turkish": "teşehhüd okumak",
+              "arabic": "قراءة التشهد",
+              "meaningArabic": "قراءة التشهد"
+            },
+            {
+              "dari": "سلام دادن",
+              "pashto": "سلام ورکول",
+              "turkish": "merhaba de",
+              "arabic": "التسليم",
+              "meaningArabic": "قل مرحبا"
+            }
           ]
         },
         {
           "id": "prayer_sunnah",
           "title_dari": "سنت‌های نماز",
           "title_pashto": "د لمانځه سنتونه",
+          "title_turkish": "Namazın sünnetleri",
+          "title_arabic": "سنن الصلاة",
+          "title_english": "Sunnahs of prayer",
           "items": [
-            {"dari": "بلند کردن دست‌ها در تکبیر تحریمه", "pashto": "د تکبیر تحریمه په وخت لاسونه پورته کول"},
-            {"dari": "خواندن ثنا", "pashto": "ثنا لوستل"},
-            {"dari": "تعوذ و تسمیه", "pashto": "تعوذ او تسمیه"},
-            {"dari": "آمین گفتن بعد از فاتحه", "pashto": "له فاتحې وروسته آمین ویل"},
-            {"dari": "تسبیح رکوع (سه بار)", "pashto": "د رکوع تسبیح (درې ځلې)"},
-            {"dari": "تسبیح سجده (سه بار)", "pashto": "د سجدې تسبیح (درې ځلې)"},
-            {"dari": "درود و دعا در قعده اخیره", "pashto": "درود او دعا په وروستي ناست کې"}
+            {
+              "dari": "بلند کردن دست‌ها در تکبیر تحریمه",
+              "pashto": "د تکبیر تحریمه په وخت لاسونه پورته کول",
+              "turkish": "İftitah tekbirinde elleri kaldırmak",
+              "arabic": "رفع اليدين عند تكبيرة الإحرام",
+              "meaningArabic": "رفع اليدين عند تكبيرة الإحرام"
+            },
+            {
+              "dari": "خواندن ثنا",
+              "pashto": "ثنا لوستل",
+              "turkish": "Sana'nın okunması",
+              "arabic": "قراءة الثناء",
+              "meaningArabic": "تلاوة سناء"
+            },
+            {
+              "dari": "تعوذ و تسمیه",
+              "pashto": "تعوذ او تسمیه",
+              "turkish": "Sığınma ve atama",
+              "arabic": "التعوذ والتسمية",
+              "meaningArabic": "اللجوء والتعيين"
+            },
+            {
+              "dari": "آمین گفتن بعد از فاتحه",
+              "pashto": "له فاتحې وروسته آمین ویل",
+              "turkish": "Fatiha'dan sonra Amin demek",
+              "arabic": "قول آمين بعد الفاتحة",
+              "meaningArabic": "قول آمين بعد الفاتحة"
+            },
+            {
+              "dari": "تسبیح رکوع (سه بار)",
+              "pashto": "د رکوع تسبیح (درې ځلې)",
+              "turkish": "Rüku namazı (üç defa)",
+              "arabic": "تسبيح الركوع (ثلاث مرات)",
+              "meaningArabic": "صلاة الركوع (ثلاث مرات)"
+            },
+            {
+              "dari": "تسبیح سجده (سه بار)",
+              "pashto": "د سجدې تسبیح (درې ځلې)",
+              "turkish": "Secde Tespih (üç defa)",
+              "arabic": "تسبيح السجود (ثلاث مرات)",
+              "meaningArabic": "مسبحة السجدة (ثلاث مرات)"
+            },
+            {
+              "dari": "درود و دعا در قعده اخیره",
+              "pashto": "درود او دعا په وروستي ناست کې",
+              "turkish": "Son kazada selam ve dualar",
+              "arabic": "الصلاة على النبي والدعاء في القعدة الأخيرة",
+              "meaningArabic": "تحية و صلاة في القضاء الأخير"
+            }
           ]
         },
         {
           "id": "prayer_makruh",
           "title_dari": "مکروهات نماز",
           "title_pashto": "د لمانځه مکروهات",
+          "title_turkish": "Namazda sevilmeyen davranışlar",
+          "title_arabic": "مكروهات الصلاة",
+          "title_english": "Disliked acts in prayer",
           "items": [
-            {"dari": "بازی کردن با لباس یا بدن", "pashto": "له جامو یا بدن سره لوبې کول"},
-            {"dari": "نگاه کردن به اطراف", "pashto": "خواو ته کتل"},
-            {"dari": "نشستن به شکل سگ", "pashto": "د سپي په شان ناستل"},
-            {"dari": "پهن کردن دست‌ها در سجده مانند سگ", "pashto": "په سجده کې لاسونه د سپي په شان خپرول"},
-            {"dari": "شمردن آیات با انگشت", "pashto": "د ګوتو سره آیات شمیرل"},
-            {"dari": "خمیازه کشیدن", "pashto": "ناوکې کول"},
-            {"dari": "بستن چشم‌ها بدون عذر", "pashto": "پرته له عذره سترګې پټول"},
-            {"dari": "خواندن نماز در حال گرسنگی یا تشنگی شدید", "pashto": "په سخت لوږې یا تندې کې لمونځ کول"}
+            {
+              "dari": "بازی کردن با لباس یا بدن",
+              "pashto": "له جامو یا بدن سره لوبې کول",
+              "turkish": "Giysilerle veya vücutla oynamak",
+              "arabic": "العبث بالثوب أو بالبدن",
+              "meaningArabic": "اللعب بالملابس أو الجسم"
+            },
+            {
+              "dari": "نگاه کردن به اطراف",
+              "pashto": "خواو ته کتل",
+              "turkish": "etrafa bakmak",
+              "arabic": "الالتفات إلى الجوانب",
+              "meaningArabic": "أبحث حولي"
+            },
+            {
+              "dari": "نشستن به شکل سگ",
+              "pashto": "د سپي په شان ناستل",
+              "turkish": "Köpek şeklinde oturmak",
+              "arabic": "الجلوس على هيئة الكلب",
+              "meaningArabic": "يجلس على شكل كلب"
+            },
+            {
+              "dari": "پهن کردن دست‌ها در سجده مانند سگ",
+              "pashto": "په سجده کې لاسونه د سپي په شان خپرول",
+              "turkish": "Kolları köpek gibi secdeye açmak",
+              "arabic": "بسط اليدين في السجود كهيئة الكلب",
+              "meaningArabic": "-بسط الذراعين في السجود مثل الكلب"
+            },
+            {
+              "dari": "شمردن آیات با انگشت",
+              "pashto": "د ګوتو سره آیات شمیرل",
+              "turkish": "Ayetleri parmakla saymak",
+              "arabic": "عدّ الآيات بالأصابع",
+              "meaningArabic": "عد الآيات بالأصابع"
+            },
+            {
+              "dari": "خمیازه کشیدن",
+              "pashto": "ناوکې کول",
+              "turkish": "esneme",
+              "arabic": "التثاؤب",
+              "meaningArabic": "التثاؤب"
+            },
+            {
+              "dari": "بستن چشم‌ها بدون عذر",
+              "pashto": "پرته له عذره سترګې پټول",
+              "turkish": "Özür dilemeden gözleri kapatmak",
+              "arabic": "إغماض العينين من غير عذر",
+              "meaningArabic": "-إغماض العينين بدون عذر"
+            },
+            {
+              "dari": "خواندن نماز در حال گرسنگی یا تشنگی شدید",
+              "pashto": "په سخت لوږې یا تندې کې لمونځ کول",
+              "turkish": "Açken veya çok susuzken namaz kılmak",
+              "arabic": "الصلاة مع الجوع الشديد أو العطش الشديد",
+              "meaningArabic": "الصلاة في حالة الجوع أو العطش الشديد"
+            }
           ]
         }
       ]
@@ -276,6 +809,9 @@
       "id": "prayer_recitations",
       "title_dari": "اذکار نماز",
       "title_pashto": "د لمانځه ذکرونه",
+      "title_turkish": "Duanın okunuşları",
+      "title_arabic": "اذكار الصلاة",
+      "title_english": "Recitations of the prayer",
       "icon": "menu-book",
       "color": "#AB47BC",
       "sections": [
@@ -283,108 +819,178 @@
           "id": "takbir",
           "title_dari": "تکبیر تحریمه",
           "title_pashto": "تکبیر تحریمه",
+          "title_turkish": "Açılış tekbiri",
+          "title_arabic": "تكبيرة الإحرام",
+          "title_english": "Opening takbir",
           "arabic": "اَللهُ أَكْبَرُ",
           "translation_dari": "الله بزرگتر است",
           "translation_pashto": "الله تر ټولو لوی دی",
+          "translation_turkish": "Allah büyüktür",
+          "translation_arabic": "الله أكبر",
           "instruction_dari": "دست‌ها را تا گوش‌ها بلند کنید و بگویید",
-          "instruction_pashto": "لاسونه تر غوږونو پورته کړئ او ووایاست"
+          "instruction_pashto": "لاسونه تر غوږونو پورته کړئ او ووایاست",
+          "instruction_turkish": "Ellerinizi kulaklarınıza kaldırın ve şunu söyleyin:",
+          "instruction_arabic": "ارفع يديك إلى أذنيك وقل"
         },
         {
           "id": "thana",
           "title_dari": "ثنا",
           "title_pashto": "ثنا",
+          "title_turkish": "Thana",
+          "title_arabic": "سانا",
+          "title_english": "Thana",
           "arabic": "سُبْحَانَكَ اللّٰهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالٰى جَدُّكَ وَلَا إِلٰهَ غَيْرُكَ",
           "translation_dari": "پاک هستی ای الله و با ستایش تو، و مبارک است نام تو، و بلند است بزرگی تو، و هیچ معبودی جز تو نیست.",
-          "translation_pashto": "پاک یې ای الله او ستا ستاینه ده، او ستا نوم بختور دی، او ستا لویي لوړه ده، او ستا پرته بل معبود نشته."
+          "translation_pashto": "پاک یې ای الله او ستا ستاینه ده، او ستا نوم بختور دی، او ستا لویي لوړه ده، او ستا پرته بل معبود نشته.",
+          "translation_turkish": "Sen temizsin, Allah'ım, hamdinledir, ismin mübarektir, azametin yücedir ve senden başka ilah yoktur.",
+          "translation_arabic": "طاهرت يا الله وبحمدك، وتبارك اسمك، وتعالى عظمتك، ولا إله إلا أنت."
         },
         {
           "id": "taawwuz",
           "title_dari": "تعوذ",
           "title_pashto": "تعوذ",
+          "title_turkish": "Ta'avwudh",
+          "title_arabic": "لجأ",
+          "title_english": "Ta‘awwudh",
           "arabic": "أَعُوذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
           "translation_dari": "پناه می‌برم به الله از شیطان رانده شده",
-          "translation_pashto": "پناه غواړم الله ته له شیطان رجیم نه"
+          "translation_pashto": "پناه غواړم الله ته له شیطان رجیم نه",
+          "translation_turkish": "Şeytanın şerrinden Allah'a sığınırım",
+          "translation_arabic": "أعوذ بالله من الشيطان"
         },
         {
           "id": "tasmiyah",
           "title_dari": "تسمیه (بسم الله)",
           "title_pashto": "تسمیه (بسم الله)",
+          "title_turkish": "Tesmiye (Bismillah)",
+          "title_arabic": "اسم",
+          "title_english": "Tasmiyah (Bismillah)",
           "arabic": "بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ",
           "translation_dari": "به نام الله بخشنده مهربان",
-          "translation_pashto": "د الله په نوم چې ډېر مهربان دی"
+          "translation_pashto": "د الله په نوم چې ډېر مهربان دی",
+          "translation_turkish": "Rahman ve Rahim olan Allah'ın adıyla",
+          "translation_arabic": "بسم الله الرحمن الرحيم"
         },
         {
           "id": "fatiha",
           "title_dari": "سوره فاتحه",
           "title_pashto": "سورة الفاتحه",
+          "title_turkish": "Fatiha Suresi",
+          "title_arabic": "سورة الفاتحة",
+          "title_english": "Surah al-Fatihah",
           "arabic": "اَلْحَمْدُ لِلّٰهِ رَبِّ الْعَالَمِينَ ۝ الرَّحْمٰنِ الرَّحِيمِ ۝ مَالِكِ يَوْمِ الدِّينِ ۝ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ۝ اِهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ۝ صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّآلِّينَ",
           "translation_dari": "ستایش مخصوص الله است که پروردگار جهانیان است، بخشنده مهربان، مالک روز جزا، تنها تو را عبادت می‌کنیم و تنها از تو کمک می‌خواهیم، ما را به راه راست هدایت کن، راه کسانی که به آنها نعمت دادی، نه راه غضب‌شدگان و نه گمراهان.",
-          "translation_pashto": "ټول ستاینه د الله لپاره ده چې د ټولو عالمونو پالونکی دی، ډېر مهربان، د جزا د ورځې مالک، موږ یوازې ستا عبادت کوو او یوازې له تا مدد غواړو، موږ ته سمه لار وښیه، د هغو لار چې تا پرې نعمت وکړ، نه د غضب شویو لار او نه د ګمراهانو."
+          "translation_pashto": "ټول ستاینه د الله لپاره ده چې د ټولو عالمونو پالونکی دی، ډېر مهربان، د جزا د ورځې مالک، موږ یوازې ستا عبادت کوو او یوازې له تا مدد غواړو، موږ ته سمه لار وښیه، د هغو لار چې تا پرې نعمت وکړ، نه د غضب شویو لار او نه د ګمراهانو.",
+          "translation_turkish": "Hamd, âlemlerin Rabbi, Rahman, kıyamet gününün sahibi olan Allah'a mahsustur, yalnız Sana ibadet ederiz ve yalnız Senden yardım dileriz, bizi doğru yola, nimet verdiğin kimselerin yoluna ilet, öfkelilerin ve sapıkların yoluna değil.",
+          "translation_arabic": "الحمد لله رب العالمين، الرحمن الرحيم، مالك يوم الدين، إياك نعبد وحدك ونستعين بك وحدك، اهدنا إلى الصراط المستقيم، صراط الذين أنعمت عليهم، لا صراط المغضوب عليهم، ولا الضالين."
         },
         {
           "id": "ruku_tasbeeh",
           "title_dari": "تسبیح رکوع",
           "title_pashto": "د رکوع تسبیح",
+          "title_turkish": "Rüku tesbihi",
+          "title_arabic": "ركوع المسبحة",
+          "title_english": "Tasbih of ruku",
           "arabic": "سُبْحَانَ رَبِّيَ الْعَظِيمِ",
           "translation_dari": "پاک است پروردگار بزرگ من",
           "translation_pashto": "پاک دی زما لوی پالونکی",
+          "translation_turkish": "Saftır benim büyük Rabbim",
+          "translation_arabic": "طاهر هو ربي العظيم",
           "instruction_dari": "سه بار یا بیشتر (طاق) بخوانید",
-          "instruction_pashto": "درې ځلې یا زیات (طاق) ولولئ"
+          "instruction_pashto": "درې ځلې یا زیات (طاق) ولولئ",
+          "instruction_turkish": "(Tak)'ı üç defa veya daha fazla okuyun",
+          "instruction_arabic": "قراءة (طق) ثلاث مرات أو أكثر"
         },
         {
           "id": "qawmah",
           "title_dari": "ذکر قومه (بعد از رکوع)",
           "title_pashto": "د قومې ذکر (له رکوع وروسته)",
+          "title_turkish": "Kavmetin anılması (rükûdan sonra)",
+          "title_arabic": "ذكر قمح (بعد الركوع)",
+          "title_english": "Remembrance of qawmah (after ruku)",
           "arabic": "سَمِعَ اللهُ لِمَنْ حَمِدَهُ",
           "translation_dari": "الله شنید کسی را که او را ستایش کرد",
           "translation_pashto": "الله واورېده هغه چا ته چې یې ستاینه وکړه",
-          "response_arabic": "رَبَّنَا لَكَ الْحَمْدُ",
+          "translation_turkish": "Allah kendisine hamd edeni işitti",
+          "translation_arabic": "سمع الله لمن أثنى عليه",
+          "response_arabic": "لك الحمد يا رب",
           "response_dari": "پروردگارا، ستایش مخصوص توست",
-          "response_pashto": "پالونکیه، ستاینه ستا لپاره ده"
+          "response_pashto": "پالونکیه، ستاینه ستا لپاره ده",
+          "response_turkish": "Hamd sana olsun Rabbim",
+          "response_meaningArabic": "ربنا، لك الحمد"
         },
         {
           "id": "sujud_tasbeeh",
           "title_dari": "تسبیح سجده",
           "title_pashto": "د سجدې تسبیح",
+          "title_turkish": "Secde tesbihi",
+          "title_arabic": "مسبحة السجود",
+          "title_english": "Tasbih of sujud",
           "arabic": "سُبْحَانَ رَبِّيَ الْأَعْلٰى",
           "translation_dari": "پاک است پروردگار بلندمرتبه من",
           "translation_pashto": "پاک دی زما لوړ پالونکی",
+          "translation_turkish": "Temizdir yüce Rabbim",
+          "translation_arabic": "طاهر هو ربي العظيم",
           "instruction_dari": "سه بار یا بیشتر (طاق) بخوانید",
-          "instruction_pashto": "درې ځلې یا زیات (طاق) ولولئ"
+          "instruction_pashto": "درې ځلې یا زیات (طاق) ولولئ",
+          "instruction_turkish": "(Tak)'ı üç defa veya daha fazla okuyun",
+          "instruction_arabic": "قراءة (طق) ثلاث مرات أو أكثر"
         },
         {
           "id": "tashahhud",
           "title_dari": "تشهد (التحیات)",
           "title_pashto": "تشهد (التحیات)",
+          "title_turkish": "Teşehhüd (Tahiyyat'ta)",
+          "title_arabic": "استشهاد",
+          "title_english": "Tashahhud (at-Tahiyyat)",
           "arabic": "التَّحِيَّاتُ لِلّٰهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، اَلسَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ، اَلسَّلَامُ عَلَيْنَا وَعَلٰى عِبَادِ اللهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
           "translation_dari": "همه سلام‌ها و درودها و پاکی‌ها برای الله است. سلام بر تو ای پیامبر و رحمت و برکات الله. سلام بر ما و بر بندگان صالح الله. گواهی می‌دهم که هیچ معبودی جز الله نیست و گواهی می‌دهم که محمد بنده و فرستاده اوست.",
-          "translation_pashto": "ټول سلامونه او درودونه او پاکوالي د الله لپاره دي. سلام دې وي پر تا ای پیغمبره او د الله رحمت او برکتونه. سلام دې وي پر موږ او پر د الله صالح بندګانو. ګواهي ورکوم چې بل معبود نشته پرته له الله نه او ګواهي ورکوم چې محمد د هغه بنده او استازی دی."
+          "translation_pashto": "ټول سلامونه او درودونه او پاکوالي د الله لپاره دي. سلام دې وي پر تا ای پیغمبره او د الله رحمت او برکتونه. سلام دې وي پر موږ او پر د الله صالح بندګانو. ګواهي ورکوم چې بل معبود نشته پرته له الله نه او ګواهي ورکوم چې محمد د هغه بنده او استازی دی.",
+          "translation_turkish": "Bütün selam ve bereketler Allah içindir. Selam sana ey Peygamber, Allah'ın rahmeti ve bereketi üzerinize olsun. Selam bize ve Allah'ın salih kullarının üzerine olsun. Şehadet ederim ki Allah'tan başka ilah yoktur ve şahitlik ederim ki Muhammed O'nun kulu ve elçisidir.",
+          "translation_arabic": "وكل التحية والتبريكات لله. السلام عليك أيها النبي، والسلام عليك ورحمة الله وبركاته. السلام علينا وعلى عباد الله الصالحين. أشهد أن لا إله إلا الله وأشهد أن محمدا عبده ورسوله."
         },
         {
           "id": "durood",
           "title_dari": "درود ابراهیمی",
           "title_pashto": "درود ابراهیمي",
+          "title_turkish": "İbrahim'in salavatı",
+          "title_arabic": "دورود ابراهيمي",
+          "title_english": "Ibrahim’s salawat",
           "arabic": "اَللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اَللّٰهُمَّ بَارِكْ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
           "translation_dari": "خدایا درود بفرست بر محمد و بر آل محمد همانگونه که درود فرستادی بر ابراهیم و آل ابراهیم، به درستی که تو ستوده و بزرگوار هستی. خدایا برکت بده بر محمد و بر آل محمد همانگونه که برکت دادی بر ابراهیم و آل ابراهیم، به درستی که تو ستوده و بزرگوار هستی.",
-          "translation_pashto": "خدایه درود واستوه پر محمد او پر د محمد کورنۍ لکه څنګه چې تا درود واستاوه پر ابراهیم او پر د ابراهیم کورنۍ، یقینا ته ستایلی او بزرګوار یې. خدایه برکت ورکړه محمد ته او د محمد کورنۍ ته لکه څنګه چې تا برکت ورکړ ابراهیم ته او د ابراهیم کورنۍ ته، یقینا ته ستایلی او بزرګوار یې."
+          "translation_pashto": "خدایه درود واستوه پر محمد او پر د محمد کورنۍ لکه څنګه چې تا درود واستاوه پر ابراهیم او پر د ابراهیم کورنۍ، یقینا ته ستایلی او بزرګوار یې. خدایه برکت ورکړه محمد ته او د محمد کورنۍ ته لکه څنګه چې تا برکت ورکړ ابراهیم ته او د ابراهیم کورنۍ ته، یقینا ته ستایلی او بزرګوار یې.",
+          "translation_turkish": "Allah'ım, İbrahim'e ve İbrahim'in ailesine salat ettiğin, sen övüldüğün ve şereflendirildiğin için, Muhammed'e ve Muhammed'in ailesine salât eyle. Allah'ım, İbrahim'e ve İbrahim ailesine bereket verdiğin, övüldüğün ve şereflendirildiğin gibi, Muhammed'e ve Muhammed'in ailesine de salat eyle.",
+          "translation_arabic": "اللهم صل على محمد وعلى آل محمد كما باركت على إبراهيم وعلى آل إبراهيم كما حميدت وكرمت. اللهم صل على محمد وعلى آل محمد كما باركت على إبراهيم وعلى آل إبراهيم كما حميدت وكرمت."
         },
         {
           "id": "dua_before_salam",
           "title_dari": "دعای قبل از سلام",
           "title_pashto": "د سلام نه مخکې دعا",
+          "title_turkish": "Selamdan önce dua",
+          "title_arabic": "الصلاة قبل التحية",
+          "title_english": "Supplication before the salam",
           "arabic": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ",
           "translation_dari": "پروردگارا! به ما در دنیا نیکی عطا کن و در آخرت نیز نیکی عطا کن و ما را از عذاب آتش حفظ فرما.",
-          "translation_pashto": "ای زموږ پالونکي! موږ ته په دنیا کې نیکي راکړه او په آخرت کې هم نیکي راکړه او موږ د اور له عذاب نه وساته."
+          "translation_pashto": "ای زموږ پالونکي! موږ ته په دنیا کې نیکي راکړه او په آخرت کې هم نیکي راکړه او موږ د اور له عذاب نه وساته.",
+          "translation_turkish": "Tanrım! Bize dünyada da iyilik ver, ahirette de iyilik ver ve bizi ateş azabından koru.",
+          "translation_arabic": "يا رب! آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار."
         },
         {
           "id": "salam",
           "title_dari": "سلام",
           "title_pashto": "سلام",
+          "title_turkish": "Selam",
+          "title_arabic": "مرحبا",
+          "title_english": "Salam",
           "arabic": "اَلسَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللهِ",
           "translation_dari": "سلام و رحمت الله بر شما باد",
           "translation_pashto": "سلام او د الله رحمت دې پر تاسو وي",
+          "translation_turkish": "Allah'ın selamı ve rahmeti üzerinize olsun",
+          "translation_arabic": "والسلام عليكم ورحمة الله",
           "instruction_dari": "ابتدا به طرف راست و سپس به طرف چپ سر را برگردانید",
-          "instruction_pashto": "لومړی ښي خوا ته او بیا کیڼ خوا ته سر وګرځوئ"
+          "instruction_pashto": "لومړی ښي خوا ته او بیا کیڼ خوا ته سر وګرځوئ",
+          "instruction_turkish": "Başınızı önce sağa, sonra sola çevirin",
+          "instruction_arabic": "أدر رأسك أولاً إلى اليمين ثم إلى اليسار"
         }
       ]
     },
@@ -392,6 +998,9 @@
       "id": "prayer_types",
       "title_dari": "انواع نماز",
       "title_pashto": "د لمانځه ډولونه",
+      "title_turkish": "Dua türleri",
+      "title_arabic": "أنواع الصلاة",
+      "title_english": "Types of prayer",
       "icon": "view-list",
       "color": "#FF7043",
       "sections": [
@@ -399,57 +1008,80 @@
           "id": "five_prayers",
           "title_dari": "نمازهای پنجگانه فرض",
           "title_pashto": "پنځه وخته فرض لمونځونه",
+          "title_turkish": "Beş farz namaz",
+          "title_arabic": "الصلوات الخمس المفروضة",
+          "title_english": "The five obligatory prayers",
           "prayers": [
             {
               "name_dari": "نماز فجر (صبح)",
               "name_pashto": "د سهار لمونځ",
+              "name_turkish": "Sabah namazı (sabah)",
+              "name_arabic": "صلاة الفجر (الصباح)",
               "fardh": 2,
               "sunnah_before": 2,
               "sunnah_after": 0,
               "total": 4,
               "notes_dari": "۲ رکعت سنت مؤکده + ۲ رکعت فرض",
-              "notes_pashto": "۲ رکعته سنت مؤکده + ۲ رکعته فرض"
+              "notes_pashto": "۲ رکعته سنت مؤکده + ۲ رکعته فرض",
+              "notes_turkish": "2 rekat Sünnet Mukaddes + 2 rekat Farz",
+              "notes_arabic": "2 ركعتين سنة مقادة + 2 ركعة فرض"
             },
             {
               "name_dari": "نماز ظهر (پیشین)",
               "name_pashto": "د غرمې لمونځ",
+              "name_turkish": "öğle namazı (önceki)",
+              "name_arabic": "صلاة الظهر (السابق)",
               "fardh": 4,
               "sunnah_before": 4,
               "sunnah_after": 2,
               "total": 10,
               "notes_dari": "۴ رکعت سنت + ۴ رکعت فرض + ۲ رکعت سنت",
-              "notes_pashto": "۴ رکعته سنت + ۴ رکعته فرض + ۲ رکعته سنت"
+              "notes_pashto": "۴ رکعته سنت + ۴ رکعته فرض + ۲ رکعته سنت",
+              "notes_turkish": "4 rekat sünnet + 4 rekat farz + 2 rekat sünnet",
+              "notes_arabic": "4 ركعة سنة + 4 ركعة فرض + 2 ركعة سنة"
             },
             {
               "name_dari": "نماز عصر (دیگر)",
               "name_pashto": "د مازدیګر لمونځ",
+              "name_turkish": "İkindi namazı (diğer)",
+              "name_arabic": "صلاة العصر (أخرى)",
               "fardh": 4,
               "sunnah_before": 0,
               "sunnah_after": 0,
               "total": 4,
               "notes_dari": "۴ رکعت فرض",
-              "notes_pashto": "۴ رکعته فرض"
+              "notes_pashto": "۴ رکعته فرض",
+              "notes_turkish": "4 zorunlu rekat",
+              "notes_arabic": "4 ركعات واجبة"
             },
             {
               "name_dari": "نماز مغرب (شام)",
               "name_pashto": "د ماښام لمونځ",
+              "name_turkish": "Akşam (akşam yemeği) namazı",
+              "name_arabic": "صلاة المغرب (العشاء).",
               "fardh": 3,
               "sunnah_before": 0,
               "sunnah_after": 2,
               "total": 5,
               "notes_dari": "۳ رکعت فرض + ۲ رکعت سنت",
-              "notes_pashto": "۳ رکعته فرض + ۲ رکعته سنت"
+              "notes_pashto": "۳ رکعته فرض + ۲ رکعته سنت",
+              "notes_turkish": "3 farz rek'at + 2 sünnet rek'at",
+              "notes_arabic": "3 ركعات فريضة + 2 ركعة سنة"
             },
             {
               "name_dari": "نماز عشاء (خفتن)",
               "name_pashto": "د ماښام وروستی لمونځ",
+              "name_turkish": "Yatsı namazı (uykuya dalmak)",
+              "name_arabic": "صلاة العشاء (النوم)",
               "fardh": 4,
               "sunnah_before": 0,
               "sunnah_after": 2,
               "witr": 3,
               "total": 9,
               "notes_dari": "۴ رکعت فرض + ۲ رکعت سنت + ۳ رکعت وتر (واجب)",
-              "notes_pashto": "۴ رکعته فرض + ۲ رکعته سنت + ۳ رکعته وتر (واجب)"
+              "notes_pashto": "۴ رکعته فرض + ۲ رکعته سنت + ۳ رکعته وتر (واجب)",
+              "notes_turkish": "4 farz rekat + 2 rekat sünnet + 3 vitir rekat (vacip)",
+              "notes_arabic": "4 ركعات واجبة + 2 ركعة سنة + 3 ركعات وتر (واجب)"
             }
           ]
         },
@@ -457,8 +1089,14 @@
           "id": "juma_prayer",
           "title_dari": "نماز جمعه",
           "title_pashto": "د جمعې لمونځ",
+          "title_turkish": "Cuma namazı",
+          "title_arabic": "صلاة الجمعة",
+          "title_english": "Friday prayer",
           "content_dari": "نماز جمعه ۲ رکعت فرض است و جایگزین نماز ظهر می‌شود. قبل از آن ۴ رکعت سنت و بعد از آن ۴+۲ رکعت سنت خوانده می‌شود. خواندن دو خطبه توسط امام قبل از نماز واجب است.",
           "content_pashto": "د جمعې لمونځ ۲ رکعته فرض دی او د غرمې لمانځه ځای نیسي. له هغه مخکې ۴ رکعته سنت او وروسته یې ۴+۲ رکعته سنت لوستل کیږي. د امام لخوا د لمانځه نه مخکې دوه خطبې ویل واجب دي.",
+          "content_turkish": "Cuma namazı 2 rekattır ve öğle namazının yerini alır. Öncesinde 4 rekat sünnet, sonrasında 4+2 rekat sünnet kılınır. İmamın namazdan önce iki hutbe vermesi farzdır.",
+          "content_arabic": "صلاة الجمعة ركعتان وهي بدل صلاة الظهر. وقبل ذلك يقرأ 4 ركعات من السنة وبعد ذلك يقرأ 4 + 2 ركعة من السنة. ويجب قراءة خطبتين للإمام قبل الصلاة.",
+          "content_english": "The Friday prayer is 2 obligatory rak‘ahs and it takes the place of Zuhr. Four rak‘ahs of sunnah are prayed before it, and 4+2 rak‘ahs of sunnah after it. It is obligatory for the imam to deliver two sermons before the prayer.",
           "conditions_dari": [
             "در شهر یا آبادی باشد",
             "امام و جماعت باشد",
@@ -470,14 +1108,32 @@
             "امام او جماعت وي",
             "د غرمې وخت داخل شوی وي",
             "خطبه ولوستل شي"
+          ],
+          "conditions_turkish": [
+            "Şehirde veya yerleşim yerinde olması",
+            "İmam ve cemaatin bulunması",
+            "Öğle vaktinin girmiş olması",
+            "Hutbenin okunması"
+          ],
+          "conditions_arabic": [
+            "أن تكون في مدينة أو بلدة عامرة",
+            "أن يكون هناك إمام وجماعة",
+            "أن يكون وقت الظهر قد دخل",
+            "أن تُلقى الخطبة"
           ]
         },
         {
           "id": "eid_prayer",
           "title_dari": "نماز عید",
           "title_pashto": "د اختر لمونځ",
+          "title_turkish": "Bayram namazı",
+          "title_arabic": "صلاة العيد",
+          "title_english": "Eid prayer",
           "content_dari": "نماز عید ۲ رکعت واجب است. در رکعت اول ۳ تکبیر زائد و در رکعت دوم ۳ تکبیر زائد قبل از رکوع گفته می‌شود. بعد از نماز دو خطبه خوانده می‌شود.",
           "content_pashto": "د اختر لمونځ ۲ رکعته واجب دی. په لومړي رکعت کې ۳ اضافي تکبیرونه او په دویم رکعت کې ۳ اضافي تکبیرونه له رکوع نه مخکې ویل کیږي. له لمانځه وروسته دوه خطبې لوستل کیږي.",
+          "content_turkish": "Bayram namazı 2 rekattır. Birinci rekatta fazladan üç tekbir alınır, ikinci rekatta rükudan önce fazladan üç tekbir alınır. Namazdan sonra iki hutbe okunur.",
+          "content_arabic": "صلاة العيد 2 ركعتين . في الركعة الأولى يكبر ثلاث تكبيرات وفي الركعة الثانية يكبر ثلاث تكبيرات قبل الركوع. وبعد الصلاة تتم قراءة خطبتين.",
+          "content_english": "The Eid prayer is 2 wajib rak‘ahs. Three extra takbirs are said in the first rak‘ah, and three extra takbirs before ruku in the second. Two sermons are delivered after the prayer.",
           "method_dari": [
             "تکبیر تحریمه",
             "۳ تکبیر زائد با بلند کردن دست‌ها",
@@ -495,52 +1151,108 @@
             "دویم رکعت: قرائت",
             "۳ اضافي تکبیرونه د لاسونو پورته کولو سره",
             "رکوع او د لمانځه دوام"
+          ],
+          "method_turkish": [
+            "İftitah tekbiri",
+            "Elleri kaldırarak 3 fazla tekbir",
+            "Sena ve kıraat",
+            "Alışılmış rükû ve secde",
+            "İkinci rekât: kıraat",
+            "Elleri kaldırarak 3 fazla tekbir",
+            "Rükû ve namaza devam"
+          ],
+          "method_arabic": [
+            "تكبيرة الإحرام",
+            "ثلاث تكبيرات زوائد مع رفع اليدين",
+            "الثناء والقراءة",
+            "الركوع والسجود المعتادان",
+            "الركعة الثانية: القراءة",
+            "ثلاث تكبيرات زوائد مع رفع اليدين",
+            "الركوع ومتابعة الصلاة"
           ]
         },
         {
           "id": "taraweeh",
           "title_dari": "نماز تراویح",
           "title_pashto": "د تراویحو لمونځ",
+          "title_turkish": "Teravih namazı",
+          "title_arabic": "صلاة التراويح",
+          "title_english": "Tarawih prayer",
           "content_dari": "نماز تراویح ۲۰ رکعت سنت مؤکده است که در شب‌های ماه رمضان بعد از نماز عشاء و قبل از وتر خوانده می‌شود. به صورت ۲ رکعت ۲ رکعت ادا می‌شود.",
-          "content_pashto": "د تراویحو لمونځ ۲۰ رکعته سنت مؤکده دی چې د روژې میاشتې په شپو کې له ماښام لمانځه وروسته او له وتره مخکې لوستل کیږي. په ۲ رکعتو ۲ رکعتو ادا کیږي."
+          "content_pashto": "د تراویحو لمونځ ۲۰ رکعته سنت مؤکده دی چې د روژې میاشتې په شپو کې له ماښام لمانځه وروسته او له وتره مخکې لوستل کیږي. په ۲ رکعتو ۲ رکعتو ادا کیږي.",
+          "content_turkish": "Teravih, 20 rek'at tasdik edilmiş sünnettir. Ramazan geceleri yatsıdan sonra ve vitirden önce iki rekat kılınır.",
+          "content_arabic": "صلاة التراويح هي 20 ركعة من السنّة، تقرأ في ليالي رمضان بعد صلاة العشاء وقبل الوتر. يتم إجراؤها في ركعتين ، ركعتان.",
+          "content_english": "Tarawih is 20 rak‘ahs of confirmed sunnah. It is prayed on the nights of Ramadan after Isha and before Witr, two rak‘ahs at a time."
         },
         {
           "id": "witr",
           "title_dari": "نماز وتر",
           "title_pashto": "د وتر لمونځ",
+          "title_turkish": "Vitr namazı",
+          "title_arabic": "صلاة الوتر",
+          "title_english": "Witr prayer",
           "content_dari": "نماز وتر ۳ رکعت واجب است و بعد از نماز عشاء خوانده می‌شود. در رکعت سوم بعد از سوره، دعای قنوت خوانده می‌شود.",
           "content_pashto": "د وتر لمونځ ۳ رکعته واجب دی او له ماښام لمانځه وروسته لوستل کیږي. په دریم رکعت کې له سورت وروسته د قنوت دعا لوستل کیږي.",
-          "qunoot_arabic": "اَللّٰهُمَّ إِنَّا نَسْتَعِينُكَ وَنَسْتَغْفِرُكَ وَنُؤْمِنُ بِكَ وَنَتَوَكَّلُ عَلَيْكَ وَنُثْنِي عَلَيْكَ الْخَيْرَ وَنَشْكُرُكَ وَلَا نَكْفُرُكَ وَنَخْلَعُ وَنَتْرُكُ مَنْ يَفْجُرُكَ، اَللّٰهُمَّ إِيَّاكَ نَعْبُدُ وَلَكَ نُصَلِّي وَنَسْجُدُ وَإِلَيْكَ نَسْعٰى وَنَحْفِدُ وَنَرْجُو رَحْمَتَكَ وَنَخْشٰى عَذَابَكَ إِنَّ عَذَابَكَ بِالْكُفَّارِ مُلْحِقٌ",
+          "content_turkish": "Vitr 3 rekattır ve yatsı namazından sonra kılınır. Üçüncü rekatta sureden sonra Kunut duası okunur.",
+          "content_arabic": "صلاة الوتر واجبة بثلاث ركعات، وتكون بعد صلاة العشاء. وفي الركعة الثالثة بعد السورة يقرأ دعاء القنوت.",
+          "content_english": "Witr is 3 wajib rak‘ahs and is prayed after Isha. In the third rak‘ah, the Qunut supplication is recited after the surah.",
+          "qunoot_arabic": "اللهم إنا نستعينك ونستغفرك ونؤمن بك ونتوكل عليك ونحمدك بخير ونشكرك ولا نكفر ونتجنب كل من يعصيك. اللهم إنا نعبدك وحدك وندعو لك ونسجد ونسعى إليك ونرجوا رحمتك ونخشى عذابك أن يصل عذابك إلى الكافرين.",
           "qunoot_dari": "خدایا از تو کمک می‌خواهیم و از تو آمرزش می‌طلبیم و به تو ایمان داریم و بر تو توکل می‌کنیم و تو را به نیکی می‌ستاییم و شکر تو را می‌گزاریم و ناسپاسی نمی‌کنیم و از کسی که نافرمانی تو کند دوری می‌جوییم. خدایا تنها تو را عبادت می‌کنیم و برای تو نماز می‌خوانیم و سجده می‌کنیم و به سوی تو می‌شتابیم و امید رحمت تو را داریم و از عذاب تو می‌ترسیم که عذاب تو به کافران خواهد رسید.",
-          "qunoot_pashto": "خدایه موږ له تا مدد غواړو او له تا بخښنه غواړو او پر تا ایمان لرو او پر تا توکل کوو او ستا ستاینه کوو او ستا شکر ګزارو او ناشکري نه کوو او له هغه چا نه لرې کیږو چې ستا نافرماني کوي. خدایه یوازې ستا عبادت کوو او ستا لپاره لمونځ کوو او سجده کوو او ستا خوا ته منډه وهو او ستا د رحمت امید لرو او له ستا عذاب نه ویریږو چې ستا عذاب کافرانو ته رسیدونکی دی."
+          "qunoot_pashto": "خدایه موږ له تا مدد غواړو او له تا بخښنه غواړو او پر تا ایمان لرو او پر تا توکل کوو او ستا ستاینه کوو او ستا شکر ګزارو او ناشکري نه کوو او له هغه چا نه لرې کیږو چې ستا نافرماني کوي. خدایه یوازې ستا عبادت کوو او ستا لپاره لمونځ کوو او سجده کوو او ستا خوا ته منډه وهو او ستا د رحمت امید لرو او له ستا عذاب نه ویریږو چې ستا عذاب کافرانو ته رسیدونکی دی.",
+          "qunoot_turkish": "Allah'ım, senden yardım dileriz, bağışlanmanı dileriz, sana inanırız, sana güveniriz, seni hayırla hamdederiz, sana şükrederiz, nankör olmayız ve sana isyan edenlerden sakınırız. Allah'ım, yalnız sana ibadet ederiz, senin için dua ederiz, secdeye kapanırız, sana doğru koşarız, senin rahmetini umarız ve azabının kâfirlere ulaşmasından korkarız.",
+          "qunoot_meaningArabic": "اللهم إنا نستعينك ونستغفرك، ونؤمن بك ونتوكل عليك، ونثني عليك الخير ونشكرك ولا نكفرك، ونخلع ونترك من يعصيك. اللهم إياك نعبد، ولك نصلي ونسجد، وإليك نسعى ونحفد، ونرجو رحمتك ونخشى عذابك، إن عذابك بالكافرين لاحق."
         },
         {
           "id": "janazah",
           "title_dari": "نماز جنازه",
           "title_pashto": "د جنازې لمونځ",
+          "title_turkish": "Cenaze namazı",
+          "title_arabic": "صلاة الجنازة",
+          "title_english": "Funeral prayer",
           "content_dari": "نماز جنازه فرض کفایی است. چهار تکبیر دارد و رکوع و سجود ندارد. برای جزئیات و دعای نماز جنازه به بخش نماز جنازه در منو مراجعه کنید.",
-          "content_pashto": "د جنازې لمونځ فرض کفایه دی. څلور تکبیرونه لري او رکوع او سجود نه لري. د جزئیاتو او د جنازې لمانځه دعا لپاره د منو له لارې د جنازې برخې ته مراجعه وکړئ."
+          "content_pashto": "د جنازې لمونځ فرض کفایه دی. څلور تکبیرونه لري او رکوع او سجود نه لري. د جزئیاتو او د جنازې لمانځه دعا لپاره د منو له لارې د جنازې برخې ته مراجعه وکړئ.",
+          "content_turkish": "Cenaze namazı toplumsal bir görevdir. Dört tekbir vardır, rüku ve secde yoktur. Detaylar ve cenaze duası için menüdeki cenaze namazı bölümüne bakınız.",
+          "content_arabic": "والصلاة على الجنازة فريضة كافية. ولها أربع تكبيرات، ولا ركوع ولا سجود. لمعرفة تفاصيل وأدعية صلاة الجنازة، راجع قسم صلاة الجنازة في القائمة.",
+          "content_english": "The funeral prayer is a communal obligation. It has four takbirs and no ruku or sujud. For the details and the funeral supplication, see the funeral prayer section in the menu."
         },
         {
           "id": "duha",
           "title_dari": "نماز نفل ضحی",
           "title_pashto": "د ضحی نفل لمونځ",
+          "title_turkish": "Duha nafile namazı",
+          "title_arabic": "صلاة نافل زها",
+          "title_english": "Duha voluntary prayer",
           "content_dari": "نماز نفل ضحی ۲ تا ۸ رکعت نفل است. وقت آن بعد از طلوع آفتاب تا قبل از ظهر است (حدود یک ربع پس از طلوع تا قبل از زوال). هر دو رکعت یک سلام دارد.",
-          "content_pashto": "د ضحی نفل لمونځ ۲ تر ۸ رکعتې نفل دی. وخت یې له لمر وتلو وروسته تر غرمې مخکې دی (نږدې یو ربع له وتلو وروسته تر زوال مخکې). هر دوه رکعت یو سلام لري."
+          "content_pashto": "د ضحی نفل لمونځ ۲ تر ۸ رکعتې نفل دی. وخت یې له لمر وتلو وروسته تر غرمې مخکې دی (نږدې یو ربع له وتلو وروسته تر زوال مخکې). هر دوه رکعت یو سلام لري.",
+          "content_turkish": "Duha namazı 2 ila 8 rekât arası nafile bir namazdır. Zamanı güneş doğduktan sonra öğle vaktine kadardır (güneşin doğuşundan yaklaşık çeyrek saat sonra güneş zirveye çıkana kadar). Her iki rekatta bir selam verilir.",
+          "content_arabic": "صلاة النافلة هي من 2 إلى 8 ركعات نافلة. ووقتها من بعد شروق الشمس إلى قبل الظهر (بعد شروق الشمس إلى قبل غروبها بحوالي الربع). والركعتان لهما سلام واحد.",
+          "content_english": "The Duha prayer is a voluntary prayer of 2 to 8 rak‘ahs. Its time is after sunrise until before noon (about a quarter of an hour after sunrise until before the sun passes its zenith). Every two rak‘ahs have one salam."
         },
         {
           "id": "tahajjud",
           "title_dari": "نماز تهجد",
           "title_pashto": "د تهجد لمونځ",
+          "title_turkish": "Teheccüd namazı",
+          "title_arabic": "صلاة التهجد",
+          "title_english": "Tahajjud prayer",
           "content_dari": "نماز تهجد ۲ تا ۸ رکعت نفل است. وقت آن بعد از نماز عشاء و خوابیدن، قبل از نماز فجر است. در یک سوم آخر شب ثواب بیشتر است.",
-          "content_pashto": "د تهجد لمونځ ۲ تر ۸ رکعتې نفل دی. وخت یې له ماښام لمانځه او خوب وروسته، له سهار لمانځه مخکې دی. په وروستۍ دریمه برخه کې ثواب زیات دی."
+          "content_pashto": "د تهجد لمونځ ۲ تر ۸ رکعتې نفل دی. وخت یې له ماښام لمانځه او خوب وروسته، له سهار لمانځه مخکې دی. په وروستۍ دریمه برخه کې ثواب زیات دی.",
+          "content_turkish": "Teheccüd, 2 ila 8 rekât arası nafile bir namazdır. Vakti yatsıdan sonra ve uykudan sonra, sabah namazından öncedir. Gecenin son üçte birinde sevap daha büyüktür.",
+          "content_arabic": "صلاة التهجد هي من 2 إلى 8 ركعات نافلة. ووقتها بعد صلاة العشاء والنوم، وقبل صلاة الفجر. والأجر أعظم في الثلث الأخير من الليل.",
+          "content_english": "Tahajjud is a voluntary prayer of 2 to 8 rak‘ahs. Its time is after Isha and after sleeping, before Fajr. The reward is greater in the last third of the night."
         },
         {
           "id": "ishraq",
           "title_dari": "نماز اشراق",
           "title_pashto": "د اشراق لمونځ",
+          "title_turkish": "İşrak namazı",
+          "title_arabic": "صلاة الوضوء",
+          "title_english": "Ishraq prayer",
           "content_dari": "نماز اشراق ۲ رکعت نفل است. وقت آن بعد از طلوع آفتاب است (حدود ۱۵ تا ۲۰ دقیقه بعد از طلوع، وقتی خورشید به اندازه یک نیزه بالا آمده باشد).",
-          "content_pashto": "د اشراق لمونځ ۲ رکعته نفل دی. وخت یې له لمر وتلو وروسته دی (نږدې ۱۵ تر ۲۰ دقیقې وروسته، کله چې لمر د یو نېزه په اندازه پورته شوی وي)."
+          "content_pashto": "د اشراق لمونځ ۲ رکعته نفل دی. وخت یې له لمر وتلو وروسته دی (نږدې ۱۵ تر ۲۰ دقیقې وروسته، کله چې لمر د یو نېزه په اندازه پورته شوی وي).",
+          "content_turkish": "İşrak, 2 rekâtlık nafile bir namazdır. Zamanı güneş doğduktan sonradır (yaklaşık 15 ila 20 dakika sonra, güneş bir mızrak boyu kadar yükseldiğinde).",
+          "content_arabic": "صلاة الإشراق هي 2 ركعة نافلة. ووقته بعد شروق الشمس (حوالي 15 إلى 20 دقيقة بعد شروق الشمس، عندما تكون الشمس بارتفاع الرمح).",
+          "content_english": "Ishraq is a voluntary prayer of 2 rak‘ahs. Its time is after sunrise (about 15 to 20 minutes later, when the sun has risen about the length of a spear)."
         }
       ]
     },
@@ -548,6 +1260,9 @@
       "id": "sajda_sahw",
       "title_dari": "سجده سهو",
       "title_pashto": "سجده سهو",
+      "title_turkish": "Unutkanlığın secdesi",
+      "title_arabic": "السجود العرضي",
+      "title_english": "Prostration of forgetfulness",
       "icon": "replay",
       "color": "#78909C",
       "sections": [
@@ -555,8 +1270,14 @@
           "id": "sahw_reasons",
           "title_dari": "موجبات سجده سهو",
           "title_pashto": "د سجدې سهو موجبات",
+          "title_turkish": "Unutkanlık secdesini gerekli kılan şey nedir?",
+          "title_arabic": "أسباب السجود غير المقصود",
+          "title_english": "What makes the prostration of forgetfulness necessary",
           "content_dari": "سجده سهو واجب می‌شود وقتی که یکی از واجبات نماز سهواً (از روی فراموشی) ترک شود یا به تأخیر بیفتد.",
           "content_pashto": "سجده سهو واجب کیږي کله چې د لمانځه له واجباتو یو له یاد یا اشتباه سره پریښودل شي یا ځنډ ومومي.",
+          "content_turkish": "Namazın vaciblerinden birinin yanlışlıkla terk edilmesi veya geciktirilmesi halinde, sehiv secdesi gerekli olur.",
+          "content_arabic": "يصبح السجود سهوا واجبا إذا سقط واجب من فروض الصلاة سهوا أو تأخر.",
+          "content_english": "The prostration of forgetfulness becomes necessary when one of the wajib acts of prayer is left out by mistake or is delayed.",
           "examples_dari": [
             "فراموش کردن قعده اولی",
             "فراموش کردن تشهد",
@@ -570,12 +1291,29 @@
             "له اشتباه سره رکعت یا سجده زیاتول",
             "په پټه ځای کې په اوچت او برعکس لوستل",
             "په لومړیو دوو رکعاتو کې له فاتحې وروسته سورت هېرول"
+          ],
+          "examples_turkish": [
+            "İlk oturuşu unutmak",
+            "Teşehhüdü unutmak",
+            "Yanlışlıkla rekât veya secde eklemek",
+            "Gizli okunacak yerde sesli, ya da tersine okumak",
+            "İlk iki rekâtta Fatiha’dan sonraki sureyi unutmak"
+          ],
+          "examples_arabic": [
+            "نسيان القعدة الأولى",
+            "نسيان التشهد",
+            "زيادة ركعة أو سجدة سهوًا",
+            "الجهر في موضع السر أو العكس",
+            "نسيان السورة بعد الفاتحة في الركعتين الأوليين"
           ]
         },
         {
           "id": "sahw_method",
           "title_dari": "طریقه سجده سهو",
           "title_pashto": "د سجدې سهو طریقه",
+          "title_turkish": "unutkanlık secdesi nasıl yapılır",
+          "title_arabic": "طريقة السجود بالخطأ",
+          "title_english": "How to perform the prostration of forgetfulness",
           "steps_dari": [
             "در قعده اخیره بعد از خواندن تشهد فقط به طرف راست سلام بدهید",
             "سپس دو سجده مانند سجده‌های نماز انجام دهید",
@@ -587,6 +1325,18 @@
             "بیا دوه سجدې د لمانځه د سجدو په شان وکړئ",
             "بیا تشهد، درود او دعا ولولئ",
             "سلام ورکړئ (دواړو خواو ته)"
+          ],
+          "steps_turkish": [
+            "Son oturuşta teşehhüdü okuduktan sonra yalnızca sağa selam verin",
+            "Sonra namaz secdeleri gibi iki secde yapın",
+            "Yeniden teşehhüd, salavat ve dua okuyun",
+            "Selam verin (iki tarafa)"
+          ],
+          "steps_arabic": [
+            "في القعدة الأخيرة، بعد التشهد، سلّموا إلى اليمين فقط",
+            "ثم اسجدوا سجدتين كسجود الصلاة",
+            "ثم اقرؤوا التشهد والصلاة على النبي والدعاء مرة أخرى",
+            "سلّموا (إلى الجهتين)"
           ]
         }
       ]
@@ -595,6 +1345,9 @@
       "id": "janazah",
       "title_dari": "نماز جنازه",
       "title_pashto": "د جنازې لمونځ",
+      "title_turkish": "Cenaze namazı",
+      "title_arabic": "صلاة الجنازة",
+      "title_english": "Funeral prayer",
       "icon": "person-outline",
       "color": "#607D8B",
       "sections": [
@@ -602,51 +1355,94 @@
           "id": "janazah_pillars",
           "title_dari": "ارکان نماز جنازه",
           "title_pashto": "د جنازې لمانځه ارکان",
+          "title_turkish": "Cenaze namazının sütunları",
+          "title_arabic": "أركان صلاة الجنازة",
+          "title_english": "Pillars of the funeral prayer",
           "items": [
-            {"dari": "چهار تکبیر", "pashto": "څلور تکبیرونه"},
-            {"dari": "قیام (ایستادن)", "pashto": "قیام (ولاړیدل)"}
+            {
+              "dari": "چهار تکبیر",
+              "pashto": "څلور تکبیرونه",
+              "turkish": "dört tekbir",
+              "arabic": "أربع تكبيرات",
+              "meaningArabic": "أربع تكبيرات"
+            },
+            {
+              "dari": "قیام (ایستادن)",
+              "pashto": "قیام (ولاړیدل)",
+              "turkish": "ayağa kalk",
+              "arabic": "القيام (الوقوف)",
+              "meaningArabic": "قف"
+            }
           ],
           "note_dari": "نماز جنازه رکوع و سجود ندارد",
-          "note_pashto": "د جنازې لمونځ رکوع او سجود نه لري"
+          "note_pashto": "د جنازې لمونځ رکوع او سجود نه لري",
+          "note_turkish": "Cenaze namazında rükû ve secde yoktur",
+          "note_arabic": "صلاة الجنازة ليس فيها ركوع وسجود"
         },
         {
           "id": "janazah_method",
           "title_dari": "طریقه نماز جنازه",
           "title_pashto": "د جنازې لمانځه طریقه",
+          "title_turkish": "cenaze namazı nasıl kılınır",
+          "title_arabic": "طريقة صلاة الجنازة",
+          "title_english": "How to pray the funeral prayer",
           "content_dari": "نماز جنازه در فقه حنفی فرض کفایی است و به جماعت ادا می‌شود. پیش از شروع:\n۱) میت غسل و کفن شده، روبه‌قبله گذاشته شود.\n۲) امام در جنازه مرد برابر سینه میت و در جنازه زن برابر وسط بدن می‌ایستد.\n۳) صفوف منظم باشد و اگر ممکن باشد سه صف یا بیشتر بهتر است.\n۴) نیت در دل کافی است: نماز جنازه برای رضای الله و دعا برای میت.\nدر نماز جنازه رکوع، سجده، قعده و اذان/اقامه نیست.",
           "content_pashto": "د جنازې لمونځ په حنفي فقه کې فرض کفایي دی او په جماعت سره ادا کېږي. له شروع مخکې:\n۱) میت غسل او کفن شوی وي او قبلې ته ایښودل شي.\n۲) امام د نارینه میت د سینې برابر او د ښځینه میت د منځ برابر درېږي.\n۳) صفونه منظم شي، او که ممکن وي درې صفه یا تر هغه زیات غوره دي.\n۴) نیت په زړه کې بسنه کوي: د الله د رضا لپاره د جنازې لمونځ او د میت لپاره دعا.\nپه جنازه لمانځه کې رکوع، سجده، قعده او اذان/اقامه نشته.",
+          "content_turkish": "Hanefi mezhebinde cenaze namazı cemaatle kılınır ve cemaatle kılınır. Başlamadan önce:\n1) Ölen kişi yıkanır, kefenlenir ve kıbleye dönük olarak yerleştirilir.\n2) İmam, ölen erkek ise göğüs hizasında, kadın ise bedenin ortası hizasında durur.\n3) Satırlar düz olmalıdır; Mümkün olduğunda üç sıra veya daha fazlası daha iyidir.\n4) Kalpte niyet yeterlidir: Allah rızası için kılınan cenaze namazı ve ölen için yapılan dua.\nCenaze namazında rükû, secde, oturuş ve ezan/kamet yoktur.",
+          "content_arabic": "وفي الفقه الحنفي تجب صلاة الجنازة جماعة. قبل البدء:\n1) يجب غسل الميت وتكفينه وجعله مستقبل القبلة.\n2) في حالة الذكر يقف الإمام بالقرب من صدر المتوفى، وفي حالة المرأة يقف بالقرب من وسط الجسد.\n3) أن يكون الموكب منتظما، وإذا أمكن ثلاثة صفوف فأكثر أفضل.\n4) كفاية النية في القلب: الصلاة على الجنازة في وجه الله، والدعاء للميت.\nوفي صلاة الجنازة ليس هناك ركوع ولا سجود ولا قضاء ولا أذان.",
+          "content_english": "In the Hanafi school the funeral prayer is a communal obligation and is performed in congregation. Before starting:\n1) The deceased is washed, shrouded, and placed facing the qibla.\n2) The imam stands level with the chest if the deceased is a man, and level with the middle of the body if the deceased is a woman.\n3) The rows should be straight; three rows or more is better when possible.\n4) An intention in the heart is enough: the funeral prayer for Allah’s pleasure and a supplication for the deceased.\nThe funeral prayer has no ruku, sujud, sitting, or adhan/iqama.",
           "steps": [
             {
               "number": 1,
               "takbir": 1,
               "dari": "تکبیر اول: نیت کنید، الله اکبر بگویید و ثنا بخوانید",
               "pashto": "لومړی تکبیر: نیت وکړئ، الله اکبر ووایاست او ثنا ولولئ",
+              "turkish": "İlk Tekbir: Niyet edin, Allahu Ekber deyin ve Sana'yı okuyun.",
+              "arabic": "التكبيرة الأولى: انووا، وقولوا الله أكبر، واقرؤوا الثناء",
               "description_dari": "نیت را در دل برای نماز جنازه ببندید. سپس دست‌ها را تا نرمى گوش بلند کرده «الله اکبر» بگویید و دست‌ها را بسته در قیام بایستید. بعد از آن ثنا را بخوانید:\n«سُبْحَانَكَ اللّٰهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالٰى جَدُّكَ وَلَا إِلٰهَ غَيْرُكَ»\nاگر ثنا را کامل حفظ نیستید، به قدر توان بخوانید و نماز را ادامه دهید.",
-              "description_pashto": "د جنازې د لمانځه نیت په زړه کې وکړئ. بیا لاسونه تر غوږونو پورته کړئ، «الله اکبر» ووایاست او لاسونه وتړئ. وروسته ثنا ولولئ:\n«سُبْحَانَكَ اللّٰهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالٰى جَدُّكَ وَلَا إِلٰهَ غَيْرُكَ»\nکه ثنا مو بشپړه نه وي یاده، تر خپلې وسې یې ولولئ او لمونځ ته دوام ورکړئ."
+              "description_pashto": "د جنازې د لمانځه نیت په زړه کې وکړئ. بیا لاسونه تر غوږونو پورته کړئ، «الله اکبر» ووایاست او لاسونه وتړئ. وروسته ثنا ولولئ:\n«سُبْحَانَكَ اللّٰهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالٰى جَدُّكَ وَلَا إِلٰهَ غَيْرُكَ»\nکه ثنا مو بشپړه نه وي یاده، تر خپلې وسې یې ولولئ او لمونځ ته دوام ورکړئ.",
+              "description_turkish": "Cenaze namazı için niyetinizi kalbinizde tutun. Daha sonra ellerinizi kulaklarınıza kadar kaldırıp \"Allahu Ekber\" deyin ve elleriniz kapalı olarak ayağa kalkın. Bundan sonra şu duayı okuyun:\n\"Allah'ı tesbih ederim, hamd sana mahsustur, ismine bereket olsun, atanız ne yücedir, senden başka ilah yoktur.\"\nSana'yı tam olarak ezberlemediyseniz, okuyabildiğiniz kadar okuyun ve namaza devam edin.",
+              "description_arabic": "اجعل النية في قلبك لصلاة الجنازة. ثم ارفع يديك إلى أذنيك وقل \"الله أكبر\" وقف مع إغلاق يديك. وبعد ذلك اقرأ الدعاء:\n\"سبحانك الله وبحمدك، وتبارك اسمك، وتعالى جدك، ولا إله إلا أنت\".\nإذا كنت لا تحفظ السنة كاملة، فاقرأ ما استطعت واستمر في الصلاة.",
+              "meaningArabic": "التكبيرة الأولى: نويت وقل الله أكبر وقرأ سناء"
             },
             {
               "number": 2,
               "takbir": 2,
               "dari": "تکبیر دوم: الله اکبر بگویید و درود ابراهیمی بخوانید",
               "pashto": "دویم تکبیر: الله اکبر ووایاست او درود ابراهیمي ولولئ",
+              "turkish": "İkinci Tekbir: Allahu Ekber deyin ve Darud İbrahimi deyin.",
+              "arabic": "التكبيرة الثانية: قولوا الله أكبر واقرؤوا الصلاة الإبراهيمية",
               "description_dari": "بدون رکوع و سجده، تکبیر دوم را بگویید. سپس درود ابراهیمی بخوانید:\n«اَللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اَللّٰهُمَّ بَارِكْ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ»\nبهتر است درود را با آرامش و توجه کامل بخوانید.",
-              "description_pashto": "له رکوع او سجدې پرته دویم تکبیر ووایاست. بیا درود ابراهیمي ولولئ:\n«اَللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اَللّٰهُمَّ بَارِكْ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ»\nدرود په سکون او حضور سره ولولئ."
+              "description_pashto": "له رکوع او سجدې پرته دویم تکبیر ووایاست. بیا درود ابراهیمي ولولئ:\n«اَللّٰهُمَّ صَلِّ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اَللّٰهُمَّ بَارِكْ عَلٰى مُحَمَّدٍ وَعَلٰى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلٰى إِبْرَاهِيمَ وَعَلٰى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ»\nدرود په سکون او حضور سره ولولئ.",
+              "description_turkish": "İkinci tekbiri rükû ve secde etmeden okuyun. Sonra Darud Ebrahimi'yi okuyun:\n\"Allah'ım, İbrahim'e ve İbrahim ailesine salât ettiğin gibi, Muhammed'e ve Muhammed'in ailesine de salat ve selam gönder, sen en yücesin, Allah'ım.\" \"İbrahim'e ve İbrahim'in ailesine bereket verdiğin gibi, Muhammed'e ve Muhammed'in ailesine de salat et; çünkü sen en şereflisin.\"\nDurood'u sakin bir şekilde ve tüm dikkatle okumak daha iyidir.",
+              "description_arabic": "وكبر التكبيرة الثانية من غير ركوع ولا سجود. ثم قرأ دارود الإبراهيمي:\n\"اللهم صل على محمد وعلى آل محمد كما صليت على إبراهيم وعلى آل إبراهيم إنك حميد مجيد يا الله\". \" بارك على محمد وعلى آل محمد كما باركت على إبراهيم وعلى آل إبراهيم إنك أكرم \".\nمن الأفضل قراءة دورود بهدوء وبانتباه كامل.",
+              "meaningArabic": "التكبيرة الثانية: قل الله أكبر وقل دارود الإبراهيمي"
             },
             {
               "number": 3,
               "takbir": 3,
               "dari": "تکبیر سوم: الله اکبر بگویید، سپس دعای جنازه بخوانید",
               "pashto": "دریم تکبیر: الله اکبر ووایاست، بیا د جنازې دعا ولولئ",
+              "turkish": "Üçüncü Tekbir: Allahu Ekber deyin, ardından cenaze namazını kılın.",
+              "arabic": "التكبيرة الثالثة: قولوا الله أكبر، ثم اقرؤوا دعاء الجنازة",
               "description_dari": "پس از تکبیر سوم، دعای جنازه خوانده می‌شود. متن کامل دعای بالغ و دعای کودک را در بخش جداگانهٔ «دعای نماز جنازه» همین صفحه بخوانید. در این مرحله، اصل کار دعا برای میت با حضور قلب و خشوع است.",
-              "description_pashto": "له دریم تکبیر وروسته د جنازې دعا ویل کېږي. د بالغ او ماشوم بشپړې دعاګانې د همدې پاڼې په جلا برخه «د جنازې لمانځه دعا» کې وګورئ. په دې مرحله کې اصل کار د میت لپاره په خشوع او حضور سره دعا کول دي."
+              "description_pashto": "له دریم تکبیر وروسته د جنازې دعا ویل کېږي. د بالغ او ماشوم بشپړې دعاګانې د همدې پاڼې په جلا برخه «د جنازې لمانځه دعا» کې وګورئ. په دې مرحله کې اصل کار د میت لپاره په خشوع او حضور سره دعا کول دي.",
+              "description_turkish": "Üçüncü tekbirden sonra cenaze namazı okunur. Yetişkin duasının ve çocuk duasının tam metnini bu sayfanın ayrı \"cenaze namazı duası\" bölümünde okuyun. Bu aşamada asıl görev, merhum için gönül rahatlığı ve tevazu ile dua etmektir.",
+              "description_arabic": "وبعد التكبيرة الثالثة تصلى على الجنازة. اقرأ النص الكامل لصلاة الكبار وصلاة الطفل في قسم \"صلاة الجنازة\" المنفصل في هذه الصفحة. المهمة الأساسية في هذه المرحلة هي الصلاة على الميت بحضور القلب والخشوع.",
+              "meaningArabic": "التكبيرة الثالثة: تكبير، ثم يصلى على الجنازة"
             },
             {
               "number": 4,
               "takbir": 4,
               "dari": "تکبیر چهارم: الله اکبر بگویید و نماز را با سلام ختم کنید",
               "pashto": "څلورم تکبیر: الله اکبر ووایاست او لمونځ په سلام ختم کړئ",
+              "turkish": "Dördüncü Tekbir: Allahu Ekber deyin ve namazı selamla bitirin.",
+              "arabic": "التكبيرة الرابعة: قولوا الله أكبر واختموا الصلاة بالسلام",
               "description_dari": "بعد از تکبیر چهارم مکث کوتاه کنید و سپس سلام بدهید. در عمل رایج حنفی افغانستان، به طرف راست و سپس طرف چپ سلام داده می‌شود. نماز جنازه با همین سلام ختم می‌گردد.",
-              "description_pashto": "له څلورم تکبیر وروسته لږ تم شئ او بیا سلام ورکړئ. د افغانستان په عام حنفي عمل کې لومړی ښي لوري ته او بیا چپ لوري ته سلام ورکول کېږي. د جنازې لمونځ په همدې سلام سره پای ته رسېږي."
+              "description_pashto": "له څلورم تکبیر وروسته لږ تم شئ او بیا سلام ورکړئ. د افغانستان په عام حنفي عمل کې لومړی ښي لوري ته او بیا چپ لوري ته سلام ورکول کېږي. د جنازې لمونځ په همدې سلام سره پای ته رسېږي.",
+              "description_turkish": "Dördüncü tekbirden sonra kısa bir ara verilir ve selam verilir. Afganistan'ın yaygın Hanefi uygulamasında önce sağ tarafa, sonra sol tarafa selam verilir. Cenaze namazı bu selamlamayla sona erer.",
+              "description_arabic": "وبعد التكبيرة الرابعة، توقف قليلاً ثم سلم. في الممارسة الحنفية الشائعة في أفغانستان، يتم إلقاء التحية على الجانب الأيمن ثم على الجانب الأيسر. وتنتهي صلاة الجنازة بهذه التحية.",
+              "meaningArabic": "التكبير الرابع: قول الله أكبر، ثم ختم الصلاة بالسلام"
             }
           ]
         },
@@ -654,17 +1450,27 @@
           "id": "janazah_dua",
           "title_dari": "دعای نماز جنازه",
           "title_pashto": "د جنازې لمانځه دعا",
+          "title_turkish": "Cenaze namazının okunması",
+          "title_arabic": "صلاة الجنازة",
+          "title_english": "Supplication of the funeral prayer",
           "content_dari": "در تکبیر سوم، اصلِ نماز جنازه دعا برای میت است. برای میت بالغ دعای بزرگسال خوانده می‌شود و برای کودکِ نابالغ دعای کودک. اگر کسی دعا را کامل حفظ نبود، می‌تواند دعای مغفرت و رحمت برای میت بخواند.",
           "content_pashto": "په دریم تکبیر کې د جنازې اصلي برخه د میت لپاره دعا ده. د بالغ میت لپاره د لویانو دعا ویل کېږي او د نابالغ ماشوم لپاره د ماشوم دعا. که څوک دعا بشپړه نه وي یاده، د میت لپاره د بښنې او رحمت دعا دې وکړي.",
+          "content_turkish": "Üçüncü tekbirde cenaze namazının özü, ölene yapılan duadır. Büyüklerin duası büyüklere, çocuğun duası da küçüklere okunur. Duanın tamamını ezberleyemeyen kişi, ölen kişi için bağışlanma ve rahmet isteyebilir.",
+          "content_arabic": "وفي التكبيرة الثالثة أصل صلاة الجنازة هو الصلاة على الميت. يُقرأ دعاء الكبار على الميت البالغ، ودعاء الطفل على الطفل غير الناضج. ومن لم يحفظ الصلاة كاملة فيمكنه أن يدعو بالمغفرة والرحمة للميت.",
+          "content_english": "At the third takbir, the essence of the funeral prayer is the supplication for the deceased. The adult supplication is recited for an adult, and the child’s supplication for a minor. Anyone who has not memorized the full supplication may ask forgiveness and mercy for the deceased.",
           "for_adult": {
             "arabic": "اَللّٰهُمَّ اغْفِرْ لِحَيِّنَا وَمَيِّتِنَا وَشَاهِدِنَا وَغَائِبِنَا وَصَغِيرِنَا وَكَبِيرِنَا وَذَكَرِنَا وَأُنْثَانَا، اَللّٰهُمَّ مَنْ أَحْيَيْتَهُ مِنَّا فَأَحْيِهِ عَلَى الْإِسْلَامِ وَمَنْ تَوَفَّيْتَهُ مِنَّا فَتَوَفَّهُ عَلَى الْإِيمَانِ",
             "translation_dari": "خدایا بیامرز زندگان و مردگان ما را، حاضران و غایبان ما را، کوچکان و بزرگان ما را، مردان و زنان ما را. خدایا هر کسی از ما را زنده نگه می‌داری بر اسلام زنده بدار و هر کسی را می‌میرانی با ایمان بمیران.",
-            "translation_pashto": "خدایه وبخښه زموږ ژوندي او مړي، زموږ حاضر او غایب، زموږ کوچني او لوی، زموږ نارینه او ښځینه. خدایه هر څوک چې له موږ نه ژوندی ساتې پر اسلام یې ژوندی وساته او هر څوک چې مړ کوې له ایمان سره یې مړ کړه."
+            "translation_pashto": "خدایه وبخښه زموږ ژوندي او مړي، زموږ حاضر او غایب، زموږ کوچني او لوی، زموږ نارینه او ښځینه. خدایه هر څوک چې له موږ نه ژوندی ساتې پر اسلام یې ژوندی وساته او هر څوک چې مړ کوې له ایمان سره یې مړ کړه.",
+            "translation_turkish": "Allah'ım, dirilerimizi ve ölülerimizi, mevcutlarımızı ve bulunmayanlarımızı, gençlerimizi ve yaşlılarımızı, erkeklerimizi ve kadınlarımızı bağışla. Allah'ım, bizden kimi hayatta tutarsan onu İslam üzere yaşat, kimi ölürsen imanla ölesin.",
+            "translation_arabic": "اللهمّ اغفر لحيّنا وميتنا، وشاهدنا وغائبنا، وصغيرنا وكبيرنا، ورجالنا وأنثانا. اللهم من أحييته منا فأحيه على الإسلام ومن توفيته فتوفه على الإيمان."
           },
           "for_child": {
             "arabic": "اَللّٰهُمَّ اجْعَلْهُ لَنَا فَرَطًا وَاجْعَلْهُ لَنَا أَجْرًا وَذُخْرًا وَاجْعَلْهُ لَنَا شَافِعًا وَمُشَفَّعًا",
             "translation_dari": "خدایا او را برای ما پیشرو قرار ده و او را برای ما اجر و ذخیره قرار ده و او را شفاعت‌کننده‌ای قرار ده که شفاعتش پذیرفته شود.",
-            "translation_pashto": "خدایه دا زموږ لپاره مخکښ وګرځوه او زموږ لپاره اجر او زیرمه یې وګرځوه او زموږ لپاره شفاعت کوونکی یې وګرځوه چې شفاعت یې منل شي."
+            "translation_pashto": "خدایه دا زموږ لپاره مخکښ وګرځوه او زموږ لپاره اجر او زیرمه یې وګرځوه او زموږ لپاره شفاعت کوونکی یې وګرځوه چې شفاعت یې منل شي.",
+            "translation_turkish": "Allah'ım, onu bize önder eyle, onu bize ödül ve rezerv kıl ve onu şefaati kabul edilen şefaatçi eyle.",
+            "translation_arabic": "اللهم اجعله لنا إماما واجعله لنا أجرا واحتياطا واجعله شفيعا مقبولا شفاعته."
           }
         }
       ]
@@ -673,6 +1479,9 @@
       "id": "contributor",
       "title_dari": "تقدیر و تشکر",
       "title_pashto": "تقدیر او مننه",
+      "title_turkish": "Teşekkür ve teşekkür",
+      "title_arabic": "التقدير والشكر",
+      "title_english": "Acknowledgement and thanks",
       "icon": "favorite",
       "color": "#FFB300",
       "sections": [
@@ -680,8 +1489,14 @@
           "id": "acknowledgment",
           "title_dari": "راهنما و حامی",
           "title_pashto": "لارښود او ملاتړی",
+          "title_turkish": "Rehber ve destekçi",
+          "title_arabic": "مرشد ومؤيد",
+          "title_english": "Guide and supporter",
           "content_dari": "این بخش با راهنمایی و حمایت خیرخواهانهٔ سیدمصطفی ابن الحاج سیدعبدالواحد یوسفی تهیه و تکمیل گردیده است.\n\nجزاه‌الله خیراً.",
-          "content_pashto": "دا برخه د سیدمصطفی ابن الحاج سیدعبدالواحد یوسفي د خیرخواهانه لارښوونې او ملاتړ سره تیاره او بشپړه شوې ده.\n\nجزاه‌الله خیراً."
+          "content_pashto": "دا برخه د سیدمصطفی ابن الحاج سیدعبدالواحد یوسفي د خیرخواهانه لارښوونې او ملاتړ سره تیاره او بشپړه شوې ده.\n\nجزاه‌الله خیراً.",
+          "content_turkish": "Bu bölüm Seyyid Mustafa ibn el-Hac Seyyid Abdul-Wahid Yusufi'nin hayırsever rehberliği ve desteğiyle hazırlandı ve tamamlandı.\n\nAllah onu hayırla mükafatlandırsın.",
+          "content_arabic": "تم إعداد هذا القسم وإتمامه بتوجيه ودعم السيد مصطفى بن الحاج السيد عبد الواحد اليوسفي.\n\nيرحمك الله.",
+          "content_english": "This section was prepared and completed with the benevolent guidance and support of Sayyid Mustafa ibn al-Hajj Sayyid Abdul-Wahid Yusufi.\n\nMay Allah reward him with good."
         }
       ]
     }
@@ -691,48 +1506,72 @@
       "id": "qiyam",
       "name_dari": "قیام",
       "name_pashto": "قیام",
+      "name_turkish": "Ayaklanma",
+      "name_arabic": "انتفاضة",
       "description_dari": "ایستادن رو به قبله، دست‌ها در زیر ناف (برای مردان) یا روی سینه (برای زنان) قرار می‌گیرد",
       "description_pashto": "قبلې ته مخ ولاړیدل، لاسونه د نومي لاندې (د نارینو لپاره) یا پر سینې (د ښځو لپاره) ایښودل کیږي",
+      "description_turkish": "Eller kıbleye dönük olarak ayakta dururken, eller göbek altına (erkeklerde) veya göğüs üzerine (kadınlarda) yerleştirilir.",
+      "description_arabic": "- الوقوف في مواجهة القبلة، ووضع اليدين تحت السرة (للرجال) أو على الصدر (للنساء).",
       "illustration": "qiyam"
     },
     {
       "id": "ruku",
       "name_dari": "رکوع",
       "name_pashto": "رکوع",
+      "name_turkish": "Eğilme",
+      "name_arabic": "الركوع",
       "description_dari": "خم شدن به طوری که دست‌ها به زانوها برسد، پشت صاف باشد",
       "description_pashto": "داسې کوږیدل چې لاسونه زنګونونو ته ورسیږي، شا مستقیمه وي",
+      "description_turkish": "Eller dizlere ulaşacak şekilde bükülür, sırt düzdür",
+      "description_arabic": "الانحناء بحيث تصل اليدين إلى الركبتين، ويكون الظهر مستقيماً",
       "illustration": "ruku"
     },
     {
       "id": "qawmah",
       "name_dari": "قومه",
       "name_pashto": "قومه",
+      "name_turkish": "gel",
+      "name_arabic": "كومي",
       "description_dari": "ایستادن بعد از رکوع",
       "description_pashto": "له رکوع وروسته ولاړیدل",
+      "description_turkish": "Rükûdan sonra ayakta",
+      "description_arabic": "الوقوف بعد الركوع",
       "illustration": "qawmah"
     },
     {
       "id": "sujud",
       "name_dari": "سجده",
       "name_pashto": "سجده",
+      "name_turkish": "secde",
+      "name_arabic": "السجود",
       "description_dari": "پیشانی، بینی، دو کف دست، دو زانو و نوک انگشتان پا بر زمین باشد",
       "description_pashto": "تندی، پوزه، د دواړو لاسونو تلي، دواړه زنګانه او د پښو د ګوتو سرونه پر ځمکه وي",
+      "description_turkish": "Alın, burun, iki avuç içi, iki diz ve ayak parmak uçları yerde olmalıdır.",
+      "description_arabic": "ويجب أن تكون الجبهة والأنف والكفين والركبتين وأطراف أصابع القدمين على الأرض",
       "illustration": "sujud"
     },
     {
       "id": "jalsa",
       "name_dari": "جلسه",
       "name_pashto": "جلسه",
+      "name_turkish": "toplantı",
+      "name_arabic": "اجتماع",
       "description_dari": "نشستن بین دو سجده، دست‌ها بر ران‌ها",
       "description_pashto": "د دوو سجدو ترمنځ ناستل، لاسونه پر ورانو",
+      "description_turkish": "İki secde arasında eller uylukların üzerinde oturmak",
+      "description_arabic": "-الجلوس بين السجدتين ووضع اليدين على الفخذين",
       "illustration": "jalsa"
     },
     {
       "id": "tashahhud",
       "name_dari": "قعده (تشهد)",
       "name_pashto": "قعده (تشهد)",
+      "name_turkish": "Kaza (şehitlik)",
+      "name_arabic": "القضاء (الاستشهاد)",
       "description_dari": "نشستن برای خواندن تشهد، انگشت شهادت در شهادت بلند می‌شود",
       "description_pashto": "د تشهد لوستلو لپاره ناستل، د شهادت ګوته د شهادت په وخت پورته کیږي",
+      "description_turkish": "Teşehhüd okumak için otururken, Şehadet parmağı Şehadet'te kaldırılır",
+      "description_arabic": "الجلوس لقراءة التشهد ورفع إصبع الشهادة في الشهادة",
       "illustration": "tashahhud"
     }
   ]

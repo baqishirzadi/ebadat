@@ -14,9 +14,12 @@ struct PrayerTimesWidgetView: View {
   private var snapshot: WidgetSnapshot? { entry.snapshot }
   private var isPashto: Bool { snapshot?.appLanguage == "pashto" }
   private var isEnglish: Bool { snapshot?.appLanguage == "english" }
-  private var isDari: Bool { !isEnglish && !isPashto }
+  private var isTurkish: Bool { snapshot?.appLanguage == "turkish" }
+  private var isArabic: Bool { snapshot?.appLanguage == "arabic" }
+  private var isLatin: Bool { isEnglish || isTurkish }
+  private var isDari: Bool { !isLatin && !isPashto && !isArabic }
   private var uiFontRegular: String {
-    if isEnglish { return "Vazirmatn" }
+    if isLatin { return "Vazirmatn" }
     if isDari { return "NotoNastaliqUrdu" }
     guard let snapshot, snapshot.version >= 7 else { return "NotoNaskhArabic-Regular" }
     return snapshot.pashtoFont == "amiri" ? "Amiri" : "NotoNaskhArabic-Regular"
@@ -92,11 +95,59 @@ struct PrayerTimesWidgetView: View {
     return [day, month, year].filter { !$0.isEmpty }.joined(separator: " ")
   }
 
+  private static let weekdayTurkish: [String: String] = [
+    "یکشنبه": "Pazar", "دوشنبه": "Pazartesi", "سه‌شنبه": "Salı", "چهارشنبه": "Çarşamba",
+    "پنجشنبه": "Perşembe", "جمعه": "Cuma", "شنبه": "Cumartesi",
+  ]
+  private static let weekdayArabic: [String: String] = [
+    "یکشنبه": "الأحد", "دوشنبه": "الإثنين", "سه‌شنبه": "الثلاثاء", "چهارشنبه": "الأربعاء",
+    "پنجشنبه": "الخميس", "جمعه": "الجمعة", "شنبه": "السبت",
+  ]
+  private static let solarMonthTurkish: [String: String] = [
+    "حمل": "Hamel", "ثور": "Sevr", "جوزا": "Cevza", "سرطان": "Seretan",
+    "اسد": "Esed", "سنبله": "Sünbüle", "میزان": "Mizan", "عقرب": "Akrep",
+    "قوس": "Kavs", "جدی": "Cedi", "دلو": "Delv", "حوت": "Hut",
+  ]
+  private static let solarMonthArabic: [String: String] = [
+    "حمل": "الحمل", "ثور": "الثور", "جوزا": "الجوزاء", "سرطان": "السرطان",
+    "اسد": "الأسد", "سنبله": "السنبلة", "میزان": "الميزان", "عقرب": "العقرب",
+    "قوس": "القوس", "جدی": "الجدي", "دلو": "الدلو", "حوت": "الحوت",
+  ]
+  private static let hijriMonthTurkish: [String: String] = [
+    "محرم": "Muharrem", "صفر": "Safer", "ربیع‌الاول": "Rebiülevvel", "ربیع‌الثانی": "Rebiülahir",
+    "جمادی‌الاول": "Cemaziyelevvel", "جمادی‌الثانی": "Cemaziyelahir", "رجب": "Recep", "شعبان": "Şaban",
+    "رمضان": "Ramazan", "شوال": "Şevval", "ذوالقعده": "Zilkade", "ذوالحجه": "Zilhicce",
+  ]
+  private static let hijriMonthArabic: [String: String] = [
+    "محرم": "المحرم", "صفر": "صفر", "ربیع‌الاول": "ربيع الأول", "ربیع‌الثانی": "ربيع الثاني",
+    "جمادی‌الاول": "جمادى الأولى", "جمادی‌الثانی": "جمادى الثانية", "رجب": "رجب", "شعبان": "شعبان",
+    "رمضان": "رمضان", "شوال": "شوال", "ذوالقعده": "ذو القعدة", "ذوالحجه": "ذو الحجة",
+  ]
+  private static let prayerTurkish: [String: String] = [
+    "fajr": "Sabah", "dhuhr": "Öğle", "asr": "İkindi", "maghrib": "Akşam", "isha": "Yatsı",
+  ]
+  private static let prayerArabic: [String: String] = [
+    "fajr": "الفجر", "dhuhr": "الظهر", "asr": "العصر", "maghrib": "المغرب", "isha": "العشاء",
+  ]
+
   private func headerTitle(_ value: WidgetSnapshot) -> String {
+    if isTurkish {
+      let day = Self.weekdayTurkish[value.weekdayDari] ?? ""
+      let solar = englishDate(value.shamsiDisplay, months: Self.solarMonthTurkish)
+      return [day, solar].filter { !$0.isEmpty }.joined(separator: ", ")
+    }
     if isEnglish {
       let day = Self.weekdayEnglish[value.weekdayDari] ?? ""
       let solar = englishDate(value.shamsiDisplay, months: Self.solarMonthEnglish)
       return [day, solar].filter { !$0.isEmpty }.joined(separator: ", ")
+    }
+    if isArabic {
+      let day = Self.weekdayArabic[value.weekdayDari] ?? value.weekdayDari
+      let arabicSolar = tokens(value.shamsiDisplay).map { part in
+        if Int(latinDigits(part)) != nil { return easternDigits(latinDigits(part)) }
+        return Self.solarMonthArabic[part] ?? part
+      }.joined(separator: " ")
+      return [day, arabicSolar].filter { !$0.isEmpty }.joined(separator: "، ")
     }
     let weekday = isPashto ? (value.weekdayPashto ?? value.weekdayDari) : value.weekdayDari
     let solar = isPashto ? (value.shamsiDisplayPashto ?? value.shamsiDisplay) : value.shamsiDisplay
@@ -108,7 +159,15 @@ struct PrayerTimesWidgetView: View {
     let parts = tokens(value.gregorianDisplay)
     guard parts.count >= 2 else { return value.gregorianDisplay }
     let key = parts[1].uppercased()
+    if isTurkish {
+      let turkishMonths = ["JAN": "Oca", "FEB": "Şub", "MAR": "Mar", "APR": "Nis", "MAY": "May", "JUN": "Haz", "JUL": "Tem", "AUG": "Ağu", "SEP": "Eyl", "OCT": "Eki", "NOV": "Kas", "DEC": "Ara"]
+      return "\(latinDigits(parts[0])) \(turkishMonths[key] ?? key)"
+    }
     if isEnglish { return "\(latinDigits(parts[0])) \(key)" }
+    if isArabic {
+      let arabicMonths = ["JAN": "يناير", "FEB": "فبراير", "MAR": "مارس", "APR": "أبريل", "MAY": "مايو", "JUN": "يونيو", "JUL": "يوليو", "AUG": "أغسطس", "SEP": "سبتمبر", "OCT": "أكتوبر", "NOV": "نوفمبر", "DEC": "ديسمبر"]
+      return "\(easternDigits(parts[0])) \(arabicMonths[key] ?? parts[1])"
+    }
     let month = (isPashto ? Self.gregMonthPashto[key] : Self.gregMonthDari[key]) ?? parts[1]
     return "\(easternDigits(parts[0])) \(month)"
   }
@@ -116,11 +175,13 @@ struct PrayerTimesWidgetView: View {
   private func sunriseTime(_ value: WidgetSnapshot) -> String {
     let raw = isPashto ? (value.sunriseDisplayPashto ?? value.sunriseDisplay) : value.sunriseDisplay
     let time = tokens(raw).last ?? ""
-    return isEnglish ? latinDigits(time) : time
+    return isLatin ? latinDigits(time) : time
   }
 
   private var sunriseCaption: String {
+    if isTurkish { return "Güneş" }
     if isEnglish { return "Sunrise" }
+    if isArabic { return "الشروق" }
     return isPashto ? "لمر" : "طلوع"
   }
 
@@ -130,17 +191,26 @@ struct PrayerTimesWidgetView: View {
   }
 
   private func hijriCell(_ value: WidgetSnapshot) -> String {
+    if isTurkish { return englishDate(value.hijriDisplay, months: Self.hijriMonthTurkish) }
     if isEnglish { return englishDate(value.hijriDisplay, months: Self.hijriMonthEnglish) }
+    if isArabic {
+      return tokens(value.hijriDisplay).map { part in
+        if Int(latinDigits(part)) != nil { return easternDigits(latinDigits(part)) }
+        return Self.hijriMonthArabic[part] ?? part
+      }.joined(separator: " ")
+    }
     return isPashto ? (value.hijriDisplayPashto ?? value.hijriDisplay) : value.hijriDisplay
   }
 
   private func label(_ value: WidgetPrayerEntry) -> String {
+    if isTurkish { return Self.prayerTurkish[value.key] ?? value.labelDari }
     if isEnglish { return Self.prayerEnglish[value.key] ?? value.labelDari }
+    if isArabic { return Self.prayerArabic[value.key] ?? value.labelDari }
     return isPashto ? (value.labelPashto ?? value.labelDari) : value.labelDari
   }
 
   private func prayerTime(_ value: WidgetPrayerEntry) -> String {
-    isEnglish ? latinDigits(value.time12h) : value.time12h
+    isLatin ? latinDigits(value.time12h) : value.time12h
   }
 
   private var widgetBackground: LinearGradient {
@@ -249,9 +319,10 @@ struct PrayerTimesWidgetView: View {
     if let snapshot, let next = nextPrayer(from: snapshot) {
       VStack(spacing: 1) {
         Text(label(next))
-          .font(.custom(uiFontBold, size: 10))
+          .font(.custom(uiFontBold, size: isPashto ? 9 : 10))
           .lineLimit(1)
-          .minimumScaleFactor(0.7)
+          .minimumScaleFactor(0.62)
+          .allowsTightening(true)
         Text(prayerTime(next))
           .font(.custom(uiFontBold, size: 12))
           .lineLimit(1)

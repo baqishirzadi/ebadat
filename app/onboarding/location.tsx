@@ -176,7 +176,7 @@ export default function OnboardingLocationScreen() {
   const selectedCategoryName = selectedCategoryEntry
     ? (language === 'pashto'
         ? PASHTO_REGION_NAMES[selectedCategoryEntry.id] ?? selectedCategoryEntry.nameEn
-        : language === 'english'
+        : language === 'english' || language === 'turkish'
           ? selectedCategoryEntry.nameEn
           : selectedCategoryEntry.name)
     : undefined;
@@ -267,7 +267,7 @@ export default function OnboardingLocationScreen() {
                 <RtlText align="center" style={[styles.countryText, { color: active ? '#fff' : theme.text }]}>
                   {language === 'pashto'
                     ? PASHTO_REGION_NAMES[cat.id] ?? cat.nameEn
-                    : language === 'english'
+                    : language === 'english' || language === 'turkish'
                       ? cat.nameEn
                       : cat.name}
                 </RtlText>

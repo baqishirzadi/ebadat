@@ -10,6 +10,8 @@ import type { AppLanguage } from '@/types/quran';
 
 export type TextDirection = 'rtl' | 'ltr';
 export type DigitSystem = 'arabic' | 'latin';
+export type LocaleFileCode = 'fa' | 'ps' | 'en' | 'tr' | 'ar';
+export type FieldSuffix = 'dari' | 'pashto' | 'english' | 'turkish' | 'arabic';
 
 export interface LanguageDefinition {
   code: AppLanguage;
@@ -22,9 +24,14 @@ export interface LanguageDefinition {
   /** Latin label, used in English UI and in developer-facing output. */
   latinLabel: string;
   /** Short code used by `locales/<code>.json`. */
-  fileCode: 'fa' | 'ps' | 'en';
+  fileCode: LocaleFileCode;
   /** Field suffix used by bilingual content records (`title_dari`, ...). */
-  fieldSuffix: 'dari' | 'pashto' | 'english';
+  fieldSuffix: FieldSuffix;
+  /**
+   * Latin-script languages follow the English layout (system font, LTR).
+   * Arabic-script languages other than Pashto follow the Dari font.
+   */
+  script: 'latin' | 'arabic' | 'pashto';
 }
 
 export const APP_LANGUAGES: Record<AppLanguage, LanguageDefinition> = {
@@ -37,6 +44,7 @@ export const APP_LANGUAGES: Record<AppLanguage, LanguageDefinition> = {
     latinLabel: 'Dari',
     fileCode: 'fa',
     fieldSuffix: 'dari',
+    script: 'arabic',
   },
   pashto: {
     code: 'pashto',
@@ -47,6 +55,29 @@ export const APP_LANGUAGES: Record<AppLanguage, LanguageDefinition> = {
     latinLabel: 'Pashto',
     fileCode: 'ps',
     fieldSuffix: 'pashto',
+    script: 'pashto',
+  },
+  arabic: {
+    code: 'arabic',
+    locale: 'ar',
+    direction: 'rtl',
+    digits: 'arabic',
+    nativeLabel: 'العربية',
+    latinLabel: 'Arabic',
+    fileCode: 'ar',
+    fieldSuffix: 'arabic',
+    script: 'arabic',
+  },
+  turkish: {
+    code: 'turkish',
+    locale: 'tr',
+    direction: 'ltr',
+    digits: 'latin',
+    nativeLabel: 'Türkçe',
+    latinLabel: 'Turkish',
+    fileCode: 'tr',
+    fieldSuffix: 'turkish',
+    script: 'latin',
   },
   english: {
     code: 'english',
@@ -57,16 +88,17 @@ export const APP_LANGUAGES: Record<AppLanguage, LanguageDefinition> = {
     latinLabel: 'English',
     fileCode: 'en',
     fieldSuffix: 'english',
+    script: 'latin',
   },
 };
 
-/** Display order for pickers: the two Afghan languages first. */
-export const APP_LANGUAGE_ORDER: readonly AppLanguage[] = ['dari', 'pashto', 'english'];
+/** Display order for pickers: Afghan languages, then Arabic, Turkish and English. */
+export const APP_LANGUAGE_ORDER: readonly AppLanguage[] = ['dari', 'pashto', 'arabic', 'turkish', 'english'];
 
 export const DEFAULT_APP_LANGUAGE: AppLanguage = 'dari';
 
 export function isAppLanguage(value: unknown): value is AppLanguage {
-  return value === 'dari' || value === 'pashto' || value === 'english';
+  return value === 'dari' || value === 'pashto' || value === 'english' || value === 'turkish' || value === 'arabic';
 }
 
 export function getLanguage(language: AppLanguage): LanguageDefinition {
@@ -77,6 +109,11 @@ export function isRtlLanguage(language: AppLanguage): boolean {
   return getLanguage(language).direction === 'rtl';
 }
 
+/** English and Turkish share LTR layout, Latin digits and the system font. */
+export function isLatinLanguage(language: AppLanguage): boolean {
+  return getLanguage(language).script === 'latin';
+}
+
 export function getTextDirection(language: AppLanguage): TextDirection {
   return getLanguage(language).direction;
 }
@@ -85,7 +122,7 @@ export function getLocaleTag(language: AppLanguage): string {
   return getLanguage(language).locale;
 }
 
-export function getLocaleFileCode(language: AppLanguage): 'fa' | 'ps' | 'en' {
+export function getLocaleFileCode(language: AppLanguage): LocaleFileCode {
   return getLanguage(language).fileCode;
 }
 
@@ -94,13 +131,15 @@ export function getLocaleFileCode(language: AppLanguage): 'fa' | 'ps' | 'en' {
  *
  * Religious content is authored per language and can lag behind the UI, so a
  * missing entry falls back to a language the reader is most likely to follow
- * rather than rendering an empty block. Dari is the app's editorial base, so
- * both other languages fall back to it first.
+ * rather than rendering an empty block. Dari is the app's editorial base.
+ * Turkish falls back through English; Arabic falls back through Dari.
  */
 const CONTENT_FALLBACK: Record<AppLanguage, readonly AppLanguage[]> = {
   dari: ['dari', 'pashto', 'english'],
   pashto: ['pashto', 'dari', 'english'],
   english: ['english', 'dari', 'pashto'],
+  turkish: ['turkish', 'english', 'dari'],
+  arabic: ['arabic', 'dari', 'pashto'],
 };
 
 export function contentFallbackChain(language: AppLanguage): readonly AppLanguage[] {

@@ -23,8 +23,8 @@ interface DreamInterpreterWidgetProps {
 function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetProps) {
   const { state } = useApp();
   const { isStreaming, error, isConfigured, sendMessage, dismissError } = useDreamInterpreter();
-  const { t, fontFamily, language } = useI18n();
-  const isEnglish = language === 'english';
+  const { t, fontFamily, language, isLatin, isPashto } = useI18n();
+  const isEnglish = isLatin;
   const isRtlHome = !isEnglish;
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
   const [input, setInput] = useState('');
@@ -47,69 +47,79 @@ function DreamInterpreterWidgetInner({ onInputFocus }: DreamInterpreterWidgetPro
 
   return (
     <RtlView style={[styles.container, isRtlHome && styles.containerPashto]}>
-      <View style={styles.titlePress}>
-        <View style={[styles.titleRow, isEnglish && styles.titleRowEnglish]}>
-          {isEnglish ? (
-            <>
-              <MaterialIcons name="nights-stay" size={18} color="rgba(255,255,255,0.9)" />
-              <RtlText
-                align="center"
-                wrap={false}
-                numberOfLines={1}
-                style={[styles.title, styles.titleEnglish]}
-              >
-                {copy.title}
-              </RtlText>
-            </>
-          ) : (
-            <>
-              <RtlText
-                align="center"
-                wrap={false}
-                numberOfLines={1}
-                style={[styles.title, {
-                  fontFamily,
-                  fontSize: Typography.ui.subtitle,
-                  lineHeight: isRtlHome ? (isNastaliq ? 34 : 22) : undefined,
-                  includeFontPadding: isRtlHome && isNastaliq,
-                }]}
-              >
-                {copy.title}
-              </RtlText>
-              <MaterialIcons name="nights-stay" size={18} color="rgba(255,255,255,0.9)" />
-            </>
-          )}
+      {isEnglish ? (
+        <View style={styles.englishHeader}>
+          <MaterialIcons name="nights-stay" size={18} color="rgba(255,255,255,0.9)" />
+          <RtlText
+            wrap={false}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.85}
+            style={[styles.title, styles.titleEnglish, styles.englishHeaderTitle]}
+          >
+            {copy.title}
+          </RtlText>
+          <Pressable
+            onPress={openFullChat}
+            hitSlop={10}
+            accessibilityRole="button"
+            accessibilityLabel={t('home.viewConversation')}
+            testID="home-dream-view-conversation"
+            style={styles.englishHeaderLink}
+          >
+            <RtlText wrap={false} numberOfLines={1} style={[styles.viewConversationText, styles.viewConversationTextEnglish]}>
+              {t('home.viewConversation')}
+            </RtlText>
+          </Pressable>
         </View>
-        <Pressable
-          onPress={openFullChat}
-          hitSlop={8}
-          accessibilityRole="button"
-          accessibilityLabel={t('home.viewConversation')}
-          testID="home-dream-view-conversation"
-          style={[styles.viewConversationButton, isRtlHome && styles.viewConversationButtonPashto]}
-        >
-          <View style={language === 'pashto' ? styles.viewConversationUnderlinePashto : undefined}>
+      ) : (
+        <View style={styles.titlePress}>
+          <View style={styles.titleRow}>
             <RtlText
               align="center"
               wrap={false}
-              style={[
-                styles.viewConversationText,
-                isRtlHome && styles.viewConversationTextPashto,
-                isEnglish && styles.viewConversationTextEnglish,
-                language === 'pashto' && styles.viewConversationTextBorderUnderlined,
-                {
-                  fontFamily: isEnglish ? undefined : fontFamily,
-                  lineHeight: isRtlHome ? (isNastaliq ? 28 : 26) : isEnglish ? 20 : 17,
-                  includeFontPadding: isRtlHome,
-                  paddingTop: isRtlHome ? 2 : undefined,
-                },
-              ]}
+              numberOfLines={1}
+              style={[styles.title, {
+                fontFamily,
+                fontSize: isPashto ? Typography.ui.body : Typography.ui.subtitle,
+                lineHeight: isNastaliq ? 34 : 22,
+                includeFontPadding: isNastaliq,
+              }]}
             >
-              {t('home.viewConversation')}
+              {copy.title}
             </RtlText>
+            <MaterialIcons name="nights-stay" size={18} color="rgba(255,255,255,0.9)" />
           </View>
-        </Pressable>
-      </View>
+          <Pressable
+            onPress={openFullChat}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('home.viewConversation')}
+            testID="home-dream-view-conversation"
+            style={[styles.viewConversationButton, styles.viewConversationButtonPashto]}
+          >
+            <View style={language === 'pashto' ? styles.viewConversationUnderlinePashto : undefined}>
+              <RtlText
+                align="center"
+                wrap={false}
+                style={[
+                  styles.viewConversationText,
+                  styles.viewConversationTextPashto,
+                  language === 'pashto' && styles.viewConversationTextBorderUnderlined,
+                  {
+                    fontFamily,
+                    lineHeight: isNastaliq ? 28 : 26,
+                    includeFontPadding: true,
+                    paddingTop: 2,
+                  },
+                ]}
+              >
+                {t('home.viewConversation')}
+              </RtlText>
+            </View>
+          </Pressable>
+        </View>
+      )}
 
       {error ? (
         <Pressable onPress={dismissError} style={styles.errorBox}>
@@ -172,8 +182,20 @@ const styles = StyleSheet.create({
     gap: 6,
     alignSelf: 'center',
   },
-  titleRowEnglish: {
+  englishHeader: {
     flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    gap: 6,
+  },
+  englishHeaderTitle: {
+    flex: 1,
+    flexShrink: 1,
+    textAlign: 'left',
+  },
+  englishHeaderLink: {
+    paddingVertical: 4,
+    paddingLeft: Spacing.xs,
   },
   title: {
     ...persianCenterSubtitleText,

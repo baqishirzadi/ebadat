@@ -599,6 +599,8 @@ export const MushafView = React.memo(function MushafView({
       const dariTranslation = getTranslation(surahNumber, item.number, 'dari');
       const pashtoTranslation = getTranslation(surahNumber, item.number, 'pashto');
       const englishTranslation = getTranslation(surahNumber, item.number, 'english');
+      const turkishTranslation = getTranslation(surahNumber, item.number, 'turkish');
+      const arabicTranslation = getTranslation(surahNumber, item.number, 'arabic');
       const isPlaying = activePlayingAyah === item.number;
 
       return (
@@ -608,6 +610,8 @@ export const MushafView = React.memo(function MushafView({
           dariTranslation={dariTranslation}
           pashtoTranslation={pashtoTranslation}
           englishTranslation={englishTranslation}
+          turkishTranslation={turkishTranslation}
+          arabicTranslation={arabicTranslation}
           isPlaying={isPlaying}
           onPlayPress={() => handlePlayAyah(item.number)}
           readerTokens={readerTokens}

@@ -160,10 +160,16 @@ const CHANNEL_IDS = {
   ADHAN_REGULAR_PASHTO: 'adhan-regular-v8-ps',
   ADHAN_FAJR_ENGLISH: 'adhan-fajr-v8-en',
   ADHAN_REGULAR_ENGLISH: 'adhan-regular-v8-en',
+  ADHAN_FAJR_TURKISH: 'adhan-fajr-v8-tr',
+  ADHAN_REGULAR_TURKISH: 'adhan-regular-v8-tr',
+  ADHAN_FAJR_ARABIC: 'adhan-fajr-v8-ar',
+  ADHAN_REGULAR_ARABIC: 'adhan-regular-v8-ar',
   PRAYER_SILENT: 'prayer-silent-v2',
   PRAYER_REMINDER: 'prayer-reminder-v3-fa',
   PRAYER_REMINDER_PASHTO: 'prayer-reminder-v3-ps',
   PRAYER_REMINDER_ENGLISH: 'prayer-reminder-v3-en',
+  PRAYER_REMINDER_TURKISH: 'prayer-reminder-v3-tr',
+  PRAYER_REMINDER_ARABIC: 'prayer-reminder-v3-ar',
   CALENDAR_QAMARI: 'calendar-qamari',
   JUMMAH_REMINDER: 'jummah-reminder-v2',
 } as const;
@@ -185,6 +191,18 @@ function adhanChannelIds(language: AppLanguage) {
         fajr: CHANNEL_IDS.ADHAN_FAJR_ENGLISH,
         regular: CHANNEL_IDS.ADHAN_REGULAR_ENGLISH,
         reminder: CHANNEL_IDS.PRAYER_REMINDER_ENGLISH,
+      };
+    case 'turkish':
+      return {
+        fajr: CHANNEL_IDS.ADHAN_FAJR_TURKISH,
+        regular: CHANNEL_IDS.ADHAN_REGULAR_TURKISH,
+        reminder: CHANNEL_IDS.PRAYER_REMINDER_TURKISH,
+      };
+    case 'arabic':
+      return {
+        fajr: CHANNEL_IDS.ADHAN_FAJR_ARABIC,
+        regular: CHANNEL_IDS.ADHAN_REGULAR_ARABIC,
+        reminder: CHANNEL_IDS.PRAYER_REMINDER_ARABIC,
       };
     default:
       return {
@@ -1067,6 +1085,46 @@ async function configureAndroidNotificationChannels(
         showBadge: true,
       }, ANDROID_ADHAN_SOUND_FILENAME);
 
+      await ensureChannel(CHANNEL_IDS.ADHAN_FAJR_TURKISH, {
+        name: 'Sabah ezanı',
+        importance: NotificationsModule.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#1a4d3e',
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
+        enableVibrate: true,
+        showBadge: true,
+      }, ANDROID_ADHAN_SOUND_FILENAME);
+
+      await ensureChannel(CHANNEL_IDS.ADHAN_REGULAR_TURKISH, {
+        name: 'Ezan (diğer namazlar)',
+        importance: NotificationsModule.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#1a4d3e',
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
+        enableVibrate: true,
+        showBadge: true,
+      }, ANDROID_ADHAN_SOUND_FILENAME);
+
+      await ensureChannel(CHANNEL_IDS.ADHAN_FAJR_ARABIC, {
+        name: 'أذان الفجر',
+        importance: NotificationsModule.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#1a4d3e',
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
+        enableVibrate: true,
+        showBadge: true,
+      }, ANDROID_ADHAN_SOUND_FILENAME);
+
+      await ensureChannel(CHANNEL_IDS.ADHAN_REGULAR_ARABIC, {
+        name: 'الأذان (سائر الصلوات)',
+        importance: NotificationsModule.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#1a4d3e',
+        sound: ANDROID_ADHAN_SOUND_FILENAME,
+        enableVibrate: true,
+        showBadge: true,
+      }, ANDROID_ADHAN_SOUND_FILENAME);
+
       await ensureChannel(CHANNEL_IDS.ADHAN_REGULAR_ENGLISH, {
         name: 'Adhan (other prayers)',
         importance: NotificationsModule.AndroidImportance.MAX,
@@ -1101,6 +1159,26 @@ async function configureAndroidNotificationChannels(
 
       await ensureChannel(CHANNEL_IDS.PRAYER_REMINDER_PASHTO, {
         name: 'د لمانځه مخکینۍ یادونه',
+        importance: NotificationsModule.AndroidImportance.LOW,
+        vibrationPattern: [0, 50],
+        lightColor: '#D4AF37',
+        sound: null,
+        enableVibrate: true,
+        showBadge: false,
+      }, null);
+
+      await ensureChannel(CHANNEL_IDS.PRAYER_REMINDER_TURKISH, {
+        name: 'Namaz öncesi hatırlatma',
+        importance: NotificationsModule.AndroidImportance.LOW,
+        vibrationPattern: [0, 50],
+        lightColor: '#D4AF37',
+        sound: null,
+        enableVibrate: true,
+        showBadge: false,
+      }, null);
+
+      await ensureChannel(CHANNEL_IDS.PRAYER_REMINDER_ARABIC, {
+        name: 'تذكير قبل الصلاة',
         importance: NotificationsModule.AndroidImportance.LOW,
         vibrationPattern: [0, 50],
         lightColor: '#D4AF37',
@@ -2008,13 +2086,30 @@ async function configureAndroidNotificationChannels(
             const reminderContent = isFridayJummah
               ? (() => {
                 const language = appState.preferences.appLanguage;
-                const heading = getNotificationHeading(language === 'pashto' ? 'د لمانځه یادونه' : 'یادآوری نماز');
+                const heading = getNotificationHeading(
+                  language === 'pashto'
+                    ? 'د لمانځه یادونه'
+                    : language === 'english'
+                      ? 'Prayer reminder'
+                      : language === 'turkish'
+                        ? 'Namaz hatırlatması'
+                        : language === 'arabic'
+                          ? 'تذكير بالصلاة'
+                          : 'یادآوری نماز',
+                );
+                const minutes = adhanPreferences.earlyReminderMinutes;
                 return {
                   title: heading.title,
                   subtitle: heading.subtitle,
                   body: language === 'pashto'
-                    ? `تر د جمعې لمانځه پورې ${adhanPreferences.earlyReminderMinutes} دقیقې پاتې دي`
-                    : `${adhanPreferences.earlyReminderMinutes} دقیقه تا نماز جمعه`,
+                    ? `تر د جمعې لمانځه پورې ${minutes} دقیقې پاتې دي`
+                    : language === 'english'
+                      ? `${minutes} minutes until Jumu'ah`
+                      : language === 'turkish'
+                        ? `Cuma namazına ${minutes} dakika kaldı`
+                        : language === 'arabic'
+                          ? `تبقّى ${minutes} دقائق على صلاة الجمعة`
+                          : `${minutes} دقیقه تا نماز جمعه`,
                 };
               })()
               : getEarlyReminderContent(

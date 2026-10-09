@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "وقتی که آفتاب پیچانیده شود (بی‌نور گردد).",
       "translation_pashto": "81-1 كله چې لمر ونغښتل شي",
-      "translation_english": "When the sun is wrapped up in darkness,"
+      "translation_english": "When the sun is wrapped up in darkness,",
+      "translation_turkish": "Güneş karanlığa büründüğünde,",
+      "translation_arabic": "إذا الشمس ملتوية (تصبح بلا ضوء)."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که ستاره‌ها بی‌نور و تاریک شوند.",
       "translation_pashto": "81-2 او كله چې ستوري خړ شي",
-      "translation_english": "and when the stars fall down,"
+      "translation_english": "and when the stars fall down,",
+      "translation_turkish": "ve yıldızlar düştüğünde,",
+      "translation_arabic": "وعندما تصبح النجوم خافتة ومظلمة."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که کوه‌ها را روان سازند.",
       "translation_pashto": "81-3 او كله چې غرونه روان كړل شي",
-      "translation_english": "and when the mountains are set in motion,"
+      "translation_english": "and when the mountains are set in motion,",
+      "translation_turkish": "ve dağlar harekete geçtiğinde,",
+      "translation_arabic": "وعندما يسويون الجبال ."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که ماده شترانِ باردار معطل گذاشته شوند.",
       "translation_pashto": "81-4 او كله چې د لسو میاشتو بلاربې اوښې معطلې (ازادې) پرېښودى شي",
-      "translation_english": "and when pregnant camels are left unattended,"
+      "translation_english": "and when pregnant camels are left unattended,",
+      "translation_turkish": "ve hamile develer gözetimsiz bırakıldığında,",
+      "translation_arabic": "وعندما تعلق الإبل الحوامل."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که حیوانات وحشی حشر شوند.",
       "translation_pashto": "81-5 او كله چې وحشي ځناوران راجمع كړل شي",
-      "translation_english": "and when wild beasts are gathered,"
+      "translation_english": "and when wild beasts are gathered,",
+      "translation_turkish": "ve vahşi hayvanlar toplandığında,",
+      "translation_arabic": "وعندما تزدحم الحيوانات البرية."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که بحرها به جوش آیند.",
       "translation_pashto": "81-6 او كله چې دریابونه بل كړى شي",
-      "translation_english": "and when the seas are set on fire,"
+      "translation_english": "and when the seas are set on fire,",
+      "translation_turkish": "ve denizler ateşe verildiğinde,",
+      "translation_arabic": "وعندما تغلي البحار."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که اجساد را با ارواح یکجا کنند.",
       "translation_pashto": "81-7 او كله چې نفسونه جوړه كړل شي",
-      "translation_english": "and when the souls are sorted,"
+      "translation_english": "and when the souls are sorted,",
+      "translation_turkish": "ve ruhlar ayrıştırıldığında,",
+      "translation_arabic": "وعندما يجمعون الجثث مع الأرواح."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که از دختر زنده به گورشده پرسیده شود.",
       "translation_pashto": "81-8 او كله چې ژوندۍ خښه كړى شوې جینۍ وپوښتى شي",
-      "translation_english": "and when the baby girl buried alive is asked,"
+      "translation_english": "and when the baby girl buried alive is asked,",
+      "translation_turkish": "ve diri diri gömülen kız çocuğuna sorulduğunda,",
+      "translation_arabic": "وعندما تسأل الفتاة التي دفنت حية ."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "(که) به کدام گناه کشته شده است؟",
       "translation_pashto": "81-9 چې دا په كومې ګناه وژل شوې ده",
-      "translation_english": "for what crime she was killed,"
+      "translation_english": "for what crime she was killed,",
+      "translation_turkish": "hangi suçtan dolayı öldürüldüğünü",
+      "translation_arabic": "وبأي ذنب قتل؟"
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که نامه‌های اعمال گشوده شود.",
       "translation_pashto": "81-10 او كله چې اعمال نامې وغوړولى شي",
-      "translation_english": "and when records of deeds are spread open,"
+      "translation_english": "and when records of deeds are spread open,",
+      "translation_turkish": "ve amel kayıtları açıldığında,",
+      "translation_arabic": "وعندما يتم فتح خطابات التقديم."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که آسمان از جای کنده شود.",
       "translation_pashto": "81-11 او كله چې له اسمان نه پوستكى ووېستل شي",
-      "translation_english": "and when the sky is stripped away,"
+      "translation_english": "and when the sky is stripped away,",
+      "translation_turkish": "ve gökyüzü sıyrılıp gittiğinde,",
+      "translation_arabic": "وعندما تتم إزالة السماء."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که دوزخ شعله‌ور شود.",
       "translation_pashto": "81-12 او كله چې دوزخ بلې لمبې كړى شي",
-      "translation_english": "and when the Blazing Fire is flared up,"
+      "translation_english": "and when the Blazing Fire is flared up,",
+      "translation_turkish": "Alevli ateş alevlendiğinde,",
+      "translation_arabic": "وعندما يحترق الجحيم."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که جنت (برای اهلش) نزدیک آورده شود.",
       "translation_pashto": "81-13 او كله چې جنت ښه نژدې كړى شي",
-      "translation_english": "and when Paradise is brought near –"
+      "translation_english": "and when Paradise is brought near –",
+      "translation_turkish": "Cennet yaklaştığı zaman,",
+      "translation_arabic": "وإذا اقتربت الجنة (لأهله)."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "هرکس آنچه (از نیکی و بدی) را که آماده (و حاضر) کرده است بداند.",
       "translation_pashto": "81-14 هر نفس به په هغه شي پوه شي چې ده حاضر كړى وي",
-      "translation_english": "then every soul will know what it has brought about."
+      "translation_english": "then every soul will know what it has brought about.",
+      "translation_turkish": "o zaman her nefis onun ne getirdiğini bilecektir.",
+      "translation_arabic": "الجميع يعرف ما (من الخير والشر) الذي أعده (وجاهز)."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "پس قسم به ستاره‌های که بازمی‌گردند.",
       "translation_pashto": "81-15 نو زه قسم خورم په هغو (ستوریو) چې بېرته ګرځېدونكي دي",
-      "translation_english": "I swear by the receding stars,"
+      "translation_english": "I swear by the receding stars,",
+      "translation_turkish": "Yemin ederim ki, uzaklaşan yıldızlara,",
+      "translation_arabic": "هكذا من قبل النجوم العائدين."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "(ستارگان) حرکت کننده (باز در افق) نهان شونده.",
       "translation_pashto": "81-16 په روانو، پټېدونكو باندې",
-      "translation_english": "that rise and hide,"
+      "translation_english": "that rise and hide,",
+      "translation_turkish": "yükselen ve saklanan,",
+      "translation_arabic": "(النجوم) المتحركة (المفتوحة في الأفق) المختبئة."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "و قسم به شب چون برود.",
       "translation_pashto": "81-17 او قسم خورم په شپې كله چې شروع شي",
-      "translation_english": "and by the night as it departs,"
+      "translation_english": "and by the night as it departs,",
+      "translation_turkish": "ve gece yola çıkarken,",
+      "translation_arabic": "وأقسم بالليل إذا رحل ."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "و قسم به صبح چون بدمد.",
       "translation_pashto": "81-18 او په سبا كله چې دى ساه واخلي (روښانه شي)",
-      "translation_english": "and by the day as it breaks –"
+      "translation_english": "and by the day as it breaks –",
+      "translation_turkish": "ve gün geçtikçe kırılırken –",
+      "translation_arabic": "وأقسم للصبح لأني آسف."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "یقیناً (قرآن) سخن رسول گرامی است.",
       "translation_pashto": "81-19 بېشكه دا (قرآن) خامخا د ډېر عزتمن رسول قول دى",
-      "translation_english": "Indeed, this [Qur’an] is a word conveyed by a noble angel-messenger."
+      "translation_english": "Indeed, this [Qur’an] is a word conveyed by a noble angel-messenger.",
+      "translation_turkish": "Şüphesiz bu (Kur'an), soylu bir melek elçinin tebliğ ettiği bir sözdür.",
+      "translation_arabic": "إن (القرآن) هو كلام الحبيب الرسول."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "(که) او نیرومند است و در بارگاه صاحب عرش (الله) دارای منزلت والایی است.",
       "translation_pashto": "81-20 چې د عرش د مالك په نیز د قوت والا (او) د مرتبې والا دى",
-      "translation_english": "extremely powerful, highly revered by the Lord of the Throne,"
+      "translation_english": "extremely powerful, highly revered by the Lord of the Throne,",
+      "translation_turkish": "son derece güçlü, Tahtın Efendisi tarafından çok saygı duyulan,",
+      "translation_arabic": "(ذلك) قوي وله مكانة عالية عند صاحب العرش (الله)."
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "از او فرمان می‌برند، در آن جا (او) امین است.",
       "translation_pashto": "81-21 منلى شوى دى هلته، امین دى",
-      "translation_english": "obeyed there [by other angels] and trustworthy."
+      "translation_english": "obeyed there [by other angels] and trustworthy.",
+      "translation_turkish": "Orada [diğer melekler tarafından] itaat edilen ve güvenilir olandır.",
+      "translation_arabic": "ويأخذون منه الأمر فهو أمين."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "و هم صحبت شما (محمد) دیوانه نیست.",
       "translation_pashto": "81-22 او ستاسو ملګرى (محمدﷺ) له سره لېونى نه دى",
-      "translation_english": "Your fellow [i.e., the Prophet] is not a madman."
+      "translation_english": "Your fellow [i.e., the Prophet] is not a madman.",
+      "translation_turkish": "Arkadaşın (yani Peygamber) deli değildir.",
+      "translation_arabic": "وكلامك (محمد) ليس مجنونا."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "و البته (او) آن (فرشته) را در کنارۀ آشکار آسمان دید.",
       "translation_pashto": "81-23 او یقینًا یقینًا ده دغه (جبریل د اسمان) په څرګنده غاړه كې لیدلى و",
-      "translation_english": "He indeed saw him [i.e., Gabriel] on the clear horizon."
+      "translation_english": "He indeed saw him [i.e., Gabriel] on the clear horizon.",
+      "translation_turkish": "Gerçekten O, onu (Cebrail'i) apaçık ufukta görmüştür.",
+      "translation_arabic": "وبالطبع رأى ذلك (الملاك) في الجانب المفتوح من السماء."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "و او بر رسانیدن سخن‌های غیب بخیل نیست.",
       "translation_pashto": "81-24 او دى د وحي په بیانولو كې له سره بخل كوونكى نه دى",
-      "translation_english": "He does not withhold [knowledge of] the unseen."
+      "translation_english": "He does not withhold [knowledge of] the unseen.",
+      "translation_turkish": "O, görülmeyeni [bilgiyi] saklamaz.",
+      "translation_arabic": "ولا يبخل في تبليغ كلام الغيب."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "و قرآن سخن شیطانِ رانده‌شده نیست.",
       "translation_pashto": "81-25 او بېخي نه دى دا (قرآن) خبره د شیطان رټل شوي ",
-      "translation_english": "This [Qur’an] is not the word of an accursed devil."
+      "translation_english": "This [Qur’an] is not the word of an accursed devil.",
+      "translation_turkish": "Bu (Kuran) kovulmuş bir şeytanın sözü değildir.",
+      "translation_arabic": "والقرآن ليس كلام الشيطان المنفي."
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "پس (قرآن را گذاشته) به کجا می‌روید؟",
       "translation_pashto": "81-26 نو تاسو (اى كافرانو!)چېرته ځئ؟ ",
-      "translation_english": "So which way are you going?"
+      "translation_english": "So which way are you going?",
+      "translation_turkish": "Peki hangi yöne gidiyorsun?",
+      "translation_arabic": "إذن إلى أين أنت ذاهب؟"
     },
     {
       "number": 27,
@@ -301,7 +353,9 @@
       "sajda": false,
       "translation_dari": "آن قرآن جز پند و اندرز برای جهانیان نیست.",
       "translation_pashto": "81-27 نه دى دا (قرآن) مګر د عالمونو لپاره نصیحت (او پند)",
-      "translation_english": "It is but a reminder to the worlds,"
+      "translation_english": "It is but a reminder to the worlds,",
+      "translation_turkish": "O, alemlere ancak bir hatırlatmadır,",
+      "translation_arabic": "وما هذا القرآن إلا نصيحة للعالم."
     },
     {
       "number": 28,
@@ -312,7 +366,9 @@
       "sajda": false,
       "translation_dari": "برای کسی از شما که بخواهد (کردارش) به راه راست، مستقیم شود.",
       "translation_pashto": "81-28 د هغه چا لپاره چې په تاسو كې غواړې چې دى نېغ برابر شي",
-      "translation_english": "for those among you who wish to take the straight path."
+      "translation_english": "for those among you who wish to take the straight path.",
+      "translation_turkish": "İçinizden doğru yolu bulmak isteyenler için.",
+      "translation_arabic": "لمن أراد منكم أن يهدي (أفعاله) إلى الطريق الصحيح."
     },
     {
       "number": 29,
@@ -323,7 +379,9 @@
       "sajda": false,
       "translation_dari": "و شما چیزی را نمی‌خواهید مگر آن که الله، پروردگار جهانیان آن را بخواهد.",
       "translation_pashto": "81-29 او تاسو د (د سمې لارې) اراده نشئ كولى مګر دا چې الله رب العلمین يې اراده وكړي",
-      "translation_english": "But you cannot wish except by the Will of Allah, the Lord of the worlds."
+      "translation_english": "But you cannot wish except by the Will of Allah, the Lord of the worlds.",
+      "translation_turkish": "Ama alemlerin Rabbi olan Allah'ın dilemesi dışında dileyemezsiniz.",
+      "translation_arabic": "ولا تريدون إلا ما أراد الله رب العالمين."
     }
   ]
 }

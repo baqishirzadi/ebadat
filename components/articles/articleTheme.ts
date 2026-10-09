@@ -29,6 +29,8 @@ export function categoryName(category: ArticleCategory | string, language: AppLa
   const info = ARTICLE_CATEGORIES[category as ArticleCategory] ?? ARTICLE_CATEGORIES.iman;
   if (language === 'pashto') return info.namePashto;
   if (language === 'english') return info.nameEnglish;
+  if (language === 'turkish') return info.nameTurkish;
+  if (language === 'arabic') return info.nameArabic;
   return info.nameDari;
 }
 

@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "قسم می‌خورم به روز قیامت.",
       "translation_pashto": "75-1 زه د قیامت په ورځې باندې قسم خورم",
-      "translation_english": "I swear by the Day of Resurrection,"
+      "translation_english": "I swear by the Day of Resurrection,",
+      "translation_turkish": "Kıyamet gününe yemin ederim ki,",
+      "translation_arabic": "أقسم بيوم القيامة."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "و قسم می‌خورم به نفس ملامت کننده (و پشیمان‌شونده).",
       "translation_pashto": "75-2 او زه په ډېر ملامت كوونكي نفس باندې قسم خورم",
-      "translation_english": "and I swear by the self-reproaching soul!"
+      "translation_english": "and I swear by the self-reproaching soul!",
+      "translation_turkish": "ve kendini suçlayan nefsin üzerine yemin ederim ki!",
+      "translation_arabic": "وأقسم بالنفس التائبة."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "آیا انسان گمان می‌کند که استخوان‌هایش را جمع نخواهیم کرد؟",
       "translation_pashto": "75-3 ایا (كافر) انسان دا ګمان كوي چې مونږ به د ده  هډوكي له سره راجمع نه كړو",
-      "translation_english": "Does man think that We cannot reassemble his bones?"
+      "translation_english": "Does man think that We cannot reassemble his bones?",
+      "translation_turkish": "İnsan, kemiklerini yeniden birleştiremeyeceğimizi mi sanıyor?",
+      "translation_arabic": "أيظن الإنسان أن لن نجمع عظامه؟"
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "بلی! (چنین خواهیم کرد) در حالیکه قادریم بر آن که (حتى) سرانگشتان او را (هم) برابر سازیم.",
       "translation_pashto": "75-4 ولې نه! (جمع به يې كړو)، په داسې حال كې چې مونږ  په دې قادر یو چې د ده (هډوكي او) د ګوتو بندونه (هم) برابر كړو",
-      "translation_english": "In fact, We are able to restore even his very fingertips."
+      "translation_english": "In fact, We are able to restore even his very fingertips.",
+      "translation_turkish": "Aslında biz onun parmak uçlarını bile onarmaya gücümüz yeter.",
+      "translation_arabic": "نعم! (سنفعل ذلك) ونحن قادرون على (حتى) أن نجعل أصابعه متساوية."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "بلکه انسان می‌خواهد (با انکار نمودن) راه فسق و فجور را پیش روی خود باز کند.",
       "translation_pashto": "75-5 بلكې (كافر) انسان اراده لري چې په خپله مخه  (راتلونكې زمانه) كې هم  نافرماني وكړي",
-      "translation_english": "But man desires to persist in sin,"
+      "translation_english": "But man desires to persist in sin,",
+      "translation_turkish": "Fakat insan günahta ısrar etmek ister,",
+      "translation_arabic": "بل يريد الإنسان (بالإنكار) أن يفتح الطريق للفسق والفجور."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "(و به طور استهزا) می‌پرسد: روز قیامت چه وقت است؟",
       "translation_pashto": "75-6 دى تپوس كوي چې د قیامت ورځ به كله وي؟",
-      "translation_english": "and asks [mockingly], “When is the Day of Resurrection?”"
+      "translation_english": "and asks [mockingly], “When is the Day of Resurrection?”",
+      "translation_turkish": "ve (alaycı bir tavırla) \"Kıyamet günü ne zaman?\" diye sorar.",
+      "translation_arabic": "(وبسخرية) يسأل: متى يوم القيامة؟"
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "پس وقتی که چشم‌ها خیره شود.",
       "translation_pashto": "75-7 نو كله چې سترګې  خړې (سپینې) شي",
-      "translation_english": "But when the sight is dazzled,"
+      "translation_english": "But when the sight is dazzled,",
+      "translation_turkish": "Ama göz kamaştırıldığında,",
+      "translation_arabic": "لذلك عندما تبهر العيون."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "و ماه بی‌نور و تاریک شود.",
       "translation_pashto": "75-8 او سپوږمۍ توره  (بې رڼا) شي",
-      "translation_english": "and the moon is darkened,"
+      "translation_english": "and the moon is darkened,",
+      "translation_turkish": "ve ay karardı,",
+      "translation_arabic": "وسيكون القمر عديم الضوء ومظلما."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "و آفتاب و ماه یکجا جمع شود.",
       "translation_pashto": "75-9 او لمر او سپوږمۍ سره جمع كړى شي",
-      "translation_english": "and the sun and the moon are brought together,"
+      "translation_english": "and the sun and the moon are brought together,",
+      "translation_turkish": "ve güneş ile ay bir araya getirilir,",
+      "translation_arabic": "والشمس والقمر يجتمعان ."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "و (وقتی روز قیامت برپا شود) انسان می‌گوید: راه گریز کجاست؟",
       "translation_pashto": "75-10 نو (كافر) انسان به په دغه وخت كې وايي: د تېښتې ځاى چېرته دى؟",
-      "translation_english": "on that Day man will say, “Where is the escape?”"
+      "translation_english": "on that Day man will say, “Where is the escape?”",
+      "translation_turkish": "O gün insan, \"Kurtuluş nerede?\" diye soracaktır.",
+      "translation_arabic": "و(إذا كان يوم القيامة) يقول الإنسان: أين المفر؟"
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "نه! هرگز جای (گریز و) پناه نیست.",
       "translation_pashto": "75-11 هیڅكله داسې نه ده، هېڅ پناه ځاى نشته",
-      "translation_english": "No indeed! There will be no refuge."
+      "translation_english": "No indeed! There will be no refuge.",
+      "translation_turkish": "Gerçekten hayır! Sığınak olmayacak.",
+      "translation_arabic": "لا! لا يوجد ملجأ أبداً."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "(بلکه) در آن روز قرارگاه تنها به‌سوی پروردگار توست.",
       "translation_pashto": "75-12 په دغې ورځ كې ځاى د قرار ستا د رب په طرف دى",
-      "translation_english": "On that Day all will end up before your Lord."
+      "translation_english": "On that Day all will end up before your Lord.",
+      "translation_turkish": "O gün her şey Rabbinin huzuruna çıkacaktır.",
+      "translation_arabic": "(بل) يومئذ يكون المثوى إلى ربك وحده."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "انسان در آن روز به آنچه پیش فرستاده و به آنچه پس گذاشته است خبر داده می‌شود.",
       "translation_pashto": "75-13 په  دغې ورځ كې به انسان په هغه څه خبر كړى شي چې ده مخكې لېږلي دي او وروسته يې پرېښي دي",
-      "translation_english": "On that Day man will be informed of what he has sent forth and left behind."
+      "translation_english": "On that Day man will be informed of what he has sent forth and left behind.",
+      "translation_turkish": "O gün insana, önden gönderdiği ve geride bıraktığı şeyler haber verilecektir.",
+      "translation_arabic": "يومئذ يُنبَّأ الإنسان ما قدم وما ترك."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "بلکه انسان به (خوب و بد) نفس خود بیناست.",
       "translation_pashto": "75-14 بلكې انسان په خپل ځان باندې ښه دلیل دى",
-      "translation_english": "In fact, man will be a witness against himself,"
+      "translation_english": "In fact, man will be a witness against himself,",
+      "translation_turkish": "Aslında insan kendi aleyhine şahit olacaktır.",
+      "translation_arabic": "بل يرى الإنسان نفسه (الخير والشر)."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "اگرچه (در آن روز) عذرهایی پیش کند.",
       "translation_pashto": "75-15 اګر كه دى خپل عذرونه وړاندې كړي",
-      "translation_english": "despite the excuses he may put forward."
+      "translation_english": "despite the excuses he may put forward.",
+      "translation_turkish": "öne sürdüğü bahanelere rağmen.",
+      "translation_arabic": "ولو يعتذر (في ذلك اليوم)."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "(ای پیغمبر! در وقت نزول وحی) زبانت را حرکت مده تا در یاد کردن آن شتاب کنی.",
       "translation_pashto": "75-16 (اى نبي!) ته خپله ژبه په دې (قرآن) سره مه خوځوه، د دې لپاره چې ته دا په تُندۍ سره حاصل كړې",
-      "translation_english": "Do not move your tongue [O Prophet] in haste trying to memorize it."
+      "translation_english": "Do not move your tongue [O Prophet] in haste trying to memorize it.",
+      "translation_turkish": "Ezberlemek için aceleyle dilini hareket ettirme.",
+      "translation_arabic": "(يا أيها النبي عند الوحي) حرك لسانك حتى تبادر إلى ذكره."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "بی‌گمان جمع کردن آن در سینۀ تو و خواندنش بر عهدۀ ماست.",
       "translation_pashto": "75-17 بېشكه پر مونږ باندې د ده جمع كول او د ده لوستل دي",
-      "translation_english": "It is upon Us to make you memorize and recite it."
+      "translation_english": "It is upon Us to make you memorize and recite it.",
+      "translation_turkish": "Onu sana ezberletmek ve okutmak bize düşer.",
+      "translation_arabic": "ولا شك أن الأمر متروك لنا أن نجمعه في صدرك ونقرأه."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "پس چون آن را (به زبان جبریل) خواندیم، پس قرائت آن را پیروی کن.",
       "translation_pashto": "75-18 نو كله چې مونږ دى ولولو، نو ته د ده د لوستلو پیروي كوه",
-      "translation_english": "Then when We recite it [through Gabriel], follow its recitation attentively;"
+      "translation_english": "Then when We recite it [through Gabriel], follow its recitation attentively;",
+      "translation_turkish": "Sonra Biz onu (Cebrail aracılığıyla) okuduğumuz zaman, sen de onun okunuşuna uyun;",
+      "translation_arabic": "فإذا قرأناه (بلغة جبريل) فاتبع قرائته."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "باز بیان (حقایق و تفسیر) آن بر عهدۀ ماست.",
       "translation_pashto": "75-19 بیا یقینًا زمونږ په ذمه د ده بیانول دي",
-      "translation_english": "then it is upon Us to explain its meanings."
+      "translation_english": "then it is upon Us to explain its meanings.",
+      "translation_turkish": "sonra onun manasını açıklamak Bize düşer.",
+      "translation_arabic": "والأمر متروك لنا لإعادة التعبير عنه (الحقائق والتفسير)."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "نه، چنین نیست (که می‌گویید) بلکه شما دنیای زودگذر را دوست می‌دارید.",
       "translation_pashto": "75-20 هیڅكله داسې نه ده بلكې تاسو تادي كوونكې (زر تېرېدونكې فاني كېدونكې دنیا) خوښوئ",
-      "translation_english": "No indeed! You [people] love this fleeting world,"
+      "translation_english": "No indeed! You [people] love this fleeting world,",
+      "translation_turkish": "Gerçekten hayır! Siz [insanlar] bu geçici dünyayı seviyorsunuz,",
+      "translation_arabic": "لا، ليس كذلك (تقول) ولكنك تحب العالم الزائل."
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "و آخرت را ترک می‌کنید.",
       "translation_pashto": "75-21 او تاسو اخرت پرېږدئ",
-      "translation_english": "and neglect the Hereafter."
+      "translation_english": "and neglect the Hereafter.",
+      "translation_turkish": "ve ahireti ihmal et.",
+      "translation_arabic": "وتترك الآخرة ."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "(حال آن که کامیاب و ناکام در آخرت معلوم شود) در آن روز چهره‌هایی شاداب (و خرم) هستند.",
       "translation_pashto": "75-22 په دغې ورځ كې به څه مخونه تازه روښانه وي",
-      "translation_english": "On that Day some faces will be bright,"
+      "translation_english": "On that Day some faces will be bright,",
+      "translation_turkish": "O gün bazı yüzler parıldayacaktır.",
+      "translation_arabic": "(والآن سيعرف النجاح والفشل في الآخرة) ويومئذ ستكون هناك وجوه مبتهجة."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "(چرا که) به پروردگار خود می‌نگرند.",
       "translation_pashto": "75-23 خپل رب ته به كتونكي وي",
-      "translation_english": "looking at their Lord."
+      "translation_english": "looking at their Lord.",
+      "translation_turkish": "Rablerine bakıyorlar.",
+      "translation_arabic": "(لأنهم) إلى ربهم ناظرون."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "و چهره‌هایی در آن روز گرفته (و غمگین) است.",
       "translation_pashto": "75-24 او  په دغې ورځ كې به څه مخونه سخت تریو (او سپېره) وي",
-      "translation_english": "And on that Day, some faces will be gloomy,"
+      "translation_english": "And on that Day, some faces will be gloomy,",
+      "translation_turkish": "O gün bazı yüzler kasvetlidir.",
+      "translation_arabic": "وهناك وجوه حزينة (وحزينة) في ذلك اليوم."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "(چون) یقین دارند که به معصیت کمرشکن گرفتار می‌شوند.",
       "translation_pashto": "75-25 یقین به كوي چې له دوى سره  به مَلا ماتوونكى عمل  وشي",
-      "translation_english": "knowing that a crushing calamity will befall them."
+      "translation_english": "knowing that a crushing calamity will befall them.",
+      "translation_turkish": "başlarına büyük bir felaket geleceğini biliyorlar.",
+      "translation_arabic": "(لأنهم) على يقين أنهم سيقعون في إثم يقصم الظهر."
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "چنین نیست (که ایشان گمان دارند) هنگامی که جان به گلوگاه رسد.",
       "translation_pashto": "75-26 داسې نه ده كله چې ساه د ستوني هډوكي ته ورسېږي",
-      "translation_english": "Indeed, when the soul reaches the throat,"
+      "translation_english": "Indeed, when the soul reaches the throat,",
+      "translation_turkish": "Gerçek şu ki, ruh boğaza ulaştığında,",
+      "translation_arabic": "وليس هذا (كما يظنون) عندما تصل الروح إلى الحلقوم."
     },
     {
       "number": 27,
@@ -301,7 +353,9 @@
       "sajda": false,
       "translation_dari": "و گفته شود: آیا کسی هست که افسون بخواند؟",
       "translation_pashto": "75-27 او وبه ویل شي: څوك دى  دم كوونكى؟",
-      "translation_english": "and it is said, “Is there any healer?”"
+      "translation_english": "and it is said, “Is there any healer?”",
+      "translation_turkish": "ve \"Şifa veren var mı?\" deniliyor.",
+      "translation_arabic": "فيقال: هل من رقية؟"
     },
     {
       "number": 28,
@@ -312,7 +366,9 @@
       "sajda": false,
       "translation_dari": "و (محتضر) يقين کند که زمان جدایی (روح از بدن) فرا رسیده است.",
       "translation_pashto": "75-28 او دى به یقین وكړي چې بېشكه دغه (وخت د) بېلتون دى",
-      "translation_english": "And he realizes that it is time to depart,"
+      "translation_english": "And he realizes that it is time to depart,",
+      "translation_turkish": "Ve artık ayrılma zamanının geldiğini anlıyor.",
+      "translation_arabic": "و (المحتضر) يتأكد أن وقت انفصال (الروح عن الجسد) قد حان."
     },
     {
       "number": 29,
@@ -323,7 +379,9 @@
       "sajda": false,
       "translation_dari": "و ساق پا به ساق دیگر بپیچد (که دیگر حرکت نتواند).",
       "translation_pashto": "75-29 او یوه پنډۍ به له بلې پنډۍ تاوېږي",
-      "translation_english": "when legs are brought together [in a shroud];"
+      "translation_english": "when legs are brought together [in a shroud];",
+      "translation_turkish": "bacaklar [kefende] bir araya getirildiğinde;",
+      "translation_arabic": "وتلتف الساق حول الساق الأخرى (بحيث لا تستطيع التحرك بعد ذلك)."
     },
     {
       "number": 30,
@@ -334,7 +392,9 @@
       "sajda": false,
       "translation_dari": "آن روز، روز سوق دادنش به‌سوی پروردگار توست.",
       "translation_pashto": "75-30 ستا د رب په لوري به دغې ورځ كې ورتله دي",
-      "translation_english": "on that Day, he will be driven to your Lord."
+      "translation_english": "on that Day, he will be driven to your Lord.",
+      "translation_turkish": "O gün Rabbine götürülür.",
+      "translation_arabic": "ذلك اليوم هو يوم تحويلها إلى ربك."
     },
     {
       "number": 31,
@@ -345,7 +405,9 @@
       "sajda": false,
       "translation_dari": "پس (انسان نافرمان) نه تصدیق کرد و نه نماز گزارد.",
       "translation_pashto": "75-31 پس ده نه تصدیق وكړ او نه يې  لمونځ وكړ",
-      "translation_english": "He neither believed nor prayed;"
+      "translation_english": "He neither believed nor prayed;",
+      "translation_turkish": "Ne inandı ne de dua etti;",
+      "translation_arabic": "فلم يعترف (العاصي) ولم يصلي."
     },
     {
       "number": 32,
@@ -356,7 +418,9 @@
       "sajda": false,
       "translation_dari": "بلکه دروغ شمرد و اعراض نمود.",
       "translation_pashto": "75-32 او لېكن دروغ يې وګاڼه (قرآن) او مخ يې  وګرځاوه",
-      "translation_english": "rather he denied and turned away,"
+      "translation_english": "rather he denied and turned away,",
+      "translation_turkish": "daha doğrusu yalanladı ve yüz çevirdi,",
+      "translation_arabic": "بل كذب وشكا."
     },
     {
       "number": 33,
@@ -367,7 +431,9 @@
       "sajda": false,
       "translation_dari": "باز متکبرانه و خرامان به‌سوی خانواده‌اش رفت.",
       "translation_pashto": "75-33 بیا  خپل اهل ته لاړ، په داسې حال كې چې تكبر يې كاوه",
-      "translation_english": "then he went to his people, elated with pride,"
+      "translation_english": "then he went to his people, elated with pride,",
+      "translation_turkish": "sonra gururla coşan halkının yanına gitti,",
+      "translation_arabic": "ومرة أخرى، ذهب إلى عائلته بغطرسة وكآبة."
     },
     {
       "number": 34,
@@ -378,7 +444,9 @@
       "sajda": false,
       "translation_dari": "وای بر تو، باز وای بر تو.",
       "translation_pashto": "75-34 تا ته دې  هلاكت (او افسوس) وي، پس هلاكت دې وي",
-      "translation_english": "Woe to you, and woe!"
+      "translation_english": "Woe to you, and woe!",
+      "translation_turkish": "Yazıklar olsun size ve yazıklar olsun!",
+      "translation_arabic": "الويل لك، الويل لك مرة أخرى."
     },
     {
       "number": 35,
@@ -389,7 +457,9 @@
       "sajda": false,
       "translation_dari": "باز وای بر تو، وای بر تو.",
       "translation_pashto": "75-35 بیا دې تا لپاره هلاكت وي، نو هلاكت دې وي",
-      "translation_english": "Again, woe to you, and woe!"
+      "translation_english": "Again, woe to you, and woe!",
+      "translation_turkish": "Tekrar söylüyorum, yazıklar olsun sana, yazıklar olsun!",
+      "translation_arabic": "مرة أخرى، الويل لك، الويل لك."
     },
     {
       "number": 36,
@@ -400,7 +470,9 @@
       "sajda": false,
       "translation_dari": "آیا انسان گمان می‌کند که به حال خود گذاشته می‌شود (و با او حساب و کتاب صورت نمی‌گیرد)؟",
       "translation_pashto": "75-36 ایا(كافر) انسان ګمان كوي چې دى به مهمل (او بې كاره) پرېښودل شي",
-      "translation_english": "Does man think that he will be left neglected?"
+      "translation_english": "Does man think that he will be left neglected?",
+      "translation_turkish": "İnsan ihmal edileceğini mi sanıyor?",
+      "translation_arabic": "أيظن الإنسان أن يترك وحده (ولا يُحاسب عليه)؟"
     },
     {
       "number": 37,
@@ -411,7 +483,9 @@
       "sajda": false,
       "translation_dari": "آیا او نطفه‌ای از منی که در رحم ریخته شده، نبود؟",
       "translation_pashto": "75-37 ایا دغه (انسان) د هغې منۍ یو څاڅكى نه و چې تویولى شي",
-      "translation_english": "Was he not once a drop of semen emitted,"
+      "translation_english": "Was he not once a drop of semen emitted,",
+      "translation_turkish": "Bir kez bile bir damla meni akmadı mı?",
+      "translation_arabic": "أليس هو نطفة مني أُلقيت في الرحم؟"
     },
     {
       "number": 38,
@@ -422,7 +496,9 @@
       "sajda": false,
       "translation_dari": "باز خون بسته‌ای بود که (الله آن را) آفرید باز (خلقت او را) استوار و برابر کرد.",
       "translation_pashto": "75-38 بیا دى د وینې یوه ټوټه وه، نو دغه (الله دى) پیدا كړ،  پس برابر يې كړ",
-      "translation_english": "then he became a clinging clot, then He created him and perfected his form,"
+      "translation_english": "then he became a clinging clot, then He created him and perfected his form,",
+      "translation_turkish": "sonra pıhtı haline geldi, sonra onu yarattı ve şeklini mükemmelleştirdi.",
+      "translation_arabic": "ومرة أخرى، كان الدم حزمة خلقها (الله) وجعلها ثابتة ومتساوية."
     },
     {
       "number": 39,
@@ -433,7 +509,9 @@
       "sajda": false,
       "translation_dari": "پس از آن (قطرۀ منی) دو جفت مرد و زن را آفرید.",
       "translation_pashto": "75-39 نو له دغې (منۍ) نه يې دوه قسمه پیدا كړل (یعنې) سړى او ښځه",
-      "translation_english": "and made from him both genders, male and female?"
+      "translation_english": "and made from him both genders, male and female?",
+      "translation_turkish": "ve ondan her iki cinsiyet de yaratıldı; erkek ve kadın?",
+      "translation_arabic": "ومن بعد ذلك (النطفة) خلق الزوجين من الرجال والنساء."
     },
     {
       "number": 40,
@@ -444,7 +522,9 @@
       "sajda": false,
       "translation_dari": "و آیا همین (آفرینندۀ انسان‌ها از منی) قادر نیست که (بار دوم) مُرده‌ها را زنده کند؟",
       "translation_pashto": "75-40 ایا دغه (الله) په دې قادر نه دى چې مړي راژوندي كړي؟",
-      "translation_english": "Is not He able to bring the dead back to life?"
+      "translation_english": "Is not He able to bring the dead back to life?",
+      "translation_turkish": "Ölüleri diriltmeye gücü yetmiyor mu?",
+      "translation_arabic": "وهل هو غير قادر على إقامة الموتى (المرة الثانية)؟"
     }
   ]
 }

@@ -35,6 +35,9 @@ interface ReaderSettingsSheetProps {
 const PREVIEW: Record<ArticleLanguage, string> = {
   dari: 'ایمان حیات قلب و آرامش روح است؛ وقتی در دل زنده باشد، زندگی معنا می‌گیرد.',
   pashto: 'ایمان د زړه ژوند او د روح ډاډ دی؛ کله چې په زړه کې ژوندی وي، ژوند مانا پیدا کوي.',
+  english: 'Faith is the life of the heart; when it is alive, life takes on meaning.',
+  turkish: 'İman kalbin hayatıdır; gönülde diri olduğunda hayat anlam kazanır.',
+  arabic: 'الإيمان حياة القلب وطمأنينة الروح؛ إذا حيي في القلب صار للحياة معنى.',
 };
 
 const TEXT_SIZES: ReaderTextSize[] = ['s', 'm', 'l', 'xl'];

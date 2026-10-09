@@ -36,6 +36,26 @@ const SOURCE_BOOK_LABELS_EN: Record<HadithSourceBook, string> = {
   IbnMajah: 'Sunan Ibn Majah',
 };
 
+const SOURCE_BOOK_LABELS_TR: Record<HadithSourceBook, string> = {
+  Bukhari: 'Sahih-i Buhari',
+  Muslim: 'Sahih-i Müslim',
+  Ahmad: 'Müsned-i Ahmed',
+  AbuDawud: 'Sünen-i Ebu Davud',
+  Tirmidhi: 'Camiu’t-Tirmizi',
+  Nasai: 'Sünen-i Nesai',
+  IbnMajah: 'Sünen-i İbn Mace',
+};
+
+const SOURCE_BOOK_LABELS_AR: Record<HadithSourceBook, string> = {
+  Bukhari: 'صحيح البخاري',
+  Muslim: 'صحيح مسلم',
+  Ahmad: 'مسند أحمد',
+  AbuDawud: 'سنن أبي داود',
+  Tirmidhi: 'جامع الترمذي',
+  Nasai: 'سنن النسائي',
+  IbnMajah: 'سنن ابن ماجه',
+};
+
 const GRADE_LABELS_FA: Record<HadithAuthenticityGrade, string> = {
   sahih: 'صحیح',
   hasan: 'حسن',
@@ -157,9 +177,13 @@ export function formatSourceLabel(
 ): string {
   const labels = language === 'english'
     ? SOURCE_BOOK_LABELS_EN
-    : language === 'pashto'
-      ? SOURCE_BOOK_LABELS_PS
-      : SOURCE_BOOK_LABELS;
+    : language === 'turkish'
+      ? SOURCE_BOOK_LABELS_TR
+      : language === 'arabic'
+        ? SOURCE_BOOK_LABELS_AR
+        : language === 'pashto'
+          ? SOURCE_BOOK_LABELS_PS
+          : SOURCE_BOOK_LABELS;
   return `${labels[book]} ${sourceNumber}`;
 }
 
@@ -171,11 +195,25 @@ export function getAuthenticityGradeLabel(
   grade: HadithAuthenticityGrade,
   language: AppLanguage,
 ): string {
-  return language === 'english' ? GRADE_LABELS_EN[grade] : GRADE_LABELS_FA[grade];
+  if (language === 'english') return GRADE_LABELS_EN[grade];
+  if (language === 'turkish') {
+    if (grade === 'sahih') return 'Sahih';
+    if (grade === 'hasan') return 'Hasen';
+    return 'Zayıf';
+  }
+  if (language === 'arabic') {
+    if (grade === 'sahih') return 'صحيح';
+    if (grade === 'hasan') return 'حسن';
+    return 'ضعيف';
+  }
+  return GRADE_LABELS_FA[grade];
 }
 
 export function getMuttafaqBadgeLabel(language: AppLanguage = 'dari'): string {
-  return language === 'english' ? 'Muttafaqun ‘alayh' : 'متفق‌علیه';
+  if (language === 'english') return 'Muttafaqun ‘alayh';
+  if (language === 'turkish') return 'Üzerinde ittifak';
+  if (language === 'arabic') return 'متفق عليه';
+  return 'متفق‌علیه';
 }
 
 export function getReasonLabelFa(reason: DailySelectionReason): string {
@@ -191,6 +229,18 @@ export function getReasonLabel(reason: DailySelectionReason, language: AppLangua
     if (reason === 'hijri_range') return 'Hijri calendar';
     if (reason === 'weekday_only') return 'Friday special';
     return 'Daily';
+  }
+  if (language === 'turkish') {
+    if (reason === 'special_days') return 'Özel gün';
+    if (reason === 'hijri_range') return 'Hicri takvim';
+    if (reason === 'weekday_only') return 'Cuma’ya özel';
+    return 'Günlük';
+  }
+  if (language === 'arabic') {
+    if (reason === 'special_days') return 'مناسبة';
+    if (reason === 'hijri_range') return 'التقويم الهجري';
+    if (reason === 'weekday_only') return 'خاص بالجمعة';
+    return 'يومي';
   }
   if (language === 'dari') return getReasonLabelFa(reason);
   if (reason === 'special_days') return 'ځانګړې ورځ';
@@ -227,6 +277,28 @@ export function getContextTitle(
     if (context.specialDayKeys.includes('ramadan')) return 'Ramadan hadith';
     if (context.isFriday) return 'Friday hadith';
     return 'Hadith of the day';
+  }
+  if (language === 'turkish') {
+    if (context.specialDayKeys.includes('laylat_al_qadr')) return 'Kadir gecesi hadisi';
+    if (context.specialDayKeys.includes('eid_al_fitr')) return 'Ramazan Bayramı hadisi';
+    if (context.specialDayKeys.includes('eid_al_adha')) return 'Kurban Bayramı hadisi';
+    if (context.specialDayKeys.includes('arafah')) return 'Arefe hadisi';
+    if (context.specialDayKeys.includes('tashreeq')) return 'Teşrik günleri hadisi';
+    if (context.specialDayKeys.includes('hijri_new_year')) return 'Hicri yılbaşı hadisi';
+    if (context.specialDayKeys.includes('ramadan')) return 'Ramazan hadisi';
+    if (context.isFriday) return 'Cuma hadisi';
+    return 'Günün hadisi';
+  }
+  if (language === 'arabic') {
+    if (context.specialDayKeys.includes('laylat_al_qadr')) return 'حديث ليلة القدر';
+    if (context.specialDayKeys.includes('eid_al_fitr')) return 'حديث عيد الفطر';
+    if (context.specialDayKeys.includes('eid_al_adha')) return 'حديث عيد الأضحى';
+    if (context.specialDayKeys.includes('arafah')) return 'حديث يوم عرفة';
+    if (context.specialDayKeys.includes('tashreeq')) return 'حديث أيام التشريق';
+    if (context.specialDayKeys.includes('hijri_new_year')) return 'حديث رأس السنة الهجرية';
+    if (context.specialDayKeys.includes('ramadan')) return 'حديث رمضان';
+    if (context.isFriday) return 'حديث الجمعة';
+    return 'حديث اليوم';
   }
   if (language === 'dari') return getContextTitleFa(context);
   if (context.specialDayKeys.includes('laylat_al_qadr')) return 'د قدر شپې حدیث';

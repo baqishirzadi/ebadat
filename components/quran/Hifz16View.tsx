@@ -2266,9 +2266,9 @@ const HifzKhatmPage = memo(function HifzKhatmPage({
     setFit(1);
   }, [pageWidth, pageHeight, slotHeight]);
 
-  const baseFont = slotHeight > 0 ? Math.min(16, Math.max(13, slotHeight / 28)) : 14;
-  const fontSize = Math.max(10, baseFont * fit);
-  const lineHeight = Math.round(fontSize * 1.58);
+  const baseFont = slotHeight > 0 ? Math.min(15, Math.max(12, slotHeight / 34)) : 13;
+  const fontSize = Math.max(11, baseFont * fit);
+  const lineHeight = Math.round(fontSize * 1.5);
 
   const onBodyTextLayout = useCallback((event: { nativeEvent: { lines: Array<{ y: number; height: number }> } }) => {
     const lines = event.nativeEvent.lines;
@@ -2277,7 +2277,7 @@ const HifzKhatmPage = memo(function HifzKhatmPage({
     const used = last.y + last.height + lineHeight;
     if (used <= slotHeight + 1) return;
     setFit((prev) => {
-      const next = Math.max(0.62, prev * (slotHeight / used));
+      const next = Math.max(0.55, prev * (slotHeight / used));
       return next < prev - 0.012 ? next : prev;
     });
   }, [lineHeight, slotHeight]);
@@ -2305,8 +2305,8 @@ const HifzKhatmPage = memo(function HifzKhatmPage({
               styles.khatmTitle,
               {
                 fontFamily: HIFZ_FONT,
-                fontSize: 22,
-                lineHeight: Math.round(22 * ARABIC_LINE_RATIO),
+                fontSize: 20,
+                lineHeight: 30,
                 color: ink,
               },
               androidFontPad,
@@ -3829,6 +3829,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minHeight: 0,
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   khatmBody: {
     textAlign: 'justify',

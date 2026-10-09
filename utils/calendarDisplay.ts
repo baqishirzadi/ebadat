@@ -44,10 +44,32 @@ export const WEEKDAYS_ENGLISH = [
   'Saturday',
 ];
 
+const WEEKDAYS_TURKISH = [
+  'Pazar',
+  'Pazartesi',
+  'Salı',
+  'Çarşamba',
+  'Perşembe',
+  'Cuma',
+  'Cumartesi',
+];
+
+const WEEKDAYS_ARABIC = [
+  'الأحد',
+  'الإثنين',
+  'الثلاثاء',
+  'الأربعاء',
+  'الخميس',
+  'الجمعة',
+  'السبت',
+];
+
 const WEEKDAYS_BY_LANGUAGE: Record<AppLanguage, string[]> = {
   dari: WEEKDAYS_DARI,
   pashto: WEEKDAYS_PASHTO,
   english: WEEKDAYS_ENGLISH,
+  turkish: WEEKDAYS_TURKISH,
+  arabic: WEEKDAYS_ARABIC,
 };
 
 /** Weekday name for a Sunday-indexed weekday (0-6) in the active language. */
@@ -63,6 +85,8 @@ export function weekdayName(weekdayIndex: number, language: AppLanguage): string
 const WEEKDAY_GRID_HEADERS: Record<AppLanguage, string[]> = {
   dari: ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
   pashto: ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
+  arabic: ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'],
+  turkish: ['Ct', 'Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu'],
   english: ['Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr'],
 };
 
@@ -86,17 +110,31 @@ const GREG_MONTHS_PASHTO = [
   'جولای', 'اګست', 'سپتمبر', 'اکتوبر', 'نومبر', 'ډسمبر',
 ];
 
+const GREG_MONTHS_TURKISH = [
+  'Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz',
+  'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara',
+];
+
+const GREG_MONTHS_ARABIC = [
+  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+];
+
+const GREG_MONTHS_BY_LANGUAGE: Record<AppLanguage, string[]> = {
+  dari: GREG_MONTHS_DARI,
+  pashto: GREG_MONTHS_PASHTO,
+  arabic: GREG_MONTHS_ARABIC,
+  turkish: GREG_MONTHS_TURKISH,
+  english: GREG_MONTHS_EN,
+};
+
 export function formatGregorianDateCompact(
   gregorianDate: Date,
   formatNumber: (value: number) => string = String,
   language: AppLanguage = 'english',
 ): string {
   const parts = getKabulDateParts(gregorianDate);
-  const month = language === 'dari'
-    ? GREG_MONTHS_DARI[parts.month - 1]
-    : language === 'pashto'
-      ? GREG_MONTHS_PASHTO[parts.month - 1]
-      : GREG_MONTHS_EN[parts.month - 1];
+  const month = (GREG_MONTHS_BY_LANGUAGE[language] ?? GREG_MONTHS_EN)[parts.month - 1];
   return `${formatNumber(parts.day)} ${month} ${formatNumber(parts.year)}`;
 }
 

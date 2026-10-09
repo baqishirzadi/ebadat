@@ -35,7 +35,7 @@ function buildSuggestionPrompt(message: string, gender: UserGender, responderNam
 ${message.trim().slice(0, 2000)}
 
 قواعد پاسخ:
-- لحن انسان‌گونه، نرم و کوتاه تا متوسط؛ به زبان ${language === 'pashto' ? 'پښتو' : 'دری'}.
+- لحن انسان‌گونه، نرم و کوتاه تا متوسط؛ به زبان ${language === 'pashto' ? 'پښتو' : language === 'english' ? 'English' : language === 'turkish' ? 'Türkçe' : language === 'arabic' ? 'العربية' : 'دری'}.
 - خطاب با «${address}».
 - همدلی کوتاه + دعای خیر کوتاه مخصوص همین مشکل.
 - حتماً با نام صریح «ذکر شاه نقشبند» یک بخش کوتاه برای آرامش دل بیاور و روش ساده بگو (چند بار، چه وقت، با حضور قلب). ذکرهای دیگر به‌تنهایی کافی نیست.

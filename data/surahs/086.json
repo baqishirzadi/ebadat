@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "قسم به آسمان، و قسم به طارق (یعنی ستاره ظاهرشونده در شب).",
       "translation_pashto": "86-1 قسم دى په اسمان او د شپې په راتلونكي",
-      "translation_english": "By the sky and the night comer –"
+      "translation_english": "By the sky and the night comer –",
+      "translation_turkish": "Gökyüzüne ve geceye yemin ederim ki –",
+      "translation_arabic": "والسماء وطارق (النجم الذي يظهر في الليل)."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "تو چه می‌دانی که طارق چیست؟",
       "translation_pashto": "86-2 او ته څه شي  پوه كړې چې د شپې راتلونكى څه شى دى؟",
-      "translation_english": "and how do you know what the night comer is?"
+      "translation_english": "and how do you know what the night comer is?",
+      "translation_turkish": "Peki gece gelenin ne olduğunu nereden biliyorsun?",
+      "translation_arabic": "ما أدراك ما طارق؟"
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "آن ستارۀ درخشنده است.",
       "translation_pashto": "86-3 ځلېدونكى ستورى دى",
-      "translation_english": "It is the star of piercing brightness –"
+      "translation_english": "It is the star of piercing brightness –",
+      "translation_turkish": "Delici parlaklığın yıldızıdır –",
+      "translation_arabic": "إنه نجم ساطع."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "کسی نیست مگر آن که بر او نگهبانی است.",
       "translation_pashto": "86-4 نشته هېڅ یو نفس مګر  په هغه باندې څارونكى (ساتونكى) شته",
-      "translation_english": "there is no soul except that there is a watcher over it."
+      "translation_english": "there is no soul except that there is a watcher over it.",
+      "translation_turkish": "üzerinde bir gözetleyici bulunmasından başka ruh yoktur.",
+      "translation_arabic": "وليس هناك أحد إلا من يحرسه."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "پس باید انسان بنگرد که از چه آفریده شده است؟",
       "translation_pashto": "86-5 نو انسان دې وګوري چې دى له څه شي نه پیدا كړى شوى دى؟",
-      "translation_english": "Let man reflect on what he was created from."
+      "translation_english": "Let man reflect on what he was created from.",
+      "translation_turkish": "Bırakın insan neyden yaratıldığını düşünsün.",
+      "translation_arabic": "فهل ينبغي للإنسان أن يرى مما خلق؟"
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "از آب (منی) زودریزنده آفریده شده است.",
       "translation_pashto": "86-6 دى له ټوپ وهونكو اوبو نه پیدا كړى شوى دى",
-      "translation_english": "He was created from a spurting fluid,"
+      "translation_english": "He was created from a spurting fluid,",
+      "translation_turkish": "Fışkıran bir sıvıdan yaratıldı.",
+      "translation_arabic": "خلقت من الماء المني."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "که از میان استخوان پشت (مرد) و استخوان سینه (زن) بیرون می‌شود.",
       "translation_pashto": "86-7 چې د شا او له سینو د هډوكو له مینځ نه راوځي",
-      "translation_english": "emerging from between the backbone and the ribs."
+      "translation_english": "emerging from between the backbone and the ribs.",
+      "translation_turkish": "omurga ile kaburgaların arasından çıkar.",
+      "translation_arabic": "الذي يخرج من عظم الظهر (الذكر) وعظم الصدر (الأنثى)."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "لذا الله بر بازگردانیدن (یعنی دوباره زنده کردنِ) انسان‌ها قادر است.",
       "translation_pashto": "86-8 بېشكه دغه (الله) د دغه (انسان) په بیا راژوندي كولو یقینًا قادر دى",
-      "translation_english": "Indeed, Allah is able to bring him back to life."
+      "translation_english": "Indeed, Allah is able to bring him back to life.",
+      "translation_turkish": "Şüphesiz Allah onu diriltmeye kadirdir.",
+      "translation_arabic": "ولذلك فإن الله قادر على إعادة (أي إحياء) البشر."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "روزی که رازهای پوشیده ظاهر شود.",
       "translation_pashto": "86-9 په هغې ورځ چې د پټو څیزونو به (په كې) څېړنه (او څرګندونه) كولى شي",
-      "translation_english": "On the Day when all secrets will be disclosed,"
+      "translation_english": "On the Day when all secrets will be disclosed,",
+      "translation_turkish": "Bütün sırların açığa çıkacağı gün,",
+      "translation_arabic": "يوم تنكشف الأسرار الخفية."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "پس در آن روز (برای انسان) هیچ قوتی و هیچ یاری‌دهنده‌ای نیست.",
       "translation_pashto": "86-10 نو د دغه (انسان) لپاره به نه هېڅ قوت وي او نه څوك مدد كوونكى",
-      "translation_english": "he will then have no power, nor any helper."
+      "translation_english": "he will then have no power, nor any helper.",
+      "translation_turkish": "Artık onun ne bir gücü vardır, ne de bir yardımcısı.",
+      "translation_arabic": "لذلك، في ذلك اليوم لا قوة ولا نصير."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "قسم به آسمان باران‌دار.",
       "translation_pashto": "86-11 قسم دى په اسمان چې خاوند د باران دى",
-      "translation_english": "By the sky and its recurring rain,"
+      "translation_english": "By the sky and its recurring rain,",
+      "translation_turkish": "Göğe ve onun sürekli yağan yağmuruna and olsun ki,",
+      "translation_arabic": "بالسماء الممطرة."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "و قسم به زمین شگافنده (برای رویانیدن نباتات).",
       "translation_pashto": "86-12 او په ځمكه چې د (زرغونې راوتلو لپاره) چاودېدلو والا ده",
-      "translation_english": "and by the earth that cracks open [with the sprout of plants],"
+      "translation_english": "and by the earth that cracks open [with the sprout of plants],",
+      "translation_turkish": "ve [bitkilerin filizlenmesiyle] çatlayan toprağa and olsun ki,",
+      "translation_arabic": "وبتفتيت الأرض (لنمو النبات)."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "که قرآن کلام فیصله‌کننده (بین حق و باطل) است.",
       "translation_pashto": "86-13 بېشكه دا (قرآن) یقینًا (د حق او باطل) بېلونكې وینا ده",
-      "translation_english": "Indeed, this [Qur’an] is a decisive word,"
+      "translation_english": "Indeed, this [Qur’an] is a decisive word,",
+      "translation_turkish": "Şüphesiz bu (Kur'an), kesin bir sözdür.",
+      "translation_arabic": "أن القرآن هو الكلمة الفاصلة (بين الحق والباطل)."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "و سخن بیهوده و شوخی نیست.",
       "translation_pashto": "86-14 او دا هیڅكله عبثه (او د ټوقو) خبره نه ده",
-      "translation_english": "which is not for amusement."
+      "translation_english": "which is not for amusement.",
+      "translation_turkish": "ki bu eğlence amaçlı değil.",
+      "translation_arabic": "وليس كلاماً خاملاً أو مزحة."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "البته آن‌ها (کفار) سخت نیرنگ می‌کنند.",
       "translation_pashto": "86-15 بېشكه دوى مكر  او چل كوي، یو چل كول",
-      "translation_english": "Indeed, they are devising a plan."
+      "translation_english": "Indeed, they are devising a plan.",
+      "translation_turkish": "Aslında bir plan yapıyorlar.",
+      "translation_arabic": "وبطبيعة الحال، من الصعب خداعهم (الكفار)."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "و من نیز (برای مجازات‌شان) چاره‌اندیشی می‌کنم.",
       "translation_pashto": "86-16 او زه هم یو تدبیر كوم، تدبیر كول",
-      "translation_english": "I am too devising a plan."
+      "translation_english": "I am too devising a plan.",
+      "translation_turkish": "Ben de bir plan yapıyorum.",
+      "translation_arabic": "وأفكر أيضاً في حل (لمعاقبتهم)."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "پس کافران را مهلت ده (تا فکر کنند و) زمانِ اندک آن‌ها را رها کن.",
       "translation_pashto": "86-17 نو ته كافرانو ته مهلت وركړه، ته دوى ته لږ مهلت وركړه",
-      "translation_english": "So bear with the disbelievers, and give them respite for a while."
+      "translation_english": "So bear with the disbelievers, and give them respite for a while.",
+      "translation_turkish": "O halde kâfirlere sabret ve onlara bir süre mühlet ver.",
+      "translation_arabic": "فأعط الكافرين وقتا (للتفكير) واترك لهم وقتا قليلا."
     }
   ]
 }

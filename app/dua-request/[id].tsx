@@ -34,9 +34,8 @@ import {
 
 export default function DuaRequestDetailScreen() {
   const { theme } = useApp();
-  const { t, language } = useI18n();
+  const { t, language, isLatin } = useI18n();
   const { copiedVisible, showCopied } = useCopiedNotice();
-  const isEnglish = language === 'english';
   const isPashto = language === 'pashto';
   const { getRequestById, refreshRequests, markRequestSeen } = useDua();
   const router = useRouter();
@@ -101,8 +100,8 @@ export default function DuaRequestDetailScreen() {
   const formatDate = (date: Date): string => {
     return formatGregorianDateTimeCompact(
       date,
-      isEnglish ? String : toArabicNumerals,
-      isEnglish ? 'en-US' : isPashto ? 'ps-AF' : 'fa-AF',
+      isLatin ? String : toArabicNumerals,
+      language === 'turkish' ? 'tr-TR' : language === 'english' ? 'en-US' : language === 'arabic' ? 'ar' : isPashto ? 'ps-AF' : 'fa-AF',
     );
   };
 

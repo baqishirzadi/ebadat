@@ -11,16 +11,18 @@ import type { QuranReaderTokens } from '@/hooks/useQuranReaderSettings';
 
 type LangKey = Exclude<TranslationLanguage, 'none' | 'both'>;
 
-const LANG_OPTIONS: LangKey[] = ['dari', 'pashto', 'english'];
+const LANG_OPTIONS: LangKey[] = ['dari', 'pashto', 'arabic', 'turkish', 'english'];
 
 export const TranslationToggle = memo(function TranslationToggle({ readerTokens }: { readerTokens?: QuranReaderTokens }) {
   const { theme, state, setTranslationLanguage } = useApp();
-  const { t } = useI18n();
+  const { t, choose } = useI18n();
   const stored = state.preferences.showTranslation;
   const current = stored === 'both' ? state.preferences.appLanguage : stored;
   const showTranslation = current !== 'none';
   const activeLang: LangKey =
-    current === 'pashto' || current === 'english' || current === 'dari' ? current : 'dari';
+    current === 'pashto' || current === 'english' || current === 'dari' || current === 'turkish' || current === 'arabic'
+      ? current
+      : 'dari';
 
   const handleLangSelect = (key: LangKey) => {
     setTranslationLanguage(key);
@@ -34,12 +36,27 @@ export const TranslationToggle = memo(function TranslationToggle({ readerTokens 
     }
   };
 
-  const labelFor = (key: LangKey) =>
-    key === 'dari'
-      ? t('quran.translation.dari')
-      : key === 'pashto'
-        ? t('quran.translation.pashto')
-        : t('quran.translation.english');
+  const labelFor = (key: LangKey) => {
+    if (key === 'turkish') {
+      return choose({
+        dari: 'ترکی',
+        pashto: 'ترکي',
+        english: 'Turkish',
+        turkish: 'Türkçe',
+        arabic: 'التركية',
+      }) ?? 'Türkçe';
+    }
+    if (key === 'arabic') {
+      return choose({
+        dari: 'عربی',
+        pashto: 'عربي',
+        english: 'Arabic',
+        turkish: 'Arapça',
+        arabic: 'العربية',
+      }) ?? 'العربية';
+    }
+    return t(`quran.translation.${key}`);
+  };
 
   return (
     <RtlView

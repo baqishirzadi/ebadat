@@ -126,8 +126,10 @@ function loadAllAyahs() {
       const pashtoRaw = String(ayah.translation_pashto || '');
       const pashto = cleanPashtoDisplay(pashtoRaw);
       const english = String(ayah.translation_english || '');
+      const turkish = String(ayah.translation_turkish || '');
+      const arabicMeaning = String(ayah.translation_arabic || '');
 
-      if (!arabic.trim() || !dari.trim() || !pashto.trim() || !english.trim()) {
+      if (!arabic.trim() || !dari.trim() || !pashto.trim() || !english.trim() || !turkish.trim() || !arabicMeaning.trim()) {
         throw new Error(`Empty text at ${surahNumber}:${ayah.number}`);
       }
 
@@ -140,11 +142,15 @@ function loadAllAyahs() {
         dari_text: dari,
         pashto_text: pashto,
         english_text: english,
+        turkish_text: turkish,
+        arabic_meaning_text: arabicMeaning,
         arabic_norm: normalizeArabicForSearch(arabic),
         arabic_compact: compactArabicForSearch(arabic),
         dari_norm: normalizeDariForSearch(dari),
         pashto_norm: normalizePashtoForSearch(pashtoRaw),
         english_norm: normalizeEnglishForSearch(english),
+        turkish_norm: normalizeEnglishForSearch(turkish),
+        arabic_meaning_norm: normalizeDariForSearch(arabicMeaning),
       });
     }
   }
@@ -171,17 +177,23 @@ function buildDatabase(rows) {
       dari_text TEXT NOT NULL,
       pashto_text TEXT NOT NULL,
       english_text TEXT NOT NULL,
+      turkish_text TEXT NOT NULL,
+      arabic_meaning_text TEXT NOT NULL,
       arabic_norm TEXT NOT NULL,
       arabic_compact TEXT NOT NULL,
       dari_norm TEXT NOT NULL,
       pashto_norm TEXT NOT NULL,
-      english_norm TEXT NOT NULL
+      english_norm TEXT NOT NULL,
+      turkish_norm TEXT NOT NULL,
+      arabic_meaning_norm TEXT NOT NULL
     );
 
     CREATE INDEX idx_ayahs_surah_ayah ON ayahs(surah_number, ayah_number);
     CREATE INDEX idx_ayahs_arabic_norm ON ayahs(arabic_norm);
     CREATE INDEX idx_ayahs_arabic_compact ON ayahs(arabic_compact);
     CREATE INDEX idx_ayahs_english_norm ON ayahs(english_norm);
+    CREATE INDEX idx_ayahs_turkish_norm ON ayahs(turkish_norm);
+    CREATE INDEX idx_ayahs_arabic_meaning_norm ON ayahs(arabic_meaning_norm);
 
     CREATE VIRTUAL TABLE ayahs_fts USING fts5(
       arabic_norm,
@@ -189,6 +201,8 @@ function buildDatabase(rows) {
       dari_norm,
       pashto_norm,
       english_norm,
+      turkish_norm,
+      arabic_meaning_norm,
       content='ayahs',
       content_rowid='id',
       tokenize='unicode61 remove_diacritics 0'
@@ -198,18 +212,18 @@ function buildDatabase(rows) {
   const insert = db.prepare(`
     INSERT INTO ayahs (
       id, surah_number, ayah_number, surah_name,
-      arabic_text, dari_text, pashto_text, english_text,
-      arabic_norm, arabic_compact, dari_norm, pashto_norm, english_norm
+      arabic_text, dari_text, pashto_text, english_text, turkish_text, arabic_meaning_text,
+      arabic_norm, arabic_compact, dari_norm, pashto_norm, english_norm, turkish_norm, arabic_meaning_norm
     ) VALUES (
       @id, @surah_number, @ayah_number, @surah_name,
-      @arabic_text, @dari_text, @pashto_text, @english_text,
-      @arabic_norm, @arabic_compact, @dari_norm, @pashto_norm, @english_norm
+      @arabic_text, @dari_text, @pashto_text, @english_text, @turkish_text, @arabic_meaning_text,
+      @arabic_norm, @arabic_compact, @dari_norm, @pashto_norm, @english_norm, @turkish_norm, @arabic_meaning_norm
     )
   `);
 
   const insertFts = db.prepare(`
-    INSERT INTO ayahs_fts(rowid, arabic_norm, arabic_compact, dari_norm, pashto_norm, english_norm)
-    VALUES (@id, @arabic_norm, @arabic_compact, @dari_norm, @pashto_norm, @english_norm)
+    INSERT INTO ayahs_fts(rowid, arabic_norm, arabic_compact, dari_norm, pashto_norm, english_norm, turkish_norm, arabic_meaning_norm)
+    VALUES (@id, @arabic_norm, @arabic_compact, @dari_norm, @pashto_norm, @english_norm, @turkish_norm, @arabic_meaning_norm)
   `);
 
   const tx = db.transaction((items) => {
@@ -235,7 +249,7 @@ function main() {
 
   const hash = crypto.createHash('sha256').update(fs.readFileSync(OUT_DB)).digest('hex');
   const meta = {
-    version: 2,
+    version: 3,
     totalAyahs: rows.length,
     totalSurahs: 114,
     generatedAt: new Date().toISOString(),

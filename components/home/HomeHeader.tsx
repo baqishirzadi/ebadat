@@ -31,8 +31,8 @@ interface HomeHeaderProps {
 
 export function HomeHeader({ onCityPress }: HomeHeaderProps) {
   const { theme } = useApp();
-  const { t, language, fontFamily } = useI18n();
-  const isEnglish = language === 'english';
+  const { t, language, fontFamily, isLatin } = useI18n();
+  const isEnglish = isLatin;
   const { state } = usePrayer();
   const insets = useSafeAreaInsets();
   const [clock, setClock] = useState(() => formatLiveClock(new Date()));

@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "برای الفت‌دادن قریش.",
       "translation_pashto": "106-1 د قریشو له یو بل سره د الفت له وجې نه",
-      "translation_english": "For the accustomed security of the Quraysh,"
+      "translation_english": "For the accustomed security of the Quraysh,",
+      "translation_turkish": "Kureyş'in alışılagelmiş güvenliği için,",
+      "translation_arabic": "لإرضاء قريش."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "الفت‌دادن آن‌ها به سفر زمستان و تابستان.",
       "translation_pashto": "106-2 د ژمي او اوړي په سفر كې د دوى د الفت په وجه",
-      "translation_english": "secure in their winter and summer journeys."
+      "translation_english": "secure in their winter and summer journeys.",
+      "translation_turkish": "kış ve yaz yolculuklarında güvendeler.",
+      "translation_arabic": "السماح لهم بالسفر في الشتاء والصيف."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "پس باید صاحب این خانه را عبادت کنند.",
       "translation_pashto": "106-3 نو لازم دي چې دوى د دې كور د رب عبادت وكړي",
-      "translation_english": "Let them worship the Lord of this [Sacred] House,"
+      "translation_english": "Let them worship the Lord of this [Sacred] House,",
+      "translation_turkish": "Bu evin Rabbine kulluk etsinler.",
+      "translation_arabic": "فينبغي لهم أن يعبدوا صاحب هذا البيت."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "کسی که آن‌ها را در گرسنگی طعام داد و در وقت ترس، امن و امان بخشید.",
       "translation_pashto": "106-4 هغه (رب) چې دوى ته يې له لوږې نه (د بچ كولو لپاره) طعام وركړى دى او دوى ته يې له وېرې نه (د ساتلو لپاره) امن (او بې خوفي) وركړې ده",
-      "translation_english": "Who fed them against hunger and made them secure against fear."
+      "translation_english": "Who fed them against hunger and made them secure against fear.",
+      "translation_turkish": "Onları açlığa karşı doyuran ve korkudan emin kılandır.",
+      "translation_arabic": "الذي أطعمهم عندما جاعوا، وآمنهم عندما خافوا."
     }
   ]
 }

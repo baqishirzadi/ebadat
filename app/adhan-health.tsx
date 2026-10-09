@@ -106,6 +106,12 @@ export default function AdhanHealthScreen() {
       if (language === 'english') {
         return formatGregorianDateTimeCompact(date, String, 'en-US');
       }
+      if (language === 'turkish') {
+        return formatGregorianDateTimeCompact(date, String, 'tr-TR');
+      }
+      if (language === 'arabic') {
+        return formatGregorianDateTimeCompact(date, toArabicNumerals, 'ar');
+      }
       if (language === 'pashto') {
         return formatGregorianDateTimeCompact(date, toArabicNumerals, 'ps-AF');
       }

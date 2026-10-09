@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "قسم به شب چون روز را (با تاریکی) بپوشاند.",
       "translation_pashto": "92-1 قسم دى په شپه كله چې دا (هر شى) پټ كړي",
-      "translation_english": "By the night when it covers,"
+      "translation_english": "By the night when it covers,",
+      "translation_turkish": "Geceyi kapladığında,",
+      "translation_arabic": "والليل إذ يغشى النهار ( ظلمة ) ."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "و قسم به روز چون روشن شود.",
       "translation_pashto": "92-2 او په ورځ باندې كله چې روښانه شي",
-      "translation_english": "and by the day when it appears,"
+      "translation_english": "and by the day when it appears,",
+      "translation_turkish": "ve ortaya çıktığı güne kadar,",
+      "translation_arabic": "وأقسم باليوم الذي يتبين فيه."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و قسم به آن ذاتی که نر و ماده را آفریده است.",
       "translation_pashto": "92-3 او په هغه ذات باندې چې نر او ښځه يې پیدا كړي دي",
-      "translation_english": "and by His creation of male and female,"
+      "translation_english": "and by His creation of male and female,",
+      "translation_turkish": "ve O'nun erkeği ve dişiyi yaratmasıyla,",
+      "translation_arabic": "وأقسم بالذي خلق الذكر والأنثى."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "همانا کوشش‌های شما گوناگون و مختلف است.",
       "translation_pashto": "92-4 چې بېشكه ستاسو سعي (او عمل) خامخا  بېل بېل دي",
-      "translation_english": "surely your efforts are divergent."
+      "translation_english": "surely your efforts are divergent.",
+      "translation_turkish": "Elbette çabalarınız farklı.",
+      "translation_arabic": "والحقيقة أن جهودكم متنوعة ومختلفة."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "پس اما کسی که (در راه الله مال خود را) بخشید و پرهیزگاری کرد.",
       "translation_pashto": "92-5 نو هر چې هغه څوك دى چې وركړه كوي او وېرېږي",
-      "translation_english": "As for the one who gives in charity and fears Allah,"
+      "translation_english": "As for the one who gives in charity and fears Allah,",
+      "translation_turkish": "Sadaka veren ve Allah'tan korkan kimseye gelince;",
+      "translation_arabic": "فالذي بذل (ماله في سبيل الله) ومارس التقوى."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "و شریعت نیک (و آسان) را تصدیق کرد.",
       "translation_pashto": "92-6 او د ډېرې ښكلې كلمې تصدیق كوي",
-      "translation_english": "and truly believes in the best reward,"
+      "translation_english": "and truly believes in the best reward,",
+      "translation_turkish": "ve gerçekten en iyi ödüle inanıyor,",
+      "translation_arabic": "واعترف بالقانون الجيد (السهل)."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "پس (راه رسیدن) به آسایش را برای او آسان می‌گردانیم.",
       "translation_pashto": "92-7 نو مونږ به ضرور ده ته د اسانې لارې اسانتیا وركړو",
-      "translation_english": "We will make easy for him the way of salvation."
+      "translation_english": "We will make easy for him the way of salvation.",
+      "translation_turkish": "Biz ona kurtuluş yolunu kolaylaştıracağız.",
+      "translation_arabic": "لذلك سهلنا عليه الأمر."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "ولی کسی که بخل ورزید، و (خود را) مستغنی شمرد.",
       "translation_pashto": "92-8 او هر چې هغه څوك دى چې بخیلي كوي او بې  پروايي كوي",
-      "translation_english": "But as for the one who is miserly and deems himself self-sufficient,"
+      "translation_english": "But as for the one who is miserly and deems himself self-sufficient,",
+      "translation_turkish": "Ama cimri olup kendini yeterli gören kimseye gelince;",
+      "translation_arabic": "ولكن الذي كان يبخل ويعتبر (نفسه) محتاجا."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "و (شریعت) نیک (و آسان) را تکذیب کرد.",
       "translation_pashto": "92-9 او د ډېرې ښكلې كلمې تكذیب كوي (دروغ يې ګڼي)",
-      "translation_english": "and denies the best reward,"
+      "translation_english": "and denies the best reward,",
+      "translation_turkish": "ve en iyi ödülü reddeder,",
+      "translation_arabic": "وأنكر الطيب (والسهل) (القانون)."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "پس زودا که راه سختی (راه دوزخ) را به او آسان کنیم.",
       "translation_pashto": "92-10 نو مونږ به ضرور ده ته د سختې لارې اسانتیا وركړو",
-      "translation_english": "We will make easy for him the way of perdition."
+      "translation_english": "We will make easy for him the way of perdition.",
+      "translation_turkish": "Biz ona azap yolunu kolaylaştıracağız.",
+      "translation_arabic": "فلنسهل عليه الطريق الصعب (طريق جهنم) قريبا."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "و وقتی (به گور) انداخته شود مال و دارایی‌اش به او سودی نخواهد کرد.",
       "translation_pashto": "92-11 او كله چې دى په كنده كې غورځېږي (هلاكېږي، نو) د ده مال به د ده هېڅ په كار رانشي",
-      "translation_english": "His wealth will be of no avail to him when he tumbles [into Hell]."
+      "translation_english": "His wealth will be of no avail to him when he tumbles [into Hell].",
+      "translation_turkish": "(Cehenneme) düştüğünde malı ona hiçbir fayda sağlamayacaktır.",
+      "translation_arabic": "وإذا ألقي في القبر لم ينفعه ماله."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "البته راهنمائی (انسان‌ها) بر عهدۀ ماست.",
       "translation_pashto": "92-12 بېشكه خاص زمونږ په ذمه خامخا لاره ښوول دي",
-      "translation_english": "Indeed, it is upon Us to show the right way,"
+      "translation_english": "Indeed, it is upon Us to show the right way,",
+      "translation_turkish": "Şüphesiz doğru yolu göstermek Bize düşer.",
+      "translation_arabic": "وبطبيعة الحال، الأمر متروك لنا لتوجيه (البشر)."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "و البته (کامیابی) دنیا و آخرت در اختیار ماست.",
       "translation_pashto": "92-13 او بېشكه خاص زمونږ لپاره اخرت او دنیا ده (د دواړو اختيار دى)",
-      "translation_english": "and surely to Us belong the Hereafter and the present life."
+      "translation_english": "and surely to Us belong the Hereafter and the present life.",
+      "translation_turkish": "Şüphesiz ahiret ve dünya hayatı bizimdir.",
+      "translation_arabic": "وبالطبع (النجاح) في الدنيا والآخرة هو بين أيدينا."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "پس شما را از آتشی که شعله می‌زند ترسانیدم.",
       "translation_pashto": "92-14 نوما تاسو له داسې اوره ووېرولئ چې لمبې وهي",
-      "translation_english": "So I warn you of a raging Fire,"
+      "translation_english": "So I warn you of a raging Fire,",
+      "translation_turkish": "O halde sizi şiddetli bir ateşe karşı uyarıyorum.",
+      "translation_arabic": "فأخافتك من النار المشتعلة."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "جز بدبخت‌ترین انسان‌ها در آن درنیاید.",
       "translation_pashto": "92-15 ده ته به نه ننوځي مګر ترټولو بدبخته",
-      "translation_english": "none will enter it except the most wretched,"
+      "translation_english": "none will enter it except the most wretched,",
+      "translation_turkish": "Oraya en zavallılardan başkası giremez.",
+      "translation_arabic": "ولا يدخلها إلا أشد الناس بؤسا."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "آن که تکذیب کرد و روی گشتاند.",
       "translation_pashto": "92-16 هغه چې تكذیب يې كړى او مخ يې (له حقه) ګرځولى دى",
-      "translation_english": "who denied and turned away."
+      "translation_english": "who denied and turned away.",
+      "translation_turkish": "kim yalanladı ve yüz çevirdi.",
+      "translation_arabic": "الذي أنكر وأعرض."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "و پرهیزگارترین (انسان‌ها) از آن دور داشته خواهد شد.",
       "translation_pashto": "92-17 او له ده نه به خامخا لرې ساتلى شي ښه وېرېدونكى",
-      "translation_english": "But the most righteous will be saved from it,"
+      "translation_english": "But the most righteous will be saved from it,",
+      "translation_turkish": "Fakat en salih olanlar ondan kurtulacaktır.",
+      "translation_arabic": "فيبتعد عنها أتقى الناس."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "آن که مال خود را می‌دهد تا پاک شود.",
       "translation_pashto": "92-18 هغه چې خپل مال د دې لپاره وركوي چې پاك شي",
-      "translation_english": "who spends his wealth to purify himself,"
+      "translation_english": "who spends his wealth to purify himself,",
+      "translation_turkish": "Malını temizlenmek için harcayan,",
+      "translation_arabic": "الذي يعطي نفسه ليتطهر."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "و هیچ کسی نزد او نعمتی ندارد که پاداش (آن را) ببیند.",
       "translation_pashto": "92-19 او له ده سره (د ده په غاړه) د هیچا لپاره څه نعمت (او احسان) نشته چې بدله يې وركولى شي ",
-      "translation_english": "not in return for someone’s favors,"
+      "translation_english": "not in return for someone’s favors,",
+      "translation_turkish": "birinin iyiliği karşılığında değil,",
+      "translation_arabic": "ولا ينعم عليه أحد فيرى ثوابها."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "(انفاق نمی‌کند آن متقی) مگر برای کسب رضایت پروردگار والاترش.",
       "translation_pashto": "92-20 مګر د خپل رب د مخ لټونې لپاره چې تر ټولو اوچت دى",
-      "translation_english": "but to seek the pleasure of his Lord, the Most High."
+      "translation_english": "but to seek the pleasure of his Lord, the Most High.",
+      "translation_turkish": "ancak Yüce Rabbinin rızasını aramak için.",
+      "translation_arabic": "(وذلك التقي لا ينفق) إلا في وجه ربه."
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "و البته به زودی راضی شود.",
       "translation_pashto": "92-21 او خامخا ژر به دى راضي شي`",
-      "translation_english": "He will surely be well pleased."
+      "translation_english": "He will surely be well pleased.",
+      "translation_turkish": "Kesinlikle çok memnun olacaktır.",
+      "translation_arabic": "وبالطبع يكون راضيا قريبا."
     }
   ]
 }

@@ -601,7 +601,7 @@ function StartupDebugBadge({
 }) {
   const elapsed = Date.now() - STARTUP_EPOCH_MS;
   return (
-    <View style={styles.debugBadge}>
+    <View pointerEvents="none" style={styles.debugBadge}>
       <Text style={styles.debugText}>startup: {phase}</Text>
       <Text style={styles.debugText}>interactive: {interactiveReady ? 'yes' : 'no'}</Text>
       <Text style={styles.debugText}>elapsed: {elapsed}ms</Text>

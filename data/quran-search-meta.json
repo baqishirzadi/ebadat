@@ -1,10 +1,10 @@
 {
-  "version": 2,
+  "version": 3,
   "totalAyahs": 6236,
   "totalSurahs": 114,
-  "generatedAt": "2026-09-25T11:27:24.523Z",
+  "generatedAt": "2026-10-09T17:17:07.718Z",
   "dbPath": "assets/quran-search.db",
-  "sha256": "b5b9dbc051b432f5d13d36099631addce6649b042fe042647a2203a570157810",
+  "sha256": "24042590e9bdc10825260a3afb2476ac0c9a4a86ccb75dfde56406e2166a7544",
   "sample": {
     "fatiha1ArabicNorm": "بسم الله الرحمان الرحیم",
     "fatiha2ArabicNorm": "الحمد لله رب العالمین",

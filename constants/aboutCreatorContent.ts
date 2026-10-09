@@ -48,7 +48,20 @@ export const CREATOR_MESSAGE_ENGLISH_BODY =
 export const CREATOR_MESSAGE_ENGLISH_SIGNATURE =
   'Sayed Abdul Baqi, son of Sayed Abdul Ellah Shirzadi';
 
+export const CREATOR_MESSAGE_TURKISH_TITLE = 'Yapımcının notu';
+export const CREATOR_MESSAGE_TURKISH_BODY =
+  'Bu uygulamayı Müslümanların ibadeti için sade ve güvenilir bir yol arkadaşı olsun diye yaptım. Onu dedem Halife Sahib Seyyid Muhammed Yetim Şirzadi’nin (Allah rahmet eylesin) ruhuna adıyorum ve Allah’tan onun yolunu sürdürme gücü diliyorum.';
+export const CREATOR_MESSAGE_TURKISH_SIGNATURE =
+  'Seyyid Abdülbaki, Seyyid Abdülellah Şirzadi’nin oğlu';
+
+export const CREATOR_MESSAGE_ARABIC_TITLE = 'كلمة من المطوّر';
+export const CREATOR_MESSAGE_ARABIC_BODY =
+  'بنيت هذا التطبيق ليكون أداة بسيطة وموثوقة لعبادة المسلمين. أهديه إلى روح جدي الخليفة السيد محمد يتيم شيرزادي رحمه الله، وأسأل الله أن يوفقني لمواصلة طريقه.';
+export const CREATOR_MESSAGE_ARABIC_SIGNATURE = 'السيد عبدالباقي بن السيد عبدالإله شيرزادي';
+
 export const CREATOR_COMPANY_LABEL = 'سازنده: شرکت نرم‌افزار';
 export const CREATOR_COMPANY_LABEL_ENGLISH = 'Software studio';
+export const CREATOR_COMPANY_LABEL_TURKISH = 'Yazılım stüdyosu';
+export const CREATOR_COMPANY_LABEL_ARABIC = 'شركة البرمجيات';
 export const CREATOR_COMPANY_LINK = 'WWW.AFGHAN.DEV';
 export const CREATOR_COMPANY_URL = 'https://www.afghan.dev';

@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "قسم به بادهای فرستاده شده‌ای پی در پی.",
       "translation_pashto": "77-1 قسم دى په هغو بادونو چې پرله پسې لېږل شوي دي!",
-      "translation_english": "By those [winds] sent forth in succession,"
+      "translation_english": "By those [winds] sent forth in succession,",
+      "translation_turkish": "Peş peşe gönderilen o [rüzgarlara] and olsun ki,",
+      "translation_arabic": "أقسم بالرياح المرسلة تباعا."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "(باز) قسم به بادهای تیز وزنده.",
       "translation_pashto": "77-2 بیا په هغو سختو تېزو چلېدونكو بادونو باندې، تېز تلل",
-      "translation_english": "those that blow violently,"
+      "translation_english": "those that blow violently,",
+      "translation_turkish": "şiddetle üfleyenler,",
+      "translation_arabic": "(مرة أخرى) أقسم بالرياح الشديدة."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و قسم به بادهای که ابرها را منتشر می‌کنند (برای باریدن باران).",
       "translation_pashto": "77-3 او په خورونكو بادونو باندې، خورول",
-      "translation_english": "and scatter [rainclouds] far and wide,"
+      "translation_english": "and scatter [rainclouds] far and wide,",
+      "translation_turkish": "ve [yağmur bulutlarını] uzaklara ve geniş bir alana dağıtın,",
+      "translation_arabic": "(والرياح المذرية السحاب)."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "باز قسم به فرشتگان فرق‌کننده (بین حق و باطل).",
       "translation_pashto": "77-4 بیا په  هغو بادونو چې جدا والى راولي، جدا كول",
-      "translation_english": "And by those [angels] who bring criterion;"
+      "translation_english": "And by those [angels] who bring criterion;",
+      "translation_turkish": "Ve ölçü getiren (meleklere) and olsun ki;",
+      "translation_arabic": "ومرة أخرى أقسم بالملائكة الذين يفرقون بين الحق والباطل."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "پس قسم به فرشتگان القا کنندۀ وعظ و وحی.",
       "translation_pashto": "77-5 بیا په هغو بادونو  باندې چې د ذكر اچونكي دي",
-      "translation_english": "and those who deliver revelation,"
+      "translation_english": "and those who deliver revelation,",
+      "translation_turkish": "ve vahiy getirenler,",
+      "translation_arabic": "فأقسم بالملائكة الذين يلهمون التبشير والوحي."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "برای رفع عذر یا بیم دادن (از عذاب الله).",
       "translation_pashto": "77-6 د عذر  لپاره او وېرولو لپاره",
-      "translation_english": "leaving no excuse or giving warning –"
+      "translation_english": "leaving no excuse or giving warning –",
+      "translation_turkish": "mazeret bırakmamak veya uyarıda bulunmamak –",
+      "translation_arabic": "لإزالة العذر أو التحذير (من عذاب الله)."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "که البته آنچه وعده داده می‌شوید (از جزا و سزا) واقع شدنی است.",
       "translation_pashto": "77-7 بېشكه چې له تاسو سره څه وعده كولى شي یقینًا (هغه) واقع كېدونكې ده",
-      "translation_english": "what you are promised will surely come to pass."
+      "translation_english": "what you are promised will surely come to pass.",
+      "translation_turkish": "size vaad edilenler mutlaka gerçekleşecektir.",
+      "translation_arabic": "وبطبيعة الحال، ما توعدون به (من العقوبة) محقق."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "پس وقتی که ستاره‌ها بی‌نور و محو شوند.",
       "translation_pashto": "77-8 نو كله چې ستوري بې رڼا كړى شي",
-      "translation_english": "So when the stars are effaced,"
+      "translation_english": "So when the stars are effaced,",
+      "translation_turkish": "Yani yıldızlar silindiğinde,",
+      "translation_arabic": "لذلك عندما تتلاشى النجوم."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که آسمان شگافته شود.",
       "translation_pashto": "77-9 او كله چې اسمان څیرې كړى شي",
-      "translation_english": "and when the sky is split apart,"
+      "translation_english": "and when the sky is split apart,",
+      "translation_turkish": "ve gökyüzü yarıldığında,",
+      "translation_arabic": "وإذا السماء انشقت."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که کوه‌ها ریشه کن و پراگنده شوند.",
       "translation_pashto": "77-10 او كله چې غرونه والوزول شي",
-      "translation_english": "and when the mountains are blown away,"
+      "translation_english": "and when the mountains are blown away,",
+      "translation_turkish": "ve dağlar uçup gittiğinde,",
+      "translation_arabic": "وإذا الجبال اقتلعت وتناثرت."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که برای (جمع شدن) پیغمبران وقت تعیین شود.",
       "translation_pashto": "77-11 او كله چې رسولانو ته وخت وټاكل شي",
-      "translation_english": "and when the messengers are summoned,"
+      "translation_english": "and when the messengers are summoned,",
+      "translation_turkish": "ve elçiler çağrıldığı zaman,",
+      "translation_arabic": "وعندما تم تحديد الوقت ل(جمع) الأنبياء."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "برای کدام روزی پس انداخته شده‌اند؟",
       "translation_pashto": "77-12 د كومې ورځې لپاره دغه (څیزونه) وروسته كړى شوي دي؟",
-      "translation_english": "until which Day has all this been postponed?"
+      "translation_english": "until which Day has all this been postponed?",
+      "translation_turkish": "Bütün bunlar hangi güne kadar ertelendi?",
+      "translation_arabic": "إلى أي يوم تم تأجيلهم؟"
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "برای روز فیصله (به دادگاه الهی پس انداخته شده‌اند).",
       "translation_pashto": "77-13 د فیصلې د ورځې لپاره ",
-      "translation_english": "Until the Day of Judgment."
+      "translation_english": "Until the Day of Judgment.",
+      "translation_turkish": "Kıyamet gününe kadar.",
+      "translation_arabic": "ليوم القيامة (يردون إلى المحكمة الإلهية)."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "و تو چه می‌دانی که روز فیصله چیست؟",
       "translation_pashto": "77-14 او ته څه  شي پوه كړې چې د فیصلې ورځ كله ده ",
-      "translation_english": "How do you know what the Day of Judgment is?"
+      "translation_english": "How do you know what the Day of Judgment is?",
+      "translation_turkish": "Kıyamet gününün ne olduğunu nereden biliyorsun?",
+      "translation_arabic": "وماذا تعرف عن يوم القيامة؟"
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-15 د دروغ ګڼونكو لپاره په دغې ورځ كې هلاكت دى",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "آیا ما پیشینیان (مجرم) را هلاک نکردیم؟",
       "translation_pashto": "77-16 ایا مونږ ړومبني (مجرمان) نه دي هلاك كړي",
-      "translation_english": "Did We not destroy the earlier nations?"
+      "translation_english": "Did We not destroy the earlier nations?",
+      "translation_turkish": "Biz daha önceki ümmetleri yok etmedik mi?",
+      "translation_arabic": "ألم نهلك السلف؟"
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "باز پسينيان [مجرم‌] را در پی آنان می‌آوریم.",
       "translation_pashto": "77-17 بیا مونږ په دوى پسې  وروستني خلق ورلېږو",
-      "translation_english": "Then We will do likewise to the later ones."
+      "translation_english": "Then We will do likewise to the later ones.",
+      "translation_turkish": "Sonra sonrakilere de aynısını yapacağız.",
+      "translation_arabic": "سوف نعيد [المجرمين] من بعدهم."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "ما با مجرمان اینگونه رفتار می‌کنیم.",
       "translation_pashto": "77-18 همداسې كار مونږ له مجرمانو (كافرانو)  سره كوو",
-      "translation_english": "This is how We deal with the wicked."
+      "translation_english": "This is how We deal with the wicked.",
+      "translation_turkish": "Biz zalimlere böyle davranırız.",
+      "translation_arabic": "هكذا نتعامل مع المجرمين."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-19 په دغې ورځې كې د تكذیب كوونكو  (دروغ ګڼونكو) لپاره هلاكت دى",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "آیا شما را از آب حقیر (منی) نیافریدیم؟",
       "translation_pashto": "77-20 ایا مونږ  تاسو له سپكو اوبو نه نه یئ پیدا كړي",
-      "translation_english": "Did We not create you from a worthless fluid,"
+      "translation_english": "Did We not create you from a worthless fluid,",
+      "translation_turkish": "Sizi değersiz bir sıvıdan yaratmadık mı?",
+      "translation_arabic": "ألم نخلقكم من ماء مهين؟"
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "باز آن را در قرارگاه محفوظ و استوار (رحم مادر) قرار دادیم.",
       "translation_pashto": "77-21 پس مونږ دغه (اوبه) په مضبوط ځاى كې كېښودلې",
-      "translation_english": "then We placed it in a secure repository"
+      "translation_english": "then We placed it in a secure repository",
+      "translation_turkish": "sonra onu güvenli bir depoya yerleştirdik",
+      "translation_arabic": "ووضعناه في مكان آمن ومستقر (رحم الأم)."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "تا مدتی معین.",
       "translation_pashto": "77-22 تر مقررې نېټې (اندازې) پورې",
-      "translation_english": "for a determined period?"
+      "translation_english": "for a determined period?",
+      "translation_turkish": "belirli bir süre için mi?",
+      "translation_arabic": "لفترة معينة من الزمن."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "پس اندازه کردیم (برای بودنِ آن در رحم مادر) پس ما چه خوب اندازه‌کنندگانیم.",
       "translation_pashto": "77-23 نو مونږ قادر یو، پس (مونږ) ښه قدرت لرونكي یو",
-      "translation_english": "For We determined it; How excellently We determine!"
+      "translation_english": "For We determined it; How excellently We determine!",
+      "translation_turkish": "Çünkü onu Biz belirledik; Biz ne kadar güzel tespit ederiz!",
+      "translation_arabic": "فكالناه (ليكون في بطن أمه) فنحن نحسن الكيل."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-24 په دغې ورځې كې د دروغ ګڼونكو لپاره هلاكت دى",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "آیا زمین را جمع‌کننده نگردانیدیم؟",
       "translation_pashto": "77-25 ایا مونږ ځمكه نه ده ګرځولې راجمع كوونكې",
-      "translation_english": "Have We not made the earth a receptacle"
+      "translation_english": "Have We not made the earth a receptacle",
+      "translation_turkish": "Biz yeryüzünü bir toplanma alanı kılmadık mı?",
+      "translation_arabic": "ألم نجعل الأرض جامعا؟"
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "(برای) زنده‌ها و مرده‌ها؟",
       "translation_pashto": "77-26 ژوندیو لره او مړیو لره",
-      "translation_english": "for the living and the dead,"
+      "translation_english": "for the living and the dead,",
+      "translation_turkish": "yaşayanlar ve ölüler için,",
+      "translation_arabic": "(للأحياء والأموات)؟"
     },
     {
       "number": 27,
@@ -301,7 +353,9 @@
       "sajda": false,
       "translation_dari": "و در آن کوه‌های بلند قرار دادیم و به شما (از زمین) آب شیرین نوشانیدیم.",
       "translation_pashto": "77-27 او مونږ په دې كې اوچت لوى غرونه پیدا كړي دي او په تاسو مو خوږې تنده ماتوونكې اوبه څښلي",
-      "translation_english": "and placed therein firm towering mountains, and given you fresh water to drink?"
+      "translation_english": "and placed therein firm towering mountains, and given you fresh water to drink?",
+      "translation_turkish": "Orada sağlam dağlar mı yarattık ve size içmeniz için tatlı su mu verdik?",
+      "translation_arabic": "وجعلنا فيها رواسي شامخات وأسقيناكم ماء عذبا (من الأرض)."
     },
     {
       "number": 28,
@@ -312,7 +366,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-28 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 29,
@@ -323,7 +379,9 @@
       "sajda": false,
       "translation_dari": "(به مجرمان گویند) بروید به‌سوی آنچه که آن را دروغ می‌شمردید.",
       "translation_pashto": "77-29 تاسو ځئ لاړ شئ هغه څیز ته چې تاسو به هغه دروغ ګاڼه",
-      "translation_english": "[They will be told,] “Proceed to that [Fire] which you used to deny!"
+      "translation_english": "[They will be told,] “Proceed to that [Fire] which you used to deny!",
+      "translation_turkish": "[Onlara şöyle denilecek:] “Yalanladığınız o [Ateşe] gidin!",
+      "translation_arabic": "(قل للمجرمين اذهبوا إلى ما كنتم تكذبون)"
     },
     {
       "number": 30,
@@ -334,7 +392,9 @@
       "sajda": false,
       "translation_dari": "بروید به‌سوی سایۀ سه شاخه (سایۀ آتش دوزخ).",
       "translation_pashto": "77-30 تاسو ځئ لاړ شئ هغه سیوري ته چې د دریوڅانګو والا دى",
-      "translation_english": "Proceed to the shadow [of smoke] ascending in three columns,"
+      "translation_english": "Proceed to the shadow [of smoke] ascending in three columns,",
+      "translation_turkish": "Üç sütun halinde yükselen [dumanın] gölgesine doğru ilerleyin,",
+      "translation_arabic": "اذهب إلى ظل الشعب الثلاثة (ظل جهنم)."
     },
     {
       "number": 31,
@@ -345,7 +405,9 @@
       "sajda": false,
       "translation_dari": "(آن سایه) نه سردی دارد و نه گرمی شعلۀ آتش را دفع می‌کند.",
       "translation_pashto": "77-31 چې نه یخ دى او نه د اور لمبې لرې كولى شي",
-      "translation_english": "that provides neither shade nor protection from the flames."
+      "translation_english": "that provides neither shade nor protection from the flames.",
+      "translation_turkish": "bu ne gölge sağlar ne de alevlere karşı koruma sağlar.",
+      "translation_arabic": "( ذلك الظل ) ليس باردا ولا دافئا يطرد لهيب النار ."
     },
     {
       "number": 32,
@@ -356,7 +418,9 @@
       "sajda": false,
       "translation_dari": "آتش پاره‌هایی از خود بیرون می‌اندازد که مانند قصر (بزرگ) است.",
       "translation_pashto": "77-32 بېشكه دغه (اور) داسې سرې سكروټې ولي (غورځوي)، لكه اوچتې ماڼۍ ",
-      "translation_english": "Indeed, it [i.e., Hell] throws up sparks as big as castles,"
+      "translation_english": "Indeed, it [i.e., Hell] throws up sparks as big as castles,",
+      "translation_turkish": "Şüphesiz o (cehennem), kaleler büyüklüğünde kıvılcımlar saçar.",
+      "translation_arabic": "تقذف النار شظايا مثل القصر (الكبير)."
     },
     {
       "number": 33,
@@ -367,7 +431,9 @@
       "sajda": false,
       "translation_dari": "گویی شعله‌های آن (در بزرگی) مانند شترهای زردرنگ است.",
       "translation_pashto": "77-33 ګویا كې دغه (سكروټې، بڅركي)  زېړ تور بخن اوښان دي",
-      "translation_english": "as if they were tawny camels."
+      "translation_english": "as if they were tawny camels.",
+      "translation_turkish": "sanki sarımsı kahverengi develermiş gibi.",
+      "translation_arabic": "وكأن لهيبها (في الحجم) مثل الإبل الصفراء."
     },
     {
       "number": 34,
@@ -378,7 +444,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-34 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى ",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 35,
@@ -389,7 +457,9 @@
       "sajda": false,
       "translation_dari": "این روزی است که (کفار) نمی‌توانند سخن بگویند.",
       "translation_pashto": "77-35 دغه ورځ ده چې دوى به (په كې) خبرې نشي كولى",
-      "translation_english": "On that Day they won’t speak,"
+      "translation_english": "On that Day they won’t speak,",
+      "translation_turkish": "O gün konuşmazlar,",
+      "translation_arabic": "هذا هو اليوم الذي لا يستطيع فيه (الكفار) أن يتكلموا."
     },
     {
       "number": 36,
@@ -400,7 +470,9 @@
       "sajda": false,
       "translation_dari": "و به آنان اجازه داده نمی‌شود تا عذرخواهی کنند.",
       "translation_pashto": "77-36 او دوى ته به اجازت وركولى نشي، پس چې دوى عذر وكړي",
-      "translation_english": "nor will they be allowed to make excuses."
+      "translation_english": "nor will they be allowed to make excuses.",
+      "translation_turkish": "mazeret göstermelerine de izin verilmeyecektir.",
+      "translation_arabic": "ولا يجوز لهم الاعتذار."
     },
     {
       "number": 37,
@@ -411,7 +483,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-37 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 38,
@@ -422,7 +496,9 @@
       "sajda": false,
       "translation_dari": "(و گفته شود) این روز روزِ فیصله است که شما و مردمان پیشین را جمع کردیم.",
       "translation_pashto": "77-38 دغه د فیصلې ورځ ده، مونږ، تاسو او ړومبني خلق  راجمع كړي دي",
-      "translation_english": "[They will be told,] “This is the Day of Judgment: We have gathered you along with the earlier generations."
+      "translation_english": "[They will be told,] “This is the Day of Judgment: We have gathered you along with the earlier generations.",
+      "translation_turkish": "(Onlara şöyle denilecek:) “Bu, kıyamet günüdür; biz sizi önceki nesillerle birlikte topladık.",
+      "translation_arabic": "(وليقل) هذا اليوم هو يوم القيامة الذي جمعناك فيه والسابقين."
     },
     {
       "number": 39,
@@ -433,7 +509,9 @@
       "sajda": false,
       "translation_dari": "پس اگر حیله‌ای دارید پس به کار گیرید.",
       "translation_pashto": "77-39 نو كه له تاسو سره څه چل مكر وي، نو زما سره (دغه) چل مكر وكړئ",
-      "translation_english": "So if you have any scheme, then plot it against Me.”"
+      "translation_english": "So if you have any scheme, then plot it against Me.”",
+      "translation_turkish": "Eğer bir planınız varsa onu Bana karşı kurun.”",
+      "translation_arabic": "لذا، إذا كانت لديك خدعة، فاستخدمها."
     },
     {
       "number": 40,
@@ -444,7 +522,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-40 په دغې ورځ كې د دروغ ګڼونكو لپاره هلاكت دى",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 41,
@@ -455,7 +535,9 @@
       "sajda": false,
       "translation_dari": "البته پرهیزگاران در سایه‌ها و چشمه‌ها قرار دارند.",
       "translation_pashto": "77-41 یقینًا پرهېزګاران به په سیورو او چینو كې وي",
-      "translation_english": "Indeed, the righteous will be amid shades and springs"
+      "translation_english": "Indeed, the righteous will be amid shades and springs",
+      "translation_turkish": "Muhakkak ki takva sahipleri gölgeler ve pınarlar arasında olacaktır",
+      "translation_arabic": "وبالطبع فإن المتقين في الظلال والينابيع."
     },
     {
       "number": 42,
@@ -466,7 +548,9 @@
       "sajda": false,
       "translation_dari": "و از هر نوع میوه که بخواهند.",
       "translation_pashto": "77-42 او په داسې مېوو كې چې دوى يې غواړي",
-      "translation_english": "and will have whatever fruit they desire."
+      "translation_english": "and will have whatever fruit they desire.",
+      "translation_turkish": "ve diledikleri meyveye sahip olacaklar.",
+      "translation_arabic": "وأي نوع من الفاكهة يريدون."
     },
     {
       "number": 43,
@@ -477,7 +561,9 @@
       "sajda": false,
       "translation_dari": "(به آن‌ها گفته شود که) بخورید و بنوشید خوشگوار به پاداش آنچه (در دنیا) می‌کردید.",
       "translation_pashto": "77-43 (ملايك به مومنانو ته وايي:) تاسو خورئ او څښئ، په داسې حال كې چې خوند اخيستونكي يئ د هغو عملونو په بدل كې چې تاسو به كول",
-      "translation_english": "[They will be told,] “Eat and drink joyfully, as a reward for what you used to do.”"
+      "translation_english": "[They will be told,] “Eat and drink joyfully, as a reward for what you used to do.”",
+      "translation_turkish": "[Onlara şöyle denilecek:] \"Yaptıklarınıza karşılık olarak afiyetle yiyin, için.\"",
+      "translation_arabic": "(يقال لهم) كلوا واشربوا هنيئا جزاء بما كنتم تعملون (في الدنيا)."
     },
     {
       "number": 44,
@@ -488,7 +574,9 @@
       "sajda": false,
       "translation_dari": "همانا ما اینطور نیکوکاران را پاداش می‌دهیم.",
       "translation_pashto": "77-44 بېشكه همداسې مونږ نېكي كوونكو ته بدله وركوو",
-      "translation_english": "This is how We reward those who do good."
+      "translation_english": "This is how We reward those who do good.",
+      "translation_turkish": "İyilik yapanları işte böyle ödüllendiririz.",
+      "translation_arabic": "كذلك نجزي المتقين."
     },
     {
       "number": 45,
@@ -499,7 +587,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-45 په دغې ورځ كې د دروغ ګڼونكو  لپاره هلاكت دى",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 46,
@@ -510,7 +600,9 @@
       "sajda": false,
       "translation_dari": "(به تکذیب‌کنندگان گفته می‌شود) بخورید و بهره گیرید اندک، یقیناً شما مجرمید.",
       "translation_pashto": "77-46 تاسو خورئ او فايده واخلئ لږه، بېشكه تاسو مجرمان یئ",
-      "translation_english": "“Eat and enjoy yourselves for a while; you are truly wicked.”"
+      "translation_english": "“Eat and enjoy yourselves for a while; you are truly wicked.”",
+      "translation_turkish": "“Bir süre yiyin ve keyfinize bakın; sen gerçekten kötüsün.”",
+      "translation_arabic": "(فيقال للكافرين) كلوا وانتفعوا قليلا إنكم مذنبون."
     },
     {
       "number": 47,
@@ -521,7 +613,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-47 په دغې ورځ كې د تكذیب كوونكو (دروغ ویونكو) لپاره هلاكت او تباهي ده",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 48,
@@ -532,7 +626,9 @@
       "sajda": false,
       "translation_dari": "و چون به آنان گفته شود به رکوع بروید نمی‌توانند به رکوع بروند.",
       "translation_pashto": "77-48 او كله چې دوى ته وویل شي تاسو ركوع كوئ (نو) دوى ركوع نه كوي",
-      "translation_english": "When it is said to them, “Bow [in prayer],” they do not bow."
+      "translation_english": "When it is said to them, “Bow [in prayer],” they do not bow.",
+      "translation_turkish": "Onlara \"Rükû edin\" denildiği zaman rükû etmezler.",
+      "translation_arabic": "وعندما يقال لهم اسجدوا لا يستطيعون أن يركعوا."
     },
     {
       "number": 49,
@@ -543,7 +639,9 @@
       "sajda": false,
       "translation_dari": "در آن روز وای بر تکذیب‌کنندگان.",
       "translation_pashto": "77-49 په دغې ورځ كې د تكذیب كوونكو لپاره هلاكت دى",
-      "translation_english": "Woe on that Day to the deniers!"
+      "translation_english": "Woe on that Day to the deniers!",
+      "translation_turkish": "O gün inkar edenlerin vay haline!",
+      "translation_arabic": "فويل يومئذ للمكذبين."
     },
     {
       "number": 50,
@@ -554,7 +652,9 @@
       "sajda": false,
       "translation_dari": "پس بعد از این (انکار قرآن) به کدام سخن ایمان می‌آورند؟",
       "translation_pashto": "77-50 نو له دې (قرآن)  نه وروسته دوى په څه شي ایمان راوړي؟",
-      "translation_english": "In which message after this [Qur’an] will they believe?"
+      "translation_english": "In which message after this [Qur’an] will they believe?",
+      "translation_turkish": "Onlar bundan [Kur'an'dan] sonra hangi mesaja inanacaklar?",
+      "translation_arabic": "فبعد هذا (إنكار القرآن) بأي كلام يؤمنون؟"
     }
   ]
 }

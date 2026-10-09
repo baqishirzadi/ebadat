@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "البته ما نوح را به‌سوی قومش فرستادیم که قوم خود را پیش از این که عذاب دردناک به سراغ آنها بیاید، بترسان.",
       "translation_pashto": "71-1 بېشكه مونږ نوح خپل قوم ته په دې سره لېږلى و چې ته خپل قوم ووېروه، مخكې له دې چې په دوى ډېر دردوونكى عذاب راشي",
-      "translation_english": "Indeed, We sent Noah to his people, “Warn your people before there comes to them a painful punishment.”"
+      "translation_english": "Indeed, We sent Noah to his people, “Warn your people before there comes to them a painful punishment.”",
+      "translation_turkish": "Andolsun ki biz Nuh'u kavmine gönderdik: \"Kavmini kendilerine acı bir azap gelmeden önce uyar.\"",
+      "translation_arabic": "ولقد أرسلنا نوحا إلى قومه لينذرهم من قبل أن يأتيهم عذاب أليم."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "(نوح) گفت: ای قوم من! من برای شما بیم دهنده‌ای آشکارم.",
       "translation_pashto": "71-2 (نو) ده وویل: اى زما قومه! بېشكه زه ستاسو لپاره ښكاره وېروونكى یم   ",
-      "translation_english": "He said: “O my people, indeed I am a clear warner to you,"
+      "translation_english": "He said: “O my people, indeed I am a clear warner to you,",
+      "translation_turkish": "Dedi ki: \"Ey kavmim, ben size apaçık bir uyarıcıyım.",
+      "translation_arabic": "قال (نوح): يا قوم! أنا مثير للقلق واضح بالنسبة لك."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "این که الله را عبادت کنید و از او بترسید و مرا اطاعت کنید.",
       "translation_pashto": "71-3 چې تاسو د الله عبادت كوئ او له ده نه ووېرېږئ او زما اطاعت وكړئ",
-      "translation_english": "that you worship Allah and fear Him, and obey me;"
+      "translation_english": "that you worship Allah and fear Him, and obey me;",
+      "translation_turkish": "Allah'a kulluk etmeniz, O'ndan korkmanız ve bana itaat etmeniz;",
+      "translation_arabic": "أن تعبدوا الله وتتقواه وتطيعوني."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "که الله گناهان شما را می‌آمرزد و اجل شما را تا وقتی معین به تأخیر می‌اندازد. يقيناً هرگاه اجل (و مهلت) مقرر الله برسد به تأخیر نمی‌افتد، اگر می‌دانید.",
       "translation_pashto": "71-4 دى به تاسو ته ستاسو ځینې ګناهونه وبخښي او ترټاكلې نېټې پورې به تاسو وروسته (او باقي پاتې) كړي، بېشكه د الله نېټه چې كله راشي(نو) وروسته كېدى نشي، كه چېرې تاسو پوهېږئ  ",
-      "translation_english": "He will forgive you some of your sins and grant you respite until an appointed term. Indeed, when Allah’s appointed term comes, it cannot be delayed, if you only knew!”"
+      "translation_english": "He will forgive you some of your sins and grant you respite until an appointed term. Indeed, when Allah’s appointed term comes, it cannot be delayed, if you only knew!”",
+      "translation_turkish": "Günahlarınızın bir kısmını bağışlayacak ve size belirlenmiş bir süreye kadar mühlet verecektir. Şüphesiz Allah'ın belirlediği ecel geldiğinde, eğer bilirseniz, artık ertelenemez!\"",
+      "translation_arabic": "أن يغفر الله ذنوبك ويؤخر موتك إلى أجل معين. إن أجل الله إذا جاء لا يتأخر لو كنتم تعلمون."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "نوح گفت: ای پروردگارم! من قومم را شب و روز (به ‌سوی توحید) دعوت دادم.",
       "translation_pashto": "71-5 ده وویل: اى زما ربه! بېشكه ما شپه او ورځ خپل قوم (توحید ته) راوباله",
-      "translation_english": "He said, “My Lord, I have surely called my people night and day,"
+      "translation_english": "He said, “My Lord, I have surely called my people night and day,",
+      "translation_turkish": "Dedi ki: \"Rabbim, ben kavmimi gece gündüz çağırdım.",
+      "translation_arabic": "فقال نوح: يا رب! دعوت قومي ليلاً ونهاراً."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "ولی دعوت من جز بر فرار آنان نیفزود.",
       "translation_pashto": "71-6 نو دوى ته زما بلنې زیاته نه كړه مګر تېښته",
-      "translation_english": "but my call only drove them further away."
+      "translation_english": "but my call only drove them further away.",
+      "translation_turkish": "ama çağrım onları yalnızca daha da uzaklaştırdı.",
+      "translation_arabic": "لكن دعوتي جعلتهم يهربون فقط."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "و هرگاه من آنان را دعوت دادم تا (گناهان)‌شان را بیامرزی، انگشتان‌شان را به گوش‌های خود در آوردند و جامه‌هایشان را به چهره‌های خود پیچیدند و بر (طغیان خود) اصرار نمودند و سخت تکبر ورزیدند.",
       "translation_pashto": "71-7 او بېشكه زه چې هر وارې دوى د دې لپاره راوبلم چې ته دوى وبخښې (نو) دوى خپلې ګوتې په خپلو غوږونو كې ننباسي او په خپلو جامو سره ځان (مخ) پټ كړي او په كفر باندې) اصرار (او همېشه والى) كوي او لويي كوي ډېر غټه لويي",
-      "translation_english": "Every time I call them so that You may forgive them, they thrust their fingers into their ears and cover their faces with their garments, and persist in obstinacy and grow extremely arrogant."
+      "translation_english": "Every time I call them so that You may forgive them, they thrust their fingers into their ears and cover their faces with their garments, and persist in obstinacy and grow extremely arrogant.",
+      "translation_turkish": "Onları bağışlaman için onları her çağırdığımda, parmaklarını kulaklarına tıkarlar, elbiseleriyle yüzlerini örterler, inat ederler ve son derece kibirlenirler.",
+      "translation_arabic": "ولما دعوتهم إلى الاستغفار لهم جعلوا أصابعهم في آذانهم ولفوا وجوههم بثيابهم وأصروا على ذلك وكانوا مستكبرين جدا."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "باز ایشان را به آواز بلند دعوت دادم.",
       "translation_pashto": "71-8 بیا یقینًا ما دوى  ښه په جار (په اوچت اواز سره) راوبلل",
-      "translation_english": "Then I called them openly,"
+      "translation_english": "Then I called them openly,",
+      "translation_turkish": "Daha sonra onları açıkça aradım.",
+      "translation_arabic": "ودعوتهم مرة أخرى إلى الغناء بصوت عالٍ."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "باز (دعوتم را) برای آنان اعلان کردم و گاهی به صورت نهانی (هم) به ایشان دعوت دادم.",
       "translation_pashto": "71-9 بیا یقینًا ما دوى ته څرګند (او ښكاره) دعوت وركړ او ما دوى ته په پټه هم دعوت وركړ، ښه په پټه",
-      "translation_english": "then I addressed them in public and in private,"
+      "translation_english": "then I addressed them in public and in private,",
+      "translation_turkish": "sonra halka açık ve özel olarak onlara seslendim,",
+      "translation_arabic": "ومرة أخرى أعلنت لهم (دعوتي) وأحيانا دعوتهم (أيضا) سرا."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "پس گفتم: از پروردگارتان مغفرت بخواهید که او بسیار آمرزنده است.",
       "translation_pashto": "71-10 نو ما (دوى ته) وویل: تاسو له خپل رب نه بخښنه وغواړئ بېشكه دى ډېر بخښونكى دى",
-      "translation_english": "I said, ‘Seek forgiveness from your Lord. Indeed, He is Most Forgiving."
+      "translation_english": "I said, ‘Seek forgiveness from your Lord. Indeed, He is Most Forgiving.",
+      "translation_turkish": "'Rabbinizden mağfiret dileyin' dedim. Gerçekten O, çok bağışlayandır.",
+      "translation_arabic": "فقلت: استغفروا ربكم إنه كان غفاراً."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "(اگر چنین کنید الله) از آسمان باران‌های پیاپی بر شما می‌باراند.",
       "translation_pashto": "71-11 دى به په تاسو ښه ورېدونكى باران راخوشې كړي",
-      "translation_english": "He will shower you with abundant rain from the sky,"
+      "translation_english": "He will shower you with abundant rain from the sky,",
+      "translation_turkish": "Üzerinize gökten bol yağmur yağdıracak,",
+      "translation_arabic": "(فإذا فعلتم يمطركم الله من السماء متتابعا)."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "و شما را با اموال و فرزندان مدد می‌کند و برای شما باغها قرار میدهد و برای شما نهرها جاری می‌سازد.",
       "translation_pashto": "71-12 او تاسو ته به مالونه او زامن درزیات كړي، او تاسو ته به باغونه پیدا كړي او تاسو ته به ولې پیدا كړي",
-      "translation_english": "and He will give you wealth and children, and bestow upon you gardens and rivers."
+      "translation_english": "and He will give you wealth and children, and bestow upon you gardens and rivers.",
+      "translation_turkish": "Size mallar ve çocuklar verecek, size bahçeler ve ırmaklar ihsan edecek.",
+      "translation_arabic": "ويمددكم بأموال وبنين ويغرس لكم جنات ويجري لكم الأنهار."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "شما را چه شده است که بزرگی و جلال برای الله قایل نمی‌شوید؟",
       "translation_pashto": "71-13 په تاسو څه شوي دي چې د الله لپاره د لويي عقیده نه ساتئ؟",
-      "translation_english": "What is the matter with you that you do not fear the Majesty of Allah,"
+      "translation_english": "What is the matter with you that you do not fear the Majesty of Allah,",
+      "translation_turkish": "Sana ne oluyor da Allah'ın azametinden korkmuyorsun?",
+      "translation_arabic": "ماذا أصابكم لا تنسبون لله تعظيماً وجلالاً؟"
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "حال آنکه شما را در مراحل مختلف آفریده است.",
       "translation_pashto": "71-14 حال دا چې ده تاسو قسما قسم پیدا كړي یئ",
-      "translation_english": "when He has created you in stages?"
+      "translation_english": "when He has created you in stages?",
+      "translation_turkish": "sizi aşamalar halinde yarattığı halde mi?",
+      "translation_arabic": "ولكنه خلقكم في مراحل مختلفة."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "آیا نمی‌بینید که الله چگونه هفت آسمان را یکی بر بالای دیگر آفریده است؟!",
       "translation_pashto": "71-15 ایا تاسو نه دي كتلي چې الله اوه اسمانونه لاندې باندې پیدا كړي",
-      "translation_english": "Do you not see how Allah has created seven heavens, one above another,"
+      "translation_english": "Do you not see how Allah has created seven heavens, one above another,",
+      "translation_turkish": "Allah'ın, birbiri üstünde yedi göğü nasıl yarattığını görmüyor musun?",
+      "translation_arabic": "ألا ترى كيف خلق الله سبع سماوات بعضها فوق بعض؟!"
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "و ماه را در میان آنها تابان و خورشید را چراغ درخشان گردانید؟!",
       "translation_pashto": "71-16 او په دغو كې يې سپوږمۍ روښانه جوړه كړه او لمر يې بَله (ځلېدونكې) ډيوه جوړه كړه",
-      "translation_english": "and has placed the moon therein as a light and the sun as a burning lamp?"
+      "translation_english": "and has placed the moon therein as a light and the sun as a burning lamp?",
+      "translation_turkish": "Ay'ı bir ışık, güneşi de yanan bir kandil olarak mı yarattı?",
+      "translation_arabic": "وجعل القمر منيرا بينهم والشمس ضياء؟"
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "و الله شما را از زمین (مانند گیاه) رویانید (آفرید).",
       "translation_pashto": "71-17 او الله تاسو په خاصو زرغونولو سره له ځمكې نه رازرغون كړئ",
-      "translation_english": "Allah has produced you from the earth like a plant,"
+      "translation_english": "Allah has produced you from the earth like a plant,",
+      "translation_turkish": "Allah seni topraktan bir bitki gibi yarattı.",
+      "translation_arabic": "والله خلقكم من الأرض (مثل النبات)."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "باز شما را به زمین باز می‌گرداند و (باز) شما را (از زمین) بیرون می‌آورد.",
       "translation_pashto": "71-18 بیا به دى تاسو په دې كې ننباسي او راوبه موباسي په خاصو را اېستلو سره",
-      "translation_english": "then He will return you into it and then will bring you out again."
+      "translation_english": "then He will return you into it and then will bring you out again.",
+      "translation_turkish": "sonra sizi oraya geri döndürecek, sonra sizi tekrar çıkaracaktır.",
+      "translation_arabic": "سيعيدكم إلى الأرض ويخرجكم (من الأرض)."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "و الله زمین را برای شما بستر هموار گردانید.",
       "translation_pashto": "71-19 او الله تاسو لپاره ځمكه فرش جوړه كړې ده",
-      "translation_english": "Allah has made the earth widespread for you"
+      "translation_english": "Allah has made the earth widespread for you",
+      "translation_turkish": "Allah yeryüzünü sizin için geniş kıldı",
+      "translation_arabic": "جعل الله لكم الأرض مهدا."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "تا در راه‌های وسيع آن بروید.",
       "translation_pashto": "71-20 د دې لپاره چې تاسو  د دې په ارتو لویو لارو باندې لاړ شئ",
-      "translation_english": "so that you may tread its spacious paths.’”"
+      "translation_english": "so that you may tread its spacious paths.’”",
+      "translation_turkish": "ta ki onun geniş yollarında yürüyesiniz.'”",
+      "translation_arabic": "أن يسير في طرقه الواسعة."
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "نوح (در دعای خود) گفت: پروردگارا! بی‌گمان ایشان از من نافرمانی کردند و از کسی پیروی کردند که مال و اولادش جز زیان و نقصان بر او نیفزود.",
       "translation_pashto": "71-21 نوح وویل: اى زما ربه! بېشكه دوى زما نافرماني وكړه، او دوى د هغه چا پیروي وكړه چې دغه (كس) ته د ده مال او د ده اولاد زیاته نه كړه مګر زیانكاري (او تاوان)",
-      "translation_english": "Noah said, “My Lord, they have disobeyed me and followed those whose wealth and children did not increase them except in loss."
+      "translation_english": "Noah said, “My Lord, they have disobeyed me and followed those whose wealth and children did not increase them except in loss.",
+      "translation_turkish": "Nuh dedi ki: \"Rabbim, onlar bana isyan ettiler ve malları ve çocukları kendilerine zarardan başka bir şey katmayan kimselerin peşine düştüler.",
+      "translation_arabic": "فقال نوح (في صلاته): يا رب! فإنهم عصوني واتبعوا من لم يزده ماله وولده إلا خسارا."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "و آن (پیشوایان در بارۀ پیروان خود) دست به مکری بس بزرگ زدند.",
       "translation_pashto": "71-22 او دغو خلقو ډېر لوى مكر وچلاوه",
-      "translation_english": "They have contrived a mighty plot,"
+      "translation_english": "They have contrived a mighty plot,",
+      "translation_turkish": "Çok büyük bir komplo kurdular",
+      "translation_arabic": "ولقد قام أولئك (القادة عن أتباعهم) بحيلة عظيمة."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "و گفتند: معبودان خود را ترک نکنید خصوصا (پنج بت را که عبارت‌اند از) ود و سواع و يغوث و يعوق و نسر را (ترک نکنید).",
       "translation_pashto": "71-23 او ويې ویل (خپلو خلقو ته): تاسو خپل  معبودان مه پرېږدئ او  تاسو مه پرېږدئ (عبادت د) وَد، او نه (د) سُواع او نه (د) یغوث او یعوق اونسر",
-      "translation_english": "They said, ‘Do not abandon your gods; and do not abandon Wadd, Suwā‘, Yaghūth, Ya‘ūq, and Nasr.’"
+      "translation_english": "They said, ‘Do not abandon your gods; and do not abandon Wadd, Suwā‘, Yaghūth, Ya‘ūq, and Nasr.’",
+      "translation_turkish": "Onlar, 'İlahlarınızı bırakmayın; Vedd'i, Suva''yı, Yeğus'u, Ye'ûk'u ve Nesr'i terk etmeyin.'",
+      "translation_arabic": "وقالوا: لا تتركوا آلهتكم ولا سيما (لا تتركوا الأصنام الخمسة التي هي) ود وسوا ويغوث ويعوق ونصر."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "واقعا که مردم بسیار را گمراه کردند (پس) ای الله! ظالمان را جز گمراهی نیفزا.",
       "translation_pashto": "71-24 او یقینًا دغو (خلقو) ډېر كسان ګمراه كړي دي او ته ظالمانو ته مه زیاتوه مګر ګمراهي",
-      "translation_english": "They have led many astray. So [O Lord], do not increase the wrongdoers except in error.”"
+      "translation_english": "They have led many astray. So [O Lord], do not increase the wrongdoers except in error.”",
+      "translation_turkish": "Pek çok kişiyi yoldan çıkardılar. O halde (ya Rabbi) zalimleri, sapıklıkları dışında artırma.”",
+      "translation_arabic": "لقد أضلوا قوما كثيرا (فالله!) أهلك الظالمين إلا الضالين."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "به (سبب) گناهانشان غرق شدند باز به آتش در آورده شدند و برای خود در برابر الله مددگارانی نیافتند.",
       "translation_pashto": "71-25 دوى د خپلو ګناهونو په سبب غرق  (ډوب) كړِى شول، نو اور ته داخل كړى شول، نو دوى د خپلو ځانونو لپاره له الله نه غیر هېڅ مدد كوونكي ونه موندل",
-      "translation_english": "Because of their sins, they were drowned and then were cast into the Fire, and they did not find any helpers against Allah."
+      "translation_english": "Because of their sins, they were drowned and then were cast into the Fire, and they did not find any helpers against Allah.",
+      "translation_turkish": "Günahlarından dolayı suda boğuldular, sonra ateşe atıldılar ve Allah'a karşı hiçbir yardımcı bulamadılar.",
+      "translation_arabic": "فغرقوا بذنوبهم وأُعيدوا إلى النار ولم يجدوا لهم من دون الله نصيرا."
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "و نوح گفت: ای پروردگار! هیچ کسی از کافران را بر روی زمین باقی مگذار.",
       "translation_pashto": "71-26 او نوح وویل: اى زما ربه! ته د ځمكې  له پاسه (د ځمكې په سر) په كافرانو كې هېڅ یو ګرځېدونكى مه پرېږده",
-      "translation_english": "Noah said, “My Lord, do not leave on earth a single disbeliever."
+      "translation_english": "Noah said, “My Lord, do not leave on earth a single disbeliever.",
+      "translation_turkish": "Nuh dedi ki: \"Rabbim, yeryüzünde tek bir kâfir bırakma.",
+      "translation_arabic": "فقال نوح: يا رب! ولا تترك على الأرض كافرا."
     },
     {
       "number": 27,
@@ -301,7 +353,9 @@
       "sajda": false,
       "translation_dari": "زیرا اگر آنها را زنده بگذاری بندگانت را گمراه می‌سازند و جز بد کار و کافر نمی‌زایند.",
       "translation_pashto": "71-27 یقینًا ته كه دوى پرېږدې، نو  دوى به ستا بنده ګان ګمراه كړي او دوى نه زېږوي مګر فاجر (بدكاره)، ډېر ناشكره ",
-      "translation_english": "For if You leave them, they will surely lead Your slaves astray and beget none but wicked disbelievers."
+      "translation_english": "For if You leave them, they will surely lead Your slaves astray and beget none but wicked disbelievers.",
+      "translation_turkish": "Çünkü eğer onları bırakırsan, mutlaka kullarını saptırırlar ve kötü kâfirlerden başkasını doğurmazlar.",
+      "translation_arabic": "لأنك إن تركتهم يضلون عبادك، ولا ينتجون إلا السيئات والكفار."
     },
     {
       "number": 28,
@@ -312,7 +366,9 @@
       "sajda": false,
       "translation_dari": "ای پروردگارم! من و پدر و مادرم را و هر کسی را که مؤمن به خانه‌ام داخل شود و مردان و زنان مؤمن را بیامرز و ظالمان را جز نابودی نیفزا.",
       "translation_pashto": "71-28 اى زما ربه! ته ما وبخښه او زما مور و پلار او هغه څوك (هم) چې زما كور ته داخل شي، چې ایمان لرونكى وي اومومن سړي او مومنې ښځې (وبخښه) او ظالمانو ته مه زیاتوه مګر هلاكت",
-      "translation_english": "My Lord, forgive me and my parents, and whoever enters my house as a believer, and all the believing men and women, and do not increase the wrongdoers except in ruin.”"
+      "translation_english": "My Lord, forgive me and my parents, and whoever enters my house as a believer, and all the believing men and women, and do not increase the wrongdoers except in ruin.”",
+      "translation_turkish": "Rabbim, beni, ana-babamı, mü'min olarak evime gireni, bütün mü'min erkek ve kadınları bağışla ve zalimlerin helakinden başkasını artırma.\"",
+      "translation_arabic": "يا ربي! اغفر لي ولوالدي ولمن دخل بيتي مؤمنا واغفر للمؤمنين والمؤمنات وأهلك الظالمين."
     }
   ]
 }

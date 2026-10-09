@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "طلب کثرت مال و اولاد شما را مشغول (غافل) ساخت.",
       "translation_pashto": "102-1 تاسو غافله كړئ فخر كولو په یو بل باندې په ډېروالي (د مال، اولاد او قام) سره ",
-      "translation_english": "Competition for worldly gains distracts you [from Allah],"
+      "translation_english": "Competition for worldly gains distracts you [from Allah],",
+      "translation_turkish": "Dünyalık rekabeti seni (Allah'tan) uzaklaştırır.",
+      "translation_arabic": "إن طلب كثرة المال والأولاد شغلك (غافلاً)."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "تا آن که به قبرستان رسیدید (یعنی دفن گردیدید).",
       "translation_pashto": "102-2 تر  هغه پورې چې تاسو هدېرو ته ورشئ",
-      "translation_english": "until you come to your graves."
+      "translation_english": "until you come to your graves.",
+      "translation_turkish": "Ta ki mezarlarınıza gelinceye kadar.",
+      "translation_arabic": "حتى تصل إلى المقبرة (أي تدفن)."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "چنین نیست؛ خواهید دانست (در قبر).",
       "translation_pashto": "102-3 داسې نه ده په كار، ژر ده چې تاسو به پوه شئ",
-      "translation_english": "No indeed! You will come to know."
+      "translation_english": "No indeed! You will come to know.",
+      "translation_turkish": "Gerçekten hayır! Zamanla öğreneceksin.",
+      "translation_arabic": "الأمر ليس كذلك؛ سوف تعلمون (في القبر)."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "باز (می‌گویم) که چنین نیست، خواهید دانست (در روز قیامت).",
       "translation_pashto": "102-4 بیا بېخي داسې نه ده، ژر ده چې تاسو به پوه شئ",
-      "translation_english": "Again no! You will come to know."
+      "translation_english": "Again no! You will come to know.",
+      "translation_turkish": "Yine hayır! Zamanla öğreneceksin.",
+      "translation_arabic": "مرة أخرى (أقول) ليس الأمر كذلك، وسوف تعلمون (يوم القيامة)."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "چنین نیست، اگر شما (حق‌بودنِ قیامت را) به یقین می‌دانستید (از آمدن آن غافل نمی‌شدید).",
       "translation_pashto": "102-5 داسې نه ده كه تاسو په علم اليقين سره پوهېدلى",
-      "translation_english": "No indeed! If only you knew for certain."
+      "translation_english": "No indeed! If only you knew for certain.",
+      "translation_turkish": "Gerçekten hayır! Keşke kesin olarak bilseydin.",
+      "translation_arabic": "وليس الأمر كذلك، لو كنتم تعلمون (حق يوم القيامة) يقينًا (ما غفلتم عن مجيئه)."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "البته دوزخ را (بعد از موت در برزخ) خواهید دید.",
       "translation_pashto": "102-6 تاسو به خامخا ضرور دوزخ وینئ",
-      "translation_english": "You will surely see the Blazing Fire,"
+      "translation_english": "You will surely see the Blazing Fire,",
+      "translation_turkish": "Alevli ateşi mutlaka göreceksiniz.",
+      "translation_arabic": "بالطبع، سوف ترى الجحيم (بعد الموت في المطهر)."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "باز البته آن (دوزخ) را به دیدۀ یقین (در روز قیامت) خواهید دید.",
       "translation_pashto": "102-7 بیا به تاسو خامخا ضرور دغه (دوزخ) د یقین په سترګو وینئ",
-      "translation_english": "Again, you will see it with absolute certainty."
+      "translation_english": "Again, you will see it with absolute certainty.",
+      "translation_turkish": "Bunu yine mutlak bir kesinlikle göreceksiniz.",
+      "translation_arabic": "وبطبيعة الحال، سوف تراها (الجحيم) يقينا (يوم القيامة)."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "باز البته در آن روز دربارۀ نعمت‌های که الله به شما داده است، پرسیده خواهید شد.",
       "translation_pashto": "102-8 بیا به په دغې ورځ كې له تاسو نه خامخا ضرور د نعمتونو په باره كې تپوس كېږي",
-      "translation_english": "Then on that Day you will surely be asked about your worldly pleasures."
+      "translation_english": "Then on that Day you will surely be asked about your worldly pleasures.",
+      "translation_turkish": "Sonra o gün mutlaka dünya zevklerinizden sorulacaksınız.",
+      "translation_arabic": "وبالطبع ستُسأل في ذلك اليوم عن النعم التي أعطاك الله إياها."
     }
   ]
 }

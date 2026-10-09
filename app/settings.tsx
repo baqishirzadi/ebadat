@@ -540,6 +540,10 @@ export default function SettingsScreen() {
                     ? tUi('پښتو', uiLanguage)
                     : state.preferences.showTranslation === 'english'
                       ? tUi('انگلیسی', uiLanguage)
+                      : state.preferences.showTranslation === 'turkish'
+                        ? tUi('ترکی', uiLanguage)
+                        : state.preferences.showTranslation === 'arabic'
+                          ? tUi('عربی', uiLanguage)
                     : state.preferences.showTranslation === 'both'
                       ? tUi('هردو', uiLanguage)
                       : tUi('بدون ترجمه', uiLanguage)}
@@ -556,12 +560,14 @@ export default function SettingsScreen() {
               {[
                 { id: 'dari', name: 'فارسی (دری) - انور بدخشانی' },
                 { id: 'pashto', name: 'پښتو' },
+                { id: 'arabic', name: 'عربی' },
+                { id: 'turkish', name: 'ترکی' },
                 { id: 'english', name: 'انگلیسی' },
                 { id: 'none', name: 'بدون ترجمه' },
               ].map((t) => (
                 <Pressable
                   key={t.id}
-                  onPress={() => setTranslationLanguage(t.id as 'dari' | 'pashto' | 'english' | 'none')}
+                  onPress={() => setTranslationLanguage(t.id as 'dari' | 'pashto' | 'english' | 'turkish' | 'arabic' | 'none')}
                   style={[
                     styles.optionItem,
                     directionalRow,
@@ -667,7 +673,13 @@ export default function SettingsScreen() {
 
           {/* App Version */}
           <LocalizedText style={[styles.versionText, { color: theme.textSecondary }]}>
-            {uiLanguage === 'english' ? 'Version 2.0.0' : 'نسخه ۲.۰.۰'}
+            {uiLanguage === 'turkish'
+              ? 'Sürüm 2.0.0'
+              : uiLanguage === 'english'
+                ? 'Version 2.0.0'
+                : uiLanguage === 'arabic'
+                  ? 'الإصدار ٢.٠.٠'
+                  : 'نسخه ۲.۰.۰'}
           </LocalizedText>
 
           <View style={styles.spacer} />

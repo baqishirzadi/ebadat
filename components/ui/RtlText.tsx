@@ -6,6 +6,7 @@ import { useAppLanguage, useLocalizedFontPreferences } from '@/context/AppContex
 import { localizeUiNode } from '@/utils/i18n/ui';
 import { isAppUiFontStyle, resolveUiFontStyle } from '@/utils/i18n/resolveUiFontFamily';
 import { isRtl, textAlignEnd, textAlignStart, writingDirectionFor } from '@/utils/i18n/direction';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 import type { AppLanguage } from '@/types/quran';
 
 const baseLayout: TextStyle = {
@@ -40,7 +41,7 @@ export function RtlText({ style, align = 'right', wrap = true, children, ...prop
   const language = useAppLanguage();
   const fonts = useLocalizedFontPreferences();
   const fontStyle = resolveUiFontStyle(style, language, fonts);
-  const latinDigits = language === 'english' && isAppUiFontStyle(style);
+  const latinDigits = isLatinLanguage(language) && isAppUiFontStyle(style);
   const flattened = StyleSheet.flatten(style) as TextStyle | undefined;
   const includeFontPaddingOverride =
     flattened?.includeFontPadding !== undefined

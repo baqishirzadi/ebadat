@@ -3,7 +3,7 @@
  * Shared by the runtime search engine and build/verify scripts.
  */
 
-export type SearchLanguage = 'arabic' | 'dari' | 'pashto' | 'english';
+export type SearchLanguage = 'arabic' | 'dari' | 'pashto' | 'english' | 'turkish' | 'arabicMeaning';
 
 const FORMAT_CONTROLS = /[\u200B-\u200F\u202A-\u202E\u2060-\u206F\uFEFF]/g;
 const ARABIC_DIACRITICS = /[\u064B-\u065F\u06D6-\u06ED]/g;

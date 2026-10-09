@@ -51,8 +51,8 @@ export function OnboardingShell({
   compactHeader = false,
 }: OnboardingShellProps) {
   const { theme } = useApp();
-  const { language, isPashto, fontFamily, t } = useI18n();
-  const isEnglish = language === 'english';
+  const { language, isPashto, fontFamily, t, isLatin } = useI18n();
+  const isEnglish = isLatin;
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
 

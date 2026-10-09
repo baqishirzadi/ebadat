@@ -15,6 +15,8 @@ import { ArticleText } from '@/components/articles/ArticleText';
 import { CategoryFilter } from '@/components/articles/CategoryFilter';
 import { ScholarCarousel } from '@/components/articles/ScholarCarousel';
 import { categoryName, shortScholarName } from '@/components/articles/articleTheme';
+import { contentFallbackChain } from '@/utils/i18n/languages';
+import type { AppLanguage } from '@/types/quran';
 import { CenteredText } from '@/components/CenteredText';
 import { LocalizedText, LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
@@ -261,7 +263,17 @@ function matchesScholar(article: Article, filter: ScholarFilter): boolean {
 const LANGUAGE_OPTIONS: { id: ArticleLanguage; label: string }[] = [
   { id: 'dari', label: 'دری' },
   { id: 'pashto', label: 'پښتو' },
+  { id: 'arabic', label: 'العربية' },
+  { id: 'turkish', label: 'Türkçe' },
+  { id: 'english', label: 'English' },
 ];
+
+function articleLanguageForApp(appLanguage: string): ArticleLanguage {
+  if (appLanguage === 'pashto' || appLanguage === 'arabic' || appLanguage === 'turkish' || appLanguage === 'english') {
+    return appLanguage;
+  }
+  return 'dari';
+}
 
 export default function ArticlesFeed() {
   const { theme } = useApp();
@@ -270,7 +282,7 @@ export default function ArticlesFeed() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedLanguage, setSelectedLanguage] = useState<ArticleLanguage>(
-    appLanguage === 'pashto' ? 'pashto' : 'dari',
+    articleLanguageForApp(appLanguage),
   );
   const [selectedScholar, setSelectedScholar] = useState<ScholarFilter | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -287,7 +299,7 @@ export default function ArticlesFeed() {
   }, [refreshArticles]);
 
   useEffect(() => {
-    setSelectedLanguage(appLanguage === 'pashto' ? 'pashto' : 'dari');
+    setSelectedLanguage(articleLanguageForApp(appLanguage));
   }, [appLanguage]);
 
   const handleRefresh = useCallback(async () => {
@@ -296,10 +308,16 @@ export default function ArticlesFeed() {
     setRefreshing(false);
   }, [syncArticles]);
 
-  const languageArticles = useMemo(
-    () => state.articles.filter((article) => article.published && article.language === selectedLanguage),
-    [selectedLanguage, state.articles],
-  );
+  const languageArticles = useMemo(() => {
+    const published = state.articles.filter((article) => article.published);
+    const exact = published.filter((article) => article.language === selectedLanguage);
+    if (exact.length > 0) return exact;
+    for (const language of contentFallbackChain(selectedLanguage as AppLanguage)) {
+      const next = published.filter((article) => article.language === language);
+      if (next.length > 0) return next;
+    }
+    return published;
+  }, [selectedLanguage, state.articles]);
 
   const scholarArticles = useMemo(
     () => (selectedScholar ? languageArticles.filter((article) => matchesScholar(article, selectedScholar)) : languageArticles),

@@ -22,6 +22,7 @@ import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { getNextPrayer, PrayerTimes } from '@/utils/prayerTimes';
 import { toArabicNumeralsString } from '@/utils/numbers';
 import { pickContent } from '@/utils/i18n/content';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 const RING_SIZE = 128;
@@ -131,15 +132,22 @@ const CountdownBlock = memo(function CountdownBlock({
   const next = getNextPrayer(prayerTimes, now);
   const remaining = next.time.getTime() - now.getTime();
   const progress = getPrayerProgress(prayerTimes, now);
-  const countdown = formatCountdown(remaining, language === 'english');
+  const countdown = formatCountdown(remaining, isLatinLanguage(language));
 
   if (compact) {
+    const track = (
+      <View style={styles.compactProgressTrack}>
+        <View style={[styles.compactProgressFill, { width: `${Math.round(progress * 100)}%`, backgroundColor: ringColor }]} />
+      </View>
+    );
+    const text = (
+      <RtlText align="center" wrap={false} style={[styles.compactCountdown, compactMetrics?.countdown]}>{countdown}</RtlText>
+    );
+    // English reads the countdown right under the prayer time, then the bar.
     return (
       <View style={styles.compactCountdownWrap}>
-        <View style={[styles.compactProgressTrack, language !== 'english' && styles.compactProgressTrackPashto]}>
-          <View style={[styles.compactProgressFill, { width: `${Math.round(progress * 100)}%`, backgroundColor: ringColor }]} />
-        </View>
-        <RtlText align="center" wrap={false} style={[styles.compactCountdown, compactMetrics?.countdown]}>{countdown}</RtlText>
+        {isLatinLanguage(language) ? text : track}
+        {isLatinLanguage(language) ? track : text}
       </View>
     );
   }
@@ -394,16 +402,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   compactProgressTrack: {
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    overflow: 'hidden',
-    width: '100%',
-  },
-  compactProgressTrackPashto: {
     height: 4,
     width: '72%',
     borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    overflow: 'hidden',
   },
   compactProgressFill: {
     height: '100%',
@@ -418,8 +421,8 @@ const styles = StyleSheet.create({
   },
   compactHint: {
     ...persianCenterText,
-    fontSize: 11,
-    color: 'rgba(255,255,255,0.55)',
+    fontSize: 13,
+    color: 'rgba(255,255,255,0.85)',
   },
   compactHintPashto: {
     color: 'rgba(255,255,255,0.8)',

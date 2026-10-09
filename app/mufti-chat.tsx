@@ -24,6 +24,7 @@ import {
 import { useApp } from '@/context/AppContext';
 import { useHanafiMufti } from '@/hooks/useHanafiMufti';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 import type { StoredHanafiMuftiMessage } from '@/utils/hanafiMuftiStorage';
 
 /** Android can flip Persian paragraphs LTR; RLM forces RTL direction. */
@@ -168,7 +169,7 @@ export default function MuftiChatScreen() {
   const { theme } = useApp();
   const { t, fontFamily, language } = useI18n();
   const { copiedVisible, showCopied } = useCopiedNotice();
-  const isEnglish = language === 'english';
+  const isEnglish = isLatinLanguage(language);
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<ChatRow>>(null);
   const [input, setInput] = useState('');

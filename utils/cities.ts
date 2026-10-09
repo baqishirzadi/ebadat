@@ -393,6 +393,6 @@ const CITY_NAME_TO_ENGLISH: Map<string, string> = (() => {
 /** Localized display name for a city, falling back to the authored name. */
 export function localizeCityName(name: string | null | undefined, language: AppLanguage): string {
   if (!name) return '';
-  if (language !== 'english') return name;
+  if (language !== 'english' && language !== 'turkish') return name;
   return CITY_NAME_TO_ENGLISH.get(name) ?? name;
 }

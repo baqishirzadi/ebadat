@@ -94,7 +94,9 @@ function main() {
     .prepare(
       `SELECT COUNT(*) AS c FROM ayahs
        WHERE arabic_text = '' OR dari_text = '' OR pashto_text = '' OR english_text = ''
-          OR arabic_norm = '' OR dari_norm = '' OR pashto_norm = '' OR english_norm = ''`,
+          OR turkish_text = '' OR arabic_meaning_text = ''
+          OR arabic_norm = '' OR dari_norm = '' OR pashto_norm = '' OR english_norm = ''
+          OR turkish_norm = '' OR arabic_meaning_norm = ''`,
     )
     .get().c;
   assert(empty === 0, `Found ${empty} empty indexed fields`);
@@ -102,7 +104,9 @@ function main() {
   const columns = db.prepare('PRAGMA table_info(ayahs)').all().map((row) => row.name);
   assert(columns.includes('english_text'), 'ayahs table missing english_text');
   assert(columns.includes('english_norm'), 'ayahs table missing english_norm');
-  assert(meta.version === 2, `Expected meta.version 2, got ${meta.version}`);
+  assert(columns.includes('turkish_text') && columns.includes('turkish_norm'), 'ayahs table missing Turkish meaning');
+  assert(columns.includes('arabic_meaning_text') && columns.includes('arabic_meaning_norm'), 'ayahs table missing Arabic meaning');
+  assert(meta.version === 3, `Expected meta.version 3, got ${meta.version}`);
 
   const prefixedPashto = db
     .prepare(`SELECT COUNT(*) AS c FROM ayahs WHERE pashto_text GLOB '[0-9]*-[0-9]* *'`)

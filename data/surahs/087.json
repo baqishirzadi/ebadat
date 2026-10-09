@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "نام پروردگار بلندمرتبه‌ات را به پاکی یاد کن.",
       "translation_pashto": "87-1 ته پاكي بیان كړه د خپل رب د نامې چې تر  ټولو اوچت دى",
-      "translation_english": "Glorify the name of your Lord, the Most High,"
+      "translation_english": "Glorify the name of your Lord, the Most High,",
+      "translation_turkish": "Yüce Rabbinin adını tesbih et,",
+      "translation_arabic": "واذكر اسم ربك تعالى طاهرا."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "کسی که آفرید (هرچیز را)، پس (آن را) استوار و برابر کرد.",
       "translation_pashto": "87-2 هغه چې پیدا يې كړل  ټول شيان، پس ښه يې برابر كړل",
-      "translation_english": "Who created and fashioned in due proportion,"
+      "translation_english": "Who created and fashioned in due proportion,",
+      "translation_turkish": "Ölçülü olarak yaratan ve biçimlendiren,",
+      "translation_arabic": "الذي خلق (كل شيء) فجعله مستقرا ومتساويا."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و کسی که اندازه را (برای هر چیز) مقرر کرد باز هدایت نمود.",
       "translation_pashto": "87-3 او هغه (رب) چې اندازه يې وكړه، پس لاره يې وښووله",
-      "translation_english": "and Who determined [the creation] then inspired them,"
+      "translation_english": "and Who determined [the creation] then inspired them,",
+      "translation_turkish": "ve (yaratılışı) belirleyen, sonra onlara ilham veren,",
+      "translation_arabic": "والذي حدد التدبير (لكل شيء) اهتدى مرة أخرى."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "و کسی که (از زمین‌های علف‌زار) چراگاه را رویانید.",
       "translation_pashto": "87-4 او هغه ذات چې تازه ګياه يې را اېستلې ده",
-      "translation_english": "and Who brings forth the pasture,"
+      "translation_english": "and Who brings forth the pasture,",
+      "translation_turkish": "Otlakları kim çıkarır?",
+      "translation_arabic": "والذي أنبت المرعى."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "باز آن را خشک و سیاه ساخت.",
       "translation_pashto": "87-5  بيا يې هغه وګرځوله وچه توره ",
-      "translation_english": "then makes it into withered chaff."
+      "translation_english": "then makes it into withered chaff.",
+      "translation_turkish": "sonra onu kurumuş saman haline getirir.",
+      "translation_arabic": "لقد جعلها جافة وسوداء مرة أخرى."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "ما بر تو (قرآن را) می‌خوانیم، پس تو دیگر فراموش نخواهی کرد.",
       "translation_pashto": "87-6 ژر ده چې مونږ به په  تا باندې (قرآن) ولولو، نو ته به يې نه هېروې",
-      "translation_english": "We will teach you [the Qur’an], so you will not forget,"
+      "translation_english": "We will teach you [the Qur’an], so you will not forget,",
+      "translation_turkish": "Unutmaman için sana Kur'an'ı öğreteceğiz.",
+      "translation_arabic": "نقرأ عليك (القرآن) فلا تنسى."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "مگر آنچه را که الله خواسته باشد (از دلت فراموش می‌کند)، چون الله آشکار و آنچه که پوشیده است می‌داند.",
       "translation_pashto": "87-7 مګر هغه چې الله يې وغواړي، بېشكه دغه (الله) په ښكاره و پوهېږي او په هغه څه چې پټ وي",
-      "translation_english": "except what Allah wills, for indeed He knows what is manifest and what is hidden."
+      "translation_english": "except what Allah wills, for indeed He knows what is manifest and what is hidden.",
+      "translation_turkish": "Allah'ın dilediği başka; zira O, açığını da, gizlisini de bilir.",
+      "translation_arabic": "إلا ما شاء الله (ينساه من قلبك) فإن الله يعلم العلن وما يخفى."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "و تو را برای شریعت آسان آماده می‌کنیم.",
       "translation_pashto": "87-8 او مونږ به تا ته اسانې لارې ته اسانتیا دركوو",
-      "translation_english": "We will guide you to the easy way."
+      "translation_english": "We will guide you to the easy way.",
+      "translation_turkish": "Sizi kolay yola yönlendireceğiz.",
+      "translation_arabic": "ونحن نجهزك للشريعة السهلة."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "پس پند ده (مردم را) اگر پند دادن مفید افتد.",
       "translation_pashto": "87-9 نو ته نصیحت (پند) كوه كه نصیحت كول نفع رسوي  (يا بېشكه نصيحت كول نفع رسوي) ",
-      "translation_english": "So remind, if the reminder should benefit."
+      "translation_english": "So remind, if the reminder should benefit.",
+      "translation_turkish": "O halde hatırlatın, eğer hatırlatmanın faydası varsa.",
+      "translation_arabic": "فعظ (الشعب) إذا كان الوعظ ينفع."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "کسی که از الله می‌ترسد به زودی پند خواهد گرفت.",
       "translation_pashto": "87-10 ژر ده چې هغه څوك به پند واخلي چې وېرېږي",
-      "translation_english": "He who fears Allah will take heed,"
+      "translation_english": "He who fears Allah will take heed,",
+      "translation_turkish": "Allah'tan korkan, öğüt alır,",
+      "translation_arabic": "ومن يخشى الله سوف يتلقى النصيحة قريباً."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "و بدبخت‌ترین انسان‌ها از آن اجتناب می‌ورزد.",
       "translation_pashto": "87-11 او له دغه (نصیحت) نه به تر ټولو بدبخته ډډه كوي",
-      "translation_english": "but the wretched will avoid it,"
+      "translation_english": "but the wretched will avoid it,",
+      "translation_turkish": "ama zavallı olan bundan kaçınacaktır,",
+      "translation_arabic": "وأشد الناس بؤسا يتجنبونه."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "آن کس که در آتش بزرگ داخل خواهد شد.",
       "translation_pashto": "87-12 هغه چې تر ټولو لوى اور ته به ننوځي",
-      "translation_english": "who will enter the Great Fire,"
+      "translation_english": "who will enter the Great Fire,",
+      "translation_turkish": "Büyük Ateşe kimler girecek?",
+      "translation_arabic": "هو الذي سيدخل النار الكبرى ."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "باز در آن جا نه می‌میرد و نه زنده می‌ماند.",
       "translation_pashto": "87-13 بیا به دى په دغه (اور) كې نه مري او نه به ښه ژوند لري",
-      "translation_english": "wherein he will neither die nor live."
+      "translation_english": "wherein he will neither die nor live.",
+      "translation_turkish": "orada ne ölecek, ne de yaşayacak.",
+      "translation_arabic": "لا يموت ولا يعيش هناك."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "البته کسی که خود را از (پلیدی شرک) پاک کرد، رستگار شد.",
       "translation_pashto": "87-14 یقینًا هغه څوك كامیاب شو چې پاك شو",
-      "translation_english": "Indeed, he who purifies himself will attain success,"
+      "translation_english": "Indeed, he who purifies himself will attain success,",
+      "translation_turkish": "Gerçekten kendini arındıran, başarıya ulaşır.",
+      "translation_arabic": "وطبعاً من طهر نفسه من (نجس الشرك) نجا."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "و نام پروردگار خود را یاد کرد و باز نماز خواند.",
       "translation_pashto": "87-15 او د خپل رب نامه يې یاده كړه، پس لمونځ يې وكړ",
-      "translation_english": "and remembers his Lord’s Name and prays."
+      "translation_english": "and remembers his Lord’s Name and prays.",
+      "translation_turkish": "Rabbinin ismini anar ve dua eder.",
+      "translation_arabic": "فذكر اسم ربه وصلى مرة أخرى."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "ولی شما زندگانی دنیا را ترجیح می‌دهید.",
       "translation_pashto": "87-16 بلكې تاسو (په اخرت باندې) دنيايي ژوند غوره كوئ",
-      "translation_english": "But you prefer the life of this world,"
+      "translation_english": "But you prefer the life of this world,",
+      "translation_turkish": "Ama sen dünya hayatını tercih ediyorsun.",
+      "translation_arabic": "ولكنكم تفضلون الحياة الدنيا ."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "حال آن که زندگی آخرت بهتر و پاینده‌تر است.",
       "translation_pashto": "87-17 حال دا چې اخرت ډېر غوره او تل ترتله دى",
-      "translation_english": "even though the Hereafter is better and more lasting."
+      "translation_english": "even though the Hereafter is better and more lasting.",
+      "translation_turkish": "Ahiret daha hayırlı ve daha kalıcı olmasına rağmen.",
+      "translation_arabic": "أما بعد فإن الحياة الآخرة أفضل وأبقى."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "البته این مضمون در صحیفه‌های سابق هم آمده است.",
       "translation_pashto": "87-18  بېشكه دا (خبرې) یقینًا په ړومبنیو صحیفو كې هم دي",
-      "translation_english": "Indeed, this was in the earlier Scriptures,"
+      "translation_english": "Indeed, this was in the earlier Scriptures,",
+      "translation_turkish": "Aslında bu daha önceki kutsal kitaplarda da vardı.",
+      "translation_arabic": "وبطبيعة الحال، تم ذكر هذا الموضوع أيضا في الكتب المقدسة السابقة."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "صحیفه‌های ابراهیم و موسی.",
       "translation_pashto": "87-19 د ابراهیم او موسی په صحیفو كې ",
-      "translation_english": "the Scriptures of Abraham and Moses."
+      "translation_english": "the Scriptures of Abraham and Moses.",
+      "translation_turkish": "İbrahim ve Musa'nın kutsal yazıları.",
+      "translation_arabic": "كتب ابراهيم وموسى."
     }
   ]
 }

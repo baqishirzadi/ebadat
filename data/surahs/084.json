@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "وقتی که آسمان بشگافد (و پاره پاره شود)",
       "translation_pashto": "84-1 كله چې اسمان څیرې شي",
-      "translation_english": "When the sky is rent asunder,"
+      "translation_english": "When the sky is rent asunder,",
+      "translation_turkish": "Gökyüzü parçalandığında,",
+      "translation_arabic": "عندما تنشق السماء"
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "و حکم پروردگار خود را فرمان برد که چنین سزاوار است.",
       "translation_pashto": "84-2 او خپل رب ته غوږ كېږدي او دى (اسمان) د همدې لايق دى",
-      "translation_english": "and hearkens to its Lord, as it must,"
+      "translation_english": "and hearkens to its Lord, as it must,",
+      "translation_turkish": "Rabbine gerektiği gibi kulak verir,",
+      "translation_arabic": "وأطاع أمر ربه فهو مستحقه."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که زمین کشیده و هموار گردد.",
       "translation_pashto": "84-3 او كله چې ځمكه راښكلى شي",
-      "translation_english": "and when the earth is leveled out,"
+      "translation_english": "and when the earth is leveled out,",
+      "translation_turkish": "ve dünya düzleştirildiğinde,",
+      "translation_arabic": "وإذا مدت الأرض واستوت."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "و آنچه در آن است بیرون اندازد و تهی گردد.",
       "translation_pashto": "84-4 او هغه څه د باندې وغورځوي چې په دې كې دي او خالي شي",
-      "translation_english": "and casts out all what it contains, and becomes empty,"
+      "translation_english": "and casts out all what it contains, and becomes empty,",
+      "translation_turkish": "ve içindeki her şeyi dışarı atar ve boşalır,",
+      "translation_arabic": "وألقِ ما فيه وأصبح فارغًا."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "و حکم پروردگار خود را فرمان برد که چنین سزاوار است.",
       "translation_pashto": "84-5 او خپل رب ته غوږ كېږدي او دا د همدې لايق ده",
-      "translation_english": "and hearkens to its Lord, as it must,"
+      "translation_english": "and hearkens to its Lord, as it must,",
+      "translation_turkish": "Rabbine gerektiği gibi kulak verir,",
+      "translation_arabic": "وأطاع أمر ربه فهو مستحقه."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "ای انسان! یقیناً تو با تلاش و رنج فراوان به‌سوی پروردگارت رهسپاری و سرانجام او را ملاقات خواهی کرد.",
       "translation_pashto": "84-6 اى انسانه! بېشكه ته په پوره كوشش سره كار كوونكى يې تر خپل ربه (سره د ملاقات پورې)، ښه په كوشش سره كار كول، پس ته له دغه (خپل عمل) سره ملاقات كوونكى يې",
-      "translation_english": "O humans, you are toiling towards your Lord, and you will surely meet Him."
+      "translation_english": "O humans, you are toiling towards your Lord, and you will surely meet Him.",
+      "translation_turkish": "Ey insanlar, Rabbinize ulaşmak için çabalıyorsunuz ve mutlaka O'na kavuşacaksınız.",
+      "translation_arabic": "يا رجل! من المؤكد أنك ستسافر إلى ربك بجهد كبير ومعاناة وسوف تقابله في النهاية."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "(پس از ملاقات) کسی که نامۀ اعمالش به دست راستش داده شود.",
       "translation_pashto": "84-7 نو هر چې هغه څوك دى چې هغه ته خپل كتاب (عمل نامه) په ښي لاس كې وركړى شي",
-      "translation_english": "Whoever is given his Record in his right hand,"
+      "translation_english": "Whoever is given his Record in his right hand,",
+      "translation_turkish": "Kitap kime sağ elinden verilirse,",
+      "translation_arabic": "(بعد اللقاء) الذي جعل عمله بيمينه."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "پس به آسانی با او حساب خواهد شد.",
       "translation_pashto": "84-8 نو ژر ده چې له ده سره به حساب وكړى شي، ډېر اسان حساب",
-      "translation_english": "he will have an easy reckoning,"
+      "translation_english": "he will have an easy reckoning,",
+      "translation_turkish": "Onun hesabı kolay olacaktır.",
+      "translation_arabic": "لذلك سيتم حسابه بسهولة."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "و شادمان به‌سوی خانوادۀ خود بازمی‌گردد.",
       "translation_pashto": "84-9 او دى به خپل اهل ته خوشاله وګرځي",
-      "translation_english": "and he will return to his people joyfully."
+      "translation_english": "and he will return to his people joyfully.",
+      "translation_turkish": "ve halkının yanına sevinçle dönecek.",
+      "translation_arabic": "ويعود شادمان إلى عائلته."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "اما کسی که نامۀ اعمالش از پشت سر (به دست چپ) او داده شود.",
       "translation_pashto": "84-10 او هر چې هغه څوك دى چې هغه ته خپل كتاب (عمل نامه) له خپلې شا نه وروسته وركړى شي",
-      "translation_english": "But whoever is given his Record from behind his back,"
+      "translation_english": "But whoever is given his Record from behind his back,",
+      "translation_turkish": "Kime arkasından kitap verilirse,",
+      "translation_arabic": "وأما من جعل عمله خلف رأسه (عن يساره)."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "پس با داد و فریاد هلاکت را می‌طلبد.",
       "translation_pashto": "84-11 نو دى به ژر هلاكت ته چغې كړي",
-      "translation_english": "he will call out for destruction,"
+      "translation_english": "he will call out for destruction,",
+      "translation_turkish": "yıkım çağrısı yapacak,",
+      "translation_arabic": "لذلك فهو يدعو إلى الدمار بالصياح."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "و وارد دوزخ خواهد شد.",
       "translation_pashto": "84-12 او د دوزخ بل اور ته به ننوځي",
-      "translation_english": "and he will enter the Blazing Fire."
+      "translation_english": "and he will enter the Blazing Fire.",
+      "translation_turkish": "O, alevli ateşe girecektir.",
+      "translation_arabic": "وسوف يدخل الجحيم."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "چون او (در دنیا) در میان خانوادۀ خود شادمان (و غافل از آخرت) بود.",
       "translation_pashto": "84-13 بېشكه دى په خپل اهل كې خوشاله و",
-      "translation_english": "Indeed, he used to live among his people joyfully."
+      "translation_english": "Indeed, he used to live among his people joyfully.",
+      "translation_turkish": "Gerçekten o, halkının arasında sevinçle yaşardı.",
+      "translation_arabic": "لأنه كان سعيداً (في الدنيا) في أهله (غافلاً عن الآخرة)."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "و چون او گمان می‌کرد که هرگز (به سوی الله) باز نمی‌گردد.",
       "translation_pashto": "84-14 بېشكه ده یقین كړى و چې دى به له سره بېرته (الله ته) ونه ګرځي",
-      "translation_english": "and he thought that he would never return [to Allah]."
+      "translation_english": "and he thought that he would never return [to Allah].",
+      "translation_turkish": "Ve asla (Allah'a) dönmeyeceğini düşünüyordu.",
+      "translation_arabic": "ولأنه ظن أنه لن يعود أبداً."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "آری! (بازگشت به‌سوی الله حق است) به درستی که پروردگارش به او بیناست.",
       "translation_pashto": "84-15 ولې نه! بېشكه د ده رب ده لره تل ښه ليدونكى و",
-      "translation_english": "Indeed he will! His Lord was always watching him."
+      "translation_english": "Indeed he will! His Lord was always watching him.",
+      "translation_turkish": "Gerçekten de yapacak! Rabbi her zaman onu izliyordu.",
+      "translation_arabic": "نعم! (الرجوع إلى الله حق) كما يراه ربه."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "پس قسم به شفق (سرخی بعد از غروب آفتاب).",
       "translation_pashto": "84-16 نو زه قسم خورم په شفق (له ماښام نه پس په سوروالي)",
-      "translation_english": "Indeed, I swear by the twilight,"
+      "translation_english": "Indeed, I swear by the twilight,",
+      "translation_turkish": "Gerçekten, alacakaranlığa yemin ederim ki,",
+      "translation_arabic": "فأقسم بالشفق (حمراء بعد غروب الشمس)."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "و قسم به شب و آنچه (در زیر سیاهی خود) جمع می‌کند.",
       "translation_pashto": "84-17 او په شپه او په هغه څه چې دې راجمع كړي دي",
-      "translation_english": "and by the night and what it covers,"
+      "translation_english": "and by the night and what it covers,",
+      "translation_turkish": "geceye ve onun kapsadığı şeye,",
+      "translation_arabic": "وبالليل وما يجمع (تحت ظلمته)."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "و قسم به ماه چون کامل گردد.",
       "translation_pashto": "84-18 او په سپوږمۍ كله چې دا كامله شي",
-      "translation_english": "and by the moon when it becomes full,"
+      "translation_english": "and by the moon when it becomes full,",
+      "translation_turkish": "ve dolunay olduğunda aya and olsun ki,",
+      "translation_arabic": "والقمر إذا اكتمل."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "که همیشه از یک حالت به حالت دیگر درآیید.",
       "translation_pashto": "84-19 چې تاسو به خامخا ضرور رسېږئ یو حال ته وروسته له بل حال نه ",
-      "translation_english": "You will surely pass from one stage to another."
+      "translation_english": "You will surely pass from one stage to another.",
+      "translation_turkish": "Bir aşamadan diğerine mutlaka geçeceksiniz.",
+      "translation_arabic": "أنك تنتقل دائمًا من دولة إلى أخرى."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "پس کفار را چه شده که ایمان نمی‌آرند؟",
       "translation_pashto": "84-20 نو په دوى څه شوي دي چې دوى ایمان نه راوړي",
-      "translation_english": "Then what is the matter with them that they do not believe,"
+      "translation_english": "Then what is the matter with them that they do not believe,",
+      "translation_turkish": "O halde onlara ne oluyor da inanmıyorlar?",
+      "translation_arabic": "فماذا حدث للكافرين الذين لا يؤمنون؟"
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "و هرگاه قرآن بر آن‌ها خوانده شود، سجده نمی‌کنند (منقاد نمی‌شوند).",
       "translation_pashto": "84-21 او كله چې په دوى باندې قرآن لوستى شي دوى سجده نه كوي",
-      "translation_english": "and when the Qur’an is recited to them, they do not prostrate?"
+      "translation_english": "and when the Qur’an is recited to them, they do not prostrate?",
+      "translation_turkish": "Kendilerine Kur'an okunduğu zaman secde etmiyorlar mı?",
+      "translation_arabic": "وإذا قرئ عليهم القرآن لا يسجدون."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "(سجده کردن چه که) بلکه کفار قرآن را تکذیب می‌کنند.",
       "translation_pashto": "84-22 بلكې هغه كسان چې كافران شوي دي؛ هغوى تكذیب كوي",
-      "translation_english": "Rather, the disbelievers persist in denying it,"
+      "translation_english": "Rather, the disbelievers persist in denying it,",
+      "translation_turkish": "Aksine kâfirler onu inkar etmekte ısrar ediyorlar.",
+      "translation_arabic": "(سجود أم ماذا) ولكن الكافرين كذبوا بالقرآن."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "و الله به آنچه در دل دارند عالم‌تر است.",
       "translation_pashto": "84-23 او الله ښه عالم دى په هغه څه چې دوى يې پټ ساتي",
-      "translation_english": "but Allah knows best whatever they harbor in their hearts."
+      "translation_english": "but Allah knows best whatever they harbor in their hearts.",
+      "translation_turkish": "Ama Allah onların kalplerinde ne barındırdığını en iyi bilendir.",
+      "translation_arabic": "والله أعلم بما في قلوبهم."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "پس آن‌ها را به عذاب دردناک مژده ده.",
       "translation_pashto": "84-24 نو ته دوى ته د ډېر دردوونكي عذاب زېرى وركړه",
-      "translation_english": "So give them the tidings of a painful punishment."
+      "translation_english": "So give them the tidings of a painful punishment.",
+      "translation_turkish": "Artık onlara acı bir azabı müjdele.",
+      "translation_arabic": "فبشرهم بعذاب أليم ."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "مگر آنانی که ایمان آورده‌اند و کارهای نیک انجام داده‌اند که برای آن‌ها اجر و ثوابی ابدی و قطع ناشدنی است.",
       "translation_pashto": "84-25 غیر له هغو كسانو نه چې ایمان يې راوړى دى او نېك عملونه يې كړي دي، د دوى لپاره نه ختمېدونكى اجر دى",
-      "translation_english": "But those who believe and do righteous deeds will have a never-ending reward."
+      "translation_english": "But those who believe and do righteous deeds will have a never-ending reward.",
+      "translation_turkish": "Ama iman edip salih ameller işleyenlere sonsuz bir mükafat vardır.",
+      "translation_arabic": "إلا الذين آمنوا وعملوا الصالحات فلهم أجر خالد غير ممنون."
     }
   ]
 }

@@ -28,9 +28,9 @@ const ACTIONS: Array<{
 
 export function QuickActions() {
   const { theme } = useApp();
-  const { t, language } = useI18n();
+  const { t, isLatin } = useI18n();
   const { unreadCount } = useDua();
-  const isEnglish = language === 'english';
+  const isEnglish = isLatin;
 
   return (
     <RtlView style={styles.grid}>

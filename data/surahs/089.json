@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "قسم به فجر (صبح).",
       "translation_pashto": "89-1 قسم دى په فجر (سبا) باندې",
-      "translation_english": "By the dawn,"
+      "translation_english": "By the dawn,",
+      "translation_turkish": "Şafak vakti,",
+      "translation_arabic": "من الفجر (الصباح)."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "و قسم به شب‌های ده‌گانه.",
       "translation_pashto": "89-2 او په لسو شپو باندې ",
-      "translation_english": "and the ten nights,"
+      "translation_english": "and the ten nights,",
+      "translation_turkish": "ve on gece,",
+      "translation_arabic": "وبعشر ليال."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و قسم به جفت و طاق.",
       "translation_pashto": "89-3 او په جفت او طاق باندې",
-      "translation_english": "and the even and the odd,"
+      "translation_english": "and the even and the odd,",
+      "translation_turkish": "ve çift ve tek,",
+      "translation_arabic": "وبالزوج والقوس."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "و قسم به شب چون سپری شود.",
       "translation_pashto": "89-4 او په شپه باندې كله چې روانه وي",
-      "translation_english": "and by the night when it comes,"
+      "translation_english": "and by the night when it comes,",
+      "translation_turkish": "ve gece geldiğinde,",
+      "translation_arabic": "وبالليل إذا انقضى."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "آیا درین (امر) قسم کافی برای صاحبان خرد نیست؟ (بلی هست!).",
       "translation_pashto": "89-5 ایا په دغو (قسمونو) كې خاوند د عقل لره (كوم قانع كوونكى) قسم شته؟",
-      "translation_english": "are these oaths not sufficient for those who have sense?"
+      "translation_english": "are these oaths not sufficient for those who have sense?",
+      "translation_turkish": "Bu yeminler aklı başında olanlara yetmez mi?",
+      "translation_arabic": "ألا يكفي القسم لمن له حكمة في هذا؟ (نعم هو كذلك!)"
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "آیا ندیدی که پروردگارت با قوم عاد چه کرد؟",
       "translation_pashto": "89-6 ایا تا نه دي كتلي چې ستا رب څه وكړل له ’’قوم عاد‘‘ سره؟",
-      "translation_english": "Have you not considered how your Lord dealt with ‘Ād"
+      "translation_english": "Have you not considered how your Lord dealt with ‘Ād",
+      "translation_turkish": "Rabbinin Âd'a nasıl davrandığını görmedin mi?",
+      "translation_arabic": "ألم تر ما فعل ربك بقوم عاد؟"
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "قوم ارم که صاحب قامت‌های بلند و ستون مانند بودند.",
       "translation_pashto": "89-7 چې ارم و د ستنو والا",
-      "translation_english": "of Iram, who were people of great stature,"
+      "translation_english": "of Iram, who were people of great stature,",
+      "translation_turkish": "Büyük boylu insanlar olan İram'ın,",
+      "translation_arabic": "قوم آرام كانوا ذوي قامة طويلة وشبيهة بالعمود."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "که مانند آن در (هیچ‌یک) از شهرها آفریده نشده بود.",
       "translation_pashto": "89-8 هغه چې په ښارونو كې د دوى په مثل نه و پیدا كړى شوي",
-      "translation_english": "the like of whom had never been created in the land;"
+      "translation_english": "the like of whom had never been created in the land;",
+      "translation_turkish": "yeryüzünde onun gibisi yaratılmamıştı;",
+      "translation_arabic": "الذي لم يخلق مثله في أي من القرى."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "و با قوم ثمود؟ آنانی که سنگ‌ها را در وادی (القری) می‌تراشیدند.",
       "translation_pashto": "89-9 او ثمودیانو سره (يې څه وكړل) هغه چې په دره كې يې تیګې غوڅې كړې (تراشلې) وې؟",
-      "translation_english": "and Thamūd, who carved out the rocks in the Valley;"
+      "translation_english": "and Thamūd, who carved out the rocks in the Valley;",
+      "translation_turkish": "ve Vadideki kayaları oyan Semûd;",
+      "translation_arabic": "ومع قوم ثمود؟ الذين قطعوا الحجارة في الوادي (القاري)."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "با فرعون؟ که میخ‌ها (برای سزا دادنِ مردم) داشت.",
       "translation_pashto": "89-10 او له میخونو والا فرعون سره (يې څه وكړل)",
-      "translation_english": "and the mighty and powerful Pharaoh?"
+      "translation_english": "and the mighty and powerful Pharaoh?",
+      "translation_turkish": "ve kudretli ve kudretli Firavun?",
+      "translation_arabic": "مع فرعون؟ الذي كان له أظافر (لمعاقبة الناس)."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "(این سه قوم) همان کسانی بودند که در شهرها سرکشی کردند.",
       "translation_pashto": "89-11 هغه كسان چې دوى په ښارونو كې سركشي كړې وه",
-      "translation_english": "All of them transgressed in the land,"
+      "translation_english": "All of them transgressed in the land,",
+      "translation_turkish": "Hepsi yeryüzünde haddi aştılar,",
+      "translation_arabic": "(هذه القبائل الثلاثة) هم الذين تمردوا في المدن."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "پس در آن شهرها فساد بیشتر کردند.",
       "translation_pashto": "89-12 نو په دغو كې يې فساد ډېر كړى و",
-      "translation_english": "and spread therein much corruption,"
+      "translation_english": "and spread therein much corruption,",
+      "translation_turkish": "ve orada pek çok bozgunculuk yaydılar,",
+      "translation_arabic": "ففعلوا المزيد من الفساد في تلك المدن."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "لهذا پروردگارت آنان را به عذاب سخت گرفتار کرد.",
       "translation_pashto": "89-13 نو ستا رب په دوى باندې د عذاب قمچینه (كروړه) نازله كړه",
-      "translation_english": "so your Lord poured upon them a scourge of punishment."
+      "translation_english": "so your Lord poured upon them a scourge of punishment.",
+      "translation_turkish": "Bunun üzerine Rabbin onların üzerine azap kırbacı yağdırdı.",
+      "translation_arabic": "ولذلك عذابهم ربك عذابا شديدا."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "یقیناً پروردگار تو در کمین‌گاه (مراقب اعمال بندگان) است.",
       "translation_pashto": "89-14 بېشكه ستا رب یقینًا په ځاى د انتظار كې دى",
-      "translation_english": "Indeed, your Lord is ever vigilant."
+      "translation_english": "Indeed, your Lord is ever vigilant.",
+      "translation_turkish": "Şüphesiz Rabbin çok uyanıktır.",
+      "translation_arabic": "إن ربك في مرصد."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "پس اما انسان هرگاه پروردگارش او را امتحان کند و به او مقام و نعمت دهد، می‌گوید: پروردگارم مرا عزت داد.",
       "translation_pashto": "89-15 نو هر چې انسان دى، كله چې ده لره خپل رب وازمايي، پس ده ته عزت وركړي او ده ته نعمت وركړي، نو دى وايي: زما رب ما ته عزت راكړ",
-      "translation_english": "As for man, when he is tested by his Lord by honoring him and bestowing blessings upon him, he says, “My Lord has [deservedly] honored me!”"
+      "translation_english": "As for man, when he is tested by his Lord by honoring him and bestowing blessings upon him, he says, “My Lord has [deservedly] honored me!”",
+      "translation_turkish": "İnsan ise, Rabbi tarafından kendisine ikramda bulunularak ve kendisine nimetler bahşedilerek sınandığı zaman, \"Rabbim bana ikramda bulundu!\" der.",
+      "translation_arabic": "فإذا ابتلي الإنسان ربه وأعطيه المنزلة والنعمة قال: أكرمني ربي."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "و اما وقتی که پروردگارش او را امتحان کند و روزی‌اش را بر او تنگ سازد، می‌گوید: پروردگارم مرا اهانت کرده است.",
       "translation_pashto": "89-16 او  خو هر كله چې دى وازمايي، پس په ده باندې د ده رزق تنګ كړي، نو دى وايي: زما رب زه سپك كړم",
-      "translation_english": "But when he is tested by restricting his provision, he says, “My Lord has [undeservedly] humiliated me!”"
+      "translation_english": "But when he is tested by restricting his provision, he says, “My Lord has [undeservedly] humiliated me!”",
+      "translation_turkish": "Ancak rızkının kısıtlanmasıyla sınandığı zaman, \"Rabbim beni (haksız yere) küçük düşürdü!\" der.",
+      "translation_arabic": "فإذا ابتلاه ربه فقدر عليه رزقه فيقول: أهانني ربي."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "نه، چنین نیست، بلکه شما یتیم را گرامی نمی‌دارید.",
       "translation_pashto": "89-17 داسې نه ده، بلكې تاسو د یتیم (سره احسان او د هغه) عزت نه كوئ",
-      "translation_english": "No indeed! You are not kind to the orphan,"
+      "translation_english": "No indeed! You are not kind to the orphan,",
+      "translation_turkish": "Gerçekten hayır! Yetime iyi davranmıyorsun,",
+      "translation_arabic": "لا ليس كذلك، ولكنكم لا تكرمون اليتيم."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "و همدیگر را بر طعام دادن مسکین ترغیب نمی‌کنید.",
       "translation_pashto": "89-18 او مسكین ته په طعام وركولو یو بل ته ترغیب نه وركوئ",
-      "translation_english": "nor do you urge one another to feed the needy,"
+      "translation_english": "nor do you urge one another to feed the needy,",
+      "translation_turkish": "Yoksulları doyurmak için birbirinizi teşvik etmiyorsunuz.",
+      "translation_arabic": "ولا يشجع بعضكم بعضاً على إطعام المسكين."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "و میراث دیگران را با مال خود خلط نموده (به طریقۀ نادرست) می‌خورید.",
       "translation_pashto": "89-19 او تاسو د میراث (پردى) مال خورئ، په خوړلو ټولو سره",
-      "translation_english": "and you greedily consume the entire inheritance,"
+      "translation_english": "and you greedily consume the entire inheritance,",
+      "translation_turkish": "ve mirasın tamamını açgözlülükle tüketiyorsun,",
+      "translation_arabic": "وتخلط بين ميراث الآخرين وميراثك (بطريقة خاطئة)."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "و مال را بسیار (بیش از حد) دوست می‌دارید.",
       "translation_pashto": "89-20 او تاسو له مال سره مینه كوئ، ډېره زیاته مینه",
-      "translation_english": "and love wealth immensely."
+      "translation_english": "and love wealth immensely.",
+      "translation_turkish": "ve zenginliği çok sever.",
+      "translation_arabic": "وأنت تحب الأشياء أكثر من اللازم."
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "چنین نیست، بلکه وقتی زمین به شدت درهم کوبیده شود.",
       "translation_pashto": "89-21 داسې نه ده كله چې ځمكه وټكولى شي، په ټكولو ماتولو سختو سره",
-      "translation_english": "No indeed! When the earth is crushed over and over,"
+      "translation_english": "No indeed! When the earth is crushed over and over,",
+      "translation_turkish": "Gerçekten hayır! Toprak defalarca ezilirken,",
+      "translation_arabic": "ليس كذلك، ولكن عندما يتم سحق الأرض."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "و پروردگارت بیاید و فرشتگان صف بسته حاضر شوند.",
       "translation_pashto": "89-22 او ستا رب راشي او ملايك قطار  قطار (راشي)",
-      "translation_english": "and your Lord comes with the angels, rank after rank,"
+      "translation_english": "and your Lord comes with the angels, rank after rank,",
+      "translation_turkish": "Rabbin sıra sıra meleklerle gelir.",
+      "translation_arabic": "وجاء ربك وظهرت الملائكة صفا."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "و آن روز دوزخ در میان آورده شود، آن روز انسان (کافر) عبرت می‌گیرد، ولی چنین عبرت گرفتن چه سودی برای او دارد؟!",
       "translation_pashto": "89-23 او په دغې ورځ كې به دوزخ راوستى شي، په دغې ورځ كې به انسان نصیحت (او پند) اخلي او (په دغه وخت كې) د ده لپاره نصیحت به څنګه (نفعمن) وي",
-      "translation_english": "and Hell is brought near on that Day – this is when man will understand, but what is the use of that understanding?"
+      "translation_english": "and Hell is brought near on that Day – this is when man will understand, but what is the use of that understanding?",
+      "translation_turkish": "O gün cehennem yaklaşır; işte o zaman insan anlayacaktır, peki bu anlamanın ne faydası var?",
+      "translation_arabic": "وفي ذلك اليوم تُذكر الجحيم، في ذلك اليوم يتعلم الإنسان (الكافر) درساً، ولكن ما فائدة تعلم مثل هذا الدرس له؟!"
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "می‌گوید: ای کاش برای این زندگی‌ام چیزی قبلاً می‌فرستادم.",
       "translation_pashto": "89-24 دى به وايي: اى كاشكې ما د خپل ژوند لپاره مخكې (څه نېك عملونه) لېږلي وى",
-      "translation_english": "He will say, “Would that I had sent forth something for my [eternal] life!”"
+      "translation_english": "He will say, “Would that I had sent forth something for my [eternal] life!”",
+      "translation_turkish": "\"Keşke (ebedi) hayatım için bir şey gönderseydim!\" der.",
+      "translation_arabic": "فيقول: وددت أني بعثت لعمري هذا شيئا."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "پس آن روز هیچ کسی چون عذاب الله عذاب نکند.",
       "translation_pashto": "89-25 نو په دغې ورځ كې به د ده (يعنې د رب) د عذاب په شان هیڅوك عذاب نه وركوي",
-      "translation_english": "None can punish as He punishes on that Day,"
+      "translation_english": "None can punish as He punishes on that Day,",
+      "translation_turkish": "O gün O'nun cezalandırdığı gibi hiç kimse ceza veremez.",
+      "translation_arabic": "فلا يعذب يومئذ أحد مثل عذاب الله."
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "و هیچ کسی هم چون الله او را به بند (زنجیرها) نمی‌بندد.",
       "translation_pashto": "89-26 او د ده د تړلو په شان به هیڅوك تړل نه كوي",
-      "translation_english": "and none can bind as He binds."
+      "translation_english": "and none can bind as He binds.",
+      "translation_turkish": "ve hiç kimse O'nun bağladığı gibi bağlayamaz.",
+      "translation_arabic": "ولا يقيده أحد بالسلاسل مثل الله."
     },
     {
       "number": 27,
@@ -301,7 +353,9 @@
       "sajda": false,
       "translation_dari": "(و در حالت نزع گفته شود که) ای نفس (شخص) آرام‌گیرنده (به ایمان)!",
       "translation_pashto": "89-27 اى اطمینان نیوونكیه نفسه!",
-      "translation_english": "[It will be said to the believer,] “O the tranquil soul!"
+      "translation_english": "[It will be said to the believer,] “O the tranquil soul!",
+      "translation_turkish": "[Mümine denilir ki:] “Ey sakin olan nefis!",
+      "translation_arabic": "(وفي حالة الصراع ينبغي أن يقال ذلك) يا نفس (شخص) تستقر (في الإيمان)!"
     },
     {
       "number": 28,
@@ -312,7 +366,9 @@
       "sajda": false,
       "translation_dari": "به‌سوی پروردگارت بازگرد، (در حالی که) تو از او راضی و او از تو راضی است.",
       "translation_pashto": "89-28 ته وګرځه خپل رب ته، په داسې حال كې چې خوشاله او راضي كړى شوى به يې",
-      "translation_english": "Return to your Lord, well pleased and pleasing [to Him]."
+      "translation_english": "Return to your Lord, well pleased and pleasing [to Him].",
+      "translation_turkish": "Rabbinden razı olmuş ve O'ndan razı olmuş olarak dön.",
+      "translation_arabic": "ارجع إلى ربك أنت راض عنه وهو راض عنك."
     },
     {
       "number": 29,
@@ -323,7 +379,9 @@
       "sajda": false,
       "translation_dari": "پس در زمره بندگانم داخل شو.",
       "translation_pashto": "89-29 نو ته زما په بنده ګانو كې داخل شه",
-      "translation_english": "Join My [righteous] slaves,"
+      "translation_english": "Join My [righteous] slaves,",
+      "translation_turkish": "[Salih] kullarıma katıl,",
+      "translation_arabic": "فادخل في عبادي ."
     },
     {
       "number": 30,
@@ -334,7 +392,9 @@
       "sajda": false,
       "translation_dari": "و در جنت من داخل شو.",
       "translation_pashto": "89-30 او زما جنت ته ننوځه",
-      "translation_english": "and enter My Paradise.”"
+      "translation_english": "and enter My Paradise.”",
+      "translation_turkish": "ve Cennetime girin.”",
+      "translation_arabic": "وادخلي جنتي ."
     }
   ]
 }

@@ -28,6 +28,8 @@ interface AyahRowProps {
   dariTranslation?: string;
   pashtoTranslation?: string;
   englishTranslation?: string;
+  turkishTranslation?: string;
+  arabicTranslation?: string;
   isPlaying?: boolean;
   onPress?: () => void;
   onLongPress?: () => void;
@@ -54,6 +56,8 @@ export const AyahRow = memo(function AyahRow({
   dariTranslation,
   pashtoTranslation,
   englishTranslation,
+  turkishTranslation,
+  arabicTranslation,
   isPlaying = false,
   onPress,
   onLongPress,
@@ -93,10 +97,15 @@ export const AyahRow = memo(function AyahRow({
     }
   };
 
-  const renderTranslation = (text: string | undefined, lang: 'dari' | 'pashto' | 'english') => {
+  const renderTranslation = (text: string | undefined, lang: 'dari' | 'pashto' | 'english' | 'turkish' | 'arabic') => {
     if (!text || text.trim() === '') return null;
 
-    const fontFamily = lang === 'pashto' ? pashtoFontFamily : lang === 'dari' ? dariFontFamily : undefined;
+    const latin = lang === 'english' || lang === 'turkish';
+    const fontFamily = lang === 'pashto'
+      ? pashtoFontFamily
+      : lang === 'dari' || lang === 'arabic'
+        ? dariFontFamily
+        : undefined;
     const displayText = lang === 'pashto'
       ? stripPashtoAyahReference(text, surahNumber, ayah.number)
       : text;
@@ -106,12 +115,13 @@ export const AyahRow = memo(function AyahRow({
           testID={lang === 'pashto' ? `quran-pashto-translation-${surahNumber}-${ayah.number}` : undefined}
           style={[
             styles.translationText,
-            lang === 'english' && styles.translationTextEnglish,
+            latin && styles.translationTextEnglish,
             {
               color: translationColor,
               fontSize: translationSize,
               fontFamily,
-              lineHeight: Math.round(translationSize * Math.max(1.5, lineHeightRatio - 0.45)),
+              // Naskh and Amiri marks clip on Android below about 1.55.
+              lineHeight: Math.round(translationSize * (latin ? 1.35 : 1.55)),
             },
           ]}
         >
@@ -184,6 +194,10 @@ export const AyahRow = memo(function AyahRow({
             renderTranslation(pashtoTranslation, 'pashto')
           ) : showTranslation === 'english' ? (
             renderTranslation(englishTranslation, 'english')
+          ) : showTranslation === 'turkish' ? (
+            renderTranslation(turkishTranslation, 'turkish')
+          ) : showTranslation === 'arabic' ? (
+            renderTranslation(arabicTranslation, 'arabic')
           ) : (
             renderTranslation(dariTranslation, 'dari')
           )}
@@ -263,12 +277,12 @@ const styles = StyleSheet.create({
   },
   translationsWrapper: {
     paddingHorizontal: Spacing.xs,
-    paddingTop: Spacing.sm,
-    marginTop: Spacing.sm,
+    paddingTop: Spacing.xs,
+    marginTop: Spacing.xs,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
   translationContainer: {
-    paddingVertical: Spacing.xs,
+    paddingVertical: 2,
     alignItems: 'stretch',
     width: '100%',
   },

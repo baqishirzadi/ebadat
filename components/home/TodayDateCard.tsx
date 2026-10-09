@@ -40,12 +40,12 @@ const pashtoDateMetrics = {
 
 function TodayDateCardInner() {
   const { theme } = useApp();
-  const { language, fontFamily, t, n } = useI18n();
+  const { language, fontFamily, t, n, isLatin } = useI18n();
   const { state } = usePrayer();
   const truth = useTodayCalendar();
   const { width } = useWindowDimensions();
-  const isEnglish = language === 'english';
-  const isDari = language === 'dari';
+  const isEnglish = isLatin;
+  const isDari = language === 'dari' || language === 'arabic';
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
   const isRtlHome = !isEnglish;
   const narrowPashto = isRtlHome && width < 360;

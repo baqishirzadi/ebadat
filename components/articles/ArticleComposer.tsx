@@ -226,32 +226,28 @@ export function ArticleComposer({
       <View style={styles.section}>
         <LocalizedText style={[styles.label, { color: theme.text }]}>زبان</LocalizedText>
         <View style={styles.languageRow}>
-          <Pressable
-            onPress={() => setLanguage('dari')}
-            disabled={busy}
-            style={[
-              styles.languageButton,
-              {
-                backgroundColor: language === 'dari' ? theme.tint : theme.backgroundSecondary,
-                borderColor: language === 'dari' ? theme.tint : theme.cardBorder,
-              },
-            ]}
-          >
-            <LocalizedText style={[styles.languageText, { color: language === 'dari' ? '#fff' : theme.text }]}>دری</LocalizedText>
-          </Pressable>
-          <Pressable
-            onPress={() => setLanguage('pashto')}
-            disabled={busy}
-            style={[
-              styles.languageButton,
-              {
-                backgroundColor: language === 'pashto' ? theme.tint : theme.backgroundSecondary,
-                borderColor: language === 'pashto' ? theme.tint : theme.cardBorder,
-              },
-            ]}
-          >
-            <LocalizedText style={[styles.languageText, { color: language === 'pashto' ? '#fff' : theme.text }]}>پښتو</LocalizedText>
-          </Pressable>
+          {([
+            ['dari', 'دری'],
+            ['pashto', 'پښتو'],
+            ['arabic', 'العربية'],
+            ['turkish', 'Türkçe'],
+            ['english', 'English'],
+          ] as const).map(([id, label]) => (
+            <Pressable
+              key={id}
+              onPress={() => setLanguage(id)}
+              disabled={busy}
+              style={[
+                styles.languageButton,
+                {
+                  backgroundColor: language === id ? theme.tint : theme.backgroundSecondary,
+                  borderColor: language === id ? theme.tint : theme.cardBorder,
+                },
+              ]}
+            >
+              <LocalizedText style={[styles.languageText, { color: language === id ? '#fff' : theme.text }]}>{label}</LocalizedText>
+            </Pressable>
+          ))}
         </View>
       </View>
 
@@ -452,10 +448,11 @@ const styles = StyleSheet.create({
   },
   languageRow: {
     flexDirection: 'row-reverse',
+    flexWrap: 'wrap',
     gap: Spacing.sm,
   },
   languageButton: {
-    flex: 1,
+    flexGrow: 1,
     borderWidth: 1,
     borderRadius: BorderRadius.md,
     minHeight: 40,

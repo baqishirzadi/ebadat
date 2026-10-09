@@ -20,7 +20,7 @@ export interface StoredDreamInterpreterMessage {
 export interface DreamInterpreterPersistedState {
   messages: StoredDreamInterpreterMessage[];
   lastMessageAt: number | null;
-  lang: 'fa' | 'ps';
+  lang: 'fa' | 'ps' | 'en' | 'tr' | 'ar';
 }
 
 function normalizeMessages(raw: unknown): StoredDreamInterpreterMessage[] {
@@ -45,8 +45,9 @@ function normalizeMessages(raw: unknown): StoredDreamInterpreterMessage[] {
   return messages.slice(-MAX_MESSAGES);
 }
 
-function normalizeLang(raw: unknown): 'fa' | 'ps' {
-  return raw === 'ps' ? 'ps' : 'fa';
+function normalizeLang(raw: unknown): 'fa' | 'ps' | 'en' | 'tr' | 'ar' {
+  if (raw === 'ps' || raw === 'en' || raw === 'tr' || raw === 'ar') return raw;
+  return 'fa';
 }
 
 export function computeDreamSessionState(lastMessageAt: number | null, now = Date.now()): 'new' | 'continuing' {

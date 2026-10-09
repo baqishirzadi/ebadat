@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "آیا بر انسان مدتی از زمان گذشت که چیزی قابل ذکر نبود.",
       "translation_pashto": "76-1 یقینًا په انسان  باندې داسې وخت هم راغلى دى چې دى څه داسې د يادولو (وړ) شى نه و ",
-      "translation_english": "Was there not a period of time when man was not a thing [even] mentioned?"
+      "translation_english": "Was there not a period of time when man was not a thing [even] mentioned?",
+      "translation_turkish": "İnsanın adı bile anılmayan bir dönem yok muydu?",
+      "translation_arabic": "هل مرت فترة من الزمن ولم يكن هناك شيء يستحق الذكر؟"
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "البته ما انسان را آمیخته از نطفه (مرد و زن) آفریده‌ایم، تا او را بیازمائیم (لذا) او را شنوای بینا گردانیدیم.",
       "translation_pashto": "76-2 بېشكه مونږ انسان له ګډې وډې شوې نطفې نه پیدا كړى دى، چې مونږ به دى ازمایو، نو دى مونږ اورېدونكى (او) لیدونكى وګرځاوه",
-      "translation_english": "Indeed, We created man from a drop of mixed fluids, in order to test him. So We gave him hearing and sight."
+      "translation_english": "Indeed, We created man from a drop of mixed fluids, in order to test him. So We gave him hearing and sight.",
+      "translation_turkish": "Andolsun biz insanı, onu imtihan etmek için karışık bir su damlasından yarattık. Bu yüzden ona işitme ve görme verdik.",
+      "translation_arabic": "إنا خلقنا الإنسان مختلطا من نطفة (ذكرا وأنثى) لنبلوه (فجعلناه سمعا بصيرا)."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "البته ما به انسان راه راست را نشان دادیم، خواه شکرگزار باشد، خواه ناشکر.",
       "translation_pashto": "76-3 بېشكه مونږ ده ته د نېغې  لارې ښوونه كړې ده، یا به دى شكر كوونكى وي او یا به ډېر ناشكره وي",
-      "translation_english": "Indeed, We showed him the way, whether he is grateful or ungrateful."
+      "translation_english": "Indeed, We showed him the way, whether he is grateful or ungrateful.",
+      "translation_turkish": "Şüphesiz biz ona şükreden de, nankör de olan yolu gösterdik.",
+      "translation_arabic": "إنا هدينا الإنسان سواء كان شاكرا وإما كفورا."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "(لیکن) ما برای کفار زنجیرها و طوق‌ها و آتش سوزان را آماده کرده‌ايم.",
       "translation_pashto": "76-4 بېشكه مونږ د كافرانو  لپاره ځنځیرونه او طوقونه (زلونې) او لمبې وهونكى اور تیار كړى دى ",
-      "translation_english": "We have surely prepared for the disbelievers chains, shackles, and a Blazing Fire."
+      "translation_english": "We have surely prepared for the disbelievers chains, shackles, and a Blazing Fire.",
+      "translation_turkish": "Andolsun biz, kâfirler için zincirler, prangalar ve çılgın bir ateş hazırladık.",
+      "translation_arabic": "(ولكن) أعتدنا للكافرين سلاسلا وأطواقا ومحرقا."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "و البته نیکان از جامی می‌نوشند که با کافور آمیخته شده است.",
       "translation_pashto": "76-5 بېشكه نېكان خلق به د شرابو له داسې جامونو نه څښاك كوي چې د هغو  ګډونى (امېزش) به كافور وي",
-      "translation_english": "Indeed, the righteous will drink from a cup [of wine] flavored with camphor,"
+      "translation_english": "Indeed, the righteous will drink from a cup [of wine] flavored with camphor,",
+      "translation_turkish": "Doğrusu, salihler kafurla tatlandırılmış bir kadehten içecek;",
+      "translation_arabic": "وبالطبع يشرب الصالحون من كأس ممزوج بالكافور."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "چشمه‌ای که بندگان نیک الله از آن می‌نوشد، هرگونه بخواهند آن را جاری می‌سازند.",
       "translation_pashto": "76-6 چې چینه ده، د الله بنده ګان به له هغې نه  څښي، دوى به هغه بهوي (چېرته چې وغواړي) ښه بهول",
-      "translation_english": "a spring from which Allah’s slaves will drink, which will flow as they wish."
+      "translation_english": "a spring from which Allah’s slaves will drink, which will flow as they wish.",
+      "translation_turkish": "Allah'ın kullarının içeceği, diledikleri gibi akan bir pınardır.",
+      "translation_arabic": "العين التي يشرب منها عباد الله الصالحون، يجرونها كيف يريدون."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "(علامت آن بندگان الله این است که) به نذرهای خود وفا می‌کنند و از روزی می‌ترسند که شرش عام و گسترده است.",
       "translation_pashto": "76-7 دوى نذرونه پوره كوي او له هغې ورځې نه وېرېږي چې د هغې شر ښه ښكاره دى",
-      "translation_english": "They fulfill their vows and fear a Day whose evil will spread far and wide,"
+      "translation_english": "They fulfill their vows and fear a Day whose evil will spread far and wide,",
+      "translation_turkish": "Onlar adaklarını yerine getirirler ve kötülüğü her yere yayılacak bir günden korkarlar.",
+      "translation_arabic": "( آية عباد الله ) يوفون بالنذور ويخافون يوما كان شره مستطيرا."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "و طعام را با وجود محبت و حاجت خود، به بینوا و یتیم و اسیر می‌دهند.",
       "translation_pashto": "76-8 او دوى د هغه (الله) په مینه كې مسكین او یتیم او بندي ته طعام وركوي",
-      "translation_english": "and they give food, despite their love for it, to the needy, the orphans, and the captives,"
+      "translation_english": "and they give food, despite their love for it, to the needy, the orphans, and the captives,",
+      "translation_turkish": "Yiyecekleri sevdikleri halde yoksullara, yetimlere ve esirlere veriyorlar.",
+      "translation_arabic": "وعلى الرغم من محبتهم وحاجتهم إلا أنهم يطعمون الطعام للفقراء والأيتام والأسرى."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "(و می‌گویند) ما برای رضای الله به شما طعام می‌دهیم و از شما هیچ پاداش و تشکری نمی‌خواهیم.",
       "translation_pashto": "76-9 (دوى وايي:) بېشكه همدا خبره ده چې مونږ تاسو ته د الله له مخه طعام دركوو، مونږ له تاسو نه څه بدله او شكر نه غواړو",
-      "translation_english": "[saying to themselves] “We feed you only for the sake of Allah; we seek from you neither reward nor gratitude."
+      "translation_english": "[saying to themselves] “We feed you only for the sake of Allah; we seek from you neither reward nor gratitude.",
+      "translation_turkish": "(kendi kendilerine şöyle derler): \"Biz sizi yalnızca Allah rızası için doyuruyoruz; sizden ne bir karşılık ne de bir şükran bekliyoruz.",
+      "translation_arabic": "(وقالوا نحن نطعمكم وجهات الله ولا نسألكم أجرا ولا شكورا)."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "البته ما از پروردگار ما می‌ترسیم در روزی که ترش روی و دشوار است.",
       "translation_pashto": "76-10 بېشكه مونږ له خپل رب نه د تریو مخې ډېرې سختې ورځې (له عذاب) نه وېرېږو",
-      "translation_english": "We fear from our Lord a grim and distressful Day.”"
+      "translation_english": "We fear from our Lord a grim and distressful Day.”",
+      "translation_turkish": "Biz, Rabbimizden, çetin ve sıkıntılı bir günden korkuyoruz.”",
+      "translation_arabic": "وطبعا نخاف ربنا في يوم مر وصعب."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "پس الله آن‌ها را از شر و ضرر آن روز حفظ کرد و به آن‌ها درخشانی چهره و خرمی بخشید.",
       "translation_pashto": "76-11 نو الله به  دوى د دغې ورځې له شر نه بچ وساتي او دوى  ته به تازګي او خوشالي ورسوي",
-      "translation_english": "So Allah will protect them from the evil of that Day, and will grant them radiance and delight,"
+      "translation_english": "So Allah will protect them from the evil of that Day, and will grant them radiance and delight,",
+      "translation_turkish": "Allah da onları o günün şerrinden koruyacak, onlara bir nur ve neşe verecektir.",
+      "translation_arabic": "فوقاهم الله شر ذلك اليوم وأذىه، وأعطاهم وجها نضرا ووجها جميلا."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "و در مقابل صبرشان (الله) باغ و (لباس‌های) ابریشمی به آنان پاداش می‌دهد.",
       "translation_pashto": "76-12 او دوى ته به  د خپل صبر په سبب جنت او ورېښم په بدل كې وركړي",
-      "translation_english": "and will reward them for their perseverance with Paradise and garments of silk."
+      "translation_english": "and will reward them for their perseverance with Paradise and garments of silk.",
+      "translation_turkish": "Sabırlarından dolayı onları cennetle ve ipekli elbiselerle ödüllendirecektir.",
+      "translation_arabic": "وسيجزيهم الله في مقابل صبرهم جنة و(ملابس) من حرير."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "در حالی که بر تخت‌ها تکیه زده‌اند، نه (گرمی) آفتاب و نه (سوز) سرما را در آن جا می‌بینند.",
       "translation_pashto": "76-13 په داسې حال كې چې په تختونو باندې به تكیه  وهونكي وي، دوى به په هغه (جنت) كې نه لمر ویني او نه ساړه (یخني)",
-      "translation_english": "They will recline therein on adorned couches; neither feeling scorching heat nor freezing cold."
+      "translation_english": "They will recline therein on adorned couches; neither feeling scorching heat nor freezing cold.",
+      "translation_turkish": "Orada süslü koltuklara yaslanırlar; ne kavurucu sıcağı ne de dondurucu soğuğu hissediyoruz.",
+      "translation_arabic": "وهم متكئون على الأسرّة لا يرون شمسًا ولا بردًا هناك."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "و سایه‌های آن (درختان جنت) به ایشان نزدیک است و میوه‌هایش در دسترس (شان) قرار داده شود.",
       "translation_pashto": "76-14 په داسې حال كې چې په دوى باندې به د دغه (جنت د ونو) سیورى نژدې وي او د هغه د مېوو شوكول به مُسخَّر (راټیټ) كړى شوي وي، مُسخركېدل",
-      "translation_english": "with shady branches spread above them, and clusters of fruit will be made within their reach."
+      "translation_english": "with shady branches spread above them, and clusters of fruit will be made within their reach.",
+      "translation_turkish": "Üstlerine gölgeli dallar serilecek ve erişebilecekleri yerde meyve salkımları oluşturulacak.",
+      "translation_arabic": "ويدنيهم ظلالها (شجر الجنة) ويوضع ثمرها في أيديهم."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "و بر آن‌ها ظرف‌های نقره‌ای و جام‌های بلورین گردانیده می‌شود.",
       "translation_pashto": "76-15 او په دوى باندې به لوښي د سپينو زرو او ګلاسونه ګرځولى شي چې د شیشو به وي",
-      "translation_english": "They will be served frequently with silver vessels and crystal cups,"
+      "translation_english": "They will be served frequently with silver vessels and crystal cups,",
+      "translation_turkish": "Gümüş kaplar ve kristal bardaklarla sık sık ikram edilecekler,",
+      "translation_arabic": "وتوضع عليها أطباق فضية وأكواب كريستال."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "بلورهای از نقره، که آن را به اندازه‌های (متفاوت) اندازه‌گیری کرده‌اند.",
       "translation_pashto": "76-16 د سپینو زرو شیشې چې دوى به دغه (لوښي) اندازه كړي وي، اندازه كول",
-      "translation_english": "crystalline goblets of silver, filled precisely as desired."
+      "translation_english": "crystalline goblets of silver, filled precisely as desired.",
+      "translation_turkish": "tam istendiği gibi doldurulmuş kristal gümüş kadehler.",
+      "translation_arabic": "بلورات من الفضة، والتي قيستها إلى أحجام مختلفة."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "و در آن جا جام شرابی نوشانیده می‌شوند که آمیختۀ آن از چشمۀ زنجبیل است.",
       "translation_pashto": "76-17 او په دغه (جنت) كې به په دوى د شرابو داسې جامونه ورڅښول كېږي چې ګډونى به يې زنجبیل وي",
-      "translation_english": "They will be given a glass [of wine] flavored with ginger"
+      "translation_english": "They will be given a glass [of wine] flavored with ginger",
+      "translation_turkish": "Onlara zencefil aromalı bir kadeh şarap verilecektir.",
+      "translation_arabic": "وهناك يشربون كأسًا من النبيذ الممزوج بالزنجبيل الربيعي."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "چشمۀ است در جنت که سلسبیل نامیده می‌شود.",
       "translation_pashto": "76-18 چې چینه ده په دغه (جنت) كې  چې نوم يې  سلسبیل ایښودل شوى دى",
-      "translation_english": "from a spring therein called Salsabīl."
+      "translation_english": "from a spring therein called Salsabīl.",
+      "translation_turkish": "oradaki Selsabil denilen bir pınardandır.",
+      "translation_arabic": "إن في الجنة عينا تسمى الساليسبيل."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "و پسران همیشه جوان (برای خدمت) بر آنان می‌گردند و چون ایشان را ببینی، آنان را مرواریدهای پراگنده می‌پنداری.",
       "translation_pashto": "76-19 او په دوى باندې به (د خدمت لپاره) همېشني هلكان ګرځي، كله چې ته دوى ووینې (نو) ته به دوى خورې كړى شوې ملغلرې ګڼې",
-      "translation_english": "They will be served by eternal young boys; if you see them, you would think that they are scattered pearls."
+      "translation_english": "They will be served by eternal young boys; if you see them, you would think that they are scattered pearls.",
+      "translation_turkish": "Onlara ebedi genç oğlanlar hizmet edecek; onları görsen dağınık inci sanırsın.",
+      "translation_arabic": "والصبيان يزورونهم دائمًا (للخدمة) وعندما تراهم تحسبهم لؤلؤًا منثورًا."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "و چون آن جا را نگاه کنی، نعمت فراوان و پادشاهی بزرگ را می‌بینی.",
       "translation_pashto": "76-20 او كله چې ته وګورې (نو) په دغه ځاى كې به نعمتونه او ډېره لویه بادشاهي ووینې",
-      "translation_english": "If you were to look around, you would see bliss and a vast dominion."
+      "translation_english": "If you were to look around, you would see bliss and a vast dominion.",
+      "translation_turkish": "Etrafına baksan, saadeti ve geniş bir mülkü görürsün.",
+      "translation_arabic": "وعندما تنظر هناك ترى بركات كثيرة وملكا عظيما."
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "بر تن آن‌ها (جنتیان) لباس‌های ابریشم نازک و ابریشم ضخیم است و با دستبندهای از نقره آراسته شده‌اند، و پروردگارشان شراب پاکیزه به آن‌ها می‌نوشاند.",
       "translation_pashto": "76-21 د دوى په تن باندې به د نري ورېښمو جامې وي چې شنې به وي او د پېړو ورېښمو (جامې به هم وي) او دوى ته به د سپینو زرو باهوګان واچولى شي او خپل رب به په دوى ډېر پاكيزه شراب وڅښي",
-      "translation_english": "They will be dressed in garments of fine green silk and rich brocade, and will be adorned with bracelets of silver, and their Lord will give them a pure drink."
+      "translation_english": "They will be dressed in garments of fine green silk and rich brocade, and will be adorned with bracelets of silver, and their Lord will give them a pure drink.",
+      "translation_turkish": "Onlar, ince yeşil ipekten ve parlak atlastan elbiseler giyecekler, gümüşten bileziklerle süslenecekler ve Rableri onlara tertemiz bir içecek verecektir.",
+      "translation_arabic": "يلبسون (الأمم) حريرًا رقيقًا وحريرًا غليظًا، ويتحلون أساور من فضة، ويسقيهم ربهم خمرًا خالصة."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "البته این (نعمت‌ها) پاداش (اعمال) شما است و سعی‌تان مورد سپاس (و قابل تقدیر) است.",
       "translation_pashto": "76-22 بېشكه دا  (نعمت) تاسو لپاره بدله ده. او ستاسو سعي (كوشش) قبول كړى شوى دى",
-      "translation_english": "[And they will be told,] “Indeed, this is your reward, and your efforts have been appreciated.”"
+      "translation_english": "[And they will be told,] “Indeed, this is your reward, and your efforts have been appreciated.”",
+      "translation_turkish": "[Ve onlara şöyle denilecek:] \"Gerçekten bu sizin ödülünüzdür ve çabalarınız takdir edilmiştir.\"",
+      "translation_arabic": "وطبعاً هذه (النعم) هي جزاء (أعمالك) وجهودك مشكورة."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "البته ما قرآن را به تدریج بر تو نازل کرده‌ایم.",
       "translation_pashto": "76-23 بېشكه همدا مونږ پر تاسو  باندې قرآن نازل كړى دى، ښه نازلول",
-      "translation_english": "Indeed, it is We Who have sent down the Qur’an to you in stages."
+      "translation_english": "Indeed, it is We Who have sent down the Qur’an to you in stages.",
+      "translation_turkish": "Şüphesiz ki Kur'an'ı sana parça parça indiren Biziz.",
+      "translation_arabic": "طبعا لقد أنزلنا عليك القرآن تدريجيا."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "پس بر حکم پروردگارت صابر باش و گناهکار یا ناسپاس آنان را اطاعت مکن.",
       "translation_pashto": "76-24 نو ته د خپل رب حكم ته صبر كوه او په دوى كې  د هېڅ ګناهګار او سخت ناشكره خبره مه منه",
-      "translation_english": "So be patient with your Lord’s decree, and do not obey any sinner or disbeliever from among them."
+      "translation_english": "So be patient with your Lord’s decree, and do not obey any sinner or disbeliever from among them.",
+      "translation_turkish": "O halde Rabbinin hükmüne sabret ve onlardan hiçbir günahkâra ve kâfire itaat etme.",
+      "translation_arabic": "فاصبر لأمر ربك ولا تطع المذنبين أو الكافرين."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "و نام پروردگارت را در هر صبح و شام یاد کن.",
       "translation_pashto": "76-25 او په سبا او بېګاه كې ته د خپل رب نوم  یادوه",
-      "translation_english": "And remember the Name of your Lord morning and evening,"
+      "translation_english": "And remember the Name of your Lord morning and evening,",
+      "translation_turkish": "Ve sabah akşam Rabbinin ismini an,",
+      "translation_arabic": "واذكر اسم ربك في كل صباح ومساء."
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "و در حصه‌ای از شب برای الله نماز بگذار و در حصۀ طولانی از شب او را به پاکی یاد کن.",
       "translation_pashto": "76-26 او د شپې په څه حصه كې، نو ته هغه ته سجده كوه او د هغه تسبیح وایه  په اوږده شپه كې",
-      "translation_english": "and prostrate to Him at night, and glorify Him at length by night."
+      "translation_english": "and prostrate to Him at night, and glorify Him at length by night.",
+      "translation_turkish": "Geceleri O'na secde edin ve geceleri O'nu uzun uzun tesbih edin.",
+      "translation_arabic": "وادعوا الله جزءاً من الليل واذكروه طهوراً جزءاً طويلاً من الليل."
     },
     {
       "number": 27,
@@ -301,7 +353,9 @@
       "sajda": false,
       "translation_dari": "بی‌گمان ایشان دنیای زودگذر را دوست می‌دارند و روز دشوار آخرت را پشت سر خویش می‌نهند.",
       "translation_pashto": "76-27 بېشكه دغه خلق تادي كوونكې (زر تېرېدونكي دنیا) خوښوي او له خپل ځان وروسته درنه ورځ پرېږدي",
-      "translation_english": "Indeed, these [pagans] love this fleeting life and pay no heed to a heavy Day ahead of them."
+      "translation_english": "Indeed, these [pagans] love this fleeting life and pay no heed to a heavy Day ahead of them.",
+      "translation_turkish": "Doğrusu bu (müşrikler) şu fani hayatı seviyorlar ve önlerindeki ağır güne aldırış etmiyorlar.",
+      "translation_arabic": "ولا شك أنهم يحبون الدنيا الزائلة ويتركون يوم الآخرة الصعب وراءهم."
     },
     {
       "number": 28,
@@ -312,7 +366,9 @@
       "sajda": false,
       "translation_dari": "ما آن‌ها را آفریدیم و آفرینش آن‌ها را استوار و محکم کردیم و هر وقت بخواهیم مانند آن‌ها انسان‌های دیگری را جایگزین‌شان می‌کنیم.",
       "translation_pashto": "76-28 مونږ دوى پیدا كړي دي او مونږ د دوى بندونه مضبوط كړي دي او كله چې مونږ وغواړو د دوى مثالونه به په بدل كې راولو، په بدل كې راوستل",
-      "translation_english": "It is We Who created them and strengthened their build. If We will, We can replace them with others like them."
+      "translation_english": "It is We Who created them and strengthened their build. If We will, We can replace them with others like them.",
+      "translation_turkish": "Onları yaratan ve yapılarını güçlendiren Biziz. Dilersek onların yerine kendileri gibi başkalarını getiririz.",
+      "translation_arabic": "لقد خلقناهم وشددنا خلقهم، ومتى نشاء أبدلناهم ببشر مثلهم."
     },
     {
       "number": 29,
@@ -323,7 +379,9 @@
       "sajda": false,
       "translation_dari": "یقیناً این (تعلیمات قرآن)، یادآوری و پندی است؛ پس هرکس بخواهد راهی را به‌سوی پروردگارش برگزیند.",
       "translation_pashto": "76-29 بېشكه دا (قرآن) نصیحت دى، نو هغه څوك چې غواړي چې خپل رب طرف ته لار ونیسي (نو ودې نیسي)",
-      "translation_english": "Indeed, this is a reminder; so let anyone who wills may take a way to his Lord."
+      "translation_english": "Indeed, this is a reminder; so let anyone who wills may take a way to his Lord.",
+      "translation_turkish": "Şüphesiz bu bir hatırlatmadır; Artık dileyen Rabbine giden bir yol tutsun.",
+      "translation_arabic": "إن هذا (تعاليم القرآن) تذكرة وموعظة؛ فمن أراد أن يتخذ إلى ربه طريقا."
     },
     {
       "number": 30,
@@ -334,7 +392,9 @@
       "sajda": false,
       "translation_dari": "شما نمی‌توانید (چیزی را) بخواهید مگر این که الله بخواهد، بی‌گمان الله دانای باحکمت است.",
       "translation_pashto": "76-30 او تاسو اراده نشئ كولى مګر دا چې الله وغواړي، بېشكه الله ښه عالم، ښه حكمت والا دى",
-      "translation_english": "But you cannot will unless Allah wills. Indeed, Allah is All-Knowing, All-Wise."
+      "translation_english": "But you cannot will unless Allah wills. Indeed, Allah is All-Knowing, All-Wise.",
+      "translation_turkish": "Ama Allah dilemedikçe siz dileyemezsiniz. Şüphesiz Allah her şeyi bilendir, hikmet sahibidir.",
+      "translation_arabic": "ولا تسألون إلا أن يشاء الله إن الله كان عليما حكيما."
     },
     {
       "number": 31,
@@ -345,7 +405,9 @@
       "sajda": false,
       "translation_dari": "(لذا) در رحمت خود کسی را که بخواهد داخل می‌کند و برای ظالم‌ها (که مستحق رحمت نیستند) عذاب دردناک را آماده کرده‌ایم.",
       "translation_pashto": "76-31 چا ته چې وغواړي په  خپل رحمت كې يې داخلوي او ظالمان (كافران) چې دي هغهٔ، د دوى لپاره ډېر دردوونكى عذاب تیار كړى دى",
-      "translation_english": "He admits whom He wills into His mercy, but for the wrongdoers He has prepared a painful punishment."
+      "translation_english": "He admits whom He wills into His mercy, but for the wrongdoers He has prepared a painful punishment.",
+      "translation_turkish": "Dilediğini rahmetine sokar, zalimler için ise acı bir azap hazırlamıştır.",
+      "translation_arabic": "( فيدخل في رحمته من يشاء وأعتدنا للظالمين عذابا أليما )"
     }
   ]
 }

@@ -245,7 +245,7 @@ export function AhadithProvider({ children }: { children: React.ReactNode }) {
       void scheduleAhadithNotifications(
         hadiths,
         notificationPrefs,
-        appState.preferences.appLanguage === 'pashto' ? 'pashto' : 'dari',
+        appState.preferences.appLanguage,
       ).catch((error) => {
         if (__DEV__) {
           console.warn('[Ahadith] Failed to schedule notifications', error);

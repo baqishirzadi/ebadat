@@ -28,10 +28,10 @@ interface BookCoverProps {
 
 export function BookCover({ categories, onSelectCategory }: BookCoverProps) {
   const { theme, state } = useApp();
-  const { t, content, language, fontFamily } = useI18n();
+  const { t, content, language, fontFamily, isLatin } = useI18n();
   const pashtoFont = state.preferences.pashtoFont;
-  const titleFont = language === 'pashto' ? getPashtoBoldFontFamily(pashtoFont) : 'Vazirmatn-Bold';
-  const bodyFont = language === 'pashto' ? getPashtoFontFamily(pashtoFont) : fontFamily || 'Vazirmatn';
+  const titleFont = language === 'pashto' ? getPashtoBoldFontFamily(pashtoFont) : isLatin ? undefined : 'Vazirmatn-Bold';
+  const bodyFont = language === 'pashto' ? getPashtoFontFamily(pashtoFont) : isLatin ? undefined : fontFamily || 'Vazirmatn';
 
   return (
     <BookFrame>

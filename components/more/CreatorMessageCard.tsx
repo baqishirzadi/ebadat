@@ -14,14 +14,32 @@ import {
   CREATOR_MESSAGE_PASHTO_BODY,
   CREATOR_MESSAGE_PASHTO_SIGNATURE,
   CREATOR_MESSAGE_PASHTO_TITLE,
+  CREATOR_MESSAGE_TURKISH_BODY,
+  CREATOR_MESSAGE_TURKISH_SIGNATURE,
+  CREATOR_MESSAGE_TURKISH_TITLE,
+  CREATOR_MESSAGE_ARABIC_BODY,
+  CREATOR_MESSAGE_ARABIC_SIGNATURE,
+  CREATOR_MESSAGE_ARABIC_TITLE,
 } from '@/constants/aboutCreatorContent';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 
 export function CreatorMessageCard() {
   const { theme, state } = useApp();
-  const isEnglish = state.preferences.appLanguage === 'english';
-  const isPashtoUi = state.preferences.appLanguage === 'pashto';
+  const language = state.preferences.appLanguage;
+  const isLatin = isLatinLanguage(language);
+  const isPashtoUi = language === 'pashto';
+  const latinTitle = language === 'turkish' ? CREATOR_MESSAGE_TURKISH_TITLE : CREATOR_MESSAGE_ENGLISH_TITLE;
+  const latinBody = language === 'turkish' ? CREATOR_MESSAGE_TURKISH_BODY : CREATOR_MESSAGE_ENGLISH_BODY;
+  const latinSignature = language === 'turkish' ? CREATOR_MESSAGE_TURKISH_SIGNATURE : CREATOR_MESSAGE_ENGLISH_SIGNATURE;
+  const headerHint = language === 'turkish'
+    ? 'Yapımcıdan'
+    : language === 'english'
+      ? 'From the creator'
+      : language === 'arabic'
+        ? 'من المطوّر'
+        : 'پیام سازنده';
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -34,21 +52,33 @@ export function CreatorMessageCard() {
         <View style={[styles.headerIconWrap, { backgroundColor: `${theme.tint}22`, borderColor: `${theme.tint}40` }]}>
           <MaterialIcons name="format-quote" size={20} color={theme.tint} />
         </View>
-        <CenteredText style={[styles.headerHint, isEnglish && styles.headerHintEnglish, { color: theme.textSecondary }]}>
-          {isEnglish ? 'From the creator' : 'پیام سازنده'}
+        <CenteredText style={[styles.headerHint, isLatin && styles.headerHintEnglish, { color: theme.textSecondary }]}>
+          {headerHint}
         </CenteredText>
       </LinearGradient>
 
-      {isEnglish ? (
+      {isLatin ? (
         <View style={styles.block}>
           <CenteredText style={[styles.blockTitle, styles.blockTitleEnglish, { color: theme.tint }]}>
-            {CREATOR_MESSAGE_ENGLISH_TITLE}
+            {latinTitle}
           </CenteredText>
           <CenteredText style={[styles.bodyEnglish, { color: theme.text }]}>
-            {CREATOR_MESSAGE_ENGLISH_BODY}
+            {latinBody}
           </CenteredText>
           <CenteredText style={[styles.signatureEnglish, { color: theme.bookmark }]}>
-            {CREATOR_MESSAGE_ENGLISH_SIGNATURE}
+            {latinSignature}
+          </CenteredText>
+        </View>
+      ) : language === 'arabic' ? (
+        <View style={styles.block}>
+          <CenteredText style={[styles.blockTitle, { color: theme.tint }]}>
+            {CREATOR_MESSAGE_ARABIC_TITLE}
+          </CenteredText>
+          <CenteredText style={[styles.bodyDari, { color: theme.text }]}>
+            {CREATOR_MESSAGE_ARABIC_BODY}
+          </CenteredText>
+          <CenteredText style={[styles.signatureDari, { color: theme.bookmark }]}>
+            {CREATOR_MESSAGE_ARABIC_SIGNATURE}
           </CenteredText>
         </View>
       ) : (

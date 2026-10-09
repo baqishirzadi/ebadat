@@ -190,7 +190,7 @@ export function DailyHadithCard({
           <View style={styles.bottomPanel}>
             <CenteredText
               style={[
-                language === 'english' ? styles.translationEnglish : styles.translation,
+                language === 'english' || language === 'turkish' ? styles.translationEnglish : styles.translation,
                 {
                   color: theme.textPrimary,
                   fontFamily,

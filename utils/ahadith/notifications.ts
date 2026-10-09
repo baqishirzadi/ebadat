@@ -47,7 +47,15 @@ async function ensureChannel(NotificationsModule: typeof import('expo-notificati
 
   const channelId = `ahadith-daily-v2-${language}`;
   await NotificationsModule.setNotificationChannelAsync(channelId, {
-    name: language === 'pashto' ? 'ورځني حدیثونه' : 'احادیث روزانه',
+    name: language === 'pashto'
+      ? 'ورځني حدیثونه'
+      : language === 'english'
+        ? 'Daily hadith'
+        : language === 'turkish'
+          ? 'Günlük hadis'
+          : language === 'arabic'
+            ? 'أحاديث يومية'
+            : 'احادیث روزانه',
     importance: NotificationsModule.AndroidImportance.DEFAULT,
     vibrationPattern: [0, 180, 120, 180],
     showBadge: true,

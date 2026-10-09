@@ -15,9 +15,12 @@ export interface SurahNameData {
   meaningPashto: string;
   /** Transliterated Arabic title, the label English readers actually use. */
   english: string;
+  turkish: string;
   /** Dari meaning under the camel-case field name `pickContent` looks for. */
   meaningDari: string;
   meaningEnglish: string;
+  meaningTurkish: string;
+  meaningArabic: string;
   ayahCount: number;
   revelationType: 'مکی' | 'مدنی';
   revelation: 'meccan' | 'medinan';
@@ -30,7 +33,7 @@ export const toArabicNumerals = toArabicNumeralsUtil;
 // Complete list of 114 Surahs with Dari names and meanings
 const SURAH_NAMES_DARI: Omit<
   SurahNameData,
-  'pashto' | 'meaningPashto' | 'english' | 'meaningDari' | 'meaningEnglish' | 'revelation'
+  'pashto' | 'meaningPashto' | 'english' | 'meaningDari' | 'meaningEnglish' | 'turkish' | 'meaningTurkish' | 'meaningArabic' | 'revelation'
 >[] = [
   { number: 1, arabic: 'الفاتحة', dari: 'فاتحه', meaning: 'آغازگر', ayahCount: 7, revelationType: 'مکی', juz: [1] },
   { number: 2, arabic: 'البقرة', dari: 'بقره', meaning: 'گاو ماده', ayahCount: 286, revelationType: 'مدنی', juz: [1, 2, 3] },
@@ -208,9 +211,154 @@ const ENGLISH_SURAH_METADATA: ReadonlyArray<readonly [name: string, meaning: str
   ['Al-Masad', 'The Palm Fibre'], ['Al-Ikhlas', 'The Sincerity'], ['Al-Falaq', 'The Daybreak'], ['An-Nas', 'Mankind'],
 ];
 
+const TURKISH_SURAH_METADATA: ReadonlyArray<readonly [name: string, meaning: string]> = [
+  ['Fatiha', 'Açılış'], ['Bakara', 'Sığır'], ['Âl-i İmrân', 'İmran ailesi'], ['Nisa', 'Kadınlar'], ['Maide', 'Sofra'],
+  ['Enâm', 'Hayvanlar'], ['A’râf', 'Yüksekler'], ['Enfâl', 'Ganimetler'], ['Tevbe', 'Tövbe'], ['Yunus', 'Yunus'],
+  ['Hûd', 'Hud'], ['Yusuf', 'Yusuf'], ['Ra’d', 'Gök gürültüsü'], ['İbrahim', 'İbrahim'], ['Hicr', 'Hicr'],
+  ['Nahl', 'Bal arısı'], ['İsrâ', 'Gece yürüyüşü'], ['Kehf', 'Mağara'], ['Meryem', 'Meryem'], ['Tâhâ', 'Taha'],
+  ['Enbiyâ', 'Peygamberler'], ['Hac', 'Hac'], ['Mü’minûn', 'Müminler'], ['Nûr', 'Nur'], ['Furkan', 'Ayırıcı'],
+  ['Şuarâ', 'Şairler'], ['Neml', 'Karınca'], ['Kasas', 'Kıssalar'], ['Ankebût', 'Örümcek'], ['Rûm', 'Rumlar'],
+  ['Lokman', 'Lokman'], ['Secde', 'Secde'], ['Ahzâb', 'Topluluklar'], ['Sebe’', 'Sebe'], ['Fâtır', 'Yaratan'],
+  ['Yâsîn', 'Yasin'], ['Sâffât', 'Saf bağlayanlar'], ['Sâd', 'Sad'], ['Zümer', 'Gruplar'], ['Mü’min', 'Bağışlayan'],
+  ['Fussilet', 'Ayrıntılı açıklama'], ['Şûrâ', 'Danışma'], ['Zuhruf', 'Altın süsler'], ['Duhân', 'Duman'], ['Câsiye', 'Diz çökenler'],
+  ['Ahkâf', 'Kum tepeleri'], ['Muhammed', 'Muhammed'], ['Fetih', 'Fetih'], ['Hucurât', 'Odalar'], ['Kâf', 'Kaf'],
+  ['Zâriyât', 'Savuran rüzgarlar'], ['Tûr', 'Dağ'], ['Necm', 'Yıldız'], ['Kamer', 'Ay'], ['Rahmân', 'Rahman'],
+  ['Vâkıa', 'Kaçınılmaz olay'], ['Hadîd', 'Demir'], ['Mücâdele', 'Savunan kadın'], ['Haşr', 'Toplanma'], ['Mümtehine', 'Sınanan kadın'],
+  ['Saf', 'Saflar'], ['Cuma', 'Cuma'], ['Münâfikûn', 'Münafıklar'], ['Teğâbün', 'Karşılıklı aldanış'], ['Talâk', 'Boşanma'],
+  ['Tahrîm', 'Yasak'], ['Mülk', 'Hükümranlık'], ['Kalem', 'Kalem'], ['Hâkka', 'Gerçekleşen'], ['Meâric', 'Yükseliş yolları'],
+  ['Nûh', 'Nuh'], ['Cin', 'Cinler'], ['Müzzemmil', 'Örtünen'], ['Müddessir', 'Bürünen'], ['Kıyâmet', 'Kıyamet'],
+  ['İnsan', 'İnsan'], ['Mürselât', 'Gönderilenler'], ['Nebe’', 'Büyük haber'], ['Nâziât', 'Söküp çıkaranlar'], ['Abese', 'Yüzünü buruşturdu'],
+  ['Tekvîr', 'Dürülme'], ['İnfitâr', 'Yarılma'], ['Mutaffifîn', 'Ölçüde hile yapanlar'], ['İnşikâk', 'Yarılış'], ['Burûc', 'Burçlar'],
+  ['Târık', 'Gece yıldızı'], ['A’lâ', 'Yüce'], ['Gâşiye', 'Kaplayan'], ['Fecr', 'Tan yerinin ağarması'], ['Beled', 'Şehir'],
+  ['Şems', 'Güneş'], ['Leyl', 'Gece'], ['Duhâ', 'Kuşluk'], ['İnşirâh', 'Rahatlama'], ['Tîn', 'İncir'],
+  ['Alak', 'Tutunan'], ['Kadr', 'Kadir gecesi'], ['Beyyine', 'Apaçık delil'], ['Zilzâl', 'Deprem'], ['Âdiyât', 'Koşan atlar'],
+  ['Kâria', 'Kapı çalan'], ['Tekâsür', 'Çoğalma yarışı'], ['Asr', 'Zaman'], ['Hümeze', 'Arkadan çekiştiren'], ['Fîl', 'Fil'],
+  ['Kureyş', 'Kureyş'], ['Mâûn', 'Küçük iyilikler'], ['Kevser', 'Bolluk'], ['Kâfirûn', 'Kâfirler'], ['Nasr', 'Yardım'],
+  ['Tebbet', 'Hurma lifi'], ['İhlâs', 'Samimiyet'], ['Felak', 'Sabah aydınlığı'], ['Nâs', 'İnsanlar'],
+];
+
+const ARABIC_SURAH_MEANINGS: readonly string[] = [
+  'الافتتاح',
+  'أنثى البقرة',
+  'عائلة عمران',
+  'النساء',
+  'الطاولة',
+  'ماشية',
+  'مرتفعات',
+  'الغنائم',
+  'التوبة',
+  'حضرة يونس عليه السلام',
+  'حضرت هود عليه السلام',
+  'حضرة يوسف عليه السلام',
+  'الرعد والبرق',
+  'حضرة ابراهيم عليه السلام',
+  'أرض الحجر',
+  'نحلة العسل',
+  'رحلة ليلية',
+  'كهف',
+  'حضرة مريم عليها السلام',
+  'طه',
+  'الأنبياء',
+  'الحج',
+  'المؤمنين',
+  'الضوء',
+  'فاصل',
+  'الشعراء',
+  'نملة',
+  'قصص',
+  'العنكبوت',
+  'الرومان',
+  'حضرة لقمان',
+  'السجود',
+  'المجموعات',
+  'أهل سبأ',
+  'الخالق',
+  'نعم',
+  'طوابير الناس',
+  'ص',
+  'المجموعات',
+  'متسامح',
+  'منفصل',
+  'التشاور',
+  'زخرفة',
+  'دخان',
+  'راكع',
+  'الكثبان الرملية',
+  'حضرة محمد صلى الله عليه وسلم',
+  'النصر',
+  'الخلايا',
+  'س',
+  'مبعثر',
+  'جبلية',
+  'النجم',
+  'القمر',
+  'الغفور',
+  'حدث',
+  'حديد',
+  'الجدل',
+  'تجمع',
+  'تم اختباره',
+  'قائمة الانتظار',
+  'الجمعة',
+  'المنافقين',
+  'جعل الخسارة',
+  'الطلاق',
+  'الحظر',
+  'المملكة',
+  'القلم',
+  'الحقيقة',
+  'سلالم',
+  'النبي نوح عليه السلام',
+  'الجني',
+  'ملابس',
+  'يرتدون ملابس',
+  'القيامة',
+  'إنسان',
+  'مبعوثون',
+  'الأخبار',
+  'القتلة',
+  'عبوس',
+  'صراعا',
+  'للانقسام',
+  'البائعين منخفضة',
+  'للانقسام',
+  'الابراج',
+  'نجمة الليل',
+  'شاهقة',
+  'المتعلم',
+  'الفجر',
+  'مدينة',
+  'الشمس',
+  'الليل',
+  'طعم',
+  'الانفتاح',
+  'الشكل',
+  'جلطة دموية',
+  'ليلة النعمة',
+  'سبب واضح',
+  'زلزال',
+  'تشغيل الخيول',
+  'يطرق',
+  'مبالغة',
+  'الوقت',
+  'مكتشف الخطأ',
+  'فيل',
+  'قبيلة قريش',
+  'صدقة',
+  'الكثير من الخير',
+  'الكافرين',
+  'النصر',
+  'سلسلة',
+  'التوحيد',
+  'الفجر',
+  'الناس',
+];
+
 if (
   PASHTO_SURAH_METADATA.length !== 114 ||
   ENGLISH_SURAH_METADATA.length !== 114 ||
+  TURKISH_SURAH_METADATA.length !== 114 ||
+  ARABIC_SURAH_MEANINGS.length !== 114 ||
   SURAH_NAMES_DARI.length !== 114
 ) {
   throw new Error('Surah localization metadata must contain exactly 114 entries.');
@@ -219,13 +367,17 @@ if (
 export const SURAH_NAMES: SurahNameData[] = SURAH_NAMES_DARI.map((surah, index) => {
   const [pashto, meaningPashto] = PASHTO_SURAH_METADATA[index];
   const [english, meaningEnglish] = ENGLISH_SURAH_METADATA[index];
+  const [turkish, meaningTurkish] = TURKISH_SURAH_METADATA[index];
   return {
     ...surah,
     pashto,
     meaningPashto,
     english,
+    turkish,
     meaningDari: surah.meaning,
     meaningEnglish,
+    meaningTurkish,
+    meaningArabic: ARABIC_SURAH_MEANINGS[index],
     revelation: surah.revelationType === 'مکی' ? 'meccan' : 'medinan',
   };
 });

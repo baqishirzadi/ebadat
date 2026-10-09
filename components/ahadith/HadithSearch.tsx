@@ -31,7 +31,7 @@ export function HadithSearch({ query, results, onChangeQuery, onOpenHadith }: Ha
           onChangeText={onChangeQuery}
           placeholder={t('ahadith.search.placeholder')}
           placeholderTextColor={theme.textSecondary}
-          style={[styles.input, { color: theme.textPrimary, fontFamily: language === 'english' ? undefined : fontFamily }]}
+          style={[styles.input, { color: theme.textPrimary, fontFamily: language === 'english' || language === 'turkish' ? undefined : fontFamily }]}
           textAlign={isRtl ? 'right' : 'left'}
           returnKeyType="search"
           onSubmitEditing={() => Keyboard.dismiss()}

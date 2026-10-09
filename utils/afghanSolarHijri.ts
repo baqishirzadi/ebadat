@@ -19,18 +19,18 @@ export interface AfghanSolarHijriDate {
 
 // Afghan Solar Hijri month names (traditional astronomical names)
 export const AFGHAN_SOLAR_MONTHS = [
-  { dari: 'حمل', pashto: 'وری', english: 'Hamal' }, // March 21 - April 20
-  { dari: 'ثور', pashto: 'غویی', english: 'Sawr' }, // April 21 - May 21
-  { dari: 'جوزا', pashto: 'غبرګولی', english: 'Jawza' }, // May 22 - June 21
-  { dari: 'سرطان', pashto: 'چنګاښ', english: 'Saratan' }, // June 22 - July 22
-  { dari: 'اسد', pashto: 'زمری', english: 'Asad' }, // July 23 - August 22
-  { dari: 'سنبله', pashto: 'وږی', english: 'Sonbola' }, // August 23 - September 22
-  { dari: 'میزان', pashto: 'تله', english: 'Mizan' }, // September 23 - October 22
-  { dari: 'عقرب', pashto: 'لړم', english: 'Aqrab' }, // October 23 - November 21
-  { dari: 'قوس', pashto: 'ليندۍ', english: 'Qaws' }, // November 22 - December 21
-  { dari: 'جدی', pashto: 'مرغومی', english: 'Jadi' }, // December 22 - January 20
-  { dari: 'دلو', pashto: 'سلواغه', english: 'Dalw' }, // January 21 - February 19
-  { dari: 'حوت', pashto: 'كب', english: 'Hut' }, // February 20 - March 20
+  { dari: 'حمل', pashto: 'وری', english: 'Hamal', turkish: 'Hamel', arabic: 'الحمل' },
+  { dari: 'ثور', pashto: 'غویی', english: 'Sawr', turkish: 'Sevr', arabic: 'الثور' },
+  { dari: 'جوزا', pashto: 'غبرګولی', english: 'Jawza', turkish: 'Cevza', arabic: 'الجوزاء' },
+  { dari: 'سرطان', pashto: 'چنګاښ', english: 'Saratan', turkish: 'Seretan', arabic: 'السرطان' },
+  { dari: 'اسد', pashto: 'زمری', english: 'Asad', turkish: 'Esed', arabic: 'الأسد' },
+  { dari: 'سنبله', pashto: 'وږی', english: 'Sonbola', turkish: 'Sünbüle', arabic: 'السنبلة' },
+  { dari: 'میزان', pashto: 'تله', english: 'Mizan', turkish: 'Mizan', arabic: 'الميزان' },
+  { dari: 'عقرب', pashto: 'لړم', english: 'Aqrab', turkish: 'Akrep', arabic: 'العقرب' },
+  { dari: 'قوس', pashto: 'ليندۍ', english: 'Qaws', turkish: 'Kavs', arabic: 'القوس' },
+  { dari: 'جدی', pashto: 'مرغومی', english: 'Jadi', turkish: 'Cedi', arabic: 'الجدي' },
+  { dari: 'دلو', pashto: 'سلواغه', english: 'Dalw', turkish: 'Delv', arabic: 'الدلو' },
+  { dari: 'حوت', pashto: 'كب', english: 'Hut', turkish: 'Hut', arabic: 'الحوت' },
 ];
 
 /** Solar Hijri leap years in the 33-year cycle. */
@@ -200,8 +200,11 @@ export function getShamsiMonthLength(year: number, month: number): number {
  * Format Afghan Solar Hijri date for display
  */
 export function solarMonthName(date: AfghanSolarHijriDate, language: AppLanguage): string {
+  const month = AFGHAN_SOLAR_MONTHS[date.month - 1];
   if (language === 'pashto') return date.monthNamePashto;
-  if (language === 'english') return date.monthNameEnglish || AFGHAN_SOLAR_MONTHS[date.month - 1]?.english || '';
+  if (language === 'turkish') return month?.turkish || date.monthNameEnglish;
+  if (language === 'arabic') return month?.arabic || date.monthNameDari;
+  if (language === 'english') return date.monthNameEnglish || month?.english || '';
   return date.monthNameDari;
 }
 

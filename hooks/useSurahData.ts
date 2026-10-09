@@ -22,6 +22,8 @@ export interface SurahAyah {
   translation_dari: string;
   translation_pashto: string;
   translation_english: string;
+  translation_turkish?: string;
+  translation_arabic?: string;
 }
 
 export interface SurahData {

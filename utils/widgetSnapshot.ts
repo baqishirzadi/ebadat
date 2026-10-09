@@ -115,7 +115,10 @@ function refreshDayCalendarDisplays(day: WidgetDaySnapshot): WidgetDaySnapshot {
 function formatSunriseDisplay(prayerTimes: PrayerTimes, timezone: string, language: DailyHadithLanguage): string {
   const time = formatPrayerTime12h(prayerTimes.sunrise, timezone);
   if (language === 'english') return `Sunrise ${time}`;
-  return language === 'pashto' ? `لمر ختل ${time}` : `طلوع آفتاب ${time}`;
+  if (language === 'turkish') return `Güneş ${time}`;
+  if (language === 'pashto') return `لمر ختل ${time}`;
+  if (language === 'arabic') return `شروق الشمس ${time}`;
+  return `طلوع آفتاب ${time}`;
 }
 
 type LegacyHadithFields = { hadithText?: unknown; hadithSource?: unknown };

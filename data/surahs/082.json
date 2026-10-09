@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "وقتی که آسمان شگافته شود.",
       "translation_pashto": "82-1 كله چې اسمان وچوي",
-      "translation_english": "When the sky breaks apart."
+      "translation_english": "When the sky breaks apart.",
+      "translation_turkish": "Gökyüzü parçalandığında.",
+      "translation_arabic": "عندما تنشق السماء ."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که ستاره‌ها پراگنده (تاریک) شوند.",
       "translation_pashto": "82-2 او كله چې ستوري ګډوډ شي (او) راولوېږي",
-      "translation_english": "and when the stars fall, scattered,"
+      "translation_english": "and when the stars fall, scattered,",
+      "translation_turkish": "ve yıldızlar dağıldığında,",
+      "translation_arabic": "وإذا النجوم أصبحت منثورة (مظلمة)."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که دریاها جاری شوند.",
       "translation_pashto": "82-3 او كله چې دریابونه یو ځاى روان كړى شي",
-      "translation_english": "and when the seas burst forth,"
+      "translation_english": "and when the seas burst forth,",
+      "translation_turkish": "ve denizler patladığında,",
+      "translation_arabic": "وعندما تجري البحار."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "و وقتی که قبرها سر و زیر شوند (و مرده‌ها زنده شوند).",
       "translation_pashto": "82-4 او كله چې قبرونه لاندې باندې كړى شي",
-      "translation_english": "and when the graves are overturned,"
+      "translation_english": "and when the graves are overturned,",
+      "translation_turkish": "ve mezarlar ters çevrildiği zaman,",
+      "translation_arabic": "وإذا القبور تقلب (ويحيي الموتى)."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "هر شخص آنچه را پیش فرستاده و آنچه را که پس گذاشته است بداند.",
       "translation_pashto": "82-5 هر نفس به په هغه څه پوه شي چې ده وړاندې لېږلي دي او وروسته يې پرېښې دي ",
-      "translation_english": "then each soul will come to know what it has done or what it has left undone."
+      "translation_english": "then each soul will come to know what it has done or what it has left undone.",
+      "translation_turkish": "o zaman her ruh ne yaptığını ya da neyi yarım bıraktığını bilecek.",
+      "translation_arabic": "وعلى كل إنسان أن يعلم ما قدم وما ترك."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "ای انسان! چه چیزی تو را در برابر پروردگار بزرگوارت مغرور ساخته (و فریب داده) است؟",
       "translation_pashto": "82-6 اى (كافره) انسانه! ته په خپل كریم (او سخي) رب باندې څه شي دوكه كړى يې",
-      "translation_english": "O mankind, what has lured you away from your Lord, the Most Generous,"
+      "translation_english": "O mankind, what has lured you away from your Lord, the Most Generous,",
+      "translation_turkish": "Ey insanlar, sizi Rahman olan Rabbinizden uzaklaştıran şey nedir?",
+      "translation_arabic": "يا رجل! ما الذي جعلك تتكبر (وتخدع) أمام ربك؟"
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "آن که تو را آفرید، پس (اندام) تو را برابر و معتدل کرد.",
       "translation_pashto": "82-7 هغه چې ته يې پیدا كړې، نو ته يې ښه برابر كړې",
-      "translation_english": "Who created you, then shaped and proportioned you,"
+      "translation_english": "Who created you, then shaped and proportioned you,",
+      "translation_turkish": "Seni yaratan, sonra sana şekil verip ölçü veren,",
+      "translation_arabic": "الذي خلقك ثم جعلك سواء ووسطا."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "به هر شکلی (و صورتی) که خواست تو را ترتیب کرد.",
       "translation_pashto": "82-8 په هر صورت (شكل) كې چې هغه غوښتل، ته يې پیوند (او جوړ) كړې",
-      "translation_english": "and assembled you in whatever form He willed?"
+      "translation_english": "and assembled you in whatever form He willed?",
+      "translation_turkish": "ve sizi dilediği şekilde mi topladı?",
+      "translation_arabic": "لقد رتبك بأي طريقة (وشكل) أرادها."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "چنین نیست (که می‌گویید) بلکه شما سزا را دروغ می‌شمارید.",
       "translation_pashto": "82-9 داسې بېخي نه ده، بلكې تاسو د بدلې ورځ (قیامت) دروغ ګڼئ",
-      "translation_english": "No indeed; but you deny the Judgment Day,"
+      "translation_english": "No indeed; but you deny the Judgment Day,",
+      "translation_turkish": "Gerçekten hayır; ama siz kıyamet gününü inkar ediyorsunuz.",
+      "translation_arabic": "ليس الأمر كذلك (كما تقول)، لكنك تعتبر الجملة كذبا."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "در حالی که بر شما نگهبانانی مقرر شده است.",
       "translation_pashto": "82-10 په داسې حال كې چې پر تاسو  باندې ساتونكي (ملايك) مقرر دي",
-      "translation_english": "while there are watchers over you,"
+      "translation_english": "while there are watchers over you,",
+      "translation_turkish": "üzerinizde gözetleyiciler varken,",
+      "translation_arabic": "بينما تم تعيين الحراس عليك."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "نویسندگان بزرگوار (اند).",
       "translation_pashto": "82-11 چې عزتمن لیكونكي دي",
-      "translation_english": "honorable scribes,"
+      "translation_english": "honorable scribes,",
+      "translation_turkish": "saygı değer katipler,",
+      "translation_arabic": "الكتاب الكرام ."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "هرچه را می‌کنید، می‌دانند.",
       "translation_pashto": "82-12 دوى په هغه څه پوهېږي چې تاسو يې كوئ",
-      "translation_english": "who know whatever you do."
+      "translation_english": "who know whatever you do.",
+      "translation_turkish": "ne yaparsan yap kim bilir.",
+      "translation_arabic": "إنهم يعرفون كل ما تفعله."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "البته نیکوکاران در نعمت‌ها و (جنت)‌اند.",
       "translation_pashto": "82-13 بېشكه نېكان (مومنان) به خامخا په نعمتونو كې وي",
-      "translation_english": "Indeed, the righteous will be in Bliss,"
+      "translation_english": "Indeed, the righteous will be in Bliss,",
+      "translation_turkish": "Muhakkak ki takva sahipleri nimetler içindedirler.",
+      "translation_arabic": "وطبعاً الأبرار في النعم و(الجنة)."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "و البته بدکاران در دوزخ‌اند.",
       "translation_pashto": "82-14 او بېشكه چې بدكاران (كافران) به خامخا په جهنم كې وي",
-      "translation_english": "and the wicked will be in Blazing Fire,"
+      "translation_english": "and the wicked will be in Blazing Fire,",
+      "translation_turkish": "Kötüler ise alevli ateşte olacaklardır.",
+      "translation_arabic": "وبالطبع الأشرار في الجحيم."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "که در روز جزا به آن داخل خواهند شد.",
       "translation_pashto": "82-15 دوى به ده ته د بدلې په ورځ ننوځي",
-      "translation_english": "which they will enter on Judgment Day,"
+      "translation_english": "which they will enter on Judgment Day,",
+      "translation_turkish": "Kıyamet günü girecekleri,",
+      "translation_arabic": "الذي سيدخلونه يوم القيامة."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "و آنان هیچگاه از آن دور (بیرون) نمی‌شوند.",
       "translation_pashto": "82-16 او دوى به له دغه (دوزخ) نه له سره پټېدونكي نه وي",
-      "translation_english": "and will never come out of it."
+      "translation_english": "and will never come out of it.",
+      "translation_turkish": "ve asla bundan çıkamayacak.",
+      "translation_arabic": "ولا يبتعدون عنه أبداً."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "تو چه می‌دانی که روز جزا چیست؟",
       "translation_pashto": "82-17 او ته څه شي پوه كړې چې د بدلې ورځ (قیامت) څه شى دى؟",
-      "translation_english": "How do you know what Judgment Day is?"
+      "translation_english": "How do you know what Judgment Day is?",
+      "translation_turkish": "Kıyamet Günü'nün ne olduğunu nereden biliyorsun?",
+      "translation_arabic": "هل تعلم ما هو يوم القيامة؟"
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "باز (گفته می‌شود که) تو چه می‌دانی که روز جزا چیست؟",
       "translation_pashto": "82-18 بیا ته څه شي پوه كړې چې د بدلې ورځ څه شى دى",
-      "translation_english": "Again, how do you know what Judgment Day is?"
+      "translation_english": "Again, how do you know what Judgment Day is?",
+      "translation_turkish": "Tekrar söylüyorum, Kıyamet Günü'nün ne olduğunu nereden biliyorsun?",
+      "translation_arabic": "مرة أخرى (يقال ذلك) ماذا تعرف عن يوم القيامة؟"
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "روزی که هیچ کسی برای دیگری نمی‌تواند کاری بکند و در آن روز فرمان، فرمانِ الله است (و بس).",
       "translation_pashto": "82-19 (یاده كړه) هغه ورځ چې هېڅ یو نفس به د بل نفس لپاره د هېڅ شي اختیار ونه لري او په دغې ورځ كې به امر (حكم) خاص الله لره وي ",
-      "translation_english": "It is the Day when no soul will be of any help to another, and all command on that Day will be with Allah."
+      "translation_english": "It is the Day when no soul will be of any help to another, and all command on that Day will be with Allah.",
+      "translation_turkish": "O gündür ki, hiçbir nefis bir başkasına fayda sağlayamaz ve o gün bütün emir Allah'ındır.",
+      "translation_arabic": "يوم لا يستطيع أحد أن يفعل شيئا لأحد، والأمر في ذلك اليوم هو أمر الله (وهذا كل شيء)."
     }
   ]
 }

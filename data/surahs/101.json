@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "قارعه (حادثه کوبندۀ قیامت)",
       "translation_pashto": "101-1 (د زړونو) ټكوونكى (قیامت)",
-      "translation_english": "The Striking Calamity!"
+      "translation_english": "The Striking Calamity!",
+      "translation_turkish": "Çarpıcı Felaket!",
+      "translation_arabic": "القارعة (حادثة القيامة)"
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "چیست آن قارعه (حادثۀ کوبنده)؟",
       "translation_pashto": "101-2 (د زړونو) ټكوونكى څه شى دى؟",
-      "translation_english": "What is the Striking Calamity?"
+      "translation_english": "What is the Striking Calamity?",
+      "translation_turkish": "Çarpıcı Felaket Nedir?",
+      "translation_arabic": "ما هي تلك القارة (حادثة السحق)؟"
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و تو را چه چیز آگاه ساخت که آن قارعه (حادثه کوبنده) چیست؟",
       "translation_pashto": "101-3 او ته څه شي پوه كړې چې (د زړونو) ټكوونكى څه شى دى؟",
-      "translation_english": "How do you know what the Striking Calamity is?"
+      "translation_english": "How do you know what the Striking Calamity is?",
+      "translation_turkish": "Çarpıcı Felaketin ne olduğunu nereden biliyorsun?",
+      "translation_arabic": "وما الذي علمك ما هي تلك القارعة؟"
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "(آن حادثه در) روزی (ظاهر گردد) که مردم مانند پروانه‌های پراگنده شوند.",
       "translation_pashto": "101-4 (دى به زړونه  ټكوي) په هغې ورځ كې چې خلق به د خواره كړى شویو پتنګانو په شان شي",
-      "translation_english": "On that Day people will be like scattered moths,"
+      "translation_english": "On that Day people will be like scattered moths,",
+      "translation_turkish": "O gün insanlar, etrafa dağılmış pervaneler gibi olacaklar.",
+      "translation_arabic": "(تلك الواقعة يوم يتفرق الناس كالفراشات)."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "و کوه‌ها مانند پشم رنگین و حلاجی‌شده شوند.",
       "translation_pashto": "101-5 او غرونه به د ډانډس كړى شوې رنګینې وړۍ په شان شي",
-      "translation_english": "and the mountains will be like carded wool."
+      "translation_english": "and the mountains will be like carded wool.",
+      "translation_turkish": "ve dağlar taranmış yün gibi olacak.",
+      "translation_arabic": "وتتلون الجبال كالصوف."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "پس کسی که کفه ترازوی نیکی‌های او گران شود.",
       "translation_pashto": "101-6 نو هر چې هغه څوك دى چې د هغه تلې درنې شوې",
-      "translation_english": "Then the one whose scales of good deeds are heavy,"
+      "translation_english": "Then the one whose scales of good deeds are heavy,",
+      "translation_turkish": "O halde kimin iyilik tartıları ağır gelirse,",
+      "translation_arabic": "فمن غلت ميزان حسناته."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "پس او در زندگی رضایت‌بخشی باشد.",
       "translation_pashto": "101-7 نو دى به په ډېر ښه ژوندون كې وي",
-      "translation_english": "will have a pleasant life."
+      "translation_english": "will have a pleasant life.",
+      "translation_turkish": "keyifli bir hayat yaşayacak.",
+      "translation_arabic": "لذلك دعه يعيش حياة مرضية."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "اما کسی که کفه ترازوی نیکی‌های او سبک شود.",
       "translation_pashto": "101-8 او پاتې شو هغه كس چې د هغه تلې سپكې شوې",
-      "translation_english": "But the one whose scales of good deeds are light,"
+      "translation_english": "But the one whose scales of good deeds are light,",
+      "translation_turkish": "Ama kimin iyiliklerinin tartıları hafif olursa,",
+      "translation_arabic": "ولكن من كان ميزان حسناته خفيفا."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "پس مأوای او هاویه است.",
       "translation_pashto": "101-9 نو د ده استوګنځى هاویه ده",
-      "translation_english": "his abode will be the abyss."
+      "translation_english": "his abode will be the abyss.",
+      "translation_turkish": "onun meskeni uçurum olacaktır.",
+      "translation_arabic": "فموطنه الحوية."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "و تو را چه چیز آگاه ساخت که هاویه چیست؟",
       "translation_pashto": "101-10 او ته څه شي پوه كړې چې دغه (هاویه) څه شى دى؟",
-      "translation_english": "And how do you know what it is?"
+      "translation_english": "And how do you know what it is?",
+      "translation_turkish": "Peki onun ne olduğunu nasıl biliyorsun?",
+      "translation_arabic": "وما الذي علمك ما الحوية؟"
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "آن آتشی است بزرگ و سوزان.",
       "translation_pashto": "101-11 (دغه) ډېر ګرم اور دى",
-      "translation_english": "It is a Blazing Fire."
+      "translation_english": "It is a Blazing Fire.",
+      "translation_turkish": "Bu, alevli bir ateştir.",
+      "translation_arabic": "إنها نار كبيرة ومشتعلة."
     }
   ]
 }

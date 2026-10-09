@@ -17,32 +17,40 @@ import CenteredText from '@/components/CenteredText';
 import { stripQuranicMarks } from '@/utils/quranText';
 import type { QuranSearchMode } from '@/utils/quranSearchEngine';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 import { forwardChevronName } from '@/utils/i18n/direction';
 import type { UiMessageKey } from '@/utils/i18n/catalog';
 
 const PAGE_SIZE = 25;
 
-const MODE_IDS: QuranSearchMode[] = ['arabic', 'dari', 'pashto', 'english', 'all'];
+const MODE_IDS: QuranSearchMode[] = ['arabic', 'arabicMeaning', 'dari', 'pashto', 'turkish', 'english', 'all'];
 
 const MODE_LABEL_KEYS: Record<QuranSearchMode, UiMessageKey> = {
   arabic: 'quran.search.mode.arabic',
+  arabicMeaning: 'quran.search.mode.arabicMeaning',
   dari: 'quran.search.mode.dari',
   pashto: 'quran.search.mode.pashto',
+  turkish: 'quran.search.mode.turkish',
   english: 'quran.search.mode.english',
   all: 'quran.search.mode.all',
 };
 
 const PLACEHOLDER_KEYS: Record<QuranSearchMode, UiMessageKey> = {
   arabic: 'quran.search.placeholder.arabic',
+  arabicMeaning: 'quran.search.placeholder.arabicMeaning',
   dari: 'quran.search.placeholder.dari',
   pashto: 'quran.search.placeholder.pashto',
+  turkish: 'quran.search.placeholder.turkish',
   english: 'quran.search.placeholder.english',
   all: 'quran.search.placeholder.all',
 };
 
 function parseMode(value?: string | string[]): QuranSearchMode | null {
   const raw = Array.isArray(value) ? value[0] : value;
-  if (raw === 'arabic' || raw === 'dari' || raw === 'pashto' || raw === 'english' || raw === 'all') {
+  if (
+    raw === 'arabic' || raw === 'arabicMeaning' || raw === 'dari' || raw === 'pashto'
+    || raw === 'turkish' || raw === 'english' || raw === 'all'
+  ) {
     return raw;
   }
   return null;
@@ -96,11 +104,13 @@ export default function SearchScreen() {
   const { theme } = useApp();
   const { searchQuran } = useQuranData();
   const { t, language, n } = useI18n();
-  const isEnglishUi = language === 'english';
+  const isEnglishUi = isLatinLanguage(language);
   const router = useRouter();
   const params = useLocalSearchParams<{ q?: string | string[]; mode?: string | string[] }>();
   const initialQuery = Array.isArray(params.q) ? params.q[0] : params.q;
-  const initialMode = parseMode(params.mode) || (isEnglishUi ? 'english' : 'arabic');
+  const initialMode = parseMode(params.mode) || (
+    language === 'turkish' ? 'turkish' : language === 'english' ? 'english' : 'arabic'
+  );
 
   const [query, setQuery] = useState(initialQuery || '');
   const [searchMode, setSearchMode] = useState<QuranSearchMode>(initialMode);
@@ -136,6 +146,10 @@ export default function SearchScreen() {
           return t('quran.search.mode.pashto');
         case 'english':
           return t('quran.search.mode.english');
+        case 'turkish':
+          return t('quran.search.mode.turkish');
+        case 'arabicMeaning':
+          return t('quran.search.mode.arabicMeaning');
         default:
           return '';
       }
@@ -300,8 +314,12 @@ export default function SearchScreen() {
             ? item.translation?.pashto || item.snippet || ''
             : item.matchedLanguage === 'english'
               ? item.translation?.english || item.snippet || ''
-              : stripQuranicMarks(item.text);
-      const isEnglishMatch = item.matchedLanguage === 'english';
+              : item.matchedLanguage === 'turkish'
+                ? item.translation?.turkish || item.snippet || ''
+                : item.matchedLanguage === 'arabicMeaning'
+                  ? item.translation?.arabic || item.snippet || ''
+                  : stripQuranicMarks(item.text);
+      const isEnglishMatch = item.matchedLanguage === 'english' || item.matchedLanguage === 'turkish';
 
       return (
         <Pressable
@@ -396,7 +414,7 @@ export default function SearchScreen() {
             onChangeText={setQuery}
             onSubmitEditing={handleSearch}
             returnKeyType="search"
-            textAlign={isEnglishUi || searchMode === 'english' ? 'left' : 'right'}
+            textAlign={isEnglishUi || searchMode === 'english' || searchMode === 'turkish' ? 'left' : 'right'}
             autoFocus
           />
           {query.length > 0 && (

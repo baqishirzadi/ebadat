@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "آیا خبر حادثۀ احاطه‌کننده (قیامت) به تو رسیده است؟",
       "translation_pashto": "88-1 ایا تا ته (يعنې خلقو لره) د پټوونكي (قیامت) خبر راغلى دى؟",
-      "translation_english": "Has there come to you the story of the Overwhelming Event?"
+      "translation_english": "Has there come to you the story of the Overwhelming Event?",
+      "translation_turkish": "Ezici Olayın hikayesi size geldi mi?",
+      "translation_arabic": "هل وصل إليك خبر الحادثة المحيطة (يوم القيامة)؟"
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "که چهره‌هایی در آن روز خوار و ذلیل‌اند.",
       "translation_pashto": "88-2 څه مخونه به په دغې ورځ كې خوار (او) وېرېدونكي وي",
-      "translation_english": "On that Day, some faces will be humiliated,"
+      "translation_english": "On that Day, some faces will be humiliated,",
+      "translation_turkish": "O gün bazı yüzler aşağılanacak,",
+      "translation_arabic": "أن الوجوه يومئذ مذلة ومذلة."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "(با آن که) مشقت‌کشیده و رنج برده‌اند.",
       "translation_pashto": "88-3 سخت كار كوونكي، ستړي كېدونكي به وي",
-      "translation_english": "overburdened and weary,"
+      "translation_english": "overburdened and weary,",
+      "translation_turkish": "aşırı yüklenmiş ve yorgun,",
+      "translation_arabic": "(على الرغم من) أنهم عانوا وعانوا."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "(لیکن) در آتش شعله‌ور و سوزان داخل شوند.",
       "translation_pashto": "88-4 ډېر ګرم اور  ته به ننوځي",
-      "translation_english": "as they burn in a scorching Fire."
+      "translation_english": "as they burn in a scorching Fire.",
+      "translation_turkish": "onlar kavurucu bir ateşte yanarken.",
+      "translation_arabic": "(بل) أدخلوا النار المشتعلة."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "از چشمۀ داغِ جوشان نوشانیده شوند.",
       "translation_pashto": "88-5 په دوى به له ډېرې ګرمې چېنې نه اوبه څښولى شي",
-      "translation_english": "They will be made to drink from a boiling spring,"
+      "translation_english": "They will be made to drink from a boiling spring,",
+      "translation_turkish": "Kaynayan bir kaynaktan onlara içirilecekler,",
+      "translation_arabic": "اشرب من الينبوع الحار المغلي."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "خوراکی جز ضریع (خار تلخ) ندارند.",
       "translation_pashto": "88-6 د دوى لپاره به طعام نه وي مګر له اغزنې ترخې ونې نه",
-      "translation_english": "and they will have no food except bitter thorny plants,"
+      "translation_english": "and they will have no food except bitter thorny plants,",
+      "translation_turkish": "Acı dikenli bitkilerden başka yiyecekleri olmayacak.",
+      "translation_arabic": "ليس لديهم ما يأكلونه إلا الزاري (الشوكة المرة)."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "که نه فربه می‌کند و نه از گرسنگی نجات می‌دهد.",
       "translation_pashto": "88-7 چې نه څربول كوي او نه هېڅ لوږه لرې كوي",
-      "translation_english": "that neither nourishes nor satisfies hunger."
+      "translation_english": "that neither nourishes nor satisfies hunger.",
+      "translation_turkish": "açlığı ne besler ne de tatmin eder.",
+      "translation_arabic": "فهو لا يجعلك سمينًا ولا يخلصك من الجوع."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "چهره‌هایی در آن روز خرم و تازه خواهند بود.",
       "translation_pashto": "88-8 څه مخونه به په دغې ورځ كې تروتازه وي",
-      "translation_english": "Other faces on that Day will be joyful,"
+      "translation_english": "Other faces on that Day will be joyful,",
+      "translation_turkish": "O gün diğer yüzler sevinçli olacaktır.",
+      "translation_arabic": "ستكون الوجوه نضرة في ذلك اليوم."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "و از کوشش خود راضی‌اند.",
       "translation_pashto": "88-9 په خپل كوشش به راضي (خوشاله)  وي",
-      "translation_english": "well-pleased with their past striving,"
+      "translation_english": "well-pleased with their past striving,",
+      "translation_turkish": "Geçmişteki çabalarından memnunlar,",
+      "translation_arabic": "وهم راضون عن جهودهم."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "در بهشت برین (و بلند جای دارند).",
       "translation_pashto": "88-10 په اوچت جنت كې به وي",
-      "translation_english": "in an elevated garden,"
+      "translation_english": "in an elevated garden,",
+      "translation_turkish": "yüksek bir bahçede,",
+      "translation_arabic": "اذهب إلى الجنة (وكان لها مكانا عاليا)."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "در آن جا سخن بیهوده نشنوند.",
       "translation_pashto": "88-11 دوى به په دغه (جنت) كې هېڅ بېكاره خبره نه اوري",
-      "translation_english": "wherein no idle talk will be heard."
+      "translation_english": "wherein no idle talk will be heard.",
+      "translation_turkish": "burada boş konuşmalar duyulmayacak.",
+      "translation_arabic": "لا تستمع إلى الحديث الخامل هناك."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "در آن جا چشمۀ جاری است.",
       "translation_pashto": "88-12 په دغه (جنت) كې روانه چینه ده",
-      "translation_english": "There will be a flowing spring;"
+      "translation_english": "There will be a flowing spring;",
+      "translation_turkish": "Akan bir kaynak olacak;",
+      "translation_arabic": "هناك ربيع متدفق هناك."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "و در آن جا تخت‌های بلند است.",
       "translation_pashto": "88-13 په دغه (جنت) كې اوچت تختونه دي",
-      "translation_english": "and couches raised high,"
+      "translation_english": "and couches raised high,",
+      "translation_turkish": "ve kanepeler yüksekte,",
+      "translation_arabic": "وهناك أسرة عالية."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "و جام‌های چیده شده است.",
       "translation_pashto": "88-14 او (په اندازې سره) ایښودل شوي جامونه دي",
-      "translation_english": "and cups placed ready,"
+      "translation_english": "and cups placed ready,",
+      "translation_turkish": "ve bardaklar hazır hale getirildi,",
+      "translation_arabic": "ويتم ترتيب الكؤوس."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "و بالش‌های در صف نهاده شده است.",
       "translation_pashto": "88-15 او په قطار كې ایښودل شوي بالښتونه دي",
-      "translation_english": "and cushions lined up,"
+      "translation_english": "and cushions lined up,",
+      "translation_turkish": "ve minderler dizilmiş,",
+      "translation_arabic": "والوسائد مصطفة."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "و فرش‌های گرانبها گسترده شده است.",
       "translation_pashto": "88-16 او غوړول شوي اعلی فرشونه دي",
-      "translation_english": "and splendid carpets spread out."
+      "translation_english": "and splendid carpets spread out.",
+      "translation_turkish": "ve muhteşem halılar yayıldı.",
+      "translation_arabic": "والسجاد الثمين منتشر."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "آیا به شتران نمی‌نگرند (منکران توحید) که چگونه آفریده شده‌اند؟",
       "translation_pashto": "88-17 ایا نو دوى اوښانو ته نه ګوري چې دوى څرنګه پیدا كړى شوي  دي؟",
-      "translation_english": "Do they not reflect on the camel, how it is created;"
+      "translation_english": "Do they not reflect on the camel, how it is created;",
+      "translation_turkish": "Devenin nasıl yaratıldığını hiç düşünmüyorlar mı?",
+      "translation_arabic": "أفلا ينظرون إلى الإبل كيف خلقت؟"
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "و به‌سوی آسمان نگاه نمی‌کنند که چگونه برافراشته شده است؟",
       "translation_pashto": "88-18 او اسمان  ته چې دى څنګه اوچت كړى شوى دى؟",
-      "translation_english": "and the sky, how it is raised high;"
+      "translation_english": "and the sky, how it is raised high;",
+      "translation_turkish": "ve gökyüzü nasıl da yükseklere yükseltilmiştir;",
+      "translation_arabic": "وأفلا ينظرون إلى السماء لينظروا كيف رفعت؟"
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "و به طرف کوه‌ها (نمی‌نگرند) که چگونه نصب (برقرار) گردیده‌اند؟",
       "translation_pashto": "88-19 او غرونو ته چې دوى څنګه ودرول شوي دي ؟",
-      "translation_english": "and the mountains, how they are firmly set up;"
+      "translation_english": "and the mountains, how they are firmly set up;",
+      "translation_turkish": "ve dağlar nasıl sağlam bir şekilde kurulmuş;",
+      "translation_arabic": "وهم (لا ينظرون) نحو الجبال كيف نصبت؟"
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "و به طرف زمین که چگونه هموار شده است؟",
       "translation_pashto": "88-20 او ځمكې ته چې څنګه غوړول شوې ده؟",
-      "translation_english": "and the earth, how it is spread out?"
+      "translation_english": "and the earth, how it is spread out?",
+      "translation_turkish": "ve yeryüzü nasıl yayıldı?",
+      "translation_arabic": "وكيف يتم تسويتها نحو الأرض؟"
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "پس پند و اندرز ده که وظیفۀ تو تنها پند دادن و یادآوری است.",
       "translation_pashto": "88-21 نو ته پند وركړه، بېشكه ته خو يواځې پند وركوونكى يې",
-      "translation_english": "So remind [O Prophet]; your duty is only to remind;"
+      "translation_english": "So remind [O Prophet]; your duty is only to remind;",
+      "translation_turkish": "Öyleyse şunu hatırlat: [Ey Peygamber]; göreviniz sadece hatırlatmak;",
+      "translation_arabic": "فانصح ووعظ لأن واجبك هو النصح والتذكير فقط."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "بر آن‌ها مسلط نیستی.",
       "translation_pashto": "88-22 ته په دوى باندې مسلط كړى شوى نه يې",
-      "translation_english": "you are not assigned to compel them."
+      "translation_english": "you are not assigned to compel them.",
+      "translation_turkish": "onları zorlamak için görevlendirilmedin.",
+      "translation_arabic": "أنت لا تسيطر عليهم."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "مگر آن که روی گرداند و کفر پیشه کند.",
       "translation_pashto": "88-23 مګر  هغه څوك چې (له ایمانه) وګرځي او كافر شي",
-      "translation_english": "But whoever turns away and disbelieves,"
+      "translation_english": "But whoever turns away and disbelieves,",
+      "translation_turkish": "Ama kim yüz çevirir ve inkar ederse,",
+      "translation_arabic": "إلا أن تولى وكفر."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "پس الله او را به عذاب سخت سزا می‌دهد.",
       "translation_pashto": "88-24 نو الله به ده ته عذاب وركړي تر ټولو لوى عذاب",
-      "translation_english": "Allah will inflict upon him the greatest punishment."
+      "translation_english": "Allah will inflict upon him the greatest punishment.",
+      "translation_turkish": "Allah ona en büyük azabı verecektir.",
+      "translation_arabic": "فيعذبه الله عذابا شديدا."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "یقیناً بازگشت آن‌ها به‌سوی ماست.",
       "translation_pashto": "88-25 بېشكه خاص مونږ ته د دوى بېرته راتګ دى",
-      "translation_english": "Indeed, to Us is their return,"
+      "translation_english": "Indeed, to Us is their return,",
+      "translation_turkish": "Şüphesiz onların dönüşü Bizedir.",
+      "translation_arabic": "وأكيد عودتهم إلينا."
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "باز حساب آن‌ها با ما خواهد بود.",
       "translation_pashto": "88-26 بیا یقینًا د دوى حساب زمونږ په غاړه دى",
-      "translation_english": "then it is for Us to call them to account."
+      "translation_english": "then it is for Us to call them to account.",
+      "translation_turkish": "sonra onları hesaba çekmek Bize düşer.",
+      "translation_arabic": "حسابهم سيكون معنا مرة أخرى."
     }
   ]
 }

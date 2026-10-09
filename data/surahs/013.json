@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "المر. (مفهوم این حروف را الله می‌داند) این آیات کتاب (قرآن) است، و آنچه که از جانب پروردگارت به‌سوی تو نازل شده حق است، ولی بیشتر مردم ایمان نمی‌آورند.",
       "translation_pashto": "13-1 الف، لام، ميم، را، دا د كتاب ایتونه دي او هغه (كتاب) چې تا ته د خپل رب له جانبه نازل كړى شوى دى، حق دى او لېكن زیاتره خلق ایمان نه راوړي",
-      "translation_english": "Alif Lām Mīm Ra. These are the verses of the Book. That which has been sent down to you [O Prophet] from your Lord is the truth, but most people do not believe."
+      "translation_english": "Alif Lām Mīm Ra. These are the verses of the Book. That which has been sent down to you [O Prophet] from your Lord is the truth, but most people do not believe.",
+      "translation_turkish": "Elif Lām Mīm Ra. Bunlar kitabın ayetleridir. (Ey Peygamber) Rabbinden sana indirilen haktır, fakat insanların çoğu inanmazlar.",
+      "translation_arabic": "إلمر. (والله يعلم معنى هذه الحروف) تلك آيات الكتاب (القرآن)، وما أنزل إليك من ربك الحق، ولكن أكثر الناس لا يؤمنون."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "الله ذاتی است که آسمان‌ها را بدون ستونهایی که آنها را ببینید بلند کرد، باز بر عرش مستقر شد و آفتاب و ماه را مسخر کرد، هر یک تا مدت معین در حرکت است، الله کار هستی را تدبیر (و اداره) می‌کند و او آیات (علامات قدرت) خود را به تفصیل بیان می‌کند تا شما به ملاقات پروردگارتان یقین کنید.",
       "translation_pashto": "13-2 الله هغه ذات دى چې اسمانونه يې اوچت كړي دي، بې له ستنو، چې تاسو  هغه وینئ، بیا يې په عرش باندې برقرار شو، او ده لمر او سپوږمۍ مسخر كړي دي، هر یو يې تر مقررې نېټې پورې روان دى، هغه، د هر كار تدبیر كوي، دلیلونه ښه په تفصیل سره بیانوي، د دې لپاره چې تاسو د خپل رب پر ملاقات یقین وكړئ",
-      "translation_english": "It is Allah Who raised the heavens without any pillars that you can see, and then He rose over the Throne. He subjected the sun and the moon, each running its course for an appointed term. He governs all affairs, and explains the signs in detail, so that you may be certain of the meeting with your Lord."
+      "translation_english": "It is Allah Who raised the heavens without any pillars that you can see, and then He rose over the Throne. He subjected the sun and the moon, each running its course for an appointed term. He governs all affairs, and explains the signs in detail, so that you may be certain of the meeting with your Lord.",
+      "translation_turkish": "Gökleri, gördüğünüz hiçbir direk olmaksızın yükselten, sonra da Arş'a yükselen Allah'tır. Her biri belirli bir süre boyunca kendi yörüngesinde hareket eden güneşi ve ayı emri altına aldı. O, her işi yönetir ve âyetleri ayrıntılı olarak açıklar ki, Rabbinize kavuşacağınızdan emin olasınız.",
+      "translation_arabic": "الله الذي رفع السماوات بغير عمد ترونها، واستوى على العرش، وسخر الشمس والقمر، كل منهما في حركة إلى أجل معين، الله يدبر عمل الوجود ويبين آياته بالتفصيل حتى تتيقنوا من لقاء ربك."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و اوست آن ذاتی که زمین را هموار و گسترده کرد و در آن کوه‌ها و نهرها گذاشت و از هر گونه میوه جفت دو گانه آفرید، شب را بر روز می‌پوشاند، يقينا در این (امور) نشانه‌هایی است برای آنان که (در وحدانیت و قدرت الله) می‌اندیشند.",
       "translation_pashto": "13-3 او دى همغه ذات دى چې ځمكه يې غوړولې ده او په هغې كې يې پاخه غرونه ايښي او نهرونه يې روان كړي دي او له هر قسمه مېوو نه يې په دغې كې دوه دوه جوړې پېدا كړي دي، هغه په شپې سره ورځ پټوي، بېشكه په دې كې د هغو خلقو لپاره يقينًا نښې دي چې فكر (او غور) كوي",
-      "translation_english": "It is He Who spread out the earth and placed therein firm mountains and rivers, and created therein fruits of every kind in pairs. He causes the night to cover the day. Indeed, there are signs in this for people who reflect."
+      "translation_english": "It is He Who spread out the earth and placed therein firm mountains and rivers, and created therein fruits of every kind in pairs. He causes the night to cover the day. Indeed, there are signs in this for people who reflect.",
+      "translation_turkish": "Yeryüzünü yayıp döşeyen, orada sağlam dağlar ve nehirler var eden ve orada her çeşit meyveyi çift çift yaratan O'dur. Gecenin gündüzü örtmesine sebep olur. Şüphesiz bunda düşünen bir kavim için ibretler vardır.",
+      "translation_arabic": "وهو الذي جعل الأرض مسطحة وعرضها وجعل عليها الجبال والأنهار وخلق زوجين مزدوجين من كل نوع من الثمرات يغشي الليل على النهار إن في ذلك لآيات لقوم يتفكرون."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "و در زمین قطعه‌های کنار هم (به هم پیوسته) و باغهایی از انگور و کشتزارها وجود دارد و درختان خرما چه از یک ریشه و چه از غیر یک ریشه که همه با یک آب آبیاری می‌شوند، اما برخی را از لحاظ طعم و لذت بر برخی دیگر برتری می‌دهیم، يقينا در این (اختلاف) نشانه‌هایی (قدرت الهی) است برای کسانی که می‌اندیشند.",
       "translation_pashto": "13-4 او په ځمكه كې څنګ په څنګ پیوستې ټوټې دي او د انګورو باغونه دي  او فصلونه دي او د كجورو ونې دي چې له یوهٔ بېخه پورته شوي دي او ځینې ځان ته (جدا) بېخ لري، چې په یوهٔ قسم اوبو سره اوبه كولى شي او مونږ په هغو كې ځينو ته په نورو باندې په مېوه (او خوند) كې فضيلت وركوو، بېشكه په دې كې د هغو خلقو لپاره یقینًا نښې دي چې له عقل نه كار اخلي",
-      "translation_english": "And on the earth there are neighboring [yet different] tracts of land, and gardens of grapevines, grains and palm trees – some growing in clusters from one root or standing alone. They are all irrigated with the same water, yet We cause some of them to excel others in taste. Indeed, there are signs in this for people of understanding."
+      "translation_english": "And on the earth there are neighboring [yet different] tracts of land, and gardens of grapevines, grains and palm trees – some growing in clusters from one root or standing alone. They are all irrigated with the same water, yet We cause some of them to excel others in taste. Indeed, there are signs in this for people of understanding.",
+      "translation_turkish": "Yeryüzünde birbirine komşu (fakat farklı) topraklar, üzüm bağları, tahıllar ve hurma ağaçlarından oluşan bahçeler vardır; bunlardan bazıları tek kökten salkımlar halinde yetişir veya tek başına durur. Hepsi aynı suyla sulanır, ama lezzet bakımından kimini kimine üstün kılarız. Şüphesiz bunda akıl sahipleri için ibretler vardır.",
+      "translation_arabic": "وفي الأرض قطع متلاصقة وجنات من أعناب وحقول ونخيل من أصل واحد ومن أصول مختلفة كلها تسقى بماء واحد ونفضل بعضها على بعض ذوقاً ولذة إن في ذلك لآيات لقوم يتفكرون."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "و اگر تعجب کنی (از تکذیب آنان) پس این سخن آنان عجیب‌تر است (که گفتند:) آیا وقتی خاک گردیم به راستی (دوباره زنده می‌شویم و) در آفرینش جدیدی می‌باشیم؟ اینها کسانی‌اند که به پرروردگارشان کفر ورزیدند و طوق و زنجیرها در گردنهایشان خواهد بود. این‌ها دوزخی‌اند و در آن جاودانه می‌مانند.",
       "translation_pashto": "13-5 او كه ته تعجب كوې، نو د دوى (دا) خبره ډېره عجیبه ده چې(وايي:)  ایا چې كله مونږ خاورې شو، ایا نو مونږ به په رښتيا نوي تخلیق كې یو (بيا به له نوي سره پيدا كولى شو)؟ دوى همغه كسان دي چې په خپل رب سره كافران شوي دي او دغه كسان دي چې طوقونه به يې په غاړو كې وي او دغه كسان د اور ملګري دي، دوى به په هغه كې تل ترتله وي",
-      "translation_english": "If you wonder, then wondrous is their saying, “What! When we become dust, will we be created anew?” They are the ones who disbelieve in their Lord, and they are the ones who will have shackles around their necks. Such are the people of the Fire; they will abide therein forever."
+      "translation_english": "If you wonder, then wondrous is their saying, “What! When we become dust, will we be created anew?” They are the ones who disbelieve in their Lord, and they are the ones who will have shackles around their necks. Such are the people of the Fire; they will abide therein forever.",
+      "translation_turkish": "Eğer merak ediyorsan, onların \"Ne! Toprak olunca yeniden mi yaratılacağız?\" sözleri ne kadar harikadır? Onlar Rablerini inkar edenlerdir ve boyunlarına prangalar vurulanlardır. Ateş ehli işte böyledir; Onlar orada sonsuza kadar kalacaklardır.",
+      "translation_arabic": "وإن تعجب (بتكذيبهم) فقولهم هذا أغرب (قالوا): أإذا كنا ترابا فهل نحن حقا في خلق جديد؟ أولئك الذين كفروا بربهم وفي رقابهم أغلال وسلاسل. هؤلاء جهنميون وسيبقون هناك إلى الأبد."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "و پیش از خوبی (رحمت الهی)، بدی (عذاب) را با شتاب از تو می‌خواهند، حال آنکه پیش از ایشان عقوبت‌ها (بر امثال شان) گذشته است و یقینا پروردگارت نسبت به مردم - با وجود ظلم‌شان - آمرزنده است و البته پروردگارت سخت عذاب دهنده است.",
       "translation_pashto": "13-6 او دوى له تا نه له نېكۍ (رحمت) نه مخكې بدي ژر غواړي او یقینًا له دوى نه مخكې (له عبرته ډك) عذابونه تېر شوي دي او بېشكه ستا رب د خلقو لپاره د هغوى د ظلم باوجود یقینًا د لوى مغفرت والا دى او بېشكه ستا رب یقینًا ډېر سخت عذاب والا دى",
-      "translation_english": "They ask you [O Prophet] to hasten the punishment before the good, even though there have already been similar punishments before them. But your Lord is indeed forgiving to people despite their wrongdoing, and your Lord is indeed severe in punishment."
+      "translation_english": "They ask you [O Prophet] to hasten the punishment before the good, even though there have already been similar punishments before them. But your Lord is indeed forgiving to people despite their wrongdoing, and your Lord is indeed severe in punishment.",
+      "translation_turkish": "Kendilerinden önce benzer azaplar olduğu halde, senden iyiliklerden önce azabı acele etmeni istiyorlar. Ama Rabbin, zulümlerine rağmen insanları bağışlayandır ve Rabbinin cezası gerçekten şiddetlidir.",
+      "translation_arabic": "ومن قبل الخير (رحمة الله) يسألونك عن الشر (العقوبة) يعجلون، وقد سبقت (لأمثالهم) العقوبات (وإن ربك لغفور للناس - على ظلمهم - وإن ربك شديد العقاب)."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "و کافران می‌گویند: چرا معجزه‌ای از سوی پروردگارش بر او فرستاده نشده است؟ همانا تو تنها بیم دهنده هستی و هر قومی راهنمای دارد.",
       "translation_pashto": "13-7 او هغه كسان چې كفر يې كړى دى، وايي: ولې په ده باندې د خپل رب له جانبه كومه نښه نه ده نازل كړى شوې؟ یقینًا همدا خبره ده چې ته وېروونكى يې او د هر قوم لپاره یو لار ښودونكى دى",
-      "translation_english": "The disbelievers say, “Why has no sign been sent down to him from his Lord?” You are only a warner, and for every people there is a guide."
+      "translation_english": "The disbelievers say, “Why has no sign been sent down to him from his Lord?” You are only a warner, and for every people there is a guide.",
+      "translation_turkish": "İnkar edenler, \"Ona Rabbinden bir ayet indirilmeli miydi?\" dediler. Sen ancak bir uyarıcısın ve her kavim için bir yol gösterici vardır.",
+      "translation_arabic": "ويقول الكافرون: لولا أنزل عليه آية من ربه؟ إنك أنت المنذر ولكل أمة هاد."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "الله می‌داند که هر (جاندار) ماده چه چیزی را در شکم حمل می‌کند و (نیز می‌داند) آنچه را که رحمها کم می‌کنند و آنچه را که می‌افزایند، و هر چیزی در نزد الله به اندازۀ معین است.",
       "translation_pashto": "13-8 الله پوهېږي پر هغه څه چې هره ښځه يې (په خپله خېټه كې) اوچتوي او پر هغه څه چې رحمونه يې كموي او پر هغه څه چې زیاتوي يې او هر شى له هغه سره په اندازې سره دى",
-      "translation_english": "Allah knows what every female bears, and what the wombs may fall short or increase. With Him everything is precisely measured."
+      "translation_english": "Allah knows what every female bears, and what the wombs may fall short or increase. With Him everything is precisely measured.",
+      "translation_turkish": "Allah her dişinin neye gebe olduğunu, rahimlerin neyi eksileyeceğini veya nelerin artacağını bilir. O'nunla her şey kesin olarak ölçülür.",
+      "translation_arabic": "الله يعلم ما تحمل كل امرأة في بطنها وما تنقص الأرحام وما تزيد وكل شيء عند الله بقدر."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "(او) دانای همه پوشیده‌ها و آشکارا است، (و او) بزرگ بلند مرتبه است.",
       "translation_pashto": "13-9 د غیبو او د ښكاره و عالم دى، ډېر لوى، لوړ برتر دى",
-      "translation_english": "He is the Knower of the unseen and the seen, the All-Great, the Most Exalted."
+      "translation_english": "He is the Knower of the unseen and the seen, the All-Great, the Most Exalted.",
+      "translation_turkish": "O, görüleni de görülmeyeni de bilendir, Büyüktür, Yücedir.",
+      "translation_arabic": "(هو) عالم جميع الغيب والعلانية، (وهو) العظيم العزيز."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "برابر است (نزد او) هرکس از شما سخن را پنهان می‌دارد و کسی که آن را آشکار می‌سازد، و (برابر است نزد او) هرکس در شب پنهان است و هر کس در روز آشکارا حرکت می‌کند.",
       "translation_pashto": "13-10 (د هغهٔ په وړاندې ټول) يو برابر دي، څوك چې په تاسو كې خبره ورو وكړي او څوك چې يې څرګنده وكړي او هغه څوك چې هغه په شپه كې پټېدونكى دى او په ورځ كې ظاهرېدونكى دى",
-      "translation_english": "It is the same [to Him] whether one of you speaks secretly or in public, and whether one is hidden in the darkness of the night or walks about openly in the daylight."
+      "translation_english": "It is the same [to Him] whether one of you speaks secretly or in public, and whether one is hidden in the darkness of the night or walks about openly in the daylight.",
+      "translation_turkish": "Sizden birinizin gizli veya açık konuşması, gecenin karanlığında gizlenmesi veya gündüzün açıkta yürümesi birdir.",
+      "translation_arabic": "سواء من أخفى عنك القول ومن أظهره، ومن استخف بالليل ومن تجاهر بالنهار."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "برای او فرشتگانی است که پیاپی از روبرو و پشت سر به فرمان الله او را مراقبت (نگهبانی) می‌کنند، همانا الله احوال هیچ قومی را تغییر نمی‌دهد تا وقتی که آنان احوال خود را تغییر دهند و چون الله برای قومی بلائی بخواهد پس هیچ برگشتی برای آن نیست و برای آنان جز او هیچ کارسازی نیست.",
       "translation_pashto": "13-11 د دغه (انسان) لپاره د ده له مخې او د ده له شا نه نوبت په نوبت په یو بل پسې راتلونكي (ملايك) دي چې د الله په امر سره د ده ساتنه كوي، بېشكه الله د هېڅ قوم حالت نه بدلوي تر هغه پورې چې هغوى (پخپله) د خپلو نفسونو حالت بدل كړي او كله چې الله یو قوم ته د بدۍ (او تكليف رسولو) اراده وكړي، نو د هغې لپاره هېڅ بېرته ګرځېدل نشته او د دوى لپاره له هغه نه غیر هیڅوك مددګار نشته",
-      "translation_english": "For each person there are successive angels in front of him and behind him, guarding him by the command of Allah. Allah does not change the condition of a people until they change their own attitude and conduct. But if Allah intends punishment for a people, then it cannot be averted, nor will there be any protector for them besides Him."
+      "translation_english": "For each person there are successive angels in front of him and behind him, guarding him by the command of Allah. Allah does not change the condition of a people until they change their own attitude and conduct. But if Allah intends punishment for a people, then it cannot be averted, nor will there be any protector for them besides Him.",
+      "translation_turkish": "Her insanın önünde ve arkasında, Allah'ın emriyle onu koruyan, birbirini takip eden melekler vardır. Bir kavim kendi tavır ve davranışlarını değiştirmedikçe Allah onların durumunu değiştirmez. Ama eğer Allah bir kavme azap dilerse, artık bu geri çevrilemez ve onlar için O'ndan başka bir dost da yoktur.",
+      "translation_arabic": "وله ملائكة يحرسونه باستمرار من بين يديه ومن خلفه بأمر الله. إن الله لا يغير ما بقوم حتى يغيروا ما بهم، وإذا أراد الله بقوم مصيبة فلا رجعة لهم، ولا إصلاح لهم إلا هو."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "اوست که برق (آسمان) را برای بیم و امید به شما نشان می‌دهد و نیز ابرهای سنگین بار را ایجاد می‌کند.",
       "translation_pashto": "13-12 دى همغه ذات دى چې تاسو ته برېښنا د وېرولو او طمع دركولو لپاره درښیي او درنې ورېځې پیدا كوي",
-      "translation_english": "It is He Who shows you lightening [causing] fear and hope and forms heavy clouds."
+      "translation_english": "It is He Who shows you lightening [causing] fear and hope and forms heavy clouds.",
+      "translation_turkish": "Size korku ve ümit veren şimşeği gösteren ve ağır bulutlar oluşturan O'dur.",
+      "translation_arabic": "وهو الذي يريكم البرق خوفا وطمعا وينشئ السحاب الثقال."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "و رعد به ستایش او و فرشتگان نیز از ترس او تسبیح می‌گویند، و صاعقه‌ها را می‌فرستد و هرکس را که بخواهد به آنها گرفتار می‌کند، در حالیکه آنان دربارۀ الله مجادله می‌کنند، حال آنکه او (در رساندن عذاب) بسیار قدرتمند است.",
       "translation_pashto": "13-13 او رعد د هغه له حمد سره تسبیح وايي او ملايك (هم) د هغه له وېرې نه او هغه تندرونه لېږي، نو چا ته چې وغواړي دا ورته رسوي، په داسې حال كې چې دوى د الله په باره كې جګړه كوي او هغه ډېر سخت سزا والا دى",
-      "translation_english": "The thunder glorifies His praise, and so do the angels in awe of Him. He sends thunderbolts, striking therewith whom He wills, yet they dispute about Allah, Who is severe in might."
+      "translation_english": "The thunder glorifies His praise, and so do the angels in awe of Him. He sends thunderbolts, striking therewith whom He wills, yet they dispute about Allah, Who is severe in might.",
+      "translation_turkish": "Gök gürültüsü O'nu hamd ile tesbih eder, melekler de O'ndan korkarak tesbih ederler. O, yıldırımlar gönderir ve onunla dilediğini vurur; fakat onlar, kuvvetli olan Allah hakkında tartışırlar.",
+      "translation_arabic": "ويسبحه الرعد وتسبحه الملائكة خوفا منه، ويرسل البروق فيأخذ بها من يشاء وهم يجادلون في الله وهو قوي جدا."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "تنها الله است که شایستۀ عبادت و دعاست. و کسانی که جز الله را می‌خوانند به هیچ وجه دعایشان را اجابت نمی‌کنند، مگر مانند کسی که دو دستش را به‌سوی آب بگشاید تا به دهانش برسد در حالیکه هرگز آب به دهانش نخواهد رسید، و دعای کافران جز در گمراهی (و ناامیدی) نیست.",
       "translation_pashto": "13-14 خاص د هغه لپاره حق بلل دي او هغه (معبودان) چې دوى يې له هغه نه پرته بلي؛ هغه د دوى هېڅ دعا نشي قبلولى مګر په شان د هغه كس چې اوبو ته خپل دواړه ورغوي (لاسونه) غځوونكى وي، د دې لپاره چې هغه د ده خولې ته راورسي، حال دا چې دغه (اوبه خولې د) ده ته رسېدونكې نه دي او د كافرانو دعا نه ده مګر بېخي په تاوان كې ده ",
-      "translation_english": "To Him alone should all supplication be addressed. But those whom they supplicate besides Him do not respond to them in any way, except like one who stretches out his hands for water to reach his mouth, but it will never reach it. The supplication of the disbelievers is all in vain."
+      "translation_english": "To Him alone should all supplication be addressed. But those whom they supplicate besides Him do not respond to them in any way, except like one who stretches out his hands for water to reach his mouth, but it will never reach it. The supplication of the disbelievers is all in vain.",
+      "translation_turkish": "Bütün dualar yalnızca O'na yapılmalıdır. O'ndan başka yalvardıkları ise, ağzına ulaşsın diye ellerini uzatıp da ağzına ulaşamayan su dışında, onlara hiçbir şekilde karşılık vermezler. Kâfirlerin duası boşadır.",
+      "translation_arabic": "ولا يستحق العبادة والدعاء إلا الله. والذين يدعون من دون الله لن يستجاب لهم الدعاء، إلا كباسط يديه إلى الماء حتى يبلغ فيه، ولن يصل الماء إلى فيه أبدا، وما دعاء الكافرين إلا ضلال."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "و هر آنچه که در آسمان‌ها و زمین است خواسته و ناخواسته برای الله سجده می‌کنند، و همچنین سایه‌هایشان صبح و شام برای الله سجده می‌کنند.",
       "translation_pashto": "13-15 او خاص الله ته سجده كوي هغه څوك چې په اسمانونو او ځمكه كې دي په خوښه او په زور او د هغوى سيوري (هم سجده كوي) سبا او بېګاه",
-      "translation_english": "To Allah prostrates whoever is in the heavens and on earth, willingly or unwillingly, and so do their shadows in the morning and evening."
+      "translation_english": "To Allah prostrates whoever is in the heavens and on earth, willingly or unwillingly, and so do their shadows in the morning and evening.",
+      "translation_turkish": "Göklerde ve yerde bulunanlar, isteyerek veya istemeyerek Allah'a secde ederler ve onların gölgeleri de sabah akşam secde ederler.",
+      "translation_arabic": "وكل من في السماوات والأرض يسجد لله طوعا وكرها، وكذلك ظلالهم تسجد لله صباحا ومساء."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "بگو: کیست پروردگار آسمان‌ها و زمین؟ (در پاسخ آنان)، بگو: «الله» بگو: آیا جز الله دوستانی گرفته‌اید که برای خودشان هم مالک نفع و زیانی نیستند؟ بگو: آیا کور و بینا برابرند؟ آیا تاریکی‌ها و روشنی برابرند؟ آیا شریکانی برای الله قرار داده‌اند که همچون آفریدن الله (چیزی را) آفریده باشند پس در نتیجه کار خلقت بر آنها مشتبه شده است؟ بگو: الله آفرینندۀ همه چیز است و اوست یگانۀ غالب.",
       "translation_pashto": "13-16 ته (دوى ته) ووایه: د اسمانونو او ځمكې رب څوك دى؟ ته ووایه: الله دى، (نو ورته) ووایه: ایا نو تاسو له هغه نه غير نور كار سازان (دوستان) جوړ كړي دي چې د خپلو ځانونو لپاره نه د نفعې اختیار لري او نه د ضرر (لرې كولو) ته ووایه: ایا ړوند او بینا سره برابر دي؟ بلكې (دا ورته ووایه:) ایا سره برابرې دي تیارې او رڼا، یا دوى د الله لپاره داسې شریكان مقرر كړي دي چې د هغه د پیدا كولو په شان پیدا كول يې كړي دي، بیا په دوى باندې پیدا كول مشتبه شوي دي؟ ته ووایه: الله د هر شي پیدا كوونكى دى او هم هغه یو دى، ډېر غالب دى",
-      "translation_english": "Say, “Who is the Lord of the heavens and earth?” Say, “Allah.” Say, “Have you taken besides Him protectors, those who have no power to benefit or harm themselves?” Say, “Can the blind person be equal to the seeing, or can the darkness be equal to the light?” Or do they ascribe to Allah partners who created the like of His creation, so they are confused between two creations? Say, “Allah is the Creator of all things, and He is the One, the Subjugator.”"
+      "translation_english": "Say, “Who is the Lord of the heavens and earth?” Say, “Allah.” Say, “Have you taken besides Him protectors, those who have no power to benefit or harm themselves?” Say, “Can the blind person be equal to the seeing, or can the darkness be equal to the light?” Or do they ascribe to Allah partners who created the like of His creation, so they are confused between two creations? Say, “Allah is the Creator of all things, and He is the One, the Subjugator.”",
+      "translation_turkish": "De ki: \"Göklerin ve yerin Rabbi kimdir?\" “Allah” deyin. De ki: \"O'nun dışında, kendilerine fayda ve zarar vermeye gücü yetmeyen koruyucular mı edindiniz?\" De ki: \"Kör görenle eşit olabilir mi, yoksa karanlık aydınla eşit olabilir mi?\" Yoksa Allah'a, yarattıklarının benzerini yaratan ortaklar mı koşuyorlar da iki yaratılışı karıştırıyorlar? De ki: \"Allah, her şeyin yaratıcısıdır ve O, tektir, boyun eğdiricidir.\"",
+      "translation_arabic": "قل: من رب السماوات والأرض؟ (ردا عليهم)، قل: \"الله\". قل: هل اتخذتم من دون الله أولياء لا يملكون لأنفسهم نفعا ولا ضرارا؟ قل: هل يستوي الأعمى والبصير؟ هل الظلام والنور متساويان؟ هل جعلوا لله شركاء خلقوا كما خلق الله فبعمل الخلق يشتبهون؟ قل: الله خالق كل شيء وهو وحده القادر."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "الله از آسمان آبی فرو فرستاد و رودخانه‌هایی به اندازۀ گنجایش خویش روان گشت، پس سیل کف بلندی روی خود برداشت. همچنین از آنچه در آتش می‌گذارید (از طلا و نقره و غیره) برای حصول زیورات و ابزار، از آن نیز کفی بالا می‌آید، الله برای حق و باطل این چنین مثل می‌زند (تا آنرا بیان و روشن کند)، اما آن کف از میان می‌رود و اما آنچه به مردم سود می‌بخشد بر روی زمین باقی می‌ماند، الله این چنین مثلها را می‌زند.",
       "translation_pashto": "13-17 هغه له بره نه اوبه نازلې كړې، نو خوړونه په خپلې اندازې سره وبهېدل، نو سیلاب اوچت شوى ځګ راپورته كړ او له هغو څیزونو نه هم چې دوى پرې په اور كې د ګاڼې، یا سامان جوړولو لپاره بلول كوي، د دې په مثل ځګ وي، همدارنګه الله (مثال د) حق او باطل بیانوي، نو هر چې ځګ دى، نو هغه بې كاره لاړ شي او هر چې هغه څیز دى چې خلقو ته فايده رسوي، نو هغه په ځمكه كې پاتې كېږي، همدارنګه الله مثالونه بیانوي",
-      "translation_english": "He sends down rain from the sky, causing the valleys to flow, each according to its capacity, and the torrent carries along rising foam, similar to the slag produced from metal that people melt in the fire to make ornaments or tools. This is how Allah compares truth to falsehood: as for the residue, it is then cast away, but that which benefits people remains on the earth. This is how Allah sets forth comparisons."
+      "translation_english": "He sends down rain from the sky, causing the valleys to flow, each according to its capacity, and the torrent carries along rising foam, similar to the slag produced from metal that people melt in the fire to make ornaments or tools. This is how Allah compares truth to falsehood: as for the residue, it is then cast away, but that which benefits people remains on the earth. This is how Allah sets forth comparisons.",
+      "translation_turkish": "O, gökten yağmur yağdırarak vadilerin kapasitelerine göre akmasını sağlar ve sel, insanların süs eşyası veya alet yapmak için ateşte erittiği metalden elde edilen cüruf gibi köpükleri de beraberinde taşır. Allah, hakkı batıla böyle karşılaştırır: Artakalanı atılır, insanlara fayda veren ise yerde kalır. Allah kıyasları böyle yapar.",
+      "translation_arabic": "وأنزل الله من السماء ماءً ففاضت الأنهار ما وسعتها، فاتخذ الطوفان مكاناً عالياً. وكذلك مما تضعه في النار (من الذهب والفضة وغيرها) للحصول على الحلي والأدوات، سيرتفع منها قاع. ويضرب الله مثل هذه الأمثال في الحق والباطل، فيختفي ذلك القاع، ويبقى ما ينفع الناس في الأرض، يضرب الله مثل هذه الأمثال."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "برای آنانی که دعوت پروردگارشان را اجابت کرده‌اند حسنی (سرانجام نیک) است، و آنانی که دعوت پروردگار خود را اجابت نکرده‌اند (بالفرض) اگر همۀ آنچه که در زمین است و مانند آن را با خود داشته باشند البته همگی را برای رهایی خود (از عذاب الهی) فدیه خواهند داد، برای آنان سختی حساب است و جایگاهشان دوزخ است و (دوزخ) چه بد جایگاهی است!.",
       "translation_pashto": "13-18 هم د هغو كسانو لپاره نېكه بدله ده چې د خپل رب حكم يې قبول كړى دى او هغه كسان چې د هغه حكم يې نه دى قبول كړى كه له دوى سره په رښتیا هر هغه څه وي چې په ځمكه كې دي ټول او د دغو په مثل نور هم له ده سره وي (، نو) خامخا به دوى هغه په فدیه كې وركړي، دغه كسان دي چې د دوى لپاره بد حساب دى او د دوى استوګنځاى جهنم دى او هغه بد ارام ځاى دى",
-      "translation_english": "Those who respond to their Lord will have the best reward. As for those who do not respond to Him, even if they were to possess all that is on earth and the likes thereof, they would surely offer it to ransom themselves; they will have the worst reckoning, and their abode will be Hell. What a terrible resting place!"
+      "translation_english": "Those who respond to their Lord will have the best reward. As for those who do not respond to Him, even if they were to possess all that is on earth and the likes thereof, they would surely offer it to ransom themselves; they will have the worst reckoning, and their abode will be Hell. What a terrible resting place!",
+      "translation_turkish": "Rablerine icabet edenler, en güzel mükâfata sahip olacaklardır. O'na icabet etmeyenler ise, yeryüzündekilerin hepsi ve bir o kadarı onların olsa bile, onu mutlaka fidye olarak verirler. Onlar, en kötü hesaba sahip olacaklardır ve onların varacakları yer Cehennemdir. Ne korkunç bir dinlenme yeri!",
+      "translation_arabic": "للذين استجابوا لربهم فحسن، والذين لم يستجيبوا لدعوة ربهم لو كان معهم كل ما في الأرض ومثله لاعطوه كله فداءً ليعتقوا أنفسهم."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "آیا کسی که می‌داند آنچه از سوی پروردگارت بر تو نازل شده حق است، مانند کسی است که نابیناست؟ تنها خردمندانند که پند می‌گیرند.",
       "translation_pashto": "13-19 ایا نو هغه څوك چې پر دې پوهېږي چې بېشكه هغه (قرآن) چې تا ته د خپل رب له جانبه نازل كړى شوى دى، حق دى، د هغه چا په شان دى چې هغه ړوند دى؟ یقینًا همدا خبره ده چې نصیحت د خالصو عقلونو والا اخلي",
-      "translation_english": "Is the one who knows that what has been sent down from your Lord is the truth like the one who is blind? None will take heed except the people of understanding,"
+      "translation_english": "Is the one who knows that what has been sent down from your Lord is the truth like the one who is blind? None will take heed except the people of understanding,",
+      "translation_turkish": "Rabbinden indirilenin hak olduğunu bilen, kör olan gibi midir? Aklı başında olanlardan başkası öğüt almaz,",
+      "translation_arabic": "هل الذي يعلم أن ما أنزل إليك من ربك هو الحق مثل الذي هو أعمى؟ الحكماء فقط هم من يأخذون النصيحة."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "(خردمندان) آنانی‌اند که به عهدی که با الله بسته‌اند، وفا می‌کنند و عهد او را نمی‌شکنند.",
       "translation_pashto": "13-20 هغه كسان چې د الله وعده پوره كوي او پخه وعده نه ماتوي",
-      "translation_english": "those who fulfill the covenant of Allah and do not break the pledge,"
+      "translation_english": "those who fulfill the covenant of Allah and do not break the pledge,",
+      "translation_turkish": "Allah'ın ahdini yerine getiren ve ahdini bozmayanlar,",
+      "translation_arabic": "(العقلاء) هم الذين يحافظون على ما عاهدوا الله عليه ولا ينقضون عهده."
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "و (همچنان خردمندان) آنانی‌اند که آنچه را الله به پیوستنش امر کرده است می‌پیوندند و از پروردگار خویش می‌ترسند و از سختی حساب بیمناک هستند.",
       "translation_pashto": "13-21 او هغه كسان چې هغه څه وصل كوي چې الله د هغه د پيوست ساتلو حكم كړى دى او له خپل رب څخه وېرېږي او له بد حساب نه وېره كوي",
-      "translation_english": "and those who maintain [the ties] which Allah has ordered to be maintained, and fear their Lord, and are afraid of a terrible reckoning,"
+      "translation_english": "and those who maintain [the ties] which Allah has ordered to be maintained, and fear their Lord, and are afraid of a terrible reckoning,",
+      "translation_turkish": "Allah'ın korunmasını emrettiği bağları koruyanlar, Rablerinden sakınanlar ve şiddetli hesaptan korkanlar,",
+      "translation_arabic": "و (الحكماء) هم الذين يصلون إلى ما أمر الله أن يصل ويخافون ربهم ويخافون صعوبة الحساب."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "و (همچنان خردمندان) آنانی‌اند که به خاطر پروردگارشان صبر و شکیبایی کردند و نماز را برپا داشتند و از آنچه که به آنها روزی دادیم به صورت پنهان و آشکار انفاق کردند و بدی را به نیکی دفع می‌کنند، این‌ها هستند که پاداش نیک آخرت از ایشان خواهد بود.",
       "translation_pashto": "13-22 او هغه كسان چې د خپل رب د مخ لټونې لپاره يې صبر كړى دى او لمونځ يې قايم كړى دى او له هغه څه نه يې چې مونږ ورته وركړي دي؛ په پټه او ښكاره انفاق كړى دى او هغوى په نېكۍ سره بدي دفع كوي دغه كسان چې دي د دوى لپاره د اخرت ښه انجام دى ",
-      "translation_english": "and those who observe patience, seeking the pleasure of their Lord, and establish prayer, and spend from what We have provided for them, secretly and in public, and repel evil with good – it is they who will have the final abode,"
+      "translation_english": "and those who observe patience, seeking the pleasure of their Lord, and establish prayer, and spend from what We have provided for them, secretly and in public, and repel evil with good – it is they who will have the final abode,",
+      "translation_turkish": "Rablerinin rızasını dileyerek sabredenler, namazı kılanlar, kendilerine verdiğimiz rızıklardan gizli ve açık harcayanlar ve kötülüğü iyilikle savanlar var ya, işte onlar, âhiret yurdudur.",
+      "translation_arabic": "(وأولئك الذين صبروا في سبيل ربهم وأقاموا الصلاة وأنفقوا مما رزقناهم سرا وعلانية ويدرءون بالحسنة السيئة أولئك الذين يجزون بالحسنة في الآخرة)."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "همان باغ‌های بهشت که جای (اقامت) همیشگی است، آنان همراه پدران و فرزندان و همسران شایستۀ خود در آنجا وارد می‌شوند و فرشتگان (برای سلام و خوش آمدید) از هر دروازه‌ای بر ایشان وارد می‌شوند.",
       "translation_pashto": "13-23 چې د تل اوسېدلو جنتونه دي، دوى به هغو ته داخلېږي، او هغوى به هم (داخلېږي) چې صالح (صلاحيت لري) وي د دوى له پلرونو څخه او د دوى له جوړو (ښځو) څخه او د دوى له اولادونو څخه او ملايك به په دوى باندې له هرې دروازې نه ورننوځي",
-      "translation_english": "Gardens of Eternity, which they will enter together with their righteous parents, their spouses and their offspring. Angels will enter upon them from every gate,"
+      "translation_english": "Gardens of Eternity, which they will enter together with their righteous parents, their spouses and their offspring. Angels will enter upon them from every gate,",
+      "translation_turkish": "Salih anne-babaları, eşleri ve çocuklarıyla birlikte girecekleri sonsuzluk cennetleri. Melekler her kapıdan üzerlerine gireceklerdir.",
+      "translation_arabic": "وجنات الجنة، وهي دار الخلد، يدخلون فيها مع آبائهم وأبنائهم وأزواجهم الصالحات، تدخلهم الملائكة من كل باب."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "(و می‌گویند:) سلامتی بر شما باد به پاداش صبر و شکیبایی که داشتید، پس آن سرای آخرت چه نیکو است!.",
       "translation_pashto": "13-24 (او وايي به) ستاسو د صبر كولو په سبب دې پر تاسو  باندې سلام وي، نو (دا) د اخرت ښه انجام دى ",
-      "translation_english": "“Peace be on you, for what you have patiently endured. How excellent is the final abode!”"
+      "translation_english": "“Peace be on you, for what you have patiently endured. How excellent is the final abode!”",
+      "translation_turkish": "\"Sabrettiğinize karşılık size selam olsun. Ahiret yurdu ne güzeldir!\"",
+      "translation_arabic": "(ويقولون: ﴿السلام عليك جزاء صبرك، فما أحسن تلك الدار الآخرة﴾!"
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "و اما آنانی که عهد الله را پس از بستن آن می‌شکنند و چیزی را که الله به پیوستن آن امر کرده می‌برند و در زمین فساد می‌کنند، این گروه برایشان لعنت است و برایشان سختی آن سرای (نیز) است.",
       "translation_pashto": "13-25 او هغه كسان چې د الله عهد ماتوي د هغه (عهد) له پخولو نه وروسته او هغه څه پرېكوي چې الله د هغه د وصلولو حكم كړى دى او په ځمكه كې فساد كوي، هم دغه كسان دي چې د دوى لپاره لعنت دى او هم د دوى لپاره د اخرت بدي ده ",
-      "translation_english": "As for those who break the covenant of Allah after it has been ratified, and sever the ties that Allah has commanded to be maintained, and spread corruption in the land – it is they who are cursed, and for them there will be the worst abode."
+      "translation_english": "As for those who break the covenant of Allah after it has been ratified, and sever the ties that Allah has commanded to be maintained, and spread corruption in the land – it is they who are cursed, and for them there will be the worst abode.",
+      "translation_turkish": "Allah'ın ahdini onaylandıktan sonra bozanlar, Allah'ın korunmasını emrettiği bağları koparanlar ve yeryüzünde bozgunculuk yapanlar, işte onlar lanetlenmiştir ve onlar için en kötü yer vardır.",
+      "translation_arabic": "وأما الذين ينقضون عهد الله من بعد ميثاقه ويأخذون ما أمر الله أن يوصل إليه ويفسدون في الأرض فهؤلاء لعنة عليهم ولهم عسر ذلك البيت."
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "الله برای هر کسی که بخواهد، رزق را می‌گشاید و تنگ می‌سازد و (کافران) به زندگی دنیا خورسند شدند، حال آنکه زندگانی دنیا در مقابل آخرت جز بهرۀ ناچیز (و چند روزه) نیست.",
       "translation_pashto": "13-26 الله روزي فراخوي چا ته چې وغواړي او تنګوي يې (چا ته چې يې وغواړي) او دوى پر دنيايي ژوند خوشحاله شوي دي او دنيايي ژوند د اخرت په مقابله كې نه دى مګر لږه متاع (سامان) ",
-      "translation_english": "Allah extends provision to whom He wills or restricts it. They rejoice in the life of this world, although the life of this world, compared to the Hereafter, is nothing but a fleeting pleasure."
+      "translation_english": "Allah extends provision to whom He wills or restricts it. They rejoice in the life of this world, although the life of this world, compared to the Hereafter, is nothing but a fleeting pleasure.",
+      "translation_turkish": "Allah, rızkı dilediğine genişletir veya daraltır. Dünya hayatı, ahiret yanında geçici bir zevkten başka bir şey olmadığı halde, dünya hayatıyla sevinirler.",
+      "translation_arabic": "الله يوسع الرزق لمن يشاء ويقدر واكتفى بالحياة الدنيا وما الحياة الدنيا إلا متاع قليل في الآخرة."
     },
     {
       "number": 27,
@@ -301,7 +353,9 @@
       "sajda": false,
       "translation_dari": "و کافران می‌گویند: چرا بر او (محمد) معجزه‌ای از جانب پروردگارش نازل نشد؟ بگو: الله هرکس را بخواهد گمراه می‌کند و هر کس را که بسوی او رجوع کند، به راه خویش هدایت می‌کند.",
       "translation_pashto": "13-27 او وايي هغه كسان چې كفر يې كړى دى: په ده باندې د خپل رب له جانبه كومه نښه (معجزه) ولې نه ده نازل كړى شوې؟ ته (ورته) ووایه: بېشكه الله چې چا ته وغواړي ګمراه كوي يې او خپل طرف ته هغه چا ته هدایت كوي چې رجوع وكړي",
-      "translation_english": "Those who disbelieve say, “Why has no sign been sent down to him from his Lord?” Say, “Allah causes to stray whom He wills and guides to Himself who turns to Him,"
+      "translation_english": "Those who disbelieve say, “Why has no sign been sent down to him from his Lord?” Say, “Allah causes to stray whom He wills and guides to Himself who turns to Him,",
+      "translation_turkish": "İnkar edenler, \"Ona Rabbinden bir ayet indirilmeli değil miydi?\" dediler. De ki: \"Allah, dilediğini saptırır ve kendisine yöneleni kendisine iletir.",
+      "translation_arabic": "ويقول الكافرون: لولا نزلت عليه آية من ربه؟ قل: يضل الله من يشاء ويهدي من أناب إليه."
     },
     {
       "number": 28,
@@ -312,7 +366,9 @@
       "sajda": false,
       "translation_dari": "آنانی که ایمان آوردند و دل‌هایشان به یاد الله آرام می‌گیرد، آگاه باشید که دلها با یاد الله آرام می‌گیرند.",
       "translation_pashto": "13-28 هغه كسان چې ایمان يې راوړى دى او د هغوى زړونه د الله په ذكر سره مطمئن كېږي، خبردار شئ! يواځې د الله په ذكر (ياد) سره زړونه مطمئن كېږي ",
-      "translation_english": "those who believe and whose hearts find tranquility in the remembrance of Allah, for indeed in the remembrance of Allah do hearts find tranquility."
+      "translation_english": "those who believe and whose hearts find tranquility in the remembrance of Allah, for indeed in the remembrance of Allah do hearts find tranquility.",
+      "translation_turkish": "Onlar, iman edenler ve kalpleri Allah'ı anmakla huzur bulanlardır; çünkü kalpler, Allah'ı anmakla huzur bulur.",
+      "translation_arabic": "الذين آمنوا وتطمئن قلوبهم بذكر الله، ألا إن قلوبهم تطمئن بذكر الله."
     },
     {
       "number": 29,
@@ -323,7 +379,9 @@
       "sajda": false,
       "translation_dari": "آنانی که ایمان آورده‌اند و کارهای نیک انجام داده‌اند، خوشا به حال ایشان و آنان سرانجام نیک دارند.",
       "translation_pashto": "13-29 هغه كسان چې ایمان يې راوړى دى او نېك عملونه يې كړي دي، د دوى لپاره ښه حال دى او ښه استوګنځاى دى",
-      "translation_english": "Those who believe and do righteous deeds, for them there will be bliss and a good return.”"
+      "translation_english": "Those who believe and do righteous deeds, for them there will be bliss and a good return.”",
+      "translation_turkish": "İman edip salih ameller işleyenlere ise bir mutluluk ve güzel bir dönüş vardır.”",
+      "translation_arabic": "طوبى للذين آمنوا وعملوا الصالحات ولهم حسن الخاتمة."
     },
     {
       "number": 30,
@@ -334,7 +392,9 @@
       "sajda": false,
       "translation_dari": "این چنین تو را در میان امتی فرستادیم که امتهای بسیاری پیش از آن گذشته‌اند، تا آنچه را به تو وحی کرده‌ایم بر آنان بخوانی. هر چند که به پروردگار مهربان کفر می‌ورزند. بگو: او (الله) پروردگار من است، جز او معبود به حقی نیست، بر او توکل کرده ام و بازگشت من به‌سوی اوست.",
       "translation_pashto": "13-30 (اى نبي) همدارنګه ته مونږ په داسې امت كې لېږلى يې چې یقینًا له هغه نه مخكې ډېر امتونه تېر شوي دي، د دې لپاره چې ته دوى ته هغه (پېغام) ولولې چې مونږ تا ته وحي كړى دى، په داسې حال كې چې دوى په رحمٰن سره كفر كوي، ته ووایه: هغه زما رب دى، له هغه نه غير د عبادت هېڅ لايق نشته، خاص پر هغه باندې ما توكل كړى دى او خاص هم هغهٔ ته زما بېرته ورتله دي ",
-      "translation_english": "Thus did We send you to a community before which other communities had passed away, so that you may recite to them what We have revealed to you, yet they disbelieve in the Most Compassionate. Say, “He is my Lord; none has the right to be worshiped except Him. In Him I put my trust, and to Him is my return.”"
+      "translation_english": "Thus did We send you to a community before which other communities had passed away, so that you may recite to them what We have revealed to you, yet they disbelieve in the Most Compassionate. Say, “He is my Lord; none has the right to be worshiped except Him. In Him I put my trust, and to Him is my return.”",
+      "translation_turkish": "İşte böylece biz seni, daha önce başka ümmetlerin gelip geçtiği bir ümmete gönderdik ki, sana vahyettiğimizi onlara okuyasın; oysa onlar Rahman'ı inkar ediyorlar. De ki: \"O benim Rabbimdir; O'ndan başka ibadet edilecek yoktur. Ben O'na tevekkül ettim ve dönüşümüm O'nadır.\"",
+      "translation_arabic": "كذلك أرسلناك في أمة قد خلت من قبل أمم كثيرة لتتلو عليهم ما أوحينا إليك. رغم أنهم يجدفون على الرب الرحيم. قل: هو (الله) ربي لا إله إلا هو عليه توكلت وإليه مرجعي."
     },
     {
       "number": 31,
@@ -345,7 +405,9 @@
       "sajda": false,
       "translation_dari": "و اگر قرآنی بود که کوه‌ها به وسیلۀ آن در حرکت آورده می‌شد و یا زمین به وسیلۀ آن پاره پاره کرده می‌شد و یا مردگان با آن به سخن گفتن در آورده می‌شد (باز هم ایمان نمی‌آوردند)، بلکه همۀ کارها الله را است. آیا مؤمنان ندانسته‌اند که اگر الله می‌خواست همۀ مردم را هدایت می‌کرد؟ و کافران همیشه به سزای آنچه می‌کنند مصیبت کوبنده‌ای به آنان می‌رسد. یا آن مصیبت نزدیک خانۀ‌شان فرود می‌آید، تا آنگاه که وعده الله برسد، بی‌گمان الله وعده خود را خلاف نمی‌کند.",
       "translation_pashto": "13-31  او كه بېشكه (دا) قرآن چې دى (داسې شي چې) په ده سره غرونه روان كړى شي، یا په ده سره ځمكه ټوټې كړى شي، یا په ده سره مړي په خبرو راوستل شي (بیا به هم دوى ایمان رانه وړي) بلكې امر (اختیار) ټول خاص الله لپاره دى، ایا نو هغه كسان چې ایمان يې راوړو (د دغو خلقو له ایمان نه) نا امېده شوي نه دي، (حال دا چې دغه مومنان پوهېږي چې) كه الله غوښتلى، نو یقینًا ټولو خلقو ته به يې هدایت كړى و او هغه كسان چې كفر يې كړى دى، همېشه به دوى ته د خپلو كړو عملونو په سبب زړه ټكوونكى (عذاب) رسېږي، یا به د دوى كورونو ته نژدې راكوزېږي، تر هغه پورې چې د الله وعده راشي، بېشكه الله د وعدې خلاف نه كوي ",
-      "translation_english": "Even if there were a Qur’an that could cause mountains to move, or split the earth, or cause the dead to speak, [they would still not believe]. To Allah belongs all matters. Do the believers not know that if Allah had willed, He could have guided all humans? Calamities will continue to befall the disbelievers or strike close to their homes because of their deeds, until the promise of Allah comes to pass, for Allah does not fail in His promise."
+      "translation_english": "Even if there were a Qur’an that could cause mountains to move, or split the earth, or cause the dead to speak, [they would still not believe]. To Allah belongs all matters. Do the believers not know that if Allah had willed, He could have guided all humans? Calamities will continue to befall the disbelievers or strike close to their homes because of their deeds, until the promise of Allah comes to pass, for Allah does not fail in His promise.",
+      "translation_turkish": "Dağları yerinden oynatacak, yeri yaracak, ölüleri konuşturacak bir Kur'an olsaydı bile (yine inanmazlardı). Bütün işler Allah'ındır. İman edenler, Allah dileseydi bütün insanları doğru yola iletebileceğini bilmiyorlar mı? Allah'ın vaadi gelinceye kadar, yaptıklarından dolayı kâfirlerin başına musibetler gelmeye devam edecek veya evlerine yaklaşacaktır. Çünkü Allah, vaadinden caymaz.",
+      "translation_arabic": "ولو أن قرآناً سيرت به الجبال أو قطعت به الأرض أو تكلم به الموتى لا يؤمنون ولكن لله كل شيء. أولم يعلم المؤمنون أن لو شاء الله لهدى الناس أجمعين؟ وسوف يعاقب الكافرون دائما بما فعلوا من الرزية الدامغة. أو تحل بهم مصيبة بالقرب من دارهم حتى يأتي وعد الله إن الله لا يخلف وعده."
     },
     {
       "number": 32,
@@ -356,7 +418,9 @@
       "sajda": false,
       "translation_dari": "البته پیغمبران پیش از تو (نیز) مورد تمسخر قرار گرفتند، پس به کافران مهلت دادم، باز آنها را گرفتار ساختم، پس سزای من چگونه بود؟",
       "translation_pashto": "13-32 او یقینًا یقینًا له تا نه په مخكې رسولانو پورې استهزا (او مسخرې) شوې وې، نو ما كافران شويو خلقو ته مهلت وركړ، بیا مې هغوى ونیول، نو (بیا) زما عذاب څنګه و؟",
-      "translation_english": "There were messengers before you who were ridiculed, but I gave respite to those who disbelieved, then I seized them. How [terrible] was My chastisement!"
+      "translation_english": "There were messengers before you who were ridiculed, but I gave respite to those who disbelieved, then I seized them. How [terrible] was My chastisement!",
+      "translation_turkish": "Senden önce de alaya alınan elçiler vardı, fakat ben inkar edenlere mühlet verdim, sonra onları yakaladım. Azabım ne kadar korkunçtu!",
+      "translation_arabic": "بالطبع، لقد استهزئ بالأنبياء من قبلك، فأمهلت الكفار، وقبضت عليهم مرة أخرى، فما كان عقابي؟"
     },
     {
       "number": 33,
@@ -367,7 +431,9 @@
       "sajda": false,
       "translation_dari": "آیا کسی که بر هر شخصی به آنچه کرده حافظ و مراقب است (چون بتان است)؟! و برای الله شریکانی قرار داده‌اند. بگو: نام‌های آنها را بگیرید، آیا الله را به آنچه که در زمین نمیداند (و نمی‌شناسد) خبر می‌دهید؟ یا اینکه با سخنان ظاهری (مردم) فریفته می‌شوید (و آنها را عبادت می‌کنید)؟ بلکه برای کافران مكر (كفر)‌شان مزین شده است و از راه راست باز داشته شده‌اند، و هر کس را که الله گمراه کند هیچ هدایت کننده‌ای ندارد.",
       "translation_pashto": "13-33 ایا نو هغه ذات چې ولاړ (او نګران) دى پر هر نفس باندې سره د هغه د هغو عملونو چې كوي يې (نو بل څوك د ده برابر كېدى شي؟) او دوى د الله لپاره شریكان مقرر كړل، ته (ورته) ووایه: تاسو د دوى نومونه (او صفتونه) ذكر كړئ، یا تاسو هغه (الله) ته د هغه څه خبر وركوئ چې هغه يې په ځمكه كې نه پېژنې، بلكې تاسو په ظاهره (بې دليله) وينا سره (تش په خولې، دوى شریكان جوړوئ) بلكې كافران شويو كسانو ته خپل مكرونه (او دروغ) ښايسته كړى شوي دي او له سمې لارې نه بند كړى شوي دي او هغه څوك چې الله يې ګمراه كړي، نو د هغه لپاره هېڅ هدایت وركوونكى نشته",
-      "translation_english": "Is He Who watches every soul in whatever it does [like others]? Yet they ascribe partners to Allah. Say, “Name them! Or do you presume to inform Him of something that He does not know on earth, or it is just a show of words?” No, but the falsehood of the disbelievers is made appealing to them, and they are hindered from the [straight] path. Whoever Allah causes to stray, he will have none to guide."
+      "translation_english": "Is He Who watches every soul in whatever it does [like others]? Yet they ascribe partners to Allah. Say, “Name them! Or do you presume to inform Him of something that He does not know on earth, or it is just a show of words?” No, but the falsehood of the disbelievers is made appealing to them, and they are hindered from the [straight] path. Whoever Allah causes to stray, he will have none to guide.",
+      "translation_turkish": "Her nefsi, yaptığı her işte gözetleyen (diğerleri gibi) O mudur? Oysa onlar Allah'a ortak koşuyorlar. De ki: \"Onların isimlerini söyleyin! Yoksa siz O'na yeryüzünde bilmediği bir şeyi mi haber vereceğinizi sanıyorsunuz, yoksa bu sadece bir söz oyunu mu?\" Hayır, fakat kâfirlerin yalanları kendilerine güzel gösterilmekte ve onlar doğru yoldan alıkonulmaktadır. Allah kimi saptırırsa artık onun için yol gösterecek kimse yoktur.",
+      "translation_arabic": "فهل هناك من يراقب كل إنسان ويراقبه على ما فعل؟ وجعلوا لله شركاء . قل: خذوا أسمائهم، هل تنبئون الله بما لا يعلم في الأرض؟ أم أنكم مغرورون (وتعبدونهم) بالظاهر (من الناس)؟ بل زين للكافرين غرورهم وصدوا عن سواء السبيل، ومن يضلل الله فما له من هادي."
     },
     {
       "number": 34,
@@ -378,7 +444,9 @@
       "sajda": false,
       "translation_dari": "برای این چنین مردم در زندگی دنیا عذاب سخت است. و البته عذاب آخرت سخت‌تر است، و برای آنها در برابر (عذاب) الله هیچ نگهدارنده‌ای نیست.",
       "translation_pashto": "13-34 شته دى د دوى لپاره عذاب په دنيايي ژوند كې او خامخا د اخرت عذاب ډېر سخت دى، او د دوى لپاره به د الله (له عذاب) نه هېڅ ساتونكى نه وي",
-      "translation_english": "They will be punished in this life, but the punishment of the Hereafter is more severe, and they will have no protector against Allah."
+      "translation_english": "They will be punished in this life, but the punishment of the Hereafter is more severe, and they will have no protector against Allah.",
+      "translation_turkish": "Onlar dünyada azaba uğrayacaklardır ama ahiretteki azap daha şiddetlidir ve Allah'tan başka bir koruyucuları da olmayacaktır.",
+      "translation_arabic": "لمثل هؤلاء الناس، العقوبة في هذا العالم صعبة. وبطبيعة الحال، فإن عذاب الآخرة أشد، ولا عصمة لهم من الله."
     },
     {
       "number": 35,
@@ -389,7 +457,9 @@
       "sajda": false,
       "translation_dari": "صفت جنتی که به پرهیزگاران وعده داده شده است (چنین است که) نهرها از زیر قصرها و درختان آن جاری است، میوه‌هایش همیشگی و سایه اش (نیز) دایمی است. این است سرانجام متقیان و سرانجام کافران آتش (دوزخ) است.",
       "translation_pashto": "13-35 د هغه جنت حال چې له متقیانو سره يې وعده شوې ده (دا دى چې) د هغهٔ له لاندې ولې بهېږي، د هغهٔ مېوې همېشنۍ دي او د هغهٔ سیورى هم، دغه (جنت) د هغو كسانو انجام (او د رجوع ځاى) دى چې پرهېزګاري كوي او د كافرانو انجام اور دى",
-      "translation_english": "The likeness of Paradise, which is promised to the righteous is that under it rivers flow; its fruit is eternal, so is its shade. Such is the end of those who fear Allah, but the end of the disbelievers is Fire!"
+      "translation_english": "The likeness of Paradise, which is promised to the righteous is that under it rivers flow; its fruit is eternal, so is its shade. Such is the end of those who fear Allah, but the end of the disbelievers is Fire!",
+      "translation_turkish": "Salihlere vaad edilen cennetin misali, altından ırmaklar akandır; meyvesi sonsuzdur, gölgesi de. Allah'tan korkanların sonu budur, kâfirlerin sonu ise ateştir!",
+      "translation_arabic": "إن صفة الجنة التي وعد المتقين بها هي أن الأنهار تجري من تحت قصورها وأشجارها، ثمارها خالدة، وظلها دائم. وهذا نهاية المتقين ونهاية الكافرين النار."
     },
     {
       "number": 36,
@@ -400,7 +470,9 @@
       "sajda": false,
       "translation_dari": "و (بعضی از) آنانی که به ایشان کتاب داده‌ایم از آنچه به‌سوی تو نازل شده است، خورسند می‌شوند، و از احزاب (کافران) کسانی هستند که بخشی از (احکام) آن را انکار می‌کند. بگو: به من این حکم شده که تنها الله را بپرستم و به او چیزی را شریک نسازم. به‌سوی او (مردم را) دعوت می‌دهم و بازگشت من به‌سوی اوست.",
       "translation_pashto": "13-36 او  هغه كسان چې مونږ هغوى ته (له تا نه مخكې) كتاب وركړى دى، هغوى په هغه (كتاب، قرآن) باندې خوشحالېږي چې تا ته نازل كړى شوى دى، او ( د اهل كتابو) په ډلو كې ځینې هغه دي چې د ده ځينې برخې نه مني، ته (دوى ته) ووایه: ما ته د دې حكم شوى دى چې د الله عبادت كوم او له هغه سره شریك ونه نیسم، خاص د هغهٔ طرف ته بلنه كوم او خاص هم هغهٔ ته زما ورتله دي",
-      "translation_english": "Those whom We gave the Scripture rejoice at that which is sent down to you [O Prophet], but there are some factions who deny part of it. Say, “I have only been commanded to worship Allah, and associate none with Him. To Him I call and to Him is my return.”"
+      "translation_english": "Those whom We gave the Scripture rejoice at that which is sent down to you [O Prophet], but there are some factions who deny part of it. Say, “I have only been commanded to worship Allah, and associate none with Him. To Him I call and to Him is my return.”",
+      "translation_turkish": "Kendilerine kitap verdiklerimiz, sana indirilene (ey Peygamber) sevinirler; fakat onun bir kısmını inkar eden bir grup da vardır. De ki: \"Ben ancak Allah'a kulluk etmek ve O'na hiçbir şeyi ortak koşmamakla emrolundum. Ben O'na çağırırım ve dönüşümüm O'nadır.\"",
+      "translation_arabic": "والذين آتيناهم الكتاب رضوا بما أنزل إليك ومن الأحزاب من كذب ببعضه. قل: أمرت أن أعبد إلا الله ولا أشرك به شيئا. إليه أدعو وإليه مرجعي."
     },
     {
       "number": 37,
@@ -411,7 +483,9 @@
       "sajda": false,
       "translation_dari": "و این چنین قرآن را به عنوان کتابی روشن و با زبان عربی نازل کردیم، و (بالفرض) اگر از خواهشات آنها پیروی کنی بعد از علمی که به تو رسیده است، تو را از (عذاب) الله هیچ حمایتگر و مددگاری نیست.",
       "translation_pashto": "13-37 او همداسې مونږ دا (قرآن) نازل كړى دى، په عربۍ ژبه حكم كوونكى او قسم دى كه ته د دوى د خواهشاتو پېروي وكړې وروسته له دې چې تا ته علم راغى (،نو) تا لپاره به د الله په مقابله كې نه هېڅ كارساز وي او نه بچ كوونكى",
-      "translation_english": "Thus We have sent it down as a commandment in Arabic. If you were to follow their desires after the knowledge that has come to you, you would have no supporter or protector against Allah."
+      "translation_english": "Thus We have sent it down as a commandment in Arabic. If you were to follow their desires after the knowledge that has come to you, you would have no supporter or protector against Allah.",
+      "translation_turkish": "İşte biz onu Arapça bir emir olarak indirdik. Eğer sana gelen ilimden sonra onların arzularına uyacak olsaydın, Allah'tan sana ne bir dost ne de bir koruyucu bulunur.",
+      "translation_arabic": "وأنزلنا هذا القرآن كتابا مبينا لسانا عربيا ولئن اتبعت طلباتهم من بعد ما جاءك من العلم ما لك من عاصم ولا نصير من عذاب الله."
     },
     {
       "number": 38,
@@ -422,7 +496,9 @@
       "sajda": false,
       "translation_dari": "و به راستی پیش از تو (نیز) پیغمبرانی را فرستادیم و برایشان زنان و فرزندانی قرار داده‌ایم، و برای هیچ پیغمبری ممکن نیست که معجزه‌ای بیاورد مگر به اجازه الله. و برای هر امری (هر وعدۀ) کتاب (قضای معین) نوشته شده است.",
       "translation_pashto": "13-38 او یقینًا یقینًا مونږ له تا نه مخكې رسولان لېږلي وو او مونږ دوى ته ښځې او اولادونه وركړي وو، او د هېڅ رسول لپاره دا اختیار نه و چې كومه معجزه راوړي مګر د الله په اذن (او حكم) سره، د هرې مودې (دور) لپاره یو لیك (، كتاب او قانون) دى",
-      "translation_english": "We have sent messengers before you and gave them wives and offspring. It was not for any messenger to bring a sign except with Allah’s permission. Every matter has a destined time."
+      "translation_english": "We have sent messengers before you and gave them wives and offspring. It was not for any messenger to bring a sign except with Allah’s permission. Every matter has a destined time.",
+      "translation_turkish": "Senden önce de elçiler gönderdik ve onlara eşler ve çocuklar verdik. Allah'ın izni olmadıkça hiçbir elçinin bir ayet getirmesi mümkün değildir. Her işin belli bir zamanı vardır.",
+      "translation_arabic": "ولقد أرسلنا رسلا من قبلك وجعلنا لهم أزواجا وأولادا وما كان لرسول أن يأتي بآية إلا بإذن الله. ولكل أمر (كل وعد) كتاب (حكم معين)."
     },
     {
       "number": 39,
@@ -433,7 +509,9 @@
       "sajda": false,
       "translation_dari": "الله هر چیزی را که بخواهد از میان می‌برد و هر چیزی را که بخواهد ثابت می‌دارد، و ام الکتاب (لوح محفوظ) در نزد اوست.",
       "translation_pashto": "13-39 الله محوه كوي هغه چې اراده يې وكړي او ثابتوي يې او له هغه سره اصل د كتاب دى",
-      "translation_english": "Allah eliminates what He wills or affirms it, and with Him is the Master Book."
+      "translation_english": "Allah eliminates what He wills or affirms it, and with Him is the Master Book.",
+      "translation_turkish": "Allah, dilediğini nefs eder veya tasdik eder; büyük kitap O'nun yanındadır.",
+      "translation_arabic": "يدمر الله ما يشاء ويثبت وعنده أم الكتاب (اللوح المحفوظ)."
     },
     {
       "number": 40,
@@ -444,7 +522,9 @@
       "sajda": false,
       "translation_dari": "و اگر برخی از آنچه را که به آنان وعده می‌دهیم به تو نشان دهیم و یا اینکه تو را بمیرانیم، در هر حال تنها رساندن (پیغام) بر عهدۀ تو است و حساب بر عهدۀ ما می‌باشد.",
       "translation_pashto": "13-40 او كه واقعًا مونږ تا ته ځینې له هغه (عذاب) نه وښیو چې دوى ته يې مونږ وعده وركوو، یا خامخا مونږ تا وفات كړو، نو پر تا خو يواځې تبلیغ كول دي او پر مونږ باندې حساب كول دي",
-      "translation_english": "Whether We show you [O Prophet] part of what We warn them or cause you to die [before that], your duty is only to convey the message, and the reckoning is for Us."
+      "translation_english": "Whether We show you [O Prophet] part of what We warn them or cause you to die [before that], your duty is only to convey the message, and the reckoning is for Us.",
+      "translation_turkish": "İster onları uyardığımızın bir kısmını sana gösterelim, ister seni vefat ettirelim; senin görevin yalnızca tebliğ etmektir ve hesap bize aittir.",
+      "translation_arabic": "وإن أريناكم بعض الذي نعدهم، أو قتلناكم، على كل حال، فالتوصيل مسؤوليتكم، والحساب مسؤوليتنا."
     },
     {
       "number": 41,
@@ -455,7 +535,9 @@
       "sajda": false,
       "translation_dari": "آیا ندیدند که ما به این زمین می‌آئیم (و) از اطراف آن می‌کاهیم (و از تصرف کفار بیرون می‌آوریم)؟ و الله حكم می‌کند و فرمان و حکمش هیچ گونه رد و مانعی ندارد، و او زود حساب گیرنده است.",
       "translation_pashto": "13-41 ایا دوى نه ګوري چې یقینًا مونږ ځمكې ته راځو چې د هغې  له اطرافو نه يې كموو او الله حكم  كوي، هیڅوك د هغهٔ د حكم رد كوونكى نشته او هغه ډېر ژر حساب كوونكى دى",
-      "translation_english": "Do they not see that We advance to the land, diminishing it from its sides? It is Allah Who decrees; there is none to reverse His decree, and He is swift in reckoning."
+      "translation_english": "Do they not see that We advance to the land, diminishing it from its sides? It is Allah Who decrees; there is none to reverse His decree, and He is swift in reckoning.",
+      "translation_turkish": "Bizim, yeryüzünü yanlarından eksilterek ilerlediğimizi görmüyorlar mı? Karar veren Allah'tır; O'nun hükmünü geri çevirecek yoktur ve O, hesabı çabuk görür.",
+      "translation_arabic": "أولم يروا أنا سنأتي هذه الأرض (و) نخفف محيطها (ونخرجها من أيدي الكافرين)؟ والله يحكم، فلا رد ولا عائق في أمره وحكمه، وهو سريع الحساب."
     },
     {
       "number": 42,
@@ -466,7 +548,9 @@
       "sajda": false,
       "translation_dari": "البته آنانی که پیش از ایشان بودند مکر و حیله ورزیدند ولی تدبیر و نقشه‌ها همگی خاص (بدست الله و) از الله است، آنچه را که هر کس انجام میدهد می‌داند و کافران خواهند دانست که انجام نیکو از کیست.",
       "translation_pashto": "13-42 او يقينًا هغو (كافرانو) مكر كړى و چې له دې (كافرانو) نه مخكې وو، نو خاص الله لره دي  پټ تدبیرونه ټول، هغه پوهېږي پر هغه څه چې هر نفس يې كوي، او كافران به ژر پوه شي چې د چا لپاره د اخرت ښه انجام دى",
-      "translation_english": "Those who came before them did devise plans, but Allah has the ultimate plan. He knows what every soul does, and the disbelievers will come to know who will have the final abode."
+      "translation_english": "Those who came before them did devise plans, but Allah has the ultimate plan. He knows what every soul does, and the disbelievers will come to know who will have the final abode.",
+      "translation_turkish": "Onlardan öncekiler plan yapmışlardı ama son plan Allah'ındır. O, her nefsin ne yaptığını bilir. Kâfirler de ahiret yurdunun kim olduğunu bileceklerdir.",
+      "translation_arabic": "وبالطبع فإن من قبلهم كانوا يمكرون ويكيدون، ولكن كل التخطيط والتدبير هو من الله، فهو يعلم ما يفعله كل أحد، وسيعلم الكافرون من أي الأعمال الصالحة."
     },
     {
       "number": 43,
@@ -477,7 +561,9 @@
       "sajda": false,
       "translation_dari": "و کافران می‌گویند: تو رسول الله نیستی، بگو: کافی است که الله در بین من و شما گواه باشد، (و کافی است گواهی) کسی که نزد او علم کتاب است.",
       "translation_pashto": "13-43 او كافران شوي خلق وايي: ته رسول نه يې، ته (ورته) ووایه: زما په مینځ كې او ستاسو په مینځ كې د ګواه په ډول الله ښه كافي دى او هغه څوك (هم) چې له هغهٔ سره د كتاب علم دى",
-      "translation_english": "Those who disbelieve say, “You are not a messenger.” Say, “Allah is sufficient as a Witness between me and you, as well as those who have knowledge of the Scripture.”"
+      "translation_english": "Those who disbelieve say, “You are not a messenger.” Say, “Allah is sufficient as a Witness between me and you, as well as those who have knowledge of the Scripture.”",
+      "translation_turkish": "İnkar edenler, \"Sen elçi değilsin\" diyorlar. De ki: \"Benimle sizin aranızda şahit olarak Allah ve kitap ilmi olanlar yeter.\"",
+      "translation_arabic": "فيقول الكافرون: لست رسول الله. قل كفى بالله شهيدا بيني وبينكم ومن عنده علم الكتاب."
     }
   ]
 }

@@ -18,7 +18,7 @@ import {
 import { DREAM_COPY } from '@/constants/dreamInterpreterCopy';
 import type { AppLanguage } from '@/types/quran';
 
-type DreamStoreLang = 'fa' | 'ps' | 'en';
+type DreamStoreLang = 'fa' | 'ps' | 'en' | 'tr' | 'ar';
 
 interface DreamInterpreterStore {
   messages: StoredDreamInterpreterMessage[];
@@ -43,6 +43,8 @@ const INITIAL_STORE: DreamInterpreterStore = {
 function storeLangToAppLanguage(lang: DreamStoreLang): AppLanguage {
   if (lang === 'ps') return 'pashto';
   if (lang === 'en') return 'english';
+  if (lang === 'tr') return 'turkish';
+  if (lang === 'ar') return 'arabic';
   return 'dari';
 }
 
@@ -93,7 +95,7 @@ async function persistState(patch: Partial<Pick<DreamInterpreterStore, 'messages
   await saveDreamInterpreterState({
     messages: patch.messages ?? store.messages,
     lastMessageAt: patch.lastMessageAt === undefined ? store.lastMessageAt : patch.lastMessageAt,
-    lang: nextLang === 'ps' ? 'ps' : 'fa',
+    lang: nextLang,
   });
 }
 

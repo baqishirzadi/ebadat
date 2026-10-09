@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "(ای پیغمبر)! بگو: پناه می‌برم به پروردگار صبح (سپیده دم).",
       "translation_pashto": "113-1 (اى نبي) ته ووایه: زه په رب د سبا پورې پناه نيسم",
-      "translation_english": "Say, “I seek refuge with the Lord of the daybreak,"
+      "translation_english": "Say, “I seek refuge with the Lord of the daybreak,",
+      "translation_turkish": "De ki: \"Sabahın Rabbine sığınırım.",
+      "translation_arabic": "(أيها النبي)! قل: أعوذ برب الفلق."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "از شر هر آنچه آفریده است.",
       "translation_pashto": "113-2 د هر هغه شي له شر نه چې ده پیدا كړى دى",
-      "translation_english": "from the harm of all what He has created;"
+      "translation_english": "from the harm of all what He has created;",
+      "translation_turkish": "yarattığı her şeyin zararından;",
+      "translation_arabic": "من شر كل ما خلق ."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و از شر تاریکی شب وقتی که همه جا را بپوشاند.",
       "translation_pashto": "113-3 او د تیارې شپې له شر نه كله چې تكه توره (او خوره) شي",
-      "translation_english": "from the harm of darkening [night] when it spreads around,"
+      "translation_english": "from the harm of darkening [night] when it spreads around,",
+      "translation_turkish": "[gecenin] etrafa yayıldığı zaman kararmasının zararından,",
+      "translation_arabic": "ومن شر ظلمة الليل إذا غشى كل شيء."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "و از شر زنان جادوگر که در گره‌ها می‌دمند.",
       "translation_pashto": "113-4 او له شره د هغو (جادوګرو) ښځو چې په غوټو كې پوكي وهونكې دي",
-      "translation_english": "from the harm of the sorceresses who blow on knots,"
+      "translation_english": "from the harm of the sorceresses who blow on knots,",
+      "translation_turkish": "Düğümlere üfleyen büyücülerin zararlarından,",
+      "translation_arabic": "ومن شر الساحرات اللاتي ينفخن في العقد."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "و از شر هر حسودی وقتی که حسد ورزد.",
       "translation_pashto": "113-5 او د حسد كوونكي له شر نه كله چی دى حسد (شروع او ښكاره) كړي",
-      "translation_english": "and from the harm of the envier when he envies.\""
+      "translation_english": "and from the harm of the envier when he envies.\"",
+      "translation_turkish": "ve haset ettiği zaman hasetçinin zararından.\"",
+      "translation_arabic": "ومن شر كل حاسد إذا حسد."
     }
   ]
 }

@@ -24,17 +24,17 @@ const { width } = Dimensions.get('window');
 
 // Common dhikr options
 const DHIKR_OPTIONS = [
-  { arabic: 'سُبْحَانَ اللَّهِ', dari: 'پاک است خدا', pashto: 'الله پاک دی', english: 'Glory be to Allah', target: 33 },
-  { arabic: 'الْحَمْدُ لِلَّهِ', dari: 'ستایش خداست', pashto: 'ټولې ستاینې الله لره دي', english: 'All praise is for Allah', target: 33 },
-  { arabic: 'اللَّهُ أَكْبَرُ', dari: 'خدا بزرگ‌تر است', pashto: 'الله تر ټولو لوی دی', english: 'Allah is the Greatest', target: 34 },
-  { arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ', dari: 'معبودی جز خدا نیست', pashto: 'له الله پرته بل معبود نشته', english: 'There is no god but Allah', target: 100 },
-  { arabic: 'أَسْتَغْفِرُ اللَّهَ', dari: 'از خدا آمرزش می‌خواهم', pashto: 'له الله بښنه غواړم', english: 'I seek Allah’s forgiveness', target: 100 },
-  { arabic: 'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ', dari: 'صلوات', pashto: 'درود شریف', english: 'Peace and blessings upon him', target: 100 },
+  { arabic: 'سُبْحَانَ اللَّهِ', dari: 'پاک است خدا', pashto: 'الله پاک دی', english: 'Glory be to Allah', turkish: 'Allah’ı tenzih ederim', meaningArabic: 'سبحان الله', target: 33 },
+  { arabic: 'الْحَمْدُ لِلَّهِ', dari: 'ستایش خداست', pashto: 'ټولې ستاینې الله لره دي', english: 'All praise is for Allah', turkish: 'Hamd Allah’adır', meaningArabic: 'الحمد لله', target: 33 },
+  { arabic: 'اللَّهُ أَكْبَرُ', dari: 'خدا بزرگ‌تر است', pashto: 'الله تر ټولو لوی دی', english: 'Allah is the Greatest', turkish: 'Allah en büyüktür', meaningArabic: 'الله أكبر', target: 34 },
+  { arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ', dari: 'معبودی جز خدا نیست', pashto: 'له الله پرته بل معبود نشته', english: 'There is no god but Allah', turkish: 'Allah’tan başka ilah yoktur', meaningArabic: 'لا إله إلا الله', target: 100 },
+  { arabic: 'أَسْتَغْفِرُ اللَّهَ', dari: 'از خدا آمرزش می‌خواهم', pashto: 'له الله بښنه غواړم', english: 'I seek Allah’s forgiveness', turkish: 'Allah’tan bağışlanma dilerim', meaningArabic: 'أستغفر الله', target: 100 },
+  { arabic: 'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ', dari: 'صلوات', pashto: 'درود شریف', english: 'Peace and blessings upon him', turkish: 'Allah’ın salât ve selamı onun üzerine olsun', meaningArabic: 'صلى الله عليه وسلم', target: 100 },
 ];
 
 export default function CounterScreen() {
   const { theme } = useApp();
-  const { t, n, content } = useI18n();
+  const { t, n, content, language } = useI18n();
   const { addDhikr } = useStats();
   const navigation = useNavigation();
   const router = useRouter();
@@ -118,7 +118,7 @@ export default function CounterScreen() {
           {selectedDhikr.arabic}
         </CenteredText>
         <CenteredText style={[styles.selectedDhikrDari, { color: theme.textSecondary }]}>
-          {content(selectedDhikr, null)}
+          {language === 'arabic' ? selectedDhikr.meaningArabic : content(selectedDhikr, null)}
         </CenteredText>
         <MaterialIcons name="arrow-drop-down" size={24} color={theme.icon} />
       </Pressable>

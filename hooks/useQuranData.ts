@@ -171,7 +171,7 @@ export function useQuranData() {
   const getTranslation = useCallback((
     surahNumber: number,
     ayahNumber: number,
-    language: 'dari' | 'pashto' | 'english'
+    language: 'dari' | 'pashto' | 'english' | 'turkish' | 'arabic'
   ): string | undefined => {
     const surahData = getSurahSync(surahNumber);
     if (!surahData) return undefined;
@@ -181,6 +181,8 @@ export function useQuranData() {
 
     if (language === 'pashto') return ayah.translation_pashto;
     if (language === 'english') return ayah.translation_english;
+    if (language === 'turkish') return ayah.translation_turkish || ayah.translation_english;
+    if (language === 'arabic') return ayah.translation_arabic || ayah.translation_dari;
     return ayah.translation_dari;
   }, []);
 
@@ -305,6 +307,14 @@ function convertToLegacyFormat(surahData: SurahData): Surah {
       english: surahData.ayahs.map(a => ({
         ayahNumber: a.number,
         text: a.translation_english ?? '',
+      })),
+      turkish: surahData.ayahs.map(a => ({
+        ayahNumber: a.number,
+        text: a.translation_turkish || a.translation_english || '',
+      })),
+      arabic: surahData.ayahs.map(a => ({
+        ayahNumber: a.number,
+        text: a.translation_arabic || a.translation_dari || '',
       })),
     },
   };

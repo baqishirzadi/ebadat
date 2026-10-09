@@ -1,17 +1,21 @@
+import ar from '@/locales/ar.json';
 import en from '@/locales/en.json';
 import fa from '@/locales/fa.json';
 import ps from '@/locales/ps.json';
+import tr from '@/locales/tr.json';
 import type { AppLanguage } from '@/types/quran';
-import { getLocaleFileCode } from '@/utils/i18n/languages';
+import { getLocaleFileCode, type LocaleFileCode } from '@/utils/i18n/languages';
 
 type NestedRecord = { [key: string]: string | string[] | NestedRecord };
 
-export type AdhanPermissionLocale = 'fa' | 'ps' | 'en';
+export type AdhanPermissionLocale = LocaleFileCode;
 
 const catalogs: Record<string, NestedRecord> = {
   fa: fa as NestedRecord,
   ps: ps as NestedRecord,
   en: en as NestedRecord,
+  tr: tr as NestedRecord,
+  ar: ar as NestedRecord,
 };
 
 /** Map the app language onto the locale file that backs these strings. */

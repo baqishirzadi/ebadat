@@ -18,7 +18,7 @@ import { pinSurahInCache } from '@/hooks/useSurahData';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { MushafView, AudioPlayer, Hifz16View, QuranDownloadCard } from '@/components/quran';
 import audioManager, { getQuranPlaybackErrorMessage } from '@/utils/quranAudio';
-import { findHifzPageForAyah, getHifzPage, getHifzSurahStartPage } from '@/utils/hifz16';
+import { findHifzPageForAyah, getHifzPage, getHifzSurahStartPage, HIFZ16_PAGE_COUNT } from '@/utils/hifz16';
 import {
   getDownloadManifest,
   getDownloadManifestKey,
@@ -104,6 +104,7 @@ export default function QuranReaderScreen() {
     requestedHifzPage ?? findHifzPageForAyah(surahNumber, initialAyah),
   );
   const [hifzOnDedication, setHifzOnDedication] = useState(false);
+  const [hifzOnKhatm, setHifzOnKhatm] = useState(false);
   const [forcedHifzPage, setForcedHifzPage] = useState<number | null>(null);
   const headerSurahNumber = hifz16Line ? hifzVisibleSurah : surahNumber;
   const surahNameData = getSurahName(headerSurahNumber);
@@ -111,9 +112,16 @@ export default function QuranReaderScreen() {
   const onHifzVisiblePosition = useCallback((nextSurah: number, ayah: number, page?: number) => {
     if (page === 0) {
       setHifzOnDedication(true);
+      setHifzOnKhatm(false);
+      return;
+    }
+    if (typeof page === 'number' && page > HIFZ16_PAGE_COUNT) {
+      setHifzOnKhatm(true);
+      setHifzOnDedication(false);
       return;
     }
     setHifzOnDedication(false);
+    setHifzOnKhatm(false);
     setHifzVisibleSurah(nextSurah);
     setHifzVisibleAyah(ayah);
     if (typeof page === 'number' && page > 0) setHifzVisiblePage(page);
@@ -125,10 +133,14 @@ export default function QuranReaderScreen() {
     setTranslationVisibleAyah(initialAyah);
     setHifzVisiblePage(requestedHifzPage ?? findHifzPageForAyah(surahNumber, initialAyah));
     setHifzOnDedication(false);
+    setHifzOnKhatm(false);
   }, [initialAyah, requestedHifzPage, surahNumber]);
 
   useEffect(() => {
-    if (!hifz16Line) setHifzOnDedication(false);
+    if (!hifz16Line) {
+      setHifzOnDedication(false);
+      setHifzOnKhatm(false);
+    }
   }, [hifz16Line]);
 
   useEffect(() => {
@@ -169,9 +181,13 @@ export default function QuranReaderScreen() {
     ? `${t('quran.mode.surah')} ${
         language === 'english'
           ? downloadSurahMeta.english
-          : language === 'pashto'
-            ? downloadSurahMeta.pashto
-            : downloadSurahMeta.dari
+          : language === 'turkish'
+            ? downloadSurahMeta.turkish
+            : language === 'arabic'
+              ? downloadSurahMeta.arabic
+              : language === 'pashto'
+                ? downloadSurahMeta.pashto
+                : downloadSurahMeta.dari
       }`
     : t('quran.mode.surah');
   const downloadScopeChoices = useMemo(() => {
@@ -465,7 +481,9 @@ export default function QuranReaderScreen() {
 
   const surahName = hifz16Line && hifzOnDedication
     ? t('quran.hifz.dedicationTitle')
-    : surahNameData
+    : hifz16Line && hifzOnKhatm
+      ? t('quran.hifz.khatmTitle')
+      : surahNameData
       ? `سورة ${surahNameData.arabic}`
       : `سوره ${toArabicNumerals(headerSurahNumber)}`;
 

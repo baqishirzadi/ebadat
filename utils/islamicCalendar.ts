@@ -36,18 +36,18 @@ export interface HijriDate {
 
 // Hijri month names
 export const HIJRI_MONTHS = [
-  { arabic: 'المحرم', dari: 'محرم', pashto: 'محرم', english: 'Muharram' },
-  { arabic: 'صفر', dari: 'صفر', pashto: 'صفر', english: 'Safar' },
-  { arabic: 'ربيع الأول', dari: 'ربیع‌الاول', pashto: 'ربیع الاول', english: 'Rabi al-Awwal' },
-  { arabic: 'ربيع الثاني', dari: 'ربیع‌الثانی', pashto: 'ربیع الثاني', english: 'Rabi al-Thani' },
-  { arabic: 'جمادى الأولى', dari: 'جمادی‌الاول', pashto: 'جمادی الاولی', english: 'Jumada al-Awwal' },
-  { arabic: 'جمادى الثانية', dari: 'جمادی‌الثانی', pashto: 'جمادی الثانیه', english: 'Jumada al-Thani' },
-  { arabic: 'رجب', dari: 'رجب', pashto: 'رجب', english: 'Rajab' },
-  { arabic: 'شعبان', dari: 'شعبان', pashto: 'شعبان', english: 'Shaban' },
-  { arabic: 'رمضان', dari: 'رمضان', pashto: 'رمضان', english: 'Ramadan' },
-  { arabic: 'شوال', dari: 'شوال', pashto: 'شوال', english: 'Shawwal' },
-  { arabic: 'ذو القعدة', dari: 'ذوالقعده', pashto: 'ذوالقعده', english: 'Dhul Qadah' },
-  { arabic: 'ذو الحجة', dari: 'ذوالحجه', pashto: 'ذوالحجه', english: 'Dhul Hijjah' },
+  { arabic: 'المحرم', dari: 'محرم', pashto: 'محرم', english: 'Muharram', turkish: 'Muharrem' },
+  { arabic: 'صفر', dari: 'صفر', pashto: 'صفر', english: 'Safar', turkish: 'Safer' },
+  { arabic: 'ربيع الأول', dari: 'ربیع‌الاول', pashto: 'ربیع الاول', english: 'Rabi al-Awwal', turkish: 'Rebiülevvel' },
+  { arabic: 'ربيع الثاني', dari: 'ربیع‌الثانی', pashto: 'ربیع الثاني', english: 'Rabi al-Thani', turkish: 'Rebiülahir' },
+  { arabic: 'جمادى الأولى', dari: 'جمادی‌الاول', pashto: 'جمادی الاولی', english: 'Jumada al-Awwal', turkish: 'Cemaziyelevvel' },
+  { arabic: 'جمادى الثانية', dari: 'جمادی‌الثانی', pashto: 'جمادی الثانیه', english: 'Jumada al-Thani', turkish: 'Cemaziyelahir' },
+  { arabic: 'رجب', dari: 'رجب', pashto: 'رجب', english: 'Rajab', turkish: 'Recep' },
+  { arabic: 'شعبان', dari: 'شعبان', pashto: 'شعبان', english: 'Shaban', turkish: 'Şaban' },
+  { arabic: 'رمضان', dari: 'رمضان', pashto: 'رمضان', english: 'Ramadan', turkish: 'Ramazan' },
+  { arabic: 'شوال', dari: 'شوال', pashto: 'شوال', english: 'Shawwal', turkish: 'Şevval' },
+  { arabic: 'ذو القعدة', dari: 'ذوالقعده', pashto: 'ذوالقعده', english: 'Dhul Qadah', turkish: 'Zilkade' },
+  { arabic: 'ذو الحجة', dari: 'ذوالحجه', pashto: 'ذوالحجه', english: 'Dhul Hijjah', turkish: 'Zilhicce' },
 ];
 
 // Special Islamic days
@@ -677,6 +677,7 @@ export function isFastingDay(date: Date): { isFasting: boolean; reason?: string;
 export function hijriMonthName(hijri: HijriDate, language: 'arabic' | AppLanguage): string {
   if (language === 'arabic') return hijri.monthNameArabic;
   if (language === 'pashto') return hijri.monthNamePashto;
+  if (language === 'turkish') return HIJRI_MONTHS[hijri.month - 1]?.turkish || hijri.monthName;
   if (language === 'english') return hijri.monthName;
   return hijri.monthNameDari;
 }

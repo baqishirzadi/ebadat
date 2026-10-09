@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "قسم به آسمانی که دارای برج‌هاست.",
       "translation_pashto": "85-1 قسم دى په اسمان چې خاوند د برجونو دى",
-      "translation_english": "By the sky full of constellations,"
+      "translation_english": "By the sky full of constellations,",
+      "translation_turkish": "Takımyıldızlarla dolu gökyüzüne and olsun ki,",
+      "translation_arabic": "والسماء التي لها أبراج ."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "و قسم به روز موعود (روز قیامت).",
       "translation_pashto": "85-2 او په وعده كړى شوې ورځې(د قيامت)",
-      "translation_english": "and by the promised Day,"
+      "translation_english": "and by the promised Day,",
+      "translation_turkish": "ve vaat edilen Gün'e kadar,",
+      "translation_arabic": "وأقسم باليوم الموعود (يوم القيامة)."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و قسم به شاهد (روز جمعه)، و قسم به مشهود (روز عرفه).",
       "translation_pashto": "85-3 او په ګواه يا حاضرېدونكي او په هغې (ورځې) چې هغې ته حاضري كولى شي (چې د قيامت ورځ ده)",
-      "translation_english": "and by the witness and the witnessed,"
+      "translation_english": "and by the witness and the witnessed,",
+      "translation_turkish": "ve tanık ve tanık tarafından,",
+      "translation_arabic": "وأقسم بالشاهد (يوم الجمعة)، وأقسم بالشاهد (يوم عرفة)."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "اهل خندق‌ها کشته شدند.",
       "translation_pashto": "85-4 هلاك دې كړى شي خاوندان د خندق",
-      "translation_english": "cursed be the makers of the trench,"
+      "translation_english": "cursed be the makers of the trench,",
+      "translation_turkish": "Hendek yapanlara lanet olsun,",
+      "translation_arabic": "وقتل أهل الخنادق."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "خندق‌های پر از آتش و دارای هیزم فراوان.",
       "translation_pashto": "85-5 چې (په كې) اور و د بلېدلو (او لرګو) والا",
-      "translation_english": "the fire full of fuel,"
+      "translation_english": "the fire full of fuel,",
+      "translation_turkish": "yakıt dolu ateş,",
+      "translation_arabic": "خنادق مليئة بالنار والكثير من الحطب."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "وقتی که بر آن (خندق‌ها) نشسته بودند.",
       "translation_pashto": "85-6 كله چې دوى په (غاړو د) هغو ناست وو",
-      "translation_english": "when they sat around it,"
+      "translation_english": "when they sat around it,",
+      "translation_turkish": "etrafına oturduklarında,",
+      "translation_arabic": "وإذ كانوا عليها جالسين (الخنادق)."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "و آن‌ها بر آنچه با مؤمنان می‌کردند حاضر بودند.",
       "translation_pashto": "85-7 او دوى هغه څه ته چې دوى به په مومنانو باندې كول؛ حاضر وو",
-      "translation_english": "and were witnessing what they did to the believers."
+      "translation_english": "and were witnessing what they did to the believers.",
+      "translation_turkish": "ve mü'minlere yaptıklarına şahit oluyorlardı.",
+      "translation_arabic": "وكانوا يعلمون ما يفعلون بالمؤمنين."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "و آن‌ها از مؤمنان انتقام نگرفتند مگر این که به الله غالب و ستوده ایمان آورده بودند.",
       "translation_pashto": "85-8 او دوى له دغو (مومنانو) نه هېڅ عیب نه لیده مګر دا چې دوى په الله باندې ایمان راوړى و، چې ډېر غالب، ښه ستايل شوى  دى",
-      "translation_english": "Their only grievance against them was that they believed in Allah, the All-Mighty, the Praiseworthy,"
+      "translation_english": "Their only grievance against them was that they believed in Allah, the All-Mighty, the Praiseworthy,",
+      "translation_turkish": "Onlara karşı tek şikâyetleri, Aziz ve övülen Allah'a iman etmeleriydi.",
+      "translation_arabic": "وما انتقموا من المؤمنين إلا أن يؤمنوا بالله العزيز الحميد."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "آن ذاتی که فرمانروایی آسمان‌ها و زمین خاص از اوست و الله بر همه چیز گواه و آگاه است.",
       "translation_pashto": "85-9 هغه (الله) چې خاص د هغه لپاره د اسمانونو او ځمكې بادشاهي ده او الله په هر شي باندې ښه خبردار (او ګواه) دى",
-      "translation_english": "to Whom belongs the dominion of the heavens and earth, and Allah is Witness over all things."
+      "translation_english": "to Whom belongs the dominion of the heavens and earth, and Allah is Witness over all things.",
+      "translation_turkish": "Göklerin ve yerin mülkü O'nundur ve Allah her şeye şahittir.",
+      "translation_arabic": "وهو الذي له ملك السماوات والأرض، والله بكل شيء شهيد عليم."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "یقیناً آنانی که مردان و زنان مؤمن را در فتنه انداختند (عذاب دادند) باز توبه نکردند، پس برای آن‌ها عذاب دوزخ و همچنین عذاب سوزنده است.",
       "translation_pashto": "85-10 بېشكه هغه كسان چې مومنان سړي او مومنې ښځې يې په فتنه (عذاب) كې اچولي وي، بیا يې توبه نه وي ایستلې، نو د دوى لپاره د جهنم (دوزخ) عذاب دى او د دوى لپاره د ډېر سوځوونكي اور عذاب دى",
-      "translation_english": "Indeed, for those who tortured the believing men and women, and then did not repent, there will be the punishment of Hell and the punishment of the burning fire."
+      "translation_english": "Indeed, for those who tortured the believing men and women, and then did not repent, there will be the punishment of Hell and the punishment of the burning fire.",
+      "translation_turkish": "Şüphesiz mümin erkek ve kadınlara eziyet eden, sonra da tövbe etmeyenlere hem cehennem azabı hem de yakıcı ateş azabı vardır.",
+      "translation_arabic": "إن الذين فتنوا المؤمنين والمؤمنات لم يتوبوا فلهم عذاب جهنم وعذاب الحريق."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "البته آنانی که ایمان آوردند و کارهای نیک کردند باغ‌هایی دارند که از زیر آن جوی‌ها روان است. این است پیروزی بزرگ.",
       "translation_pashto": "85-11 بېشكه هغه كسان چې ایمان يې راوړى دى او نېك عملونه يې كړي دي د دوى لپاره داسې جنتونه دي چې د هغو له لاندې ولې بهېږي، همدغه ډېره لویه كامیابي ده",
-      "translation_english": "But those who believed and did righteous deeds will certainly have gardens under which rivers flow; that is the supreme triumph."
+      "translation_english": "But those who believed and did righteous deeds will certainly have gardens under which rivers flow; that is the supreme triumph.",
+      "translation_turkish": "İman edip salih ameller işleyenler için elbette altlarından ırmaklar akan cennetler vardır; bu en büyük zaferdir.",
+      "translation_arabic": "إن الذين آمنوا وعملوا الصالحات لهم جنات تجري من تحتها الأنهار. هذا نصر عظيم."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "(لیکن به یاد داشته باش که) البته گرفتِ پروردگار تو بسیار سخت است.",
       "translation_pashto": "85-12 بېشكه ستا د رب نیول یقینًا ډېر سخت دي",
-      "translation_english": "Indeed, the punishment of your Lord is severe."
+      "translation_english": "Indeed, the punishment of your Lord is severe.",
+      "translation_turkish": "Şüphesiz Rabbinin azabı çok şiddetlidir.",
+      "translation_arabic": "(ولكن تذكر ذلك) إن قبضة ربك شديدة للغاية."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "چون او (آفرینش) را آغاز می‌کند و (بار دوم نیز) او (زندگی هرچیز را) بازمی‌گرداند.",
       "translation_pashto": "85-13 بېشكه هم دغه (الله) اول ځلې پیدا كوي او دویم ځلې پیدا كوي",
-      "translation_english": "Indeed, it is He Who originates [the creation] and then resurrects all,"
+      "translation_english": "Indeed, it is He Who originates [the creation] and then resurrects all,",
+      "translation_turkish": "Şüphesiz ki, (yaratılışı) yaratan, sonra hepsini dirilten O'dur.",
+      "translation_arabic": "لأنه يبدأ (الخلق) و(المرة الثانية) يعيد (حياة كل شيء)."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "و او آمرزنده و دوستدار مؤمنان است.",
       "translation_pashto": "85-14 او هم دى ډېر بخښونكى، ډېر محبت كوونكى دى",
-      "translation_english": "and He is the All-Forgiving, the Most Affectionate,"
+      "translation_english": "and He is the All-Forgiving, the Most Affectionate,",
+      "translation_turkish": "O, çok bağışlayıcıdır, çok şefkatlidir.",
+      "translation_arabic": "وهو غفور ودود للمؤمنين."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "و اوست صاحب عرش دارای مجد و عظمت.",
       "translation_pashto": "85-15  د عرش مالك دى، لوى شان (او عزت) والا دى",
-      "translation_english": "the Lord of the Glorious Throne;"
+      "translation_english": "the Lord of the Glorious Throne;",
+      "translation_turkish": "Yüce Arş'ın Rabbi;",
+      "translation_arabic": "وهو مالك العرش ذو الجلال والإكرام."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "هرچه را بخواهد حتماً انجام می‌دهد.",
       "translation_pashto": "85-16 ډېر كوونكى دى هغه څه لره چې دى يې اراده وكړي",
-      "translation_english": "He does whatever He wills."
+      "translation_english": "He does whatever He wills.",
+      "translation_turkish": "O, dilediğini yapar.",
+      "translation_arabic": "سوف يفعل ما يريد."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "آیا قصۀ آن لشکرها (که هلاک شدند) به تو رسیده است؟",
       "translation_pashto": "85-17 ایا تا ته د لښكرو خبر راغلى دى؟",
-      "translation_english": "Has there not come to you the story of the forces"
+      "translation_english": "Has there not come to you the story of the forces",
+      "translation_turkish": "Güçlerin hikayesi sana gelmedi mi?",
+      "translation_arabic": "فهل وصلتكم قصة تلك الجيوش (التي هلكت)؟"
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "(لشکریان) فرعون و ثمود.",
       "translation_pashto": "85-18 چې فرعونیان او ثمودیان وو",
-      "translation_english": "of Pharaoh and Thamūd?"
+      "translation_english": "of Pharaoh and Thamūd?",
+      "translation_turkish": "Firavun ve Semûd'un?",
+      "translation_arabic": "(جيوش) فرعون وثمود."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "(اما کفار از قصه‌های قرآن عبرت نمی‌گیرند)، بلکه کافران همیشه در پی تکذیب قرآن‌اند.",
       "translation_pashto": "85-19 بلكې هغه كسان چې كافران شوي دي په دروغ ګڼلو كې (لګیا) دي ",
-      "translation_english": "But the disbelievers are in persistent denial,"
+      "translation_english": "But the disbelievers are in persistent denial,",
+      "translation_turkish": "Fakat kâfirler ısrarla inkar içindedirler.",
+      "translation_arabic": "(ولكن الكافرين لا يتعلمون من قصص القرآن) ولكن الكافرين يسعون دائما إلى تكذيب القرآن."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "و لیکن الله از هر طرف بر آن‌ها احاطه دارد.",
       "translation_pashto": "85-20 او الله د دوى له چاپېره نه راګېروونكى دى",
-      "translation_english": "although Allah encompasses them from all sides."
+      "translation_english": "although Allah encompasses them from all sides.",
+      "translation_turkish": "halbuki Allah onları her taraftan kuşatmıştır.",
+      "translation_arabic": "ولكن الله محيط بهم من كل جانب."
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "(قرآن قابل تکذیب نیست)، بلکه قرآن کتابی بزرگوار و عالی‌قدر است.",
       "translation_pashto": "85-21 بلكې دغه د لوى قدر والا قرآن دى",
-      "translation_english": "But this is a glorious Qur’an,"
+      "translation_english": "But this is a glorious Qur’an,",
+      "translation_turkish": "Ama bu, muhteşem bir Kur'an'dır.",
+      "translation_arabic": "(القرآن لا يمكن إنكاره)، ولكن القرآن كتاب شريف وتعالى."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "که در لوح المحفوظ (لوحۀ که از دسترسِ مخلوقات محفوظ است) ثبت است.",
       "translation_pashto": "85-22 په لوح محفوظ كې دى",
-      "translation_english": "[inscribed] in a Preserved Tablet."
+      "translation_english": "[inscribed] in a Preserved Tablet.",
+      "translation_turkish": "Korunmuş bir Tablette [yazılı].",
+      "translation_arabic": "وهو مسجل في اللوح المحفوظ (اللوح المحفوظ عن متناول المخلوقات)."
     }
   ]
 }

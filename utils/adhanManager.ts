@@ -43,13 +43,14 @@ export const PRAYER_NAMES: Record<PrayerName, {
   dari: string;
   pashto: string;
   english: string;
+  turkish: string;
   arabic: string;
 }> = {
-  fajr: { dari: 'نماز صبح', pashto: 'د سهار لمونځ', english: 'Fajr prayer', arabic: 'صلاة الفجر' },
-  dhuhr: { dari: 'نماز ظهر', pashto: 'د غرمې لمونځ', english: 'Dhuhr prayer', arabic: 'صلاة الظهر' },
-  asr: { dari: 'نماز عصر', pashto: 'د مازدیګر لمونځ', english: 'Asr prayer', arabic: 'صلاة العصر' },
-  maghrib: { dari: 'نماز شام', pashto: 'د ماښام لمونځ', english: 'Maghrib prayer', arabic: 'صلاة المغرب' },
-  isha: { dari: 'نماز خفتن', pashto: 'د خفتن لمونځ', english: 'Isha prayer', arabic: 'صلاة العشاء' },
+  fajr: { dari: 'نماز صبح', pashto: 'د سهار لمونځ', english: 'Fajr prayer', turkish: 'Sabah namazı', arabic: 'صلاة الفجر' },
+  dhuhr: { dari: 'نماز ظهر', pashto: 'د غرمې لمونځ', english: 'Dhuhr prayer', turkish: 'Öğle namazı', arabic: 'صلاة الظهر' },
+  asr: { dari: 'نماز عصر', pashto: 'د مازدیګر لمونځ', english: 'Asr prayer', turkish: 'İkindi namazı', arabic: 'صلاة العصر' },
+  maghrib: { dari: 'نماز شام', pashto: 'د ماښام لمونځ', english: 'Maghrib prayer', turkish: 'Akşam namazı', arabic: 'صلاة المغرب' },
+  isha: { dari: 'نماز خفتن', pashto: 'د خفتن لمونځ', english: 'Isha prayer', turkish: 'Yatsı namazı', arabic: 'صلاة العشاء' },
 };
 
 // Settings for each prayer

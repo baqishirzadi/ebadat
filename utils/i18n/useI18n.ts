@@ -6,7 +6,7 @@ import type { AppLanguage } from '@/types/quran';
 import { formatNumber, localizeDigits } from '@/utils/numbers';
 import { translateUi, type UiMessageKey, type UiMessageParams } from '@/utils/i18n/catalog';
 import { pickContent, pickContentList, pickLanguage } from '@/utils/i18n/content';
-import { getLanguage, isRtlLanguage } from '@/utils/i18n/languages';
+import { getLanguage, isLatinLanguage, isRtlLanguage } from '@/utils/i18n/languages';
 
 /**
  * Everything a screen needs to render in the active language: translation,
@@ -17,7 +17,7 @@ export function useI18n() {
   const fonts = useLocalizedFontPreferences();
 
   const fontFamily = useMemo(() => {
-    if (language === 'english') return undefined;
+    if (isLatinLanguage(language)) return undefined;
     return language === 'pashto'
       ? getPashtoFontFamily(fonts?.pashtoFont)
       : getDariFontFamily(fonts?.dariFont ?? 'vazirmatn');
@@ -59,6 +59,7 @@ export function useI18n() {
     language,
     isPashto: language === 'pashto',
     isEnglish: language === 'english',
+    isLatin: isLatinLanguage(language),
     isRtl: isRtlLanguage(language),
     direction: definition.direction,
     locale: definition.locale,

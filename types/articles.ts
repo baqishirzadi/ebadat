@@ -3,7 +3,7 @@
  * Type definitions for scholars, articles, and categories
  */
 
-export type ArticleLanguage = 'dari' | 'pashto';
+export type ArticleLanguage = 'dari' | 'pashto' | 'english' | 'turkish' | 'arabic';
 
 export type ArticleCategory =
   | 'iman' // ایمان
@@ -21,6 +21,8 @@ export interface ArticleCategoryInfo {
   nameDari: string;
   namePashto: string;
   nameEnglish: string;
+  nameTurkish: string;
+  nameArabic: string;
   icon: string;
   color: string;
 }
@@ -31,6 +33,8 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     nameDari: 'ایمان',
     namePashto: 'ایمان',
     nameEnglish: 'Faith',
+    nameTurkish: 'İman',
+    nameArabic: 'الإيمان',
     icon: 'favorite',
     color: '#E91E63',
   },
@@ -39,6 +43,8 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     nameDari: 'نماز',
     namePashto: 'لمونځ',
     nameEnglish: 'Prayer',
+    nameTurkish: 'Namaz',
+    nameArabic: 'الصلاة',
     icon: 'access-time',
     color: '#2196F3',
   },
@@ -47,6 +53,8 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     nameDari: 'اخلاق',
     namePashto: 'اخلاق',
     nameEnglish: 'Character',
+    nameTurkish: 'Ahlak',
+    nameArabic: 'الأخلاق',
     icon: 'auto-awesome',
     color: '#9C27B0',
   },
@@ -55,6 +63,8 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     nameDari: 'خانواده',
     namePashto: 'کورنۍ',
     nameEnglish: 'Family',
+    nameTurkish: 'Aile',
+    nameArabic: 'الأسرة',
     icon: 'family-restroom',
     color: '#FF9800',
   },
@@ -63,6 +73,8 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     nameDari: 'اضطراب',
     namePashto: 'اندېښنه',
     nameEnglish: 'Anxiety',
+    nameTurkish: 'Kaygı',
+    nameArabic: 'القلق',
     icon: 'psychology',
     color: '#F44336',
   },
@@ -71,6 +83,8 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     nameDari: 'رزق',
     namePashto: 'رزق',
     nameEnglish: 'Provision',
+    nameTurkish: 'Rızık',
+    nameArabic: 'الرزق',
     icon: 'attach-money',
     color: '#4CAF50',
   },
@@ -79,6 +93,8 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     nameDari: 'دعا',
     namePashto: 'دعا',
     nameEnglish: 'Supplication',
+    nameTurkish: 'Dua',
+    nameArabic: 'الدعاء',
     icon: 'favorite-border',
     color: '#00BCD4',
   },
@@ -87,6 +103,8 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     nameDari: 'تزکیه',
     namePashto: 'تزکیه',
     nameEnglish: 'Purification',
+    nameTurkish: 'Tezkiye',
+    nameArabic: 'التزكية',
     icon: 'spa',
     color: '#795548',
   },
@@ -95,6 +113,8 @@ export const ARTICLE_CATEGORIES: Record<ArticleCategory, ArticleCategoryInfo> = 
     nameDari: 'اسماء الحسنی',
     namePashto: 'اسماء الحسنی',
     nameEnglish: 'Names of Allah',
+    nameTurkish: 'Esmaül Hüsna',
+    nameArabic: 'أسماء الله الحسنى',
     icon: 'vpn-key',
     color: '#009688',
   },

@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "قسم به زمانه.",
       "translation_pashto": "103-1 قسم دى په عصر (مازیګر، یا زمانه)",
-      "translation_english": "By the time,"
+      "translation_english": "By the time,",
+      "translation_turkish": "O zamana kadar,",
+      "translation_arabic": "بحلول الوقت"
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "که البته انسان در خساره است.",
       "translation_pashto": "103-2 چې بېشكه یقینًا انسان په زیان (او تاوان) كې دى",
-      "translation_english": "man is in utter loss,"
+      "translation_english": "man is in utter loss,",
+      "translation_turkish": "adam tam bir kayıp içinde,",
+      "translation_arabic": "وبطبيعة الحال، فإن البشر في حيرة."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "به جز آنانی که ایمان آوردند و اعمال نیک انجام دادند و یکدیگر را به حق توصیه کردند، و یکدیگر را به صبر (در راه حق) توصیه کردند.",
       "translation_pashto": "103-3 غیر له هغو كسانو نه چې ایمان يې راوړى دى او نېك عملونه يې كړې دي او یو بل ته يې د حق (دین) وصیت كړى دى، او یو بل ته يې د صبر وصیت كړى دى ",
-      "translation_english": "except those who believe and do righteous deeds, and exhort one another to the truth and exhort one another to patience."
+      "translation_english": "except those who believe and do righteous deeds, and exhort one another to the truth and exhort one another to patience.",
+      "translation_turkish": "Ancak iman edip salih ameller işleyenler, birbirlerine hakkı tavsiye edenler ve birbirlerine sabrı tavsiye edenler müstesnadır.",
+      "translation_arabic": "إلا الذين آمنوا وعملوا الصالحات وتواصوا بالحق وتواصوا بالصبر."
     }
   ]
 }

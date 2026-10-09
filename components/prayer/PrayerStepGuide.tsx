@@ -35,11 +35,11 @@ interface PrayerStepGuideProps {
 
 export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
   const { theme, state } = useApp();
-  const { t, language, fontFamily } = useI18n();
+  const { t, language, fontFamily, isLatin } = useI18n();
   const [index, setIndex] = useState(0);
   const pashtoFont = state.preferences.pashtoFont;
   const bodyFont = language === 'pashto' ? getPashtoFontFamily(pashtoFont) : fontFamily;
-  const titleFont = language === 'pashto' ? getPashtoBoldFontFamily(pashtoFont) : 'Vazirmatn-Bold';
+  const titleFont = language === 'pashto' ? getPashtoBoldFontFamily(pashtoFont) : isLatin ? undefined : 'Vazirmatn-Bold';
   const bodyLineHeight = language === 'pashto' ? 42 : 30;
 
   useEffect(() => {

@@ -20,7 +20,7 @@ import {
   type SearchLanguage,
 } from '@/utils/quranSearchNormalize';
 
-export type QuranSearchMode = 'arabic' | 'dari' | 'pashto' | 'english' | 'all';
+export type QuranSearchMode = 'arabic' | 'dari' | 'pashto' | 'english' | 'turkish' | 'arabicMeaning' | 'all';
 
 export type QuranSearchOptions = {
   mode?: QuranSearchMode;
@@ -45,15 +45,19 @@ type DbAyahRow = {
   dari_text: string;
   pashto_text: string;
   english_text: string;
+  turkish_text: string;
+  arabic_meaning_text: string;
   arabic_norm: string;
   arabic_compact: string;
   dari_norm: string;
   pashto_norm: string;
   english_norm: string;
+  turkish_norm: string;
+  arabic_meaning_norm: string;
 };
 
 const DB_ASSET_NAME = 'quran-search.db';
-const DB_RUNTIME_NAME = 'quran-search-v2.db';
+const DB_RUNTIME_NAME = 'quran-search-v3.db';
 const DEFAULT_LIMIT = 25;
 const MAX_CANDIDATES = 400;
 
@@ -138,11 +142,17 @@ function buildResult(
           ? row.dari_text
           : matchedLanguage === 'pashto'
             ? row.pashto_text
-            : row.english_text,
+            : matchedLanguage === 'turkish'
+              ? row.turkish_text
+              : matchedLanguage === 'arabicMeaning'
+                ? row.arabic_meaning_text
+                : row.english_text,
     translation: {
       dari: row.dari_text,
       pashto: row.pashto_text,
       english: row.english_text,
+      turkish: row.turkish_text,
+      arabic: row.arabic_meaning_text,
     },
     highlightRanges: [{
       start: 0,
@@ -152,7 +162,11 @@ function buildResult(
           ? row.dari_text.length
           : matchedLanguage === 'pashto'
             ? row.pashto_text.length
-            : row.english_text.length,
+            : matchedLanguage === 'turkish'
+              ? row.turkish_text.length
+              : matchedLanguage === 'arabicMeaning'
+                ? row.arabic_meaning_text.length
+                : row.english_text.length,
     }],
   };
 }
@@ -166,6 +180,8 @@ function scoreRow(
     dari: string;
     pashto: string;
     english: string;
+    turkish: string;
+    arabicMeaning: string;
   },
 ): { language: SearchLanguage; score: number; matchedText: string } | null {
   const candidates: Array<{ language: SearchLanguage; score: number; matchedText: string }> = [];
@@ -201,6 +217,20 @@ function scoreRow(
     }
   }
 
+  if (mode === 'turkish' || mode === 'all') {
+    const score = scoreMatch(row.turkish_norm, norms.turkish);
+    if (score > 0) {
+      candidates.push({ language: 'turkish', score, matchedText: norms.turkish });
+    }
+  }
+
+  if (mode === 'arabicMeaning' || mode === 'all') {
+    const score = scoreMatch(row.arabic_meaning_norm, norms.arabicMeaning);
+    if (score > 0) {
+      candidates.push({ language: 'arabicMeaning', score, matchedText: norms.arabicMeaning });
+    }
+  }
+
   if (candidates.length === 0) return null;
   candidates.sort((a, b) => b.score - a.score);
   return candidates[0];
@@ -215,6 +245,8 @@ async function queryCandidates(
     dari: string;
     pashto: string;
     english: string;
+    turkish: string;
+    arabicMeaning: string;
   },
 ): Promise<DbAyahRow[]> {
   const clauses: string[] = [];
@@ -242,6 +274,16 @@ async function queryCandidates(
   if ((mode === 'english' || mode === 'all') && norms.english.length >= 2) {
     clauses.push('english_norm LIKE ? ESCAPE \'\\\'');
     params.push(`%${escapeLike(norms.english)}%`);
+  }
+
+  if ((mode === 'turkish' || mode === 'all') && norms.turkish.length >= 2) {
+    clauses.push('turkish_norm LIKE ? ESCAPE \'\\\'');
+    params.push(`%${escapeLike(norms.turkish)}%`);
+  }
+
+  if ((mode === 'arabicMeaning' || mode === 'all') && norms.arabicMeaning.length >= 2) {
+    clauses.push('arabic_meaning_norm LIKE ? ESCAPE \'\\\'');
+    params.push(`%${escapeLike(norms.arabicMeaning)}%`);
   }
 
   if (clauses.length === 0) return [];
@@ -289,6 +331,8 @@ export async function searchQuranPaged(
   const dari = normalizeDariForSearch(query);
   const pashto = normalizePashtoForSearch(query);
   const english = normalizeEnglishForSearch(query);
+  const turkish = normalizeEnglishForSearch(query);
+  const arabicMeaning = normalizeDariForSearch(query);
 
   const activeNorm =
     mode === 'arabic'
@@ -299,14 +343,18 @@ export async function searchQuranPaged(
           ? pashto
           : mode === 'english'
             ? english
-            : arabic || dari || pashto || english;
+            : mode === 'turkish'
+              ? turkish
+              : mode === 'arabicMeaning'
+                ? arabicMeaning
+                : arabic || dari || pashto || english || turkish || arabicMeaning;
 
   if (!activeNorm || activeNorm.length < 2) {
     return { results: [], total: 0, offset, limit, hasMore: false };
   }
 
   const db = await openSearchDatabase();
-  const norms = { arabic, arabicCompact, dari, pashto, english };
+  const norms = { arabic, arabicCompact, dari, pashto, english, turkish, arabicMeaning };
   const candidates = await queryCandidates(db, mode, norms);
 
   const scored: SearchResult[] = [];

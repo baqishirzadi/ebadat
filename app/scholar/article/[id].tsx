@@ -209,46 +209,35 @@ export default function EditArticleScreen() {
         <View style={styles.section}>
           <CenteredText style={[styles.label, { color: theme.text }]}>زبان</CenteredText>
           <View style={styles.languageRow}>
-            <Pressable
-              onPress={() => setLanguage('dari')}
-              style={({ pressed }) => [
-                styles.languageButton,
-                {
-                  backgroundColor: language === 'dari' ? theme.tint : theme.card,
-                  borderColor: language === 'dari' ? theme.tint : theme.cardBorder,
-                },
-                pressed && styles.buttonPressed,
-              ]}
-            >
-              <CenteredText
-                style={[
-                  styles.languageText,
-                  { color: language === 'dari' ? '#fff' : theme.text },
+            {([
+              ['dari', 'دری'],
+              ['pashto', 'پښتو'],
+              ['arabic', 'العربية'],
+              ['turkish', 'Türkçe'],
+              ['english', 'English'],
+            ] as const).map(([id, label]) => (
+              <Pressable
+                key={id}
+                onPress={() => setLanguage(id)}
+                style={({ pressed }) => [
+                  styles.languageButton,
+                  {
+                    backgroundColor: language === id ? theme.tint : theme.card,
+                    borderColor: language === id ? theme.tint : theme.cardBorder,
+                  },
+                  pressed && styles.buttonPressed,
                 ]}
               >
-                دری
-              </CenteredText>
-            </Pressable>
-            <Pressable
-              onPress={() => setLanguage('pashto')}
-              style={({ pressed }) => [
-                styles.languageButton,
-                {
-                  backgroundColor: language === 'pashto' ? theme.tint : theme.card,
-                  borderColor: language === 'pashto' ? theme.tint : theme.cardBorder,
-                },
-                pressed && styles.buttonPressed,
-              ]}
-            >
-              <CenteredText
-                style={[
-                  styles.languageText,
-                  { color: language === 'pashto' ? '#fff' : theme.text },
-                ]}
-              >
-                پښتو
-              </CenteredText>
-            </Pressable>
+                <CenteredText
+                  style={[
+                    styles.languageText,
+                    { color: language === id ? '#fff' : theme.text },
+                  ]}
+                >
+                  {label}
+                </CenteredText>
+              </Pressable>
+            ))}
           </View>
         </View>
 
@@ -417,11 +406,12 @@ const styles = StyleSheet.create({
   },
   languageRow: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: Spacing.sm,
     marginTop: Spacing.sm,
   },
   languageButton: {
-    flex: 1,
+    flexGrow: 1,
     paddingVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
     borderRadius: BorderRadius.md,

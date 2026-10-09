@@ -27,6 +27,8 @@ export interface PrayerSection {
     pashto?: string;
     english?: string;
     arabic?: string;
+    turkish?: string;
+    meaningArabic?: string;
   }>;
   steps?: Array<Record<string, unknown>>;
   steps_dari?: string[];
@@ -94,10 +96,10 @@ export function BookLeaf({
   onJumpSection,
 }: BookLeafProps) {
   const { theme, state } = useApp();
-  const { t, content, contentList, language, fontFamily } = useI18n();
+  const { t, content, contentList, language, fontFamily, isLatin } = useI18n();
   const pashtoFont = state.preferences.pashtoFont;
-  const titleFont = language === 'pashto' ? getPashtoBoldFontFamily(pashtoFont) : 'Vazirmatn-Bold';
-  const bodyFont = language === 'pashto' ? getPashtoFontFamily(pashtoFont) : fontFamily || 'Vazirmatn';
+  const titleFont = language === 'pashto' ? getPashtoBoldFontFamily(pashtoFont) : isLatin ? undefined : 'Vazirmatn-Bold';
+  const bodyFont = language === 'pashto' ? getPashtoFontFamily(pashtoFont) : isLatin ? undefined : fontFamily || 'Vazirmatn';
   const bodyLineHeight = language === 'pashto' ? 42 : 32;
   const itemLineHeight = language === 'pashto' ? 38 : 28;
 
@@ -188,7 +190,7 @@ export function BookLeaf({
                   { color: theme.text, fontFamily: bodyFont, lineHeight: itemLineHeight },
                 ]}
               >
-                {content(item, null)}
+                {language === 'arabic' && item.meaningArabic ? item.meaningArabic : content(item, null)}
               </LocalizedText>
             </View>
           ))}
@@ -209,7 +211,7 @@ export function BookLeaf({
       ) : null}
 
       {structuredSteps.length > 0 ? (
-        <PrayerStepGuide steps={structuredSteps as never} />
+        <PrayerStepGuide steps={structuredSteps as never} showBothLanguages={false} />
       ) : null}
 
       {categoryId === 'janazah' && section.id === 'janazah_method' && onJumpSection ? (

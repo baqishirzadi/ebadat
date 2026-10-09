@@ -436,11 +436,29 @@ export const PRAYER_LABELS_ENGLISH = {
   isha: 'Isha',
 } as const;
 
+export const PRAYER_LABELS_TURKISH = {
+  fajr: 'Sabah',
+  dhuhr: 'Öğle',
+  asr: 'İkindi',
+  maghrib: 'Akşam',
+  isha: 'Yatsı',
+} as const;
+
+export const PRAYER_LABELS_ARABIC = {
+  fajr: 'الفجر',
+  dhuhr: 'الظهر',
+  asr: 'العصر',
+  maghrib: 'المغرب',
+  isha: 'العشاء',
+} as const;
+
 export type PrayerLabelKey = keyof typeof PRAYER_LABELS_DARI;
 
 export function prayerLabel(key: PrayerLabelKey, language: AppLanguage): string {
   if (language === 'pashto') return PRAYER_LABELS_PASHTO[key];
   if (language === 'english') return PRAYER_LABELS_ENGLISH[key];
+  if (language === 'turkish') return PRAYER_LABELS_TURKISH[key];
+  if (language === 'arabic') return PRAYER_LABELS_ARABIC[key];
   return PRAYER_LABELS_DARI[key];
 }
 

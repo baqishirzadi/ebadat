@@ -6,6 +6,7 @@ import TrackPlayer, { Event, State, type AddTrack } from 'react-native-track-pla
 import { useStartupPhase } from '@/context/StartupPhaseContext';
 import { useApp } from '@/context/AppContext';
 import { Naat, NaatDraft } from '@/types/naat';
+import type { AppLanguage } from '@/types/quran';
 import {
   createDraftPayload,
   ensureNaatDirectory,
@@ -290,6 +291,23 @@ function makeSession(queueIds: string[], currentId: string | null, source: NaatQ
   };
 }
 
+function naatText(
+  language: AppLanguage,
+  dari: string,
+  pashto: string,
+  english: string,
+  turkish: string,
+  arabic: string,
+): string {
+  switch (language) {
+    case 'pashto': return pashto;
+    case 'english': return english;
+    case 'turkish': return turkish;
+    case 'arabic': return arabic;
+    default: return dari;
+  }
+}
+
 function quantizeMillis(value: number): number {
   if (value <= 0) return 0;
   return Math.floor(value / PLAYER_PROGRESS_QUANTIZE_MS) * PLAYER_PROGRESS_QUANTIZE_MS;
@@ -298,7 +316,7 @@ function quantizeMillis(value: number): number {
 export function NaatProvider({ children }: { children: React.ReactNode }) {
   const { isInteractiveReady, isAdhanSettled } = useStartupPhase();
   const { state: appState } = useApp();
-  const isPashto = appState.preferences.appLanguage === 'pashto';
+  const language = appState.preferences.appLanguage;
   const [naats, setNaats] = useState<Naat[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncError, setSyncError] = useState<string | null>(null);
@@ -798,10 +816,15 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       if (now - lastPlaybackErrorAt.current > 5000) {
         lastPlaybackErrorAt.current = now;
         Alert.alert(
-          isPashto ? 'تېروتنه' : 'خطا',
-          isPashto
-            ? 'د نعت غږول ودرېدل. انټرنېټ یا غږیزه فایل وګورئ.'
-            : 'پخش نعت قطع شد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.',
+          naatText(language, 'خطا', 'تېروتنه', 'Error', 'Hata', 'خطأ'),
+          naatText(
+            language,
+            'پخش نعت قطع شد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.',
+            'د نعت غږول ودرېدل. انټرنېټ یا غږیزه فایل وګورئ.',
+            'Playback stopped. Check your connection or the audio file.',
+            'Çalma durdu. Bağlantınızı veya ses dosyasını kontrol edin.',
+            'توقف التشغيل. تحققوا من الاتصال أو ملف الصوت.',
+          ),
         );
       }
     });
@@ -829,7 +852,7 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       playbackErrorSub.remove();
       queueEndedSub.remove();
     };
-  }, [playerReady, findNaatByTrack, maybeAutoDownloadCompletedNaat, syncPlayerSnapshot]);
+  }, [playerReady, findNaatByTrack, maybeAutoDownloadCompletedNaat, syncPlayerSnapshot, language]);
 
   // Remote notification / lock-screen controls. The actions themselves live in
   // services/naatPlaybackService.ts (same JS runtime on iOS); performing them here
@@ -1180,24 +1203,42 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       if (error?.message === 'offline') {
-        Alert.alert(isPashto ? 'بې‌انټرنېټه' : 'آفلاین', isPashto ? 'لومړی نعت ښکته کړئ.' : 'ابتدا دانلود نمایید');
+        Alert.alert(
+          naatText(language, 'آفلاین', 'بې‌انټرنېټه', 'Offline', 'Çevrimdışı', 'دون اتصال'),
+          naatText(language, 'ابتدا دانلود نمایید', 'لومړی نعت ښکته کړئ.', 'Download it first.', 'Önce indirin.', 'نزّلوه أولاً.'),
+        );
         return;
       }
       if (error?.message === 'no-audio') {
-        Alert.alert(isPashto ? 'تېروتنه' : 'خطا', isPashto ? 'د غږیز فایل لینک ونه موندل شو.' : 'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.');
+        Alert.alert(
+          naatText(language, 'خطا', 'تېروتنه', 'Error', 'Hata', 'خطأ'),
+          naatText(
+            language,
+            'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.',
+            'د غږیز فایل لینک ونه موندل شو.',
+            'Audio link was not found. Add it in admin.',
+            'Ses bağlantısı bulunamadı. Yönetimde ekleyin.',
+            'لم يُعثر على رابط الصوت. أضيفوه من الإدارة.',
+          ),
+        );
         return;
       }
       if (__DEV__) {
         console.log('[NaatPlayer] Playback unavailable:', getErrorMessage(error));
       }
       Alert.alert(
-        isPashto ? 'تېروتنه' : 'خطا',
-        isPashto
-          ? 'د نعت غږول پیل نه شول. انټرنېټ یا غږیزه فایل وګورئ.'
-          : 'پخش نعت شروع نشد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.',
+        naatText(language, 'خطا', 'تېروتنه', 'Error', 'Hata', 'خطأ'),
+        naatText(
+          language,
+          'پخش نعت شروع نشد. لطفاً اتصال اینترنت یا فایل صوتی را بررسی کنید.',
+          'د نعت غږول پیل نه شول. انټرنېټ یا غږیزه فایل وګورئ.',
+          'Playback did not start. Check your connection or the audio file.',
+          'Çalma başlamadı. Bağlantınızı veya ses dosyasını kontrol edin.',
+          'لم يبدأ التشغيل. تحققوا من الاتصال أو ملف الصوت.',
+        ),
       );
     }
-  }, [ensurePlayerReady, resolveAudioSource, cacheNaatForPlayback, buildQueueTracks, isPashto]);
+  }, [ensurePlayerReady, resolveAudioSource, cacheNaatForPlayback, buildQueueTracks, language]);
 
   const play = useCallback(async (naat: Naat) => {
     const sourceList = naatsRef.current.length > 0 ? naatsRef.current : [naat];
@@ -1341,7 +1382,10 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
           ? { ...item, localFileUri: existingUri, isDownloaded: true, downloadProgress: undefined, file_size_mb: sizeMb }
           : item));
         if (!silent) {
-          Alert.alert(isPashto ? 'خبرتیا' : 'اطلاع', isPashto ? 'دا نعت مخکې ښکته شوی دی.' : 'این نعت قبلاً دانلود شده است');
+          Alert.alert(
+            naatText(language, 'اطلاع', 'خبرتیا', 'Notice', 'Bilgi', 'تنبيه'),
+            naatText(language, 'این نعت قبلاً دانلود شده است', 'دا نعت مخکې ښکته شوی دی.', 'This naat is already downloaded.', 'Bu naat zaten indirilmiş.', 'هذا النعت منزّل من قبل.'),
+          );
         }
         return;
       }
@@ -1395,7 +1439,17 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
         : item));
       delete downloadProgressTickRef.current[naat.id];
       if (!silent) {
-        Alert.alert(isPashto ? 'بریالی' : 'موفق', isPashto ? 'نعت وساتل شو او بې‌انټرنېټه غږېدای شي.' : 'نعت ذخیره شد و آفلاین قابل پخش است');
+        Alert.alert(
+          naatText(language, 'موفق', 'بریالی', 'Done', 'Tamam', 'تم'),
+          naatText(
+            language,
+            'نعت ذخیره شد و آفلاین قابل پخش است',
+            'نعت وساتل شو او بې‌انټرنېټه غږېدای شي.',
+            'Saved. It can play offline.',
+            'Kaydedildi. Çevrimdışı çalınabilir.',
+            'حُفظ ويمكن تشغيله دون اتصال.',
+          ),
+        );
       }
     } catch (error: any) {
       if (__DEV__) console.log('Naat download failed', error);
@@ -1404,24 +1458,42 @@ export function NaatProvider({ children }: { children: React.ReactNode }) {
       setNaats((prev) => prev.map((item) => item.id === naat.id ? { ...item, downloadProgress: undefined } : item));
       if (silent) return;
       if (error?.message === 'offline') {
-        Alert.alert(isPashto ? 'بې‌انټرنېټه' : 'آفلاین', isPashto ? 'لومړی نعت ښکته کړئ.' : 'ابتدا دانلود نمایید');
+        Alert.alert(
+          naatText(language, 'آفلاین', 'بې‌انټرنېټه', 'Offline', 'Çevrimdışı', 'دون اتصال'),
+          naatText(language, 'ابتدا دانلود نمایید', 'لومړی نعت ښکته کړئ.', 'Download it first.', 'Önce indirin.', 'نزّلوه أولاً.'),
+        );
         return;
       }
       if (error?.message === 'no-audio') {
-        Alert.alert(isPashto ? 'تېروتنه' : 'خطا', isPashto ? 'د غږیز فایل لینک ونه موندل شو.' : 'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.');
+        Alert.alert(
+          naatText(language, 'خطا', 'تېروتنه', 'Error', 'Hata', 'خطأ'),
+          naatText(
+            language,
+            'لینک صوتی یافت نشد. لطفاً در مدیریت اضافه کنید.',
+            'د غږیز فایل لینک ونه موندل شو.',
+            'Audio link was not found. Add it in admin.',
+            'Ses bağlantısı bulunamadı. Yönetimde ekleyin.',
+            'لم يُعثر على رابط الصوت. أضيفوه من الإدارة.',
+          ),
+        );
         return;
       }
       Alert.alert(
-        isPashto ? 'تېروتنه' : 'خطا',
-        isPashto
-          ? 'ښکته کول بریالي نه شول. د عام فایل لینک وګورئ.'
-          : 'دانلود ناموفق است. لطفاً مطمئن شوید لینک فایل عمومی است.',
+        naatText(language, 'خطا', 'تېروتنه', 'Error', 'Hata', 'خطأ'),
+        naatText(
+          language,
+          'دانلود ناموفق است. لطفاً مطمئن شوید لینک فایل عمومی است.',
+          'ښکته کول بریالي نه شول. د عام فایل لینک وګورئ.',
+          'Download failed. Make sure the file link is public.',
+          'İndirme başarısız. Dosya bağlantısının herkese açık olduğundan emin olun.',
+          'فشل التنزيل. تأكدوا أن رابط الملف عام.',
+        ),
       );
     } finally {
       if (downloadTasksRef.current.get(naat.id) === task) downloadTasksRef.current.delete(naat.id);
       releaseTask();
     }
-  }, [getLocalUriIfExists, resolveAudioSource, isPashto]);
+  }, [getLocalUriIfExists, resolveAudioSource, language]);
 
   autoDownloadByIdRef.current = (id) => {
     const naat = naatsRef.current.find((item) => item.id === id);

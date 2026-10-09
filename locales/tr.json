@@ -1,0 +1,85 @@
+{
+  "adhanPermissions": {
+    "notifications": {
+      "title": "Bildirim izni",
+      "body": "Ebadat’ın namaz vakitlerini göstermesi ve ezanı çalması için bildirim izni gerekir.",
+      "button": "İzin ver",
+      "skip": "Bildirimsiz devam et"
+    },
+    "exactAlarm": {
+      "title": "Ezan için tam zamanlı alarmlar",
+      "body": "Ezanın, telefon uyurken bile tam namaz vaktinde çalması için Ebadat’a “Alarmlar ve hatırlatıcılar” iznini verin.",
+      "button": "Etkinleştir",
+      "skip": "Şimdi değil",
+      "granted": "Etkin",
+      "denied": "İlgilenmek gerekiyor"
+    },
+    "battery": {
+      "title": "Pil optimizasyonunu kapatın",
+      "body": "Bazı telefonlar arka plan uygulamalarını kendiliğinden kapatır. Ebadat pil optimizasyonunda kalırsa ezan zamanında çalmayabilir.",
+      "button": "Pil ayarları",
+      "skip": "Sonra"
+    },
+    "autostart": {
+      "title": "“Otomatik başlatma”yı açın",
+      "body": "Telefonunuz bu izni ayrı yönetir. Lütfen aşağıdaki adımları izleyin:",
+      "button": "Ayarları aç",
+      "skip": "Sonra",
+      "openAppSettings": "Uygulama ayarları"
+    },
+    "health": {
+      "title": "Ezan teslim durumu",
+      "exactAlarm": "Tam zamanlı alarmlar",
+      "battery": "Pil optimizasyonu",
+      "autostart": "Otomatik başlatma",
+      "notifications": "Bildirimler",
+      "statusPass": "Hazır",
+      "statusWarn": "İlgilenmek gerekiyor",
+      "fix": "Düzelt",
+      "fullCheck": "Tam sağlık kontrolü yap"
+    },
+    "banner": {
+      "body": "Ezanın tam vaktinde çalması için “Tam zamanlı alarmlar” iznini açın.",
+      "button": "Şimdi etkinleştir"
+    },
+    "oemSteps": {
+      "xiaomi": [
+        "Telefon ayarlarını açın",
+        "“Uygulamalar” veya “Uygulamaları yönet”e gidin",
+        "Ebadat’ı bulun ve “Otomatik başlatma”yı açın",
+        "İzni açın"
+      ],
+      "huawei": [
+        "Telefon ayarlarını açın",
+        "“Uygulamalar” → “Başlatma” veya “Korumalı uygulamalar”a gidin",
+        "Ebadat’ı bulun",
+        "Arka planda çalışmasına izin verin"
+      ],
+      "oppo": [
+        "Telefon ayarlarını açın",
+        "“Uygulama yönetimi” → “Başlangıç yöneticisi”ne gidin",
+        "Ebadat’ı bulun",
+        "Otomatik başlatmayı açın"
+      ],
+      "vivo": [
+        "Telefon ayarlarını açın",
+        "“Pil” → “Yüksek arka plan pil kullanımı”na gidin",
+        "Ebadat’ı bulun",
+        "Arka planda çalışmasına izin verin"
+      ],
+      "samsung": [
+        "Telefon ayarlarını açın",
+        "“Cihaz bakımı” → “Pil” → “Arka plan kullanım sınırları”na gidin",
+        "Ebadat’ı “Hiç uyumayan uygulamalar”a ekleyin",
+        "Ebadat için “Uygulamayı uykuya al”ı kapatın"
+      ],
+      "default": [
+        "Telefon ayarlarını açın",
+        "Ebadat uygulama ayarlarını açın",
+        "Pil ve arka plan kısıtlamalarını gözden geçirin",
+        "Arka planda çalışmasına izin verin"
+      ]
+    },
+    "continue": "Devam et"
+  }
+}

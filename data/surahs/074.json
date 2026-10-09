@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "ای جامه بر خود کشیده.",
       "translation_pashto": "74-1 اى په جامه كې نغښتونكیه!",
-      "translation_english": "O you covered [in your cloak],"
+      "translation_english": "O you covered [in your cloak],",
+      "translation_turkish": "Ey sen (pelerinle) örttün,",
+      "translation_arabic": "أوه، لقد ارتدى ملابسه."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "برخیز و (مردم را از عذاب الله) بترسان.",
       "translation_pashto": "74-2 ته پورته شه، نو (خلق) ووېروه",
-      "translation_english": "arise and warn,"
+      "translation_english": "arise and warn,",
+      "translation_turkish": "kalk ve uyar,",
+      "translation_arabic": "قم فانذر (أهل عذاب الله)."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و پروردگارت را به بزرگی یاد کن.",
       "translation_pashto": "74-3 او نو د خپل رب لويي بیانوه",
-      "translation_english": "and proclaim the greatness of your Lord,"
+      "translation_english": "and proclaim the greatness of your Lord,",
+      "translation_turkish": "Rabbinin büyüklüğünü ilan et,",
+      "translation_arabic": "واذكر ربك تعظيما ."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "و لباس‌هایت را پاکیزه دار.",
       "translation_pashto": "74-4 او نو خپلې جامې پاكې ساته",
-      "translation_english": "and purify your garments,"
+      "translation_english": "and purify your garments,",
+      "translation_turkish": "ve elbiselerini arındır,",
+      "translation_arabic": "وحافظ على نظافة ملابسك."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "و از پلیدی دوری کن.",
       "translation_pashto": "74-5 او  ګناه  (او بتان) نو ترك كړه",
-      "translation_english": "and shun idol worshiping,"
+      "translation_english": "and shun idol worshiping,",
+      "translation_turkish": "ve putlara tapınmaktan uzak durun,",
+      "translation_arabic": "واجتناب الشر."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "و بخشش مکن تا بیش از آن بخواهی.",
       "translation_pashto": "74-6 او (داسې) احسان مه كوه چې بدل (او ډېرول) يې  غواړې",
-      "translation_english": "and do not do a favor for a greater return,"
+      "translation_english": "and do not do a favor for a greater return,",
+      "translation_turkish": "Daha büyük bir kazanç için iyilik yapmayın,",
+      "translation_arabic": "ولا تسامح أن تطلب المزيد."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "و برای (رضایت) پروردگارت صبر کن.",
       "translation_pashto": "74-7 او خاص د خپل رب لپاره،  پس صبر كوه",
-      "translation_english": "and be patient for the sake of your Lord."
+      "translation_english": "and be patient for the sake of your Lord.",
+      "translation_turkish": "Rabbin rızası için sabret.",
+      "translation_arabic": "وانتظر (رضا) ربك."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "پس چون در صور دمیده شود.",
       "translation_pashto": "74-8 نو كله چې په شپېلۍ كې پوكى وكړى شي",
-      "translation_english": "When the Trumpet is sounded,"
+      "translation_english": "When the Trumpet is sounded,",
+      "translation_turkish": "Trompet çalındığında,",
+      "translation_arabic": "فإذا نفخ في الأبواق."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "پس آن روز، روزی سخت است.",
       "translation_pashto": "74-9 نو په دغه وخت كې دغه ډېره سخته ورځ ده",
-      "translation_english": "that Day will be a difficult day,"
+      "translation_english": "that Day will be a difficult day,",
+      "translation_turkish": "O gün çetin bir gün olacak,",
+      "translation_arabic": "لذا فإن ذلك اليوم هو يوم صعب."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "بر کافران آسان نیست.",
       "translation_pashto": "74-10 په كافرانو باندې اسانه نه ده",
-      "translation_english": "not easy for the disbelievers."
+      "translation_english": "not easy for the disbelievers.",
+      "translation_turkish": "kâfirler için kolay değildir.",
+      "translation_arabic": "فالأمر ليس بالسهل على الكافرين."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "مرا با آن که تنها آفریدمش بگذار.",
       "translation_pashto": "74-11 ته پرېږده ما او هغه څوك چې ما دى يواځې پیدا كړى دى",
-      "translation_english": "Leave me to deal with the one whom I created lonely,"
+      "translation_english": "Leave me to deal with the one whom I created lonely,",
+      "translation_turkish": "Yalnız yarattığım kişiyle beni baş başa bırak,",
+      "translation_arabic": "دعني وشأني مع ما خلقت."
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "و به او مال فراوان دادم.",
       "translation_pashto": "74-12 او (بیا مې) ده ته ډېر زیات مال وركړ",
-      "translation_english": "and gave him abundant wealth,"
+      "translation_english": "and gave him abundant wealth,",
+      "translation_turkish": "ve ona bol miktarda zenginlik verdi,",
+      "translation_arabic": "وأعطيته الكثير من المال."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "و پسرانی که (هر وقت در کنارش) حاضرند.",
       "translation_pashto": "74-13 او زامن  حاضر (باشه)",
-      "translation_english": "and sons by his side,"
+      "translation_english": "and sons by his side,",
+      "translation_turkish": "ve oğulları onun yanında,",
+      "translation_arabic": "والصبية الذين (كلما) بجانبه."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "و برای او (وسائل زندگی را) از هر نظر آماده ساختم.",
       "translation_pashto": "74-14 او ده ته مې  فراخي وركړه، ډېره  فراخي",
-      "translation_english": "and gave him a life of comfort and power,"
+      "translation_english": "and gave him a life of comfort and power,",
+      "translation_turkish": "ve ona rahatlık ve güç dolu bir yaşam verdi,",
+      "translation_arabic": "وأعدت له (وسيلة الحياة) من كل وجه."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "(با این حال) باز هم طمع دارد که او را بیشتر دهم.",
       "translation_pashto": "74-15 بیا دى طمع لري چې زه  به ده ته لا زیات وركړم",
-      "translation_english": "yet he aspires that I should give him more."
+      "translation_english": "yet he aspires that I should give him more.",
+      "translation_turkish": "yine de ona daha fazlasını vermemi istiyor.",
+      "translation_arabic": "(ومع ذلك) فهو لا يزال جشعًا ليعطيه المزيد."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "هرگز نه، زیرا او در مقابل آیات ما عناد می‌ورزید.",
       "translation_pashto": "74-16 هیڅكله هم نه، بېشكه دى زمونږ له ایتونو سره ډېر عناد كوونكى (مخالف) و",
-      "translation_english": "By no means! For he has been stubborn against Our verses."
+      "translation_english": "By no means! For he has been stubborn against Our verses.",
+      "translation_turkish": "Kesinlikle! Çünkü o, ayetlerimize karşı inatçı olmuştur.",
+      "translation_arabic": "أبداً، إنه كان على آياتنا ساخطاً."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "(بلکه) به زودی او را به بالا شدن بر گردنۀ سخت مجبور می‌سازم",
       "translation_pashto": "74-17 ژر به زه ده ته ډېر سخت تكلیف وركړم",
-      "translation_english": "I will subject him to an unbearable punishment."
+      "translation_english": "I will subject him to an unbearable punishment.",
+      "translation_turkish": "Onu dayanılmaz bir cezaya çarptıracağım.",
+      "translation_arabic": "(بل سأجبره قريبا على تسلق الرقبة الصلبة)."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "همانا او (برای مبارزه با قرآن) اندیشید و سنجيد.",
       "translation_pashto": "74-18 بېشكه ده فكر وكړ او اندازه يې وكړه",
-      "translation_english": "For he reflected and plotted [against the Qur’an]."
+      "translation_english": "For he reflected and plotted [against the Qur’an].",
+      "translation_turkish": "Çünkü o, (Kur'an'a karşı) düşünmüş ve tuzak kurmuştu.",
+      "translation_arabic": "بل فكر ووزن (لمحاربة القرآن)."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "پس مرگ بر او باد چگونه سنجید!؟",
       "translation_pashto": "74-19 پس دى دې هلاك كړى شي، ده څنګه اندازه وكړه؟",
-      "translation_english": "May he perish, how he plotted!"
+      "translation_english": "May he perish, how he plotted!",
+      "translation_turkish": "Yok olsun, nasıl da plan yaptı!",
+      "translation_arabic": "كيف تقيس موته؟"
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "باز مرگ بر او باد چگونه سنجید؟",
       "translation_pashto": "74-20 بیا دې هلاك كړى شي،  ده څنګه اندازه وكړه",
-      "translation_english": "Again, may he perish, how he plotted!"
+      "translation_english": "Again, may he perish, how he plotted!",
+      "translation_turkish": "Yine yok olsun, nasıl da plan yaptı!",
+      "translation_arabic": "عليه الموت مرة أخرى كيف قياسته؟"
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "باز نگریست.",
       "translation_pashto": "74-21 بیا يې وكتل",
-      "translation_english": "Then he looked around,"
+      "translation_english": "Then he looked around,",
+      "translation_turkish": "Sonra etrafına baktı:",
+      "translation_arabic": "نظر مرة أخرى."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "باز روی ترش کرد و پیشانی در هم کشید.",
       "translation_pashto": "74-22 بیا يې مخ تریو كړ او وچولى (تندى) يې بوټ كړ",
-      "translation_english": "then he frowned and scowled,"
+      "translation_english": "then he frowned and scowled,",
+      "translation_turkish": "sonra kaşlarını çattı ve kaşlarını çattı,",
+      "translation_arabic": "عبوس مرة أخرى وعبوس."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "باز پشت گردانید و تکبر کرد.",
       "translation_pashto": "74-23 بیا يې شا كړه او لويي يې وكړه",
-      "translation_english": "then turned away with arrogance,"
+      "translation_english": "then turned away with arrogance,",
+      "translation_turkish": "sonra kibirle yüz çevirdi,",
+      "translation_arabic": "أدار ظهره وأصبح متعجرفًا."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "پس گفت: این (قرآن) چیزی جز جادوی نقل شده (از پیشینیان) نیست.",
       "translation_pashto": "74-24 نو ده وویل: نه دى دا (قرآن) مګر داسې جادو چې رانقل كولى شي",
-      "translation_english": "then said, “This is nothing but magic from the past."
+      "translation_english": "then said, “This is nothing but magic from the past.",
+      "translation_turkish": "sonra şöyle dedi: “Bu geçmişten gelen bir sihirden başka bir şey değil.",
+      "translation_arabic": "فقال: ما هذا (القرآن) إلا سحر مرسل (عن السلف)."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "و این (قرآن) نیست مگر گفتۀ بشر.",
       "translation_pashto": "74-25 نه دى دا مګر  د انسان قول",
-      "translation_english": "This is nothing but the words of a man.”"
+      "translation_english": "This is nothing but the words of a man.”",
+      "translation_turkish": "Bu bir adamın sözlerinden başka bir şey değil.”",
+      "translation_arabic": "وما هذا (القرآن) إلا كلام بشر."
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "(به سزای این سخن) زود است که او را در سقر (دوزخ) داخل کنم.",
       "translation_pashto": "74-26 ژر به زه دى د دوزخ اور ته داخل كړم",
-      "translation_english": "Soon I will make him burn in the Scorching Fire."
+      "translation_english": "Soon I will make him burn in the Scorching Fire.",
+      "translation_turkish": "Yakında onu kavurucu ateşte yakacağım.",
+      "translation_arabic": "(عقوبة على هذا الكلام) فأسرع لي أن أدخله في صقر."
     },
     {
       "number": 27,
@@ -301,7 +353,9 @@
       "sajda": false,
       "translation_dari": "و تو چه می‌دانی که سقر چیست؟",
       "translation_pashto": "74-27 او ته  څه شي پوه كړې چې سقر (د دوزخ اور) څه شى دى",
-      "translation_english": "How do you know what Scorching Fire is?"
+      "translation_english": "How do you know what Scorching Fire is?",
+      "translation_turkish": "Kavurucu Ateşin ne olduğunu nereden biliyorsun?",
+      "translation_arabic": "وما أدراك ما هو الصقر؟"
     },
     {
       "number": 28,
@@ -312,7 +366,9 @@
       "sajda": false,
       "translation_dari": "(سقر چیزی است که) نه باقی می‌گذارد و نه رها می‌کند.",
       "translation_pashto": "74-28 دى به نه باقي ساتي او نه به پرېږدي",
-      "translation_english": "It leaves nothing and spares no one,"
+      "translation_english": "It leaves nothing and spares no one,",
+      "translation_turkish": "Hiçbir şey bırakmaz ve kimseyi esirgemez,",
+      "translation_arabic": "(صقر شيء) لا يترك ولا يترك."
     },
     {
       "number": 29,
@@ -323,7 +379,9 @@
       "sajda": false,
       "translation_dari": "تغیر دهنده و سوزانندۀ پوست انسان است.",
       "translation_pashto": "74-29 انسان لره ډېر سوځوونكى دى",
-      "translation_english": "scorching the skin."
+      "translation_english": "scorching the skin.",
+      "translation_turkish": "cildi kavurmak.",
+      "translation_arabic": "يغير ويحرق جلد الإنسان."
     },
     {
       "number": 30,
@@ -334,7 +392,9 @@
       "sajda": false,
       "translation_dari": "بر آن (دوزخ) نوزده فرشته (محافظ) مقرراند.",
       "translation_pashto": "74-30 په ده باندې نولس(ملايك) مقرر دي",
-      "translation_english": "It is overseen by nineteen [angels]."
+      "translation_english": "It is overseen by nineteen [angels].",
+      "translation_turkish": "Ondokuz [melek] tarafından denetlenmektedir.",
+      "translation_arabic": "تسعة عشر ملاكا (الأوصياء) مكلفون بها (الجحيم)."
     },
     {
       "number": 31,
@@ -345,7 +405,9 @@
       "sajda": false,
       "translation_dari": "و ما محافظان دوزخ را جز از فرشتگان قرار ندادیم و شمار آنها را نیز جز وسيلۀ آزمایش کافران قرار ندادیم، تا اهل کتاب يقين کنند (که قرآن کتاب آسمانی است) و تا ایمان مؤمنان بیشتر شود و تا اهل کتاب و مؤمنان شک نکنند و تا بیماردلان (منافقان) و کافران بگویند: الله از این مثل چه خواسته است؟ الله این چنین هر کس را که بخواهد گمراه می‌سازد و هر کس را که بخواهد هدایت می‌کند. و لشکرهای پروردگارت را جز او کسی نمی‌داند و این جز اندرزی برای بشر نیست.",
       "translation_pashto": "74-31 او مونږ د دوزخ څوكيداران نه دي ګرځولي مګر ملايك او  مونږ د دوى شمېر نه دى ګرځولى مګر ازمېښت د هغو كسانو لپاره چې كافران شوي دي، د دې لپاره چې هغه كسان یقین وكړي چې كتاب ورته وركړى شوى دى او د هغو كسانو ایمان زیات شي چې ایمان يې راوړى دى او شك ونه كړي هغه كسان چې كتاب ورته وركړى شوى دى او مومنان او د دې لپاره چې هغه كسان ووايي چې د هغوى په زړونو كې مرض دى او كافران: الله په دې سره د مثال په لحاظ څه اراده كړې ده. همداسې الله ګمراه كوي چا ته چې وغواړي او هدایت وركوي چا ته چې وغواړي او ستا د رب لښكرې  نه پېژني مګر هم  دى. او نه دى دا مګر د خلقو لپاره نصیحت (او پند)",
-      "translation_english": "We have only appointed angels as keepers of the Fire, and We have only made their number as a test for the disbelievers, so that those who were given the Scripture may have certainty and the believers may increase in faith; and neither those who were given the Scripture nor the believers may have any doubts; and so that those [hypocrites] in whose hearts is sickness and the disbelievers may say, “What does Allah mean by this number?” Thus Allah causes to stray whom He wills and guides whom He wills, and none knows the soldiers of your Lord but He. This is but a reminder to mankind."
+      "translation_english": "We have only appointed angels as keepers of the Fire, and We have only made their number as a test for the disbelievers, so that those who were given the Scripture may have certainty and the believers may increase in faith; and neither those who were given the Scripture nor the believers may have any doubts; and so that those [hypocrites] in whose hearts is sickness and the disbelievers may say, “What does Allah mean by this number?” Thus Allah causes to stray whom He wills and guides whom He wills, and none knows the soldiers of your Lord but He. This is but a reminder to mankind.",
+      "translation_turkish": "Biz, melekleri ancak ateşin koruyucuları olarak görevlendirdik ve onların sayılarını da ancak kâfirler için bir imtihan vesilesi olarak kıldık ki, kendilerine kitap verilenler kesin bilgi sahibi olsunlar ve mü'minlerin imanları artsın. Ne kendilerine kitap verilenler ne de mü'minler şüpheye düşmezler. Ta ki kalplerinde hastalık bulunanlar ve kâfirler, \"Allah bu sayıyla ne demek istiyor?\" desinler. Böylece Allah dilediğini saptırır, dilediğini doğru yola iletir ve Rabbinin askerlerini O'ndan başkası bilmez. Bu, insanlığa bir hatırlatmadan başka bir şey değildir.",
+      "translation_arabic": "وما جعلنا أولياء جهنم إلا ملائكة، ولم نجعل عددهم فتنة للكافرين، ليستيقن أهل الكتاب (أن القرآن كتاب سماوي)، وليزداد إيمان المؤمنين، وحتى لا يشك أهل الكتاب والمؤمنون، وليقول مرضى القلوب (المنافقون والكافرون): ماذا أراد الله من هذا المثل؟ وكذلك يضل الله من يشاء ويهدي من يشاء. وما يعلم جنود ربك إلا هو وما ذلك إلا ذكرى للناس."
     },
     {
       "number": 32,
@@ -356,7 +418,9 @@
       "sajda": false,
       "translation_dari": "نه چنین نیست (که کفار می‌پندارند)، قسم به ماه.",
       "translation_pashto": "74-32 هیڅكله داسې نه  ده، قسم دى په سپوږمۍ",
-      "translation_english": "No indeed! By the moon,"
+      "translation_english": "No indeed! By the moon,",
+      "translation_turkish": "Gerçekten hayır! Ay adına,",
+      "translation_arabic": "كلا، ليس كذلك (الذي يظنه الكفار)، والقمر."
     },
     {
       "number": 33,
@@ -367,7 +431,9 @@
       "sajda": false,
       "translation_dari": "قسم به شب چون پشت کند.",
       "translation_pashto": "74-33 او په شپې باندې كله چې شا كړي",
-      "translation_english": "and by the night when it departs,"
+      "translation_english": "and by the night when it departs,",
+      "translation_turkish": "ve gece yola çıktığında,",
+      "translation_arabic": "أقسم بالليل لأنه بطيء."
     },
     {
       "number": 34,
@@ -378,7 +444,9 @@
       "sajda": false,
       "translation_dari": "قسم به صبح چون روشن شود.",
       "translation_pashto": "74-34 او په سبا باندې كله چې روښانه شي",
-      "translation_english": "and by the dawn when it brightens,"
+      "translation_english": "and by the dawn when it brightens,",
+      "translation_turkish": "ve şafak vakti aydınlandığında,",
+      "translation_arabic": "بحلول الصباح عندما يكون واضحا."
     },
     {
       "number": 35,
@@ -389,7 +457,9 @@
       "sajda": false,
       "translation_dari": "که دوزخ یکی از نشانه‌های بزرگ (قدرت الله) است.",
       "translation_pashto": "74-35 بېشكه  دغه (اور د سقر) یقینًا په لویو (بلاګانو) كې یو دى",
-      "translation_english": "Hellfire is indeed one of the greatest matters,"
+      "translation_english": "Hellfire is indeed one of the greatest matters,",
+      "translation_turkish": "Cehennem ateşi gerçekten en büyük meselelerden biridir.",
+      "translation_arabic": "النار هي واحدة من العلامات الكبرى (قدرة الله)."
     },
     {
       "number": 36,
@@ -400,7 +470,9 @@
       "sajda": false,
       "translation_dari": "در حالیکه ترسانندۀ بشر است.",
       "translation_pashto": "74-36 چې انسان لره وېروونكى دى",
-      "translation_english": "a warning to mankind,"
+      "translation_english": "a warning to mankind,",
+      "translation_turkish": "İnsanlığa bir uyarı,",
+      "translation_arabic": "بينما هو مخيف للبشرية."
     },
     {
       "number": 37,
@@ -411,7 +483,9 @@
       "sajda": false,
       "translation_dari": "(ترساننده است) برای هر کس از شما که بخواهد پیش رود (در گناه)، یا پس ماند (از نیکی).",
       "translation_pashto": "74-37 هغه چا لره چې په تاسو كې غواړي چې وړاندې شي، یا وروسته شي",
-      "translation_english": "to whoever among you chooses to advance or regress."
+      "translation_english": "to whoever among you chooses to advance or regress.",
+      "translation_turkish": "Sizden kim ilerlemeyi veya gerilemeyi seçerse ona.",
+      "translation_arabic": "(إنه مرعب) لمن أراد منكم أن يتقدم (في الإثم) أو يتأخر (في الخير)."
     },
     {
       "number": 38,
@@ -422,7 +496,9 @@
       "sajda": false,
       "translation_dari": "هر نفس (هر شخص) در گرو کاری است که انجام داده است.",
       "translation_pashto": "74-38 هر نفس به د خپلو كړو په  بدل كې ګاڼه (ګرو) وي",
-      "translation_english": "Every soul is held in pledge for its deeds,"
+      "translation_english": "Every soul is held in pledge for its deeds,",
+      "translation_turkish": "Her can, yaptığı amellerden dolayı rehin tutulmuştur.",
+      "translation_arabic": "كل نفس (كل شخص) مسؤولة عما فعلته."
     },
     {
       "number": 39,
@@ -433,7 +509,9 @@
       "sajda": false,
       "translation_dari": "مگر اصحاب دست راست.",
       "translation_pashto": "74-39 غیر له ښي اړخ والاو نه",
-      "translation_english": "except the People of the Right,"
+      "translation_english": "except the People of the Right,",
+      "translation_turkish": "Sağ Ehli hariç,",
+      "translation_arabic": "إلا أصحاب اليمين."
     },
     {
       "number": 40,
@@ -444,7 +522,9 @@
       "sajda": false,
       "translation_dari": "که آنها در باغها‌اند و می‌پرسند.",
       "translation_pashto": "74-40 (دوى به) په جنتونو كې وي، یو تر بله به پوښتنې كوي",
-      "translation_english": "who will be in gardens, asking one another"
+      "translation_english": "who will be in gardens, asking one another",
+      "translation_turkish": "Bahçelerde kimler birbirlerine soracaklar?",
+      "translation_arabic": "أنهم في البساتين ويسألون."
     },
     {
       "number": 41,
@@ -455,7 +535,9 @@
       "sajda": false,
       "translation_dari": "از مجرمان (کافران)",
       "translation_pashto": "74-41 د مجرمانو (كافرانو) په باره كې",
-      "translation_english": "about the wicked:"
+      "translation_english": "about the wicked:",
+      "translation_turkish": "kötüler hakkında:",
+      "translation_arabic": "من المجرمين (الكفار)"
     },
     {
       "number": 42,
@@ -466,7 +548,9 @@
       "sajda": false,
       "translation_dari": "که شما را چه چیز در دوزخ در آورد؟",
       "translation_pashto": "74-42 (مومنان به مجرمانو ته وايي:) تاسو په دوزخ كې څه شي داخل كړي یئ؟",
-      "translation_english": "“What brought you to Hell?”"
+      "translation_english": "“What brought you to Hell?”",
+      "translation_turkish": "“Seni Cehenneme ne getirdi?”",
+      "translation_arabic": "ما الذي جلبك إلى الجحيم؟"
     },
     {
       "number": 43,
@@ -477,7 +561,9 @@
       "sajda": false,
       "translation_dari": "(در جواب) گویند: ما از نمازگزاران نبودیم.",
       "translation_pashto": "74-43 دوى به ووايي: مونږ له لمونځ كوونكو ځنې نه وو",
-      "translation_english": "They will say, “We were not among those who prayed,"
+      "translation_english": "They will say, “We were not among those who prayed,",
+      "translation_turkish": "\"Biz namaz kılanlardan değildik\" derler.",
+      "translation_arabic": "(ردا على ذلك) يقولون: لم نكن من المصلين."
     },
     {
       "number": 44,
@@ -488,7 +574,9 @@
       "sajda": false,
       "translation_dari": "و مسکینان را طعام نمی‌دادیم.",
       "translation_pashto": "74-44  او مسكین ته به مو طعام نه وركاوه",
-      "translation_english": "nor did we feed the poor,"
+      "translation_english": "nor did we feed the poor,",
+      "translation_turkish": "fakirleri de doyurmadık,",
+      "translation_arabic": "ولم نطعم مسكينا."
     },
     {
       "number": 45,
@@ -499,7 +587,9 @@
       "sajda": false,
       "translation_dari": "(بلکه) با آنانی که سخن باطل می‌گفتند (در کفر گویی) فرو می‌رفتیم.",
       "translation_pashto": "74-45 او له باطل ویونكو سره به مونږ په باطلو خبرو كې ننوتلو",
-      "translation_english": "and we indulged in falsehood along with those who indulged in it,"
+      "translation_english": "and we indulged in falsehood along with those who indulged in it,",
+      "translation_turkish": "Biz de batıla dalmış olanlarla birlikte batıla daldık.",
+      "translation_arabic": "(بل) كنا نغرق (في الكفر) مع الذين كذبوا."
     },
     {
       "number": 46,
@@ -510,7 +600,9 @@
       "sajda": false,
       "translation_dari": "و روز جزا را دروغ می‌شمردیم،",
       "translation_pashto": "74-46 او مونږ به د بدلې ورځ دروغ ګڼله",
-      "translation_english": "and we denied the Day of Judgment,"
+      "translation_english": "and we denied the Day of Judgment,",
+      "translation_turkish": "Biz, kıyamet gününü yalanladık.",
+      "translation_arabic": "و حسبنا يوم القيامة كذبا"
     },
     {
       "number": 47,
@@ -521,7 +613,9 @@
       "sajda": false,
       "translation_dari": "تا آن که مرگ به سراغ ما آمد.",
       "translation_pashto": "74-47 تر دې پورې چې مونږ ته یقین راغى",
-      "translation_english": "until the certainty [of death] came to us.”"
+      "translation_english": "until the certainty [of death] came to us.”",
+      "translation_turkish": "Bize [ölüm] kesinliği gelinceye kadar.”",
+      "translation_arabic": "حتى جاءنا الموت ."
     },
     {
       "number": 48,
@@ -532,7 +626,9 @@
       "sajda": false,
       "translation_dari": "پس (این تکذیب کنندگان بی‌ایمان را) شفاعت شفاعت کنندگان نفع نرساند.",
       "translation_pashto": "74-48 نو دوى ته د سفارش كوونكو سفارش فايده نه رسوي",
-      "translation_english": "So the intercession of intercessors will not benefit them."
+      "translation_english": "So the intercession of intercessors will not benefit them.",
+      "translation_turkish": "O halde şefaatçilerin şefaati onlara fayda sağlamaz.",
+      "translation_arabic": "ولذلك لم تنفع شفاعة الشفعاء (هؤلاء الكافرين المكذبين)."
     },
     {
       "number": 49,
@@ -543,7 +639,9 @@
       "sajda": false,
       "translation_dari": "پس آنان را چه شده است که از پند روی گردانند؟!",
       "translation_pashto": "74-49 نو په دوى څه شوي دي چې له نصیحت (قرآن) نه مخ ګرځوونكي دي",
-      "translation_english": "Then what is the matter with them that they turn away from the Reminder,"
+      "translation_english": "Then what is the matter with them that they turn away from the Reminder,",
+      "translation_turkish": "Peki onlara ne oluyor da Zikret'ten yüz çeviriyorlar?",
+      "translation_arabic": "فماذا حدث لهم حتى يبتعدوا عن النصيحة؟!"
     },
     {
       "number": 50,
@@ -554,7 +652,9 @@
       "sajda": false,
       "translation_dari": "گویا آنها گوره خرانی رمنده‌اند.",
       "translation_pashto": "74-50 ګویا كې دوى تښتېدونكي ځنګلي خره دي",
-      "translation_english": "as if they were terrified wild asses,"
+      "translation_english": "as if they were terrified wild asses,",
+      "translation_turkish": "sanki dehşete düşmüş yaban eşekleriymiş gibi,",
+      "translation_arabic": "ويبدو أنهم ذهبوا إلى القبور."
     },
     {
       "number": 51,
@@ -565,7 +665,9 @@
       "sajda": false,
       "translation_dari": "که از شیر گریخته‌اند.",
       "translation_pashto": "74-51 چې له زمري نه تښتي",
-      "translation_english": "fleeing from a lion?"
+      "translation_english": "fleeing from a lion?",
+      "translation_turkish": "aslandan kaçmak mı?",
+      "translation_arabic": "الذي هرب من الأسد."
     },
     {
       "number": 52,
@@ -576,7 +678,9 @@
       "sajda": false,
       "translation_dari": "بلکه هر فردی از آنها می‌خواهد که صحیفه‌های سرگشاده (از سوی الله) به او داده شود.",
       "translation_pashto": "74-52 بلكې په دوى كې هر یو سړى غواړي چې ده ته خورې كړى شوې صحیفې (پاڼې) وركړى شي",
-      "translation_english": "In fact, each one of them desires that open [divine] letters be sent to each of them."
+      "translation_english": "In fact, each one of them desires that open [divine] letters be sent to each of them.",
+      "translation_turkish": "Aslında onlardan her biri, kendilerine açık mektupların gönderilmesini ister.",
+      "translation_arabic": "بل يريد كل إنسان أن يؤتى منهم كتبا مبينة."
     },
     {
       "number": 53,
@@ -587,7 +691,9 @@
       "sajda": false,
       "translation_dari": "چنین نیست، بلکه ایشان از روز آخرت نمی‌ترسند.",
       "translation_pashto": "74-53 هیڅكله داسې نه ده بلكې دوى له اخرت نه نه وېرېږي",
-      "translation_english": "By no means! They rather do not fear the Hereafter."
+      "translation_english": "By no means! They rather do not fear the Hereafter.",
+      "translation_turkish": "Kesinlikle! Ahiretten korkmayı tercih etmezler.",
+      "translation_arabic": "ليس هذا هو الحال، ولكنهم لا يخافون اليوم الآخر."
     },
     {
       "number": 54,
@@ -598,7 +704,9 @@
       "sajda": false,
       "translation_dari": "واقعا که آن قرآن تذكر (و پند ارزشمند) است.",
       "translation_pashto": "74-54 هیڅكله داسې نه ده، بېشكه دا (قرآن) نصیحت دى",
-      "translation_english": "No indeed! This [Qur’an] is a reminder."
+      "translation_english": "No indeed! This [Qur’an] is a reminder.",
+      "translation_turkish": "Gerçekten hayır! Bu (Kuran) bir hatırlatmadır.",
+      "translation_arabic": "إن ذلك القرآن تذكرة (ونصيحة قيمة)."
     },
     {
       "number": 55,
@@ -609,7 +717,9 @@
       "sajda": false,
       "translation_dari": "پس هر کس بخواهد آن را یاد کند.",
       "translation_pashto": "74-55 نو څوك چې غواړي (نو) له ده نه دې پند واخلي",
-      "translation_english": "So whoever wills may take heed."
+      "translation_english": "So whoever wills may take heed.",
+      "translation_turkish": "O halde dileyen kulak verebilir.",
+      "translation_arabic": "فمن أراد أن يتذكره."
     },
     {
       "number": 56,
@@ -620,7 +730,9 @@
       "sajda": false,
       "translation_dari": "و یاد نمی‌کنند مگر اینکه الله بخواهد (و به ایشان توفیق دهد). او (الله) سزاوار تقوی است و او سزاوار آمرزش است.",
       "translation_pashto": "74-56 او دوى نصیحت (او پند) نه اخلي مګر كه الله يې وغواړي. هم دى د وېرې لايق دى او د بخښنې اهل دى",
-      "translation_english": "But they will not take heed unless Allah so wills. He is most worthy to be feared and most worthy to forgive."
+      "translation_english": "But they will not take heed unless Allah so wills. He is most worthy to be feared and most worthy to forgive.",
+      "translation_turkish": "Ama Allah dilemedikçe öğüt almazlar. O, korkulmaya en layık olandır ve affedilmeye en layık olandır.",
+      "translation_arabic": "ولا يتعلمون إلا أن يشاء الله (ويوفقهم). إنه (الله) يستحق التقوى ويستحق المغفرة."
     }
   ]
 }

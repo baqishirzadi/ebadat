@@ -27,6 +27,7 @@ import { useDreamInterpreter } from '@/hooks/useDreamInterpreter';
 import { stripDreamMarkdown } from '@/utils/dreamInterpreter';
 import type { StoredDreamInterpreterMessage } from '@/utils/dreamInterpreterStorage';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 
 const RLM = '\u200F';
 
@@ -143,7 +144,7 @@ export default function DreamChatScreen() {
   const { theme, state } = useApp();
   const { t, isPashto, fontFamily, language } = useI18n();
   const { copiedVisible, showCopied } = useCopiedNotice();
-  const isEnglish = language === 'english';
+  const isEnglish = isLatinLanguage(language);
   const isNastaliq = isPashto && fontFamily === 'NotoNastaliqUrdu';
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<ChatRow>>(null);
@@ -170,7 +171,11 @@ export default function DreamChatScreen() {
         ? 'ps'
         : state.preferences.appLanguage === 'english'
           ? 'en'
-          : 'fa';
+          : state.preferences.appLanguage === 'turkish'
+            ? 'tr'
+            : state.preferences.appLanguage === 'arabic'
+              ? 'ar'
+              : 'fa';
     setLang(lang);
   }, [setLang, state.preferences.appLanguage]);
 

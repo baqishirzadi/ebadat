@@ -26,12 +26,12 @@ const PAGE_TONES: { id: QuranPageTone; colors: string[] }[] = [
   { id: 'sepia', colors: ['#F6EFE1'] },
   { id: 'dark', colors: ['#0E1311'] },
 ];
-const TRANSLATIONS = ['none', 'dari', 'pashto', 'english', 'both'] as const;
+const TRANSLATIONS = ['none', 'dari', 'pashto', 'arabic', 'turkish', 'english', 'both'] as const;
 
 export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false }: QuranReaderSettingsSheetProps) {
   const insets = useSafeAreaInsets();
   const { theme, state, setArabicFontSize, setQuranFont, setTranslationLanguage } = useApp();
-  const { t, language } = useI18n();
+  const { t, language, isLatin } = useI18n();
   const { settings, update, tokens } = useQuranReaderSettings();
   const selectedSize = state.preferences.arabicFontSize;
   const sizeIndex = FONT_SIZES.indexOf(selectedSize);
@@ -243,7 +243,7 @@ export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false
                       بِسْمِ اللَّهِ
                     </LocalizedText>
                     <LocalizedText style={[styles.fontName, { color: selected ? theme.tint : theme.textSecondary }]}>
-                      {language === 'english' ? details.displayName : details.displayNameDari}
+                      {isLatin ? details.displayName : details.displayNameDari}
                     </LocalizedText>
                   </Pressable>
                 );

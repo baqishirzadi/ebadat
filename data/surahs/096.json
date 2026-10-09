@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "بخوان به نام پروردگارت که (همه چیز را) آفرید.",
       "translation_pashto": "96-1 ته د خپل هغه رب په نامه سره ولوله چې پیدا كړي يې دي (ټول مخلوقات)",
-      "translation_english": "Read in the name of your Lord Who created,"
+      "translation_english": "Read in the name of your Lord Who created,",
+      "translation_turkish": "Yaratan Rabbinin adıyla oku,",
+      "translation_arabic": "غن باسم ربك الذي خلق (كل شيء)."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "(و) انسان را از خون بسته آفرید.",
       "translation_pashto": "96-2 ده انسان له پرنې (ټوټې) وینې نه پیدا كړى دى",
-      "translation_english": "created man from a clinging clot."
+      "translation_english": "created man from a clinging clot.",
+      "translation_turkish": "insanı yapışan bir pıhtıdan yarattı.",
+      "translation_arabic": "(و) خلق الإنسان من دم."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "بخوان که پروردگارت کریم‌تر (و گرامی‌تر) است.",
       "translation_pashto": "96-3 ته ولوله، په داسې حال كې چې ستا رب تر ټولو لوى كریم دى",
-      "translation_english": "Read, and your Lord is the Most Generous,"
+      "translation_english": "Read, and your Lord is the Most Generous,",
+      "translation_turkish": "Okuyun, Rabbiniz çok cömerttir,",
+      "translation_arabic": "اقرأ إن ربك هو الرحمن الرحيم."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "آن که (انسان را) با قلم آموخت.",
       "translation_pashto": "96-4 هغه چې په قلم سره يې ښوونه كړې ده",
-      "translation_english": "Who taught by the pen,"
+      "translation_english": "Who taught by the pen,",
+      "translation_turkish": "Kalemle öğreten,",
+      "translation_arabic": "هو الذي علم ( الإنسان ) بالقلم ."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "آن چیزی را به انسان آموخت که نمی‌دانست.",
       "translation_pashto": "96-5 انسان ته يې هغه  څه ښودلي دي چې دى پرې نه پوهېده",
-      "translation_english": "taught man what he did not know."
+      "translation_english": "taught man what he did not know.",
+      "translation_turkish": "insana bilmediğini öğretti.",
+      "translation_arabic": "وعلمت الناس ما لم يعلموا."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "نه چنین نیست، بی‌گمان انسان طغیان می‌کند.",
       "translation_pashto": "96-6 حقه دا خبره ده چې یقینًا انسان خامخا سركشي كوي",
-      "translation_english": "Indeed, man transgresses"
+      "translation_english": "Indeed, man transgresses",
+      "translation_turkish": "Gerçekten insan haddi aşıyor",
+      "translation_arabic": "لا، ليس الأمر هكذا، بلا شك الناس يتمردون."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "چون خود را مستغنی (بی‌نیاز) می‌بیند.",
       "translation_pashto": "96-7 په دې وجه چې دى خپل ځان ویني چې دى بې پروا (بې حاجته) شو",
-      "translation_english": "when he deems himself to be self-sufficient."
+      "translation_english": "when he deems himself to be self-sufficient.",
+      "translation_turkish": "kendini yeterli gördüğünde.",
+      "translation_arabic": "لأنه يرى نفسه لا داعي له."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "البته بازگشت همه به‌سوی پروردگار توست.",
       "translation_pashto": "96-8 بېشكه خاص ستا رب ته بېرته ورتلل دي",
-      "translation_english": "Indeed, to your Lord is the return."
+      "translation_english": "Indeed, to your Lord is the return.",
+      "translation_turkish": "Şüphesiz dönüş Rabbinedir.",
+      "translation_arabic": "وطبعا المرجع كله إلى ربك."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "آیا دیدی آن را که منع می‌کند.",
       "translation_pashto": "96-9 ته ما ته خبر راكړه د هغه كس چې منع كوي",
-      "translation_english": "Have you seen the one who prevents"
+      "translation_english": "Have you seen the one who prevents",
+      "translation_turkish": "Engelleyeni gördün mü",
+      "translation_arabic": "هل رأيت ما يحرم؟"
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "بنده‌ای را که نماز گزارد.",
       "translation_pashto": "96-10 بنده (محمدﷺ) لره كله چې دى لمونځ كوي",
-      "translation_english": "a slave [of Allah] from praying?"
+      "translation_english": "a slave [of Allah] from praying?",
+      "translation_turkish": "(Allah'ın) namaz kılmaktan uzak bir kulu mu?",
+      "translation_arabic": "خادم يصلي."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "آیا دیده‌ای (ای مخاطب) که (آن بندۀ نمازگزار) بر راه راست باشد.",
       "translation_pashto": "96-11 ته ما ته خبر راكړه كه چېرې دغه (بنده) په هدایت وي",
-      "translation_english": "What if this [slave] is rightly guided,"
+      "translation_english": "What if this [slave] is rightly guided,",
+      "translation_turkish": "Peki ya bu [köle] doğru yoldaysa,",
+      "translation_arabic": "فهل رأيت (الجمهور) أن (المصلي) على الطريق الصحيح؟"
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "یا به پرهیزگاری سفارش کند (بازهم او را منع می‌کند)؟",
       "translation_pashto": "96-12 یا په تقوٰی (پرهېزګارۍ) سره حكم كوي",
-      "translation_english": "and enjoins righteousness?"
+      "translation_english": "and enjoins righteousness?",
+      "translation_turkish": "ve iyiliği mi emrediyor?",
+      "translation_arabic": "أم ليأمر بالتقوى (ينهى عنه مرة أخرى)؟"
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "آیا دیده‌ای (ای مخاطب که) اگر (حق را) تکذیب کند و اعراض نماید (آیا الله او را به حالش می‌گذارد؟)",
       "translation_pashto": "96-13 ته ما ته خبر راكړه كه دغه (منع كوونكى) تكذیب كوي او (له حق نه) مخ اړوي",
-      "translation_english": "How about the one who denies and turns away?"
+      "translation_english": "How about the one who denies and turns away?",
+      "translation_turkish": "Ya yalanlayıp yüz çevirenin durumu nedir?",
+      "translation_arabic": "أرأيتم (أيها الجمهور) أنه إذا أنكر وشكا (أيتركه الله كما هو؟)"
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "آیا ندانست که الله می‌بیند؟",
       "translation_pashto": "96-14 ایا دى نه پوهېږي چې بېشكه الله ویني؟",
-      "translation_english": "Does he not know that Allah is watching all?"
+      "translation_english": "Does he not know that Allah is watching all?",
+      "translation_turkish": "Allah'ın her şeyi gözetlediğini bilmiyor mu?",
+      "translation_arabic": "ألم يعلم أن الله يرى؟"
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "چنین نیست (که او گمان دارد، اگر بازنیاید (آن منع‌کننده) البته پیشانی‌اش را خواهیم کشید.",
       "translation_pashto": "96-15 داسې نه ده! قسم دى كه دى منع نشو، (نو) مونږ به (دى) خامخا ضرور ډېر سخت راكاږو د تندي (وچولي) په وېښتانو سره",
-      "translation_english": "No indeed; if he does not desist, We will surely drag him by the forelock"
+      "translation_english": "No indeed; if he does not desist, We will surely drag him by the forelock",
+      "translation_turkish": "Gerçekten hayır; Eğer vazgeçmezse onu alnından tutup sürükleyeceğiz.",
+      "translation_arabic": "ليس الأمر كذلك (يعتقد)، إذا لم يرجع (هذا المنع)، بالطبع سنقطع جبهته."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "پیشانی دروغ‌گوی خطاکار.",
       "translation_pashto": "96-16 داسې تندى چې دروغجن (او) خطا كار دى",
-      "translation_english": "a lying, sinful forelock."
+      "translation_english": "a lying, sinful forelock.",
+      "translation_turkish": "yalancı, günahkâr bir perçem.",
+      "translation_arabic": "جبين الكذاب والخطأ."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "پس باید اهل مجلسش را بخواهد.",
       "translation_pashto": "96-17 نو دى دې خپل مجلس والا راوبلي",
-      "translation_english": "So let him call his associates;"
+      "translation_english": "So let him call his associates;",
+      "translation_turkish": "O halde arkadaşlarını çağırsın;",
+      "translation_arabic": "لذا عليه أن يسأل عن أعضائه."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "ما هم به زودی فرشته‌های موظف دوزخ را طلب می‌کنیم.",
       "translation_pashto": "96-18 ژر ده چې مونږ به ډېر سخت تند خویه ملايك راوبلو",
-      "translation_english": "We will call the wardens of Hellfire."
+      "translation_english": "We will call the wardens of Hellfire.",
+      "translation_turkish": "Cehennem ateşinin bekçilerini çağıracağız.",
+      "translation_arabic": "وسنستدعي ملائكة الجحيم قريباً."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "نه، چنین نیست، هرگز از او اطاعت مکن (بلکه) سجده کن (به دربار پروردگارت) و تقرب جوی.",
       "translation_pashto": "96-19 داسې نه ده ته د ده خبره مه منه، او (الله ته) سجده كوه او (الله ته) ښه نژدې شه ",
-      "translation_english": "No indeed; do not obey him, but prostrate and draw near [to Allah]."
+      "translation_english": "No indeed; do not obey him, but prostrate and draw near [to Allah].",
+      "translation_turkish": "Gerçekten hayır; Ona itaat etmeyin, secde edin ve (Allah'a) yaklaşın.",
+      "translation_arabic": "كلا، ليس كذلك، فلا تطعه أبدًا (بل) واسجد (لمحكمة ربك) واقترب."
     }
   ]
 }

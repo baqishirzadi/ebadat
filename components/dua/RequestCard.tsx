@@ -47,7 +47,7 @@ export function RequestCard({
   const formatDate = (date: Date): string => {
     return formatGregorianDateCompact(
       date,
-      language === 'english' ? String : toArabicNumerals,
+      language === 'english' || language === 'turkish' ? String : toArabicNumerals,
       language,
     );
   };
@@ -122,7 +122,7 @@ export function RequestCard({
           name={forwardChevronName(language)}
           size={20}
           color={theme.icon}
-          style={[styles.arrow, language === 'english' && styles.arrowEnglish]}
+          style={[styles.arrow, (language === 'english' || language === 'turkish') && styles.arrowEnglish]}
         />
       )}
     </Pressable>

@@ -3,6 +3,7 @@ import { StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 import type { DariFontFamily, PashtoFontFamily } from '@/constants/theme';
 import { getDariFontFamily, getPashtoBoldFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import type { AppLanguage } from '@/types/quran';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 
 export type UiLanguage = AppLanguage;
 
@@ -43,8 +44,9 @@ function isBoldRequest(flattened: TextStyle | undefined, requested: string | und
  * purpose-built families (notably Quran/Mushaf fonts) untouched. Legacy
  * styles that name a Dari font are treated as app UI styles, not overrides.
  *
- * English returns `undefined`, which renders in the platform system face
- * (San Francisco / Roboto) — the Perso-Arabic UI fonts have poor Latin metrics.
+ * Latin-script languages (English and Turkish) return `undefined`, which
+ * renders in the platform system face (San Francisco / Roboto). Arabic uses
+ * the Dari face. Pashto keeps its own Nastaliq or Naskh preference.
  */
 export function resolveUiFontFamily(
   style: StyleProp<TextStyle>,
@@ -58,7 +60,7 @@ export function resolveUiFontFamily(
 
   const isBold = isBoldRequest(flattened, requested);
 
-  if (language === 'english') return undefined;
+  if (isLatinLanguage(language)) return undefined;
 
   if (language === 'pashto') {
     return isBold
@@ -73,9 +75,9 @@ export function resolveUiFontFamily(
 /**
  * Font fragment to spread onto a Text style.
  *
- * Weight has to travel with the family: Dari/Pashto encode boldness in the
- * family name (`Vazirmatn-Bold`), whereas the English system face needs an
- * explicit `fontWeight` to render bold at all.
+ * Weight has to travel with the family: Dari, Arabic and Pashto encode
+ * boldness in the family name (`Vazirmatn-Bold`), whereas Latin system faces
+ * need an explicit `fontWeight` to render bold at all.
  */
 export function resolveUiFontStyle(
   style: StyleProp<TextStyle>,
@@ -84,7 +86,7 @@ export function resolveUiFontStyle(
 ): TextStyle {
   const fontFamily = resolveUiFontFamily(style, language, preferences);
 
-  if (language !== 'english') return { fontFamily };
+  if (!isLatinLanguage(language)) return { fontFamily };
 
   const flattened = StyleSheet.flatten(style);
   const requested = flattened?.fontFamily;

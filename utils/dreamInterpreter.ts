@@ -92,22 +92,34 @@ function mapHttpError(status: number, bodyText: string, language: AppLanguage = 
     case 400:
       return language === 'english'
         ? 'The request is not valid.'
-        : language === 'pashto'
-          ? 'غوښتنه ناسمه ده.'
-          : 'درخواست نامعتبر است.';
+        : language === 'turkish'
+          ? 'İstek geçerli değil.'
+          : language === 'arabic'
+            ? 'الطلب غير صالح.'
+            : language === 'pashto'
+              ? 'غوښتنه ناسمه ده.'
+              : 'درخواست نامعتبر است.';
     case 429:
       return language === 'english'
         ? 'Please wait a moment and try again.'
-        : language === 'pashto'
-          ? 'لږه شېبه صبر وکړئ او بیا هڅه وکړئ.'
-          : 'لطفاً چند لحظه صبر کنید و دوباره تلاش کنید.';
+        : language === 'turkish'
+          ? 'Lütfen biraz bekleyip yeniden deneyin.'
+          : language === 'arabic'
+            ? 'يرجى الانتظار قليلاً ثم المحاولة مرة أخرى.'
+            : language === 'pashto'
+              ? 'لږه شېبه صبر وکړئ او بیا هڅه وکړئ.'
+              : 'لطفاً چند لحظه صبر کنید و دوباره تلاش کنید.';
     case 500:
     default:
       return language === 'english'
         ? 'Server error. Please try again.'
-        : language === 'pashto'
-          ? 'د سرور تېروتنه ده. بیا هڅه وکړئ.'
-          : 'خطای سرور. لطفاً دوباره تلاش کنید.';
+        : language === 'turkish'
+          ? 'Sunucu hatası. Lütfen yeniden deneyin.'
+          : language === 'arabic'
+            ? 'خطأ في الخادم. يرجى المحاولة مرة أخرى.'
+            : language === 'pashto'
+              ? 'د سرور تېروتنه ده. بیا هڅه وکړئ.'
+              : 'خطای سرور. لطفاً دوباره تلاش کنید.';
   }
 }
 

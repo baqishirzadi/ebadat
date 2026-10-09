@@ -3,6 +3,7 @@ import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useApp } from '@/context/AppContext';
 import { Naat } from '@/types/naat';
+import type { AppLanguage } from '@/types/quran';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { NaatProgressBar } from '@/components/naat/NaatProgressBar';
 import { RtlText } from '@/components/ui/RtlText';
@@ -29,7 +30,7 @@ function formatDuration(seconds?: number | string | null) {
   return `${m}:${String(s).padStart(2, '0')}`;
 }
 
-function formatSize(size?: number | string | null, language: 'dari' | 'pashto' | 'english' = 'dari') {
+function formatSize(size?: number | string | null, language: AppLanguage = 'dari') {
   const value = typeof size === 'string' ? Number(size) : size;
   if (!value || value <= 0) return '—';
   return `${value.toFixed(1)} ${tUi('مگابایت', language)}`;

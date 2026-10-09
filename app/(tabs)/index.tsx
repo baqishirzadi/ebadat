@@ -182,7 +182,7 @@ function HomeDashboardScreen() {
             );
           }
         }}
-        title="انتخاب شهر"
+        title={t('prayer.selectCity')}
       />
     </>
   );

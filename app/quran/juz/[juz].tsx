@@ -36,6 +36,8 @@ type JuzAyahItem = {
   dariTranslation?: string;
   pashtoTranslation?: string;
   englishTranslation?: string;
+  turkishTranslation?: string;
+  arabicTranslation?: string;
   surahAyahCount: number;
 };
 
@@ -172,6 +174,8 @@ export default function JuzReaderScreen() {
         dariTranslation: getTranslation(surahNumber, entry.ayah.number, 'dari'),
         pashtoTranslation: getTranslation(surahNumber, entry.ayah.number, 'pashto'),
         englishTranslation: getTranslation(surahNumber, entry.ayah.number, 'english'),
+        turkishTranslation: getTranslation(surahNumber, entry.ayah.number, 'turkish'),
+        arabicTranslation: getTranslation(surahNumber, entry.ayah.number, 'arabic'),
         surahAyahCount: entry.surah.ayahCount,
       };
 
@@ -634,6 +638,8 @@ export default function JuzReaderScreen() {
           dariTranslation={ayahItem.dariTranslation}
           pashtoTranslation={ayahItem.pashtoTranslation}
           englishTranslation={ayahItem.englishTranslation}
+          turkishTranslation={ayahItem.turkishTranslation}
+          arabicTranslation={ayahItem.arabicTranslation}
           isPlaying={isAyahPlaying}
           onPlayPress={() => handlePlayAyah(ayahItem)}
         />

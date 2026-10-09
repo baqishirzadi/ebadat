@@ -30,6 +30,8 @@ interface Dhikr {
   dari: string;
   pashto: string;
   english?: string;
+  turkish?: string;
+  meaningArabic?: string;
   reference: string;
   count: number;
   virtue?: string;
@@ -41,6 +43,7 @@ interface Category {
   nameDari: string;
   namePashto: string;
   nameEnglish?: string;
+  nameTurkish?: string;
   icon: string;
   color: string;
 }
@@ -182,7 +185,7 @@ export default function AdhkarDetailScreen() {
         </CenteredText>
 
         <CenteredText style={[styles.translationText, { color: theme.translationText }]}>
-          {content(item, null)}
+          {language === 'arabic' && item.meaningArabic ? item.meaningArabic : content(item, null)}
         </CenteredText>
 
         <View style={styles.metaRow}>

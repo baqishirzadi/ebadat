@@ -54,6 +54,7 @@ supabase/.temp/*
 !supabase/.temp/.gitkeep
 
 data/.cache/
+scripts/.tr-ar-cache.json
 
 # TypeScript cache
 *.tsbuildinfo

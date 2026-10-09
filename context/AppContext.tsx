@@ -28,6 +28,7 @@ const STORAGE_KEYS = {
 
 const PASHTO_FONT_MIGRATION_TARGET = 2;
 const HIFZ16_DEFAULT_TARGET = 1;
+const TRANSLATION_DEFAULTS_TARGET = 1;
 
 // Default preferences
 const DEFAULT_PREFERENCES: UserPreferences = {
@@ -39,6 +40,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   pashtoFont: DEFAULT_PASHTO_FONT,
   arabicFontSize: 'small',
   translationFontSize: 'small',
+  translationDefaultsVersion: TRANSLATION_DEFAULTS_TARGET,
   viewMode: 'scroll',
   hifz16Line: true,
   hifz16DefaultVersion: HIFZ16_DEFAULT_TARGET,
@@ -372,7 +374,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       if (!isValidQuranFontFamily(rawPreferences.quranFont)) {
         preferences = {
-          ...rawPreferences,
+          ...preferences,
           quranFont: 'scheherazade',
         };
         preferencesNormalized = true;
@@ -391,6 +393,30 @@ export function AppProvider({ children }: { children: ReactNode }) {
           ...preferences,
           showTranslation: isAppLanguage(preferences.appLanguage) ? preferences.appLanguage : 'dari',
           translationLanguageMode: 'follow_app',
+        };
+        preferencesNormalized = true;
+      }
+
+      // Translation follows the app language. A hidden translation stays hidden.
+      if (
+        preferences.showTranslation !== 'none' &&
+        isAppLanguage(preferences.appLanguage) &&
+        (preferences.showTranslation !== preferences.appLanguage ||
+          preferences.translationLanguageMode !== 'follow_app')
+      ) {
+        preferences = {
+          ...preferences,
+          showTranslation: preferences.appLanguage,
+          translationLanguageMode: 'follow_app',
+        };
+        preferencesNormalized = true;
+      }
+
+      if (Number(storedPreferences?.translationDefaultsVersion || 0) < TRANSLATION_DEFAULTS_TARGET) {
+        preferences = {
+          ...preferences,
+          translationFontSize: 'small',
+          translationDefaultsVersion: TRANSLATION_DEFAULTS_TARGET,
         };
         preferencesNormalized = true;
       }

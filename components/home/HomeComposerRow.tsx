@@ -37,8 +37,8 @@ export function HomeComposerRow({
   isStreaming,
   isConfigured,
 }: HomeComposerRowProps) {
-  const { fontFamily, language } = useI18n();
-  const isEnglish = language === 'english';
+  const { fontFamily, isLatin } = useI18n();
+  const isEnglish = isLatin;
   const isRtlHome = !isEnglish;
   const disabled = !value.trim() || isStreaming || !isConfigured;
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
   },
   pashtoNastaliqInput: {
     fontSize: 14,
-    lineHeight: 28,
+    lineHeight: 30,
     minHeight: 40,
     paddingVertical: 2,
     includeFontPadding: true,

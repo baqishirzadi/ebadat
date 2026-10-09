@@ -20,7 +20,7 @@ import {
 
 /**
  * Each option describes itself in its own language so a user who only reads one
- * of the three can still find their language in the list.
+ * of them can still find their language in the list.
  */
 const LANGUAGE_OPTIONS: Record<AppLanguage, { label: string; hint: string; fontFamily?: string }> = {
   dari: {
@@ -32,6 +32,16 @@ const LANGUAGE_OPTIONS: Record<AppLanguage, { label: string; hint: string; fontF
     label: 'پښتو',
     hint: 'د اپ ژبه او ژباړې په پښتو',
     fontFamily: 'Vazirmatn',
+  },
+  arabic: {
+    label: 'العربية',
+    hint: 'واجهة التطبيق والترجمة بالعربية',
+    fontFamily: 'Vazirmatn',
+  },
+  turkish: {
+    label: 'Türkçe',
+    hint: 'Uygulama metni ve mealler Türkçe',
+    fontFamily: undefined,
   },
   english: {
     label: 'English',

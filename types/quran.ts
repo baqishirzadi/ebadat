@@ -21,6 +21,8 @@ export interface SurahTranslations {
   dari: Translation[];
   pashto: Translation[];
   english: Translation[];
+  turkish: Translation[];
+  arabic: Translation[];
 }
 
 export interface Surah {
@@ -30,6 +32,8 @@ export interface Surah {
   englishNameTranslation: string;    // English meaning
   dariName: string;                  // Dari/Farsi name
   pashtoName: string;                // Pashto name
+  turkishName?: string;
+  arabicName?: string;
   ayahCount: number;                 // Number of ayahs
   revelationType: 'Meccan' | 'Medinan';
   startPage: number;                 // Starting Mushaf page
@@ -64,9 +68,9 @@ export interface ReadingPosition {
 
 // View modes
 export type ViewMode = 'mushaf' | 'scroll';
-export type AppLanguage = 'dari' | 'pashto' | 'english';
+export type AppLanguage = 'dari' | 'pashto' | 'english' | 'turkish' | 'arabic';
 /** 'both' predates English and still means Dari + Pashto side by side. */
-export type TranslationLanguage = 'dari' | 'pashto' | 'english' | 'both' | 'none';
+export type TranslationLanguage = 'dari' | 'pashto' | 'english' | 'turkish' | 'arabic' | 'both' | 'none';
 
 // User preferences
 export interface UserPreferences {
@@ -78,6 +82,8 @@ export interface UserPreferences {
   pashtoFont: import('../constants/theme').PashtoFontFamily;
   arabicFontSize: 'small' | 'medium' | 'large' | 'xlarge';
   translationFontSize: 'small' | 'medium' | 'large' | 'xlarge';
+  /** One-time migration marker for the small translation size default. */
+  translationDefaultsVersion: number;
   viewMode: ViewMode;
   /** Indo-Pak 16-line hifz mushaf (no translation). */
   hifz16Line: boolean;
@@ -114,7 +120,7 @@ export interface SearchResult {
   ayahNumber: number;
   text: string;
   matchedText: string;
-  matchedLanguage?: 'arabic' | 'dari' | 'pashto' | 'english';
+  matchedLanguage?: 'arabic' | 'dari' | 'pashto' | 'english' | 'turkish' | 'arabicMeaning';
   score?: number;
   snippet?: string;
   highlightRanges?: Array<{ start: number; end: number }>;
@@ -122,5 +128,7 @@ export interface SearchResult {
     dari?: string;
     pashto?: string;
     english?: string;
+    turkish?: string;
+    arabic?: string;
   };
 }

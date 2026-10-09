@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "الر (مفهوم این حروف به الله معلوم است)، این آیات، آیات کتاب واضح (و بیانگر حق و باطل) است.",
       "translation_pashto": "12-1 الف، لام، را، دا د واضح كتاب ایتونه دي",
-      "translation_english": "Alif Lām Ra. These are the verses of the clear Book."
+      "translation_english": "Alif Lām Ra. These are the verses of the clear Book.",
+      "translation_turkish": "Elif Lām Ra. Bunlar apaçık kitabın ayetleridir.",
+      "translation_arabic": "إيلار (معنى هذه الحروف معروف عند الله)، هذه الآيات هي آيات الكتاب الواضحة (ويبين الحق والباطل)."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "چون ما آن را قرآن )خواندنی و( به زبان عربی نازل کردیم تا (مفهوم آن را) درک کنید.",
       "translation_pashto": "12-2 بېشكه مونږ دا نازل كړى دى، په داسې حال كې چې عربي قرآن دى، د دې لپاره چې تاسو پوه شئ",
-      "translation_english": "We have sent it down as an Arabic Qur’an so that you may understand."
+      "translation_english": "We have sent it down as an Arabic Qur’an so that you may understand.",
+      "translation_turkish": "Anlayasınız diye biz onu Arapça bir Kur'an olarak indirdik.",
+      "translation_arabic": "لأننا أنزلناه قرآنا عربيا لعلكم تعقلون."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "ما بهترین داستان‌ها را، با وحی فرستادن و به وسیلۀ این قرآن بر تو حکایت می‌کنیم، حال آنکه پیش از این از بی‌خبران بودی.",
       "translation_pashto": "12-3 (اى نبي!) مونږ تا ته تر ټولو ښه بیان (قصه) اوروو، د دې قرآن په ذريعې سره چې مونږ تا ته وحي كړى دى، او بېشكه شان دا دى چې ته د دې (قرآن له نازلېدلو) نه مخكې خامخا له ناخبرو ځنې وې",
-      "translation_english": "We relate to you [O Prophet] the best of stories through Our revelation of this Qur’an, although before this you were unaware of them."
+      "translation_english": "We relate to you [O Prophet] the best of stories through Our revelation of this Qur’an, although before this you were unaware of them.",
+      "translation_turkish": "(Ey Peygamber), sana bu Kur'an'ı vahyettiğimiz kıssaların en güzelini anlatıyoruz; oysa sen bundan önce onlardan habersizdin.",
+      "translation_arabic": "نحن نقص عليك أحسن القصص بالوحي وبهذا القرآن وإن كنت من قبل جاهلا."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "(آن داستان این است که) چون یوسف به پدرش گفت: ای پدر (بزرگوارم)! من یازده ستاره و آفتاب و ماه را در خواب دیدم، دیدم که آنها برایم سجده می‌کنند.",
       "translation_pashto": "12-4 (یاد كړه هغه وخت) كله چې یوسف خپل پلار ته وویل: اى زما پلار جانه! بېشكه ما (په خوب كې) یوولس ستوري او لمر او سپوږمۍ ولیدل، ما دوى ولېدل چې ما ته سجده كوونكي وو",
-      "translation_english": "[Remember] when Joseph said to his father, “O my father, I saw [in a dream] eleven stars, the sun and the moon – I saw them prostrating to me.”"
+      "translation_english": "[Remember] when Joseph said to his father, “O my father, I saw [in a dream] eleven stars, the sun and the moon – I saw them prostrating to me.”",
+      "translation_turkish": "[Hatırla] Yusuf babasına şöyle demişti: \"Ey babacığım, ben (rüyada) on bir yıldızı, güneşi ve ayı gördüm; onları bana secde ederken gördüm.\"",
+      "translation_arabic": "(تلك القصة) إذ قال يوسف لأبيه: يا أبت! رأيت في المنام أحد عشر كوكبا والشمس والقمر رأيتهم لي يسجدون."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "(يعقوب) گفت: ای پسرک من! خوابت را به برادرانت حکایت مکن که برای تو حیله سازی می‌کنند، زیرا شیطان برای انسان دشمن آشکار است.",
       "translation_pashto": "12-5 (یعقوب) وویل: اى زما خوږه بچيه! خپل (دا) خوب خپلو وروڼو ته مه بیانوه، (ګنې) بیا به دوى تا ته څه چل جور كړي، څه چل جوړول، بېشكه شیطان د انسان لپاره ښكاره دښمن دى",
-      "translation_english": "He said, “O my son, do not relate your vision to your brothers, lest they devise a plot against you, for Satan is a sworn enemy to mankind."
+      "translation_english": "He said, “O my son, do not relate your vision to your brothers, lest they devise a plot against you, for Satan is a sworn enemy to mankind.",
+      "translation_turkish": "Dedi ki: \"Ey oğlum, sana karşı bir tuzak kurmasınlar diye, rüyanı kardeşlerine anlatma; zira şeytan, insanların yeminli düşmanıdır.",
+      "translation_arabic": "قال (يعقوب): يا بني! ولا تقصص حلمك على إخوتك فيخدعوك، لأن الشيطان عدو مبين للإنسان."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "و اینچنین پروردگارت تو را بر می‌گزیند و تعبیر خوابها را به تو می‌آموزد و نعمت خود را بر تو و فرزندان یعقوب کامل می‌کند همانطور که پیش از این بر پدرانت ابراهیم و اسحاق کامل نمود. بی‌گمان پروردگارت دانای باحکمت است.",
       "translation_pashto": "12-6 او همدارنګه ستا رب به تا غوره كړي او تا ته به د خبرو(خوبونو) څه اصل حقیقت (تعبیر كول) وښیي او په تا باندې او د یعقوب په كورنۍ به خپل نعمت پوره كړي لكه چې هغه پوره كړى و دا (نعمت) له تا نه مخكې ستا په دوو پلرونو (نیكه او ورنیكه) ابراهیم او اسحق باندې، بېشكه ستا رب ښه پوه، ښه حكمت والا دى",
-      "translation_english": "Thus your Lord will choose you and teach you the interpretation of dreams, and He will complete His favor upon you and upon the house of Jacob, just as He completed it upon your forefathers Abraham and Isaac before. Indeed, your Lord is All-Knowing, All-Wise.”"
+      "translation_english": "Thus your Lord will choose you and teach you the interpretation of dreams, and He will complete His favor upon you and upon the house of Jacob, just as He completed it upon your forefathers Abraham and Isaac before. Indeed, your Lord is All-Knowing, All-Wise.”",
+      "translation_turkish": "Böylece Rabbin seni seçecek, sana rüya tabirini öğretecek ve daha önce ataların İbrahim ve İshak'a nimetini tamamladığı gibi, sana ve Yakup soyuna da nimetini tamamlayacaktır. Şüphesiz Rabbin her şeyi bilendir, hikmet sahibidir.”",
+      "translation_arabic": "وكذلك يجتبيك ربك ويعلمك من تفسير الرؤيا ويتم نعمته عليك وعلى آل يعقوب كما أتم على أبويك إبراهيم وإسحاق من قبل. إن ربك هو العليم الحكيم."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "البته در سرگذشت یوسف و برادرانش برای پرسندگان نشانه‌هاست.",
       "translation_pashto": "12-7 یقینًا یقینًا په یوسف او د هغه په وروڼو كې د تپوس كوونكو لپاره ډېرې نښې دي",
-      "translation_english": "In the story of Joseph and his brothers there are lessons for those who seek [them]."
+      "translation_english": "In the story of Joseph and his brothers there are lessons for those who seek [them].",
+      "translation_turkish": "Yusuf ve kardeşlerinin öyküsünde, onları arayanlar için dersler vardır.",
+      "translation_arabic": "وبطبيعة الحال، هناك علامات للسائلين في قصة يوسف وإخوته."
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "وقتی که (برادران یوسف در مشورۀ خود) گفتند: یقینا یوسف و برادرش (بنیامین) نزد پدر ما نسبت به ما دوست داشتنی‌ترند، در حالیکه ما جمعی نیرومند هستیم، واقعا پدر ما در خطای آشکار است.",
       "translation_pashto": "12-8 كله چې هغوى (په خپل مینځ كې) وویل: خامخا یوسف او د هغه سكنى ورور زمونږ پلار ته زمونږ نه زیات محبوب دي، حال دا چې مونږ یوه قوتناكه ډله یو، بېشكه زمونږ پلار خامخا په ښكاره خطا كې (پروت) دى",
-      "translation_english": "When they said, “Joseph and his brother are dearer to our father than we are, although we are a group of so many. Indeed, our father is clearly mistaken."
+      "translation_english": "When they said, “Joseph and his brother are dearer to our father than we are, although we are a group of so many. Indeed, our father is clearly mistaken.",
+      "translation_turkish": "Hani onlar: \"Biz bu kadar kalabalık bir topluluk olmamıza rağmen, Yusuf ve kardeşi, babamıza bizden daha sevgilidirler. Doğrusu babamız açıkça yanılıyor.\"",
+      "translation_arabic": "إذ قال (إخوة يوسف في وصيتهم): إن يوسف وأخيه (بنيامين) أحب إلى أبينا منا، ونحن جماعة قوية، إن أبونا لفي ضلال مبين."
     },
     {
       "number": 9,
@@ -103,7 +119,9 @@
       "sajda": false,
       "translation_dari": "(لذا) يوسف را بکشید یا او را در سرزمین (دور) بیندازید تا توجه پدرتان به شما معطوف گردد، و بعد از او (پس از قتل يوسف، با توبه کردن) مردمان نیک و شایسته باشید.",
       "translation_pashto": "12-9 تاسو یوسف قتل كړئ یا هغه په كومې (لرې نامعلومه) ځمكه كې وغورځوئ چې ستاسو د پلار توجه يواځې تاسو ته خالصه شي او له دې (كاره) وروسته به تاسو نېك خلق شئ",
-      "translation_english": "Kill Joseph or cast him out to another land, so that your father’s attention will only be to you; then you will become righteous people.”"
+      "translation_english": "Kill Joseph or cast him out to another land, so that your father’s attention will only be to you; then you will become righteous people.”",
+      "translation_turkish": "Yusuf'u öldürün veya onu başka bir ülkeye atın ki, babanızın ilgisi yalnızca sizin üzerinizde olsun; o zaman salih kimseler olursunuz.”",
+      "translation_arabic": "(لذلك) اقتل يوسف أو اطرحه في أرض (بعيدة) حتى توجه انتباه والدك إليك، وبعده (بعد قتل يوسف، بالتوبة) كونوا أهل خير وصالح."
     },
     {
       "number": 10,
@@ -114,7 +132,9 @@
       "sajda": false,
       "translation_dari": "گوینده‌ای از آنان گفت: یوسف را نکشید بلکه او را در قعر چاهی باندازید، تا کسی از مسافران او را بگیرد، اگر می‌خواهید کاری بکنید.",
       "translation_pashto": "12-10 په دوى كې یو ویونكي وویل: تاسو یوسف مه وژنئ او (بلكې) هغه د ګمنامي كوهي په تیاره بېخ كې وغورځوئ چې په تېرېدونكو (لارویانو) كې به يې ځینې (څوك) واخلي كه تاسو كوونكي یئ (د هغه كار چې ستاسو مقصد پرې پوره كېږي)",
-      "translation_english": "One of them said, “Do not kill Joseph; but if you must do something, then throw him into the bottom of the well, so that some travelers may pick him up.”"
+      "translation_english": "One of them said, “Do not kill Joseph; but if you must do something, then throw him into the bottom of the well, so that some travelers may pick him up.”",
+      "translation_turkish": "İçlerinden biri şöyle dedi: \"Yusuf'u öldürmeyin, eğer bir şey yapmanız gerekiyorsa onu kuyunun dibine atın da yolculardan bazıları onu alsın.\"",
+      "translation_arabic": "وقال قائل منهم: لا تقتلوا يوسف وألقوه في قعر البئر، ليدركه أحد الركاب إن أردتم أن تفعلوا شيئا."
     },
     {
       "number": 11,
@@ -125,7 +145,9 @@
       "sajda": false,
       "translation_dari": "گفتند: ای پدر (مهربان ما)! چرا در بارۀ یوسف به ما اطمینان نداری حال آنکه ما خیر خواه او هستیم؟",
       "translation_pashto": "12-11 دوى وویل: اى زمونږ پلاره! څه باعث (او سبب) دى تا لره چې ته پر مونږ د یوسف باره كې اعتبار نه كوې، حال دا چې مونږ د ده یقینًا خیر غوښتونكي یو",
-      "translation_english": "They said, “O our father, why do you not trust us with Joseph, although we truly care for him?"
+      "translation_english": "They said, “O our father, why do you not trust us with Joseph, although we truly care for him?",
+      "translation_turkish": "Dediler ki: \"Ey babamız, biz ona gerçekten değer verdiğimiz halde, neden Yusuf konusunda bize güvenmiyorsun?",
+      "translation_arabic": "قالوا: يا أبانا! فهلا تأمنوننا على يوسف ونحن له ناصحون؟"
     },
     {
       "number": 12,
@@ -136,7 +158,9 @@
       "sajda": false,
       "translation_dari": "(اگر ما را خیر خواه او میدانی) فردا او را با ما بفرست تا بخورد و بازی کند و البته ما نگهبان و مراقب او خواهیم بود.",
       "translation_pashto": "12-12 ته دى له مونږ سره سبا ولېږه چې ښې ډېرې مېوې وخوري (مزې وكړي) او لوبې وكړي او بېشكه مونږ د ده خامخا ساتونكي یو",
-      "translation_english": "Send him with us tomorrow so that he may enjoy himself and play; we will surely keep him safe.”"
+      "translation_english": "Send him with us tomorrow so that he may enjoy himself and play; we will surely keep him safe.”",
+      "translation_turkish": "Yarın onu bizimle gönder de eğlenip oynasın; Onu mutlaka güvende tutacağız.”",
+      "translation_arabic": "(إن كنتم تعلمون أننا ناصحون) فأرسلوه معنا غداً ليأكل ويلعب وسنكون بالطبع حارسه ورقيبه."
     },
     {
       "number": 13,
@@ -147,7 +171,9 @@
       "sajda": false,
       "translation_dari": "(پدر) گفت: اینکه او را با خود ببرید، مرا سخت غمگین می‌کند و (نیز) می‌ترسم از آن که او را گرگ بخورد و شما از او بی‌خبر باشید.",
       "translation_pashto": "12-13 هغه وویل: بېشكه زه چې یم، یقینًا ما دا خبره غمجنوي چې تاسو دى بوځئ او زه له دې نه وېرېږم چې دا (یوسف) به لیوه (شرمښ) وخوري، په داسې حال كې چې تاسو به له ده نه غافلان یئ",
-      "translation_english": "He said, “It truly saddens me that you should take him away, and I fear that a wolf may eat him when you are negligent of him.”"
+      "translation_english": "He said, “It truly saddens me that you should take him away, and I fear that a wolf may eat him when you are negligent of him.”",
+      "translation_turkish": "\"Onu götürmeniz beni gerçekten üzüyor ve siz ona karşı ihmalkar davrandığınız zaman onu bir kurdun yemesinden korkuyorum\" dedi.",
+      "translation_arabic": "قال (الأب): إذا أخذته معك فإن ذلك يحزنني جداً، وأخاف أن يأكله الذئب ولا تعلم به."
     },
     {
       "number": 14,
@@ -158,7 +184,9 @@
       "sajda": false,
       "translation_dari": "(پسران) گفتند: اگر او را گرگ بخورد با اینکه ما (بر دفع گرگ) گروه نیرومند هستیم، در این صورت يقينا زیانکار خواهیم بود.",
       "translation_pashto": "12-14 هغوى وویل: قسم دى كه دى (رانه) لیوه وخوري، حال دا چې مونږ یوه قوتناكه ډله یو (،نو) بېشكه مونږ به په دغه وخت كې خامخا تاوانیان (او هلاكېدونكي) یو",
-      "translation_english": "They said, “If a wolf were to eat him, despite our strong group, then we would surely be losers!”"
+      "translation_english": "They said, “If a wolf were to eat him, despite our strong group, then we would surely be losers!”",
+      "translation_turkish": "Onlar, \"Eğer bizim kuvvetli topluluğumuza rağmen onu bir kurt yerse, o zaman mutlaka kaybedenlerden oluruz\" dediler.",
+      "translation_arabic": "قال (الصبية): لئن أكله الذئب ونحن جماعة قوية فإنا إذاً لخاسرون."
     },
     {
       "number": 15,
@@ -169,7 +197,9 @@
       "sajda": false,
       "translation_dari": "پس وقتی او را بردند و تصمیم گرفتند که او را در قعر چاه بیندازند (در همان لحظه) به او (يوسف) وحی کردیم که البته آنها را از این کارشان آگاه خواهی ساخت، در حالیکه نمی‌فهمند.",
       "translation_pashto": "12-15 نو كله چې دوى هغه بوته او پر دې خبره يې اتفاق وكړ چې دى د (ګمنامي) كوهي په تیاره بېخ كې وغورځوي او مونږ ده ته (یوسف ته) وحي وكړه چې قسم دى چې ته به خامخا ضرور دوى ته د دوى د دې كار خبر وركړې، په دې حال كې چې دوى به نه پوهېږي (چې ته یوسف يې)",
-      "translation_english": "Then when they took him away and they agreed to cast him into the bottom of the well, We inspired him: “You will surely inform them of this affair of theirs when they will not realize [who you are].”"
+      "translation_english": "Then when they took him away and they agreed to cast him into the bottom of the well, We inspired him: “You will surely inform them of this affair of theirs when they will not realize [who you are].”",
+      "translation_turkish": "Sonra onu alıp kuyunun dibine atmaya karar verdiklerinde ona şöyle vahyettik: \"Onlar (senin kim olduğunu) bilmiyorlarken, sen onlara bu işlerini mutlaka haber vereceksin.\"",
+      "translation_arabic": "فلما أخذوه وأرادوا أن يلقوه في قعر البئر (في تلك اللحظة) أوحينا إليه (يوسف) لتعلمنهم بما يفعلون وهم لا يعقلون."
     },
     {
       "number": 16,
@@ -180,7 +210,9 @@
       "sajda": false,
       "translation_dari": "و شب گریان نزد پدر آمدند.",
       "translation_pashto": "12-16 او دوى خپل پلار ته بېګاه ته (په تیاره كې) راغلل چې ژړل يې (په دروغو سره)",
-      "translation_english": "At night they came to their father, crying."
+      "translation_english": "At night they came to their father, crying.",
+      "translation_turkish": "Gece ağlayarak babalarının yanına geldiler.",
+      "translation_arabic": "وجاءوا إلى أبيهم يبكون في الليل."
     },
     {
       "number": 17,
@@ -191,7 +223,9 @@
       "sajda": false,
       "translation_dari": "گفتند: ای پدر! ما رفتیم که مسابقه دهیم، و يوسف را نزد سامان و اسباب ما گذاشتیم، پس گرگ او را خورد، ولی تو باور کنندۀ ما نیستی اگر چه راستگو باشیم.",
       "translation_pashto": "12-17  ويې ويل: اى زمونږ پلاره! بېشكه مونږ لاړو مسابقه مو سره كوله او مونږ یوسف له خپلو اسبابو سره پريښى و، نو هغه شرمخ وخوړ او ته پر مونږ باندې باور كوونكى نه يې اګر كه مونږ رښتیني یو",
-      "translation_english": "They said, “O our father, we went off racing one another and left Joseph with our belongings, and a wolf ate him. But you will never believe us, no matter how truthful we may be.”"
+      "translation_english": "They said, “O our father, we went off racing one another and left Joseph with our belongings, and a wolf ate him. But you will never believe us, no matter how truthful we may be.”",
+      "translation_turkish": "Dediler ki: \"Ey babamız, biz yarışa çıkmıştık, Yusuf'u mallarımızla birlikte bıraktık, onu bir kurt yedi. Ama ne kadar doğru söylersek söyleyelim, sen bize asla inanmayacaksın.\"",
+      "translation_arabic": "قالوا: يا أبتاه! إنا استبقنا وتركنا يوسف عند متاعنا فأكله الذئب وما أنت بمؤمننا وإن كنا صادقين."
     },
     {
       "number": 18,
@@ -202,7 +236,9 @@
       "sajda": false,
       "translation_dari": "و پیراهن او را آلوده به خون دروغ آوردند، پدر گفت: نه، بلکه نفس‌های تان کار زشت را برای شما آراسته است، پس کار من صبر نیک است و راجع به آنچه بیان می‌کنید، از الله مدد (و یاری) می‌خواهم.",
       "translation_pashto": "12-18 او دوى د هغه د كمیس له پاسه دروغجنه وینه لګولې راوړه، یعقوب وویل: (دا دروغ دي) بلكې تاسو ته ستاسو نفسونو (دا بد) كار ښايسته كړى دى، نو (زما كار) صبر جمیل دى او د هغو خبرو په هكله خاص له الله نه مدد غوښتلى شي چې تاسو يې بیانوئ",
-      "translation_english": "They brought his shirt, stained with false blood. He said, “Nay; rather your souls have enticed you to commit something. But I will bear it with beautiful patience. It is Allah’s help that I seek against what you claim.”"
+      "translation_english": "They brought his shirt, stained with false blood. He said, “Nay; rather your souls have enticed you to commit something. But I will bear it with beautiful patience. It is Allah’s help that I seek against what you claim.”",
+      "translation_turkish": "Sahte kanla lekelenmiş gömleğini getirdiler. Dedi ki: \"Hayır, bilakis nefsiniz sizi bir şeye ayarttı. Ben buna güzel bir sabırla katlanacağım. İddia ettiğiniz şeye karşı ben Allah'tan yardım diliyorum.\"",
+      "translation_arabic": "وأحضروا قميصه ملطخاً بدماء الكذب، قال الأب: لا، ولكن غروركم قد زين لكم العمل القبيح، فعملي حسن الصبر وأسأل الله العون على ما تقولون."
     },
     {
       "number": 19,
@@ -213,7 +249,9 @@
       "sajda": false,
       "translation_dari": "و کاروانی (نزدیک چاه) آمد پس آب آور خود را فرستادند، پس دلو خود را انداخت (وقتی به جای آب، یوسف را دید) گفت: مژده باد! این یک پسر است، و او را به طور متاعی پنهان ساختند، و الله به آنچه می‌کردند داناست.",
       "translation_pashto": "12-19 او قافله راغله، نو دوى خپل اوبه راوړونكى ولېږه، نو هغه خپله بوكه (په كوهي كې) ورخوشې كړه (نو یوسف دغې بوكې پورې ونښت، چې يې ولیده، نو) ويې ويل:اى زما خوشحالۍ! دا خو (ډېر ښكلى) هلك دى او دوى هغه د تجارت د مال په توګه پټ كړ او الله پر هغو كارونو ښه عالم دى چې دوى كول",
-      "translation_english": "Some travelers came and sent their water fetcher, who lowered his bucket into the well. He cried out, “Oh, what good news; here is a boy!” They kept him hidden as merchandise, but Allah is All-Knowing of what they did."
+      "translation_english": "Some travelers came and sent their water fetcher, who lowered his bucket into the well. He cried out, “Oh, what good news; here is a boy!” They kept him hidden as merchandise, but Allah is All-Knowing of what they did.",
+      "translation_turkish": "Bazı yolcular gelip su toplayıcılarını gönderdiler, o da kovasını kuyuya indirdi. \"Ah, ne güzel haber; işte bir çocuk!\" diye bağırdı. Onu ticari bir mal olarak sakladılar; fakat Allah, onların yaptıklarını hakkıyla bilendir.",
+      "translation_arabic": "وجاءت عير (عند البئر) فأرسلوا حاملهم فألقى دلوه (لما رأى يوسف بدل الماء) وقال: أبشر! هذا غلام وقد خبأوه سرا والله أعلم بما فعلوا."
     },
     {
       "number": 20,
@@ -224,7 +262,9 @@
       "sajda": false,
       "translation_dari": "و او را به پول ناچیزی (و تنها) به چند درهم شمرده شده فروختند و در بارۀ او بی‌علاقه بودند.",
       "translation_pashto": "12-20 او دوى هغه په ډېر كم قیمت خرڅ كړ، چې څو شمېرل شوې روپۍ وې او دوى د هغه په حق كې له بې رغبتو څخه وو",
-      "translation_english": "They sold him for a meager price, a few silver coins; they were quite indifferent about him."
+      "translation_english": "They sold him for a meager price, a few silver coins; they were quite indifferent about him.",
+      "translation_turkish": "Onu çok az bir fiyata, birkaç gümüş paraya sattılar; ona karşı oldukça kayıtsızdılar.",
+      "translation_arabic": "فباعوه بثمن زهيد، وهو دراهم معدودة، وهم به غافلون."
     },
     {
       "number": 21,
@@ -235,7 +275,9 @@
       "sajda": false,
       "translation_dari": "و آن کس از اهل مصر که او را خریده بود به همسرش گفت: او را گرامی دار شاید به حال ما نفعی برساند، یا او را به فرزندی بگیریم. و این گونه ما یوسف را در سرزمین تمکین دادیم و تا تعبیر خوابها را به او بیاموزیم. و الله بر کار خود غالب است، اما بیشتر مردم نمی‌دانند.",
       "translation_pashto": "12-21 او هغه سړي چې دى يې له مصره اخيستى و، خپلې ښځې ته وویل: د ده استوګنه عزتمنه ساته (دى په عزت سره ساته)، امېد دى چې دى به مونږ ته فايده راورسوي یا به دى مونږ زوى ونیسو او همدارنګه مونږ یوسف ته په ځمكه كې ځاى (او قدرت) وركړ او د دې لپاره چې مونږ هغه ته د خبرو څه تاویل (او تعبیر) وښیو او الله پر خپل كار غالب دى او لېكن اكثره خلق نه پوهېږي",
-      "translation_english": "The man in Egypt who bought him said to his wife, “Make his stay comfortable; perhaps he will benefit us or we may adopt him as a son.” This is how We established Joseph in the land, so that We may teach him the interpretation of dreams. Allah’s decree always prevails, but most people do not know."
+      "translation_english": "The man in Egypt who bought him said to his wife, “Make his stay comfortable; perhaps he will benefit us or we may adopt him as a son.” This is how We established Joseph in the land, so that We may teach him the interpretation of dreams. Allah’s decree always prevails, but most people do not know.",
+      "translation_turkish": "Mısır'da onu satın alan adam, hanımına, \"Onun rahat etmesini sağla, umulur ki bize faydası olur veya onu evlat ediniriz\" dedi. Kendisine rüya tabirini öğretmek için Yusuf'u yeryüzünde böyle yerleştirdik. Her zaman Allah'ın hükmü hakimdir ama insanların çoğu bilmez.",
+      "translation_arabic": "فقال المصري الذي اشتراه لامرأته: أكرميه عسى أن ينفعنا، أو نتبنيه. وكذلك ذلنا ليوسف في الارض لنعلمه تفسير الرؤيا. والله غالب على عمله ولكن أكثر الناس لا يعلمون."
     },
     {
       "number": 22,
@@ -246,7 +288,9 @@
       "sajda": false,
       "translation_dari": "و چون به كمال جوانی خود رسید به او حكمت و دانایی دادیم، و این چنین به نیکوکاران پاداش می‌دهیم.",
       "translation_pashto": "12-22 او كله چې هغه خپل قوت ته ورسېده (، نو) مونږ هغهٔ ته حكم او علم وركړ او همداسې مونږ نېكي كوونكو ته بدله وركوو",
-      "translation_english": "When he reached his prime, We gave him wisdom and knowledge. This is how We reward those who do good."
+      "translation_english": "When he reached his prime, We gave him wisdom and knowledge. This is how We reward those who do good.",
+      "translation_turkish": "En parlak çağına ulaştığında ona hikmet ve ilim verdik. İyilik yapanları işte böyle ödüllendiririz.",
+      "translation_arabic": "ولما بلغ شبابه آتيناه حكما وعلما وكذلك نجزي المتقين."
     },
     {
       "number": 23,
@@ -257,7 +301,9 @@
       "sajda": false,
       "translation_dari": "و آن زنی که یوسف در خانه اش بود خواست تا از او کام گیرد (و از پاکدامنی او را بیرون آورد)، و درها را بست و گفت: پیش بیا که از توام، یوسف گفت: (از این کار زشت) به الله پناه می‌برم و او (عزیز مصر) آقای من است، (جای) مرا نیکو ساخت، بی‌گمان ظالمان رستگار نمی‌شوند.",
       "translation_pashto": "12-23 او هغې ښځې، چې دا د هغې په كور كې و، هغې له ده نه له هغې سره د بدكارۍ مطالبه وكړه او (ټولې) دروازى يې كلكې پورې كړې او ويې ويل:هله، ته زر راشه! هغهٔ وویل: زه په الله پورې پناه نیسم، بېشكه دا (عزیز) زما مالك دى، هغه زما استوګنه ښه كړې ده، بېشكه شان دا دى چې ظالمان فلاح (او خلاصى) نه مومي",
-      "translation_english": "But the woman in whose house he was living tried to seduce him. She bolted the doors and said, “Come here to me!” He said, “I seek refuge with Allah! My master has made my stay good. Indeed, the wrongdoers will never succeed.”"
+      "translation_english": "But the woman in whose house he was living tried to seduce him. She bolted the doors and said, “Come here to me!” He said, “I seek refuge with Allah! My master has made my stay good. Indeed, the wrongdoers will never succeed.”",
+      "translation_turkish": "Ancak evinde yaşadığı kadın onu baştan çıkarmaya çalıştı. Kapıları sürgüledi ve \"Buraya, yanıma gel!\" dedi. \"Allah'a sığınırım! Rabbim, kalışımı güzel kıldı. Şüphesiz zalimler asla kurtuluşa eremezler\" dedi.",
+      "translation_arabic": "والمرأة التي طلب يوسف منه طعاما في بيتها (وأخرجته من العفة) وأغلقت الأبواب وقالت: هيا، قال يوسف: أعوذ بالله (من هذا العمل القبيح) وهو (عزيز مصر) سيدي، (مكان) أحسن لي، إنه لا ينجو من الظالمين."
     },
     {
       "number": 24,
@@ -268,7 +314,9 @@
       "sajda": false,
       "translation_dari": "البته آن زن قصد (مقاربت با) یوسف کرد. (ولی) اگر یوسف برهان پروردگارش را نمی‌دید، او نیز قصد (مقاربت با) آن زن می‌کرد. ما این چنین کردیم تا بدی و فحشا را از او دور سازیم، چون که او از بندگان مخلص و برگزیدۀ ما بود.",
       "translation_pashto": "12-24 او یقینًا یقینًا هغې دهٔ ته قصد كړى و، او ده به هغې ته قصد كړى و كه چېرې ده د خپل رب دلیل نه وى لیدلى، همداسې (مونږ یوسف وساته) د دې لپاره چې مونږ له هغه نه بد او ناكاره (بې حیا) فعل وګرځوو (واړوو)، بېشكه دغه (یوسف) زمونږ له غوره كړى شويو بنده ګانو څخه دى",
-      "translation_english": "She advanced towards him, and he would have advanced towards her, had he not seen a sign from his Lord. This is how We kept evil and shameful acts away from him. Indeed, he was one of Our chosen slaves."
+      "translation_english": "She advanced towards him, and he would have advanced towards her, had he not seen a sign from his Lord. This is how We kept evil and shameful acts away from him. Indeed, he was one of Our chosen slaves.",
+      "translation_turkish": "O ona doğru ilerledi; eğer Rabbinden bir ayet görmemiş olsaydı, o da ona doğru ilerleyecekti. Böylece kötülükleri ve çirkinlikleri ondan uzak tuttuk. Gerçekten o, seçilmiş kullarımızdandı.",
+      "translation_arabic": "بالطبع تلك المرأة قصدت (الجماع) مع يوسف. (ولكن) لو لم ير يوسف حجة ربه لأراد تلك المرأة. وفعلنا ذلك لنزيل عنه الشر والزنا، لأنه كان من عبادنا المخلصين والمختارين."
     },
     {
       "number": 25,
@@ -279,7 +327,9 @@
       "sajda": false,
       "translation_dari": "و هر دو به طرف دروازه بر یکدیگر سبقت کردند و آن زن پیراهن یوسف را از پشت پاره کرد. و شوهرش را نزدیک دروازه یافتند. (زن به شوهر خود) گفت: جزای کسی که قصد بدی به همسرت کرده چیست؟ جز این (نیست) که زندانی گردد یا عذاب دردناک (داده) شود.",
       "translation_pashto": "12-25 او دواړو دروازې ته سره منډې شروع كړې او هغې د ده  كمیس له شا طرف نه څیرې كړ او دواړه د هغې له خاوند سره دروازي ته نژدې مخامخ شول، هغې وویل: نه ده سزا د هغه چا چې ستا له اهل سره يې د بدۍ اراده وكړه مګر دا چې هغه بندي (قيد) كړى شي یا ( د هغهٔ لپاره) ډېر دردوونكى عذاب دى",
-      "translation_english": "They both rushed to the door and she tore his shirt from behind, and they found her husband at the door. She said, “What is the punishment for someone who tried to dishonor your wife, except to be imprisoned or a painful punishment?”"
+      "translation_english": "They both rushed to the door and she tore his shirt from behind, and they found her husband at the door. She said, “What is the punishment for someone who tried to dishonor your wife, except to be imprisoned or a painful punishment?”",
+      "translation_turkish": "İkisi de kapıya koştular ve kadın gömleğini arkadan yırttı ve kocasını kapıda buldular. \"Karının namusunu lekelemeye çalışan kimsenin cezası, hapis veya acı bir cezadan başka nedir?\" dedi.",
+      "translation_arabic": "وسبق كل منهما الآخر نحو الباب، فمزقت تلك المرأة قميص يوسف من الخلف. ووجدوا زوجها بالقرب من البوابة. (قالت الزوجة لزوجها): ما جزاء من أساء إلى زوجتك؟ إلا أن يسجن أو يعذب عذابا أليما."
     },
     {
       "number": 26,
@@ -290,7 +340,9 @@
       "sajda": false,
       "translation_dari": "یوسف (در جواب) گفت: این زن مرا به سوی خود خواست، (ولی من انکار کردم و از وی فرار می‌نمودم) و شاهدی از خانوادۀ آن زن گواهی داد که اگر پیراهن او از پیش روی پاره شده باشد، پس آن زن راست گفته است و یوسف از دروغگویان است.",
       "translation_pashto": "12-26 هغهٔ وویل: هم دې له ما نه د بدكارۍ غوښتنه كړې ده، او د هغې د كورنۍ یو شاهد شاهدي وركړه (داسې چې) كه د ده كمیس له مخامخ اړخ نه څيرې شوى وي، نو هغې رښتیا ویلي دي او دا له دروغجنانو څخه دى",
-      "translation_english": "Joseph said, “It was she who tried to seduce me.” A witness from her own household suggested: “If his shirt is torn from the front, then she is telling the truth and he is a liar."
+      "translation_english": "Joseph said, “It was she who tried to seduce me.” A witness from her own household suggested: “If his shirt is torn from the front, then she is telling the truth and he is a liar.",
+      "translation_turkish": "Joseph, \"Beni baştan çıkarmaya çalışan oydu\" dedi. Kendi evinden bir görgü tanığı şunu öne sürdü: “Eğer gömleği önden yırtılmışsa, o zaman kadın doğru söylüyordur ve o da yalancıdır.",
+      "translation_arabic": "فقال يوسف: هذه المرأة سألتني عنها (فكذبت وهربت منها) وشهد شاهد من أهل تلك المرأة أنه إذا كان قميصها قد تمزق من الأمام فقد صدقت تلك المرأة ويوسف من الكاذبين."
     },
     {
       "number": 27,
@@ -301,7 +353,9 @@
       "sajda": false,
       "translation_dari": "و اگر پیراهنش از پشت پاره شده باشد، پس این زن دروغ گفته است و یوسف از راستگویان است.",
       "translation_pashto": "12-27 او كه د ده كمیس له شا اړخ نه څیرې شوى وي، نو دې دروغ ویلي دي او هغه (یوسف) له رښتینو څخه دى",
-      "translation_english": "But if his shirt is torn from the back, then she is lying and he is truthful.”"
+      "translation_english": "But if his shirt is torn from the back, then she is lying and he is truthful.”",
+      "translation_turkish": "Eğer gömleği arkadan yırtılmışsa kadın yalan söylemiş, adam ise doğru söylemiş demektir.”",
+      "translation_arabic": "وإن كان قميصها قد مزق من دبر فقد كذبت هذه المرأة ويوسف من الصادقين."
     },
     {
       "number": 28,
@@ -312,7 +366,9 @@
       "sajda": false,
       "translation_dari": "پس چون (شوهر) دید که پیراهن یوسف از پشت پاره شده، گفت: يقينا این (ماجرا) از مکر شما زنان است، زیرا مکر شما زنان بزرگ است.",
       "translation_pashto": "12-28 نو كله چې هغه (عزیز) د ده كمیس ولیده چې له شا اړخ نه څیرې شوى دى، ويې ويل: بېشكه (اى ښځو) دا ستاسو له فریبونو څخه دى، بېشكه ستاسو فریب (او چل) ډېر لوى دى",
-      "translation_english": "When he saw that his shirt was torn from the back, he said, “This is your guile [O women]; your guile is great indeed!"
+      "translation_english": "When he saw that his shirt was torn from the back, he said, “This is your guile [O women]; your guile is great indeed!",
+      "translation_turkish": "Gömleğinin arkadan yırtıldığını görünce şöyle dedi: \"Bu sizin hilenizdir (ey kadınlar), sizin hileniz gerçekten büyüktür!",
+      "translation_arabic": "فلما رأى أن قميص يوسف قد تمزق من الخلف قال: إن هذا من كيدكن يا معشر النساء، إن كيدكن لعظيم من النساء."
     },
     {
       "number": 29,
@@ -323,7 +379,9 @@
       "sajda": false,
       "translation_dari": "(عزیز مصر گفت:) ای یوسف! تو از افشای این کار در گذر و تو ای زن! برای گناه خود آمرزش بخواه، چون از خطاکاران بودی.",
       "translation_pashto": "12-29 اى یوسفه! له دې خبرې نه مخ واړوه او (اى ښځې) ته د خپلې ګناه لپاره مغفرت وغواړه، بېشكه هم تهٔ له خطا كارانو ځنې وې",
-      "translation_english": "O Joseph, forget about this; but you [O wife], seek forgiveness for your sin, for it was you who have done wrong.”"
+      "translation_english": "O Joseph, forget about this; but you [O wife], seek forgiveness for your sin, for it was you who have done wrong.”",
+      "translation_turkish": "Ey Yusuf, unut şunu; ama sen (ey kadınım), günahın için bağışlanma dile, çünkü sen haksızlık ettin.”",
+      "translation_arabic": "(قال عزيز مصر:) يا يوسف! أنتِ تمرّين بالكشف عن هذا العمل، وأنتِ أيتها المرأة! استغفر لذنبك فإنك كنت من المسرفين."
     },
     {
       "number": 30,
@@ -334,7 +392,9 @@
       "sajda": false,
       "translation_dari": "و عده‌ای از زنان در شهر گفتند: زن عزیز از غلامش کام می‌خواهد تا او را از پاکدامنی غافل کند، به راستی محبت (یوسف) در دلش جای گرفته است، البته او را در گمراهی آشکار می‌بینیم.",
       "translation_pashto": "12-30 او په ښار كې ښځو وویل: د عزیز ښځه له خپل غلام نه د بدكارۍ مطالبه كوي، یقینًا د مینې په لحاظ سره هغهٔ، د دې د زړه پرده څیرې كړې ده (د دې ورسره سخته مينه ده)، بېشكه مونږ هغه خامخا په ښكاره ګمراهۍ كې وینو",
-      "translation_english": "Some women in the city said, “The chief minister’s wife is trying to seduce her slave-boy; his love has overwhelmed her heart. We see that she is clearly mistaken.”"
+      "translation_english": "Some women in the city said, “The chief minister’s wife is trying to seduce her slave-boy; his love has overwhelmed her heart. We see that she is clearly mistaken.”",
+      "translation_turkish": "Şehirdeki bazı kadınlar, \"Başbakan'ın karısı cariyesini baştan çıkarmaya çalışıyor, aşkı kalbini sarmış. Açıkça yanıldığını görüyoruz\" dedi.",
+      "translation_arabic": "وقال بعض نساء المدينة: امرأة عزيزة تطلب من عبدها أن يغفل عن العفة، فإن الحب في قلبه، إنا لنراه في ضلال مبين."
     },
     {
       "number": 31,
@@ -345,7 +405,9 @@
       "sajda": false,
       "translation_dari": "پس چون زن عزیز مکر زنان را شنید، کسی را به‌سوی زنان فرستاد و برای آنها مجلسی آماده کرد و به دست هر یک از آنها کاردی داد و گفت: (به يوسف) بر زنان بیرون آی. پس چون زنان او را دیدند او را (در حسن و جمال) بزرگ یافتند و دست‌های خود را (از شدت مشغول شدن به جمال او) بریدند و گفتند: سبحان الله (پاکی است الله را) این بشر نیست (بلکه) این جز فرشته بزرگوار نیست.",
       "translation_pashto": "12-31 نو كله چې هغې د دوى مكر واورېده (، نو) دوى ته يې پېغام ولېږه او د دوى لپاره يې مجلس تیار كړ او په دوى كې يې هرې یوې ته چاړه وركړه او هغې (ده ته) وویل: دوى ته راووځه، نو كله چې دوى هغه ولیده (،نو) ډېر لوى ښايسته يې ومونده او خپل لاسونه يې پرې كړل او ويې ویل الله ته پاكي ده، دا خو بشر نه دى، دا نه دى مګر ډېر عزتمن مَلك",
-      "translation_english": "When she heard of their gossip, she invited them and arranged for them a banquet, gave each one of them a knife, and said [to Joseph], “Come out before them.” When they saw him, they were so stunned that they cut their hands, and said, “Great God! This cannot be human; this must be a noble angel.”"
+      "translation_english": "When she heard of their gossip, she invited them and arranged for them a banquet, gave each one of them a knife, and said [to Joseph], “Come out before them.” When they saw him, they were so stunned that they cut their hands, and said, “Great God! This cannot be human; this must be a noble angel.”",
+      "translation_turkish": "Dedikodularını duyunca onları davet etti, onlara bir ziyafet düzenledi, her birine birer bıçak verdi ve (Yusuf'a) \"Onların huzuruna çık\" dedi. Onu gördüklerinde o kadar şaşkına döndüler ki ellerini kestiler ve, \"Yüce Allah! Bu insan olamaz, bu soylu bir melek olmalı\" dediler.",
+      "translation_arabic": "فلما سمعت العزيزة خدعة النساء، أرسلت إلى النساء وأعدت لهن اجتماعاً وأعطت كل واحدة منهن سكيناً وقالت: (ليوسف) اخرجوا على النساء. فلما رأته النساء وجدوه عظيما (في الجمال والجمال) وقطعوا أيديهن (من شدة انشغاله بجماله) وقلن: سبحان الله (سبحان الله)."
     },
     {
       "number": 32,
@@ -356,7 +418,9 @@
       "sajda": false,
       "translation_dari": "زن عزیز گفت: این همان جوانی است که مرا دربارۀ محبت او ملامت کردید، و البته من او را بسوی خود طلب کردم، ولی خود را پاک داشت. و اگر آنچه را که به او دستور میدهم انجام ندهد، حتما زندانی می‌شود و حتما از خوار شدگان خواهد شد.",
       "translation_pashto": "12-32 هغې وویل: دا هماغه (زلمى) دى چې تاسو زه د ده (له ده سره د مینې) په باره كې ملامته كړې ومه او یقینًا یقینًا ما له ده نه د ده د ځان غوښتنه كړې وه، نو ده ځان وساته او قسم دى كه ده هغه كار ونه كړ چې زه يې ده ته حكم كوم (، نو) خامخا هرومرو به دى بندي كړى شي او خامخا هرومرو به دى شي له ذلیلانو نه",
-      "translation_english": "She said, “This is the one for whose love you reproached me. I did try to seduce him but he abstained. If he does not follow my order, he will surely be imprisoned and will be fully humiliated.”"
+      "translation_english": "She said, “This is the one for whose love you reproached me. I did try to seduce him but he abstained. If he does not follow my order, he will surely be imprisoned and will be fully humiliated.”",
+      "translation_turkish": "\"Bu, aşkından dolayı beni azarladığın kişidir. Ben onu baştan çıkarmaya çalıştım ama o çekimser kaldı. Eğer benim emrime uymazsa mutlaka hapse atılacak ve tamamen aşağılanacaktır\" dedi.",
+      "translation_arabic": "فقالت العزيزة: هذا هو الشاب الذي عاتبتني على حبه، وطبعاً بحثت عنه لكنه حافظ على نظافته. وإن لم يفعل ما أمرته به، فإنه سيسجن حتما وسيكون من الأذلين."
     },
     {
       "number": 33,
@@ -367,7 +431,9 @@
       "sajda": false,
       "translation_dari": "گفت: پروردگارا! زندان برای من دوست داشتنی‌تر است از چیزی که مرا به‌سوی آن می‌خوانند. و اگر مکر آن زنان را از من باز نداری به‌سوی آنان خواهم گروید و از جملۀ نادانان می‌گردم.",
       "translation_pashto": "12-33 هغهٔ وویل: اى زما ربه! بندي خانه ما ته ډېره خوښه ده له هغه كار نه چې دوى ما هغه ته بلي او كه ته زما څخه د دوى مكر و فریب وانه ړوې (، نو) زه به دوى ته مايله شم او شم به له جاهلانو نه",
-      "translation_english": "Joseph said, “My Lord, I would rather be in prison than that to which they are calling me. Unless you protect me from their guile, I may succumb to them and fall into ignorance.”"
+      "translation_english": "Joseph said, “My Lord, I would rather be in prison than that to which they are calling me. Unless you protect me from their guile, I may succumb to them and fall into ignorance.”",
+      "translation_turkish": "Yusuf dedi ki: \"Rabbim, onların beni çağırdıkları şey yerine zindanda olmayı tercih ederim. Eğer beni onların hilelerinden korumazsan, onlara boyun eğerim ve cahilliğe düşerim.\"",
+      "translation_arabic": "قال: يا رب! السجن أحب إلي مما أدعو إليه. ولئن لم تمنعني هؤلاء النساء لأتوجه إليهن وأكون من الجاهلين."
     },
     {
       "number": 34,
@@ -378,7 +444,9 @@
       "sajda": false,
       "translation_dari": "پس پروردگارش دعای او را قبول کرد و مکر زنان را از او باز داشت. يقينا او شنوای داناست.",
       "translation_pashto": "12-34 نو خپل رب يې د ده دعا قبوله كړه، نو له ده نه يې د دوى مكر و فریب وګرځاوه، بېشكه هغه، هم هغه ښه اورېدونكى، ښه پوه دى",
-      "translation_english": "So his Lord answered his prayer and protected him from their guile. He is the All-Hearing, the All-Knowing."
+      "translation_english": "So his Lord answered his prayer and protected him from their guile. He is the All-Hearing, the All-Knowing.",
+      "translation_turkish": "Bunun üzerine Rabbi onun duasını kabul etti ve onu onların hilelerinden korudu. O, her şeyi işitendir, her şeyi bilendir.",
+      "translation_arabic": "فتقبل ربه دعاءه وكف عنه حيل النساء. إنه هو السميع العليم."
     },
     {
       "number": 35,
@@ -389,7 +457,9 @@
       "sajda": false,
       "translation_dari": "باز به نظرشان رسید پس از آنکه علامات (پاکی یوسف) را دیدند که البته او را تا مدتی زندانی کنند.",
       "translation_pashto": "12-35 بیا دوى (عزیز او د هغه كسانو) ته ښكاره شوه (صلاح يې وكړه)، وروسته له دې چې دوى (د یوسف د پاكۍ) نښې ولېدې،  چې دوى به دى خامخا هرومرو تر یو وخته پورې بندي كړي",
-      "translation_english": "Then it occurred to them after they saw the signs [of his innocence] that they should imprison him for some time."
+      "translation_english": "Then it occurred to them after they saw the signs [of his innocence] that they should imprison him for some time.",
+      "translation_turkish": "Sonra (masumluğunun) alametlerini görünce, onu bir süre hapsetmeleri gerektiği aklına geldi.",
+      "translation_arabic": "وبعد أن رأوا العلامات (على طهارة يوسف) قرروا أن يحبسوه لفترة."
     },
     {
       "number": 36,
@@ -400,7 +470,9 @@
       "sajda": false,
       "translation_dari": "و دو جوان با یوسف به زندان در آمدند، یکی از آن دو گفت: من در خواب دیدم که انگور (برای شراب) می‌فشارم، و دیگری گفت: من در خواب دیدم که بر سر خویش نانی برداشته ام که پرنده‌ها از آن می‌خورند، ما را از تعبیر این خواب آگاه کن که تو را از جملۀ نیکوکاران می‌بینیم.",
       "translation_pashto": "12-36 او له ده سره زندان ته دوه زلمي ننوتل، په دې دواړو كې یو وویل: بېشكه زه چې یم، زه ځان (په خوب كې) وینم، چې د شرابو لپاره انګور نچوړوم او بل وویل: بېشكه زه چې یم، ځان وینم، په دې حال كې چې د خپل سر له پاسه مې ډوډۍ بار كړې ده، چې له هغې نه مرغان خوراك كوي، مونږ د دې (خوبونو) پر تعبیر خبر كړه، بېشكه مونږ تا له نیكوكارانو  څخه وینو",
-      "translation_english": "Two young men went to prison with him. One of them said, “I dreamt that I was pressing wine.” The other said, “I dreamt that I was carrying bread on my head of which birds were eating. Tell us their interpretation, for we see you as one of those who do good.”"
+      "translation_english": "Two young men went to prison with him. One of them said, “I dreamt that I was pressing wine.” The other said, “I dreamt that I was carrying bread on my head of which birds were eating. Tell us their interpretation, for we see you as one of those who do good.”",
+      "translation_turkish": "Onunla birlikte iki genç de hapse girdi. İçlerinden biri, \"Rüyamda şarap sıktığımı gördüm\" dedi. Diğeri ise, \"Rüyamda kuşların yediği bir ekmeği başımın üzerinde taşıdığımı gördüm. Bize bunların yorumunu söyle, çünkü biz seni iyilik yapanlardan görüyoruz\" dedi.",
+      "translation_arabic": "ودخل مع يوسف السجن شابان قال أحدهما: حلمت أني أعصر عنباً، وقال الآخر: حلمت أني أحمل على رأسي خبزاً تأكل منه الطير، أخبرنا بتفسير هذه الرؤية إنا نراك بين الصالحين."
     },
     {
       "number": 37,
@@ -411,7 +483,9 @@
       "sajda": false,
       "translation_dari": "یوسف گفت: پیش از آنکه غذایتان به شما برسد، شما را از تعبیر خوابتان آگاه خواهم ساخت، این (تعبیر خواب) که به شما می‌گویم از چیزهایی است که پروردگارم به من آموخته است. همانا من آیین قومی را که به الله ایمان نمی‌آورند و منکر آخرت نیز هستند، ترک کرده‌ام.",
       "translation_pashto": "12-37 (یوسف) وویل: چې تاسو ته به هغه طعام لا نه وي راغلى چې تاسو ته هغه دركاوه شي مګر چې تاسو به د دې (خوبونو) پر تعبیر خبر كړم، مخكې له دې نه چې تاسو ته هغه راشي، دا (تعبیر) له هغه علم څخه دى چې زما رب ما ته ښودلى دى، بېشكه ما د هغه قوم دین پریښى دى چې په الله ایمان نه لري او په اخرت هم كافران دي",
-      "translation_english": "Joseph said, “Before there comes to you the meal which you will be given, I will inform you of their interpretation. This is part of what my Lord has taught me. I have renounced the faith of people who do not believe in Allah and who deny the Hereafter."
+      "translation_english": "Joseph said, “Before there comes to you the meal which you will be given, I will inform you of their interpretation. This is part of what my Lord has taught me. I have renounced the faith of people who do not believe in Allah and who deny the Hereafter.",
+      "translation_turkish": "Yusuf dedi ki: \"Size verilecek yemek gelmeden önce, onların yorumunu size bildireceğim. Bu, Rabbimin bana öğrettiğinin bir kısmıdır. Ben, Allah'a inanmayan ve ahireti inkar eden kavmin imanından vazgeçtim.\"",
+      "translation_arabic": "قال يوسف: قبل أن يأتيك طعامك سأعلمك تفسير رؤياك، فإن هذا (تفسير الحلم) الذي أخبرك به هو مما علمنيه ربي. إني تركت دين قوم لا يؤمنون بالله ويكذبون بالآخرة."
     },
     {
       "number": 38,
@@ -422,7 +496,9 @@
       "sajda": false,
       "translation_dari": "بلکه دین پدرانم ابراهیم و اسحق و یعقوب را پیروی کرده ام، برای ما شایسته نیست که با الله چیزی را شریک گردانیم، این (ایمان و توحید) از فضل الله بر ما و بر مردم است، ولی بیشتر مردم شکر گزاری نمی‌کنند.",
       "translation_pashto": "12-38 او ما د خپلو پلرونو د ملت پیروي كړې ده چې ابراهیم او اسحق او یعقوب دى، زمونږ لپاره له سره جايز نه دي چې له الله سره څه شى شریك كړو، دا د الله له فضله څخه دي پر مونږ باندې او په (نورو) خلقو باندې او لېكن زیاتره خلق شكر نه وباسي",
-      "translation_english": "I follow the faith of my fathers – Abraham, Isaac and Jacob; it is not right for us to associate any partner with Allah. This is from Allah’s favor upon us and upon people, but most people are ungrateful."
+      "translation_english": "I follow the faith of my fathers – Abraham, Isaac and Jacob; it is not right for us to associate any partner with Allah. This is from Allah’s favor upon us and upon people, but most people are ungrateful.",
+      "translation_turkish": "Atalarım İbrahim, İshak ve Yakup'un inancını takip ediyorum; Allah'a hiçbir şeyi ortak koşmamız doğru değildir. Bu, Allah'ın bize ve insanlara bir lütfudur, fakat insanların çoğu nankördür.",
+      "translation_arabic": "بل اتبعت ملة آبائي إبراهيم وإسحاق ويعقوب. ولا ينبغي لنا أن نشرك بالله شيئاً. وهذا (الإيمان والتوحيد) من فضل الله علينا وعلى الناس، ولكن أكثر الناس لا يشكرون."
     },
     {
       "number": 39,
@@ -433,7 +509,9 @@
       "sajda": false,
       "translation_dari": "(یوسف گفت:) ای دوستان زندانی ام! آیا معبودهای پراگنده بهتر است یا الله یگانۀ غالب (بر همه مخلوقات)؟",
       "translation_pashto": "12-39 اى د زندان دواړو ملګرو! ایا ګڼ او متفرق خدایان غوره دي یا كه هغه الله چې یو دى، ډېر قوي او غالب دى",
-      "translation_english": "O my two fellow prisoners, which is better: many different lords or Allah, the One, the Subjugator?"
+      "translation_english": "O my two fellow prisoners, which is better: many different lords or Allah, the One, the Subjugator?",
+      "translation_turkish": "Ey iki esir arkadaşım; hangisi daha hayırlıdır; çok sayıda rabler mi, yoksa bir olan ve boyun eğdiren Allah mı?",
+      "translation_arabic": "(Youssef said:) O friends of my prisoner! فهل الآلهة المتفرقة أفضل أم الله وحده هو المسيطر؟"
     },
     {
       "number": 40,
@@ -444,7 +522,9 @@
       "sajda": false,
       "translation_dari": "غير از او نمی‌پرستید مگر نام‌هایی را که شما و پدرانتان وضع کرده‌اید، الله (هیچ) دلیل و برهانی بر (صحت) آنان نفرستاده است. فرمانروایی (کائنات) تنها از الله است و امر کرده که جز او را نپرستید، این است دین راست و استوار، ولی بیشتر مردم نمی‌دانند.",
       "translation_pashto": "12-40 تاسو له الله نه غیر عبادت نه كوئ مګر د داسې نومونو چې تاسو او ستاسو پلرونو ایښي (او نومولي) دي (او) الله د دوى (د الوهیت) په باره كې هېڅ دلیل نه دى نازل كړى، حكم يواځې الله ته خاص دى، هغه حكم كړى دى چې تاسو يواځې د هغه عبادت كوئ، همدا سم دین دى او لېكن زیاتره خلق نه پوهېږي",
-      "translation_english": "You worship none besides Him except names that you and your forefathers have made up, for which Allah has not sent down any authority. All power belongs to Allah alone; He has commanded that you should worship none except Him. This is the right religion, but most people do not know.”"
+      "translation_english": "You worship none besides Him except names that you and your forefathers have made up, for which Allah has not sent down any authority. All power belongs to Allah alone; He has commanded that you should worship none except Him. This is the right religion, but most people do not know.”",
+      "translation_turkish": "Siz, sizin ve atalarınızın uydurduğu ve Allah'ın hakkında hiçbir delil indirmediği isimler dışında, O'ndan başkasına ibadet etmiyorsunuz. Bütün güç yalnızca Allah'a aittir; Kendisinden başkasına ibadet etmemenizi emretmiştir. Bu doğru dindir ama insanların çoğu bilmez.”",
+      "translation_arabic": "ما تعبدون من دونه إلا الأسماء التي سميتموها أنتم وآباؤكم، لم يرسل الله عليها برهانًا ولا برهانًا. إن الحكم لله وحده، وقد أمر ألا تعبدوا إلا إياه. هذا هو الدين الحق الحنيف ولكن أكثر الناس لا يعلمون."
     },
     {
       "number": 41,
@@ -455,7 +535,9 @@
       "sajda": false,
       "translation_dari": "ای دوستان زندانی ام! اما یکی از شما (مثل سابق) به آقای خود شراب می‌نوشاند، اما آن دیگر به دار کشیده می‌شود و پرنده‌ها از سر او می‌خورند. (باز گفت:) امری که شما دوتن جویای (تعبير آن) از من شدید، فيصله شده است.",
       "translation_pashto": "12-41 اى د زندان دواړو ملګرو! هر چي په تاسو كې یو دى، نو هغه خو به پر خپل مالك شراب څښوي او پاتې شو بل، نو هغه به په دار كولى شي، نو مرغان به د ده له سر نه (غوښې) خوري، هغه كار فیصله شوى دى چې تاسو د هغه په باره كې (له ما نه) تعبیر پوښتئ",
-      "translation_english": "“O my two fellow prisoners, as for one of you, he will serve wine to his master; as for the other, he will be crucified and the birds will eat from his head. The matter you are asking about has been decreed.”"
+      "translation_english": "“O my two fellow prisoners, as for one of you, he will serve wine to his master; as for the other, he will be crucified and the birds will eat from his head. The matter you are asking about has been decreed.”",
+      "translation_turkish": "\"Ey iki esir arkadaşım, biriniz efendisine şarap ikram edecek, diğeriniz ise çarmıha gerilecek ve başından kuşlar yiyecek. Sorduğunuz iş kesinleşti.\"",
+      "translation_arabic": "أصدقائي المسجونين! ولكن أحدكم (كما في السابق) يسقي سيده خمراً، والآخر يُشنق وتأكل الطير رأسه. (قال مرة أخرى:) قد قضى الأمر الذي سألتني عنه (تفسيره)."
     },
     {
       "number": 42,
@@ -466,7 +548,9 @@
       "sajda": false,
       "translation_dari": "و به یکی از آن دو که گمان می‌کرد نجات می‌یابد، گفت: مرا در نزد آقای خود یاد کن، ولی شیطان یادآوری (قضیۀ) یوسف را نزد آقایش از یاد آن (جوان) برد؛ در نتيجه، (یوسف) چند سال در زندان ماند.",
       "translation_pashto": "12-42 او هغه كس ته يې وویل چې پر هغه يې دا یقین و چې یقینًا دى په دې دواړو كې خلاصى موندونكى دى: د خپل مالك په وړاندې ما یاد كړه، نو شیطان له هغه نه خپل مالك ته (د یوسف) یادول هېر كړل، نو هغه په زندان كې څو كاله پاتې شو",
-      "translation_english": "Then he said to the one he knew would be saved, “Mention me to your master.” But Satan made him forget to mention this to his master, so he remained in prison for several years."
+      "translation_english": "Then he said to the one he knew would be saved, “Mention me to your master.” But Satan made him forget to mention this to his master, so he remained in prison for several years.",
+      "translation_turkish": "Sonra kurtulacağını bildiği kişiye, \"Efendine benden bahset\" dedi. Fakat şeytan, bunu efendisine söylemeyi ona unutturdu ve o, birkaç yıl zindanda kaldı.",
+      "translation_arabic": "وقال لأحدهما الذي ظن أنه نجا: اذكرني عند ربك فذهب الشيطان عن ربك ذكرى يوسف. ونتيجة لذلك بقي (يوسف) في السجن عدة سنوات."
     },
     {
       "number": 43,
@@ -477,7 +561,9 @@
       "sajda": false,
       "translation_dari": "و پادشاه گفت: من در خواب هفت گاو فربه را دیدم که هفت گاو لاغر، آنها را می‌خوردند، و هفت خوشه سبز و هفت خوشه خشک دیگر را دیدم. ای سران قوم! در بارۀ خوابم به من نظر دهید، اگر خواب را تعبیر می‌کنید.",
       "translation_pashto": "12-43 او بادشاه وویل: بېشكه زه چې یم، زه  اوه چاغې څربه غواګانې وینم، چې اوه خوارې غواګانې يې خوري او اوه شنه وږي او نور وچ (اوه وږي وینم) اى سردارانو! تاسو ما ته زما د خوب تعبیر ووایئ، كه چېرې تاسو د خوب تعبیر كولى شئ",
-      "translation_english": "The King said, “I dreamt of seven fat cows eaten up by seven lean ones, and seven green ears of grain and [seven] others withered. O chiefs, explain my dream to me if you can interpret dreams.”"
+      "translation_english": "The King said, “I dreamt of seven fat cows eaten up by seven lean ones, and seven green ears of grain and [seven] others withered. O chiefs, explain my dream to me if you can interpret dreams.”",
+      "translation_turkish": "Kral şöyle dedi: \"Rüyamda yedi semiz ineğin yedi cılız inek tarafından yendiğini, yedi yeşil başağın ve diğer (yedi) başağın kuruduğunu gördüm. Ey beyler, eğer rüyayı yorumlayabilirseniz bana rüyamı açıklayın.\"",
+      "translation_arabic": "وقال الملك: رأيت في المنام سبع بقرات سمينة يأكلهن سبع بقرات رقيقات، ورأيت سبع سنبلات خضر وسبع سنبلات أخرى يابسة. يا زعماء الشعب! أعطني رأي في حلمي إذا كنت تفسر الحلم."
     },
     {
       "number": 44,
@@ -488,7 +574,9 @@
       "sajda": false,
       "translation_dari": "(سران قوم) گفتند: این خواب‌های پریشان کننده و بی‌اساس است و ما به تعبیر خواب‌های پریشان و بی‌اساس آگاهی نداریم.",
       "translation_pashto": "12-44 هغوى وویل: (دا) ګډوډ (تَخَیُّلي) خوبونه دي او مونږ د خیالي ګډو وډو خوبونو په تعبیر باندې عالمان نه یو",
-      "translation_english": "They said, “These are jumbled dreams, and we do not know the interpretation of such dreams.”"
+      "translation_english": "They said, “These are jumbled dreams, and we do not know the interpretation of such dreams.”",
+      "translation_turkish": "\"Bunlar karışık rüyalardır ve biz bu rüyaların yorumunu bilmiyoruz\" dediler.",
+      "translation_arabic": "فقال (شيوخ القبائل): هذه أحلام مزعجة لا أساس لها من الصحة، ونحن لا نعرف معنى الأحلام المزعجة التي لا أساس لها من الصحة."
     },
     {
       "number": 45,
@@ -499,7 +587,9 @@
       "sajda": false,
       "translation_dari": "و کسی که از آن دو نفر نجات یافته بود بعد از مدتها به یاد آورد (و) گفت: من شما را از تعبیر آن باخبر میسازم، پس مرا (نزد یوسف) بفرستید.",
       "translation_pashto": "12-45 او هغه كس  وویل چې په هغو دواړو كې هغه نجات موندلى و او له ډېرې مودې نه پس يې یاد شو: زه تاسو د دې (خوب) پر تعبیر خبروم، نو تاسو ما (یوسف ته) ولېږئ",
-      "translation_english": "The freed prisoner remembered after a long time had passed, and said, “I will inform you of its interpretation, so send me forth.”"
+      "translation_english": "The freed prisoner remembered after a long time had passed, and said, “I will inform you of its interpretation, so send me forth.”",
+      "translation_turkish": "Serbest bırakılan esir, aradan uzun bir süre geçtikten sonra hatırladı ve şöyle dedi: \"Ben bunun yorumunu sana bildireceğim, o halde beni gönder.\"",
+      "translation_arabic": "وتذكر الذي نجا من هذين بعد فترة طويلة (و) قال: سأخبرك بتأويله فأرسلني (إلى يوسف)."
     },
     {
       "number": 46,
@@ -510,7 +600,9 @@
       "sajda": false,
       "translation_dari": "(پس نزد یوسف رفته و گفت:) ای یوسف! ای مرد راستگو! دربارۀ هفت گاو فربه که هفت گاو لاغر آنها را می‌خورند، و (دربارۀ) هفت خوشۀ سبز و هفت خوشۀ خشک به ما نظر ده تا اینکه من به‌سوی مردم برگردم، امید است آنان بدانند.",
       "translation_pashto": "12-46 اى یوسفه! اى ډېره رښتینه! ته مونږ ته تعبیر بیان كړه د اوو څربو غواګانو په باره كې چې اوه خوارې يې خوري او د اوو شنو وږو او نورو (اوو) وچو (وږو) په باره كې، د دې لپاره چې زه خلقو ته واپس لاړشم، د دې لپاره چې هغوى پوه شي",
-      "translation_english": "[He said], “Joseph, O man of truth, tell us about seven fat cows eaten up by seven lean ones, and seven green ears of grain and [seven] others withered, so that I may return to the people and that they may know.”"
+      "translation_english": "[He said], “Joseph, O man of truth, tell us about seven fat cows eaten up by seven lean ones, and seven green ears of grain and [seven] others withered, so that I may return to the people and that they may know.”",
+      "translation_turkish": "(O dedi ki): \"Ey doğru söyleyen Yusuf, bize yedi cılız ineğin yediği yedi semiz ineği, yedi yeşil başağı ve kurumuş diğer (yedi) başağı anlat ki, ben de insanlara döneyim ve onlar da bilsinler.\"",
+      "translation_arabic": "(So he went to Yusuf and said:) O Yusuf! أيها الرجل الصادق! أفتنا في البقرات السبع السمينة التي تأكلها البقرات السبع العجاف، والسبع السنابل الخضراء، والسبع اليابسات، حتى أرجع إلى الناس، لعلهم يعلمون."
     },
     {
       "number": 47,
@@ -521,7 +613,9 @@
       "sajda": false,
       "translation_dari": "يوسف گفت: هفت سال پی در پی کشت کنید و آنچه را که درو نمودید جز اندکی که می‌خورید در خوشۀ آن بگذارید.",
       "translation_pashto": "12-47 هغهٔ وویل: تاسو به اوه كاله پرله پسې په ډېر كوښښ سره كر كيله كوئ، نو څه چې تاسو ورېبئ هغه (غله) په خپلو وږو كې پرېږدئ، خو لږ له هغو نه چې تاسو يې خورئ",
-      "translation_english": "Joseph said, “You will grow crops for seven consecutive years. But whatever you harvest, leave it in its ear, except for a little that you may eat."
+      "translation_english": "Joseph said, “You will grow crops for seven consecutive years. But whatever you harvest, leave it in its ear, except for a little that you may eat.",
+      "translation_turkish": "Yusuf dedi ki: \"Yedi yıl aralıksız ürün yetiştireceksiniz. Ama yiyeceğiniz az bir miktar dışında, hasat ettiğiniz her şeyi başağında bırakın.",
+      "translation_arabic": "قال يوسف: ازرع سبع سنين متوالية واترك ما حصدت إلا قليلا مما تأكل في عنقودها."
     },
     {
       "number": 48,
@@ -532,7 +626,9 @@
       "sajda": false,
       "translation_dari": "پس از آن، هفت سال سخت می‌آید که آنچه را به خاطر آن ذخیره کرده‌اید می‌خورند مگر اندکی از آنچه که ذخیره می‌کنید.",
       "translation_pashto": "12-48 بیا به له دې (كلونو) نه پس ډېر سخت اوه (كاله) راځي چې هغه (غلې) به وخوري چې تاسو مخكې د دغو (كلونو) لپاره ذخیره كړي دي مګر لږ شان له هغه نه چې تاسو يې ساتئ",
-      "translation_english": "Then after that will come seven years of hardship which will devour all what you had stored, except for a little that you may set aside."
+      "translation_english": "Then after that will come seven years of hardship which will devour all what you had stored, except for a little that you may set aside.",
+      "translation_turkish": "Daha sonra, ayırdığınız az bir miktar hariç, biriktirdiklerinizin tamamını yok edecek olan yedi sıkıntı yılı gelecektir.",
+      "translation_arabic": "ويأتي من بعد ذلك سبع سنين شداد يأكلون ما ادخرتم له إلا قليلا مما تدخرون."
     },
     {
       "number": 49,
@@ -543,7 +639,9 @@
       "sajda": false,
       "translation_dari": "باز بعد از آن (سالهای خشک و سخت) سالی می‌آید که به مردم (در آن سال) باران می‌رسد، و در آن شیره (انگور و زیتون و دیگر میوه‌ها) را می‌فشارند.",
       "translation_pashto": "12-49 بیا به له دې (كلونو) نه پس یو كال راځي چې په هغه كې به (په باران سره) د خلقو فریاد رسي وشي او په ده كې به دوى (مېوې) نچوړي",
-      "translation_english": "Then after that will come a year in which people will have abundant rain, and in which they will press [grapes and olives].”"
+      "translation_english": "Then after that will come a year in which people will have abundant rain, and in which they will press [grapes and olives].”",
+      "translation_turkish": "Bundan sonra insanların yağmurlarının bol olacağı ve üzüm ve zeytin yetiştirecekleri bir yıl gelecektir.”",
+      "translation_arabic": "ثم يأتي بعد ذلك (سنوات الجفاف) عام يمطر فيه الناس (في تلك السنة) فيعصرون فيه العصير (العنب والزيتون وغيرهما من الفواكه)."
     },
     {
       "number": 50,
@@ -554,7 +652,9 @@
       "sajda": false,
       "translation_dari": "و پادشاه گفت: یوسف را پیش من بیاورید، چون قاصد نزد او آمد، گفت: پیش آقایت باز گرد و از او بپرس ماجرای زنانی که دست‌هایشان را بریدند چه بود؟ و یقینا پروردگارم به مکر آنان داناست.",
       "translation_pashto": "12-50 او بادشاه وویل: تاسو هغه (یوسف) ما ته راولئ، نو كله چې ده ته استازى راغى، (نو) ده (ورته) وویل: خپل مالك ته بېرته لاړ شه، نو له هغه نه تپوس وكړه چې د هغو ښځو څه حال و چې خپل لاسونه يې پرې كړي وو، بېشكه زما رب د هغوى پر مكر او چل ښه پوه دى",
-      "translation_english": "The King said, “Bring him to me.” But when the messenger came to him, he said, “Go back to your master and ask him, ‘What was the case of the women who cut their hands?’ Indeed, my Lord is All-Knowing of their guile.”"
+      "translation_english": "The King said, “Bring him to me.” But when the messenger came to him, he said, “Go back to your master and ask him, ‘What was the case of the women who cut their hands?’ Indeed, my Lord is All-Knowing of their guile.”",
+      "translation_turkish": "Kral, \"Onu bana getirin\" dedi. Fakat elçi ona gelince şöyle dedi: \"Efendine dön ve ona sor: 'Ellerini kesen kadınların durumu neydi?' Şüphesiz Rabbim onların hilelerini çok iyi bilendir.\"",
+      "translation_arabic": "وقال الملك: ائتوني بيوسف. فلما جاءه الرسول قال: ارجع إلى سيدك فاسأله ما فعل النساء اللاتي قطعن أيديهن. وإن ربي يعلم كيدهم."
     },
     {
       "number": 51,
@@ -565,7 +665,9 @@
       "sajda": false,
       "translation_dari": "پادشاه (زنان را جمع کرده) گفت: جریان شما چه بود آنگاه که خواستید یوسف را به خود بخوانید؟ گفتند: پناه بر الله، هیچ گناهی از او سراغ نداریم. زن عزیز گفت: اکنون حق آشکار شد، این من بودم که او را به‌سوی خود خواندم (ولی او به من روی نداد) و يقينا او از راستگویان است.",
       "translation_pashto": "12-51 هغه وویل: ستاسو څه حال (معامله) وه كله چې تاسو له یوسف نه د هغه د نفس غوښتنه كوله؟ هغوى وویل: الله ته پاكي ده، مونږ په هغه كې هېڅ بدي نه وه معلومه كړې، د عزیز ښځې وویل: اوس حقه (او رښتیا) خبره ظاهره شوه، ما له هغه نه مطالبه كړې وه او بېشكه هغه یقینًا له رښتینو څخه دى",
-      "translation_english": "The king said, “What happened when you [O women] tried to seduce Joseph?” They said, “Allah forbid; we know nothing bad about him.” The chief minister’s wife said, “Now the truth has come to light. It was I who tried to seduce him, and he is surely the truthful."
+      "translation_english": "The king said, “What happened when you [O women] tried to seduce Joseph?” They said, “Allah forbid; we know nothing bad about him.” The chief minister’s wife said, “Now the truth has come to light. It was I who tried to seduce him, and he is surely the truthful.",
+      "translation_turkish": "Kral dedi ki: \"Siz (ey kadınlar) Yusuf'u baştan çıkarmaya çalıştığınızda ne oldu?\" “Allah esirgesin, onun hakkında kötü bir şey bilmiyoruz” dediler. Başbakanın eşi, \"Artık gerçek ortaya çıktı. Onu baştan çıkarmaya çalışan bendim, o da kesinlikle doğru söylüyor.\"",
+      "translation_arabic": "فقال الملك (جمع النساء): ما حدث لك عندما أردت أن تدعو يوسف لنفسك؟ قالوا: نعوذ بالله، لا نعلم منه ذنبا. قالت العزيزة: الآن ظهر الحق، وأنا الذي دعوته إلي (فلم يلتفت إلي)، وإنه لمن الصادقين."
     },
     {
       "number": 52,
@@ -576,7 +678,9 @@
       "sajda": false,
       "translation_dari": "این (در خواست من) به آن خاطر است که او (عزیز مصر) بداند من در نهان به او خیانت نکرده ام و الله مكر خیانت کاران را به سر نمی‌رساند.",
       "translation_pashto": "12-52 دا د دې لپاره چې هغه (عزیز) پوه شي چې ما پسې شا له هغه سره خیانت نه دى كړى، او دا چې یقینًا الله د خیانتګرو مكر نه برابروي (سر ته يې نه رسوي)",
-      "translation_english": "That is because he [i.e., the chief] should know that I did not betray him in his absence, for Allah does not lead the guile of the betrayers to succeed.”"
+      "translation_english": "That is because he [i.e., the chief] should know that I did not betray him in his absence, for Allah does not lead the guile of the betrayers to succeed.”",
+      "translation_turkish": "Bu, onun (yani reisin) benim kendisine yokluğunda ihanet etmediğimi bilmesi içindir; çünkü Allah, hainlerin hilesini başarıya ulaştırmaz.”",
+      "translation_arabic": "وهذا (طلبي) لكي يعلم (عزيز مصر) أنني لم أخنه في السر ولا يعاقب الله من يخون."
     },
     {
       "number": 53,
@@ -587,7 +691,9 @@
       "sajda": false,
       "translation_dari": "و من نفس خود را تبرئه نمی‌کنم؛ چرا که نفس حتما بسیار به بدی امر می‌کند، مگر نفس کسی که پروردگارم به او رحم کند، چون پروردگارم آمرزندۀ مهربان است.",
       "translation_pashto": "12-53 او زه خپل نفس نه بري كوم(پاك ورته نه وايم)، یقینًا نفس خو په بدۍ سره ډېر حكم كوونكى دى، مګر هغه چې زما رب پرې رحم وكړي، یقینًا زما رب ښه، مغفرت كوونكى، بې حده رحم كوونكى دى",
-      "translation_english": "I do not absolve myself of blame, for Indeed the soul prompts one to evil, except those to whom my Lord may show mercy. Indeed, my Lord is All-Forgiving, Most Merciful.”"
+      "translation_english": "I do not absolve myself of blame, for Indeed the soul prompts one to evil, except those to whom my Lord may show mercy. Indeed, my Lord is All-Forgiving, Most Merciful.”",
+      "translation_turkish": "Ben kendimi suçtan kurtaramam, çünkü Rabbimin merhamet ettiği kimseler müstesna, nefis insanı kötülüğe teşvik eder. Şüphesiz Rabbim çok bağışlayandır, çok merhamet edendir.”",
+      "translation_arabic": "ولا أبرئ نفسي؛ لأن النفس لتأمر بالسوء كثيرًا، إلا النفس من رحم ربي، فإن ربي هو الغفور الرحيم."
     },
     {
       "number": 54,
@@ -598,7 +704,9 @@
       "sajda": false,
       "translation_dari": "و پادشاه (بار دوم) گفت: او را نزد من بیاورید تا وی را از مخصوص (مشورۀ خود و از افراد مقرب) خود گردانم. پس چون با او به سخن پرداخت، گفت: البته تو امروز نزد ما ارجمند و امانتدار (و قابل اعتماد) هستی.",
       "translation_pashto": "12-54 او باچا وویل: هغه ما ته راولئ چې زه يې د خپل ځان لپاره خاص مُصاحب كړم، نو كله چې يې له هغه سره خبرې وكړې، ويې ويل:بېشكه تهٔ همدا له نن ورځې نه زمونږ په نیز د مرتبې خاوند، (او) د اعتبار وړ يې",
-      "translation_english": "The King said, “Bring him to me; I will appoint him [as an adviser] exclusively to myself.” Then when he spoke to him, he said, “You are today in a highly-esteemed position and fully trusted by us.”"
+      "translation_english": "The King said, “Bring him to me; I will appoint him [as an adviser] exclusively to myself.” Then when he spoke to him, he said, “You are today in a highly-esteemed position and fully trusted by us.”",
+      "translation_turkish": "Kral, “Onu bana getirin; Onu yalnızca kendime [danışman olarak] atayacağım.” Daha sonra onunla konuştuğunda, \"Sen bugün çok saygın bir konumdasın ve bizim tarafımızdan tamamen güvenilen bir konumdasın\" dedi.",
+      "translation_arabic": "فقال الملك (في المرة الثانية): ائتوني به حتى أجعله من خاصتي. فلما كلمه قال: بلى، أنت معنا اليوم شريف وأمين."
     },
     {
       "number": 55,
@@ -609,7 +717,9 @@
       "sajda": false,
       "translation_dari": "يوسف گفت: مرا بر خزانه‌های مصر مقرر کن، چون که من نگاهدارندۀ دانا هستم.",
       "translation_pashto": "12-55 هغه وویل: تهٔ ما د دې ملك پر خزانو باندې مقرر كړه، بېشكه زه ښه ساتونكى، ښه پوه یم",
-      "translation_english": "Joseph said, “Put me in charge of the storehouses of the land; I am indeed a good keeper and knowledgeable.”"
+      "translation_english": "Joseph said, “Put me in charge of the storehouses of the land; I am indeed a good keeper and knowledgeable.”",
+      "translation_turkish": "Yusuf şöyle dedi: “Ülkenin ambarlarının başına beni atayın; Ben gerçekten iyi bir kaleciyim ve bilgiliyim.”",
+      "translation_arabic": "قال يوسف: اجعلني على خزائن مصر فإني خازن العلم."
     },
     {
       "number": 56,
@@ -620,7 +730,9 @@
       "sajda": false,
       "translation_dari": "این چنین یوسف را در این سرزمین قدرت و نعمت (و نفوذ) دادیم، که در آن هر جا که بخواهد قرار گیرد، ما نعمت خود را به هر کس که بخواهیم می‌رسانیم و مزد نیکوکاران را ضایع نمی‌گردانیم.",
       "translation_pashto": "12-56 او همدارنګه مونږ یوسف ته په ځمكه (د مصر) كې اقتدار وركړ، چې په دې (ملك) كې به يې چېرې چې غوښتل؛ ځاى نیوه (اوسېدلو)، مونږ خپل رحمت كوو پر چا چې مونږ وغواړو او مونږ د نېكي كوونكو اجر نه ضايع كوو",
-      "translation_english": "This is how We established Joseph in the land so that he may settle wherever he wished. We extend Our mercy to whom We will, and We do not let the reward of those who do good to go to waste."
+      "translation_english": "This is how We established Joseph in the land so that he may settle wherever he wished. We extend Our mercy to whom We will, and We do not let the reward of those who do good to go to waste.",
+      "translation_turkish": "Böylece Yusuf'u dilediği yere yerleşsin diye yeryüzünde yerleştirdik. Rahmetimizi dilediğimize uzatırız ve iyilik yapanların mükâfatını zayi etmeyiz.",
+      "translation_arabic": "كذلك أعطينا يوسف سلطانا وبركات في هذه الأرض يتخذها حيث يشاء ونعماتنا نؤتيه من نشاء ولا نضيع أجر المحسنين."
     },
     {
       "number": 57,
@@ -631,7 +743,9 @@
       "sajda": false,
       "translation_dari": "و البته ثواب آخرت برای آنانی که ایمان آورده و پرهیزگاری می‌کردند (نسبت به پادشاهی دنیا) بهتر است.",
       "translation_pashto": "12-57 او یقینًا د اخرت اجر د هغو كسانو لپاره ډېر غوره دى چې ایمان يې راوړدى دى او پرهېزګاري يې كوله",
-      "translation_english": "But the reward of the Hereafter is better for those who believe and fear Allah."
+      "translation_english": "But the reward of the Hereafter is better for those who believe and fear Allah.",
+      "translation_turkish": "İman edip Allah'tan sakınanlar için ahiret mükâfatı daha hayırlıdır.",
+      "translation_arabic": "وبطبيعة الحال، فإن أجر الآخرة خير (مقارنة بملكوت الدنيا) للذين آمنوا وعملوا بالتقوى."
     },
     {
       "number": 58,
@@ -642,7 +756,9 @@
       "sajda": false,
       "translation_dari": "و برادران یوسف (برای حصول غله) به مصر آمدند، پس بر او وارد شدند، یوسف آنان را شناخت ولی آنها يوسف را نشناختند.",
       "translation_pashto": "12-58 او د یوسف وروڼه (له كِنعانه مصر ته د غلې دانې اخيستلو لپاره) راغلل، نو په ده باندې ورننوتل، نو ده هغوى وپېژندل او هغوى ده لره ناپېژندونكي وو",
-      "translation_english": "The brothers of Joseph came and presented themselves before him; he recognized them but they did not know him."
+      "translation_english": "The brothers of Joseph came and presented themselves before him; he recognized them but they did not know him.",
+      "translation_turkish": "Yusuf'un kardeşleri gelip huzuruna çıktılar; onları tanıdı ama onlar onu tanımıyordu.",
+      "translation_arabic": "وجاء إخوة يوسف إلى مصر (للحصول على الحبوب) فهاجموه، فعرفهم يوسف، وهم لم يعرفوا يوسف."
     },
     {
       "number": 59,
@@ -653,7 +769,9 @@
       "sajda": false,
       "translation_dari": "و هنگامی که يوسف بارهای آنها را آماده کرد، گفت: (بار دیگر) برادر پدری خود را نزد من آورید، مگر نمی‌بینید که من پیمانه را به تمام و کمال میدهم و من بهترین میزبانان هستم؟",
       "translation_pashto": "12-59 او كله چې هغهٔ دوى ته د دوى د سفر اسباب تیار كړل، ويې ويل:تاسو ما ته خپل هغه ورور راولئ چې ستاسو له پلاره دى، ایا تاسو نه وینئ چې بېشكه زه پېمانه (دانې) پوره وركوم او زه تر ټولو غوره مېلمه پال یم",
-      "translation_english": "When he prepared for them their rations, he said, “Bring me your step-brother; do you not see that I give full measure and I am the best host?"
+      "translation_english": "When he prepared for them their rations, he said, “Bring me your step-brother; do you not see that I give full measure and I am the best host?",
+      "translation_turkish": "Onlara yiyeceklerini hazırlarken şöyle dedi: “Bana üvey kardeşini getirin; Benim ölçüyü tam verdiğimi ve en iyi ev sahibi olduğumu görmüyor musun?",
+      "translation_arabic": "ولما أعد يوسف أوزارهم قال ائتوني بأخيكم ألا ترون أوفي الكيل وأنا خير المضيفين؟"
     },
     {
       "number": 60,
@@ -664,7 +782,9 @@
       "sajda": false,
       "translation_dari": "پس اگر او را نزد من نیاوردید، پس برای شما هرگز پیمانۀ غله نزد من نیست و هرگز به من نزدیک نشوید.",
       "translation_pashto": "12-60 نو كه چېرې تاسو هغه ما ته رانه وسته، بیا نو ستاسو لپاره زما سره هېڅ پېمانه نشته او (بیا) تاسو ما ته مه رانژدې كېږئ",
-      "translation_english": "If you do not bring him to me, you will never receive any measure [of grain] from me, nor will you even come close to me.”"
+      "translation_english": "If you do not bring him to me, you will never receive any measure [of grain] from me, nor will you even come close to me.”",
+      "translation_turkish": "Eğer onu bana getirmezsen, benden asla bir ölçek tahıl alamayacaksın, yanıma bile yaklaşamayacaksın.”",
+      "translation_arabic": "فإن لم تحضره إلي، فلن يكون معك مقدار من الحبوب ولن تقترب مني أبدًا."
     },
     {
       "number": 61,
@@ -675,7 +795,9 @@
       "sajda": false,
       "translation_dari": "گفتند: دربارۀ او با پدرش گفتگو نموده تلاش می‌کنیم که (به هر وسیله ممکن او را نزد تو بیاوریم) و این کار را خواهیم کرد.",
       "translation_pashto": "12-61 هغوى وویل: مونږ به د هغهٔ په هكله د هغه له پلاره په كوښښ سره غوښتنه كوو او بېشكه مونږ خامخا (دا كار) كوونكي یو",
-      "translation_english": "They said, “We will persuade his father to send him, and we will surely do our best.”"
+      "translation_english": "They said, “We will persuade his father to send him, and we will surely do our best.”",
+      "translation_turkish": "“Babasını onu göndermeye ikna edeceğiz ve mutlaka elimizden geleni yapacağız” dediler.",
+      "translation_arabic": "فقالوا: سنتحدث عنه مع والده ونحاول (أن نحضره إليكم بأي وسيلة ممكنة) وسنفعل ذلك."
     },
     {
       "number": 62,
@@ -686,7 +808,9 @@
       "sajda": false,
       "translation_dari": "و به جوانان (خدمتگذار خود) گفت: سرمایۀ (پول)‌شان را (که پرداخته اند) در بارهایشان بگذارید، تا چون به نزد خانواده‌شان بازگردند آن را بازیابند و شاید (دوباره) برگردند.",
       "translation_pashto": "12-62 او هغه خپلو ځلمیو ته وویل: د هغوى پنګه (سرمايه) د هغوى په بارونو كې كېږدئ، د دې لپاره چې دوى هغه وپېژني، كله چې دوى خپل اهل ته واپس لاړ شي، د دې لپاره چې دوى واپس راشي",
-      "translation_english": "Joseph said to his servants, “Put their trading goods back in their saddlebags so that they may find them when they go back to their family; perhaps they will return.”"
+      "translation_english": "Joseph said to his servants, “Put their trading goods back in their saddlebags so that they may find them when they go back to their family; perhaps they will return.”",
+      "translation_turkish": "Yusuf hizmetçilerine şöyle dedi: \"Ticaret mallarını heybelerine koyun ki, ailelerinin yanına döndüklerinde onları bulsunlar; belki geri dönerler.”",
+      "translation_arabic": "وقال للشباب (عباده): اتركوا أموالهم (أموالهم) (التي دفعوها) في أثقالهم، حتى إذا رجعوا إلى أهليهم استعادوها وربما يرجعون."
     },
     {
       "number": 63,
@@ -697,7 +821,9 @@
       "sajda": false,
       "translation_dari": "پس چون به‌سوی پدر خویش باز گشتند، گفتند: ای پدر! پیمانۀ غله از ما منع شد، پس برادر ما را با ما بفرست تا پیمانه بگیریم و همانا ما نگهبان او هستیم.",
       "translation_pashto": "12-63 نو كله چې دوى خپل پلار ته بېرته وګرځېدل، ويې ويل:اى زمونږ پلاره! زمونږ نه پېمانه (د بنيامين) منع كړى شوې ده، نو ته زمونږ سره زمونږ ورور ولېږه چې پېمانه راواخلو او بېشكه مونږ خامخا د ده حفاظت كوونكي یو",
-      "translation_english": "When they returned to their father, they said, “O our father, we have been denied any further measure [of grain]; send our brother with us so that we may receive our measure, and we will surely protect him.”"
+      "translation_english": "When they returned to their father, they said, “O our father, we have been denied any further measure [of grain]; send our brother with us so that we may receive our measure, and we will surely protect him.”",
+      "translation_turkish": "Babalarının yanına döndüklerinde şöyle dediler: \"Ey babamız, bize bir miktar daha [tahıl] engellendi; Kardeşimizi de bizimle gönder de tedbirimizi alalım, biz de onu mutlaka koruyalım.”",
+      "translation_arabic": "فلما رجعوا إلى أبيهم قالوا: يا أبت! حرمت علينا كيلاً من حبة، فأرسل معنا أخانا ليكيل به، وإنا له لحافظون."
     },
     {
       "number": 64,
@@ -708,7 +834,9 @@
       "sajda": false,
       "translation_dari": "پدر گفت: آیا من دربارۀ او به شما اطمینان کنم همانگونه که دربارۀ برادرش (یوسف) پیش از این به شما اطمینان کردم؟! پس الله بهترین نگهبان و او مهربانترین مهربانان است.",
       "translation_pashto": "12-64 هغه وویل: ایا زه تاسو د ده باره كې پر تاسو اعتماد وكړم مګر په شان د هغه اعتماد چې ما پر تاسو له دې نه مخكې د ده د ورور باره كې كړى و، نو الله ډېر غوره ساتونكى دى او هغه تر ټولو زیات رحم كوونكى دى",
-      "translation_english": "He said, “Should I trust you with him as I trusted you earlier with his brother? But Allah is the best Protector, and He is the Most Merciful of those who show mercy.”"
+      "translation_english": "He said, “Should I trust you with him as I trusted you earlier with his brother? But Allah is the best Protector, and He is the Most Merciful of those who show mercy.”",
+      "translation_turkish": "\"Daha önce kardeşi konusunda sana güvendiğim gibi, ona da güveneyim mi? Ama Allah, koruyucuların en hayırlısıdır ve O, merhamet edenlerin en merhametlisidir\" dedi.",
+      "translation_arabic": "فقال الأب: هل أطمئنك عليه كما ضمنت لك على أخيه (يوسف) من قبل؟! فالله خير حافظا وهو أرحم الراحمين."
     },
     {
       "number": 65,
@@ -719,7 +847,9 @@
       "sajda": false,
       "translation_dari": "و چون بارشان را باز کردند، دیدند که سرمایۀ (پول)‌شان به آنان بازگردانده شده است. گفتند: ای پدر! ما دیگر چه می‌خواهیم؟ این سرمایۀ ماست که به ما بازگردانده شده است و (باز می‌رویم تا) برای خانوادۀ خود آذوقه بیاوریم و برادر خود را محافظت می‌کنیم و یک بار شتر اضافه خواهیم آورد، و این مقدار (برای ما کم و) ناچیز است.",
       "translation_pashto": "12-65 او كله چې دوى خپل سامان پرانسته، دوى خپله پنګه وموندله چې دوى ته بېرته واپس كړى شوې ده، دوى وویل: اى زمونږ پلاره! مونږ (نور) څه غواړو؟، دا زمونږ پنګه ده چې مونږ ته بېرته واپس كړى شوې ده، او مونږ به د خپل اهل لپاره غله راوړو او خپل ورور به ساتو او د یو اوښ بار به زیات راوړو، دغه (وركړه د بادشاه لپاره يا دغه اضافي پېمانه) ډېره اسانه پېمانه ده",
-      "translation_english": "When they opened their baggage, they found that their merchandise had been returned to them. They said, “O our father, what more could we ask for? Here are our trading goods returned to us. We can bring more food to our family, protect our brother, and obtain an extra camel-load of grain. That measure is easily secured.”"
+      "translation_english": "When they opened their baggage, they found that their merchandise had been returned to them. They said, “O our father, what more could we ask for? Here are our trading goods returned to us. We can bring more food to our family, protect our brother, and obtain an extra camel-load of grain. That measure is easily secured.”",
+      "translation_turkish": "Bagajlarını açtıklarında malların kendilerine iade edildiğini gördüler. Dediler ki: \"Ey babamız, daha ne isteyebiliriz ki? İşte bize iade edilen ticari mallarımız. Ailemize daha fazla yiyecek götürebilir, kardeşimizi koruyabilir ve fazladan bir deve yükü tahıl elde edebiliriz. Bu tedbir kolaylıkla sağlanır.\"",
+      "translation_arabic": "ولما فتحوا متاعهم رأوا أن رؤوس أموالهم قد ردت إليهم. قالوا: يا أبتاه! ماذا نريد؟ هذا رأس مالنا الذي رد إلينا ونأتي برزق لأهلنا ونحمي أخانا ونأتي بحمولة إضافية من الإبل، وهذا المقدار (بالنسبة لنا قليل) لا يذكر."
     },
     {
       "number": 66,
@@ -730,7 +860,9 @@
       "sajda": false,
       "translation_dari": "يعقوب گفت: هرگز او را با شما نمی‌فرستم تا اینکه عهدی به نام الله به من بدهید که او را حتما نزد من بر می‌گردانید، مگر اینکه گرفتار شوید (و از توان شما خارج گردد)، پس وقتی با پدر عهد بستند، يعقوب گفت: الله بر آنچه می‌گوییم وکیل (آگاه و ناظر) است.",
       "translation_pashto": "12-66 هغه وویل: هیڅكله به هم زه له تاسو سره هغه ونه لېږم تر هغه پورې چې تاسو ما ته د الله پخه وعده راكړئ چې تاسو به هغه خامخا لازمًا ما ته بېرته راولئ، مګر دا چې تاسو له هر جانب نه ګېر كړى شئ، نو كله چې هغوى ده ته خپله پخه وعده وركړه، هغه وویل: الله وكیل (او شاهد) دى پر هغه څه چې مونږ يې وایو",
-      "translation_english": "He said, “I will never send him with you unless you give me a pledge by Allah that you will surely bring him back to me, unless you are completely overpowered.” Then when they gave him their pledge, he said, “Allah is Witness to what we say.”"
+      "translation_english": "He said, “I will never send him with you unless you give me a pledge by Allah that you will surely bring him back to me, unless you are completely overpowered.” Then when they gave him their pledge, he said, “Allah is Witness to what we say.”",
+      "translation_turkish": "Dedi ki: \"Sen, tamamen galip gelmedikçe, onu mutlaka bana geri getireceğine dair Allah adına bana bir söz vermedikçe, onu asla seninle göndermeyeceğim.\" Sonra ona biat ettiklerinde, \"Söylediklerimize Allah şahittir\" dedi.",
+      "translation_arabic": "فقال يعقوب: لن أرسله معك حتى تعاهدني على الله لتردنني به إلا أن تمسك (وما في طاقتك) فلما عاهدوا الأب قال يعقوب: الله وكيل على ما نقول."
     },
     {
       "number": 67,
@@ -741,7 +873,9 @@
       "sajda": false,
       "translation_dari": "و (یعقوب از باب احتیاط) گفت: ای پسران من! از یک دروازه داخل نشوید، بلکه از دروازه‌های مختلف وارد شوید، و نمی‌توانم چیزی را که الله مقرر کرده است از شما دور کنم، (چون) حكم (نفع و ضرر) تنها و خاص به دست الله است، بر او توکل کرده ام و توکل کنندگان باید بر او توکل کنند.",
       "translation_pashto": "12-67 او هغه وویل: اى زما زامنو! تاسو (ټول) له یوې دروازې نه مه ورننوځئ او له بېلو بېلو دروازو نه ورننوځئ او زه له تاسو نه د الله (له فیصلې) نه هېڅ شى نشم لرې كولى، حكم نشته مګر خاص الله لره دى، خاص په هغه باندې ما توكل كړى دى اولازم دي چې توكل كوونكي يواځې په هغه باندې توكل وكړي",
-      "translation_english": "And he said, “O my sons, do not enter all from one gate, but enter from different gates. I cannot avail you anything against [the decree of] Allah; the decision belongs to Allah alone. In Him I put my trust, and in Him let the faithful put their trust.”"
+      "translation_english": "And he said, “O my sons, do not enter all from one gate, but enter from different gates. I cannot avail you anything against [the decree of] Allah; the decision belongs to Allah alone. In Him I put my trust, and in Him let the faithful put their trust.”",
+      "translation_turkish": "Ve dedi ki: \"Ey oğullarım, hepinize bir kapıdan girmeyin, ayrı kapılardan girin. Ben Allah'ın hükmüne karşı size hiçbir şey yapamam; hüküm yalnızca Allah'ındır. Ben O'na tevekkül ettim ve mü'minler de O'na tevekkül etsinler.\"",
+      "translation_arabic": "وقال (يعقوب، على سبيل الاحتياط): يا بني! لا تدخلوا من باب واحد، بل ادخلوا من أبواب مختلفة، ولا أستطيع أن آخذ منكم ما قضى الله، فإن القرار بيد الله وحده، عليه توكلت، وعلى المتوكلين أن يتوكلوا."
     },
     {
       "number": 68,
@@ -752,7 +886,9 @@
       "sajda": false,
       "translation_dari": "و چون همان طور که پدرشان به آنان دستور داده بود، وارد شدند، (چنین ورود) نمی‌توانست آنچه را که الله خواسته بود از آنان دفع کند، ولی آنچه را که در دل يعقوب بود برآورده کرد، يقينا يعقوب به خاطر اینکه ما به او آموخته بودیم، دارای علم بزرگی بود. ليكن بسیاری از مردم نمی‌دانند.",
       "translation_pashto": "12-68 او كله چې دوى ننوتل له هغه ځایه چې دوى ته يې خپل پلار حكم كړى و، هغهٔ له دوى نه د الله (له فيصلې) نه هېڅ شى نشو لرې كولى، مګر دا د یعقوب په زړه كې یو حاجت و چې هغه يې ادا كړ، او بېشكه هغه یقینًا د علم خاوند و، په سبب د دې چې مونږ هغه ته تعلیم وركړى و او لېكن د خلقو اكثریت نه پوهېږي ",
-      "translation_english": "When they entered as their father had instructed them, it could not avail them against [the decree of] Allah whatsoever, yet a need in Jacob’s heart was satisfied. He was indeed a man of knowledge because of what We had taught him, but most people do not know."
+      "translation_english": "When they entered as their father had instructed them, it could not avail them against [the decree of] Allah whatsoever, yet a need in Jacob’s heart was satisfied. He was indeed a man of knowledge because of what We had taught him, but most people do not know.",
+      "translation_turkish": "Babalarının emrettiği gibi içeri girdiklerinde bu, Allah'ın hükmüne karşı onlara hiçbir fayda sağlamadı, fakat yine de Yakub'un kalbindeki bir ihtiyaç tatmin oldu. O, kendisine öğrettiklerimizden dolayı gerçekten bir ilim adamıydı; fakat insanların çoğu bilmezler.",
+      "translation_arabic": "فلما دخلوا من حيث أمرهم أبوهم لم يستطيعوا رد ما طلب الله منهم ولكن حقق ما في قلب يعقوب إن يعقوب كان عليما بما علمناه. لكن الكثير من الناس لا يعرفون."
     },
     {
       "number": 69,
@@ -763,7 +899,9 @@
       "sajda": false,
       "translation_dari": "و چون (بار دوم) بر يوسف وارد شدند، برادرش (بنیامین) را نزد خود جای داد. گفت: من برادر تو (یوسف) هستم، پس از آنچه کرده‌اند اندوهگین مباش.",
       "translation_pashto": "12-69 او كله چې دوى په یوسف باندې ورننوتل، (نو) هغه خپل ورور  خپل ځان ته رانژدې كړ، ويې ويل:بېشكه زه چې یم، هم دا زه ستا ورور یم، نو ته پر هغو كارونو مه خفه كېږه چې دوى به كول",
-      "translation_english": "When they came into Joseph’s presence, he called his brother [Benjamin] aside, and said, “I am indeed your brother, so do not be saddened by their past actions.”"
+      "translation_english": "When they came into Joseph’s presence, he called his brother [Benjamin] aside, and said, “I am indeed your brother, so do not be saddened by their past actions.”",
+      "translation_turkish": "Yusuf'un huzuruna vardıklarında kardeşini bir kenara çekti ve şöyle dedi: \"Ben senin kardeşinim, onların geçmişteki yaptıklarından dolayı üzülme.\"",
+      "translation_arabic": "ولما دخلوا على يوسف (المرة الثانية) وضع معه أخاه (بنيامين). قال: أنا أخوك فلا تحزن على ما فعلوا."
     },
     {
       "number": 70,
@@ -774,7 +912,9 @@
       "sajda": false,
       "translation_dari": "پس چون يوسف آنان را با آذوقه و سامان‌شان مجهز کرد، جام آبخوری (پادشاه) را در بار برادرش نهاد. باز ندا دهنده‌ای ندا داد: ای کاروان! حتما شما دزد هستید.",
       "translation_pashto": "12-70 نو كله چې هغه، دوى ته د دوى سامانونه تیار كړل (، نو) د څښلو جام يې د خپل ورور په بار كې كېښود، بیا غږ كوونكي غږ وكړ! اى قافلې! بېشكه تاسو يقينًا غله یئ",
-      "translation_english": "When he prepared for them their rations, he placed the [royal] drinking vessel in his brother’s saddlebag. Then an announcer called out, “O people of the caravan, you must be thieves!”"
+      "translation_english": "When he prepared for them their rations, he placed the [royal] drinking vessel in his brother’s saddlebag. Then an announcer called out, “O people of the caravan, you must be thieves!”",
+      "translation_turkish": "Onlara yiyeceklerini hazırlarken, [kraliyet] içki kabını kardeşinin heybesine koydu. Bunun üzerine bir spiker, \"Ey kervan halkı, siz hırsızsınız!\" diye seslendi.",
+      "translation_arabic": "فلما جهزهم يوسف بالطعام والعتاد، وضع القدح (الملك) على مشرب أخيه. فنادى منادٍ مرة أخرى: يا قافلة! يجب أن تكون لص."
     },
     {
       "number": 71,
@@ -785,7 +925,9 @@
       "sajda": false,
       "translation_dari": "روی به‌سوی ایشان کرده و گفتند: چه چیز را گم کرده‌اید؟",
       "translation_pashto": "12-71 هغوى وویل او دوى ته يې مخ راواړوه: تاسو څه شى ورك كړى دى؟",
-      "translation_english": "They said as they turned back, “What are you missing?”"
+      "translation_english": "They said as they turned back, “What are you missing?”",
+      "translation_turkish": "Arkalarına dönerken “Neyi kaçırıyorsun?” dediler.",
+      "translation_arabic": "فالتفتوا إليهم فقالوا: ماذا فقدتم؟"
     },
     {
       "number": 72,
@@ -796,7 +938,9 @@
       "sajda": false,
       "translation_dari": "گفتند: جام پادشاه را گم کرده‌ایم و برای هر کس که آنرا بیاورد بار شتر (از غله) خواهد بود و من ضامن این (وعده) هستم.",
       "translation_pashto": "12-72 هغوى وویل: مونږ د بادشاه پېمانه وركه كړې ده، او د هغه چا لپاره چې دغه راوړي، د یو اوښ بار دى، او زه د دې ضامن یم",
-      "translation_english": "They said, “We are missing the king’s measuring cup. Whoever brings it will have a camel-load [of grain]; and I guarantee it.”"
+      "translation_english": "They said, “We are missing the king’s measuring cup. Whoever brings it will have a camel-load [of grain]; and I guarantee it.”",
+      "translation_turkish": "\"Kralın ölçü kabı kayıp. Onu getirene bir deve yükü tahıl verilecek, buna kefilim\" dediler.",
+      "translation_arabic": "قالوا: أضعنا كأس الملك، ومن جاء به فهو حمل بعير، وأنا على هذا كفيلة."
     },
     {
       "number": 73,
@@ -807,7 +951,9 @@
       "sajda": false,
       "translation_dari": "(برادران یوسف) گفتند: به الله قسم که شما خوب دانسته‌اید که ما در سرزمین مصر برای فساد نیامده‌ایم و ما (پیش از این) دزد نبودیم.",
       "translation_pashto": "12-73 هغوى وویل: قسم پر الله، یقینًا یقینًا تاسو پوه شوي یئ چې مونږ د دې لپاره نه یو راغلي چې په دې ځمكه كې فساد وكړو، او مونږ خو كله هم غله نه یو تېر شوي",
-      "translation_english": "They said, “By Allah, you know well that we did not come to spread corruption in the land, nor are we thieves.”"
+      "translation_english": "They said, “By Allah, you know well that we did not come to spread corruption in the land, nor are we thieves.”",
+      "translation_turkish": "Onlar, \"Vallahi, sen iyi biliyorsun ki, biz yeryüzünde bozgunculuk yapmak için gelmedik ve biz hırsız da değiliz\" dediler.",
+      "translation_arabic": "قالوا (إخوة يوسف): والله لقد تعلمون أننا لم نأت أرض مصر للفساد، ولم نكن سارقين (من قبل)."
     },
     {
       "number": 74,
@@ -818,7 +964,9 @@
       "sajda": false,
       "translation_dari": "(مأموران) گفتند: پس سزای او (دزد) چیست اگر دروغگو باشید؟",
       "translation_pashto": "12-74 هغوى وویل: نو د هغه جزا به څه وي كه تاسو دروغجن وئ؟",
-      "translation_english": "They said, “What should the punishment be, if you are liars?”"
+      "translation_english": "They said, “What should the punishment be, if you are liars?”",
+      "translation_turkish": "\"Eğer yalancı iseniz cezası ne olmalıdır?\" dediler.",
+      "translation_arabic": "قال (الضباط): فما عقوبته (السارق) إن كنت كاذبا؟"
     },
     {
       "number": 75,
@@ -829,7 +977,9 @@
       "sajda": false,
       "translation_dari": "گفتند: سزایش این است که هر کس آن جام در بارش یافت شود پس به سزای دزدی اسیر گردد، ما این چنین ظالمان را سزا می‌دهیم.",
       "translation_pashto": "12-75 دوى وویل: د هغهٔ جزا هغه كس دى د چا په بار كې چې دغه وموندل شي، نو هم دغه كس د هغه جزا دى (هغه به په كې نيولى شي)، همدارنګه مونږ ظالمانو ته جزا وركوو",
-      "translation_english": "They said, “The punishment is that the one in whose saddlebag it is found should be enslaved in recompense. This is how we punish the wrongdoers.”"
+      "translation_english": "They said, “The punishment is that the one in whose saddlebag it is found should be enslaved in recompense. This is how we punish the wrongdoers.”",
+      "translation_turkish": "\"Ceza, heybesinde bulunan kimsenin ceza olarak köleleştirilmesidir. Biz zalimleri işte böyle cezalandırırız\" dediler.",
+      "translation_arabic": "قالوا: العقوبة أن من وجد ذلك الكأس في المطر فليقبض عليه بالسرقة. سوف نعاقب مثل هؤلاء الظالمين."
     },
     {
       "number": 76,
@@ -840,7 +990,9 @@
       "sajda": false,
       "translation_dari": "پس پیش از بار برادرش، به تفتیش نمودن بارهای دیگران آغاز کرد، باز پیمانه را از بار برادرش بیرون آورد، ما اینگونه برای یوسف تدبیر آموختیم، زیرا او نمی‌توانست در دین پادشاه برادرش را بگیرد، مگر اینکه الله بخواهد، درجات هر کس را که بخواهیم بالا می‌بریم و فوق هر دانایی دانایی بزرگتر هست.",
       "translation_pashto": "12-76 نو د خپل ورور له بار نه مخكې يې د هغوى پر بارونو شروع وكړه، بیا يې دغه پېمانه د خپل ورور له بار نه راوښكله، همدارنګه مونږ د یوسف لپاره تدبیر وكړ، هغه (یوسف د دې حقدار) نه و چې د بادشاه په قانون كې خپل ورور راونیسي (او بندي يې كړي)، مګر دا چې الله وغواړي، چا ته چې مونږ وغواړو په درجو كې يې اوچتوو او د هر علم والا له پاسه لوى عالم دى",
-      "translation_english": "So he began searching their bags before his brother’s bag, then he brought it out of his brother’s bag. This is how We planned for Joseph; he could not have detained his brother under the King’s law, unless Allah so willed. We raise in ranks whom We will, but above each one who possesses knowledge is the All-Knowing One."
+      "translation_english": "So he began searching their bags before his brother’s bag, then he brought it out of his brother’s bag. This is how We planned for Joseph; he could not have detained his brother under the King’s law, unless Allah so willed. We raise in ranks whom We will, but above each one who possesses knowledge is the All-Knowing One.",
+      "translation_turkish": "Kardeşinin çantasından önce onların çantalarını aramaya başladı, sonra kardeşinin çantasından çıkardı. Biz Yusuf için böyle planladık; Allah dilemedikçe, Kral'ın kanununa göre kardeşini alıkoyamazdı. Dilediğimizi derecelerle yükseltiriz; her ilim sahibinin üstünde ise her şeyi bilen vardır.",
+      "translation_arabic": "فقبل ثقل أخيه بدأ يتفقد أثقال الآخرين، وأخرج الكيل من ثقل أخيه. وهكذا تعلمنا الحكمة ليوسف، فإنه لا يستطيع أن يأخذ دين أخيه في دين الملك إلا أن يشاء الله."
     },
     {
       "number": 77,
@@ -851,7 +1003,9 @@
       "sajda": false,
       "translation_dari": "(برادرانش) گفتند: اگر او دزدی کند (بعید نیست) چون برادرش پیش از او دزدی کرده بود. پس یوسف آن را در دل خود پنهان نمود و آن را برایشان آشکار نکرد. (و در دل خویش) گفت: شما مقام بدتری دارید و الله به آنچه وصف می‌کنید داناتر است.",
       "translation_pashto": "12-77 هغوى وویل: كه دا غلا كوي، نو (د حرانتيا خبره نه ده) یقینًا له ده نه مخكې د ده ورور (يوسف) هم غلا كړې ده، نو یوسف دا په خپل نفس كې پټه وساتله او دايې دوى ته ښكاره نه كړه، ويې ويل: ستاسو حال ډېر بد دى، او الله ښه عالم دى پر هغې خبره چې تاسو يې بیانوئ",
-      "translation_english": "They said, “If he steals, then it was his brother [Joseph] who stole before.” Joseph kept it to himself and did not reveal it to them, and said [in his heart], “You are in a far worse position; and Allah knows best the truth of what you say.”"
+      "translation_english": "They said, “If he steals, then it was his brother [Joseph] who stole before.” Joseph kept it to himself and did not reveal it to them, and said [in his heart], “You are in a far worse position; and Allah knows best the truth of what you say.”",
+      "translation_turkish": "\"Eğer o çalarsa, daha önce çalan kardeşi Yusuf'tur\" dediler. Yusuf bunu kendine sakladı ve onlara açıklamadı ve (içinden) şöyle dedi: \"Sen daha kötü bir durumdasın; Allah, söylediklerinin doğrusunu daha iyi bilir.\"",
+      "translation_arabic": "قال (إخوته): إذا سرق (لا يبعد) لأن أخاه قد سرق قبله. فأخفاها يوسف في قلبه ولم يبدها لهم. (وفي قلبه) قال: أنت شر حالا، والله أعلم بما تصفون."
     },
     {
       "number": 78,
@@ -862,7 +1016,9 @@
       "sajda": false,
       "translation_dari": "گفتند: ای عزیز؛ او پدر پیر و سالخورده‌ای دارد، پس یکی از ما را به جای او بگیر، یقینا تو را از نیکوکاران می‌بینیم.",
       "translation_pashto": "12-78 دوى وویل: اى عزیزه! بېشكه د ده ډېر زوړ عمرخوړلى پلار دى، نو ته د ده پر ځاى په مونږ كې یو تن ونیسه، بېشكه مونږ تا له احسان كوونكو ځنې وینو",
-      "translation_english": "They said, “O chief minister, he has an elderly and vulnerable father, so take one of us instead of him, for we see that you are a kind man.”"
+      "translation_english": "They said, “O chief minister, he has an elderly and vulnerable father, so take one of us instead of him, for we see that you are a kind man.”",
+      "translation_turkish": "\"Ey başbakan, onun yaşlı ve savunmasız bir babası var, onun yerine bizden birini al, çünkü görüyoruz ki sen iyi bir adamsın\" dediler.",
+      "translation_arabic": "قالوا: يا عزيزي؛ إن له أبا كبيرا فخذ أحدنا مكانه سنجدك من الصالحين."
     },
     {
       "number": 79,
@@ -873,7 +1029,9 @@
       "sajda": false,
       "translation_dari": "يوسف گفت: به الله پناه می‌برم از اینکه غیر از کسی را که متاع خود را نزد او یافته‌ایم بگیریم، ما در آن صورت از ظالمان خواهیم بود.",
       "translation_pashto": "12-79 هغه وویل: د الله پناه غواړو (له دې خبرې نه) چې مونږ له هغه كس نه غير څوك ونيسو چې مونږ له هغه سره خپل سامان موندلى دى، بېشكه مونږ به په دغه وخت كې خامخا ظالمان یو",
-      "translation_english": "Joseph said, “Allah forbid that we should take except the one with whom we found our property, for we would then be unjust.”"
+      "translation_english": "Joseph said, “Allah forbid that we should take except the one with whom we found our property, for we would then be unjust.”",
+      "translation_turkish": "Yusuf dedi ki: \"Malımızı yanında bulduğumuz kimseden başkasını almaktan Allah korusun, o zaman haksızlık etmiş oluruz.\"",
+      "translation_arabic": "قال يوسف: أعوذ بالله أن نأخذ غير الذي وجدنا متاعنا عنده فنكون من الظالمين."
     },
     {
       "number": 80,
@@ -884,7 +1042,9 @@
       "sajda": false,
       "translation_dari": "و هنگامی که از او ناامید شدند در خلوتی برای مشورت نشستند، بزرگ آنان گفت: آیا ندانسته‌اید که پدرتان از شما به نام الله عهد محکم گرفته است و پیش از این دربارۀ يوسف کوتاهی کرده‌اید؟ من هرگز از این سرزمین حرکت نمی‌کنم مگر اینکه پدرم به من اجازه دهد، یا الله در حق من حکم کند و او بهترین حکم کنندگان است.",
       "translation_pashto": "12-80 نو كله چې دوى له هغه (يوسف) نه نا امېده شول (، نو یوې خوا ته) بېل شول، په دې حال كې چې مشوره كوونكي وو، د دوى مشر وویل: ایا تاسو پر دې پوه نه یئ چې یقینًا ستاسو پلار له تاسو نه د الله پخه وعده اخيستې ده او له دې نه مخكې چې تاسو د یوسف په باره كې څه تقصیر كړى دى، نو زه خو به هیڅكله هم له دې ځمكې ونه خوځم تر هغه پورې چې ما ته زما پلار اجازت راكړي، یا الله زما لپاره فیصله وكړي او هغه تر ټولو غوره فیصله كوونكى دى",
-      "translation_english": "When they lost hope in him, they conferred privately. The eldest of them said, “Do you not know that your father has taken from you a solemn pledge by Allah, and before this you failed with regard to Joseph? Therefore, I will never leave this land until my father gives me permission or Allah decides for me, for He is the Best of Judges."
+      "translation_english": "When they lost hope in him, they conferred privately. The eldest of them said, “Do you not know that your father has taken from you a solemn pledge by Allah, and before this you failed with regard to Joseph? Therefore, I will never leave this land until my father gives me permission or Allah decides for me, for He is the Best of Judges.",
+      "translation_turkish": "Ondan umutlarını yitirdiklerinde özel olarak görüştüler. Büyükleri dedi ki: \"Babanızın sizden Allah adına kesin bir söz aldığını ve bundan önce Yusuf konusunda başarısız olduğunuzu bilmiyor musunuz? O halde babam bana izin verinceye veya Allah benim hakkımda hüküm verinceye kadar bu yerden asla ayrılmayacağım. Çünkü O, hükmedenlerin en hayırlısıdır.\"",
+      "translation_arabic": "ولما خابوا منه جلسوا على انفراد يتشاورون، فقال كبيرهم: أما علمت أن أباك قد أخذ منك على الله يميناً، وقد قصرت في يوسف من قبل؟ ولا أفارق هذه الأرض أبدا حتى يأذن لي أبي، أو يحكم الله لي، وهو خير الحاكمين."
     },
     {
       "number": 81,
@@ -895,7 +1055,9 @@
       "sajda": false,
       "translation_dari": "نزد پدرتان برگردید و بگویید: ای پدر! پسرت دزدی کرده است، و گواهی ندادیم جز به آنچه دانستیم و ما نگهبان علم غیب نبودیم.",
       "translation_pashto": "12-81 تاسو خپل پلار ته بېرته لاړ شئ، نو (ورته) ووایئ، اى زمونږ پلاره! بېشكه ستا زوى غلا كړې ده (ځكه نو هغه ونيول شو) او مونږ يواځې هغه څه بيانوو چې مونږ ته يې علم شوى دى او مونږ د غيبو ساتونكي (نګهبانان) خو نه وو",
-      "translation_english": "Go back to your father and say, ‘O our father, your son has committed theft, and we did not tell you except what we saw, and we had no knowledge of the unseen."
+      "translation_english": "Go back to your father and say, ‘O our father, your son has committed theft, and we did not tell you except what we saw, and we had no knowledge of the unseen.",
+      "translation_turkish": "Babana dön ve de ki: 'Ey babamız, oğlun hırsızlık yaptı, biz sana gördüklerimizin dışında bir şey söylemedik ve bizim gayb bilgimiz yoktu.",
+      "translation_arabic": "ارجع إلى أبيك فقل: يا أبت! لقد سرق ابنك وما شهدنا إلا بما علمنا وما كنا لعلم الغيب حافظين."
     },
     {
       "number": 82,
@@ -906,7 +1068,9 @@
       "sajda": false,
       "translation_dari": "و از (مردم) دهی که در آن بودیم و از کاروانی که با آن آمدیم بپرس، و يقينا ما راستگوییم.",
       "translation_pashto": "12-82 او ته له هغه كلي (والو) نه تپوس وكړه، چې مونږ په كې وو او له هغې قافلې نه (هم) چې مونږ په هغې كې راغلو او بېشكه مونږ لازمًا رښتیا ویونكي یو",
-      "translation_english": "Ask [the people of] the town where we were and the caravan we came with, and we are surely telling the truth.”"
+      "translation_english": "Ask [the people of] the town where we were and the caravan we came with, and we are surely telling the truth.”",
+      "translation_turkish": "Nerede olduğumuzu ve beraber geldiğimiz kervanı (halkına) sorun, biz kesinlikle doğruyu söyleriz.”",
+      "translation_arabic": "واسأل الذين كنا فيها والعير الذي جئنا به وإنا لصادقون."
     },
     {
       "number": 83,
@@ -917,7 +1081,9 @@
       "sajda": false,
       "translation_dari": "يعقوب گفت: (نه) بلکه نفس‌های تان امری (زشتی) را برای شما آراسته است، پس کار من صبر نیک است، امید که الله همۀ آنها را یکجا نزد من بیارد، چون او دانای حکیم است.",
       "translation_pashto": "12-83 هغه وویل: بلكې تاسو لپاره ستاسو نفسونو یو كار ښايسته كړى دى،  نو (زما  كار) صبر جمیل دى، امېد دى چې الله به ما ته هغوى ټول راولي، بېشكه هغه، هم هغه ښه پوه، ښه حكمت والا دى",
-      "translation_english": "He said, “No, but your souls have enticed you to commit something. But I will bear this with beautiful patience; perhaps Allah will bring them all back to me, for He is the All-Knowing, the All-Wise.”"
+      "translation_english": "He said, “No, but your souls have enticed you to commit something. But I will bear this with beautiful patience; perhaps Allah will bring them all back to me, for He is the All-Knowing, the All-Wise.”",
+      "translation_turkish": "Dedi ki: \"Hayır, fakat nefisleriniz sizi bir şeye ayarttı. Ama ben buna güzel bir sabırla katlanacağım; belki Allah onların hepsini bana geri getirir. Çünkü O, her şeyi bilendir, hikmet sahibidir.\"",
+      "translation_arabic": "قال يعقوب: (لا) ولكن أعدت لكم أنفسكم شيئاً (قبيحاً)، فعملي هو الصبر الجيد، آملاً أن يأتيني الله بهم جميعاً دفعة واحدة، إنه هو العليم الحكيم."
     },
     {
       "number": 84,
@@ -928,7 +1094,9 @@
       "sajda": false,
       "translation_dari": "و از آنان روی گرداند و گفت: ای دریغ بر یوسف! و چشمانش از اندوه سفید و نابینا گردید درحالیکه بسیار غمگین بود.",
       "translation_pashto": "12-84 او له هغوى نه يې مخ وګرځاوه او ويې ويل: اى زما غمه په (جدايۍ د) یوسف باندې! او د هغه دواړه سترګې له غمه تكې سپینې شوې، نو هغه (له غمه) ډك و",
-      "translation_english": "He turned away from them and said, “O my sorrow for Joseph!” And his eyes turned white because of suppressing his grief."
+      "translation_english": "He turned away from them and said, “O my sorrow for Joseph!” And his eyes turned white because of suppressing his grief.",
+      "translation_turkish": "Onlardan yüz çevirdi ve şöyle dedi: \"Ey Yusuf'a olan üzüntüm!\" Ve üzüntüsünü bastırdığı için gözleri beyaza döndü.",
+      "translation_arabic": "فتولى عنهم وقال: يا يوسف! وابيضت عيناه وأعمى من الحزن وهو في غاية الحزن."
     },
     {
       "number": 85,
@@ -939,7 +1107,9 @@
       "sajda": false,
       "translation_dari": "پسران گفتند: قسم به الله همیشه یوسف را یاد می‌کنی تا بیمار (و نزدیک به مرگ) شوی یا از هلاک شدگان گردی.",
       "translation_pashto": "12-85 هغوى وویل: پر الله قسم دى چې ته به همېشه یوسف یادوې، تر هغه پورې چې ته په وېلې كېدو سره مرګ ته قریب شې یا ته له هلاكېدونكو نه شې",
-      "translation_english": "They said, “By Allah, you will not cease to remember Joseph until your health is ruined or you die.”"
+      "translation_english": "They said, “By Allah, you will not cease to remember Joseph until your health is ruined or you die.”",
+      "translation_turkish": "\"Vallahi, sağlığın bozuluncaya veya ölene kadar Yusuf'u anmaktan vazgeçmeyeceksin\" dediler.",
+      "translation_arabic": "فقال الغلام: والله لا تزال تذكر يوسف حتى تمرض أو تكون من الهالكين."
     },
     {
       "number": 86,
@@ -950,7 +1120,9 @@
       "sajda": false,
       "translation_dari": "يعقوب گفت: من پریشانی حال و اندوهم را تنها به الله شکایت می‌کنم و از سوی الله چیزهایی را می‌دانم که شما نمی‌دانید.",
       "translation_pashto": "12-86 هغه وویل: بېشكه همدا خبره ده چې زه د خپلې پرېشانۍ او غم فرياد الله ته كوم، او زه د الله له جانبه پر هغه څه پوهېږم چې تاسو پرې نه پوهېږئ",
-      "translation_english": "He said, “I only complain of my anguish and sorrow to Allah, and I know from Allah what you do not know."
+      "translation_english": "He said, “I only complain of my anguish and sorrow to Allah, and I know from Allah what you do not know.",
+      "translation_turkish": "Dedi ki: \"Ben üzüntümü ve üzüntümü ancak Allah'a şikayet ediyorum ve ben Allah'tan sizin bilmediğinizi biliyorum.",
+      "translation_arabic": "قال يعقوب: إنما أشكو بثي وحزني إلى الله، ومن الله أعلم ما لا تعلمون."
     },
     {
       "number": 87,
@@ -961,7 +1133,9 @@
       "sajda": false,
       "translation_dari": "ای پسران من! بروید و از یوسف و برادرش جستجو کنید و از رحمت الله ناامید مشوید، زیرا جز قوم کافر از رحمت الله ناامید نمی‌شود.",
       "translation_pashto": "12-87 اى زما زامنو! تاسو لاړ شئ، نو د یوسف او د هغه د ورور لټون وكړئ او د الله له رحمت نه مه نا امېده كېږئ، بېشكه حقيقت دا دى چې د الله له رحمت نه كافر خو يواځې نا امېده كېږي",
-      "translation_english": "O my sons, go and find out about Joseph and his brother, and do not despair of Allah’s mercy. Indeed, no one despairs of Allah’s mercy except the disbelieving people.”"
+      "translation_english": "O my sons, go and find out about Joseph and his brother, and do not despair of Allah’s mercy. Indeed, no one despairs of Allah’s mercy except the disbelieving people.”",
+      "translation_turkish": "Ey oğullarım, gidin Yusuf ve kardeşinin durumunu öğrenin ve Allah'ın rahmetinden ümidinizi kesmeyin. Şüphesiz kâfir kavimden başkası Allah'ın rahmetinden ümidini kesmez.\"",
+      "translation_arabic": "يا أبنائي! اذهبوا فابحثوا عن يوسف وأخيه ولا تقنطوا من رحمة الله فإنه لا ييأس من رحمة الله إلا القوم الكافرون."
     },
     {
       "number": 88,
@@ -972,7 +1146,9 @@
       "sajda": false,
       "translation_dari": "و هنگامی که (بار سوم) پیش یوسف رفتند، گفتند: ای عزیز! به ما و خانواده ما سختی رسیده است و سرمایه اندک و ناچیز آورده‌ایم، پس پیمانه ما را کامل بده و بر ما (بيشتر) بخشش کن، چون الله صدقه دهندگان را پاداش می‌دهد.",
       "translation_pashto": "12-88 نو كله چې دوى پر هغه ورننوتل، دوى وویل: اى عزیزه! مونږ ته او زمونږ كورنۍ ته سختي رسېدلې ده او مونږ ناقصه (كمه) پنګه راوړې ده، نو ته مونږ ته پوره پېمانه راكړه او پر مونږ صدقه وكړه، بېشكه الله خیرات كوونكو ته بدله وركوي",
-      "translation_english": "When they came into Joseph’s presence, they said, “O chief minister, we and our family have been struck with adversity, and we have brought some goods of scanty worth. So give us full measure [of grain] and be charitable to us, for Allah rewards those who are charitable.”"
+      "translation_english": "When they came into Joseph’s presence, they said, “O chief minister, we and our family have been struck with adversity, and we have brought some goods of scanty worth. So give us full measure [of grain] and be charitable to us, for Allah rewards those who are charitable.”",
+      "translation_turkish": "Yusuf'un huzuruna vardıklarında şöyle dediler: \"Ey vezir, biz ve ailemiz bir belaya uğradık ve değeri az olan bir takım mallar getirdik. O halde bize tam bir ölçü (tahıl) ver ve bize yardımda bulun. Çünkü Allah, iyilik yapanları mükafatlandırır.\"",
+      "translation_arabic": "ولما جاءوا إلى يوسف (الثالثة) قالوا: يا عزيزي! لقد مسنا وأهلنا ضر وأتينا برأس مال قليل فأوف لنا كيلنا واغفر لنا إن الله يجزي المحسنين."
     },
     {
       "number": 89,
@@ -983,7 +1159,9 @@
       "sajda": false,
       "translation_dari": "یوسف گفت: آیا به یاد دارید که با یوسف و برادرش وقتی که نادان بودید چه کردید؟",
       "translation_pashto": "12-89 ويې ويل: ایا تاسو پر هغه فعل عالمان یئ چې تاسو له یوسف او  د هغه له ورور سره كړى و، كله چې تاسو ناپوهان وئ؟",
-      "translation_english": "He said, “Do you know what you did to Joseph and his brother when you were ignorant?”"
+      "translation_english": "He said, “Do you know what you did to Joseph and his brother when you were ignorant?”",
+      "translation_turkish": "\"Cahil olduğunuz bir dönemde Yusuf'a ve kardeşine ne yaptığınızı biliyor musunuz?\" dedi.",
+      "translation_arabic": "قال يوسف: هل تذكرون ما فعلتم بيوسف وأخيه إذ أنتم جاهلون؟"
     },
     {
       "number": 90,
@@ -994,7 +1172,9 @@
       "sajda": false,
       "translation_dari": "گفتند: آیا واقعا تو یوسف هستی؟ گفت: بلی! من يوسف هستم و این برادر من است، الله بر ما منت نهاده است. چون هر کس تقوا و صبر پیشه کند، بی‌گمان الله پاداش نیکوکاران را ضایع نمی‌کند.",
       "translation_pashto": "12-90 ويې وویل: ایا یقینًا (او) واقعًا همدا ته یوسف يې؟ هغه وویل: هم زه یوسف یم او دغه مې سكه ورور دى، یقینًا الله پر مونږ احسان وكړ، بېشكه حقيقت دا دى چې څوك تقوىٰ اختیار كړي او صبر وكړي، نو بېشكه الله د نېكي كوونكو اجر نه ضايع كوي ",
-      "translation_english": "They said, “Are you really Joseph?” He said, “I am Joseph, and this is my brother. Allah has surely been gracious to us. Whoever fears Allah and remains patient, Allah will not let the reward of those who do good to go to waste.”"
+      "translation_english": "They said, “Are you really Joseph?” He said, “I am Joseph, and this is my brother. Allah has surely been gracious to us. Whoever fears Allah and remains patient, Allah will not let the reward of those who do good to go to waste.”",
+      "translation_turkish": "\"Sen gerçekten Yusuf musun?\" dediler. \"Ben Yusuf'um, bu da kardeşim. Allah bize lütufta bulundu. Kim Allah'tan korkar ve sabrederse, Allah iyilik yapanların mükâfatını zayi etmez\" dedi.",
+      "translation_arabic": "قالوا: أأنت يوسف حقاً؟ قال: نعم! أنا يوسف وهذا أخي رزقنا الله. لأنه من يتقوى ويصبر فإن الله لا يضيع أجر المحسنين."
     },
     {
       "number": 91,
@@ -1005,7 +1185,9 @@
       "sajda": false,
       "translation_dari": "(برادرانش) گفتند: قسم به الله که الله تو را بر ما برتری داده است و در حقیقت ما خطاکار بودیم.",
       "translation_pashto": "12-91 هغوى وویل: قسم پر الله چې یقینًا په رښتیا سره الله ته پر مونږ باندې غوره كړى يې او بېشكه مونږ خامخا خطا كار وو",
-      "translation_english": "They said, “By Allah, Allah has favored you over us, and we have surely been sinful.”"
+      "translation_english": "They said, “By Allah, Allah has favored you over us, and we have surely been sinful.”",
+      "translation_turkish": "\"Vallahi Allah seni bize üstün kıldı ve biz kesinlikle günahkârız\" dediler.",
+      "translation_arabic": "(قالوا): تالله لقد فضلكم الله علينا وإنا كنا ظالمين."
     },
     {
       "number": 92,
@@ -1016,7 +1198,9 @@
       "sajda": false,
       "translation_dari": "یوسف گفت: امروز بر شما هیچ سرزنش و ملامتی نیست. الله شما را می‌آمرزد و او مهربان‌ترین مهربانان است.",
       "translation_pashto": "12-92 هغه وویل: نن ورځ پر تاسو  باندې هېڅ ملامتي نشته، الله دې تاسو وبخښي او هغه تر ټولو زیات رحم كوونكى دى",
-      "translation_english": "He said, “There is no blame on you today. May Allah forgive you, for He is the Most Merciful of those who show mercy."
+      "translation_english": "He said, “There is no blame on you today. May Allah forgive you, for He is the Most Merciful of those who show mercy.",
+      "translation_turkish": "\"Bugün sana bir günah yoktur. Allah seni affetsin, çünkü O, merhamet edenlerin en merhametlisidir\" dedi.",
+      "translation_arabic": "فقال يوسف: لا حرج عليك اليوم ولا حرج. سيغفر الله لك وهو أرحم الراحمين."
     },
     {
       "number": 93,
@@ -1027,7 +1211,9 @@
       "sajda": false,
       "translation_dari": "(و به برادران خود گفت:) این پیراهن مرا با خود ببرید و آن را بر روی پدرم بیاندازید تا بینا گردد و اهل خویش را همه یکجا نزد من بیاورید.",
       "translation_pashto": "12-93 تاسو زما دا كمیس یوسئ، نو دا زما د پلار پر مخ واچوئ، هغه به بېرته بینا شي او تاسو، سره له خپل اهله ټول ما ته راشئ",
-      "translation_english": "Take this shirt of mine and throw it over my father’s face; he will recover his sight. Then come back to me with all of your family.”"
+      "translation_english": "Take this shirt of mine and throw it over my father’s face; he will recover his sight. Then come back to me with all of your family.”",
+      "translation_turkish": "Şu gömleğimi al ve babamın yüzüne at; görüşünü geri kazanacaktır. Daha sonra tüm ailenizle birlikte bana gelin.”",
+      "translation_arabic": "(وقال لإخوته: خذوا قميصي هذا معكم وألقوه على أبي حتى يبصر ويجمع إلي أهلك)."
     },
     {
       "number": 94,
@@ -1038,7 +1224,9 @@
       "sajda": false,
       "translation_dari": "و چون کاروان (برادران یوسف به‌سوی شام) حرکت کرد، پدرشان گفت: اگر مرا به بی‌خردی نسبت ندهید همانا من بوی یوسف را می‌یابم.",
       "translation_pashto": "12-94 او كله چې قافله (د مصر له حدودو) ووتله، د هغوى پلار وویل: بېشكه زه چې یم يقينًا د یوسف خوشبويي محسوسوم  كه چېرې تاسو ما ته د بوډاوالي د كم عقلۍ نسبت ونه كړئ (نو زما تصدیق به وكړئ) ",
-      "translation_english": "When the caravan set out [from Egypt], their father said, “I certainly sense the fragrance of Joseph, even though you might think that I am senile.”"
+      "translation_english": "When the caravan set out [from Egypt], their father said, “I certainly sense the fragrance of Joseph, even though you might think that I am senile.”",
+      "translation_turkish": "Kervan Mısır'dan yola çıktığında babaları şöyle dedi: \"Siz beni bunak sanıyor olsanız da, ben kesinlikle Yusuf'un kokusunu duyuyorum.\"",
+      "translation_arabic": "ولما سارت العير (إخوة يوسف) نحو دمشق قال أبوهم: لئن لم تسفهوني لأشمن ريح يوسف."
     },
     {
       "number": 95,
@@ -1049,7 +1237,9 @@
       "sajda": false,
       "translation_dari": "(اهل خانه) گفتند: قسم به الله که تو در همان خطای قدیمت هستی.",
       "translation_pashto": "12-95 (ده ته حاضرینو) وویل: بېشكه ته چې يې، خامخا په خپلې پخوانۍ خطا كې پروت يې",
-      "translation_english": "They said, “By Allah, you are still lost in your old delusion.”"
+      "translation_english": "They said, “By Allah, you are still lost in your old delusion.”",
+      "translation_turkish": "“Vallahi sen hâlâ o eski vesvesenin içindesin” dediler.",
+      "translation_arabic": "فقال (أهل البيت): والله إنكم على نفس الضلال الذي كان قبله."
     },
     {
       "number": 96,
@@ -1060,7 +1250,9 @@
       "sajda": false,
       "translation_dari": "پس چون مژده دهنده آمد، و پیراهن را بر روی یعقوب انداخت پس او بینا گشت، و گفت: آیا به شما نگفته بودم که از جانب الله چیزهایی را می‌دانم که شما نمی‌دانید؟",
       "translation_pashto": "12-96 نو هغه وخت چې زېرى كوونكى څنګه راغى، نو د ده پر مخ يې هغه (كمیس) واچوه، نو دى بینا وګرځېده، هغه (یعقوب) وویل: ایا ما تاسو ته نه وو ویلي؟ بېشكه زه ( د الله په ښودنې سره) پر هغه څه پوهېږم چې تاسو پرې نه پوهېږئ",
-      "translation_english": "Then when the bearer of the glad tidings came, he threw it over his face, and he immediately recovered his sight. He said, “Did I not tell you that I know from Allah what you do not know?”"
+      "translation_english": "Then when the bearer of the glad tidings came, he threw it over his face, and he immediately recovered his sight. He said, “Did I not tell you that I know from Allah what you do not know?”",
+      "translation_turkish": "Sonra müjdeci gelince, onu yüzüne attı ve hemen gözleri açıldı. \"Ben size, sizin bilmediğiniz şeyleri benim Allah'tan bildiğimi söylemedim mi?\" dedi.",
+      "translation_arabic": "فلما جاء المبشر وألقى القميص على يعقوب، تراءى وقال: ألم أقل لك إني أعلم من الله ما لا تعلمه أنت؟"
     },
     {
       "number": 97,
@@ -1071,7 +1263,9 @@
       "sajda": false,
       "translation_dari": "(پس از رسیدن به کنعان) پسران گفتند: ای پدر! برای ما آمرزش گناهان ما را بخواه که ما خطاکار بودیم.",
       "translation_pashto": "12-97 هغوى وویل: اى زمونږ پلاره! زمونږ لپاره (له الله نه) زمونږ د ګناهونو بخښنه وغواړه، بېشكه مونږ خطا كار وو",
-      "translation_english": "They said, “O our father, pray to Allah to forgive us our sins; we were certainly mistaken.”"
+      "translation_english": "They said, “O our father, pray to Allah to forgive us our sins; we were certainly mistaken.”",
+      "translation_turkish": "Dediler ki: \"Ey babamız, Allah'tan bizim günahlarımızı bağışlamasını dile; biz kesinlikle yanılmışız.\"",
+      "translation_arabic": "(وبعد الوصول إلى كنعان) قال الأبناء: يا أبت! استغفر لنا ذنوبنا إننا كنا ظالمين."
     },
     {
       "number": 98,
@@ -1082,7 +1276,9 @@
       "sajda": false,
       "translation_dari": "گفت: به زودی از پروردگارم برای شما آمرزش می‌خواهم زیرا او آمرزگار مهربان است.",
       "translation_pashto": "12-98 هغه وویل: عنقریب به زه تاسو لپاره له خپل رب نه بخښنه وغواړم، بېشكه هغه، هم هغه، ښه بخښونكى، بې حده رحم كوونكى دى",
-      "translation_english": "He said, “I will ask my Lord to forgive you, for He is the All-Forgiving, the Most Merciful.”"
+      "translation_english": "He said, “I will ask my Lord to forgive you, for He is the All-Forgiving, the Most Merciful.”",
+      "translation_turkish": "\"Rabbimden sizi bağışlamasını isteyeceğim, çünkü O çok bağışlayandır, çok merhamet edendir\" dedi.",
+      "translation_arabic": "قال: سأستغفر لكم ربي عما قريب إنه هو التواب الرحيم."
     },
     {
       "number": 99,
@@ -1093,7 +1289,9 @@
       "sajda": false,
       "translation_dari": "پس چون بر یوسف در آمدند، پدر و مادر خود را در کنار خود جای داد و گفت: به خواست الله با امن و امان وارد سرزمین مصر شوید.",
       "translation_pashto": "12-99 نو كله چې دوى پر یوسف ورننوتل، نو خپل مور و پلار يې خپل ځان ته رانژدې كړل او ويې ويل: تاسو مصر ته داخل شئ، په داسې حال كې چې په امن كې به يئ كه الله وغواړي",
-      "translation_english": "When they came into Joseph’s presence, he embraced his parents and said, “Enter Egypt, if Allah wills, safe and secure."
+      "translation_english": "When they came into Joseph’s presence, he embraced his parents and said, “Enter Egypt, if Allah wills, safe and secure.",
+      "translation_turkish": "Yusuf'un huzuruna vardıklarında anne ve babasına sarıldı ve şöyle dedi: \"Allah dilerse sağ salim Mısır'a girin.",
+      "translation_arabic": "فلما أتوا على يوسف وضع أبويه إلى جانبه وقال: إن شاء الله ادخلوا أرض مصر سالمين."
     },
     {
       "number": 100,
@@ -1104,7 +1302,9 @@
       "sajda": false,
       "translation_dari": "و پدر و مادر خود را بر تخت نشاند و همۀ آنان برای او سجده کنان به زمین افتادند، و گفت: ای پدر! این تعبیر خوابی است که قبلا دیده بودم و پروردگارم آن را راست و درست گردانید، و حقا که به من احسان کرد وقتی که مرا از زندان بیرون ساخت و شما را پس از آنکه شیطان بین من و برادرانم اختلاف افگنده بود از دهات باز آورد. به راستی پروردگارم هر چه بخواهد (با لطف و مهربانی خود) سنجیده و دقیق انجام می‌دهد، زیرا او دانای حکیم است.",
       "translation_pashto": "12-100 او خپل مور و پلار يې (له ځان سره) په تخت باندې پورته كړل، او دوى (ټول) ده ته پرېوتل سجده كوونكي او ده وویل: اى زما پلار جانه! دا زما د هغه خوب تعبیر دى چې مخكې مالېدلى و، یقینًا هغه زما رب رښتیا وګرځاوه، او یقینًا هغه پر ما احسان وكړ كله چې يې زه له جېل نه راووېستم او تاسو يې له میرې (صحرا) نه راوستئ، وروسته له دې چې شیطان زما او زما د وروڼو په مینځ كې جګړه غورځولې وه، بېشكه زما رب باریك تدبیر والا دى، د هغه (شي) لپاره چې اراده يې وكړي، بېشكه هغه، هم هغه، ښه عالم، ښه حكمت والا دى",
-      "translation_english": "He took his parents to the throne, and they all fell down in prostration before him. He said, “O my father, this is the interpretation of my old dream. My Lord has made it come true. He was kind to me when He freed me from prison and brought you all here from the wilderness after Satan caused a rift between me and my brothers. My Lord is gracious to whom He wills. Indeed, He is the All-Knowing, the All-Wise.”"
+      "translation_english": "He took his parents to the throne, and they all fell down in prostration before him. He said, “O my father, this is the interpretation of my old dream. My Lord has made it come true. He was kind to me when He freed me from prison and brought you all here from the wilderness after Satan caused a rift between me and my brothers. My Lord is gracious to whom He wills. Indeed, He is the All-Knowing, the All-Wise.”",
+      "translation_turkish": "Anne ve babasını tahta çıkardı ve hepsi onun önünde secdeye kapandılar. “Ey babacığım, bu benim eski rüyamın yorumudur. Rabbim bunu gerçekleştirdi. Şeytan benimle kardeşlerimin arasını açtıktan sonra beni hapishaneden kurtarıp hepinizi çölden buraya getirdiğinde bana karşı nazik davrandı. Rabbim dilediğine lütufta bulunur. Şüphesiz O, her şeyi bilendir, hikmet sahibidir.”",
+      "translation_arabic": "ووضع أبويه على العرش، فوقعوا له جميعاً ساجدين، فقال: يا أبت! هذا تفسير حلم رأيته من قبل وقد جعله ربي حقا وحقاً، وقد من عليّ إذ أخرجني من السجن وأرجعكم من الريف بعد أن نزغ الشيطان بيني وبين إخوتي. إن ربي يفعل ما يشاء (بفضله ولطفه) بعناية وعناية لأنه هو العليم الحكيم."
     },
     {
       "number": 101,
@@ -1115,7 +1315,9 @@
       "sajda": false,
       "translation_dari": "ای پروردگار! واقعا (نصیبی بزرگ) از پادشاهی به من دادی و به من از تعبیر خوابها آموختی، ای آفرینندۀ آسمان‌ها و زمین! تو کارساز من در دنیا و آخرت هستی، مرا مسلمان بمیران و به صالحان ملحق بگردان.",
       "translation_pashto": "12-101 اى زما ربه! یقینًا تا ما ته (د) څه (علاقې) بادشاهي راكړې ده، او تا ما ته د خوبونو د تعبیر علم راكړى دى، اى د اسمانونو او ځمكې پېدا كوونكیه! په دنیا  او اخرت كې هم ته زما كارساز يې، ته ما ته وفات راكړه، په داسې حال كې چې مسلمان یم او ته ما له نېكانو صالحانو سره یو ځاى كړه ",
-      "translation_english": "“My Lord, You have given me authority and taught me something of the interpretation of dreams. O Originator of the heavens and earth, You are my Protector in this world and in the Hereafter. Cause me to die as a Muslim [submitting to You], and join me with the righteous.”"
+      "translation_english": "“My Lord, You have given me authority and taught me something of the interpretation of dreams. O Originator of the heavens and earth, You are my Protector in this world and in the Hereafter. Cause me to die as a Muslim [submitting to You], and join me with the righteous.”",
+      "translation_turkish": "“Rabbim, bana yetki verdin ve bana rüya tabirinden bir şeyler öğrettin. Ey gökleri ve yeri yoktan var eden, sen benim dünyada ve ahirette koruyucumsun. Beni Müslüman olarak vefat ettir ve beni salihlerin arasına kat.”",
+      "translation_arabic": "يا رب! إنك آتيتني ملكًا وعلمتني تفسير الأحلام يا فاطر السماوات والأرض! أنت عوني في الدنيا والآخرة توفني مسلما وألحقني بالصالحين."
     },
     {
       "number": 102,
@@ -1126,7 +1328,9 @@
       "sajda": false,
       "translation_dari": "این داستان از خبرهای غیب است که آن را به تو وحی می‌کنیم. و تو نزد آنان نبودی وقتی که تصمیم گرفتند، در حالیکه آنان نیرنگ و توطئه چینی می‌کردند.",
       "translation_pashto": "12-102 دا د غیب له خبرونو ځنې دي چې هغه مونږ تا ته وحي كوو او ته له هغوى سره نه وې كله چې هغوى د خپل كار پخه اراده وكړه، په داسې حال كې چې دوى مكر (او فرېب) كاوه",
-      "translation_english": "That is from the stories of the unseen which We reveal to you [O Prophet]; you were not with them when they agreed upon their plan as they were plotting."
+      "translation_english": "That is from the stories of the unseen which We reveal to you [O Prophet]; you were not with them when they agreed upon their plan as they were plotting.",
+      "translation_turkish": "Bu, sana vahyettiğimiz gayb kıssalarındandır. Onlar komplo kurarken, plan üzerinde anlaştıklarında sen yanlarında değildin.",
+      "translation_arabic": "هذه القصة من أخبار الغيب التي نكشفها لكم. وما كنت معهم حين قرروا وهم يمكرون ويمكرون."
     },
     {
       "number": 103,
@@ -1137,7 +1341,9 @@
       "sajda": false,
       "translation_dari": "و بیشتر مردم هر چند حرص بورزی، ایمان نمی‌آورند.",
       "translation_pashto": "12-103 او زیاتره خلق، اګر كه ته (د دوى پر ایمان راوړلو) حرص  وكړې (بیا هم) هېڅكله ایمان راوړونكي نه دي",
-      "translation_english": "But most people will not believe, no matter how eager you may be."
+      "translation_english": "But most people will not believe, no matter how eager you may be.",
+      "translation_turkish": "Ancak ne kadar istekli olursanız olun çoğu insan inanmayacaktır.",
+      "translation_arabic": "وأكثر الناس لا يؤمنون رغم طمعهم."
     },
     {
       "number": 104,
@@ -1148,7 +1354,9 @@
       "sajda": false,
       "translation_dari": "و تو در برابر (این دعوت) از آنان مزدی نمی‌خواهی و آن (قرآن) جز پند و اندرزی برای عالمیان نیست.",
       "translation_pashto": "12-104 او ته له دوى نه په دې  (تبلیغ د قرآن) باندې هېڅ اجر نه غواړې، نه دى دا مګر د ټولو خلقو لپاره (د الله له جانبه) نصیحت",
-      "translation_english": "You are not asking them for any reward. It is only a reminder to the worlds."
+      "translation_english": "You are not asking them for any reward. It is only a reminder to the worlds.",
+      "translation_turkish": "Onlardan herhangi bir ödül istemiyorsunuz. O, âlemlere yalnızca bir hatırlatmadır.",
+      "translation_arabic": "وما تسألهم عليه أجرا وما هو إلا موعظة للعلماء."
     },
     {
       "number": 105,
@@ -1159,7 +1367,9 @@
       "sajda": false,
       "translation_dari": "و چه بسیار دلائل قدرت و وحدانیت (الله) در آسمان‌ها و زمین است که بر آن می‌گذرند در حالیکه ایشان از آن روی می‌گردانند.",
       "translation_pashto": "12-105 او څومره ډېر دلیلونه دي په اسمانونو او ځمكه كې، چې دوى پرې تېرېږي، په داسې حال كې چې دوى له هغو نه مخ اړوونكي وي",
-      "translation_english": "How many signs there are in the heavens and earth which they pass by without paying them any heed!"
+      "translation_english": "How many signs there are in the heavens and earth which they pass by without paying them any heed!",
+      "translation_turkish": "Göklerde ve yerde, hiç umursamadan geçtikleri nice ayetler vardır!",
+      "translation_arabic": "وأدلة القدرة والوحدانية في السماوات والأرض كثيرة يمرون عليها وهم عنها معرضون."
     },
     {
       "number": 106,
@@ -1170,7 +1380,9 @@
       "sajda": false,
       "translation_dari": "و بیشترشان (که ادعای ایمان می‌کنند) به الله ایمان نمی‌آورند مگر اینکه مشرکند.",
       "translation_pashto": "12-106 او د دوى زیاتره پر الله ایمان نه لري، مګر په داسې حال كې چې دوى شرك كوونكي وي",
-      "translation_english": "And most of them do not believe in Allah except that they associate partners with Him."
+      "translation_english": "And most of them do not believe in Allah except that they associate partners with Him.",
+      "translation_turkish": "Ve onların çoğu, Allah'a ortak koşmanın dışında iman etmezler.",
+      "translation_arabic": "وما أكثرهم (الذين يدعون الإيمان) يؤمنون بالله إلا وهم مشركون."
     },
     {
       "number": 107,
@@ -1181,7 +1393,9 @@
       "sajda": false,
       "translation_dari": "آیا ایمن هستند از این که عذاب همه گیر از سوى الله بر آنان بیاید، یا ناگهان قیامت به آنها بیاید، در حالیکه غافل و بی‌خبر باشند؟!.",
       "translation_pashto": "12-107  ایا نو دوى په امن كې شوي دي له دې نه چې په دوى باندې د الله له عذاب نه پټوونكې (راګېروونكې) برخه راشي، یا په دوى باندې ناڅاپه قیامت راشي، په داسې حال كې چې دوى به نه پوهېږي",
-      "translation_english": "Do they feel secure that an overwhelming punishment from Allah will not overtake them, or that the Hour will not come upon them by surprise when they least expect it?"
+      "translation_english": "Do they feel secure that an overwhelming punishment from Allah will not overtake them, or that the Hour will not come upon them by surprise when they least expect it?",
+      "translation_turkish": "Onlar, Allah'tan büyük bir azabın kendilerine gelmeyeceğinden veya hiç beklemedikleri bir anda kıyametin kendilerine gelmeyeceğinden emin mi oldular?",
+      "translation_arabic": "فهل يأمنون أن يأتيهم وباء عذاب من الله، أو تأتيهم يوم القيامة فجأة وهم لا يشعرون ولا يشعرون؟!"
     },
     {
       "number": 108,
@@ -1192,7 +1406,9 @@
       "sajda": false,
       "translation_dari": "بگو: این راه من است، با بصیرت و آگاهی به‌سوی الله دعوت می‌کنم و پیروان من هم (باید چنین باشند) و الله (از هر عیب) پاک است و من از مشرکان نیستم.",
       "translation_pashto": "12-108 ته ووایه: دا زما لاره ده، د الله په طرف بلنه كوم، په ښه بیان او بصیرت سره، زه او هغه څوك چې زما پیروي كوي، او الله پاك دى، او زه له شرك كوونكو ځنې نه یم",
-      "translation_english": "Say [O Prophet], “This is my way. I call to Allah with clear evidence – I and those who follow me. Glory be to Allah, and I am not one of those who associate partners with Him.”"
+      "translation_english": "Say [O Prophet], “This is my way. I call to Allah with clear evidence – I and those who follow me. Glory be to Allah, and I am not one of those who associate partners with Him.”",
+      "translation_turkish": "De ki: (Ey Peygamber), \"Bu benim yolumdur. Ben ve bana uyanlar, Allah'a apaçık bir delille çağırırım. Allah'ı tenzih ederiz ve ben O'na ortak koşanlardan değilim.\"",
+      "translation_arabic": "قل: هذه سبيلي، أدعو إلى الله على بصيرة وعلم، وأتباعي (يجب أن يكونوا كذلك)، والله نقي (من كل خطأ) وما أنا من المشركين."
     },
     {
       "number": 109,
@@ -1203,7 +1419,9 @@
       "sajda": false,
       "translation_dari": "و نفرستاده‌ایم پیش از تو مگر مردان را که وحی می‌فرستادیم به آنها در حالی که آنها از اهل شهرهای بزرگ ‌بودند، آیا (مشرکان) در زمین (همان پیغمبران) نرفته‌اند تا ببینند که چگونه شد انجام آنان که پیش از مشرکان بودند؟ (بلکه رفته‌اند اما عبرت نگرفته‌اند،) و البته سرای آخرت بهتر است برای پرهیزگاران، آیا نمی‌اندیشید؟",
       "translation_pashto": "12-109 او مونږ له تا نه مخكې (د رسولانو په طور) نه دي لېږلي مګر سړي چې مونږ به هغوى ته وحي كوله، چې د كلیو (ښارونو) اوسېدونكي وو، ایا نو دوى په ځمكه كې نه دي ګرځېدلي، پس چې لیدلي يې وى چې د هغو (مجرمو) كسانو انجام څنګه و چې له دوى نه مخكې وو، او یقینًا د اخرت كور د هغو كسانو لپاره ډېر غوره دى چې (له شرك او كفر نه) ځان ساتي، ایا نو تاسو له عقل نه كار نه اخلئ؟ ",
-      "translation_english": "We did not send before you except men whom We gave a revelation, from the people of each society. Have they not traveled through the land to see how was the end of those who came before them? But the home of the Hereafter is far better for those who fear Allah. Do you not then understand?"
+      "translation_english": "We did not send before you except men whom We gave a revelation, from the people of each society. Have they not traveled through the land to see how was the end of those who came before them? But the home of the Hereafter is far better for those who fear Allah. Do you not then understand?",
+      "translation_turkish": "Senden önce, her toplumun halkından vahiy verdiğimiz erkeklerden başkasını göndermedik. Kendilerinden öncekilerin sonlarının nasıl olduğunu görmek için yeryüzünde dolaşmadılar mı? Ama ahiret yurdu, Allah'tan korkanlar için daha hayırlıdır. O zaman anlamıyor musun?",
+      "translation_arabic": "وما أرسلنا من قبلك إلا رجالا نوحي إليهم وهم من أهل الأمصار. (بل ذهبوا ولم يتعلموا) وبالطبع فإن الدار الآخرة خير للمتقين، أفلا تظنون؟"
     },
     {
       "number": 110,
@@ -1214,7 +1432,9 @@
       "sajda": false,
       "translation_dari": "(پیغمبران پیشین اقوام‌شان را دعوت دادند( تا آنکه پیغمبران (از ایمان آوردن مردم) ناامید شدند و (مردم) گمان کردند که (از طرف پیغامبران) به آنها دروغ گفته شده‌است. (در آن حالت،) یاری ما به پیغمبران رسید پس کسانی را که خواستیم نجات یافتند، و عذاب ما از گروه مجرمان برگشت ندارد.",
       "translation_pashto": "12-110 تر هغه پورې چې رسولان به (د خلكو له ايمان راوړو نه) نا امېده شول او هغو (كافرو خلقو) به دا یقین وكړ چې بېشكه دغو (رسولان) چې دي، یقینًا دوى ته دروغ ویل شوي دي (،نو) دوى (رسولانو) ته به زمونږ مدد راغى، بیا به هغه چا ته نجات وركړى شو چې مونږ به غوښتل او زمونږ عذاب له مجرمو (كافرو) خلقو نه نشي دفع كېدلى",
-      "translation_english": "Until when the messengers lost all hope and realized that they were dismissed as liars, Our help came to them, so We saved whom We willed, and Our punishment cannot be averted from the wicked people."
+      "translation_english": "Until when the messengers lost all hope and realized that they were dismissed as liars, Our help came to them, so We saved whom We willed, and Our punishment cannot be averted from the wicked people.",
+      "translation_turkish": "Nihayet, elçiler ümidini kesip yalancı olduklarını anlayınca onlara yardımımız geldi, dilediğimizi kurtardık ve azabımız zalimler topluluğundan geri çevrilemez.",
+      "translation_arabic": "(دعا الأنبياء الأولون أقاربهم) حتى خاب الأنبياء (في تحويل الناس إلى الإيمان) وظن (الناس) أنهم قد كذبوا (من قبل الرسل). (في ذلك الحال) بلغ نصرنا الأنبياء، فنجا من سألنا، ولن يعود بأسنا من فئة المجرمين."
     },
     {
       "number": 111,
@@ -1225,7 +1445,9 @@
       "sajda": false,
       "translation_dari": "به راستی که در داستان‌های پیغمبران عبرتی برای صاحبان خرد است، (قرآن) سخنی نیست که به دروغ ساخته شده باشد بلکه تصدیق کنندۀ کتاب‌های است که پیش از آن بوده، و بیانگر هر ضرورت دینی است و هدایت و رحمتی است برای مردمی که (به آن) ایمان می‌آورند.",
       "translation_pashto": "12-111 یقینًا یقینًا د دوى (د قصې) په بیان كې د خالصو عقلونو والاوو لپاره ښه عبرت دى، دغه (قرآن) داسې خبره بېخي نه ده چې له ځانه په دروغو جوړه كړى شوې وي او لېكن (دغه قرآن) د هغو (كتابونو) تصدیق دى چې له ده نه مخكې وو او د هر شي تفصیل (بیان) دى او هدایت او رحمت دى د هغه قوم لپاره چې (پر الله او د هغه پر رسول)  ایمان لري",
-      "translation_english": "In their stories there is truly a lesson for people of understanding. This [Qur’an] is not a fabricated tale, rather a confirmation of what came before it, a detailed explanation of everything, a guidance and mercy for people who believe."
+      "translation_english": "In their stories there is truly a lesson for people of understanding. This [Qur’an] is not a fabricated tale, rather a confirmation of what came before it, a detailed explanation of everything, a guidance and mercy for people who believe.",
+      "translation_turkish": "Onların hikayelerinde gerçekten anlayışlı insanlar için bir ders vardır. Bu (Kuran), uydurma bir masal değil, kendisinden öncekileri doğrulayan, her şeyin ayrıntılı bir açıklaması, iman eden bir toplum için bir hidayet ve rahmettir.",
+      "translation_arabic": "إن قصص الأنبياء لعبرة لأولي الحكمة، وليس كلمة كذب، ولكنه مصدق لما قبله من الكتب، ومعبر عن كل ضرورة دينية، وهو هدى ورحمة لقوم يؤمنون."
     }
   ]
 }

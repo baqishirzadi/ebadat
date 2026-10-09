@@ -15,7 +15,9 @@
       "sajda": false,
       "translation_dari": "قسم به انجیر و زیتون.",
       "translation_pashto": "95-1 قسم دى په انځر او زیتون (ښوون) باندې",
-      "translation_english": "By the fig and the olive,"
+      "translation_english": "By the fig and the olive,",
+      "translation_turkish": "İncire ve zeytine and olsun ki,",
+      "translation_arabic": "بالتين والزيتون."
     },
     {
       "number": 2,
@@ -26,7 +28,9 @@
       "sajda": false,
       "translation_dari": "و قسم به طور سینا.",
       "translation_pashto": "95-2 او په طور سینین (غره) باندې",
-      "translation_english": "and by Mount Sinai,"
+      "translation_english": "and by Mount Sinai,",
+      "translation_turkish": "ve Sina Dağı'nın yanında,",
+      "translation_arabic": "وأقسم بسيناء."
     },
     {
       "number": 3,
@@ -37,7 +41,9 @@
       "sajda": false,
       "translation_dari": "و قسم به این شهر امن (مکه).",
       "translation_pashto": "95-3 او په دې امان وركوونكي/امن والا ښار باندې",
-      "translation_english": "and by this secure city [of Makkah],"
+      "translation_english": "and by this secure city [of Makkah],",
+      "translation_turkish": "ve bu güvenli şehir (Mekke) adına,",
+      "translation_arabic": "وبهذه المدينة الآمنة (مكة)."
     },
     {
       "number": 4,
@@ -48,7 +54,9 @@
       "sajda": false,
       "translation_dari": "بی‌گمان انسان را در بهترین صورت (و ترکیب) آفریدیم.",
       "translation_pashto": "95-4 چې یقینًا یقینًا مونږ انسان په ډېر ښكلي صورت (او اعتدال) كې پیدا كړى دى",
-      "translation_english": "Surely We have created man in the best form,"
+      "translation_english": "Surely We have created man in the best form,",
+      "translation_turkish": "Şüphesiz biz insanı en güzel şekilde yarattık.",
+      "translation_arabic": "لقد خلقنا الإنسان في أحسن تقويم."
     },
     {
       "number": 5,
@@ -59,7 +67,9 @@
       "sajda": false,
       "translation_dari": "باز او را به پست‌ترین مرحله (حقیرترین مرتبه؛ به سبب کفر) بازگردانیدیم.",
       "translation_pashto": "95-5 بیا دى مونږ وګرځاوه د ښكتو ډېر ښكته",
-      "translation_english": "then We will reduce him to the lowest of the low,"
+      "translation_english": "then We will reduce him to the lowest of the low,",
+      "translation_turkish": "Sonra onu aşağıların en aşağısına indireceğiz.",
+      "translation_arabic": "ومرة أخرى رددناه إلى أدنى درجة (أدنى درجة؛ بسبب الكفر)."
     },
     {
       "number": 6,
@@ -70,7 +80,9 @@
       "sajda": false,
       "translation_dari": "مگر آنانی که ایمان آوردند و کارهای نیک انجام دادند، پس برای آن‌ها اجریست قطع ناشدنی.",
       "translation_pashto": "95-6 مګر  هغه كسان چې ایمان يې راوړى دى او نېك عملونه يې كړې دي،  نو د دوى لپاره نه ختمېدونكى اجر دى",
-      "translation_english": "except those who believe and do righteous deeds; they will have a never-ending reward."
+      "translation_english": "except those who believe and do righteous deeds; they will have a never-ending reward.",
+      "translation_turkish": "İman edip salih ameller işleyenler hariç; sonsuz bir ödüle sahip olacaklar.",
+      "translation_arabic": "إلا الذين آمنوا وعملوا الصالحات فلهم أجر غير ممنون."
     },
     {
       "number": 7,
@@ -81,7 +93,9 @@
       "sajda": false,
       "translation_dari": "پس چه چیز سبب می‌شود (ای انسان) که قیامت را تکذیب کنی.",
       "translation_pashto": "95-7 نو (اى د قیامت منكره!) له دې نه وروسته تا څه شى د قیامت په هكله دروغ ګڼلو ته اماده كوي؟",
-      "translation_english": "Then, what makes you deny the Judgment Day?"
+      "translation_english": "Then, what makes you deny the Judgment Day?",
+      "translation_turkish": "O halde kıyamet gününü inkar etmenize sebep olan şey nedir?",
+      "translation_arabic": "فما الذي يجعلك (أيها الرجل) تكذب بيوم القيامة؟"
     },
     {
       "number": 8,
@@ -92,7 +106,9 @@
       "sajda": false,
       "translation_dari": "آیا الله بزرگ‌ترین فرمانروایان نیست؟ (بلی هست! و من بر آن از جملۀ گواهانم).",
       "translation_pashto": "95-8 ایا الله تر ټولو لوى حاكم نه دى؟",
-      "translation_english": "Is not Allah the Most Just of all judges?"
+      "translation_english": "Is not Allah the Most Just of all judges?",
+      "translation_turkish": "Allah, hakimlerin en adili değil mi?",
+      "translation_arabic": "أليس الله أكبر الحاكمين؟ (نعم هو كذلك! وأنا من الشاهدين على ذلك)."
     }
   ]
 }

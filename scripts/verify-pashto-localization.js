@@ -34,7 +34,12 @@ function compareShape(left, right, trail) {
 
 const dariLocale = JSON.parse(fs.readFileSync(path.join(root, 'locales/fa.json'), 'utf8'));
 const pashtoLocale = JSON.parse(fs.readFileSync(path.join(root, 'locales/ps.json'), 'utf8'));
+const englishLocale = JSON.parse(fs.readFileSync(path.join(root, 'locales/en.json'), 'utf8'));
+const turkishLocale = JSON.parse(fs.readFileSync(path.join(root, 'locales/tr.json'), 'utf8'));
+const arabicLocale = JSON.parse(fs.readFileSync(path.join(root, 'locales/ar.json'), 'utf8'));
 compareShape(dariLocale, pashtoLocale, 'locales');
+compareShape(englishLocale, turkishLocale, 'locales-tr');
+compareShape(englishLocale, arabicLocale, 'locales-ar');
 
 function parseSource(relativePath) {
   const filePath = path.join(root, relativePath);
@@ -75,7 +80,7 @@ for (const entry of catalog.properties) {
   const variants = Object.fromEntries(entry.initializer.properties
     .filter(ts.isPropertyAssignment)
     .map((variant) => [variant.name.text, variant.initializer]));
-  for (const language of ['dari', 'pashto']) {
+  for (const language of ['dari', 'pashto', 'turkish', 'arabic']) {
     assert(variants[language] && ts.isStringLiteral(variants[language]), `${key}: missing ${language} string`);
     assert(variants[language].text.trim().length > 0, `${key}: empty ${language} string`);
   }
@@ -132,19 +137,23 @@ assert(quranScreen.includes('testID="quran-continue-reading"') && quranScreen.in
 assert(quranScreen.includes('numberOfLines={1}') && quranScreen.includes('styles.continueIconSlot'), 'Quran continue-reading title is not centered between balanced icon slots');
 assert(quranScreen.includes('minHeight: 72') && quranScreen.includes('fontSize: Typography.ui.body'), 'Quran continue-reading card is not using the compact title geometry');
 const widgetUi = sourceText('widgets/PrayerTimesWidget.tsx');
-assert(widgetUi.includes('snapshot?.pashtoFont') && widgetUi.includes('NotoNastaliqUrdu'), 'Android widget does not follow the saved Pashto font preference');
+assert(widgetUi.includes('snapshot?.pashtoFont') && widgetUi.includes('NotoNaskhArabic-Regular'), 'Android widget does not follow the saved Pashto font preference');
+assert(widgetUi.includes('isTurkish') && widgetUi.includes('isArabic'), 'Android widget does not render Turkish and Arabic');
 assert(!widgetUi.includes('snapshot.hadithText'), 'Android prayer widget still renders Hadith');
-assert(widgetUi.includes('(compact ? 9 : 10) - (isPashto ? 1 : 0)') && widgetUi.includes('const solarDateSize = isPashto ? 16 : 18'), 'Android widget does not fit long Pashto labels while retaining the shared layout');
+assert(widgetUi.includes('const pashtoLineScale') && widgetUi.includes("fontWeight: '700' as const") && widgetUi.includes('textShadowColor: color'), 'Android widget does not keep Pashto at the Dari card height with thickened bold text');
 const swiftWidgetModel = sourceText('ios/EbadatPrayerWidget/WidgetShared.swift');
 assert(swiftWidgetModel.includes('let dariFont: String?') && swiftWidgetModel.includes('let pashtoFont: String?'), 'iOS widget snapshot does not preserve selected fonts');
 const iosWidgetView = sourceText('ios/EbadatPrayerWidget/PrayerTimesWidgetView.swift');
 assert(iosWidgetView.includes('.font(.custom(uiFontBold'), 'iOS widget text does not use the selected language font');
 assert(iosWidgetView.includes('isPashto ? 9 : 10') && iosWidgetView.includes('.minimumScaleFactor(0.62)') && iosWidgetView.includes('.allowsTightening(true)'), 'iOS widget does not fit long Pashto prayer labels');
 
-const prayerLearning = sourceText('app/(tabs)/prayer-learning.tsx');
+const prayerLearning = [
+  sourceText('app/(tabs)/prayer-learning.tsx'),
+  sourceText('components/prayer/BookLeaf.tsx'),
+].join('\n');
 assert(prayerLearning.includes('content(category, \'title\')') || prayerLearning.includes('content(currentCategory, \'title\')'), 'Prayer learning does not resolve titles from the active language');
 assert(prayerLearning.includes('showBothLanguages={false}'), 'Prayer learning still forces bilingual Dari/Pashto blocks');
-assert(prayerLearning.includes("contentList(currentSection, 'steps')"), 'Prayer learning does not resolve instruction steps from the active language');
+assert(prayerLearning.includes("contentList(section, 'steps')") || prayerLearning.includes("contentList(currentSection, 'steps')"), 'Prayer learning does not resolve instruction steps from the active language');
 const duaForm = sourceText('app/dua-request/new.tsx');
 assert(duaForm.includes("t('dua.new.messagePlaceholder')") && duaForm.includes("t('dua.new.validation.gender')"), 'Dua form is missing semantic Pashto localization');
 assert(sourceText('components/dua/CategorySelector.tsx').includes("pickContent(category, 'name', language)"), 'Dua category selector does not follow the selected language');
@@ -166,6 +175,34 @@ surahMetadata.elements.forEach((entry, index) => {
     assert(ts.isStringLiteral(value) && value.text.trim().length > 0, `Surah ${index + 1}: missing Pashto ${field === 0 ? 'name' : 'meaning'}`);
   });
 });
+
+const languagesSource = sourceText('utils/i18n/languages.ts');
+assert(languagesSource.includes("code: 'turkish'") && languagesSource.includes("code: 'arabic'"), 'Language registry is missing Turkish or Arabic');
+assert(languagesSource.includes('isLatinLanguage'), 'Latin-script helper is missing');
+assert(languagesSource.includes("turkish: ['turkish', 'english', 'dari']"), 'Turkish content fallback is missing');
+assert(languagesSource.includes("arabic: ['arabic', 'dari', 'pashto']"), 'Arabic content fallback is missing');
+
+for (const relativePath of [
+  'utils/i18n/messages/quran.ts',
+  'utils/i18n/messages/ahadith.ts',
+  'utils/i18n/messages/articles.ts',
+  'utils/i18n/messages/media.ts',
+  'utils/i18n/messages/misc.ts',
+  'utils/i18n/messages/prayer.ts',
+]) {
+  const source = sourceText(relativePath);
+  const dariCount = (source.match(/dari:/g) || []).length;
+  const turkishCount = (source.match(/turkish:/g) || []).length;
+  const arabicCount = (source.match(/arabic:/g) || []).length;
+  assert(turkishCount >= dariCount && arabicCount >= dariCount, `${relativePath}: Turkish/Arabic UI strings are incomplete (${turkishCount}/${arabicCount} vs ${dariCount})`);
+}
+
+const ikhlas = JSON.parse(fs.readFileSync(path.join(root, 'data/surahs/112.json'), 'utf8'));
+const firstAyah = ikhlas.ayahs[0];
+assert(typeof firstAyah.translation_turkish === 'string' && firstAyah.translation_turkish.trim().length > 0, 'Surah 112 is missing a Turkish meaning');
+assert(typeof firstAyah.translation_arabic === 'string' && firstAyah.translation_arabic.trim().length > 0, 'Surah 112 is missing an Arabic meaning');
+assert(firstAyah.translation_turkish !== firstAyah.translation_english, 'Turkish meaning must not copy the English text');
+assert(firstAyah.translation_arabic !== firstAyah.translation_dari, 'Arabic meaning must not copy the Dari text');
 
 const qiblaDial = fs.readFileSync(path.join(root, 'components/qibla/QiblaDial.tsx'), 'utf8');
 assert(['ش', 'خ', 'ج', 'ل'].every((label) => qiblaDial.includes(`label: '${label}'`)), 'Pashto Qibla compass initials are missing');

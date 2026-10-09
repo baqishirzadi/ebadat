@@ -10,13 +10,14 @@ import { useAppLanguage, useLocalizedFontPreferences } from '@/context/AppContex
 import { localizeUiNode } from '@/utils/i18n/ui';
 import { isAppUiFontStyle, resolveUiFontStyle } from '@/utils/i18n/resolveUiFontFamily';
 import { writingDirectionFor } from '@/utils/i18n/direction';
+import { isLatinLanguage } from '@/utils/i18n/languages';
 
 export function CenteredText(props: TextProps) {
   const { style, children, ...rest } = props;
   const language = useAppLanguage();
   const fonts = useLocalizedFontPreferences();
   const fontStyle = resolveUiFontStyle(style, language, fonts);
-  const latinDigits = language === 'english' && isAppUiFontStyle(style);
+  const latinDigits = isLatinLanguage(language) && isAppUiFontStyle(style);
 
   return (
     <Text
