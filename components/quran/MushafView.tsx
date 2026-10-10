@@ -41,6 +41,8 @@ interface MushafViewProps {
 // offset from an average row height (which drifts on variable-height rows).
 const JUMP_CONTEXT_ROWS = 3;
 const WINDOW_PREPEND_CHUNK = 20;
+// A row already pinned under the top bar can sit a few pixels off the safe edge.
+const FOLLOW_EDGE_SLACK = 8;
 const STABLE_LIST_RENDER_CONFIG = {
   initialNumToRender: 10,
   maxToRenderPerBatch: 8,
@@ -129,6 +131,7 @@ export const MushafView = React.memo(function MushafView({
   const skipTypographyFollowResetRef = useRef(true);
   const activePlayingAyahRef = useRef(activePlayingAyah);
   activePlayingAyahRef.current = activePlayingAyah;
+  const ayahRowRefs = useRef(new Map<number, View>());
 
   const mushafPages = useMemo(() => {
     if (!surah) return [] as { page: number; ayahs: Ayah[] }[];
@@ -219,6 +222,45 @@ export const MushafView = React.memo(function MushafView({
     }
   }, [ayahFollowViewOffset, getScrollIndexForAyah, effectiveViewMode]);
 
+  // The player covers the bottom of the list. Fifty-percent viewability still
+  // counts a row whose lower half sits under that bar, so playback follow
+  // measures the row against the open area instead.
+  const ayahFitsAbovePlayer = useCallback((ayahNumber: number): Promise<boolean> => {
+    const node = ayahRowRefs.current.get(ayahNumber);
+    if (!node) return Promise.resolve(false);
+    return new Promise((resolve) => {
+      let settled = false;
+      const finish = (fits: boolean) => {
+        if (settled) return;
+        settled = true;
+        resolve(fits);
+      };
+      const timer = setTimeout(() => finish(false), 80);
+      try {
+        node.measureInWindow((_x, y, _width, height) => {
+          clearTimeout(timer);
+          if (!Number.isFinite(y) || !Number.isFinite(height) || height <= 0) {
+            finish(false);
+            return;
+          }
+          const windowHeight = getPortraitWindowSize().height;
+          const safeTop = contentPaddingTop;
+          const safeBottom = windowHeight - Math.max(0, contentPaddingBottom);
+          const safeHeight = safeBottom - safeTop;
+          const topAligned = y >= safeTop - 1 && y <= safeTop + FOLLOW_EDGE_SLACK;
+          if (height > safeHeight && topAligned) {
+            finish(true);
+            return;
+          }
+          finish(y >= safeTop - 1 && y + height <= safeBottom + 1);
+        });
+      } catch {
+        clearTimeout(timer);
+        finish(false);
+      }
+    });
+  }, [contentPaddingBottom, contentPaddingTop]);
+
   const clearTypographyFollowTimers = useCallback(() => {
     if (typographyFollowSettleTimerRef.current) {
       clearTimeout(typographyFollowSettleTimerRef.current);
@@ -235,14 +277,18 @@ export const MushafView = React.memo(function MushafView({
     pendingTypographyFollowAyahRef.current = null;
     clearTypographyFollowTimers();
     if (activePlayingAyahRef.current !== ayahNumber) return;
-    if (viewableAyahNumbersRef.current.has(ayahNumber)) return;
 
-    requestAnimationFrame(() => {
-      if (activePlayingAyahRef.current !== ayahNumber) return;
-      if (viewableAyahNumbersRef.current.has(ayahNumber)) return;
-      scrollToAyahIndex(ayahNumber, true);
+    void ayahFitsAbovePlayer(ayahNumber).then((fits) => {
+      if (fits || activePlayingAyahRef.current !== ayahNumber) return;
+      requestAnimationFrame(() => {
+        if (activePlayingAyahRef.current !== ayahNumber) return;
+        void ayahFitsAbovePlayer(ayahNumber).then((stillFits) => {
+          if (stillFits || activePlayingAyahRef.current !== ayahNumber) return;
+          scrollToAyahIndex(ayahNumber, true);
+        });
+      });
     });
-  }, [clearTypographyFollowTimers, scrollToAyahIndex]);
+  }, [ayahFitsAbovePlayer, clearTypographyFollowTimers, scrollToAyahIndex]);
 
   const handleTypographyContentSizeChange = useCallback(() => {
     const pendingAyah = pendingTypographyFollowAyahRef.current;
@@ -282,30 +328,43 @@ export const MushafView = React.memo(function MushafView({
     resetJumpSessionState(true);
   }, [jumpMode, jumpToken, logJumpDev, resetJumpSessionState]);
 
-  // Keeps the playing ayah under the top bar. If it sits before the rendered
-  // window, the window moves first and the scroll waits until that render.
+  // Keeps the playing ayah under the top bar. A row that is only partly above
+  // the player still scrolls up. If it sits before the rendered window, the
+  // window moves first and the scroll waits until that render.
   const followAyah = useCallback((ayahNumber: number) => {
-    if (effectiveViewMode === 'scroll' && viewableAyahNumbersRef.current.has(ayahNumber)) {
+    const scrollIntoSafeArea = () => {
+      if (activePlayingAyahRef.current !== ayahNumber) return;
+      if (effectiveViewMode === 'scroll' && ayahNumber - 1 < windowStart) {
+        pendingFollowScrollRef.current = ayahNumber;
+        setWindowStart(windowStartForAyah(ayahNumber));
+        return;
+      }
+      scrollToAyahIndex(ayahNumber, true);
+    };
+
+    if (effectiveViewMode !== 'scroll') {
+      scrollIntoSafeArea();
       return;
     }
-    if (effectiveViewMode === 'scroll' && ayahNumber - 1 < windowStart) {
-      pendingFollowScrollRef.current = ayahNumber;
-      setWindowStart(windowStartForAyah(ayahNumber));
-      return;
-    }
-    scrollToAyahIndex(ayahNumber, true);
-  }, [effectiveViewMode, scrollToAyahIndex, windowStart]);
+
+    void ayahFitsAbovePlayer(ayahNumber).then((fits) => {
+      if (fits) return;
+      scrollIntoSafeArea();
+    });
+  }, [ayahFitsAbovePlayer, effectiveViewMode, scrollToAyahIndex, windowStart]);
 
   useEffect(() => {
     const pending = pendingFollowScrollRef.current;
     if (pending === null) return;
     pendingFollowScrollRef.current = null;
     const frame = requestAnimationFrame(() => {
-      if (viewableAyahNumbersRef.current.has(pending)) return;
-      scrollToAyahIndex(pending, true);
+      void ayahFitsAbovePlayer(pending).then((fits) => {
+        if (fits || activePlayingAyahRef.current !== pending) return;
+        scrollToAyahIndex(pending, true);
+      });
     });
     return () => cancelAnimationFrame(frame);
-  }, [windowStart, scrollToAyahIndex]);
+  }, [ayahFitsAbovePlayer, windowStart, scrollToAyahIndex]);
 
   const scheduleBasicScroll = useCallback(
     (ayahNumber: number, firstAnimated = true, forceScrollToTop = false) => {
@@ -609,18 +668,26 @@ export const MushafView = React.memo(function MushafView({
       const isPlaying = activePlayingAyah === item.number;
 
       return (
-        <AyahRow
-          ayah={item}
-          surahNumber={surahNumber}
-          dariTranslation={dariTranslation}
-          pashtoTranslation={pashtoTranslation}
-          englishTranslation={englishTranslation}
-          turkishTranslation={turkishTranslation}
-          arabicTranslation={arabicTranslation}
-          isPlaying={isPlaying}
-          onPlayPress={() => handlePlayAyah(item.number)}
-          readerTokens={readerTokens}
-        />
+        <View
+          collapsable={false}
+          ref={(node) => {
+            if (node) ayahRowRefs.current.set(item.number, node);
+            else ayahRowRefs.current.delete(item.number);
+          }}
+        >
+          <AyahRow
+            ayah={item}
+            surahNumber={surahNumber}
+            dariTranslation={dariTranslation}
+            pashtoTranslation={pashtoTranslation}
+            englishTranslation={englishTranslation}
+            turkishTranslation={turkishTranslation}
+            arabicTranslation={arabicTranslation}
+            isPlaying={isPlaying}
+            onPlayPress={() => handlePlayAyah(item.number)}
+            readerTokens={readerTokens}
+          />
+        </View>
       );
     },
     [surahNumber, getTranslation, activePlayingAyah, handlePlayAyah, readerTokens]

@@ -145,9 +145,9 @@
               "label": "اوقات نماز",
               "description": "تاریخ امروز، طلوع آفتاب و اوقات نماز",
               "minWidth": "320dp",
-              "minHeight": "110dp",
+              "minHeight": "40dp",
               "targetCellWidth": 4,
-              "targetCellHeight": 2,
+              "targetCellHeight": 1,
               "resizeMode": "horizontal",
               "previewImage": "./assets/images/android-widget-preview.png",
               "updatePeriodMillis": 1800000

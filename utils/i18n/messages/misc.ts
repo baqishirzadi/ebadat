@@ -202,6 +202,16 @@ export const miscMessages = {
     turkish: 'İkindi, Hanefi mezhebine göre hesaplanır (gölge boyu iki kat)',
     arabic: 'يُحسب وقت العصر وفق المذهب الحنفي (ظل بمقدار الضعف)',
   },
+  'settings.group.appearance': { dari: 'ظاهر', pashto: 'بڼه', english: 'Appearance', turkish: 'Görünüm', arabic: 'المظهر' },
+  'settings.group.quran': { dari: 'قرآن', pashto: 'قرآن', english: 'Quran', turkish: 'Kur’an', arabic: 'القرآن' },
+  'settings.group.prayer': { dari: 'نماز', pashto: 'لمانځه', english: 'Prayer', turkish: 'Namaz', arabic: 'الصلاة' },
+  'settings.translationOnly.scope': {
+    dari: 'فقط در حالت ترجمهٔ قرآن اعمال می‌شود، نه در صفحهٔ ۱۶ خط.',
+    pashto: 'یوازې د قرآن د ژباړې په حالت کې پلی کېږي، نه د ۱۶ کرښو په پاڼه کې.',
+    english: 'Applies in translation mode, not on the 16-line page.',
+    turkish: 'Yalnızca meal modunda uygulanır, 16 satırlık sayfada değil.',
+    arabic: 'يُطبَّق في وضع الترجمة فقط، لا في صفحة الستة عشر سطرًا.',
+  },
   'settings.method.karachi': { dari: 'کراچی (حنفی)', pashto: 'کراچۍ (حنفي)', english: 'Karachi (Hanafi)', turkish: 'Karaçi (Hanefi)', arabic: 'كراتشي (حنفي)' },
   'settings.method.mwl': {
     dari: 'رابطه عالم اسلامی',

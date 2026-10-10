@@ -19,7 +19,7 @@ import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import Animated from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import CenteredText from '@/components/CenteredText';
-import { NumericText } from '@/components/ui/NumericText';
+import { QuranNumberBadge } from './QuranNumberBadge';
 import { getUthmaniFont } from '@/hooks/useFonts';
 import { RtlView } from '@/components/ui/RtlView';
 import { normalizeArabicForSearch, normalizeDariForSearch, normalizePashtoForSearch } from '@/utils/quranSearchNormalize';
@@ -84,17 +84,7 @@ const SurahItem = React.memo(function SurahItem({
         </CenteredText>
       </View>
 
-      <View style={[styles.islamicBadgeContainer, { flexShrink: 0 }]}>
-        <View style={[styles.decorativeRing, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.decorativeRingMiddle, { borderColor: `${theme.surahHeader}80` }]} />
-        <View style={[styles.numberContainer, { backgroundColor: theme.surahHeader }]}>
-          <NumericText style={styles.numberText}>{n(surah.number)}</NumericText>
-        </View>
-        <View style={[styles.cornerDeco, styles.cornerTopLeft, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerTopRight, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerBottomLeft, { borderColor: theme.surahHeader }]} />
-        <View style={[styles.cornerDeco, styles.cornerBottomRight, { borderColor: theme.surahHeader }]} />
-      </View>
+      <QuranNumberBadge value={n(surah.number)} color={theme.surahHeader} />
 
       <View style={styles.infoContainer}>
         <CenteredText style={[styles.arabicName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
@@ -714,92 +704,6 @@ const styles = StyleSheet.create({
   surahItemPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
-  },
-  islamicBadgeContainer: {
-    width: 48,
-    height: 48,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  decorativeRing: {
-    position: 'absolute',
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderStyle: 'solid',
-  },
-  decorativeRingMiddle: {
-    position: 'absolute',
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    borderWidth: 1.5,
-    borderStyle: 'solid',
-  },
-  numberContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
-    zIndex: 1,
-  },
-  cornerDeco: {
-    position: 'absolute',
-    width: 8,
-    height: 8,
-    borderWidth: 1.5,
-    borderStyle: 'solid',
-  },
-  cornerTopLeft: {
-    top: 0,
-    left: 0,
-    borderTopWidth: 1.5,
-    borderLeftWidth: 1.5,
-    borderRightWidth: 0,
-    borderBottomWidth: 0,
-    borderTopLeftRadius: 4,
-  },
-  cornerTopRight: {
-    top: 0,
-    right: 0,
-    borderTopWidth: 1.5,
-    borderRightWidth: 1.5,
-    borderLeftWidth: 0,
-    borderBottomWidth: 0,
-    borderTopRightRadius: 4,
-  },
-  cornerBottomLeft: {
-    bottom: 0,
-    left: 0,
-    borderBottomWidth: 1.5,
-    borderLeftWidth: 1.5,
-    borderTopWidth: 0,
-    borderRightWidth: 0,
-    borderBottomLeftRadius: 4,
-  },
-  cornerBottomRight: {
-    bottom: 0,
-    right: 0,
-    borderBottomWidth: 1.5,
-    borderRightWidth: 1.5,
-    borderTopWidth: 0,
-    borderLeftWidth: 0,
-    borderBottomRightRadius: 4,
-  },
-  numberText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    lineHeight: 22,
-    includeFontPadding: false,
   },
   infoContainer: {
     flex: 1,

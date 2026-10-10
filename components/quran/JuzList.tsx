@@ -1,14 +1,17 @@
+import CenteredText from '@/components/CenteredText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { JuzRange } from '@/data/juzRanges';
 import { SURAH_NAMES } from '@/data/surahNames';
 import { getUthmaniFont } from '@/hooks/useFonts';
-import { directionStyle, textCenterStyle } from '@/utils/i18n/direction';
+import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { MaterialIcons } from '@expo/vector-icons';
 import React, { useMemo } from 'react';
 
 import { Pressable, StyleSheet, View } from 'react-native';
 import { LocalizedText } from '@/components/ui/LocalizedText';
+import { QuranNumberBadge } from './QuranNumberBadge';
 
 interface ReadingPosition {
   surahNumber: number;
@@ -20,6 +23,8 @@ interface JuzListProps {
   currentPosition?: ReadingPosition;
   onPressJuz: (juz: JuzRange) => void;
 }
+
+const ROW_HEIGHT = 108;
 
 function comparePosition(
   a: { surah: number; ayah: number },
@@ -39,8 +44,7 @@ function isPositionInsideJuz(position: ReadingPosition, juz: JuzRange): boolean 
 export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps) {
   const { theme } = useApp();
   const { t, n, content, language } = useI18n();
-  const direction = directionStyle(language);
-  const textCenter = textCenterStyle(language);
+  const directionalRow = rowStyle(language);
   const surahNameMap = useMemo(
     () => new Map(SURAH_NAMES.map((surah) => [surah.number, content(surah, null)])),
     [content],
@@ -55,7 +59,7 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
   }
 
   return (
-    <View style={[styles.grid, direction]}>
+    <View style={styles.list}>
       {juzItems.map((juz) => {
         const isCurrent = currentPosition ? isPositionInsideJuz(currentPosition, juz) : false;
         const title = t('quran.juzTitle', { number: n(juz.juzNumber) });
@@ -63,10 +67,12 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
           start: n(juz.startPage),
           end: n(juz.endPage),
         });
+        const startSurah = surahNameMap.get(juz.startSurah) || n(juz.startSurah);
+        const endSurah = surahNameMap.get(juz.endSurah) || n(juz.endSurah);
         const rangeLine = t('quran.surahAyahRange', {
-          startSurah: surahNameMap.get(juz.startSurah) || n(juz.startSurah),
+          startSurah,
           startAyah: n(juz.startAyah),
-          endSurah: surahNameMap.get(juz.endSurah) || n(juz.endSurah),
+          endSurah,
           endAyah: n(juz.endAyah),
         });
 
@@ -79,55 +85,54 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
             accessibilityState={{ selected: isCurrent }}
             onPress={() => onPressJuz(juz)}
             style={({ pressed }) => [
-              styles.plaque,
+              styles.row,
+              directionalRow,
               {
-                backgroundColor: isCurrent ? theme.playing : theme.card,
-                borderColor: theme.playing,
+                backgroundColor: theme.card,
+                borderColor: isCurrent ? theme.playing : theme.cardBorder,
               },
-              pressed && styles.plaquePressed,
+              pressed && styles.rowPressed,
             ]}
           >
-            <View
-              style={[
-                styles.plaqueInner,
-                { borderColor: isCurrent ? `${theme.accent}CC` : `${theme.accent}8C` },
-              ]}
-            >
-              <View
-                style={[
-                  styles.medallion,
-                  isCurrent
-                    ? { backgroundColor: '#fff', borderColor: theme.accent }
-                    : { backgroundColor: `${theme.playing}12`, borderColor: `${theme.accent}B3` },
-                ]}
-              >
-                <LocalizedText
-                  style={[styles.medallionNumber, { color: theme.playing }]}
-                  numberOfLines={1}
-                >
-                  {n(juz.juzNumber)}
-                </LocalizedText>
-              </View>
-              <View style={styles.info}>
-                <LocalizedText
-                  style={[styles.title, textCenter, { color: isCurrent ? '#fff' : theme.text }]}
-                  numberOfLines={1}
-                >
-                  {title}
-                </LocalizedText>
-                <LocalizedText
-                  style={[
-                    styles.pages,
-                    textCenter,
-                    { color: isCurrent ? 'rgba(255,255,255,0.85)' : theme.textSecondary },
-                  ]}
-                  numberOfLines={1}
-                  adjustsFontSizeToFit
-                >
-                  {pageLine}
-                </LocalizedText>
-              </View>
+            <View style={styles.meta}>
+              <CenteredText style={[styles.metaText, { color: theme.textSecondary }]} numberOfLines={1}>
+                {startSurah}
+              </CenteredText>
+              {juz.startSurah !== juz.endSurah ? (
+                <CenteredText style={[styles.metaText, styles.metaSecond, { color: theme.textSecondary }]} numberOfLines={1}>
+                  {endSurah}
+                </CenteredText>
+              ) : null}
             </View>
+
+            <QuranNumberBadge value={n(juz.juzNumber)} color={theme.surahHeader} />
+
+            <View style={styles.info}>
+              <CenteredText
+                style={[styles.title, { color: theme.text }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {title}
+              </CenteredText>
+              <CenteredText
+                style={[styles.pages, { color: theme.textSecondary }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {pageLine}
+              </CenteredText>
+            </View>
+
+            <View style={styles.chevron}>
+              <MaterialIcons name={forwardChevronName(language)} size={24} color={theme.icon} />
+            </View>
+
+            {isCurrent ? (
+              <View style={[styles.currentMark, { backgroundColor: theme.playing }]}>
+                <MaterialIcons name="play-arrow" size={14} color="#fff" />
+              </View>
+            ) : null}
           </Pressable>
         );
       })}
@@ -136,68 +141,75 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
 }
 
 const styles = StyleSheet.create({
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    rowGap: Spacing.sm + 2,
-    paddingTop: Spacing.sm,
+  list: {
+    gap: Spacing.md,
   },
-  plaque: {
-    width: '48.5%',
-    minHeight: 76,
-    padding: 3,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1.2,
-    shadowColor: '#0B5E4B',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
+  row: {
+    alignItems: 'center',
+    height: ROW_HEIGHT,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.xl,
+    borderWidth: 1,
+    gap: Spacing.md,
     elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    overflow: 'hidden',
   },
-  plaquePressed: {
-    opacity: 0.9,
+  rowPressed: {
+    opacity: 0.85,
     transform: [{ scale: 0.98 }],
   },
-  plaqueInner: {
-    flex: 1,
+  meta: {
+    flexShrink: 0,
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingHorizontal: 46,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
+    minWidth: 70,
+    maxWidth: 92,
   },
-  medallion: {
-    position: 'absolute',
-    start: 5,
-    top: '50%',
-    marginTop: -19,
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderWidth: 1.5,
+  metaText: {
+    fontSize: Typography.ui.caption,
+    fontFamily: 'Vazirmatn',
+  },
+  metaSecond: {
+    marginTop: 2,
+  },
+  info: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  medallionNumber: {
-    fontFamily: getUthmaniFont(),
-    fontSize: 19,
-    lineHeight: 27,
-    textAlign: 'center',
-    includeFontPadding: false,
-  },
-  info: {
-    justifyContent: 'center',
-    gap: 2,
-  },
   title: {
-    fontSize: Typography.ui.body,
-    fontWeight: '700',
-    fontFamily: 'Vazirmatn',
+    width: '100%',
+    fontSize: Typography.ui.title,
+    fontWeight: '600',
+    fontFamily: getUthmaniFont(),
+    textAlign: 'center',
+    writingDirection: 'rtl',
   },
   pages: {
+    width: '100%',
+    marginTop: 2,
     fontSize: Typography.ui.caption,
     fontFamily: 'Vazirmatn',
-    lineHeight: 18,
+    textAlign: 'center',
+    writingDirection: 'rtl',
+  },
+  chevron: {
+    flexShrink: 0,
+  },
+  currentMark: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyContainer: {
     paddingVertical: Spacing.xl,

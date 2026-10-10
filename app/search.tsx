@@ -5,25 +5,34 @@
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { View, StyleSheet, FlatList, Pressable, ActivityIndicator, Keyboard } from 'react-native';
+import { View, StyleSheet, FlatList, Pressable, ActivityIndicator, Keyboard, ScrollView, Text } from 'react-native';
 import { LocalizedText, LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, Stack, useLocalSearchParams } from 'expo-router';
-import { useApp } from '@/context/AppContext';
+import { useApp, useLocalizedFontPreferences } from '@/context/AppContext';
 import { useQuranData } from '@/hooks/useQuranData';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
-import { SearchResult } from '@/types/quran';
+import { SearchResult, type AppLanguage } from '@/types/quran';
 import CenteredText from '@/components/CenteredText';
 import { stripQuranicMarks } from '@/utils/quranText';
 import type { QuranSearchMode } from '@/utils/quranSearchEngine';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { isLatinLanguage } from '@/utils/i18n/languages';
 import { forwardChevronName } from '@/utils/i18n/direction';
+import { languageChoiceStyle } from '@/utils/i18n/languageChoiceStyle';
 import type { UiMessageKey } from '@/utils/i18n/catalog';
 
 const PAGE_SIZE = 25;
 
 const MODE_IDS: QuranSearchMode[] = ['arabic', 'arabicMeaning', 'dari', 'pashto', 'turkish', 'english', 'all'];
+
+const LANGUAGE_ENDONYMS: Partial<Record<QuranSearchMode, { language: AppLanguage; label: string }>> = {
+  arabic: { language: 'arabic', label: 'العربية' },
+  dari: { language: 'dari', label: 'دری' },
+  pashto: { language: 'pashto', label: 'پښتو' },
+  turkish: { language: 'turkish', label: 'Türkçe' },
+  english: { language: 'english', label: 'English' },
+};
 
 const MODE_LABEL_KEYS: Record<QuranSearchMode, UiMessageKey> = {
   arabic: 'quran.search.mode.arabic',
@@ -102,6 +111,7 @@ function HighlightedText({
 
 export default function SearchScreen() {
   const { theme } = useApp();
+  const fonts = useLocalizedFontPreferences();
   const { searchQuran } = useQuranData();
   const { t, language, n } = useI18n();
   const isEnglishUi = isLatinLanguage(language);
@@ -125,15 +135,6 @@ export default function SearchScreen() {
   const navigationGuardTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestSearchRequestIdRef = useRef(0);
   const isNavigatingRef = useRef(false);
-
-  const modeOptions = useMemo(
-    () =>
-      MODE_IDS.map((id) => ({
-        id,
-        label: t(MODE_LABEL_KEYS[id]),
-      })),
-    [t],
-  );
 
   const languageLabel = useCallback(
     (matched?: SearchResult['matchedLanguage']): string => {
@@ -424,34 +425,53 @@ export default function SearchScreen() {
           )}
         </View>
 
-        <View style={styles.modeToggle}>
-          {modeOptions.map((option) => {
-            const active = searchMode === option.id;
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.modeScroll}
+          contentContainerStyle={styles.modeToggle}
+        >
+          {MODE_IDS.map((id) => {
+            const active = searchMode === id;
+            const endonym = LANGUAGE_ENDONYMS[id];
+            const label = endonym?.label ?? t(MODE_LABEL_KEYS[id]);
             return (
               <Pressable
-                key={option.id}
-                onPress={() => setSearchMode(option.id)}
+                key={id}
+                accessibilityRole="button"
+                accessibilityLabel={label}
+                accessibilityState={{ selected: active }}
+                onPress={() => setSearchMode(id)}
                 style={[
                   styles.modeButton,
                   {
-                    backgroundColor: active ? theme.tint : theme.card,
-                    borderColor: active ? theme.tint : theme.cardBorder,
+                    backgroundColor: active ? theme.surahHeader : theme.card,
+                    borderColor: active ? theme.surahHeader : theme.cardBorder,
                   },
                 ]}
               >
-                <CenteredText
-                  style={[
-                    styles.modeButtonText,
-                    language === 'pashto' && styles.modeButtonTextPashto,
-                    { color: active ? '#fff' : theme.text },
-                  ]}
-                >
-                  {option.label}
-                </CenteredText>
+                {endonym ? (
+                  <Text
+                    numberOfLines={1}
+                    style={[
+                      languageChoiceStyle(endonym.language, fonts, { bold: active, fontSize: 15 }),
+                      { color: active ? '#fff' : theme.text },
+                    ]}
+                  >
+                    {endonym.label}
+                  </Text>
+                ) : (
+                  <CenteredText
+                    numberOfLines={1}
+                    style={[styles.modeButtonText, { color: active ? '#fff' : theme.text }]}
+                  >
+                    {label}
+                  </CenteredText>
+                )}
               </Pressable>
             );
           })}
-        </View>
+        </ScrollView>
       </View>
 
       {error ? (
@@ -534,9 +554,10 @@ const styles = StyleSheet.create({
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    minHeight: 48,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.lg + 4,
     borderWidth: 1,
     gap: Spacing.sm,
   },
@@ -549,27 +570,27 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     writingDirection: 'ltr',
   },
+  modeScroll: {
+    flexGrow: 0,
+  },
   modeToggle: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.xs,
+    alignItems: 'center',
+    gap: Spacing.sm,
   },
   modeButton: {
-    flexGrow: 1,
-    flexBasis: '18%',
-    minWidth: 56,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.xs,
-    borderRadius: BorderRadius.md,
+    height: 48,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.lg,
     borderWidth: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
   modeButtonText: {
-    fontSize: Typography.ui.caption,
-    fontWeight: '500',
-  },
-  modeButtonTextPashto: {
     fontSize: Typography.ui.body,
+    fontWeight: '600',
+    lineHeight: 22,
   },
   loadingContainer: {
     flex: 1,
@@ -593,8 +614,13 @@ const styles = StyleSheet.create({
   },
   resultItem: {
     padding: Spacing.md,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     borderWidth: 1,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   resultItemPressed: {
     opacity: 0.9,

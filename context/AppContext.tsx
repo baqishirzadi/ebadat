@@ -397,12 +397,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
         preferencesNormalized = true;
       }
 
-      // Translation follows the app language. A hidden translation stays hidden.
+      // follow_app stays on the app language. A manual choice, including
+      // "no translation", is kept. The retired "both" value was migrated above.
       if (
+        preferences.translationLanguageMode !== 'manual' &&
         preferences.showTranslation !== 'none' &&
         isAppLanguage(preferences.appLanguage) &&
-        (preferences.showTranslation !== preferences.appLanguage ||
-          preferences.translationLanguageMode !== 'follow_app')
+        preferences.showTranslation !== preferences.appLanguage
       ) {
         preferences = {
           ...preferences,

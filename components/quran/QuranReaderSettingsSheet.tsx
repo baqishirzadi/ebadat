@@ -26,7 +26,7 @@ const PAGE_TONES: { id: QuranPageTone; colors: string[] }[] = [
   { id: 'sepia', colors: ['#F6EFE1'] },
   { id: 'dark', colors: ['#0E1311'] },
 ];
-const TRANSLATIONS = ['none', 'dari', 'pashto', 'arabic', 'turkish', 'english', 'both'] as const;
+const TRANSLATIONS = ['none', 'dari', 'pashto', 'arabic', 'turkish', 'english'] as const;
 
 export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false }: QuranReaderSettingsSheetProps) {
   const insets = useSafeAreaInsets();

@@ -97,12 +97,9 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         ? 'NotoNaskhArabic-Bold'
         : 'Vazirmatn-Bold';
 
-  // Use the same 0.88 medium-widget scale as iOS at the configured 4x2 size.
-  // A narrow legacy placement can shrink down to 0.76 while keeping all rows.
-  const scale = Math.min(0.88, Math.max(0.76, height / 125));
   // Android sizes each line from the font's Windows metrics. Noto Naskh and
   // Amiri boxes are taller than Dari's Vazirmatn, so Arabic and Pashto type
-  // is scaled down until the wrap_content card fits the same launcher cell.
+  // is scaled down inside the same launcher cell.
   const pashtoLineScale = isArabic
     ? 0.84
     : !isPashto
@@ -110,6 +107,16 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       : snapshot?.pashtoFont === 'amiri'
         ? 0.62
         : 0.84;
+  // One home-screen row. These units match the padding and line boxes below,
+  // so the three rows fit the real cell instead of a fixed two-row card.
+  const lineBox = 1.4;
+  const contentUnits =
+    10 +
+    3 +
+    4 +
+    4 +
+    (20 + 15 + 13 + 15) * pashtoLineScale * lineBox;
+  const scale = Math.min(0.88, Math.max(0.52, height / contentUnits));
   const typeScale = scale * pashtoLineScale;
   // At that smaller size the bold Naskh strokes read thin. A tight shadow in
   // the text color thickens them without changing the line box.
@@ -329,7 +336,6 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       style={{
         height: 'match_parent',
         width: 'match_parent',
-        // Keep the launcher cell transparent around the medium-height card.
         backgroundColor: '#00000000',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -339,12 +345,12 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
     >
       <FlexWidget
         style={{
-          height: 'wrap_content',
+          height: 'match_parent',
           width: 'match_parent',
           backgroundGradient: BACKGROUND_GRADIENT,
           borderRadius: 16,
           flexDirection: 'column',
-          justifyContent: 'flex-start',
+          justifyContent: 'center',
           alignItems: 'center',
           paddingVertical: rootPaddingVertical,
           paddingHorizontal: rootPaddingHorizontal,

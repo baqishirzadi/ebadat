@@ -39,7 +39,9 @@ export function CreatorMessageCard() {
       ? 'From the creator'
       : language === 'arabic'
         ? 'من المطوّر'
-        : 'پیام سازنده';
+        : language === 'pashto'
+          ? 'د جوړوونکي پیغام'
+          : 'پیام سازنده';
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -81,40 +83,36 @@ export function CreatorMessageCard() {
             {CREATOR_MESSAGE_ARABIC_SIGNATURE}
           </CenteredText>
         </View>
+      ) : isPashtoUi ? (
+        <View style={styles.block}>
+          <CenteredText style={[styles.blockTitlePashto, styles.blockTitlePashtoNaskh, { color: theme.tint }]}>
+            {CREATOR_MESSAGE_PASHTO_TITLE}
+          </CenteredText>
+          <CenteredText
+            style={[styles.bodyPashto, styles.bodyPashtoNaskh, { color: theme.text }]}
+            {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
+          >
+            {CREATOR_MESSAGE_PASHTO_BODY}
+          </CenteredText>
+          <CenteredText
+            style={[styles.signaturePashto, styles.signaturePashtoNaskh, { color: theme.bookmark }]}
+            {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
+          >
+            {CREATOR_MESSAGE_PASHTO_SIGNATURE}
+          </CenteredText>
+        </View>
       ) : (
-        <>
-          <View style={styles.block}>
-            <CenteredText style={[styles.blockTitle, { color: theme.tint }]}>
-              {CREATOR_MESSAGE_DARI_TITLE}
-            </CenteredText>
-            <CenteredText style={[styles.bodyDari, { color: theme.text }]}>
-              {CREATOR_MESSAGE_DARI_BODY}
-            </CenteredText>
-            <CenteredText style={[styles.signatureDari, { color: theme.bookmark }]}>
-              {CREATOR_MESSAGE_DARI_SIGNATURE}
-            </CenteredText>
-          </View>
-
-          <View style={[styles.divider, { backgroundColor: theme.divider }]} />
-
-          <View style={[styles.block, styles.pashtoBlock]}>
-            <CenteredText style={[styles.blockTitlePashto, isPashtoUi && styles.blockTitlePashtoNaskh, { color: theme.tint }]}>
-              {CREATOR_MESSAGE_PASHTO_TITLE}
-            </CenteredText>
-            <CenteredText
-              style={[styles.bodyPashto, isPashtoUi && styles.bodyPashtoNaskh, { color: theme.text }]}
-              {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
-            >
-              {CREATOR_MESSAGE_PASHTO_BODY}
-            </CenteredText>
-            <CenteredText
-              style={[styles.signaturePashto, isPashtoUi && styles.signaturePashtoNaskh, { color: theme.bookmark }]}
-              {...(Platform.OS === 'android' ? { textBreakStrategy: 'simple' as const } : null)}
-            >
-              {CREATOR_MESSAGE_PASHTO_SIGNATURE}
-            </CenteredText>
-          </View>
-        </>
+        <View style={styles.block}>
+          <CenteredText style={[styles.blockTitle, { color: theme.tint }]}>
+            {CREATOR_MESSAGE_DARI_TITLE}
+          </CenteredText>
+          <CenteredText style={[styles.bodyDari, { color: theme.text }]}>
+            {CREATOR_MESSAGE_DARI_BODY}
+          </CenteredText>
+          <CenteredText style={[styles.signatureDari, { color: theme.bookmark }]}>
+            {CREATOR_MESSAGE_DARI_SIGNATURE}
+          </CenteredText>
+        </View>
       )}
     </View>
   );
@@ -196,10 +194,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'ltr',
   },
-  divider: {
-    height: 1,
-    marginHorizontal: Spacing.lg,
-  },
   blockTitlePashto: {
     fontSize: Typography.ui.subtitle,
     fontFamily: 'NotoNastaliqUrdu',
@@ -223,10 +217,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     writingDirection: 'rtl',
     includeFontPadding: false,
-  },
-  pashtoBlock: {
-    paddingBottom: Spacing.md,
-    paddingTop: Spacing.xs,
   },
   // In Pashto mode these blocks render in the Pashto Naskh face, not Nastaliq.
   blockTitlePashtoNaskh: {
