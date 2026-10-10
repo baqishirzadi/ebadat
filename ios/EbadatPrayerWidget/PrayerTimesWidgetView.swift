@@ -34,11 +34,8 @@ struct PrayerTimesWidgetView: View {
     default: return "NotoNaskhArabic-Bold"
     }
   }
-  /// Naskh sits small inside the Nastaliq line box. Draw Pashto larger in that same box.
-  private var pashtoGlyphScale: CGFloat {
-    guard isPashto else { return 1 }
-    return snapshot?.pashtoFont == "amiri" ? 1.15 : 1.25
-  }
+  /// Pashto uses the same line box as Dari so the prayer times stay inside the chip.
+  private var pashtoGlyphScale: CGFloat { 1 }
 
   private static let weekdayEnglish: [String: String] = [
     "یکشنبه": "Sun", "دوشنبه": "Mon", "سه‌شنبه": "Tue", "سې‌شنبه": "Tue",
@@ -355,7 +352,7 @@ struct PrayerTimesWidgetView: View {
     if let snapshot, let next = nextPrayer(from: snapshot) {
       VStack(spacing: 1) {
         Text(label(next))
-          .font(.custom(uiFontBold, size: isPashto ? 12 : 10))
+          .font(.custom(uiFontBold, size: 10))
           .lineLimit(1)
           .minimumScaleFactor(0.62)
           .allowsTightening(true)

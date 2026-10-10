@@ -178,47 +178,49 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         ? 'NotoNaskhArabic-Bold'
         : 'Vazirmatn-Bold';
 
-  // Pashto glyphs draw larger than Dari. The extra size is only on fontSize;
-  // a tighter line box and shorter vertical gaps keep the same three rows
-  // inside the launcher cell. Arabic stays at its previous fit.
+  // Naskh and Amiri line boxes are taller than Dari's Vazirmatn. At Dari's
+  // font size the prayer-time line is pushed out of this one-cell widget.
+  // These scales keep the name and the time inside the same chip.
   const glyphScale = isArabic
     ? 0.84
     : !isPashto
       ? 1
       : snapshot?.pashtoFont === 'amiri'
-        ? 0.92
-        : 1.12;
-  const lineBox = isPashto ? 0.84 : 1.4;
-  const spaceScale = isPashto ? 0.6 : 1;
+        ? 0.62
+        : 0.8;
+  const lineBox = 1.4;
   // One home-screen row. These units match the padding and line boxes below,
   // so the three rows fit the real cell instead of a fixed two-row card.
   const contentUnits =
-    (10 + 3 + 4 + 4) * spaceScale +
+    10 +
+    3 +
+    4 +
+    4 +
     (20 + 15 + 13 + 15) * glyphScale * lineBox;
   const scale = Math.min(0.88, Math.max(0.52, height / contentUnits));
   const typeScale = scale * glyphScale;
   // Bold Naskh strokes read thin at widget size. A tight shadow in the text
-  // color thickens them without changing the line box. Pashto uses a heavier stroke.
+  // color thickens Arabic without changing the line box.
   const pashtoWeight = (color: `#${string}`) =>
-    isPashto || isArabic
+    isArabic
       ? {
           fontWeight: '700' as const,
           textShadowColor: color,
-          textShadowRadius: isPashto ? 2 : 1.2,
+          textShadowRadius: 1.2,
           textShadowOffset: { width: 0, height: 0 },
         }
       : null;
-  const rootPaddingVertical = 5 * scale * spaceScale;
+  const rootPaddingVertical = 5 * scale;
   const rootPaddingHorizontal = 6 * scale;
   const prayerLabelSize = 13 * typeScale;
   const prayerTimeSize = 15 * typeScale;
-  const prayerChipPaddingVertical = 2 * scale * spaceScale;
+  const prayerChipPaddingVertical = 2 * scale;
   const prayerTimeMarginTop = 0;
   const headerTitleSize = 20 * typeScale;
   const dateLineSize = 15 * typeScale;
   const sunriseLineSize = 15 * typeScale;
-  const dateRowMarginTop = 3 * scale * spaceScale;
-  const prayerRowMarginTop = 4 * scale * spaceScale;
+  const dateRowMarginTop = 3 * scale;
+  const prayerRowMarginTop = 4 * scale;
   const palette = widgetPalette(snapshot?.themeMode);
   const backgroundGradient = {
     from: palette.gradientFrom,

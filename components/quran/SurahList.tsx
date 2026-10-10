@@ -161,6 +161,7 @@ function GlassSegment({ options, direction }: { options: GlassOption[]; directio
               color={option.active ? '#fff' : 'rgba(255,255,255,0.78)'}
             />
             <CenteredText
+              numberOfLines={1}
               style={[styles.glassButtonText, option.active && styles.glassButtonTextActive]}
             >
               {option.label}
@@ -630,16 +631,16 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
   },
   glassButtonActive: {
-    borderColor: 'rgba(255,255,255,0.75)',
-    backgroundColor: 'rgba(255,255,255,0.34)',
+    borderColor: 'rgba(190,255,220,0.75)',
+    backgroundColor: 'rgba(52,178,122,0.55)',
   },
   glassButtonShadowActive: {
-    backgroundColor: 'transparent',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
-    shadowRadius: 4,
-    elevation: Platform.OS === 'android' ? 2 : 0,
+    backgroundColor: 'rgba(52,178,122,0.55)',
+    shadowColor: '#3DDC97',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    elevation: Platform.OS === 'android' ? 4 : 0,
   },
   glassButtonPressed: {
     opacity: 0.85,
@@ -668,6 +669,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Vazirmatn',
     fontWeight: '600',
     color: 'rgba(255,255,255,0.82)',
+    includeFontPadding: false,
   },
   glassButtonTextActive: {
     color: '#fff',
