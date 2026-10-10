@@ -6,6 +6,8 @@
 import { Platform } from 'react-native';
 import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 import { isAdminSessionActive, publishArticleByAdmin } from './articleAdminService';
+import { translateUi } from './i18n/catalog';
+import { readPersistedAppLanguage } from './i18n/languages';
 
 // Conditional import - only load on native platforms, not in Expo Go
 let Notifications: typeof import('expo-notifications') | null = null;
@@ -108,7 +110,7 @@ export async function notifyArticlePublished(
     // For now, we'll schedule local notifications as a fallback
     // In a real implementation, you'd batch send via Expo Push API
 
-    const notificationTitle = `مقاله جدید از ${scholarName}`;
+    const notificationTitle = translateUi('articles.notify.title', await readPersistedAppLanguage(), { name: scholarName });
     const notificationBody = articleTitle;
 
     // Schedule notification (this is a simplified version)

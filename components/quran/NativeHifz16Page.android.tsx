@@ -21,6 +21,7 @@ type NativeHifz16PageProps = ViewProps & {
   accentColor: string;
   contentTop: number;
   contentBottom: number;
+  fontFamily?: string;
   activeSurah?: number;
   activeAyah?: number;
   onHifzLinePress?: (event: NativeSyntheticEvent<NativePressPayload>) => void;
@@ -36,6 +37,7 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
   accentColor,
   contentTop,
   contentBottom,
+  fontFamily,
   activePlayingSurah,
   activePlayingAyah,
   onAyahPress,
@@ -47,6 +49,7 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
   accentColor: string;
   contentTop: number;
   contentBottom: number;
+  fontFamily?: string;
   activePlayingSurah?: number | null;
   activePlayingAyah?: number | null;
   onAyahPress: (surah: number, ayah: number) => void;
@@ -68,6 +71,7 @@ export const NativeHifz16Page = memo(function NativeHifz16Page({
       // native view converts them to physical pixels before drawing.
       contentTop={contentTop}
       contentBottom={contentBottom}
+      fontFamily={fontFamily}
       activeSurah={activePlayingSurah ?? 0}
       activeAyah={activePlayingAyah ?? 0}
       onHifzLinePress={(event) => {

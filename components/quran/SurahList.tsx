@@ -90,6 +90,7 @@ const SurahItem = React.memo(function SurahItem({
         <CenteredText style={[styles.arabicName, { color: theme.text }]} numberOfLines={1} ellipsizeMode="tail">
           {t('quran.mode.surah')} {surah.arabic}
         </CenteredText>
+        {language === 'arabic' ? null : (
         <CenteredText
           style={[styles.dariName, { color: theme.textSecondary }]}
           numberOfLines={2}
@@ -97,6 +98,7 @@ const SurahItem = React.memo(function SurahItem({
         >
           {content(surah, null)} ({content(surah, 'meaning')})
         </CenteredText>
+        )}
       </View>
 
       <View style={{ flexShrink: 0 }}>
@@ -190,6 +192,7 @@ export function SurahList() {
     const arabicQuery = normalizeArabicForSearch(query);
     const dariQuery = normalizeDariForSearch(query);
     const pashtoQuery = normalizePashtoForSearch(query);
+    const latinQuery = query.toLocaleLowerCase('en');
 
     return SURAH_NAMES.filter((surah) => {
       const arabicName = normalizeArabicForSearch(surah.arabic);
@@ -197,11 +200,14 @@ export function SurahList() {
       const meaning = normalizeDariForSearch(surah.meaning);
       const pashtoName = normalizePashtoForSearch(surah.pashto);
       const pashtoMeaning = normalizePashtoForSearch(surah.meaningPashto);
+      const englishName = surah.english.toLocaleLowerCase('en');
+      const turkishName = surah.turkish.toLocaleLowerCase('tr');
 
       return (
         (arabicQuery.length >= 1 && arabicName.includes(arabicQuery)) ||
         (dariQuery.length >= 1 && (dariName.includes(dariQuery) || meaning.includes(dariQuery))) ||
         (pashtoQuery.length >= 1 && (pashtoName.includes(pashtoQuery) || pashtoMeaning.includes(pashtoQuery))) ||
+        (latinQuery.length >= 2 && (englishName.includes(latinQuery) || turkishName.includes(latinQuery))) ||
         surah.number.toString() === query ||
         toArabicNumerals(surah.number).includes(query)
       );

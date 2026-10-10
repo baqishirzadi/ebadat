@@ -1527,6 +1527,7 @@ async function configureAndroidNotificationChannels(
       appLanguage: appState.preferences.appLanguage,
       dariFont: appState.preferences.dariFont,
       pashtoFont: appState.preferences.pashtoFont,
+      themeMode: appState.preferences.theme,
       horizonDays: 30,
     });
     // Multi-day only after adhan schedule settles — avoids racing 7-day native JSON.
@@ -1545,6 +1546,7 @@ async function configureAndroidNotificationChannels(
           appLanguage: appState.preferences.appLanguage,
           dariFont: appState.preferences.dariFont,
           pashtoFont: appState.preferences.pashtoFont,
+          themeMode: appState.preferences.theme,
           horizonDays: 30,
         });
       });
@@ -1564,6 +1566,7 @@ async function configureAndroidNotificationChannels(
     appState.preferences.appLanguage,
     appState.preferences.dariFont,
     appState.preferences.pashtoFont,
+    appState.preferences.theme,
   ]);
 
   useEffect(() => {
@@ -1577,6 +1580,7 @@ async function configureAndroidNotificationChannels(
         appLanguage: appState.preferences.appLanguage,
         dariFont: appState.preferences.dariFont,
         pashtoFont: appState.preferences.pashtoFont,
+        themeMode: appState.preferences.theme,
         // Keep a long local horizon so WidgetKit remains correct while the app is closed.
         horizonDays: 30,
       });
@@ -1591,6 +1595,7 @@ async function configureAndroidNotificationChannels(
     appState.preferences.appLanguage,
     appState.preferences.dariFont,
     appState.preferences.pashtoFont,
+    appState.preferences.theme,
     state.settings.selectedCity,
   ]);
 
@@ -1865,6 +1870,7 @@ async function configureAndroidNotificationChannels(
         appLanguage: appState.preferences.appLanguage,
         dariFont: appState.preferences.dariFont,
         pashtoFont: appState.preferences.pashtoFont,
+        themeMode: appState.preferences.theme,
         horizonDays: 30,
       });
     }
@@ -2167,17 +2173,7 @@ async function configureAndroidNotificationChannels(
             const reminderContent = isFridayJummah
               ? (() => {
                 const language = appState.preferences.appLanguage;
-                const heading = getNotificationHeading(
-                  language === 'pashto'
-                    ? 'د لمانځه یادونه'
-                    : language === 'english'
-                      ? 'Prayer reminder'
-                      : language === 'turkish'
-                        ? 'Namaz hatırlatması'
-                        : language === 'arabic'
-                          ? 'تذكير بالصلاة'
-                          : 'یادآوری نماز',
-                );
+                const heading = getNotificationHeading(translateUi('adhan.reminder.title', language), language);
                 const minutes = adhanPreferences.earlyReminderMinutes;
                 return {
                   title: heading.title,
@@ -3093,7 +3089,10 @@ async function configureAndroidNotificationChannels(
         identifier: `adhan-system-test-${Date.now()}`,
         content: {
           ...(() => {
-            const heading = getNotificationHeading('تست اذان');
+            const heading = getNotificationHeading(
+              translateUi('adhanSettings.systemTest', appState.preferences.appLanguage),
+              appState.preferences.appLanguage,
+            );
             return {
               ...(heading.title ? { title: heading.title } : {}),
               ...(heading.subtitle ? { subtitle: heading.subtitle } : {}),

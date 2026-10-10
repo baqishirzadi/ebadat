@@ -18,9 +18,9 @@ export const WEEKDAYS_DARI = [
 export const WEEKDAYS_PASHTO = [
   'یکشنبه',
   'دوشنبه',
-  'سې‌شنبه',
-  'چهارشنبه',
-  'پنجشنبه',
+  'درې‌شنبه',
+  'څلورشنبه',
+  'پینځشنبه',
   'جمعه',
   'شنبه',
 ];
@@ -85,9 +85,9 @@ export function weekdayName(weekdayIndex: number, language: AppLanguage): string
  */
 const WEEKDAY_GRID_HEADERS: Record<AppLanguage, string[]> = {
   dari: ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
-  pashto: ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
+  pashto: ['ش', 'ی', 'د', 'س', 'څ', 'پ', 'ج'],
   arabic: ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'],
-  turkish: ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'],
+  turkish: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
   english: ['Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr'],
 };
 

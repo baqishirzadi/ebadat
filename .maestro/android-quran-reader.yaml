@@ -22,6 +22,8 @@ appId: com.afghandev.ebadat
       id: quran-reader-settings-sheet
     timeout: 10000
 - takeScreenshot: android-quran-reader-settings-open
+- assertNotVisible:
+    id: quran-reader-hifz-font-amiriQuran
 - assertVisible:
     id: quran-reader-size-increase
 - tapOn:

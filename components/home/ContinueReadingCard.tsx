@@ -7,12 +7,11 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp, useReadingPosition } from '@/context/AppContext';
-import { toArabicNumerals } from '@/utils/numbers';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 export function ContinueReadingCard() {
   const { theme } = useApp();
-  const { isPashto, language, t } = useI18n();
+  const { language, t, n } = useI18n();
   const { position } = useReadingPosition();
 
   if (position.surahNumber <= 0) return null;
@@ -35,7 +34,7 @@ export function ContinueReadingCard() {
             align="center"
             style={[styles.subtitle, language !== 'english' && styles.subtitlePashto, { color: theme.textSecondary }]}
           >
-            {isPashto ? 'سورت' : 'سوره'} {toArabicNumerals(position.surahNumber)} • {isPashto ? 'آیت' : 'آیه'} {toArabicNumerals(position.ayahNumber)}
+            {t('quran.search.surahLabel', { number: n(position.surahNumber) })} • {t('quran.ayahLabel', { number: n(position.ayahNumber) })}
           </RtlText>
         </RtlView>
         <MaterialIcons name="play-circle-filled" size={36} color={theme.playing} />

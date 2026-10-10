@@ -264,6 +264,29 @@ export type DariFontFamily = 'vazirmatn' | 'amiri';
 export type PashtoFontFamily = 'naskh' | 'amiri';
 
 // Font configuration
+/** Indo-Pak 16-line mushaf faces. Kept separate from the translation-reader fonts. */
+export type HifzFontFamily = 'amiriQuran' | 'scheherazade';
+
+export const HifzFonts: Record<HifzFontFamily, {
+  name: string;
+  iosName: string;
+  displayName: string;
+  displayNameDari: string;
+}> = {
+  amiriQuran: {
+    name: 'AmiriQuran',
+    iosName: 'Amiri Quran',
+    displayName: 'Amiri Quran',
+    displayNameDari: 'امیری قرآن',
+  },
+  scheherazade: {
+    name: 'ScheherazadeNew',
+    iosName: 'Scheherazade New',
+    displayName: 'Uthmani Taha',
+    displayNameDari: 'عثمان طه',
+  },
+};
+
 export const QuranFonts: Record<QuranFontFamily, { 
   name: string; 
   displayName: string; 

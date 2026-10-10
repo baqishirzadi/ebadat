@@ -18,10 +18,11 @@ function hadithField(hadith: Hadith, language: AppLanguage): string {
 
 /**
  * Translation for the active app language.
- * Turkish falls back through English, and Arabic through Dari, when a
- * rendering has not been stored yet.
+ * Arabic readers already see the matn, so the simplified Arabic paraphrase
+ * is not shown. Turkish falls back through English when a rendering is missing.
  */
 export function getHadithTranslation(hadith: Hadith, language: AppLanguage): string {
+  if (language === 'arabic') return '';
   for (const candidate of contentFallbackChain(language)) {
     const text = hadithField(hadith, candidate);
     if (text) return text;
@@ -34,7 +35,10 @@ export function resolveHadithTranslation(
   hadith: Hadith,
   language: AppLanguage,
 ): { text: string; language: AppLanguage } | null {
-  const text = getHadithTranslation(hadith, language);
-  if (!text) return null;
-  return { text, language };
+  if (language === 'arabic') return null;
+  for (const candidate of contentFallbackChain(language)) {
+    const text = hadithField(hadith, candidate);
+    if (text) return { text, language: candidate };
+  }
+  return null;
 }

@@ -182,7 +182,7 @@ export function useQuranData() {
     if (language === 'pashto') return ayah.translation_pashto;
     if (language === 'english') return ayah.translation_english;
     if (language === 'turkish') return ayah.translation_turkish || ayah.translation_english;
-    if (language === 'arabic') return ayah.translation_arabic || ayah.translation_dari;
+    if (language === 'arabic') return undefined;
     return ayah.translation_dari;
   }, []);
 
@@ -314,7 +314,7 @@ function convertToLegacyFormat(surahData: SurahData): Surah {
       })),
       arabic: surahData.ayahs.map(a => ({
         ayahNumber: a.number,
-        text: a.translation_arabic || a.translation_dari || '',
+        text: '',
       })),
     },
   };

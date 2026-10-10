@@ -13,6 +13,8 @@ import {
   buildAdhanHealthReport,
 } from '@/utils/adhanHealth';
 import { adhanPermissionLocale, tAdhanPermission, type AdhanPermissionLocale } from '@/utils/i18n/adhanPermissions';
+import { translateUi } from '@/utils/i18n/catalog';
+import type { AppLanguage } from '@/types/quran';
 import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
@@ -27,18 +29,19 @@ export function healthStatusFromReport(
   return report.overallStatus;
 }
 
+function languageForPermissionLocale(locale: AdhanPermissionLocale): AppLanguage {
+  if (locale === 'en') return 'english';
+  if (locale === 'ps') return 'pashto';
+  if (locale === 'tr') return 'turkish';
+  if (locale === 'ar') return 'arabic';
+  return 'dari';
+}
+
 export function healthSummaryLine(status: HealthVisualStatus, locale: AdhanPermissionLocale = 'fa'): string {
-  switch (status) {
-    case 'healthy':
-      if (locale === 'en') return 'The adhan is ready and scheduling is active.';
-      return locale === 'ps' ? 'اذان چمتو دی او مهالوېش فعال دی.' : 'اذان آماده است و زمان‌بندی فعال است.';
-    case 'warning':
-      if (locale === 'en') return 'One or more items need attention.';
-      return locale === 'ps' ? 'یو یا څو موارد کتنې ته اړتیا لري.' : 'یک یا چند مورد نیاز به بررسی دارد.';
-    default:
-      if (locale === 'en') return 'Fix your settings so the adhan plays on time.';
-      return locale === 'ps' ? 'د اذان د پر وخت غږولو لپاره امستنې سمې کړئ.' : 'برای پخش به‌موقع اذان، تنظیمات را اصلاح کنید.';
-  }
+  const language = languageForPermissionLocale(locale);
+  if (status === 'healthy') return translateUi('home.adhan.summary.healthy', language);
+  if (status === 'warning') return translateUi('home.adhan.summary.warning', language);
+  return translateUi('home.adhan.summary.critical', language);
 }
 
 export function healthChipLabel(status: HealthVisualStatus, locale: AdhanPermissionLocale = 'fa'): string {

@@ -33,7 +33,7 @@ export function PrayerTextBlock({
   const language = state.preferences.appLanguage;
   const pashtoFontFamily = getPashtoFontFamily(state.preferences.pashtoFont);
 
-  const translation = resolveContent(source, translationField, language);
+  const translation = language === 'arabic' ? null : resolveContent(source, translationField, language);
   const instruction = resolveContent(source, instructionField, language);
 
   const fontFor = (textLanguage: AppLanguage) =>

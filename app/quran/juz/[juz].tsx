@@ -93,7 +93,7 @@ export default function JuzReaderScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { theme } = useApp();
-  const { t } = useI18n();
+  const { t, n, language } = useI18n();
   const { updatePosition } = useReadingPosition();
   const { getAyahsByJuz, getTranslation } = useQuranData();
 
@@ -496,7 +496,7 @@ export default function JuzReaderScreen() {
           juzNumber,
         })
         .catch((error) => {
-          Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
+          Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error, language));
         });
     },
     [currentlyPlaying, juzBoundsBySurah, juzNumber, t]
@@ -516,7 +516,7 @@ export default function JuzReaderScreen() {
         juzNumber,
       })
       .catch((error) => {
-        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error, language));
       });
   }, [currentlyPlaying, juzBoundsBySurah, juzNumber, t]);
 
@@ -580,18 +580,18 @@ export default function JuzReaderScreen() {
       return (
         <SurahDecoratedCard
           surahNumber={section.surahNumber}
-          title={`سوره ${section.surahName}`}
-          subtitle={`از آیه ${toArabicNumerals(section.startAyah)} تا آیه ${toArabicNumerals(section.endAyah)}`}
+          title={t('quran.search.surahLabel', { number: section.surahName })}
+          subtitle={t('quran.ayahSpan', { start: n(section.startAyah), end: n(section.endAyah) })}
           metaIcon="menu-book"
-          metaTop={`داخل جزء ${toArabicNumerals(juzNumber)}`}
-          metaBottom={`${toArabicNumerals(ayahCount)} آیه`}
+          metaTop={t('quran.insideJuz', { number: n(juzNumber) })}
+          metaBottom={t('quran.ayahCount', { count: n(ayahCount) })}
           actionIcon="open-in-new"
           onPress={() => handleOpenFullSurah(section)}
           style={styles.sectionHeaderCard}
         />
       );
     },
-    [handleOpenFullSurah, juzNumber]
+    [handleOpenFullSurah, juzNumber, n, t]
   );
 
   const renderBismillah = useCallback(() => {
@@ -680,7 +680,7 @@ export default function JuzReaderScreen() {
           <MaterialIcons name="arrow-forward" size={24} color="#fff" />
         </Pressable>
         <AppCenteredText style={styles.topBarTitle} numberOfLines={1} ellipsizeMode="tail">
-          جزء {toArabicNumerals(juzNumber)} • سوره {currentSurahArabic}
+          {t('quran.juzTitle', { number: n(juzNumber) })} • {t('quran.search.surahLabel', { number: currentSurahArabic })}
         </AppCenteredText>
         <Pressable
           testID="quran-download-juz-header"
@@ -739,7 +739,7 @@ export default function JuzReaderScreen() {
         visible={showDownloadSheet}
         scope={juzDownloadScope}
         theme={theme}
-        title={`دانلود جزء ${toArabicNumerals(juzNumber)}`}
+        title={t('quran.downloadJuz', { number: n(juzNumber) })}
         primaryLabel={t('quran.download.action')}
         onClose={() => setShowDownloadSheet(false)}
         onCompleted={(nextReciter) => {

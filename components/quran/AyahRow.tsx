@@ -185,7 +185,7 @@ export const AyahRow = memo(function AyahRow({
         </QuranText>
       </View>
 
-      {showTranslation !== 'none' && (
+      {showTranslation !== 'none' && showTranslation !== 'arabic' && (
         <View style={[styles.translationsWrapper, { borderTopColor: dividerColor }]}>
           {showTranslation === 'both' ? (
             <>
@@ -198,8 +198,6 @@ export const AyahRow = memo(function AyahRow({
             renderTranslation(englishTranslation, 'english')
           ) : showTranslation === 'turkish' ? (
             renderTranslation(turkishTranslation, 'turkish')
-          ) : showTranslation === 'arabic' ? (
-            renderTranslation(arabicTranslation, 'arabic')
           ) : (
             renderTranslation(dariTranslation, 'dari')
           )}

@@ -4,12 +4,13 @@ import { getCalendarTruth } from '@/utils/calendarTruth';
 import { clampHijriOffsetDays, getUserHijriOffsetDays } from '@/utils/hijriOffset';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { formatHijriDate } from '@/utils/islamicCalendar';
+import { gregorianToDisplayDiyanetHijri } from '@/utils/diyanetHijri';
 import { toArabicNumerals } from '@/utils/numbers';
 import { PRAYER_LABELS_DARI, PRAYER_LABELS_PASHTO, prayerLabel, type PrayerTimes } from '@/utils/prayerTimes';
 import { PRAYER_POLICY_VERSION } from '@/utils/prayerCalculationPolicy';
 import { MAGHRIB_OFFSET_MINUTES } from '@/utils/adhanSchedulePolicy';
 import type { DailyHadithLanguage } from '@/utils/ahadith/daily';
-import type { DariFontFamily, PashtoFontFamily } from '@/constants/theme';
+import type { DariFontFamily, PashtoFontFamily, ThemeMode } from '@/constants/theme';
 
 export const WIDGET_SNAPSHOT_KEY = 'ebadat_widget_snapshot_v1';
 
@@ -35,6 +36,8 @@ export interface WidgetDaySnapshot {
   hijriDisplay: string;
   hijriDisplayPashto?: string;
   hijriDisplayEnglish?: string;
+  /** Diyanet lunar date. Present only for the Turkish UI. */
+  hijriDisplayTurkish?: string;
   gregorianDisplay: string;
   sunriseDisplay: string;
   sunriseDisplayPashto?: string;
@@ -46,6 +49,8 @@ export interface WidgetSnapshot {
   /** Snapshot schema 7 migrates existing Pashto font choices to Vazirmatn. */
   version: 7;
   appLanguage?: DailyHadithLanguage;
+  /** Active appearance. Missing snapshots stay on the original green widget. */
+  themeMode?: ThemeMode;
   dariFont?: DariFontFamily;
   pashtoFont?: PashtoFontFamily;
   updatedAt: string;
@@ -73,6 +78,7 @@ export interface WidgetSnapshot {
   hijriDisplay: string;
   hijriDisplayPashto?: string;
   hijriDisplayEnglish?: string;
+  hijriDisplayTurkish?: string;
   gregorianDisplay: string;
   sunriseDisplay: string;
   sunriseDisplayPashto?: string;
@@ -89,6 +95,21 @@ const DEFAULT_PASHTO_FONT: PashtoFontFamily = 'naskh';
 
 function normalizePashtoFont(value: unknown): PashtoFontFamily {
   return value === 'amiri' ? 'amiri' : DEFAULT_PASHTO_FONT;
+}
+
+const WIDGET_THEME_MODES: readonly ThemeMode[] = ['light', 'night', 'sapphire', 'burgundy'];
+
+export function normalizeWidgetTheme(value: unknown): ThemeMode {
+  if (value === 'turquoise') return 'sapphire';
+  if (value === 'olive') return 'burgundy';
+  if (typeof value === 'string' && (WIDGET_THEME_MODES as readonly string[]).includes(value)) {
+    return value as ThemeMode;
+  }
+  return 'light';
+}
+
+function turkishHijriDisplay(date: Date, hijriOffsetDays: number): string {
+  return formatHijriDate(gregorianToDisplayDiyanetHijri(date, hijriOffsetDays), 'turkish');
 }
 
 function formatGregorianDisplay(gregorianDate: Date): string {
@@ -152,6 +173,7 @@ function buildDaySnapshot(
     hijriDisplay: `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNameDari} ${toArabicNumerals(truth.hijri.year)}`,
     hijriDisplayPashto: `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNamePashto} ${toArabicNumerals(truth.hijri.year)}`,
     hijriDisplayEnglish: formatHijriDate(truth.hijri, 'english'),
+    hijriDisplayTurkish: language === 'turkish' ? turkishHijriDisplay(noonAnchor, hijriOffsetDays) : undefined,
     gregorianDisplay: formatGregorianDisplay(truth.gregorianDate),
     sunriseDisplay: formatSunriseDisplay(prayerTimes, timezone, language),
     sunriseDisplayPashto: formatSunriseDisplay(prayerTimes, timezone, 'pashto'),
@@ -253,6 +275,7 @@ export function buildWidgetSnapshot(
     maghribOffsetMinutes?: number;
     fixedDhuhrLocalTime?: string | null;
     appLanguage?: DailyHadithLanguage;
+    themeMode?: ThemeMode;
     dariFont?: DariFontFamily;
     pashtoFont?: PashtoFontFamily;
     multiDay?: Array<{ dateKey: string; times: PrayerTimes; noonAnchor: Date }>;
@@ -295,6 +318,7 @@ export function buildWidgetSnapshot(
   return {
     version: 7,
     appLanguage,
+    themeMode: normalizeWidgetTheme(options?.themeMode),
     dariFont: options?.dariFont ?? 'vazirmatn',
     pashtoFont: normalizePashtoFont(options?.pashtoFont),
     updatedAt: now.toISOString(),
@@ -320,6 +344,7 @@ export function buildWidgetSnapshot(
     hijriDisplay: active.hijriDisplay,
     hijriDisplayPashto: active.hijriDisplayPashto,
     hijriDisplayEnglish: active.hijriDisplayEnglish,
+    hijriDisplayTurkish: active.hijriDisplayTurkish,
     gregorianDisplay: active.gregorianDisplay,
     sunriseDisplay: active.sunriseDisplay,
     sunriseDisplayPashto: active.sunriseDisplayPashto,
@@ -367,6 +392,7 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
     pashtoFont: cleanSnapshot.version < 7
       ? DEFAULT_PASHTO_FONT
       : normalizePashtoFont(cleanSnapshot.pashtoFont),
+    themeMode: normalizeWidgetTheme(cleanSnapshot.themeMode),
     appLanguage,
     updatedAt: now.toISOString(),
     days,
@@ -384,6 +410,7 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
       `${toArabicNumerals(truth.hijri.day)} ${truth.hijri.monthNamePashto} ${toArabicNumerals(truth.hijri.year)}`,
     hijriDisplayEnglish:
       active?.hijriDisplayEnglish || formatHijriDate(truth.hijri, 'english'),
+    hijriDisplayTurkish: active?.hijriDisplayTurkish,
     gregorianDisplay: active?.gregorianDisplay || formatGregorianDisplay(truth.gregorianDate),
     sunriseDisplay: active?.sunriseDisplay || snapshot.sunriseDisplay || '',
     sunriseDisplayPashto: active?.sunriseDisplayPashto || snapshot.sunriseDisplayPashto || '',
@@ -400,6 +427,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
     const parsed = JSON.parse(raw) as {
       version?: number;
       appLanguage?: DailyHadithLanguage;
+      themeMode?: ThemeMode;
       dariFont?: DariFontFamily;
       pashtoFont?: PashtoFontFamily;
       updatedAt?: string;
@@ -422,6 +450,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       shamsiDisplayPashto?: string;
       hijriDisplay?: string;
       hijriDisplayPashto?: string;
+      hijriDisplayTurkish?: string;
       gregorianDisplay?: string;
       sunriseDisplay?: string;
       sunriseDisplayPashto?: string;
@@ -525,6 +554,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
     return {
       version: 7,
       appLanguage: parsed.appLanguage || 'dari',
+      themeMode: normalizeWidgetTheme(parsed.themeMode),
       dariFont: parsed.dariFont || 'vazirmatn',
       pashtoFont: (parsed.version ?? 0) < 7
         ? DEFAULT_PASHTO_FONT
@@ -549,6 +579,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       shamsiDisplayPashto: parsed.shamsiDisplayPashto || days[0]?.shamsiDisplayPashto || '',
       hijriDisplay: parsed.hijriDisplay || '',
       hijriDisplayPashto: parsed.hijriDisplayPashto || '',
+      hijriDisplayTurkish: parsed.hijriDisplayTurkish || days[0]?.hijriDisplayTurkish,
       gregorianDisplay: parsed.gregorianDisplay || '',
       sunriseDisplay: parsed.sunriseDisplay || days[0]?.sunriseDisplay || '',
       sunriseDisplayPashto: parsed.sunriseDisplayPashto || days[0]?.sunriseDisplayPashto || '',

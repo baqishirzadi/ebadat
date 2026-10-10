@@ -47,6 +47,7 @@ class Hifz16PageView(context: Context) : View(context) {
   )
 
   private val arabicPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG)
+  private val inkBounds = Rect()
   private val metaPaint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.SUBPIXEL_TEXT_FLAG)
   private val framePaint = Paint(Paint.ANTI_ALIAS_FLAG)
   private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -68,15 +69,27 @@ class Hifz16PageView(context: Context) : View(context) {
   private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
   private var topInset = 0f
   private var bottomInset = 0f
-  private val mushafTypeface: Typeface = Typeface.createFromAsset(context.assets, "fonts/ScheherazadeNew-Regular.ttf")
+  private val amiriTypeface: Typeface = Typeface.createFromAsset(context.assets, "fonts/AmiriQuran-Regular.ttf")
+  private val scheherazadeTypeface: Typeface = Typeface.createFromAsset(context.assets, "fonts/ScheherazadeNew-Regular.ttf")
+  private var maxTatweelPerWord = 4
 
   init {
     setWillNotDraw(false)
     isClickable = true
     importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
-    arabicPaint.typeface = mushafTypeface
+    arabicPaint.typeface = amiriTypeface
     arabicPaint.isSubpixelText = true
     metaPaint.typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
+  }
+
+  fun setFontFamily(family: String?) {
+    val scheherazade = family == "ScheherazadeNew"
+    val cap = if (scheherazade) 8 else 4
+    val next = if (scheherazade) scheherazadeTypeface else amiriTypeface
+    if (arabicPaint.typeface === next && maxTatweelPerWord == cap) return
+    arabicPaint.typeface = next
+    maxTatweelPerWord = cap
+    invalidate()
   }
 
   fun setPageJson(raw: String?) {
@@ -89,10 +102,12 @@ class Hifz16PageView(context: Context) : View(context) {
       val source: JSONArray = page.optJSONArray("lines") ?: JSONArray()
       for (index in 0 until source.length()) {
         val item = source.optJSONObject(index) ?: continue
+        val type = item.optString("type", "spacer")
+        val rawText = item.optString("text", "")
         parsed += Line(
           number = item.optInt("line", index + 1),
-          type = item.optString("type", "spacer"),
-          text = item.optString("text", ""),
+          type = type,
+          text = rawText,
           centered = item.optBoolean("centered", false),
           surah = item.optIntOrNull("surahNumber"),
           ayahStart = item.optIntOrNull("ayahStart"),
@@ -235,14 +250,14 @@ class Hifz16PageView(context: Context) : View(context) {
       arabicPaint.textSize = lineSize
       arabicPaint.textScaleX = 1f
       arabicPaint.color = if (line.type == "ayah") inkColor else accentColor
-      val baseline = top + (rowHeight - (arabicPaint.descent() + arabicPaint.ascent())) / 2f
+      val baseline = letterBaseline(top, rowHeight)
 
       if (line.type == "surah_name") {
         if (opening) {
-          drawOpeningNamePlaque(canvas, textLeft, textRight, top, bottom, density)
+          drawOpeningNamePlaque(canvas, textLeft, textRight, top, bottom, density, outerBottom)
           drawFitted(canvas, line.text, (textLeft + textRight) / 2f, baseline, textWidth * 0.72f, lineSize, Paint.Align.CENTER)
         } else {
-          drawHeadingBand(canvas, line, top, bottom, textLeft, textRight, baseline, lineSize, density, needsInlineBismillah(line))
+          drawHeadingBand(canvas, line, top, bottom, textLeft, textRight, baseline, lineSize, density, needsInlineBismillah(line), outerBottom)
         }
         continue
       }
@@ -255,20 +270,37 @@ class Hifz16PageView(context: Context) : View(context) {
         if (natural >= textWidth * 0.55f) centered = false
       }
       arabicPaint.textAlign = if (centered) Paint.Align.CENTER else Paint.Align.RIGHT
-      val text = if (centered) line.text else stretchToWidth(line.text, textWidth)
+      val stretched = when {
+        line.type != "ayah" -> line.text
+        centered -> HifzKashidaPolicy.apply(line.text, 0)
+        else -> stretchToWidth(line.text, textWidth)
+      }
+      val lifted = if (line.type == "ayah") prepareAyahLine(stretched) else PreparedAyah(stretched, emptyList(), emptyList(), emptyList())
+      val text = lifted.text
       var drawBaseline = baseline
-      if (!centered) {
-        val measured = arabicPaint.measureText(text)
-        arabicPaint.textScaleX = (textWidth / max(1f, measured)).coerceIn(0.94f, 1.10f)
-      } else if (arabicPaint.measureText(text) > textWidth) {
-        // Fit first so the highlight and the hit box match the drawn glyphs.
-        applyFit(text, textWidth, lineSize)
-        drawBaseline = top + (rowHeight - (arabicPaint.descent() + arabicPaint.ascent())) / 2f
+      arabicPaint.textScaleX = 1f
+      if (text.isNotEmpty() && arabicPaint.measureText(text) > textWidth) {
+        // Extra width comes off this row's font size. The pause column is drawn
+        // separately, so the run is never squeezed with textScaleX.
+        fitAyahBySize(text, textWidth, lineSize)
+        drawBaseline = letterBaseline(top, rowHeight)
       }
-      if (line.type == "ayah" && line.surah != null) {
-        drawAyahSpans(canvas, line, text, top, bottom, centered, textRight, density)
+      if (line.type == "ayah" && line.surah != null && text.isNotEmpty()) {
+        drawAyahSpans(canvas, line, text, top, bottom, centered, textRight, density, outerBottom)
       }
-      canvas.drawText(text, if (centered) (left + right) / 2f else textRight, drawBaseline, arabicPaint)
+      val originX = if (centered) (left + right) / 2f else textRight
+      if (text.isNotEmpty()) {
+        canvas.drawText(text, originX, drawBaseline, arabicPaint)
+      }
+      if (lifted.maddaAnchors.isNotEmpty()) {
+        drawRaisedMarks(canvas, text, lifted.maddaAnchors, "\u0653", originX, drawBaseline, centered, 1.00f)
+      }
+      if (lifted.smallMeemAnchors.isNotEmpty()) {
+        drawRaisedMarks(canvas, text, lifted.smallMeemAnchors, "\u06E2", originX, drawBaseline, centered, 1.22f, 0.72f)
+      }
+      if (lifted.columns.isNotEmpty()) {
+        drawPauseColumns(canvas, lifted, originX, drawBaseline, centered, top)
+      }
       arabicPaint.textScaleX = 1f
       arabicPaint.textSize = lineSize
     }
@@ -307,8 +339,16 @@ class Hifz16PageView(context: Context) : View(context) {
     baseSize: Float,
     density: Float,
     withBismillah: Boolean,
+    frameBottom: Float,
   ) {
-    val band = RectF(textLeft, top + 1.5f * density, textRight, bottom - 1.5f * density)
+    val drop = opticalDrop(bottom - top)
+    val ruleGap = 1.5f * density
+    val band = RectF(
+      textLeft,
+      top + ruleGap + drop,
+      textRight,
+      min(bottom - ruleGap + drop, frameBottom - ruleGap),
+    )
     val radius = 7f * density
     highlightPaint.style = Paint.Style.FILL
     highlightPaint.color = Color.argb(28, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor))
@@ -342,9 +382,16 @@ class Hifz16PageView(context: Context) : View(context) {
     top: Float,
     bottom: Float,
     density: Float,
+    frameBottom: Float,
   ) {
     val width = textRight - textLeft
-    val plaque = RectF(textLeft + width * 0.18f, top + density, textRight - width * 0.18f, bottom - density)
+    val drop = opticalDrop(bottom - top)
+    val plaque = RectF(
+      textLeft + width * 0.18f,
+      top + density + drop,
+      textRight - width * 0.18f,
+      min(bottom - density + drop, frameBottom),
+    )
     highlightPaint.style = Paint.Style.FILL
     highlightPaint.color = Color.argb(36, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor))
     val path = plaquePath(plaque, 8f * density)
@@ -408,14 +455,15 @@ class Hifz16PageView(context: Context) : View(context) {
     centered: Boolean,
     textRight: Float,
     density: Float,
+    frameBottom: Float,
   ) {
     val surah = line.surah ?: return
     val spans = HifzAyahSegments.split(text, line.ayahStart, line.ayahEnd)
     if (spans.isEmpty()) return
 
     val measuredWidth = arabicPaint.measureText(text)
-    // Advance is measured inside the shaped line, so kashida and textScaleX
-    // stay in the same boxes as the glyphs. Isolated substring widths drift.
+    // Advance is measured inside the shaped line, so kashida stays in the same
+    // boxes as the glyphs. Isolated substring widths drift.
     val shapedWidths = spans.map { span ->
       val toEnd = arabicPaint.getRunAdvance(text, 0, text.length, 0, text.length, true, span.end)
       val toStart = arabicPaint.getRunAdvance(text, 0, text.length, 0, text.length, true, span.start)
@@ -435,6 +483,8 @@ class Hifz16PageView(context: Context) : View(context) {
     // box ran past the last letter. Hit testing still uses the advance.
     val hitPad = 2f * density
     val side = 4f * density
+    val drop = opticalDrop(bottom - top)
+    val visualBottom = min(bottom + drop, frameBottom)
     val highlights = mutableListOf<RectF>()
     val ink = Rect()
 
@@ -450,9 +500,9 @@ class Hifz16PageView(context: Context) : View(context) {
         val originLeft = cursorRight - advance
         val visual = RectF(
           originLeft + ink.left - side,
-          top,
+          top + drop,
           originLeft + ink.right + side,
-          bottom,
+          visualBottom,
         )
         if (visual.width() > density && visual.height() > density) {
           val previous = highlights.lastOrNull()
@@ -495,30 +545,270 @@ class Hifz16PageView(context: Context) : View(context) {
   }
 
   private fun pageFontSize(pageLines: List<Line>, textWidth: Float, rowHeight: Float): Float {
-    if (pageLines.isEmpty()) return min(rowHeight * 0.62f, 25f * resources.displayMetrics.scaledDensity)
-    var size = min(rowHeight * 0.68f, 29f * resources.displayMetrics.scaledDensity)
+    if (pageLines.isEmpty()) return min(rowHeight * 0.50f, 25f * resources.displayMetrics.scaledDensity)
+    // Pause glyphs need a band above the letters, so the body stays at half
+    // the row and the column uses the rest. Both mushaf faces share this.
+    var size = min(rowHeight * 0.50f, 29f * resources.displayMetrics.scaledDensity)
     val minSize = 13f * resources.displayMetrics.scaledDensity
     while (size > minSize) {
       arabicPaint.textSize = size
       arabicPaint.textScaleX = 1f
       val widest = pageLines.maxOf { arabicPaint.measureText(it.text) }
-      if (widest <= textWidth * 1.08f) break
+      if (widest <= textWidth) break
       size -= resources.displayMetrics.scaledDensity
     }
     return max(minSize, size)
   }
 
+  /** Indo-Pak pause signs. Madda and harakat are not in this set. */
+  private fun isPauseMark(codePoint: Int): Boolean =
+    codePoint == 0x0614 || codePoint == 0x0615 || codePoint in 0x06D6..0x06DC
+
+  private data class PauseColumn(val anchor: Int, val marks: List<Int>)
+  private data class PreparedAyah(
+    val text: String,
+    val columns: List<PauseColumn>,
+    val maddaAnchors: List<Int>,
+    val smallMeemAnchors: List<Int>,
+  )
+
+  /**
+   * Pause clusters leave the run. A madda or small meem that shares its
+   * letter with a shadda leaves too, so each can be drawn just above it.
+   */
+  private fun prepareAyahLine(text: String): PreparedAyah {
+    if (text.isEmpty()) return PreparedAyah(text, emptyList(), emptyList(), emptyList())
+    val out = StringBuilder(text.length)
+    val columns = mutableListOf<PauseColumn>()
+    val maddaAnchors = mutableListOf<Int>()
+    val smallMeemAnchors = mutableListOf<Int>()
+    val cluster = mutableListOf<Int>()
+    var index = 0
+    fun flushPause() {
+      if (cluster.isEmpty()) return
+      columns += PauseColumn(out.length, cluster.toList())
+      cluster.clear()
+    }
+    while (index < text.length) {
+      val codePoint = text.codePointAt(index)
+      val charCount = Character.charCount(codePoint)
+      if (isPauseMark(codePoint)) {
+        cluster += codePoint
+        index += charCount
+        continue
+      }
+      flushPause()
+      if (!isArabicBase(codePoint)) {
+        out.appendCodePoint(codePoint)
+        index += charCount
+        continue
+      }
+      val anchor = out.length
+      out.appendCodePoint(codePoint)
+      index += charCount
+      val marks = mutableListOf<Int>()
+      while (index < text.length) {
+        val mark = text.codePointAt(index)
+        if (!isAttachedMark(mark)) break
+        marks += mark
+        index += Character.charCount(mark)
+      }
+      val stackedMadda = marks.any { it == 0x0651 } && marks.any { it == 0x0653 }
+      val stackedMeem = marks.any { it == 0x0651 } && marks.any { it == 0x06E2 }
+      if (stackedMadda) maddaAnchors += anchor
+      if (stackedMeem) smallMeemAnchors += anchor
+      for (mark in marks) {
+        if (stackedMadda && mark == 0x0653) continue
+        if (stackedMeem && mark == 0x06E2) continue
+        out.appendCodePoint(mark)
+      }
+    }
+    flushPause()
+    return PreparedAyah(out.toString(), columns, maddaAnchors, smallMeemAnchors)
+  }
+
+  private fun isArabicBase(codePoint: Int): Boolean =
+    codePoint in 0x0621..0x064A || codePoint == 0x0671 || codePoint == 0x06CC
+
+  private fun isAttachedMark(codePoint: Int): Boolean {
+    if (isPauseMark(codePoint)) return false
+    if (codePoint == 0x06E2) return true
+    val type = Character.getType(codePoint)
+    return type == Character.NON_SPACING_MARK.toInt() ||
+      type == Character.COMBINING_SPACING_MARK.toInt() ||
+      type == Character.ENCLOSING_MARK.toInt()
+  }
+
+  /** Horizontal center of the letter at `anchor`, measured at the body size. */
+  private fun letterCenterX(text: String, anchor: Int, originRight: Float): Float {
+    if (text.isEmpty()) return originRight
+    val start = anchor.coerceIn(0, text.length - 1)
+    val end = (start + Character.charCount(text.codePointAt(start))).coerceAtMost(text.length)
+    val advanceStart = arabicPaint.getRunAdvance(text, 0, text.length, 0, text.length, true, start)
+    val advanceEnd = arabicPaint.getRunAdvance(text, 0, text.length, 0, text.length, true, end)
+    return originRight - (advanceStart + advanceEnd) / 2f
+  }
+
+  /**
+   * Draw a combining mark just above the shadda of its own letter.
+   * `riseEm` is how far that mark's ink sits above the baseline.
+   */
+  private fun drawRaisedMarks(
+    canvas: Canvas,
+    text: String,
+    anchors: List<Int>,
+    glyph: String,
+    originX: Float,
+    baseline: Float,
+    centered: Boolean,
+    riseEm: Float,
+    glyphScale: Float = 1f,
+  ) {
+    if (text.isEmpty() || anchors.isEmpty()) return
+    val bodySize = arabicPaint.textSize
+    val align = arabicPaint.textAlign
+    val scaleX = arabicPaint.textScaleX
+    val measured = arabicPaint.measureText(text)
+    val originRight = if (centered) originX + measured / 2f else originX
+    val centers = anchors.map { letterCenterX(text, it, originRight) }
+    arabicPaint.textAlign = Paint.Align.CENTER
+    arabicPaint.textScaleX = 1f
+    arabicPaint.textSize = bodySize * glyphScale
+    arabicPaint.getTextBounds(glyph, 0, glyph.length, inkBounds)
+    val targetBottom = baseline - bodySize * riseEm
+    val drawY = targetBottom - inkBounds.bottom
+    for (x in centers) {
+      canvas.drawText(glyph, x, drawY, arabicPaint)
+    }
+    arabicPaint.textSize = bodySize
+    arabicPaint.textAlign = align
+    arabicPaint.textScaleX = scaleX
+  }
+
+  /** Center the column in the whitespace around the pause, measured at the body size. */
+  private fun pauseAnchorX(text: String, anchor: Int, originRight: Float): Float {
+    var start = anchor.coerceIn(0, text.length)
+    var end = start
+    while (start > 0) {
+      val previous = text.codePointBefore(start)
+      if (!Character.isWhitespace(previous)) break
+      start -= Character.charCount(previous)
+    }
+    while (end < text.length && Character.isWhitespace(text.codePointAt(end))) {
+      end += Character.charCount(text.codePointAt(end))
+    }
+    val advanceStart = arabicPaint.getRunAdvance(text, 0, text.length, 0, text.length, true, start)
+    val advanceEnd = arabicPaint.getRunAdvance(text, 0, text.length, 0, text.length, true, end)
+    return originRight - (advanceStart + advanceEnd) / 2f
+  }
+
+  /** Nudge row frames down so the letter body, kept low for pause marks, sits in the middle. */
+  private fun opticalDrop(rowHeight: Float): Float = rowHeight * 0.07f
+
+  /**
+   * Sit the letter on the lower part of the row. Jeem and meem descend about
+   * 0.54em; the band above lam is left for the pause column.
+   */
+  private fun letterBaseline(top: Float, rowHeight: Float): Float {
+    val descent = arabicPaint.textSize * 0.56f
+    val pad = resources.displayMetrics.density
+    return top + rowHeight - descent - pad
+  }
+
+  /**
+   * Draw each pause glyph in a vertical column just above the shadda band.
+   * Every mark stays large enough to read. The first stays nearest the word
+   * and later marks step upward. A tall stack may use the empty gap under
+   * the row above, and it is not shrunk below half the text size.
+   */
+  private fun drawPauseColumns(
+    canvas: Canvas,
+    lifted: PreparedAyah,
+    originX: Float,
+    baseline: Float,
+    centered: Boolean,
+    rowTop: Float,
+  ) {
+    val bodySize = arabicPaint.textSize
+    val align = arabicPaint.textAlign
+    val scaleX = arabicPaint.textScaleX
+    val text = lifted.text
+    if (text.isEmpty()) return
+    val measured = arabicPaint.measureText(text)
+    val originRight = if (centered) originX + measured / 2f else originX
+    val anchors = lifted.columns.map { column ->
+      pauseAnchorX(text, column.anchor, originRight) to column.marks
+    }
+    val density = resources.displayMetrics.density
+    val gap = density
+    // The pause glyph's ink is about half an em tall and already sits very high
+    // in the font. 0.62 leaves a readable mark; the row above is mostly empty
+    // because letters are pinned to the bottom of their own row.
+    val preferred = 0.62f
+    val floorScale = 0.50f
+    val columnBottom = baseline - bodySize * 1.14f
+    val rowLimit = rowTop - bodySize * 0.16f
+    val room = columnBottom - rowLimit
+    arabicPaint.textAlign = Paint.Align.CENTER
+    arabicPaint.textScaleX = 1f
+    for ((x, marks) in anchors) {
+      arabicPaint.textSize = bodySize
+      val inks = marks.map { mark ->
+        val sample = String(Character.toChars(mark))
+        arabicPaint.getTextBounds(sample, 0, sample.length, inkBounds)
+        val height = (inkBounds.bottom - inkBounds.top).toFloat().coerceAtLeast(bodySize * 0.2f)
+        inkBounds.top.toFloat() to height
+      }
+      var stack = 0f
+      for ((index, ink) in inks.withIndex()) {
+        stack += ink.second
+        if (index > 0) stack += gap
+      }
+      val fitted = if (stack > 0f && room > 0f && stack * preferred > room) {
+        room / stack
+      } else {
+        preferred
+      }
+      val scale = fitted.coerceIn(floorScale, preferred)
+      arabicPaint.textSize = bodySize * scale
+      var inkBottom = columnBottom
+      for ((index, mark) in marks.withIndex()) {
+        val sample = String(Character.toChars(mark))
+        arabicPaint.getTextBounds(sample, 0, sample.length, inkBounds)
+        val drawY = inkBottom - inkBounds.bottom
+        canvas.drawText(sample, x, drawY, arabicPaint)
+        inkBottom = drawY + inkBounds.top - gap
+      }
+    }
+    arabicPaint.textSize = bodySize
+    arabicPaint.textAlign = align
+    arabicPaint.textScaleX = scaleX
+  }
+
+  /** Shrink an ayah row down to 72% of its size. Does not scale the run horizontally. */
+  private fun fitAyahBySize(text: String, available: Float, baseSize: Float) {
+    var size = baseSize
+    val floor = baseSize * 0.72f
+    arabicPaint.textScaleX = 1f
+    arabicPaint.textSize = size
+    while (size > floor && arabicPaint.measureText(text) > available) {
+      size -= resources.displayMetrics.scaledDensity
+      arabicPaint.textSize = size
+    }
+  }
+
   private fun stretchToWidth(text: String, available: Float): String {
     arabicPaint.textScaleX = 1f
-    if (arabicPaint.measureText(text) >= available * 0.985f) return text
+    val minimum = HifzKashidaPolicy.apply(text, 0)
+    if (arabicPaint.measureText(minimum) > available) return minimum
     val slots = HifzKashidaPolicy.slots(text)
-    if (slots.isEmpty()) return text
+    if (slots.isEmpty()) return minimum
     var low = 0
-    var high = min(slots.size * 3, 240)
-    var best = text
+    var high = slots.size * maxTatweelPerWord
+    var best = minimum
     while (low <= high) {
       val count = (low + high) / 2
-      val candidate = HifzKashidaPolicy.apply(text, count)
+      val candidate = HifzKashidaPolicy.apply(text, count, maxTatweelPerWord)
       if (arabicPaint.measureText(candidate) <= available) {
         best = candidate
         low = count + 1

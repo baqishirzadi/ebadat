@@ -24,7 +24,6 @@ interface BookChapterProps {
   categoryTitle: string;
   chapterIndex: number;
   sections: BookSectionRef[];
-  onBack: () => void;
   onSelectSection: (sectionId: string) => void;
 }
 
@@ -32,7 +31,6 @@ export function BookChapter({
   categoryTitle,
   chapterIndex,
   sections,
-  onBack,
   onSelectSection,
 }: BookChapterProps) {
   const { theme, state } = useApp();
@@ -43,12 +41,6 @@ export function BookChapter({
 
   return (
     <BookFrame>
-      <Pressable onPress={onBack} hitSlop={10} style={styles.backRow}>
-        <LocalizedText style={[styles.backLabel, { color: theme.tint, fontFamily: bodyFont }]}>
-          {t('prayerLearning.contents')}
-        </LocalizedText>
-      </Pressable>
-
       <View style={styles.header}>
         <LocalizedText style={[styles.chapterLabel, { color: theme.accent }]}>
           {t('prayerLearning.chapter')} {chapterIndex + 1}
@@ -89,15 +81,6 @@ export function BookChapter({
 }
 
 const styles = StyleSheet.create({
-  backRow: {
-    alignItems: 'center',
-    marginBottom: Spacing.lg,
-  },
-  backLabel: {
-    fontSize: Typography.ui.body,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
   header: {
     alignItems: 'center',
     marginBottom: Spacing.lg,

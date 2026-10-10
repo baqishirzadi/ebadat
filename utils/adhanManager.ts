@@ -50,7 +50,7 @@ export const PRAYER_NAMES: Record<PrayerName, {
   dhuhr: { dari: 'نماز ظهر', pashto: 'د غرمې لمونځ', english: 'Dhuhr prayer', turkish: 'Öğle namazı', arabic: 'صلاة الظهر' },
   asr: { dari: 'نماز عصر', pashto: 'د مازدیګر لمونځ', english: 'Asr prayer', turkish: 'İkindi namazı', arabic: 'صلاة العصر' },
   maghrib: { dari: 'نماز شام', pashto: 'د ماښام لمونځ', english: 'Maghrib prayer', turkish: 'Akşam namazı', arabic: 'صلاة المغرب' },
-  isha: { dari: 'نماز خفتن', pashto: 'د خفتن لمونځ', english: 'Isha prayer', turkish: 'Yatsı namazı', arabic: 'صلاة العشاء' },
+  isha: { dari: 'نماز خفتن', pashto: 'د ماسخوتن لمونځ', english: 'Isha prayer', turkish: 'Yatsı namazı', arabic: 'صلاة العشاء' },
 };
 
 // Settings for each prayer
@@ -216,21 +216,26 @@ export function getBestAvailableVoice(): AdhanVoice {
   return 'barakatullah'; // Fallback to barakatullah
 }
 
+export function adhanNotificationTitle(language: AppLanguage = 'dari'): string {
+  return translateUi('app.brandName', language);
+}
+
+/** @deprecated Use adhanNotificationTitle(language). Kept for callers that still import the constant. */
 export const ADHAN_NOTIFICATION_APP_TITLE = 'عبادت';
 
-function formatNotificationHeading(heading: string): { title: string; subtitle?: string } {
+function formatNotificationHeading(heading: string, language: AppLanguage = 'dari'): { title: string; subtitle?: string } {
   if (Platform.OS === 'ios') {
     return { title: '', subtitle: heading };
   }
 
   return {
-    title: ADHAN_NOTIFICATION_APP_TITLE,
+    title: adhanNotificationTitle(language),
     subtitle: heading,
   };
 }
 
-export function getNotificationHeading(heading: string): { title: string; subtitle?: string } {
-  return formatNotificationHeading(heading);
+export function getNotificationHeading(heading: string, language: AppLanguage = 'dari'): { title: string; subtitle?: string } {
+  return formatNotificationHeading(heading, language);
 }
 
 /**
@@ -242,7 +247,7 @@ export function getNotificationContent(prayer: PrayerName, playSound: boolean, l
   body: string;
   sound: boolean;
 } {
-  const heading = formatNotificationHeading(translateUi('adhan.title', language));
+  const heading = formatNotificationHeading(translateUi('adhan.title', language), language);
 
   return {
     title: heading.title,
@@ -260,7 +265,7 @@ export function getJummahNotificationContent(language: AppLanguage = 'dari'): {
   subtitle?: string;
   body: string;
 } {
-  const heading = formatNotificationHeading(translateUi('adhan.jummah.title', language));
+  const heading = formatNotificationHeading(translateUi('adhan.jummah.title', language), language);
 
   return {
     title: heading.title,
@@ -278,7 +283,7 @@ export function getEarlyReminderContent(prayer: PrayerName, minutes: number, lan
   body: string;
 } {
   const prayerInfo = pickContent(PRAYER_NAMES[prayer], null, language);
-  const heading = formatNotificationHeading(translateUi('adhan.reminder.title', language));
+  const heading = formatNotificationHeading(translateUi('adhan.reminder.title', language), language);
 
   return {
     title: heading.title,

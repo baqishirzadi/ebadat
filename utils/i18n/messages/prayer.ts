@@ -13,11 +13,11 @@ export const prayerMessages = {
     turkish: 'İkindi, Hanefi mezhebine göre hesaplanır.',
     arabic: 'حُسبت صلاة العصر وفق المذهب الحنفي',
   },
-  'prayer.fullName.fajr': { dari: 'نماز صبح', pashto: 'د سهار لمونځ', english: 'Fajr prayer', turkish: 'Sabah namazı', arabic: 'صلاة الصبح' },
+  'prayer.fullName.fajr': { dari: 'نماز صبح', pashto: 'د سهار لمونځ', english: 'Fajr prayer', turkish: 'Sabah namazı', arabic: 'صلاة الفجر' },
   'prayer.fullName.dhuhr': { dari: 'نماز ظهر', pashto: 'د غرمې لمونځ', english: 'Dhuhr prayer', turkish: 'Öğle namazı', arabic: 'صلاة الظهر' },
   'prayer.fullName.asr': { dari: 'نماز عصر', pashto: 'د مازدیګر لمونځ', english: 'Asr prayer', turkish: 'İkindi namazı', arabic: 'صلاة العصر' },
   'prayer.fullName.maghrib': { dari: 'نماز شام', pashto: 'د ماښام لمونځ', english: 'Maghrib prayer', turkish: 'Akşam namazı', arabic: 'صلاة المغرب' },
-  'prayer.fullName.isha': { dari: 'نماز خفتن', pashto: 'د خفتن لمونځ', english: 'Isha prayer', turkish: 'Yatsı namazı', arabic: 'صلاة العشاء' },
+  'prayer.fullName.isha': { dari: 'نماز خفتن', pashto: 'د ماسخوتن لمونځ', english: 'Isha prayer', turkish: 'Yatsı namazı', arabic: 'صلاة العشاء' },
   'prayer.city.searchPlaceholder': {
     dari: 'جستجوی شهر یا استان...',
     pashto: 'ښار یا ولایت ولټوئ...',
@@ -136,9 +136,9 @@ export const prayerMessages = {
   'home.adhan.notificationsAccessBody': {
     dari: 'برای فعال‌کردن اعلان‌های اذان، به Settings → Apps → Ibadet → Notifications بروید و Allow Notifications را روشن کنید.',
     pashto: 'د اذان خبرتیاوو د فعالولو لپاره Settings → Apps → Ibadet → Notifications ته لاړ شئ او Allow Notifications روښانه کړئ.',
-    english: 'To enable Adhan notifications, go to Settings → Apps → Ibadet → Notifications and turn on Allow Notifications.',
-    turkish: 'Ezan bildirimlerini etkinleştirmek için Settings → Apps → Ibadet → Notifications yoluna gidin ve Allow Notifications seçeneğini açın.',
-    arabic: 'لتفعيل إشعارات الأذان، انتقل إلى Settings → Apps → Ibadet → Notifications وقم بتشغيل Allow Notifications.',
+    english: 'To enable Adhan notifications, go to Settings → Apps → Ebadat → Notifications and turn on Allow Notifications.',
+    turkish: 'Ezan bildirimlerini açmak için Ayarlar → Uygulamalar → İbadet → Bildirimler yoluna gidin ve Bildirimlere izin ver seçeneğini açın.',
+    arabic: 'لتفعيل إشعارات الأذان، انتقل إلى الإعدادات ← التطبيقات ← عبادة ← الإشعارات وفعّل السماح بالإشعارات.',
   },
   'common.ok': { dari: 'باشه', pashto: 'سمه ده', english: 'OK', turkish: 'Tamam', arabic: 'حسنًا' },
 

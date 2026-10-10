@@ -7,7 +7,7 @@ import { buildWidgetSnapshot } from '@/utils/widgetSnapshot';
 import { writeWidgetSnapshot } from '@/utils/widgetDataBridge';
 import { resolvePrayerCalculationPolicy } from '@/utils/prayerCalculationPolicy';
 import type { DailyHadithLanguage } from '@/utils/ahadith/daily';
-import type { PashtoFontFamily } from '@/constants/theme';
+import type { PashtoFontFamily, ThemeMode } from '@/constants/theme';
 
 let lastPushedAt = 0;
 const MIN_PUSH_INTERVAL_MS = 15_000;
@@ -56,6 +56,7 @@ export async function pushWidgetSnapshot(
     location?: { latitude: number; longitude: number; altitude?: number; timezone?: string };
     timezone?: string;
     appLanguage?: DailyHadithLanguage;
+    themeMode?: ThemeMode;
     dariFont?: 'vazirmatn' | 'amiri';
     pashtoFont?: PashtoFontFamily;
     /** Days to prefetch into the widget snapshot. Default 30 for app-independent rollover. */
@@ -108,6 +109,27 @@ export async function pushWidgetSnapshot(
     }
   }
 
+  if (options?.appLanguage === 'turkish') {
+    try {
+      const { ensureDiyanetHijriMonth } = await import('@/utils/diyanetHijri');
+      const { getIstanbulDateParts } = await import('@/utils/istanbulCalendar');
+      const anchors = multiDay?.map((day) => day.noonAnchor) ?? [new Date()];
+      const months = new Set<string>();
+      for (const anchor of anchors) {
+        const parts = getIstanbulDateParts(anchor);
+        months.add(`${parts.year}-${parts.month}`);
+      }
+      await Promise.all(
+        [...months].map((key) => {
+          const [year, month] = key.split('-').map(Number);
+          return ensureDiyanetHijriMonth(year, month);
+        }),
+      );
+    } catch (error) {
+      console.warn('[pushWidgetSnapshot] Diyanet hijri warm failed:', error);
+    }
+  }
+
   const snapshot = buildWidgetSnapshot(prayerTimes, cityName, new Date(), {
     timezone,
     sourceLabel,
@@ -117,6 +139,7 @@ export async function pushWidgetSnapshot(
     maghribOffsetMinutes: policy.maghribOffsetMinutes,
     fixedDhuhrLocalTime: policy.fixedDhuhrLocalTime,
     appLanguage: options?.appLanguage,
+    themeMode: options?.themeMode,
     dariFont: options?.dariFont,
     pashtoFont: options?.pashtoFont,
     multiDay,

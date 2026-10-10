@@ -11,7 +11,7 @@ import type { QuranReaderTokens } from '@/hooks/useQuranReaderSettings';
 
 type LangKey = Exclude<TranslationLanguage, 'none' | 'both'>;
 
-const LANG_OPTIONS: LangKey[] = ['dari', 'pashto', 'arabic', 'turkish', 'english'];
+const LANG_OPTIONS: LangKey[] = ['dari', 'pashto', 'turkish', 'english'];
 
 export const TranslationToggle = memo(function TranslationToggle({ readerTokens }: { readerTokens?: QuranReaderTokens }) {
   const { theme, state, setTranslationLanguage } = useApp();

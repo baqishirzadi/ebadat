@@ -28,7 +28,7 @@ class HifzKashidaPolicyTest {
   @Test
   fun limitsEachWordAndSpreadsElongationAcrossWords() {
     val oneWord = HifzKashidaPolicy.apply("بببب", 20)
-    assertEquals(3, oneWord.count { it == '\u0640' })
+    assertEquals(4, oneWord.count { it == '\u0640' })
 
     val twoWords = HifzKashidaPolicy.apply("بب بب", 2)
     assertEquals(2, twoWords.count { it == '\u0640' })
@@ -39,5 +39,23 @@ class HifzKashidaPolicyTest {
   @Test
   fun allowsAThirdTatweelOnOneWordBeforeAnyGlyphScale() {
     assertEquals(3, HifzKashidaPolicy.apply("بببب", 3).count { it == '\u0640' })
+  }
+
+  @Test
+  fun keepsTheMaddaSeparatorAtOneTatweelWhileOtherWordsStillFill() {
+    val alifLamMeem = "الٓمّٓ بب"
+    val separated = HifzKashidaPolicy.apply(alifLamMeem, 0)
+    assertEquals(1, separated.count { it == '\u0640' })
+    assertTrue(separated.startsWith("الٓـمّٓ"))
+
+    val filled = HifzKashidaPolicy.apply(alifLamMeem, 20)
+    assertEquals(1, filled.substringBefore(' ').count { it == '\u0640' })
+    assertEquals(4, filled.substringAfter(' ').count { it == '\u0640' })
+  }
+
+  @Test
+  fun narrowerFaceMayPlaceTwiceAsManyTatweelsOnTheSameJoin() {
+    assertEquals(8, HifzKashidaPolicy.apply("بببب", 20, 8).count { it == '\u0640' })
+    assertEquals(4, HifzKashidaPolicy.apply("بببب", 20, 4).count { it == '\u0640' })
   }
 }

@@ -9,6 +9,9 @@ import { getCalendarTruth } from './calendarTruth';
 import { displayHijriToGregorian } from './hijriOffset';
 import { SPECIAL_DAYS } from './islamicCalendar';
 import { IOS_CALENDAR_MAX_EVENTS } from './notificationBudget';
+import { pickContent } from './i18n/content';
+import { translateUi } from './i18n/catalog';
+import { readPersistedAppLanguage } from './i18n/languages';
 
 export const CALENDAR_QAMARI_STORAGE_KEY = '@ebadat/calendar_qamari_notifications';
 
@@ -100,6 +103,7 @@ export async function scheduleCalendarNotifications(
     return { scheduled: 0 };
   }
 
+  const language = await readPersistedAppLanguage();
   const now = new Date();
   const todayH = getCalendarTruth(now).hijri;
   const years = [todayH.year, todayH.year + 1];
@@ -112,7 +116,7 @@ export async function scheduleCalendarNotifications(
     if (Platform.OS === 'android') {
       try {
         await NotificationsModule.setNotificationChannelAsync('calendar-qamari', {
-          name: 'مناسبت‌های قمری',
+          name: translateUi('calendar.notify.channel', language),
           importance: NotificationsModule.AndroidImportance.DEFAULT,
           vibrationPattern: [0, 100],
           enableVibrate: true,
@@ -161,12 +165,27 @@ export async function scheduleCalendarNotifications(
     for (const occasion of occasionsToSchedule) {
       const { specialDay, hijriYear, triggerDate } = occasion;
       const identifier = `calendar-qamari-${specialDay.month}-${specialDay.day}-${hijriYear}`;
+      const occasionName = pickContent(specialDay, 'name', language);
+      const occasionDescription = language === 'arabic'
+        ? ''
+        : pickContent(
+            {
+              descriptionDari: specialDay.descriptionDari,
+              descriptionPashto: specialDay.descriptionPashto,
+              descriptionEnglish: specialDay.description,
+              descriptionTurkish: specialDay.description,
+            },
+            'description',
+            language,
+          );
 
       await NotificationsModule.scheduleNotificationAsync({
         identifier,
         content: {
-          title: 'مناسبت قمری',
-          body: `فردا: ${specialDay.nameDari}\n${specialDay.descriptionDari}`,
+          title: translateUi('calendar.notify.title', language),
+          body: [translateUi('calendar.notify.tomorrow', language, { name: occasionName }), occasionDescription]
+            .filter(Boolean)
+            .join('\n'),
           data: { type: 'calendar_qamari', month: specialDay.month, day: specialDay.day },
           sound: true,
           ...(Platform.OS === 'android' && { channelId: 'calendar-qamari' }),

@@ -7,6 +7,7 @@ import React, { Component, ReactNode } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import CenteredText from '@/components/CenteredText';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface Props {
   children: ReactNode;
@@ -16,6 +17,27 @@ interface Props {
 interface State {
   hasError: boolean;
   error: Error | null;
+}
+
+function ErrorFallback({ onRetry }: { onRetry: () => void }) {
+  const { t } = useI18n();
+  return (
+    <View style={styles.container}>
+      <MaterialIcons name="error-outline" size={64} color="#EF4444" />
+      <CenteredText style={styles.title}>{t('common.crashTitle')}</CenteredText>
+      <CenteredText style={styles.message}>{t('common.crashBody')}</CenteredText>
+      <Pressable
+        onPress={onRetry}
+        style={({ pressed }) => [
+          styles.retryButton,
+          pressed && styles.retryButtonPressed,
+        ]}
+      >
+        <MaterialIcons name="refresh" size={20} color="#fff" />
+        <CenteredText style={styles.retryText}>{t('common.retry')}</CenteredText>
+      </Pressable>
+    </View>
+  );
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -42,25 +64,7 @@ export class ErrorBoundary extends Component<Props, State> {
         return this.props.fallback;
       }
 
-      return (
-        <View style={styles.container}>
-          <MaterialIcons name="error-outline" size={64} color="#EF4444" />
-          <CenteredText style={styles.title}>خطایی رخ داد</CenteredText>
-          <CenteredText style={styles.message}>
-            متأسفانه مشکلی پیش آمد. لطفاً دوباره تلاش کنید.
-          </CenteredText>
-          <Pressable
-            onPress={this.handleRetry}
-            style={({ pressed }) => [
-              styles.retryButton,
-              pressed && styles.retryButtonPressed,
-            ]}
-          >
-            <MaterialIcons name="refresh" size={20} color="#fff" />
-            <CenteredText style={styles.retryText}>تلاش مجدد</CenteredText>
-          </Pressable>
-        </View>
-      );
+      return <ErrorFallback onRetry={this.handleRetry} />;
     }
 
     return this.props.children;

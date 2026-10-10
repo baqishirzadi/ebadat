@@ -14,6 +14,8 @@ import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { getPashtoBoldFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { resolveContent } from '@/utils/i18n/content';
+import { APP_LANGUAGES } from '@/utils/i18n/languages';
 
 export interface PrayerSection {
   id: string;
@@ -66,12 +68,14 @@ export interface PrayerSection {
 interface BookLeafProps {
   categoryId: string;
   section: PrayerSection;
-  sectionIndex: number;
-  sectionCount: number;
-  onBack: () => void;
-  onPrevious: () => void;
-  onNext: () => void;
+  stepIndex: number;
   onJumpSection?: (sectionId: string) => void;
+}
+
+/** Structured `steps` win; otherwise the localized string-step list. */
+export function lessonStepCount(section: PrayerSection, stringStepCount: number): number {
+  if (section.steps && section.steps.length > 0) return section.steps.length;
+  return stringStepCount;
 }
 
 function normalizeStringSteps(
@@ -88,11 +92,7 @@ function normalizeStringSteps(
 export function BookLeaf({
   categoryId,
   section,
-  sectionIndex,
-  sectionCount,
-  onBack,
-  onPrevious,
-  onNext,
+  stepIndex,
   onJumpSection,
 }: BookLeafProps) {
   const { theme, state } = useApp();
@@ -117,9 +117,6 @@ export function BookLeaf({
     }
     return [];
   }, [section.steps, stringSteps]);
-
-  const hasPrev = sectionIndex > 0;
-  const hasNext = sectionIndex < sectionCount - 1;
 
   const renderStatChip = (label: string, value: number | undefined) => {
     if (value == null || value <= 0) return null;
@@ -150,12 +147,6 @@ export function BookLeaf({
 
   return (
     <BookFrame>
-      <Pressable onPress={onBack} hitSlop={10} style={styles.backRow}>
-        <LocalizedText style={[styles.backLabel, { color: theme.tint, fontFamily: bodyFont }]}>
-          {t('prayerLearning.backToChapter')}
-        </LocalizedText>
-      </Pressable>
-
       <View style={styles.header}>
         <LocalizedText
           preserveFontFamily
@@ -190,7 +181,22 @@ export function BookLeaf({
                   { color: theme.text, fontFamily: bodyFont, lineHeight: itemLineHeight },
                 ]}
               >
-                {language === 'arabic' && item.meaningArabic ? item.meaningArabic : content(item, null)}
+                {(() => {
+                  const resolved = language === 'arabic' && item.meaningArabic
+                    ? { text: item.meaningArabic, language: 'arabic' as const }
+                    : resolveContent(item, null, language);
+                  if (!resolved) return null;
+                  return (
+                    <>
+                      {resolved.language !== language ? (
+                        <LocalizedText style={{ color: theme.accent, fontSize: 12 }}>
+                          {APP_LANGUAGES[resolved.language].nativeLabel}
+                        </LocalizedText>
+                      ) : null}
+                      {resolved.text}
+                    </>
+                  );
+                })()}
               </LocalizedText>
             </View>
           ))}
@@ -211,7 +217,7 @@ export function BookLeaf({
       ) : null}
 
       {structuredSteps.length > 0 ? (
-        <PrayerStepGuide steps={structuredSteps as never} showBothLanguages={false} />
+        <PrayerStepGuide steps={structuredSteps as never} index={stepIndex} />
       ) : null}
 
       {categoryId === 'janazah' && section.id === 'janazah_method' && onJumpSection ? (
@@ -319,57 +325,11 @@ export function BookLeaf({
         </View>
       ) : null}
 
-      <View style={styles.leafNav}>
-        <Pressable
-          onPress={onPrevious}
-          disabled={!hasPrev}
-          style={({ pressed }) => [
-            styles.navButton,
-            {
-              borderColor: theme.cardBorder,
-              opacity: !hasPrev ? 0.35 : pressed ? 0.7 : 1,
-            },
-          ]}
-        >
-          <LocalizedText style={[styles.navLabel, { color: theme.tint }]}>
-            {t('prayerLearning.previous')}
-          </LocalizedText>
-        </Pressable>
-
-        <LocalizedText style={[styles.pageIndicator, { color: theme.textSecondary }]}>
-          {sectionIndex + 1} / {sectionCount}
-        </LocalizedText>
-
-        <Pressable
-          onPress={onNext}
-          disabled={!hasNext}
-          style={({ pressed }) => [
-            styles.navButton,
-            {
-              borderColor: theme.cardBorder,
-              opacity: !hasNext ? 0.35 : pressed ? 0.7 : 1,
-            },
-          ]}
-        >
-          <LocalizedText style={[styles.navLabel, { color: theme.tint }]}>
-            {t('prayerLearning.next')}
-          </LocalizedText>
-        </Pressable>
-      </View>
     </BookFrame>
   );
 }
 
 const styles = StyleSheet.create({
-  backRow: {
-    alignItems: 'center',
-    marginBottom: Spacing.md,
-  },
-  backLabel: {
-    fontSize: Typography.ui.body,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
   header: {
     alignItems: 'center',
     marginBottom: Spacing.lg,
@@ -477,32 +437,6 @@ const styles = StyleSheet.create({
   block: {
     marginBottom: Spacing.sm,
     alignItems: 'stretch',
-  },
-  leafNav: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: Spacing.lg,
-    gap: Spacing.sm,
-  },
-  navButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.sm,
-    borderWidth: 1,
-    borderRadius: BorderRadius.md,
-  },
-  navLabel: {
-    fontSize: Typography.ui.body,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  pageIndicator: {
-    fontSize: Typography.ui.caption,
-    fontWeight: '600',
-    minWidth: 48,
-    textAlign: 'center',
   },
 });
 

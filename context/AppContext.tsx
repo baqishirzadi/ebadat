@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useRef, useState, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts, PashtoFonts, DEFAULT_PASHTO_FONT, resolveThemeMode } from '@/constants/theme';
+import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, HifzFontFamily, Themes, ThemeColors, QuranFonts, HifzFonts, PashtoFonts, DEFAULT_PASHTO_FONT, resolveThemeMode } from '@/constants/theme';
 import {
   Bookmark,
   ReadingPosition,
@@ -30,6 +30,11 @@ const PASHTO_FONT_MIGRATION_TARGET = 2;
 const HIFZ16_DEFAULT_TARGET = 1;
 const TRANSLATION_DEFAULTS_TARGET = 1;
 
+/** Arabic UI keeps the mushaf text and does not add a second Arabic paraphrase. */
+function followedQuranTranslation(language: AppLanguage): TranslationLanguage {
+  return language === 'arabic' ? 'none' : language;
+}
+
 // Default preferences
 const DEFAULT_PREFERENCES: UserPreferences = {
   appLanguage: 'dari',
@@ -43,6 +48,7 @@ const DEFAULT_PREFERENCES: UserPreferences = {
   translationDefaultsVersion: TRANSLATION_DEFAULTS_TARGET,
   viewMode: 'scroll',
   hifz16Line: true,
+  hifzFont: 'amiriQuran',
   hifz16DefaultVersion: HIFZ16_DEFAULT_TARGET,
   showTranslation: 'dari',
   autoPlayAudio: true,
@@ -79,6 +85,7 @@ type AppAction =
   | { type: 'SET_TRANSLATION_FONT_SIZE'; payload: 'small' | 'medium' | 'large' | 'xlarge' }
   | { type: 'SET_VIEW_MODE'; payload: ViewMode }
   | { type: 'SET_HIFZ16_LINE'; payload: boolean }
+  | { type: 'SET_HIFZ_FONT'; payload: HifzFontFamily }
   | { type: 'SET_TRANSLATION_LANGUAGE'; payload: TranslationLanguage }
   | { type: 'SET_AUTO_PLAY'; payload: boolean }
   | { type: 'SET_REPEAT_AYAH'; payload: boolean }
@@ -109,7 +116,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
           ...state.preferences,
           appLanguage: action.payload,
           ...(state.preferences.translationLanguageMode === 'follow_app'
-            ? { showTranslation: action.payload }
+            ? { showTranslation: followedQuranTranslation(action.payload) }
             : {}),
         },
       };
@@ -161,13 +168,19 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         preferences: { ...state.preferences, hifz16Line: action.payload },
       };
+
+    case 'SET_HIFZ_FONT':
+      return {
+        ...state,
+        preferences: { ...state.preferences, hifzFont: action.payload },
+      };
     
     case 'SET_TRANSLATION_LANGUAGE':
       return {
         ...state,
         preferences: {
           ...state.preferences,
-          showTranslation: action.payload,
+          showTranslation: action.payload === 'arabic' ? 'none' : action.payload,
           translationLanguageMode: 'manual',
         },
       };
@@ -220,6 +233,10 @@ function isValidQuranFontFamily(value: unknown): value is QuranFontFamily {
   return typeof value === 'string' && value in QuranFonts;
 }
 
+function isValidHifzFontFamily(value: unknown): value is HifzFontFamily {
+  return typeof value === 'string' && value in HifzFonts;
+}
+
 function isValidPashtoFontFamily(value: unknown): value is PashtoFontFamily {
   return typeof value === 'string' && value in PashtoFonts;
 }
@@ -254,6 +271,7 @@ interface AppContextType {
   // View actions
   setViewMode: (mode: ViewMode) => void;
   setHifz16Line: (enabled: boolean) => void;
+  setHifzFont: (font: HifzFontFamily) => void;
   setTranslationLanguage: (lang: TranslationLanguage) => void;
   
   // Audio actions
@@ -354,7 +372,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       if (!storedPreferences) {
         preferences = {
           ...preferences,
-          showTranslation: preferences.appLanguage,
+          showTranslation: followedQuranTranslation(preferences.appLanguage),
           translationLanguageMode: 'follow_app',
         };
         preferencesNormalized = true;
@@ -388,10 +406,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
         preferencesNormalized = true;
       }
 
-      if (preferences.showTranslation === 'both') {
+      if (preferences.showTranslation === 'both' || preferences.showTranslation === 'arabic') {
         preferences = {
           ...preferences,
-          showTranslation: isAppLanguage(preferences.appLanguage) ? preferences.appLanguage : 'dari',
+          showTranslation: followedQuranTranslation(
+            isAppLanguage(preferences.appLanguage) ? preferences.appLanguage : 'dari',
+          ),
           translationLanguageMode: 'follow_app',
         };
         preferencesNormalized = true;
@@ -407,7 +427,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       ) {
         preferences = {
           ...preferences,
-          showTranslation: preferences.appLanguage,
+          showTranslation: followedQuranTranslation(preferences.appLanguage),
           translationLanguageMode: 'follow_app',
         };
         preferencesNormalized = true;
@@ -426,6 +446,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
         preferences = {
           ...preferences,
           hifz16Line: true,
+        };
+        preferencesNormalized = true;
+      }
+
+      if (!isValidHifzFontFamily(preferences.hifzFont)) {
+        preferences = {
+          ...preferences,
+          hifzFont: 'amiriQuran',
         };
         preferencesNormalized = true;
       }
@@ -550,6 +578,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'SET_HIFZ16_LINE', payload: enabled });
   };
 
+  const setHifzFont = (font: HifzFontFamily) => {
+    dispatch({ type: 'SET_HIFZ_FONT', payload: font });
+  };
+
   const setTranslationLanguage = (lang: TranslationLanguage) => {
     dispatch({ type: 'SET_TRANSLATION_LANGUAGE', payload: lang });
   };
@@ -616,6 +648,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setTranslationFontSize,
     setViewMode,
     setHifz16Line,
+    setHifzFont,
     setTranslationLanguage,
     setAutoPlay,
     setRepeatAyah,

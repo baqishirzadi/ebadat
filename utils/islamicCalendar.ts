@@ -636,7 +636,15 @@ export function getNextSpecialDay(hijriDate: HijriDate): SpecialDay | null {
 }
 
 // Check if today is a recommended fasting day
-export function isFastingDay(date: Date): { isFasting: boolean; reason?: string; reasonDari?: string; reasonPashto?: string } {
+export function isFastingDay(date: Date): {
+  isFasting: boolean;
+  reason?: string;
+  reasonDari?: string;
+  reasonPashto?: string;
+  reasonEnglish?: string;
+  reasonArabic?: string;
+  reasonTurkish?: string;
+} {
   const offset = getUserHijriOffsetDays();
   const hijri = gregorianToHijri(offset === 0 ? date : addDaysToKabulDate(date, offset));
   const dayOfWeek = getKabulWeekdayIndex(date); // 0 = Sunday, 1 = Monday, 4 = Thursday
@@ -646,9 +654,12 @@ export function isFastingDay(date: Date): { isFasting: boolean; reason?: string;
   if (specialDay?.isFasting) {
     return {
       isFasting: true,
-      reason: specialDay.nameDari,
+      reason: specialDay.nameEnglish,
       reasonDari: specialDay.nameDari,
       reasonPashto: specialDay.namePashto,
+      reasonEnglish: specialDay.nameEnglish,
+      reasonArabic: specialDay.nameArabic,
+      reasonTurkish: specialDay.nameEnglish,
     };
   }
 
@@ -659,6 +670,9 @@ export function isFastingDay(date: Date): { isFasting: boolean; reason?: string;
       reason: dayOfWeek === 1 ? 'Monday Sunnah Fast' : 'Thursday Sunnah Fast',
       reasonDari: dayOfWeek === 1 ? 'روزه سنت دوشنبه' : 'روزه سنت پنجشنبه',
       reasonPashto: dayOfWeek === 1 ? 'د دوشنبې سنت روژه' : 'د پنجشنبې سنت روژه',
+      reasonEnglish: dayOfWeek === 1 ? 'Monday Sunnah fast' : 'Thursday Sunnah fast',
+      reasonArabic: dayOfWeek === 1 ? 'صوم الإثنين سنة' : 'صوم الخميس سنة',
+      reasonTurkish: dayOfWeek === 1 ? 'Pazartesi sünnet orucu' : 'Perşembe sünnet orucu',
     };
   }
 
@@ -669,6 +683,9 @@ export function isFastingDay(date: Date): { isFasting: boolean; reason?: string;
       reason: 'Ayyam al-Beed (White Days)',
       reasonDari: 'ایام البیض (روزهای سفید)',
       reasonPashto: 'ایام البیض (سپینې ورځې)',
+      reasonEnglish: 'Ayyam al-Beed (White Days)',
+      reasonArabic: 'أيام البيض',
+      reasonTurkish: 'Eyyâm-ı bîz',
     };
   }
 

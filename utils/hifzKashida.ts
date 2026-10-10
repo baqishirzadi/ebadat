@@ -60,8 +60,53 @@ const PREFERRED_STRETCH = new Set([
 
 /** Spread stretch across many joins so a full line does not become one long bar. */
 export const MAX_STRETCH_LETTERS = 40;
-/** Short mushaf stroke — a few tatweels per join, never a long bar. */
-export const MAX_TATWEEL_PER_LETTER = 5;
+/** Up to four short tatweels on a join. Spread evenly, never a hairline bar. */
+export const MAX_TATWEEL_PER_LETTER = 4;
+
+export type HifzFaceMetrics = {
+  /** Tatweels allowed on the one chosen join of a word. */
+  maxTatweelPerLetter: number;
+  /** Advance of U+0640 as a fraction of the em. */
+  kashidaAdvanceRatio: number;
+  /** Rough connected-letter advance used to seed stretch. */
+  charWidthRatio: number;
+  /** Wider estimate so the page font stays inside the column. */
+  pageCharWidthRatio: number;
+  /**
+   * Downward shift of a pause glyph, as a fraction of its own size.
+   * Amiri draws these marks more than an em above the baseline.
+   */
+  pauseLiftRatio: number;
+};
+
+/**
+ * Amiri Quran tatweel is 185/1000 em and already allows four strokes per join.
+ * Scheherazade New is 181/2048 em, about half as wide, so it allows eight.
+ */
+export const HIFZ_FACE_METRICS: Record<'amiriQuran' | 'scheherazade', HifzFaceMetrics> = {
+  amiriQuran: {
+    maxTatweelPerLetter: 4,
+    kashidaAdvanceRatio: 0.185,
+    charWidthRatio: 0.52,
+    pageCharWidthRatio: 0.59,
+    pauseLiftRatio: 0.95,
+  },
+  scheherazade: {
+    // Stroke is about half of Amiri, so the same line needs about twice the joins.
+    maxTatweelPerLetter: 8,
+    kashidaAdvanceRatio: 0.0884,
+    charWidthRatio: 0.52,
+    pageCharWidthRatio: 0.62,
+    pauseLiftRatio: 0.35,
+  },
+};
+
+export function hifzFaceMetrics(face: string | undefined): HifzFaceMetrics {
+  return face === 'scheherazade' ? HIFZ_FACE_METRICS.scheherazade : HIFZ_FACE_METRICS.amiriQuran;
+}
+
+const PAUSE_MARK_RE = /[\u0614\u0615\u06D6-\u06DC]/;
+const ALEF_AFTER_LAM = new Set(['ا', 'أ', 'إ', 'آ', 'ٱ']);
 
 export function parseAyahMarkerDigits(digits: string): number {
   let n = 0;
@@ -187,7 +232,9 @@ function scoredSlots(text: string): Slot[] {
 
     const j = skipMarksForward(text, i + 1);
     if (j >= text.length) continue;
+    if (hasPauseMark(text, i + 1, j) || wordContainsAllah(text, i)) continue;
     const next = text[j];
+    if ((ch === 'ل' || ch === 'ﻝ') && ALEF_AFTER_LAM.has(next)) continue;
     if (next === ' ' || next === '\u00A0' || next === '﴿' || next === KASHIDA) continue;
     if (next === '﴾' || /[0-9٠-٩]/.test(next)) continue;
     if (!ARABIC_BASE_LETTER_RE.test(next) || NON_JOINING_LETTER.has(next)) continue;
@@ -247,27 +294,37 @@ export function applyKashida(
   count: number,
   maxPerSlot = MAX_TATWEEL_PER_LETTER
 ): string {
-  if (!text || count <= 0) return text;
+  if (!text) return text;
   const slots = scoredSlots(text);
-  if (slots.length === 0) return text;
+  const required = requiredInserts(text, slots);
+  if ((count <= 0 && required.length === 0) || (slots.length === 0 && required.length === 0)) {
+    return text;
+  }
 
-  const cap = Math.max(1, Math.min(MAX_TATWEEL_PER_LETTER, maxPerSlot));
-  const maxLetters = Math.min(MAX_STRETCH_LETTERS, slots.length);
-  // Enough joins to hold the budget at the per-slot cap; spread them along the line.
-  const letterCount = Math.min(maxLetters, Math.max(1, Math.ceil(count / cap)));
-  const chosen = pickSpreadSlots(slots, letterCount);
-  if (chosen.length === 0) return text;
+  const cap = Math.max(1, Math.min(12, Math.floor(maxPerSlot)));
+  const chosen = pickSpreadSlots(slots, Math.min(MAX_STRETCH_LETTERS, Math.max(slots.length, 1)));
+  const insertAts = new Set(chosen.map((slot) => slot.insertAt));
+  for (const insertAt of required) insertAts.add(insertAt);
+  const ordered = [...insertAts].sort((a, b) => a - b);
+  if (ordered.length === 0) return text;
 
-  const budget = Math.min(count, chosen.length * cap);
+  const requiredSet = new Set(required);
+  const floor = required.length;
+  const fill = ordered.filter((insertAt) => !requiredSet.has(insertAt));
+  const extras = Math.min(Math.max(count - floor, 0), fill.length * cap);
+  if (floor === 0 && extras === 0) return text;
+
   const inserts = new Map<number, number>();
+  for (const insertAt of required) inserts.set(insertAt, 1);
   let placed = 0;
-  while (placed < budget) {
+  while (placed < extras && fill.length > 0) {
+    const lowest = Math.min(...fill.map((insertAt) => inserts.get(insertAt) ?? 0));
     let progressed = false;
-    for (const slot of chosen) {
-      if (placed >= budget) break;
-      const cur = inserts.get(slot.insertAt) ?? 0;
-      if (cur >= cap) continue;
-      inserts.set(slot.insertAt, cur + 1);
+    for (const insertAt of fill) {
+      if (placed >= extras) break;
+      const current = inserts.get(insertAt) ?? 0;
+      if (current > lowest || current >= cap) continue;
+      inserts.set(insertAt, current + 1);
       placed += 1;
       progressed = true;
     }
@@ -288,8 +345,99 @@ export function visibleLength(text: string): number {
   return text.replace(MARKS_RE, '').replace(new RegExp(KASHIDA, 'g'), '').length;
 }
 
-/** Scheherazade tatweel advance as a fraction of font size. */
-export const KASHIDA_ADVANCE_RATIO = 0.28;
+/** Amiri Quran tatweel advance. Other faces pass their own ratio into the helpers. */
+export const KASHIDA_ADVANCE_RATIO = HIFZ_FACE_METRICS.amiriQuran.kashidaAdvanceRatio;
+
+export type MushafPiece =
+  | { kind: 'text'; text: string }
+  | { kind: 'pause'; marks: string };
+
+/**
+ * Pull Indo-Pak pause clusters out of a shaped line. Madda and harakat stay
+ * in the text pieces. Each cluster is drawn as its own vertical column.
+ */
+export function splitPausePieces(text: string): MushafPiece[] {
+  if (!text) return [];
+  const pieces: MushafPiece[] = [];
+  const cluster = /[\u0614\u0615\u06D6-\u06DC]+/g;
+  let last = 0;
+  let match: RegExpExecArray | null;
+  while ((match = cluster.exec(text)) != null) {
+    if (match.index > last) {
+      pieces.push({ kind: 'text', text: text.slice(last, match.index) });
+    }
+    pieces.push({ kind: 'pause', marks: match[0] });
+    last = match.index + match[0].length;
+  }
+  if (last < text.length) pieces.push({ kind: 'text', text: text.slice(last) });
+  if (pieces.length === 0) pieces.push({ kind: 'text', text });
+  return pieces;
+}
+
+export function pauseColumnCount(text: string): number {
+  if (!text) return 0;
+  const matches = text.match(/[\u0614\u0615\u06D6-\u06DC]+/g);
+  return matches ? matches.length : 0;
+}
+
+const SHADDA = '\u0651';
+const MADDA = '\u0653';
+
+function isBaseLetter(ch: string): boolean {
+  return /[\u0621-\u064A\u0671\u06CC]/u.test(ch);
+}
+
+/** One tatweel between a madda and a shadda or madda on one of the next two letters. */
+function requiredInserts(text: string, slots: Slot[]): number[] {
+  const bases: { offset: number; marks: string }[] = [];
+  for (let index = 0; index < text.length; index += 1) {
+    if (!isBaseLetter(text[index])) continue;
+    const offset = index;
+    index += 1;
+    let marks = '';
+    while (index < text.length && MARKS_RE.test(text[index])) {
+      marks += text[index];
+      index += 1;
+    }
+    index -= 1;
+    bases.push({ offset, marks });
+  }
+  const inserts: number[] = [];
+  for (let index = 0; index < bases.length; index += 1) {
+    if (!bases[index].marks.includes(MADDA)) continue;
+    const last = Math.min(bases.length - 1, index + 2);
+    for (let next = index + 1; next <= last; next += 1) {
+      const marks = bases[next].marks;
+      if (!marks.includes(SHADDA) && !marks.includes(MADDA)) continue;
+      const join = slots.find(
+        (slot) => slot.insertAt > bases[index].offset && slot.insertAt <= bases[next].offset,
+      );
+      if (join && !inserts.includes(join.insertAt)) inserts.push(join.insertAt);
+      break;
+    }
+  }
+  return inserts;
+}
+
+function hasPauseMark(text: string, from: number, until: number): boolean {
+  for (let index = from; index < until; index += 1) {
+    if (PAUSE_MARK_RE.test(text[index])) return true;
+  }
+  return false;
+}
+
+function wordContainsAllah(text: string, index: number): boolean {
+  let start = index;
+  while (start > 0 && text[start - 1] !== ' ' && text[start - 1] !== '\u00A0') start -= 1;
+  let end = index;
+  while (end < text.length && text[end] !== ' ' && text[end] !== '\u00A0') end += 1;
+  const word = text
+    .slice(start, end)
+    .replace(new RegExp(MARKS_RE.source, 'g'), '')
+    .replace(/\u0640/g, '')
+    .replace(/\u0671/g, '\u0627');
+  return word.includes('الله');
+}
 
 /**
  * Estimate how many tatweels are needed to fill measured slack.
@@ -297,11 +445,13 @@ export const KASHIDA_ADVANCE_RATIO = 0.28;
 export function kashidaCountForWidth(
   naturalWidth: number,
   contentWidth: number,
-  fontSize: number
+  fontSize: number,
+  advanceRatio = KASHIDA_ADVANCE_RATIO,
+  maxPerLetter = MAX_TATWEEL_PER_LETTER,
 ): number {
   if (contentWidth <= 0 || naturalWidth <= 0) return 0;
   const slack = contentWidth - naturalWidth;
   if (slack <= 4) return 0;
-  const per = Math.max(fontSize * KASHIDA_ADVANCE_RATIO, 3.5);
-  return Math.min(MAX_STRETCH_LETTERS * MAX_TATWEEL_PER_LETTER, Math.ceil(slack / per));
+  const per = Math.max(fontSize * advanceRatio, 3.5);
+  return Math.min(MAX_STRETCH_LETTERS * Math.max(1, maxPerLetter), Math.ceil(slack / per));
 }

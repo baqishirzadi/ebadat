@@ -39,7 +39,8 @@ import {
 import { pickContent } from '@/utils/i18n/content';
 import { rowStyle } from '@/utils/i18n/direction';
 import { formatHijriDate } from '@/utils/islamicCalendar';
-import { localizeDigits, toArabicNumerals } from '@/utils/numbers';
+import { localizeDigits } from '@/utils/numbers';
+import { useI18n } from '@/utils/i18n/useI18n';
 import type { AppLanguage } from '@/types/quran';
 
 type DeferredSectionKey = 'progress' | 'upcoming' | 'app' | 'creatorMessage' | 'creatorCompany';
@@ -57,11 +58,17 @@ interface UpcomingDayCard {
   badgeColor: string;
 }
 
-function formatGregorianDate(date: Date, language: AppLanguage): string {
-  return language === 'pashto'
-    ? formatGregorianDateCompact(date, toArabicNumerals, 'pashto')
-    : formatGregorianDateCompact(date, toArabicNumerals);
+function formatGregorianDate(date: Date, language: AppLanguage, digits: (value: string) => string): string {
+  const monthLanguage = language === 'pashto' ? 'pashto' : language === 'turkish' ? 'turkish' : language === 'arabic' ? 'arabic' : language === 'english' ? 'english' : 'dari';
+  return digits(formatGregorianDateCompact(date, (value) => String(value), monthLanguage));
 }
+
+type HubAction = {
+  icon: 'auto-awesome' | 'school' | 'explore' | 'favorite' | 'bookmark' | 'format-quote' | 'article' | 'calendar-today' | 'menu-book' | 'nights-stay' | 'settings' | 'access-alarm' | 'admin-panel-settings';
+  label: string;
+  subtitle: string;
+  route: string;
+};
 
 function chunkPairs<T>(items: readonly T[]): T[][] {
   const rows: T[][] = [];
@@ -73,7 +80,7 @@ function chunkPairs<T>(items: readonly T[]): T[][] {
 
 export default function MoreScreen() {
   const { theme, themeMode, state } = useApp();
-  const language = state.preferences.appLanguage;
+  const { t, n, digits, language } = useI18n();
   const isTurkish = language === 'turkish';
   const diyanetHijri = useDiyanetHijriDate(isTurkish);
   const directionalRow = rowStyle(language);
@@ -100,10 +107,10 @@ export default function MoreScreen() {
   );
   const scheduleModeLabel = useMemo(() => {
     const mode = prayer.scheduleAudit?.scheduleMode;
-    if (mode === 'exact') return 'اذان دقیق';
-    if (mode === 'fallback') return 'اذان عادی';
-    return 'اذان آماده';
-  }, [prayer.scheduleAudit?.scheduleMode]);
+    if (mode === 'exact') return t('more.adhan.exact');
+    if (mode === 'fallback') return t('more.adhan.standard');
+    return t('more.adhan.ready');
+  }, [prayer.scheduleAudit?.scheduleMode, t]);
 
   useEffect(() => {
     if (Platform.OS === 'ios') {
@@ -163,36 +170,37 @@ export default function MoreScreen() {
   }, [language, showDeferredSections, truth.gregorianDate, truth.hijri.year, truth.hijri.month, truth.hijri.day, theme.tint, theme.bookmark]);
 
   const worshipActions = useMemo(() => [
-    { icon: 'auto-awesome' as const, label: 'اذکار', subtitle: 'اذکار روزانه', route: '/(tabs)/adhkar' },
-    { icon: 'school' as const, label: 'آموزش نماز', subtitle: 'فقه و راهنما', route: '/(tabs)/prayer-learning' },
-    { icon: 'explore' as const, label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla' },
-    { icon: 'favorite' as const, label: 'دعای خیر', subtitle: 'ارسال درخواست دعا', route: '/dua-request' },
-    { icon: 'bookmark' as const, label: 'نشانه‌های من', subtitle: 'موارد ذخیره‌شده', route: '/(tabs)/bookmarks' },
-  ], []);
+    { icon: 'auto-awesome' as const, label: t('adhkar.title'), subtitle: t('more.tile.adhkar.sub'), route: '/(tabs)/adhkar' },
+    { icon: 'school' as const, label: t('prayerLearning.title'), subtitle: t('more.tile.prayer.sub'), route: '/(tabs)/prayer-learning' },
+    { icon: 'explore' as const, label: t('qibla.title'), subtitle: t('more.tile.qibla.sub'), route: '/qibla' },
+    { icon: 'favorite' as const, label: t('home.dua.title'), subtitle: t('more.tile.dua.sub'), route: '/dua-request' },
+    { icon: 'bookmark' as const, label: t('more.tile.bookmarks'), subtitle: t('more.tile.bookmarks.sub'), route: '/(tabs)/bookmarks' },
+  ], [t]);
 
   const studyActions = useMemo(() => [
-    { icon: 'format-quote' as const, label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith' },
-    { icon: 'article' as const, label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles' },
-    { icon: 'calendar-today' as const, label: 'جنتری', subtitle: 'تقویم اسلامی', route: '/(tabs)/jantari' },
-  ], []);
+    { icon: 'format-quote' as const, label: t('hadith.title'), subtitle: t('more.tile.hadith.sub'), route: '/(tabs)/ahadith' },
+    { icon: 'article' as const, label: t('articles.title'), subtitle: t('more.tile.articles.sub'), route: '/(tabs)/articles' },
+    { icon: 'calendar-today' as const, label: t('jantari.title'), subtitle: t('more.tile.calendar.sub'), route: '/(tabs)/jantari' },
+  ], [t]);
 
   const questionActions = useMemo(() => [
-    { icon: 'menu-book' as const, label: 'مفتی هوشمند حنفی', subtitle: 'سوال دینی و فقهی', route: '/mufti-chat' },
-    { icon: 'nights-stay' as const, label: 'تعبیر خواب اسلامی', subtitle: 'بر اساس قرآن و حدیث', route: '/dream-chat' },
-  ], []);
+    { icon: 'menu-book' as const, label: t('home.mufti.title'), subtitle: t('more.tile.mufti.sub'), route: '/mufti-chat' },
+    { icon: 'nights-stay' as const, label: t('chat.dream.title'), subtitle: t('more.tile.dream.sub'), route: '/dream-chat' },
+  ], [t]);
 
   const appActions = useMemo(() => [
-    { icon: 'settings' as const, label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/settings' },
-    { icon: 'access-alarm' as const, label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings' },
-    { icon: 'admin-panel-settings' as const, label: 'پنل مدیریت', subtitle: 'بخش مدیریتی', route: '/admin/login' },
-  ], []);
+    { icon: 'settings' as const, label: t('settings.title'), subtitle: t('more.tile.settings.sub'), route: '/settings' },
+    { icon: 'access-alarm' as const, label: t('calendar.prayerSettings'), subtitle: t('more.tile.adhan.sub'), route: '/adhan-settings' },
+    { icon: 'admin-panel-settings' as const, label: t('more.tile.admin'), subtitle: t('more.tile.admin.sub'), route: '/admin/login' },
+  ], [t]);
 
   const summaryCards = useMemo(() => [
-    { icon: 'menu-book', label: 'آیات خوانده‌شده', value: dashboardSnapshot.summary.totalAyahsRead },
-    { icon: 'hearing', label: 'آیات شنیده‌شده', value: dashboardSnapshot.summary.totalAyahsListened },
-    { icon: 'bolt', label: 'بهترین پیوستگی', value: dashboardSnapshot.summary.longestStreak },
-    { icon: 'auto-stories', label: 'ختم قرآن', value: dashboardSnapshot.summary.khatmCount },
+    { icon: 'menu-book', label: t('more.stat.ayahsRead'), value: dashboardSnapshot.summary.totalAyahsRead },
+    { icon: 'hearing', label: t('more.stat.ayahsHeard'), value: dashboardSnapshot.summary.totalAyahsListened },
+    { icon: 'bolt', label: t('more.stat.streak'), value: dashboardSnapshot.summary.longestStreak },
+    { icon: 'auto-stories', label: t('more.stat.khatm'), value: dashboardSnapshot.summary.khatmCount },
   ], [
+    t,
     dashboardSnapshot.summary.khatmCount,
     dashboardSnapshot.summary.longestStreak,
     dashboardSnapshot.summary.totalAyahsListened,
@@ -200,11 +208,13 @@ export default function MoreScreen() {
   ]);
 
   const todayRows = useMemo(() => [
-    { label: 'آیات خوانده‌شده امروز', value: toArabicNumerals(dashboardSnapshot.today.ayahsRead) },
-    { label: 'آیات شنیده‌شده امروز', value: toArabicNumerals(dashboardSnapshot.today.ayahsListened) },
-    { label: 'صفحه‌های امروز', value: toArabicNumerals(dashboardSnapshot.today.pagesRead) },
-    { label: 'اذکار امروز', value: toArabicNumerals(dashboardSnapshot.today.dhikrCount) },
+    { label: t('more.today.ayahsRead'), value: n(dashboardSnapshot.today.ayahsRead) },
+    { label: t('more.today.ayahsHeard'), value: n(dashboardSnapshot.today.ayahsListened) },
+    { label: t('more.today.pages'), value: n(dashboardSnapshot.today.pagesRead) },
+    { label: t('more.today.adhkar'), value: n(dashboardSnapshot.today.dhikrCount) },
   ], [
+    n,
+    t,
     dashboardSnapshot.today.ayahsListened,
     dashboardSnapshot.today.ayahsRead,
     dashboardSnapshot.today.dhikrCount,
@@ -212,10 +222,12 @@ export default function MoreScreen() {
   ]);
 
   const heroMetrics = useMemo(() => ([
-    { value: toArabicNumerals(dashboardSnapshot.heroMetrics.currentStreak), label: 'روز متوالی', color: theme.surahHeader },
-    { value: toArabicNumerals(dashboardSnapshot.heroMetrics.totalQuranMinutes), label: 'دقیقه قرآن', color: theme.bookmark },
-    { value: toArabicNumerals(dashboardSnapshot.heroMetrics.totalDhikrCount), label: 'ذکر ثبت‌شده', color: theme.tint },
+    { value: n(dashboardSnapshot.heroMetrics.currentStreak), label: t('more.metric.streak'), color: theme.surahHeader },
+    { value: n(dashboardSnapshot.heroMetrics.totalQuranMinutes), label: t('more.metric.minutes'), color: theme.bookmark },
+    { value: n(dashboardSnapshot.heroMetrics.totalDhikrCount), label: t('more.metric.dhikr'), color: theme.tint },
   ]), [
+    n,
+    t,
     dashboardSnapshot.heroMetrics.currentStreak,
     dashboardSnapshot.heroMetrics.totalDhikrCount,
     dashboardSnapshot.heroMetrics.totalQuranMinutes,
@@ -246,8 +258,8 @@ export default function MoreScreen() {
           style={[styles.header, { paddingTop: insets.top + 12 }]}
           pointerEvents="none"
         >
-          <CenteredText style={styles.headerTitle}>بیشتر</CenteredText>
-          <CenteredText style={styles.headerSubtitle}>میان‌بُرهای مهم، پیگیری پیشرفت و همراه همیشگی عبادت</CenteredText>
+          <CenteredText style={styles.headerTitle}>{t('more.title')}</CenteredText>
+          <CenteredText style={styles.headerSubtitle}>{t('more.subtitle')}</CenteredText>
         </LinearGradient>
 
         <View style={[styles.heroCard, { backgroundColor: theme.card, borderColor: theme.cardBorder, shadowColor: theme.tint }]}>
@@ -276,7 +288,7 @@ export default function MoreScreen() {
             </Pressable>
           </View>
 
-          <CenteredText style={[styles.heroLead, { color: theme.textSecondary }]}>امروز در یک نگاه</CenteredText>
+          <CenteredText style={[styles.heroLead, { color: theme.textSecondary }]}>{t('more.todayGlance')}</CenteredText>
           <CenteredText style={[styles.heroHijri, { color: theme.text }]}>
             {isTurkish
               ? formatTurkishMiladiDate(new Date(), String)
@@ -295,20 +307,20 @@ export default function MoreScreen() {
           )}
           {isTurkish ? null : (
             <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
-              {formatGregorianDate(truth.gregorianDate, language)}
+              {formatGregorianDate(truth.gregorianDate, language, digits)}
             </CenteredText>
           )}
         </View>
 
         {([
-          { title: 'عبادت', actions: worshipActions },
-          { title: 'مطالعه', actions: studyActions },
-          { title: 'پرسش', actions: questionActions },
-        ] as const).map((group) => (
+          { title: t('more.section.worship'), actions: worshipActions },
+          { title: t('more.section.study'), actions: studyActions },
+          { title: t('more.section.ask'), actions: questionActions },
+        ]).map((group) => (
           <View key={group.title} style={styles.section}>
             <MoreSectionTitle title={group.title} />
             <View style={styles.quickGrid}>
-              {chunkPairs(group.actions).map((row) => (
+              {chunkPairs(group.actions as HubAction[]).map((row) => (
                 <View
                   key={row.map((item) => item.route).join('|')}
                   style={[styles.quickRow, row.length === 1 && styles.quickRowSingle]}
@@ -350,6 +362,8 @@ export default function MoreScreen() {
       directionalRow,
       router,
       unreadCount,
+      t,
+      digits,
     ],
   );
 
@@ -357,7 +371,7 @@ export default function MoreScreen() {
     if (item === 'progress') {
       return (
         <View style={styles.section}>
-          <MoreSectionTitle title="پیشرفت" />
+          <MoreSectionTitle title={t('more.section.progress')} />
           <View style={styles.heroMetricsRow}>
             {heroMetrics.map((metric) => (
               <View
@@ -380,7 +394,7 @@ export default function MoreScreen() {
                 <View style={[styles.summaryIconWrap, { backgroundColor: `${theme.tint}18`, borderColor: `${theme.tint}30` }]}>
                   <MaterialIcons name={card.icon as any} size={22} color={theme.tint} />
                 </View>
-                <CenteredText style={[styles.summaryValue, { color: theme.text }]}>{toArabicNumerals(card.value)}</CenteredText>
+                <CenteredText style={[styles.summaryValue, { color: theme.text }]}>{n(card.value)}</CenteredText>
                 <CenteredText style={[styles.summaryLabel, { color: theme.textSecondary }]}>{card.label}</CenteredText>
               </View>
             ))}
@@ -403,7 +417,7 @@ export default function MoreScreen() {
     if (item === 'upcoming') {
       return (
         <View style={styles.section}>
-          <MoreSectionTitle title="مناسبت‌های آینده" />
+          <MoreSectionTitle title={t('more.section.upcoming')} />
           <View style={styles.upcomingList}>
             {upcomingCards.map((day) => {
               return (
@@ -450,7 +464,7 @@ export default function MoreScreen() {
     if (item === 'app') {
       return (
         <View style={styles.section}>
-          <MoreSectionTitle title="برنامه" />
+          <MoreSectionTitle title={t('more.section.app')} />
           <View style={styles.secondaryList}>
             {appActions.map((action) => (
               <MoreHubRow

@@ -4,6 +4,7 @@ import type { UiMessage } from '../messageType';
  * in its source language. */
 export const articlesMessages = {
   'articles.title': { dari: 'مقالات', pashto: 'مقالې', english: 'Articles', turkish: 'Makaleler', arabic: 'المقالات' },
+  'articles.verified': { dari: 'تأیید شده', pashto: 'تایید شوی', english: 'Verified', turkish: 'Doğrulandı', arabic: 'موثّق' },
   'articles.subtitle': { dari: 'مقالات و نوشته‌های علما', pashto: 'د علماوو مقالې او لیکنې', english: 'Articles and writings by scholars', turkish: 'Âlimlerin makaleleri ve yazıları', arabic: 'مقالات العلماء وكتاباتهم' },
   'articles.languageLabel': { dari: 'زبان مقاله', pashto: 'د مقالې ژبه', english: 'Article language', turkish: 'Makale dili', arabic: 'لغة المقال' },
   'articles.all': { dari: 'همه', pashto: 'ټول', english: 'All', turkish: 'Tümü', arabic: 'الكل' },
@@ -45,8 +46,8 @@ export const articlesMessages = {
   'articles.reader.spacing.normal': { dari: 'معمولی', pashto: 'عادي', english: 'Normal', turkish: 'Olağan', arabic: 'عادي' },
   'articles.reader.spacing.relaxed': { dari: 'باز', pashto: 'پراخ', english: 'Relaxed', turkish: 'Rahat', arabic: 'واسع' },
   'articles.reader.align': { dari: 'تراز متن', pashto: 'د متن برابرول', english: 'Text alignment', turkish: 'Metin hizası', arabic: 'محاذاة النص' },
-  'articles.reader.align.justify': { dari: 'هم‌تراز', pashto: 'دواړو خواوو ته برابر', english: 'Justified', turkish: 'İki yana yaslı', arabic: 'مضبوط' },
-  'articles.reader.align.start': { dari: 'راست‌چین', pashto: 'ښي لوري ته', english: 'Right-aligned', turkish: 'Sağa hizalı', arabic: 'محاذاة إلى اليمين' },
+  'articles.reader.align.justify': { dari: 'هم‌تراز', pashto: 'دواړو خواوو ته برابر', english: 'Justified', turkish: 'İki yana yaslı', arabic: 'ضبط الطرفين' },
+  'articles.reader.align.start': { dari: 'راست‌چین', pashto: 'ښي لوري ته', english: 'Align to start', turkish: 'Sağa hizalı', arabic: 'محاذاة إلى اليمين' },
   'articles.reader.page': { dari: 'رنگ صفحه', pashto: 'د پاڼې رنګ', english: 'Page colour', turkish: 'Sayfa rengi', arabic: 'لون الصفحة' },
   'articles.reader.page.auto': { dari: 'خودکار', pashto: 'خپلکاره', english: 'Auto', turkish: 'Otomatik', arabic: 'تلقائي' },
   'articles.reader.page.light': { dari: 'روشن', pashto: 'روښانه', english: 'Light', turkish: 'Açık', arabic: 'فاتح' },

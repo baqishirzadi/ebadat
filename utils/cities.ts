@@ -392,8 +392,27 @@ const CITY_NAME_TO_ENGLISH: Map<string, string> = (() => {
 })();
 
 /** Localized display name for a city, falling back to the authored name. */
+const FEATURED_CITY_NAMES: Partial<Record<AppLanguage, Record<string, string>>> = {
+  pashto: {
+    'کابل': 'کابل',
+    'هرات': 'هرات',
+    'قندهار': 'کندهار',
+    'مزارشریف': 'مزارشریف',
+    'جلال‌آباد': 'جلال‌اباد',
+  },
+  arabic: {
+    'کابل': 'كابل',
+    'هرات': 'هرات',
+    'قندهار': 'قندهار',
+    'مزارشریف': 'مزار شريف',
+    'جلال‌آباد': 'جلال آباد',
+  },
+};
+
 export function localizeCityName(name: string | null | undefined, language: AppLanguage): string {
   if (!name) return '';
+  const featured = FEATURED_CITY_NAMES[language]?.[name];
+  if (featured) return featured;
   if (language !== 'english' && language !== 'turkish') return name;
   const english = CITY_NAME_TO_ENGLISH.get(name) ?? name;
   if (language === 'turkish') return formatTurkishPlaceName(english);

@@ -4,6 +4,7 @@ import { AhadithNotificationPreferences, Hadith } from '@/types/hadith';
 import { resolveCanonicalDailyHadith } from '@/utils/ahadith/daily';
 import type { DailyHadithLanguage } from '@/utils/ahadith/daily';
 import { getContextTitle } from '@/utils/ahadith/labels';
+import { translateUi } from '@/utils/i18n/catalog';
 import { IOS_AHADITH_DAYS_AHEAD } from '@/utils/notificationBudget';
 import { KABUL_TIME_ZONE, getKabulDateKey } from '@/utils/afghanistanCalendar';
 import { addDaysToDateKey, buildDateFromLocalTimeInTimezone } from '@/utils/prayerTimezone';
@@ -110,7 +111,9 @@ export async function scheduleAhadithNotifications(
 
     const identifier = `${IDENTIFIER_PREFIX}${dateKey}`;
     const title = getContextTitle(selection.context, language);
-    const body = truncatePreview(selection.text);
+    const body = language === 'arabic'
+      ? translateUi('hadith.daily', language)
+      : truncatePreview(selection.text);
 
     await NotificationsModule.scheduleNotificationAsync({
       identifier,

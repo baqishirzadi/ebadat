@@ -117,9 +117,11 @@ export default function CounterScreen() {
         <CenteredText style={[styles.selectedDhikrArabic, { color: theme.arabicText }]}>
           {selectedDhikr.arabic}
         </CenteredText>
+        {language !== 'arabic' ? (
         <CenteredText style={[styles.selectedDhikrDari, { color: theme.textSecondary }]}>
-          {language === 'arabic' ? selectedDhikr.meaningArabic : content(selectedDhikr, null)}
+          {content(selectedDhikr, null)}
         </CenteredText>
+        ) : null}
         <MaterialIcons name="arrow-drop-down" size={24} color={theme.icon} />
       </Pressable>
 

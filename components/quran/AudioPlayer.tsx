@@ -67,7 +67,7 @@ export function AudioPlayer({
   onClose,
 }: AudioPlayerProps) {
   const { theme } = useApp();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const insets = useSafeAreaInsets();
   const [currentReciter, setCurrentReciter] = useState<ReciterKey>(() => audioManager.getReciter() || DEFAULT_QURAN_RECITER);
   const [showReciterModal, setShowReciterModal] = useState(false);
@@ -111,10 +111,10 @@ export function AudioPlayer({
             juzNumber,
           })
           .catch((error) => {
-            Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
+            Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error, language));
           });
       } catch (error) {
-        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error, language));
       }
     },
     [currentReciter, surahNumber, ayahNumber, totalAyahs, scopeType, scopeStartAyah, scopeEndAyah, juzNumber, t]

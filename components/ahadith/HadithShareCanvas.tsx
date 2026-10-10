@@ -39,6 +39,8 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
           {hadith.arabic_text}
         </CenteredText>
 
+        {language !== 'arabic' ? (
+        <>
         <View style={[styles.divider, { backgroundColor: alphaColor(theme.textSecondary, 0.3) }]} />
 
         <CenteredText
@@ -53,6 +55,8 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
         >
           {translation || t('ahadith.translation.unavailable')}
         </CenteredText>
+        </>
+        ) : null}
 
         <CenteredText
           style={[

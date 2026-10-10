@@ -8,6 +8,8 @@ import * as Device from 'expo-device';
 import * as duaStorage from './duaStorage';
 import { getSupabaseClient, isSupabaseConfigured } from './supabase';
 import { updateUserMetadata } from './duaService';
+import { translateUi } from './i18n/catalog';
+import { readPersistedAppLanguage } from './i18n/languages';
 
 // Conditional import - only load on native platforms, not in Expo Go
 // We also need to completely skip ALL notification logic in Expo Go (SDK 53+),
@@ -97,10 +99,11 @@ export async function sendNotificationToUser(userId: string, requestId: string):
     // Send notification via Expo Notifications
     // Note: For production, you'd use Supabase Edge Functions or Expo Push API
     // For now, we'll schedule a local notification
+    const language = await readPersistedAppLanguage();
     await Notifications.scheduleNotificationAsync({
       content: {
-        title: 'پاسخ به درخواست شما',
-        body: `پاسخ به درخواست شما آماده است. برای مشاهده پاسخ، اینجا را بزنید.`,
+        title: translateUi('dua.notify.title', language),
+        body: translateUi('dua.notify.body', language),
         data: {
           type: 'dua_response',
           requestId,

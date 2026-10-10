@@ -1,9 +1,11 @@
 package com.afghandev.ebadat
 
-/** Conservative, display-only elongation policy for the bundled Scheherazade font. */
+/** Even, short tatweels for the bundled Amiri Quran face. */
 internal object HifzKashidaPolicy {
   private const val TATWEEL = '\u0640'
-  private const val MAX_PER_WORD = 3
+  private const val MAX_PER_WORD = 4
+  private const val SHADDA = 0x0651
+  private const val MADDA = 0x0653
 
   /** Letters with a well-formed, visually useful outgoing join in this mushaf font. */
   private val carriers = setOf(
@@ -45,68 +47,51 @@ internal object HifzKashidaPolicy {
 
   internal data class Slot(val insertAt: Int, val wordStart: Int, val score: Float)
 
-  /** Valid kashida positions in UTF-16 offsets, after marks attached to the preceding letter. */
+  /** One join per word, the most central eligible carrier. */
   fun slots(text: String): List<Slot> {
-    if (text.length < 2) return emptyList()
     val bestByWord = linkedMapOf<Int, Slot>()
-    var index = 0
-    while (index < text.length) {
-      val codePoint = text.codePointAt(index)
-      val charCount = Character.charCount(codePoint)
-      if (codePoint.toChar() !in carriers || isAllahWord(text, index)) {
-        index += charCount
-        continue
-      }
-
-      val nextOffset = skipTransparentMarks(text, index + charCount)
-      if (nextOffset >= text.length) {
-        index += charCount
-        continue
-      }
-      val nextCodePoint = text.codePointAt(nextOffset)
-      val nextChar = nextCodePoint.toChar()
-      if (
-        nextCodePoint != TATWEEL.code &&
-        nextChar in joinsFromPrevious &&
-        !(codePoint.toChar() == '\u0644' && nextChar in alefs)
-      ) {
-        val wordStart = findWordStart(text, index)
-        if (!isAllahWord(text, wordStart)) {
-          val wordEnd = findWordEnd(text, index)
-          val middle = (wordStart + wordEnd) / 2f
-          val score = 1f - kotlin.math.abs(index - middle) / text.length.toFloat()
-          val current = bestByWord[wordStart]
-          if (current == null || score > current.score) {
-            bestByWord[wordStart] = Slot(nextOffset, wordStart, score)
-          }
-        }
-      }
-      index += charCount
+    for (slot in allJoins(text)) {
+      val current = bestByWord[slot.wordStart]
+      if (current == null || slot.score > current.score) bestByWord[slot.wordStart] = slot
     }
     return bestByWord.values.sortedBy { it.insertAt }
   }
 
-  /** Add a bounded number of tatweels at spread, validated positions; source text is never mutated. */
-  fun apply(text: String, count: Int): String {
-    if (text.isEmpty() || count <= 0) return text
-    val candidates = slots(text)
-    if (candidates.isEmpty()) return text
+  /**
+   * Place `count` tatweels, spread so every chosen word stays within one of
+   * the others. A madda that would meet a later shadda or madda keeps one
+   * tatweel on the join between them even when count is 0.
+   */
+  fun apply(text: String, count: Int, maxPerWord: Int = MAX_PER_WORD): String {
+    if (text.isEmpty()) return text
+    val cap = maxPerWord.coerceIn(1, 12)
+    val wordSlots = slots(text)
+    val required = requiredInserts(text)
+    if (wordSlots.isEmpty() && required.isEmpty()) return text
 
-    // Prefer one short extension in each available word before adding the
-    // optional second extension to any selected word.
-    val selectedCount = minOf(candidates.size, maxOf(1, count))
-    val selected = selectSpreadSlots(candidates, selectedCount)
-    val budget = minOf(count, selected.size * MAX_PER_WORD)
-    if (budget == 0) return text
+    val selected = linkedMapOf<Int, Slot>()
+    for (slot in wordSlots) selected[slot.insertAt] = slot
+    for (insertAt in required.keys) {
+      if (insertAt !in selected) {
+        selected[insertAt] = Slot(insertAt, findWordStart(text, insertAt), 0f)
+      }
+    }
+    val ordered = selected.values.sortedBy { it.insertAt }
+    val floor = required.values.sum()
+    // The separating join stays at one tatweel. The fill uses the other joins.
+    val fill = ordered.filter { it.insertAt !in required }
+    val extras = minOf(maxOf(count - floor, 0), fill.size * cap)
+    if (floor == 0 && extras == 0) return text
 
-    val inserts = mutableMapOf<Int, Int>()
+    val inserts = required.toMutableMap()
     var placed = 0
-    while (placed < budget) {
+    while (placed < extras && fill.isNotEmpty()) {
+      val lowest = fill.minOf { inserts[it.insertAt] ?: 0 }
       var progressed = false
-      for (slot in selected) {
-        if (placed >= budget) break
+      for (slot in fill) {
+        if (placed >= extras) break
         val current = inserts[slot.insertAt] ?: 0
-        if (current >= MAX_PER_WORD) continue
+        if (current > lowest || current >= cap) continue
         inserts[slot.insertAt] = current + 1
         placed += 1
         progressed = true
@@ -126,16 +111,97 @@ internal object HifzKashidaPolicy {
     return output.toString()
   }
 
-  private fun selectSpreadSlots(slots: List<Slot>, count: Int): List<Slot> {
-    if (slots.size <= count) return slots
-    val selected = ArrayList<Slot>(count)
-    for (sliceIndex in 0 until count) {
-      val start = sliceIndex * slots.size / count
-      val end = maxOf(start + 1, (sliceIndex + 1) * slots.size / count)
-      selected += slots.subList(start, minOf(end, slots.size)).maxBy { it.score }
+  /** Every valid join, including more than one inside a single word. */
+  private fun allJoins(text: String): List<Slot> {
+    if (text.length < 2) return emptyList()
+    val joins = mutableListOf<Slot>()
+    var index = 0
+    while (index < text.length) {
+      val codePoint = text.codePointAt(index)
+      val charCount = Character.charCount(codePoint)
+      if (codePoint.toChar() !in carriers || isAllahWord(text, index)) {
+        index += charCount
+        continue
+      }
+
+      val nextOffset = skipTransparentMarks(text, index + charCount)
+      if (nextOffset >= text.length || hasPauseMark(text, index + charCount, nextOffset)) {
+        index += charCount
+        continue
+      }
+      val nextCodePoint = text.codePointAt(nextOffset)
+      val nextChar = nextCodePoint.toChar()
+      if (
+        nextCodePoint != TATWEEL.code &&
+        nextChar in joinsFromPrevious &&
+        !(codePoint.toChar() == '\u0644' && nextChar in alefs)
+      ) {
+        val wordStart = findWordStart(text, index)
+        if (!isAllahWord(text, wordStart)) {
+          val wordEnd = findWordEnd(text, index)
+          val middle = (wordStart + wordEnd) / 2f
+          val score = 1f - kotlin.math.abs(index - middle) / text.length.toFloat()
+          joins += Slot(nextOffset, wordStart, score)
+        }
+      }
+      index += charCount
     }
-    return selected.sortedBy { it.insertAt }
+    return joins
   }
+
+  private data class LetterBase(val offset: Int, val marks: List<Int>)
+
+  /**
+   * One tatweel on the first join between a madda and a shadda or madda on
+   * one of the next two letters. That is what separates الف from م in الم.
+   */
+  private fun requiredInserts(text: String): Map<Int, Int> {
+    val bases = letterBases(text)
+    if (bases.size < 2) return emptyMap()
+    val joins = allJoins(text)
+    if (joins.isEmpty()) return emptyMap()
+    val result = linkedMapOf<Int, Int>()
+    for (index in bases.indices) {
+      if (MADDA !in bases[index].marks) continue
+      val last = minOf(bases.lastIndex, index + 2)
+      for (next in index + 1..last) {
+        val marks = bases[next].marks
+        if (SHADDA !in marks && MADDA !in marks) continue
+        val join = joins.firstOrNull {
+          it.insertAt > bases[index].offset && it.insertAt <= bases[next].offset
+        }
+        if (join != null) result.putIfAbsent(join.insertAt, 1)
+        break
+      }
+    }
+    return result
+  }
+
+  private fun letterBases(text: String): List<LetterBase> {
+    val bases = mutableListOf<LetterBase>()
+    var index = 0
+    while (index < text.length) {
+      val codePoint = text.codePointAt(index)
+      if (!isBaseLetter(codePoint)) {
+        index += Character.charCount(codePoint)
+        continue
+      }
+      val offset = index
+      index += Character.charCount(codePoint)
+      val marks = mutableListOf<Int>()
+      while (index < text.length) {
+        val mark = text.codePointAt(index)
+        if (!isTransparentMark(mark)) break
+        marks += mark
+        index += Character.charCount(mark)
+      }
+      bases += LetterBase(offset, marks)
+    }
+    return bases
+  }
+
+  private fun isBaseLetter(codePoint: Int): Boolean =
+    codePoint in 0x0621..0x064A || codePoint == 0x0671 || codePoint == 0x06CC
 
   private fun skipTransparentMarks(text: String, from: Int): Int {
     var index = from
@@ -145,6 +211,17 @@ internal object HifzKashidaPolicy {
       index += Character.charCount(codePoint)
     }
     return index
+  }
+
+  /** A pause cluster between the carrier and the next letter is not a kashida site. */
+  private fun hasPauseMark(text: String, from: Int, until: Int): Boolean {
+    var index = from
+    while (index < until && index < text.length) {
+      val codePoint = text.codePointAt(index)
+      if (codePoint == 0x0614 || codePoint == 0x0615 || codePoint in 0x06D6..0x06DC) return true
+      index += Character.charCount(codePoint)
+    }
+    return false
   }
 
   private fun isTransparentMark(codePoint: Int): Boolean {

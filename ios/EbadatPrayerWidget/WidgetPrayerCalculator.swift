@@ -44,7 +44,7 @@ enum WidgetPrayerCalculator {
   private static let gregorianMonths = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
   private static let weekdays = ["یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه"]
   private static let weekdaysPashto = ["یکشنبه", "دوشنبه", "سې‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه", "شنبه"]
-  private static let prayerLabelsPashto = ["fajr": "سهار", "dhuhr": "غرمه", "asr": "مازدیګر", "maghrib": "ماښام", "isha": "خفتن"]
+  private static let prayerLabelsPashto = ["fajr": "سهار", "dhuhr": "غرمه", "asr": "مازدیګر", "maghrib": "ماښام", "isha": "ماسخوتن"]
   // Keep these verified periods aligned with utils/ahadith/officialAfghanistanCalendar.ts.
   private static let verifiedAfghanHijriPeriods = [
     VerifiedAfghanHijriPeriod(startDateKey: "2026-02-18", dayCount: 29, hijriYear: 1447, hijriMonth: 9, firstHijriDay: 1),
@@ -115,7 +115,7 @@ enum WidgetPrayerCalculator {
       ("dhuhr", "ظهر", times.dhuhr),
       ("asr", "عصر", times.asr),
       ("maghrib", "شام", times.maghrib),
-      ("isha", "خفتن", times.isha)
+      ("isha", "ماسخوتن", times.isha)
     ].map { key, label, value in
       WidgetPrayerEntry(
         key: key,

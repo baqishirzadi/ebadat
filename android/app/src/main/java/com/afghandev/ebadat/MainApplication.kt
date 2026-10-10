@@ -83,6 +83,7 @@ class MainApplication : Application(), ReactApplication {
     ReactFontManager.getInstance().addCustomFont(this, "NotoNaskhArabic-Regular", R.font.xml_noto_naskh_arabic)
     ReactFontManager.getInstance().addCustomFont(this, "NotoNaskhArabic-Bold", R.font.xml_noto_naskh_arabic_bold)
     // @generated end xml-fonts-init
+    ReactFontManager.getInstance().addCustomFont(this, "AmiriQuran", R.font.xml_amiri_quran)
     DefaultNewArchitectureEntryPoint.releaseLevel = try {
       ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
     } catch (e: IllegalArgumentException) {

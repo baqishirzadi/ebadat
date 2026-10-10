@@ -13,7 +13,7 @@ export const HANAFI_MUFTI_STARTER_QUESTIONS_DARI = [
 ] as const;
 
 export const HANAFI_MUFTI_STARTER_QUESTIONS_PASHTO = [
-  'د ماسپښین لمونځ څو رکعته دی؟',
+  'د غرمې لمونځ څو رکعته دی؟',
   'د سرو زرو زکات څنګه حسابېږي؟',
   'پر اولادونو د مور او پلار حق څه دی؟',
   'د دې اپ ملاتړ کوونکي څوک دي؟',

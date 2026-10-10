@@ -27,10 +27,10 @@ export const AFGHAN_SOLAR_MONTHS = [
   { dari: 'سنبله', pashto: 'وږی', english: 'Sonbola', turkish: 'Sünbüle', arabic: 'السنبلة' },
   { dari: 'میزان', pashto: 'تله', english: 'Mizan', turkish: 'Mizan', arabic: 'الميزان' },
   { dari: 'عقرب', pashto: 'لړم', english: 'Aqrab', turkish: 'Akrep', arabic: 'العقرب' },
-  { dari: 'قوس', pashto: 'ليندۍ', english: 'Qaws', turkish: 'Kavs', arabic: 'القوس' },
+  { dari: 'قوس', pashto: 'لیندۍ', english: 'Qaws', turkish: 'Kavs', arabic: 'القوس' },
   { dari: 'جدی', pashto: 'مرغومی', english: 'Jadi', turkish: 'Cedi', arabic: 'الجدي' },
   { dari: 'دلو', pashto: 'سلواغه', english: 'Dalw', turkish: 'Delv', arabic: 'الدلو' },
-  { dari: 'حوت', pashto: 'كب', english: 'Hut', turkish: 'Hut', arabic: 'الحوت' },
+  { dari: 'حوت', pashto: 'کب', english: 'Hut', turkish: 'Hut', arabic: 'الحوت' },
 ];
 
 /** Solar Hijri leap years in the 33-year cycle. */

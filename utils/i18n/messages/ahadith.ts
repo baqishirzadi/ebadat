@@ -29,7 +29,7 @@ export const ahadithMessages = {
   'ahadith.search.clear': { dari: 'پاک‌کردن جستجو', pashto: 'لټون پاکول', english: 'Clear the search', turkish: 'Aramayı temizle', arabic: 'مسح البحث' },
   'ahadith.search.prompt': { dari: 'عبارت جستجو را وارد کنید', pashto: 'د لټون عبارت ولیکئ', english: 'Type a word to search', turkish: 'Aramak için bir kelime yazın', arabic: 'أدخل عبارة البحث' },
 
-  'ahadith.muttafaq.empty': { dari: 'حدیث متفق‌علیه موجود نیست', pashto: 'متفق علیه حدیثونه نشته', english: 'No Muttafaq ‘alayh hadith is available', turkish: 'Müttefakun aleyh hadis yok', arabic: 'لا يوجد حديث متفق عليه' },
+  'ahadith.muttafaq.empty': { dari: 'حدیث متفق‌علیه موجود نیست', pashto: 'متفق علیه حدیثونه نشته', english: 'No Muttafaqun ‘alayh hadith to show', turkish: 'Müttefekun aleyh hadis yok', arabic: 'لا يوجد حديث متفق عليه' },
 
   'ahadith.topics.allChip': { dari: 'همه', pashto: 'ټول', english: 'All', turkish: 'Tümü', arabic: 'الكل' },
   'ahadith.topics.all': { dari: 'موضوع: همه', pashto: 'ټولې موضوعګانې', english: 'All topics', turkish: 'Tüm konular', arabic: 'الموضوع: الكل' },

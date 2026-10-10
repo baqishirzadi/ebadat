@@ -4,17 +4,50 @@ import { FlexWidget, TextWidget } from 'react-native-android-widget';
 import type { WidgetSnapshot } from '@/utils/widgetSnapshot';
 import { toArabicNumeralsString, toLatinNumeralsString } from '@/utils/numbers';
 
-const TINT = '#1a4d3d';
 const ACTIVE_BG = '#ffffff';
 const INACTIVE_BG = '#ffffff1f';
 const TEXT_PRIMARY = '#ffffff';
 const TEXT_SECONDARY = '#ffffffd9';
-const ACCENT = '#8cd9b8';
-const BACKGROUND_GRADIENT = {
-  from: '#0f1f14',
-  to: TINT,
-  orientation: 'TL_BR' as const,
-} as const;
+
+type WidgetPalette = {
+  gradientFrom: `#${string}`;
+  gradientTo: `#${string}`;
+  accent: `#${string}`;
+  chipText: `#${string}`;
+};
+
+function widgetPalette(themeMode: string | undefined): WidgetPalette {
+  switch (themeMode) {
+    case 'night':
+      return {
+        gradientFrom: '#000000',
+        gradientTo: '#141414',
+        accent: '#f2f2f2',
+        chipText: '#111111',
+      };
+    case 'sapphire':
+      return {
+        gradientFrom: '#152a45',
+        gradientTo: '#1e3a5f',
+        accent: '#d6e4f5',
+        chipText: '#1e3a5f',
+      };
+    case 'burgundy':
+      return {
+        gradientFrom: '#4a1e28',
+        gradientTo: '#6b2d3c',
+        accent: '#f6d5dc',
+        chipText: '#6b2d3c',
+      };
+    default:
+      return {
+        gradientFrom: '#0f1f14',
+        gradientTo: '#1a4d3d',
+        accent: '#8cd9b8',
+        chipText: '#1a4d3d',
+      };
+  }
+}
 
 const WEEKDAY_SHORT_EN: Record<string, string> = {
   Sunday: 'Sun',
@@ -24,6 +57,32 @@ const WEEKDAY_SHORT_EN: Record<string, string> = {
   Thursday: 'Thu',
   Friday: 'Fri',
   Saturday: 'Sat',
+};
+
+/** Distinct Turkish shorts. Cuma and Cumartesi must not both collapse to "Cum". */
+const WEEKDAY_SHORT_TR: Record<string, string> = {
+  Sunday: 'Paz',
+  Monday: 'Pzt',
+  Tuesday: 'Sal',
+  Wednesday: 'Çar',
+  Thursday: 'Per',
+  Friday: 'Cum',
+  Saturday: 'Cmt',
+};
+
+const GREGORIAN_MONTH_TR: Record<string, string> = {
+  JAN: 'Ocak',
+  FEB: 'Şubat',
+  MAR: 'Mart',
+  APR: 'Nisan',
+  MAY: 'Mayıs',
+  JUN: 'Haziran',
+  JUL: 'Temmuz',
+  AUG: 'Ağustos',
+  SEP: 'Eylül',
+  OCT: 'Ekim',
+  NOV: 'Kasım',
+  DEC: 'Aralık',
 };
 
 const HIJRI_MONTH_SHORT_EN: Record<string, string> = {
@@ -47,18 +106,40 @@ function englishHijriDate(hijriDisplay: string): string {
 }
 
 /** Latin hero: short weekday plus the primary calendar date. */
-function englishHeaderTitle(weekday: string, dateDisplay: string): string {
-  const shortDay = WEEKDAY_SHORT_EN[weekday] || weekday.slice(0, 3);
+function latinHeaderTitle(weekday: string, dateDisplay: string, language: string): string {
+  const shortDay = language === 'turkish'
+    ? WEEKDAY_SHORT_TR[weekday] || weekday
+    : WEEKDAY_SHORT_EN[weekday] || weekday.slice(0, 3);
   return [shortDay, toLatinNumeralsString(dateDisplay)].filter(Boolean).join(', ');
 }
 
-/** Gregorian day and English month code, omitting the year. Latin digits in every language. */
-function gregorianCell(gregorianDisplay: string): string {
+/** Gregorian day and month, omitting the year. Turkish uses the full month name. */
+function widgetPrayerClock(
+  prayer: { time12h: string; atMs?: number },
+  language: string,
+): string {
+  if ((language === 'turkish' || language === 'english') && prayer.atMs) {
+    const date = new Date(prayer.atMs);
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    if (language === 'turkish') {
+      return `${String(date.getHours()).padStart(2, '0')}:${minutes}`;
+    }
+    const suffix = date.getHours() >= 12 ? 'PM' : 'AM';
+    const hours12 = date.getHours() % 12 || 12;
+    return `${hours12}:${minutes} ${suffix}`;
+  }
+  return language === 'english' || language === 'turkish'
+    ? toLatinNumeralsString(prayer.time12h)
+    : toArabicNumeralsString(prayer.time12h);
+}
+
+function gregorianCell(gregorianDisplay: string, language: string): string {
   const parts = gregorianDisplay.trim().split(/\s+/).filter(Boolean);
   if (parts.length < 2) return toLatinNumeralsString(gregorianDisplay.trim());
   const day = toLatinNumeralsString(parts[0]);
   const monthKey = toLatinNumeralsString(parts[1]).toUpperCase();
-  return `${day} ${monthKey}`;
+  const month = language === 'turkish' ? GREGORIAN_MONTH_TR[monthKey] || monthKey : monthKey;
+  return `${day} ${month}`;
 }
 
 interface PrayerTimesWidgetProps {
@@ -97,49 +178,53 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         ? 'NotoNaskhArabic-Bold'
         : 'Vazirmatn-Bold';
 
-  // Android sizes each line from the font's Windows metrics. Noto Naskh and
-  // Amiri boxes are taller than Dari's Vazirmatn, so Arabic and Pashto type
-  // is scaled down inside the same launcher cell.
-  const pashtoLineScale = isArabic
+  // Pashto glyphs draw larger than Dari. The extra size is only on fontSize;
+  // a tighter line box and shorter vertical gaps keep the same three rows
+  // inside the launcher cell. Arabic stays at its previous fit.
+  const glyphScale = isArabic
     ? 0.84
     : !isPashto
       ? 1
       : snapshot?.pashtoFont === 'amiri'
-        ? 0.62
-        : 0.84;
+        ? 0.92
+        : 1.12;
+  const lineBox = isPashto ? 0.84 : 1.4;
+  const spaceScale = isPashto ? 0.6 : 1;
   // One home-screen row. These units match the padding and line boxes below,
   // so the three rows fit the real cell instead of a fixed two-row card.
-  const lineBox = 1.4;
   const contentUnits =
-    10 +
-    3 +
-    4 +
-    4 +
-    (20 + 15 + 13 + 15) * pashtoLineScale * lineBox;
+    (10 + 3 + 4 + 4) * spaceScale +
+    (20 + 15 + 13 + 15) * glyphScale * lineBox;
   const scale = Math.min(0.88, Math.max(0.52, height / contentUnits));
-  const typeScale = scale * pashtoLineScale;
-  // At that smaller size the bold Naskh strokes read thin. A tight shadow in
-  // the text color thickens them without changing the line box.
+  const typeScale = scale * glyphScale;
+  // Bold Naskh strokes read thin at widget size. A tight shadow in the text
+  // color thickens them without changing the line box. Pashto uses a heavier stroke.
   const pashtoWeight = (color: `#${string}`) =>
     isPashto || isArabic
       ? {
           fontWeight: '700' as const,
           textShadowColor: color,
-          textShadowRadius: 1.2,
+          textShadowRadius: isPashto ? 2 : 1.2,
           textShadowOffset: { width: 0, height: 0 },
         }
       : null;
-  const rootPaddingVertical = 5 * scale;
+  const rootPaddingVertical = 5 * scale * spaceScale;
   const rootPaddingHorizontal = 6 * scale;
   const prayerLabelSize = 13 * typeScale;
   const prayerTimeSize = 15 * typeScale;
-  const prayerChipPaddingVertical = 2 * scale;
+  const prayerChipPaddingVertical = 2 * scale * spaceScale;
   const prayerTimeMarginTop = 0;
   const headerTitleSize = 20 * typeScale;
   const dateLineSize = 15 * typeScale;
   const sunriseLineSize = 15 * typeScale;
-  const dateRowMarginTop = 3 * scale;
-  const prayerRowMarginTop = 4 * scale;
+  const dateRowMarginTop = 3 * scale * spaceScale;
+  const prayerRowMarginTop = 4 * scale * spaceScale;
+  const palette = widgetPalette(snapshot?.themeMode);
+  const backgroundGradient = {
+    from: palette.gradientFrom,
+    to: palette.gradientTo,
+    orientation: 'TL_BR' as const,
+  };
 
   if (!snapshot) {
     return (
@@ -147,7 +232,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         style={{
           height: 'match_parent',
           width: 'match_parent',
-          backgroundGradient: BACKGROUND_GRADIENT,
+          backgroundGradient,
           justifyContent: 'center',
           alignItems: 'center',
           padding: 10,
@@ -176,22 +261,21 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
     );
   }
 
-  const weekdayLabel = isTurkish
-    ? ({ Sunday: 'Pazar', Monday: 'Pazartesi', Tuesday: 'Salı', Wednesday: 'Çarşamba', Thursday: 'Perşembe', Friday: 'Cuma', Saturday: 'Cumartesi' } as Record<string, string>)[snapshot.weekdayEnglish || ''] || snapshot.weekdayEnglish
-    : isLatin
-      ? snapshot.weekdayEnglish || snapshot.weekdayDari
-      : isArabic
+  const weekdayLabel = isLatin
+    ? snapshot.weekdayEnglish || snapshot.weekdayDari
+    : isArabic
         ? ({ 'یکشنبه': 'الأحد', 'دوشنبه': 'الإثنين', 'سه‌شنبه': 'الثلاثاء', 'چهارشنبه': 'الأربعاء', 'پنجشنبه': 'الخميس', 'جمعه': 'الجمعة', 'شنبه': 'السبت' } as Record<string, string>)[snapshot.weekdayDari] || snapshot.weekdayDari
         : isPashto
           ? snapshot.weekdayPashto
           : snapshot.weekdayDari;
   const hijriLabel = isTurkish
-    ? (snapshot.hijriDisplayEnglish || snapshot.hijriDisplay || '')
+    ? (snapshot.hijriDisplayTurkish
+        || (snapshot.hijriDisplayEnglish || snapshot.hijriDisplay || '')
         .replace('Muharram', 'Muharrem').replace('Safar', 'Safer')
         .replace('Rabi al-Awwal', 'Rebiülevvel').replace('Rabi al-Thani', 'Rebiülahir')
         .replace('Jumada al-Awwal', 'Cemaziyelevvel').replace('Jumada al-Thani', 'Cemaziyelahir')
         .replace('Rajab', 'Recep').replace('Shaban', 'Şaban').replace('Ramadan', 'Ramazan')
-        .replace('Shawwal', 'Şevval').replace('Dhul Qadah', 'Zilkade').replace('Dhul Hijjah', 'Zilhicce')
+        .replace('Shawwal', 'Şevval').replace('Dhul Qadah', 'Zilkade').replace('Dhul Hijjah', 'Zilhicce'))
     : isLatin
       ? snapshot.hijriDisplayEnglish || snapshot.hijriDisplay
       : isArabic
@@ -249,13 +333,13 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           : 'طلوع';
 
   const solarDisplay = shamsiLabel || snapshot.shamsiDisplay || '';
-  const gregorianText = gregorianCell(snapshot.gregorianDisplay || '');
+  const gregorianText = gregorianCell(snapshot.gregorianDisplay || '', language);
   const hijriText = isLatin ? englishHijriDate(hijriLabel || '') : (hijriLabel || '');
   const shamsiText = isLatin ? toLatinNumeralsString(solarDisplay) : solarDisplay;
   const hijriPrimary = isLatin || isArabic;
   const headerSubject = hijriPrimary ? hijriText : solarDisplay;
   const headerTitleText = isLatin
-    ? englishHeaderTitle(weekdayLabel || '', headerSubject)
+    ? latinHeaderTitle(weekdayLabel || '', headerSubject, language)
     : [weekdayLabel, headerSubject].filter(Boolean).join('، ');
   const sunriseCell = `${sunriseCaption}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim();
   const calendarCell: WidgetDateCell = hijriPrimary
@@ -264,12 +348,12 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
   const dateCells: WidgetDateCell[] = isLatin
     ? [
         { key: 'gregorian', text: gregorianText, color: TEXT_SECONDARY },
-        { key: 'sunrise', text: sunriseCell, color: ACCENT },
+        { key: 'sunrise', text: sunriseCell, color: palette.accent },
         calendarCell,
       ]
     : [
         calendarCell,
-        { key: 'sunrise', text: sunriseCell, color: ACCENT },
+        { key: 'sunrise', text: sunriseCell, color: palette.accent },
         { key: 'gregorian', text: gregorianText, color: TEXT_SECONDARY },
       ];
 
@@ -302,8 +386,8 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         style={{
           fontSize: headerTitleSize,
           fontFamily: boldFontFamily,
-          ...pashtoWeight(ACCENT),
-          color: ACCENT,
+          ...pashtoWeight(palette.accent),
+          color: palette.accent,
           adjustsFontSizeToFit: true,
         }}
       />
@@ -353,7 +437,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         style={{
           height: 'match_parent',
           width: 'match_parent',
-          backgroundGradient: BACKGROUND_GRADIENT,
+          backgroundGradient,
           borderRadius: 16,
           flexDirection: 'column',
           justifyContent: 'center',
@@ -375,7 +459,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           {prayersOrdered.map((prayer) => {
             const active = activePrayerKey === prayer.key;
             const prayerName = isTurkish
-              ? ({ fajr: 'Sabah', dhuhr: 'Öğle', asr: 'İkindi', maghrib: 'Akşam', isha: 'Yatsı' } as const)[prayer.key]
+              ? ({ fajr: 'İmsak', dhuhr: 'Öğle', asr: 'İkindi', maghrib: 'Akşam', isha: 'Yatsı' } as const)[prayer.key]
               : language === 'english'
                 ? prayer.labelEnglish || prayer.labelDari
                 : isArabic
@@ -403,20 +487,20 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                   style={{
                     fontSize: prayerLabelSize,
                     fontFamily: boldFontFamily,
-                    ...pashtoWeight(active ? TINT : TEXT_PRIMARY),
-                    color: active ? TINT : TEXT_PRIMARY,
+                    ...pashtoWeight(active ? palette.chipText : TEXT_PRIMARY),
+                    color: active ? palette.chipText : TEXT_PRIMARY,
                     adjustsFontSizeToFit: true,
                   }}
                 />
                 <TextWidget
-                  text={localizeDigits(prayer.time12h)}
+                  text={widgetPrayerClock(prayer, language)}
                   maxLines={1}
                   allowFontScaling={false}
                   style={{
                     fontSize: prayerTimeSize,
                     fontFamily: boldFontFamily,
-                    ...pashtoWeight(active ? TINT : TEXT_SECONDARY),
-                    color: active ? TINT : TEXT_SECONDARY,
+                    ...pashtoWeight(active ? palette.chipText : TEXT_SECONDARY),
+                    color: active ? palette.chipText : TEXT_SECONDARY,
                     marginTop: prayerTimeMarginTop,
                     adjustsFontSizeToFit: true,
                   }}

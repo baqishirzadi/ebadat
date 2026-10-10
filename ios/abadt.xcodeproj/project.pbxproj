@@ -28,6 +28,7 @@
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
 		F4E774B4891047A89D9DC004 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9035DA2D9AF546ECB81744CF /* InfoPlist.strings */; };
 		FA8AC0BB6ED241E7B6C25557 /* Amiri-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 25348C55611241EFBD8E0EFC /* Amiri-Regular.ttf */; };
+		AQRN0BF00000000000000001 /* AmiriQuran-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AQRN0FR00000000000000001 /* AmiriQuran-Regular.ttf */; };
 		W1D2G3E4XT001 /* EbadatPrayerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR001 /* EbadatPrayerWidget.swift */; };
 		W1D2G3E4XT002 /* PrayerTimesWidgetProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR002 /* PrayerTimesWidgetProvider.swift */; };
 		W1D2G3E4XT003 /* PrayerTimesWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR003 /* PrayerTimesWidgetView.swift */; };
@@ -79,6 +80,7 @@
 		1D5F85730D754E9A9C3DF240 /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = ps.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		24618AC3ED0BFBE7DEFCD0CE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = abadt/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		25348C55611241EFBD8E0EFC /* Amiri-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Amiri-Regular.ttf"; path = "../assets/fonts/Amiri-Regular.ttf"; sourceTree = "<group>"; };
+		AQRN0FR00000000000000001 /* AmiriQuran-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "AmiriQuran-Regular.ttf"; path = "../assets/fonts/AmiriQuran-Regular.ttf"; sourceTree = "<group>"; };
 		36FD6C85C92A47DABA7ACD38 /* barakatullah_salim_18sec.mp3 */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = barakatullah_salim_18sec.mp3; path = abadt/barakatullah_salim_18sec.mp3; sourceTree = "<group>"; };
 		9035DA2D9AF546ECB81744CF /* InfoPlist.strings */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = fa.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		961C4D789D714B179CF85826 /* NotoNastaliqUrdu-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "NotoNastaliqUrdu-Regular.ttf"; path = "../assets/fonts/NotoNastaliqUrdu-Regular.ttf"; sourceTree = "<group>"; };
@@ -185,6 +187,7 @@
 				E336123CAA1B4B59BF86DE6A /* ScheherazadeNew-Bold.ttf */,
 				FDF95EC0DE1241C5B75B47AC /* QPCHafs18.ttf */,
 				25348C55611241EFBD8E0EFC /* Amiri-Regular.ttf */,
+				AQRN0FR00000000000000001 /* AmiriQuran-Regular.ttf */,
 				EAA20087D1EB4669933289B6 /* Amiri-Bold.ttf */,
 				C7AAF416978A422FB6AE300F /* Vazirmatn-Regular.ttf */,
 				A49739E0C47249188274C1F8 /* Vazirmatn-Bold.ttf */,
@@ -378,6 +381,7 @@
 				B24E2E79751F4483B6CDEB2C /* ScheherazadeNew-Bold.ttf in Resources */,
 				5C1A995AA30C4CE497D5F9D9 /* QPCHafs18.ttf in Resources */,
 				FA8AC0BB6ED241E7B6C25557 /* Amiri-Regular.ttf in Resources */,
+				AQRN0BF00000000000000001 /* AmiriQuran-Regular.ttf in Resources */,
 				3AF7E1B4280648218DDAE879 /* Amiri-Bold.ttf in Resources */,
 				C79F30A048B943ECB519CB63 /* Vazirmatn-Regular.ttf in Resources */,
 				E6DCE0B9CA9B468389137939 /* Vazirmatn-Bold.ttf in Resources */,

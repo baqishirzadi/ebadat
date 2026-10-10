@@ -2,13 +2,13 @@
   "adhanPermissions": {
     "notifications": {
       "title": "Notification permission",
-      "body": "Ibadet needs permission to send notifications so it can show prayer times and play the Adhan.",
+      "body": "Ebadat needs permission to send notifications so it can show prayer times and play the Adhan.",
       "button": "Allow",
       "skip": "Continue without notifications"
     },
     "exactAlarm": {
       "title": "Exact alarms for the Adhan",
-      "body": "So the Adhan plays exactly at the prayer time — even while your phone is asleep — please grant Ibadet the “Alarms & reminders” permission.",
+      "body": "So the Adhan plays exactly at the prayer time — even while your phone is asleep — please grant Ebadat the “Alarms & reminders” permission.",
       "button": "Enable",
       "skip": "Not now",
       "granted": "Enabled",
@@ -16,7 +16,7 @@
     },
     "battery": {
       "title": "Turn off battery optimisation",
-      "body": "Some phones close background apps automatically. If Ibadet stays under battery optimisation, the Adhan may not play on time.",
+      "body": "Some phones close background apps automatically. If Ebadat stays under battery optimisation, the Adhan may not play on time.",
       "button": "Battery settings",
       "skip": "Later"
     },
@@ -46,36 +46,36 @@
       "xiaomi": [
         "Open your phone settings",
         "Go to “Apps” or “Manage apps”",
-        "Find Ibadet and open “Autostart”",
+        "Find Ebadat and open “Autostart”",
         "Turn it on"
       ],
       "huawei": [
         "Open your phone settings",
         "Go to “Apps” → “Launch” or “Protected apps”",
-        "Find Ibadet",
+        "Find Ebadat",
         "Allow it to run in the background"
       ],
       "oppo": [
         "Open your phone settings",
         "Go to “App management” → “Startup Manager”",
-        "Find Ibadet",
+        "Find Ebadat",
         "Enable autostart"
       ],
       "vivo": [
         "Open your phone settings",
         "Go to “Battery” → “High background battery usage”",
-        "Find Ibadet",
+        "Find Ebadat",
         "Allow it to run in the background"
       ],
       "samsung": [
         "Open your phone settings",
         "Go to “Device care” → “Battery” → “Background usage limits”",
-        "Add Ibadet to “Never sleeping apps”",
-        "Turn off “Put app to sleep” for Ibadet"
+        "Add Ebadat to “Never sleeping apps”",
+        "Turn off “Put app to sleep” for Ebadat"
       ],
       "default": [
         "Open your phone settings",
-        "Open the Ibadet app settings",
+        "Open the Ebadat app settings",
         "Review the battery and background restrictions",
         "Allow it to run in the background"
       ]

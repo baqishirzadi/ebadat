@@ -5,7 +5,8 @@ import { Hadith } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
 import { alphaColor } from '@/utils/ahadith/theme';
 import { formatSourceLabel, getAuthenticityGradeLabel, getMuttafaqBadgeLabel } from '@/utils/ahadith/labels';
-import { getHadithTranslation } from '@/utils/ahadith/translation';
+import { resolveHadithTranslation } from '@/utils/ahadith/translation';
+import { APP_LANGUAGES } from '@/utils/i18n/languages';
 import { forwardChevronName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { getQuranFontFamily } from '@/hooks/useFonts';
@@ -20,6 +21,7 @@ export function HadithListCard({ hadith, onPress }: HadithListCardProps) {
   const { theme, state } = useApp();
   const { t, language, fontFamily, isRtl, digits } = useI18n();
   const nastaliq = fontFamily === 'NotoNastaliqUrdu';
+  const resolved = resolveHadithTranslation(hadith, language);
   const gradeLabel = hadith.is_muttafaq
     ? getMuttafaqBadgeLabel(language)
     : getAuthenticityGradeLabel(hadith.authenticity_grade, language);
@@ -48,6 +50,7 @@ export function HadithListCard({ hadith, onPress }: HadithListCardProps) {
         {hadith.arabic_text}
       </CenteredText>
 
+      {language !== 'arabic' ? (
       <CenteredText
         numberOfLines={3}
         style={[
@@ -60,8 +63,10 @@ export function HadithListCard({ hadith, onPress }: HadithListCardProps) {
           },
         ]}
       >
-        {getHadithTranslation(hadith, language) || t('ahadith.translation.unavailable')}
+        {resolved && resolved.language !== language ? `${APP_LANGUAGES[resolved.language].nativeLabel}: ` : ''}
+        {resolved?.text || t('ahadith.translation.unavailable')}
       </CenteredText>
+      ) : null}
 
       <View style={[styles.footer, { borderTopColor: alphaColor(theme.textSecondary, 0.16) }]}>
         <View

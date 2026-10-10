@@ -4,10 +4,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Modal, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
 import { LocalizedText } from '@/components/ui/LocalizedText';
-import { QuranFonts, Typography, type QuranFontFamily } from '@/constants/theme';
+import { HifzFonts, QuranFonts, Typography, type HifzFontFamily, type QuranFontFamily } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { getQuranFontFamily } from '@/hooks/useFonts';
+import { getHifzFontFamily, getQuranFontFamily } from '@/hooks/useFonts';
 import { useQuranReaderSettings, type QuranLineSpacing, type QuranPageTone } from '@/hooks/useQuranReaderSettings';
+import type { UiMessageKey } from '@/utils/i18n/catalog';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { QuranText } from './QuranText';
 
@@ -26,12 +27,18 @@ const PAGE_TONES: { id: QuranPageTone; colors: string[] }[] = [
   { id: 'sepia', colors: ['#F6EFE1'] },
   { id: 'dark', colors: ['#0E1311'] },
 ];
-const TRANSLATIONS = ['none', 'dari', 'pashto', 'arabic', 'turkish', 'english'] as const;
+const TRANSLATIONS = ['none', 'dari', 'pashto', 'turkish', 'english'] as const;
+const HIFZ_FONT_LABELS: Record<HifzFontFamily, UiMessageKey> = {
+  amiriQuran: 'quran.reader.hifzFont.amiriQuran',
+  scheherazade: 'quran.reader.hifzFont.scheherazade',
+};
+const BISMILLAH = 'بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ';
+const FONT_SAMPLE = 'بِسْمِ اللَّهِ';
 
 export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false }: QuranReaderSettingsSheetProps) {
   const insets = useSafeAreaInsets();
-  const { theme, state, setArabicFontSize, setQuranFont, setTranslationLanguage } = useApp();
-  const { t, language, isLatin } = useI18n();
+  const { theme, state, setArabicFontSize, setHifzFont, setQuranFont, setTranslationLanguage } = useApp();
+  const { t, isLatin } = useI18n();
   const { settings, update, tokens } = useQuranReaderSettings();
   const selectedSize = state.preferences.arabicFontSize;
   const sizeIndex = FONT_SIZES.indexOf(selectedSize);
@@ -42,6 +49,7 @@ export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false
   };
 
   const fontOptions = Object.entries(QuranFonts) as [QuranFontFamily, (typeof QuranFonts)[QuranFontFamily]][];
+  const hifzFontOptions = Object.keys(HifzFonts) as HifzFontFamily[];
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -66,7 +74,7 @@ export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false
           <View style={[styles.grabber, { backgroundColor: theme.divider }]} />
           <View style={styles.header}>
             <LocalizedText style={[styles.title, { color: theme.text }]}>
-              {t('quran.reader.settings')}
+              {t(fixedMushaf ? 'quran.reader.hifzSettings' : 'quran.reader.settings')}
             </LocalizedText>
             <Pressable
               testID="quran-reader-settings-done"
@@ -81,6 +89,55 @@ export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
+            {fixedMushaf ? <>
+            <View style={[styles.preview, { backgroundColor: tokens.page, borderColor: tokens.border }]}>
+              <QuranText
+                allowFontScaling={false}
+                style={{
+                  color: tokens.arabic,
+                  fontFamily: getHifzFontFamily(state.preferences.hifzFont),
+                  fontSize: 22,
+                  lineHeight: Math.round(22 * 2.6),
+                  width: '100%',
+                  textAlign: 'center',
+                  writingDirection: 'rtl',
+                  includeFontPadding: true,
+                  paddingVertical: 8,
+                }}
+              >
+                {BISMILLAH}
+              </QuranText>
+            </View>
+            <SettingLabel>{t('quran.reader.font')}</SettingLabel>
+            <View style={styles.fontRow}>
+              {hifzFontOptions.map((font) => {
+                const selected = state.preferences.hifzFont === font;
+                return (
+                  <Pressable
+                    key={font}
+                    testID={`quran-reader-hifz-font-${font}`}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected }}
+                    onPress={() => setHifzFont(font)}
+                    style={[
+                      styles.fontOption,
+                      { borderColor: selected ? theme.tint : theme.cardBorder, backgroundColor: selected ? theme.backgroundSecondary : 'transparent' },
+                    ]}
+                  >
+                    <QuranText
+                      allowFontScaling={false}
+                      style={[styles.fontSample, { color: theme.text, fontFamily: getHifzFontFamily(font) }]}
+                    >
+                      {FONT_SAMPLE}
+                    </QuranText>
+                    <LocalizedText style={[styles.fontName, { color: selected ? theme.tint : theme.textSecondary }]}>
+                      {t(HIFZ_FONT_LABELS[font])}
+                    </LocalizedText>
+                  </Pressable>
+                );
+              })}
+            </View>
+            </> : null}
             {!fixedMushaf ? <>
             <View style={[styles.preview, { backgroundColor: tokens.page, borderColor: tokens.border }]}>
               <QuranText
@@ -89,15 +146,15 @@ export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false
                   color: tokens.arabic,
                   fontFamily: getQuranFontFamily(state.preferences.quranFont),
                   fontSize: Typography.arabic[selectedSize],
-                  lineHeight: Math.round(Typography.arabic[selectedSize] * Math.max(tokens.lineHeightRatio, 2.25)),
+                  lineHeight: Math.round(Typography.arabic[selectedSize] * 2.6),
                   width: '100%',
                   textAlign: 'center',
                   writingDirection: 'rtl',
                   includeFontPadding: true,
-                  paddingVertical: 4,
+                  paddingVertical: 8,
                 }}
               >
-                بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ
+                {BISMILLAH}
               </QuranText>
             </View>
 
@@ -236,12 +293,12 @@ export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false
                       { borderColor: selected ? theme.tint : theme.cardBorder, backgroundColor: selected ? theme.backgroundSecondary : 'transparent' },
                     ]}
                   >
-                    <LocalizedText
-                      preserveFontFamily
+                    <QuranText
+                      allowFontScaling={false}
                       style={[styles.fontSample, { color: theme.text, fontFamily: getQuranFontFamily(font) }]}
                     >
-                      بِسْمِ اللَّهِ
-                    </LocalizedText>
+                      {FONT_SAMPLE}
+                    </QuranText>
                     <LocalizedText style={[styles.fontName, { color: selected ? theme.tint : theme.textSecondary }]}>
                       {isLatin ? details.displayName : details.displayNameDari}
                     </LocalizedText>
@@ -251,6 +308,7 @@ export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false
             </View>
             </> : null}
 
+            {!fixedMushaf ? <>
             <SettingLabel>{t('quran.reader.translation')}</SettingLabel>
             <View style={styles.translationGrid}>
               {TRANSLATIONS.map((translation) => {
@@ -274,6 +332,7 @@ export function QuranReaderSettingsSheet({ visible, onClose, fixedMushaf = false
                 );
               })}
             </View>
+            </> : null}
           </ScrollView>
         </View>
       </View>
@@ -295,7 +354,7 @@ const styles = StyleSheet.create({
   header: { minHeight: 48, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
   title: { fontSize: 18, fontWeight: '700' },
   iconButton: { width: 40, height: 40, alignItems: 'center', justifyContent: 'center' },
-  preview: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, marginBottom: 2 },
+  preview: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 12, marginBottom: 2, overflow: 'visible' },
   sectionLabel: { fontSize: 13, fontWeight: '700', marginTop: 14, marginBottom: 8 },
   sizeControl: { minHeight: 54, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 8, paddingHorizontal: 8 },
   sizeButton: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
@@ -314,8 +373,8 @@ const styles = StyleSheet.create({
   swatchHalf: { flex: 1 },
   pageLabel: { fontSize: 11, textAlign: 'center' },
   fontRow: { flexDirection: 'row', gap: 8 },
-  fontOption: { flex: 1, minHeight: 66, borderWidth: 1, borderRadius: 8, alignItems: 'center', justifyContent: 'center', gap: 2 },
-  fontSample: { fontSize: 21, lineHeight: 32, writingDirection: 'rtl' },
+  fontOption: { flex: 1, minHeight: 100, borderWidth: 1, borderRadius: 8, alignItems: 'center', justifyContent: 'center', gap: 2, overflow: 'visible', paddingVertical: 10 },
+  fontSample: { fontSize: 21, lineHeight: 48, writingDirection: 'rtl', includeFontPadding: true, paddingVertical: 4 },
   fontName: { fontSize: 11, textAlign: 'center' },
   translationGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 8 },
   translationOption: { width: '31%', minHeight: 42, borderWidth: 1, borderRadius: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },

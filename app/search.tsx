@@ -24,7 +24,7 @@ import type { UiMessageKey } from '@/utils/i18n/catalog';
 
 const PAGE_SIZE = 25;
 
-const MODE_IDS: QuranSearchMode[] = ['arabic', 'arabicMeaning', 'dari', 'pashto', 'turkish', 'english', 'all'];
+const MODE_IDS: QuranSearchMode[] = ['arabic', 'dari', 'pashto', 'turkish', 'english', 'all'];
 
 const LANGUAGE_ENDONYMS: Partial<Record<QuranSearchMode, { language: AppLanguage; label: string }>> = {
   arabic: { language: 'arabic', label: 'العربية' },
@@ -56,8 +56,9 @@ const PLACEHOLDER_KEYS: Record<QuranSearchMode, UiMessageKey> = {
 
 function parseMode(value?: string | string[]): QuranSearchMode | null {
   const raw = Array.isArray(value) ? value[0] : value;
+  if (raw === 'arabicMeaning') return 'arabic';
   if (
-    raw === 'arabic' || raw === 'arabicMeaning' || raw === 'dari' || raw === 'pashto'
+    raw === 'arabic' || raw === 'dari' || raw === 'pashto'
     || raw === 'turkish' || raw === 'english' || raw === 'all'
   ) {
     return raw;

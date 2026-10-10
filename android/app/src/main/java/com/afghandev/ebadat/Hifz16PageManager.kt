@@ -11,6 +11,7 @@ class Hifz16PageManager : SimpleViewManager<Hifz16PageView>() {
   override fun createViewInstance(reactContext: ThemedReactContext): Hifz16PageView = Hifz16PageView(reactContext)
 
   @ReactProp(name = "pageJson") fun setPageJson(view: Hifz16PageView, value: String?) = view.setPageJson(value)
+  @ReactProp(name = "fontFamily") fun setFontFamily(view: Hifz16PageView, value: String?) = view.setFontFamily(value)
   @ReactProp(name = "paperColor") fun setPaperColor(view: Hifz16PageView, value: String?) = view.setPaperColor(value)
   @ReactProp(name = "inkColor") fun setInkColor(view: Hifz16PageView, value: String?) = view.setInkColor(value)
   @ReactProp(name = "accentColor") fun setAccentColor(view: Hifz16PageView, value: String?) = view.setAccentColor(value)

@@ -3,6 +3,8 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as Network from 'expo-network';
 import TrackPlayer, { Event, RepeatMode, State as TrackPlayerState, type AddTrack } from 'react-native-track-player';
 import { getSurah as getSurahName, toArabicNumerals } from '@/data/surahNames';
+import type { AppLanguage } from '@/types/quran';
+import { translateUi } from '@/utils/i18n/catalog';
 import { ensureSharedTrackPlayerReady, isSharedTrackPlayerReady } from '@/utils/sharedTrackPlayer';
 
 export type ReciterKey =
@@ -179,21 +181,18 @@ export async function hasMp3Header(path: string): Promise<boolean> {
   }
 }
 
-export function getQuranPlaybackErrorMessage(error: unknown): string {
+export function getQuranPlaybackErrorMessage(error: unknown, language: AppLanguage = 'dari'): string {
   const message = error instanceof Error ? error.message : String(error);
-  if (message.startsWith('cache_dir_unavailable')) {
-    return 'فضای ذخیره‌سازی برای قرآن در دسترس نیست. لطفاً برنامه را دوباره باز کنید.';
-  }
-  if (message.startsWith('dns_failure')) {
-    return 'اتصال به سرور تلاوت برقرار نشد. لطفاً اینترنت را بررسی کنید.';
-  }
-  if (message.startsWith('offline_cache_miss')) {
-    return 'این آیه هنوز ذخیره نشده است. برای بار اول اینترنت را وصل کنید.';
-  }
-  if (message.startsWith('cache_write_failed')) {
-    return 'ذخیره فایل صوتی انجام نشد. لطفاً دوباره تلاش کنید.';
-  }
-  return 'پخش آیه ممکن نیست. لطفاً دوباره تلاش کنید.';
+  const key = message.startsWith('cache_dir_unavailable')
+    ? 'quran.audio.storage'
+    : message.startsWith('dns_failure')
+      ? 'quran.audio.dns'
+      : message.startsWith('offline_cache_miss')
+        ? 'quran.audio.offline'
+        : message.startsWith('cache_write_failed')
+          ? 'quran.audio.cache'
+          : 'quran.audio.generic';
+  return translateUi(key, language);
 }
 
 const MIN_VALID_CACHE_FILE_BYTES = 1024;

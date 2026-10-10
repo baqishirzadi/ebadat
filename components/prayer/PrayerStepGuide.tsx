@@ -1,9 +1,9 @@
 /**
- * Step-by-step reader — centered text only, no illustrations or icon buttons.
+ * Step card — one lesson step at a time. Navigation lives on the lesson bar.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 
 import { LocalizedText } from '@/components/ui/LocalizedText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
@@ -29,25 +29,21 @@ interface Step {
 
 interface PrayerStepGuideProps {
   steps: Step[];
-  /** Kept so existing call sites compile. Always ignored: one language only. */
-  showBothLanguages?: boolean;
+  index: number;
 }
 
-export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
+export function PrayerStepGuide({ steps, index }: PrayerStepGuideProps) {
   const { theme, state } = useApp();
-  const { t, language, fontFamily, isLatin } = useI18n();
-  const [index, setIndex] = useState(0);
+  const { language, fontFamily, isLatin } = useI18n();
   const pashtoFont = state.preferences.pashtoFont;
   const bodyFont = language === 'pashto' ? getPashtoFontFamily(pashtoFont) : fontFamily;
   const titleFont = language === 'pashto' ? getPashtoBoldFontFamily(pashtoFont) : isLatin ? undefined : 'Vazirmatn-Bold';
   const bodyLineHeight = language === 'pashto' ? 42 : 30;
 
-  useEffect(() => {
-    setIndex(0);
-  }, [steps]);
-
   const total = steps.length;
-  const safeIndex = Math.min(index, Math.max(total - 1, 0));
+  if (total === 0) return null;
+
+  const safeIndex = Math.min(Math.max(index, 0), total - 1);
   const step = steps[safeIndex];
   const stepNumber = step?.number ?? step?.takbir ?? safeIndex + 1;
   const title = step
@@ -55,29 +51,11 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
     : '';
   const description = step ? pickContent(step, 'description', language) : '';
 
-  const goPrev = useCallback(() => {
-    setIndex((current) => Math.max(0, current - 1));
-  }, []);
-
-  const goNext = useCallback(() => {
-    setIndex((current) => Math.min(total - 1, current + 1));
-  }, [total]);
-
-  if (total === 0) return null;
-
-  const progressLabel = t('prayerLearning.stepOf', {
-    current: safeIndex + 1,
-    total,
-  });
-
   return (
     <View style={styles.container}>
       <View style={[styles.card, { borderColor: `${theme.accent}66`, backgroundColor: theme.card }]}>
         <LocalizedText style={[styles.stepNumber, { color: theme.accent }]}>
           {stepNumber}
-        </LocalizedText>
-        <LocalizedText style={[styles.progressLabel, { color: theme.textSecondary }]}>
-          {progressLabel}
         </LocalizedText>
 
         <View style={[styles.progressTrack, { backgroundColor: theme.divider }]}>
@@ -116,40 +94,6 @@ export function PrayerStepGuide({ steps }: PrayerStepGuideProps) {
           </LocalizedText>
         ) : null}
       </View>
-
-      <View style={styles.navRow}>
-        <Pressable
-          onPress={goPrev}
-          disabled={safeIndex === 0}
-          style={({ pressed }) => [
-            styles.navButton,
-            {
-              borderColor: theme.cardBorder,
-              opacity: safeIndex === 0 ? 0.35 : pressed ? 0.7 : 1,
-            },
-          ]}
-        >
-          <LocalizedText style={[styles.navLabel, { color: theme.tint }]}>
-            {t('prayerLearning.previous')}
-          </LocalizedText>
-        </Pressable>
-
-        <Pressable
-          onPress={goNext}
-          disabled={safeIndex >= total - 1}
-          style={({ pressed }) => [
-            styles.navButton,
-            {
-              borderColor: theme.cardBorder,
-              opacity: safeIndex >= total - 1 ? 0.35 : pressed ? 0.7 : 1,
-            },
-          ]}
-        >
-          <LocalizedText style={[styles.navLabel, { color: theme.tint }]}>
-            {t('prayerLearning.next')}
-          </LocalizedText>
-        </Pressable>
-      </View>
     </View>
   );
 }
@@ -162,18 +106,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
-    marginBottom: Spacing.md,
     alignItems: 'center',
   },
   stepNumber: {
     fontSize: Typography.ui.heading,
     fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: Spacing.xs,
-  },
-  progressLabel: {
-    fontSize: Typography.ui.caption,
-    fontWeight: '600',
     textAlign: 'center',
     marginBottom: Spacing.sm,
   },
@@ -198,24 +135,6 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.body,
     textAlign: 'center',
     includeFontPadding: false,
-  },
-  navRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: Spacing.sm,
-  },
-  navButton: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.sm,
-    borderWidth: 1,
-    borderRadius: BorderRadius.md,
-  },
-  navLabel: {
-    fontSize: Typography.ui.body,
-    fontWeight: '600',
-    textAlign: 'center',
   },
 });
 

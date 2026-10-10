@@ -109,7 +109,7 @@ export default function AdhanSettingsScreen() {
       Alert.alert(t('adhanSettings.systemTestScheduledTitle'), t('adhanSettings.systemTestScheduledBody'));
       return;
     }
-    Alert.alert(isPashto ? 'تېروتنه' : 'خطا', t('adhanSettings.systemTestFailure'));
+    Alert.alert(t('common.error'), t('adhanSettings.systemTestFailure'));
   }, [scheduleAdhanSystemTest, isPashto, t]);
 
   const handleRecheckAndSchedule = useCallback(async () => {
@@ -128,7 +128,7 @@ export default function AdhanSettingsScreen() {
     try {
       await testAdhanVoice(voice, prayer);
     } catch {
-      Alert.alert(isPashto ? 'تېروتنه' : 'خطا', t('adhanSettings.voiceFailure'));
+      Alert.alert(t('common.error'), t('adhanSettings.voiceFailure'));
     } finally {
       setIsTestingVoice(null);
     }

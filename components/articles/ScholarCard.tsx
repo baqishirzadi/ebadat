@@ -10,6 +10,7 @@ import { useApp } from '@/context/AppContext';
 import { Scholar } from '@/types/articles';
 import { Spacing, BorderRadius } from '@/constants/theme';
 import CenteredText from '@/components/CenteredText';
+import { useI18n } from '@/utils/i18n/useI18n';
 
 interface ScholarCardProps {
   scholar: Scholar;
@@ -17,6 +18,7 @@ interface ScholarCardProps {
 
 export function ScholarCard({ scholar }: ScholarCardProps) {
   const { theme } = useApp();
+  const { t } = useI18n();
 
   return (
     <View style={[styles.card, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
@@ -41,7 +43,7 @@ export function ScholarCard({ scholar }: ScholarCardProps) {
         <View style={styles.verified}>
           <MaterialIcons name="verified" size={20} color={theme.tint} />
           <CenteredText style={[styles.verifiedText, { color: theme.tint }]}>
-            تأیید شده
+            {t('articles.verified')}
           </CenteredText>
         </View>
       )}

@@ -3,7 +3,7 @@
  * Returns the correct font family based on user preferences
  */
 
-import { QuranFonts, DariFonts, PashtoFonts, QuranFontFamily, DariFontFamily, PashtoFontFamily } from '@/constants/theme';
+import { QuranFonts, DariFonts, PashtoFonts, HifzFonts, QuranFontFamily, DariFontFamily, PashtoFontFamily, HifzFontFamily } from '@/constants/theme';
 import { Platform } from 'react-native';
 
 const IOS_QURAN_FONT_FAMILIES = {
@@ -14,6 +14,12 @@ const IOS_QURAN_FONT_FAMILIES = {
 /**
  * Get the actual font family name for Quran text
  */
+/** Family name for the 16-line mushaf. Not used by the translation reader. */
+export function getHifzFontFamily(fontKey: HifzFontFamily | undefined): string {
+  const face = fontKey && HifzFonts[fontKey] ? HifzFonts[fontKey] : HifzFonts.amiriQuran;
+  return Platform.OS === 'ios' ? face.iosName : face.name;
+}
+
 export function getQuranFontFamily(fontKey: QuranFontFamily): string {
   if (Platform.OS === 'ios') {
     return IOS_QURAN_FONT_FAMILIES[fontKey] || IOS_QURAN_FONT_FAMILIES.scheherazade;

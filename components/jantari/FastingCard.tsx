@@ -14,14 +14,21 @@ import { useI18n } from '@/utils/i18n/useI18n';
 export function FastingCard() {
   const { theme } = useApp();
   const hijriOffsetDays = usePrayer().state.settings.hijriOffsetDays;
-  const { isPashto, language, t } = useI18n();
+  const { language, t } = useI18n();
   useDiyanetHijriDate(language === 'turkish');
   const fasting = useMemo(() => isFastingDay(new Date()), [hijriOffsetDays]);
   const turkishReason = language === 'turkish' ? turkishFastingLabel(new Date()) : null;
+  const localizedReason = language === 'english'
+    ? fasting.reasonEnglish
+    : language === 'arabic'
+      ? fasting.reasonArabic
+      : language === 'pashto'
+        ? fasting.reasonPashto
+        : fasting.reasonDari;
   const reason = language === 'turkish'
-    ? turkishReason
+    ? turkishReason || (fasting.isFasting ? fasting.reasonTurkish : null)
     : fasting.isFasting
-      ? (isPashto ? fasting.reasonPashto : fasting.reasonDari)
+      ? localizedReason
       : null;
 
   if (!reason) return null;

@@ -425,7 +425,7 @@ export const PRAYER_LABELS_PASHTO = {
   dhuhr: 'غرمه',
   asr: 'مازدیګر',
   maghrib: 'ماښام',
-  isha: 'خفتن',
+  isha: 'ماسخوتن',
 } as const;
 
 export const PRAYER_LABELS_ENGLISH = {
@@ -437,7 +437,7 @@ export const PRAYER_LABELS_ENGLISH = {
 } as const;
 
 export const PRAYER_LABELS_TURKISH = {
-  fajr: 'Sabah',
+  fajr: 'İmsak',
   dhuhr: 'Öğle',
   asr: 'İkindi',
   maghrib: 'Akşam',

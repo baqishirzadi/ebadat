@@ -285,11 +285,21 @@ appId: com.afghandev.ebadat
 - tapOn:
     id: quran-reader-settings
 - assertVisible:
+    id: quran-reader-hifz-font-amiriQuran
+- assertVisible:
+    id: quran-reader-hifz-font-scheherazade
+- assertVisible:
     id: quran-reader-page-sepia
 - assertVisible:
     id: quran-reader-page-dark
 - assertNotVisible:
     id: quran-reader-font-scheherazade
+- assertNotVisible:
+    id: quran-reader-size-increase
+- assertNotVisible:
+    id: quran-reader-translation-dari
+- tapOn:
+    id: quran-reader-hifz-font-scheherazade
 - tapOn:
     id: quran-reader-page-sepia
 - tapOn:

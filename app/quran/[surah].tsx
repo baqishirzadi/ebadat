@@ -102,7 +102,12 @@ export default function QuranReaderScreen() {
         : normalizedJumpParam === 'search_exact'
           ? 'search_exact'
           : 'default';
-  const surah = useMemo(() => getSurah(surahNumber), [getSurah, surahNumber]);
+  // The 16-line page does not use the translation file. Parsing it here, especially
+  // Baqarah, blocked the first paint of the mushaf.
+  const surah = useMemo(
+    () => (hifz16Line ? undefined : getSurah(surahNumber)),
+    [getSurah, hifz16Line, surahNumber],
+  );
   const [hifzVisibleSurah, setHifzVisibleSurah] = useState(surahNumber);
   const [hifzVisibleAyah, setHifzVisibleAyah] = useState(initialAyah);
   const [translationVisibleAyah, setTranslationVisibleAyah] = useState(initialAyah);
@@ -281,10 +286,9 @@ export default function QuranReaderScreen() {
   }, [surahNumber]);
 
   useEffect(() => {
-    if (!surah && !shouldGoBack) {
-      setShouldGoBack(true);
-    }
-  }, [surah, shouldGoBack]);
+    if (hifz16Line || surah || shouldGoBack) return;
+    setShouldGoBack(true);
+  }, [hifz16Line, surah, shouldGoBack]);
 
   const goBackToList = useCallback(() => {
     if (navigation.canGoBack()) {
@@ -398,13 +402,12 @@ export default function QuranReaderScreen() {
         endAyah: surah.ayahs.length,
       })
       .catch((error) => {
-        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error, language));
       });
   }, [surah, currentlyPlaying, t]);
 
   const handleHifzPlayAyah = useCallback((surahNum: number, ayahNum: number) => {
-    const meta = getSurahName(surahNum);
-    const ayahCount = meta?.ayahCount ?? surah?.ayahs.length;
+    const ayahCount = getSurahName(surahNum)?.ayahCount ?? getSurah(surahNum)?.ayahs.length;
     if (!ayahCount) return;
 
     const isSameAyah =
@@ -443,14 +446,14 @@ export default function QuranReaderScreen() {
         endAyah: ayahCount,
       })
       .catch((error) => {
-        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error, language));
       });
-  }, [currentlyPlaying, surah?.ayahs.length, t]);
+  }, [currentlyPlaying, getSurah, language, t]);
 
   const handlePlayContinuous = useCallback(() => {
     const playSurah = hifz16Line && currentlyPlaying ? currentlyPlaying.surah : surahNumber;
     const playAyah = currentlyPlaying?.surah === playSurah ? currentlyPlaying.ayah : initialAyah;
-    const ayahCount = getSurahName(playSurah)?.ayahCount ?? surah?.ayahs.length;
+    const ayahCount = getSurahName(playSurah)?.ayahCount ?? getSurah(playSurah)?.ayahs.length;
     if (!ayahCount) return;
 
     followedPlaybackSurahRef.current = playSurah;
@@ -464,9 +467,9 @@ export default function QuranReaderScreen() {
         endAyah: ayahCount,
       })
       .catch((error) => {
-        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error));
+        Alert.alert(t('quran.audio.playAyah'), getQuranPlaybackErrorMessage(error, language));
       });
-  }, [currentlyPlaying, hifz16Line, initialAyah, surah?.ayahs.length, surahNumber, t]);
+  }, [currentlyPlaying, getSurah, hifz16Line, initialAyah, language, surahNumber, t]);
 
   const handlePause = useCallback(() => {
     setIsPlaying(false);
@@ -616,7 +619,7 @@ export default function QuranReaderScreen() {
   // Reader mode is a persisted Quran preference. Keep the screen inert until
   // AsyncStorage has resolved it so a launch-time tap cannot be applied to
   // the temporary default and then overwritten by hydration.
-  if (!state.isInitialized || !surah || shouldGoBack) {
+  if (!state.isInitialized || shouldGoBack || (!hifz16Line && !surah)) {
     return (
       <View testID="quran-reader-loading" style={[styles.container, { backgroundColor: readerTokens.page }]}>
         <AppCenteredText style={[styles.loadingText, { color: theme.textSecondary }]}>
@@ -768,6 +771,7 @@ export default function QuranReaderScreen() {
           activePlayingAyah={currentlyPlaying?.ayah ?? null}
           onPlayAyah={handleHifzPlayAyah}
           onVisiblePositionChange={onHifzVisiblePosition}
+          onSettingsPress={() => setSettingsOpen(true)}
         />
       ) : (
         <MushafView
@@ -791,10 +795,10 @@ export default function QuranReaderScreen() {
         <AudioPlayer
           surahNumber={currentlyPlaying.surah}
           ayahNumber={currentlyPlaying.ayah}
-          totalAyahs={getSurahName(currentlyPlaying.surah)?.ayahCount ?? surah.ayahs.length}
+          totalAyahs={getSurahName(currentlyPlaying.surah)?.ayahCount ?? surah?.ayahs.length ?? 1}
           scopeType="surah"
           scopeStartAyah={1}
-          scopeEndAyah={getSurahName(currentlyPlaying.surah)?.ayahCount ?? surah.ayahs.length}
+          scopeEndAyah={getSurahName(currentlyPlaying.surah)?.ayahCount ?? surah?.ayahs.length ?? 1}
           isVisible={showAudioPlayer}
           compact={hifz16Line}
           readerTokens={readerTokens}

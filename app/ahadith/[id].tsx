@@ -118,7 +118,9 @@ export default function HadithDetailScreen() {
     if (!hadith) return;
     await shareHadithCard({
       captureRef: shareCanvasRef,
-      fallbackMessage: `${hadith.arabic_text}\n\n${getHadithTranslation(hadith, language) || t('ahadith.translation.unavailable')}\n\n${formatSourceLabel(hadith.source_book, hadith.source_number, language)}`,
+      fallbackMessage: language === 'arabic'
+        ? `${hadith.arabic_text}\n\n${formatSourceLabel(hadith.source_book, hadith.source_number, language)}`
+        : `${hadith.arabic_text}\n\n${getHadithTranslation(hadith, language) || t('ahadith.translation.unavailable')}\n\n${formatSourceLabel(hadith.source_book, hadith.source_number, language)}`,
     });
   }, [hadith, language, t]);
 
@@ -184,6 +186,7 @@ export default function HadithDetailScreen() {
               </CText>
             </View>
 
+            {language !== 'arabic' ? (
             <CText
               style={[
                 language === 'english' || language === 'turkish' ? styles.translationEnglish : styles.translation,
@@ -197,6 +200,7 @@ export default function HadithDetailScreen() {
             >
               {getHadithTranslation(hadith, language) || t('ahadith.translation.unavailable')}
             </CText>
+            ) : null}
 
             {hadith.topics.length > 0 ? (
               <View style={styles.topicsRow}>

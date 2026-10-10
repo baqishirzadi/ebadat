@@ -5,6 +5,8 @@ import { Naat } from '@/types/naat';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { RtlText } from '@/components/ui/RtlText';
+import { useI18n } from '@/utils/i18n/useI18n';
+import { pickLanguage } from '@/utils/i18n/content';
 
 type Props = {
   visible: boolean;
@@ -15,8 +17,8 @@ type Props = {
 };
 
 export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }: Props) {
-  const { theme, state } = useApp();
-  const isPashto = state.preferences.appLanguage === 'pashto';
+  const { theme } = useApp();
+  const { t, n, language } = useI18n();
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -28,9 +30,9 @@ export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }:
             <MaterialIcons name="close" size={22} color={theme.text} />
           </Pressable>
           <View style={styles.headerTextWrap}>
-            <RtlText align="center" style={[styles.title, { color: theme.text }]}>{isPashto ? 'د غږولو لړ' : 'فهرست پخش'}</RtlText>
+            <RtlText align="center" style={[styles.title, { color: theme.text }]}>{t('naat.queue.title')}</RtlText>
             <RtlText align="center" style={[styles.subtitle, { color: theme.textSecondary }]}>
-              {isPashto ? `${items.length} نعت په دې لړ کې` : `${items.length} نعت در این نشست`}
+              {t('naat.queue.count', { count: n(items.length) })}
             </RtlText>
           </View>
         </View>
@@ -61,7 +63,7 @@ export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }:
                 </View>
                 <View style={styles.rowText}>
                   <RtlText align="center" style={[styles.itemTitle, { color: theme.text }]} numberOfLines={2}>
-                    {isPashto ? item.title_ps : item.title_fa}
+                    {pickLanguage({ dari: item.title_fa, pashto: item.title_ps, english: item.title_fa, turkish: item.title_fa, arabic: item.title_fa }, language) || item.title_fa}
                   </RtlText>
                   <RtlText align="center" style={[styles.itemSubtitle, { color: theme.textSecondary }]} numberOfLines={1}>
                     {item.reciter_name}

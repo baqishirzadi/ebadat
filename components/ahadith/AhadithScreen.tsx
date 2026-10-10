@@ -82,7 +82,9 @@ export function AhadithScreen() {
 
     await shareHadithCard({
       captureRef: shareCanvasRef,
-      fallbackMessage: `${activeSelection.hadith.arabic_text}\n\n${getHadithTranslation(activeSelection.hadith, language) || t('ahadith.translation.unavailable')}\n\n${formatSourceLabel(activeSelection.hadith.source_book, activeSelection.hadith.source_number, language)}`,
+      fallbackMessage: language === 'arabic'
+        ? `${activeSelection.hadith.arabic_text}\n\n${formatSourceLabel(activeSelection.hadith.source_book, activeSelection.hadith.source_number, language)}`
+        : `${activeSelection.hadith.arabic_text}\n\n${getHadithTranslation(activeSelection.hadith, language) || t('ahadith.translation.unavailable')}\n\n${formatSourceLabel(activeSelection.hadith.source_book, activeSelection.hadith.source_number, language)}`,
     });
   };
 

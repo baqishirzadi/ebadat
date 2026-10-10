@@ -184,9 +184,11 @@ export default function AdhkarDetailScreen() {
           {item.arabic}
         </CenteredText>
 
+        {language !== 'arabic' ? (
         <CenteredText style={[styles.translationText, { color: theme.translationText }]}>
-          {language === 'arabic' && item.meaningArabic ? item.meaningArabic : content(item, null)}
+          {content(item, null)}
         </CenteredText>
+        ) : null}
 
         <View style={styles.metaRow}>
           <MaterialIcons name="menu-book" size={14} color={theme.textSecondary} />

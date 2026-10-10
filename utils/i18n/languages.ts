@@ -145,3 +145,16 @@ const CONTENT_FALLBACK: Record<AppLanguage, readonly AppLanguage[]> = {
 export function contentFallbackChain(language: AppLanguage): readonly AppLanguage[] {
   return CONTENT_FALLBACK[language] ?? CONTENT_FALLBACK[DEFAULT_APP_LANGUAGE];
 }
+
+/** App language stored with preferences, for notifications scheduled outside React. */
+export async function readPersistedAppLanguage(): Promise<AppLanguage> {
+  try {
+    const AsyncStorage = (await import('@react-native-async-storage/async-storage')).default;
+    const raw = await AsyncStorage.getItem('@ebadat/preferences');
+    const language = raw ? (JSON.parse(raw) as { appLanguage?: unknown }).appLanguage : null;
+    if (isAppLanguage(language)) return language;
+  } catch {
+    // Fall through to the editorial default.
+  }
+  return DEFAULT_APP_LANGUAGE;
+}

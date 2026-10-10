@@ -120,11 +120,10 @@ export default function SettingsScreen() {
 
   const showDariFont = uiLanguage === 'dari' || state.preferences.showTranslation === 'dari';
   const showPashtoFont = uiLanguage === 'pashto' || state.preferences.showTranslation === 'pashto';
-  const translationOptions: { id: 'none' | 'dari' | 'pashto' | 'arabic' | 'turkish' | 'english'; name: string }[] = [
+  const translationOptions: { id: 'none' | 'dari' | 'pashto' | 'turkish' | 'english'; name: string }[] = [
     { id: 'none', name: 'بدون ترجمه' },
     { id: 'dari', name: 'فارسی (دری) - انور بدخشانی' },
     { id: 'pashto', name: 'پښتو' },
-    { id: 'arabic', name: 'عربی' },
     { id: 'turkish', name: 'ترکی' },
     { id: 'english', name: 'انگلیسی' },
   ];

@@ -87,6 +87,8 @@ export interface UserPreferences {
   viewMode: ViewMode;
   /** Indo-Pak 16-line hifz mushaf (no translation). */
   hifz16Line: boolean;
+  /** Face used only by the 16-line mushaf. Independent of `quranFont`. */
+  hifzFont: import('../constants/theme').HifzFontFamily;
   /** One-time migration marker for the restored primary Hafiz reader. */
   hifz16DefaultVersion: number;
   showTranslation: TranslationLanguage;

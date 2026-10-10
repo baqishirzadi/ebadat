@@ -2,13 +2,13 @@
   "adhanPermissions": {
     "notifications": {
       "title": "Bildirim izni",
-      "body": "Ibadet’ın namaz vakitlerini göstermesi ve ezanı çalması için bildirim izni gerekir.",
+      "body": "İbadet’in namaz vakitlerini göstermesi ve ezanı çalması için bildirim izni gerekir.",
       "button": "İzin ver",
       "skip": "Bildirimsiz devam et"
     },
     "exactAlarm": {
-      "title": "Ezan için tam zamanlı alarmlar",
-      "body": "Ezanın, telefon uyurken bile tam namaz vaktinde çalması için Ibadet’a “Alarmlar ve hatırlatıcılar” iznini verin.",
+      "title": "Ezan için tam vaktinde alarmlar",
+      "body": "Ezanın, telefon uyurken bile tam namaz vaktinde çalması için İbadet’e “Alarmlar ve hatırlatıcılar” iznini verin.",
       "button": "Etkinleştir",
       "skip": "Şimdi değil",
       "granted": "Etkin",
@@ -16,7 +16,7 @@
     },
     "battery": {
       "title": "Pil optimizasyonunu kapatın",
-      "body": "Bazı telefonlar arka plan uygulamalarını kendiliğinden kapatır. Ibadet pil optimizasyonunda kalırsa ezan zamanında çalmayabilir.",
+      "body": "Bazı telefonlar arka plan uygulamalarını kendiliğinden kapatır. İbadet pil optimizasyonunda kalırsa ezan zamanında çalmayabilir.",
       "button": "Pil ayarları",
       "skip": "Sonra"
     },
@@ -36,7 +36,7 @@
       "statusPass": "Hazır",
       "statusWarn": "İlgilenmek gerekiyor",
       "fix": "Düzelt",
-      "fullCheck": "Tam sağlık kontrolü yap"
+      "fullCheck": "Ezanı baştan kontrol et"
     },
     "banner": {
       "body": "Ezanın tam vaktinde çalması için “Tam zamanlı alarmlar” iznini açın.",
@@ -46,36 +46,36 @@
       "xiaomi": [
         "Telefon ayarlarını açın",
         "“Uygulamalar” veya “Uygulamaları yönet”e gidin",
-        "Ibadet’ı bulun ve “Otomatik başlatma”yı açın",
+        "İbadet’i bulun ve “Otomatik başlatma”yı açın",
         "İzni açın"
       ],
       "huawei": [
         "Telefon ayarlarını açın",
         "“Uygulamalar” → “Başlatma” veya “Korumalı uygulamalar”a gidin",
-        "Ibadet’ı bulun",
+        "İbadet’i bulun",
         "Arka planda çalışmasına izin verin"
       ],
       "oppo": [
         "Telefon ayarlarını açın",
         "“Uygulama yönetimi” → “Başlangıç yöneticisi”ne gidin",
-        "Ibadet’ı bulun",
+        "İbadet’i bulun",
         "Otomatik başlatmayı açın"
       ],
       "vivo": [
         "Telefon ayarlarını açın",
         "“Pil” → “Yüksek arka plan pil kullanımı”na gidin",
-        "Ibadet’ı bulun",
+        "İbadet’i bulun",
         "Arka planda çalışmasına izin verin"
       ],
       "samsung": [
         "Telefon ayarlarını açın",
         "“Cihaz bakımı” → “Pil” → “Arka plan kullanım sınırları”na gidin",
-        "Ibadet’ı “Hiç uyumayan uygulamalar”a ekleyin",
-        "Ibadet için “Uygulamayı uykuya al”ı kapatın"
+        "İbadet’i “Hiç uyumayan uygulamalar”a ekleyin",
+        "İbadet için “Uygulamayı uykuya al”ı kapatın"
       ],
       "default": [
         "Telefon ayarlarını açın",
-        "Ibadet uygulama ayarlarını açın",
+        "İbadet uygulama ayarlarını açın",
         "Pil ve arka plan kısıtlamalarını gözden geçirin",
         "Arka planda çalışmasına izin verin"
       ]

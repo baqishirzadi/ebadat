@@ -188,6 +188,7 @@ export function DailyHadithCard({
           </LinearGradient>
 
           <View style={styles.bottomPanel}>
+            {language !== 'arabic' ? (
             <CenteredText
               style={[
                 language === 'english' || language === 'turkish' ? styles.translationEnglish : styles.translation,
@@ -201,6 +202,7 @@ export function DailyHadithCard({
             >
               {translation || t('ahadith.translation.unavailable')}
             </CenteredText>
+            ) : null}
 
             <View style={[styles.footer, { borderTopColor: alphaColor(theme.textSecondary, 0.2) }]}>
               <Pressable

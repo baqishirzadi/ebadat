@@ -224,10 +224,10 @@ function scoreRow(
     }
   }
 
-  if (mode === 'arabicMeaning' || mode === 'all') {
-    const score = scoreMatch(row.arabic_meaning_norm, norms.arabicMeaning);
+  if (mode === 'arabicMeaning') {
+    const score = scoreMatch(row.arabic_norm, norms.arabic);
     if (score > 0) {
-      candidates.push({ language: 'arabicMeaning', score, matchedText: norms.arabicMeaning });
+      candidates.push({ language: 'arabic', score, matchedText: norms.arabic });
     }
   }
 
@@ -281,9 +281,9 @@ async function queryCandidates(
     params.push(`%${escapeLike(norms.turkish)}%`);
   }
 
-  if ((mode === 'arabicMeaning' || mode === 'all') && norms.arabicMeaning.length >= 2) {
-    clauses.push('arabic_meaning_norm LIKE ? ESCAPE \'\\\'');
-    params.push(`%${escapeLike(norms.arabicMeaning)}%`);
+  if (mode === 'arabicMeaning' && norms.arabic.length >= 2) {
+    clauses.push('arabic_norm LIKE ? ESCAPE \'\\\'');
+    params.push(`%${escapeLike(norms.arabic)}%`);
   }
 
   if (clauses.length === 0) return [];

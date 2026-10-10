@@ -193,6 +193,7 @@
             "./assets/fonts/ScheherazadeNew-Bold.ttf",
             "./assets/fonts/QPCHafs18.ttf",
             "./assets/fonts/Amiri-Regular.ttf",
+            "./assets/fonts/AmiriQuran-Regular.ttf",
             "./assets/fonts/Amiri-Bold.ttf",
             "./assets/fonts/Vazirmatn-Regular.ttf",
             "./assets/fonts/Vazirmatn-Bold.ttf",
@@ -234,6 +235,15 @@
                 "fontDefinitions": [
                   {
                     "path": "./assets/fonts/Amiri-Regular.ttf",
+                    "weight": 400
+                  }
+                ]
+              },
+              {
+                "fontFamily": "AmiriQuran",
+                "fontDefinitions": [
+                  {
+                    "path": "./assets/fonts/AmiriQuran-Regular.ttf",
                     "weight": 400
                   }
                 ]
