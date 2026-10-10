@@ -54,13 +54,12 @@ function statusIcon(status: AdhanHealthCheckItem['status']): keyof typeof Materi
   }
 }
 
-const PASS_COLOR = '#1b7f4d';
 const FAIL_COLOR = '#c0392b';
 
 function statusColor(status: AdhanHealthCheckItem['status'], theme: ReturnType<typeof useApp>['theme']): string {
   switch (status) {
     case 'pass':
-      return PASS_COLOR;
+      return theme.tint;
     case 'fail':
       return FAIL_COLOR;
     case 'warn':

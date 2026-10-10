@@ -193,8 +193,8 @@ export default function NaatAdminScreen() {
           </View>
 
           <Pressable onPress={handleAdd} style={[styles.addButton, { backgroundColor: theme.tint }]}>
-            <MaterialIcons name={editingId ? 'save' : 'add'} size={20} color="#fff" />
-            <LocalizedText style={styles.addButtonText}>{editingId ? 'ذخیره تغییرات' : 'افزودن نعت'}</LocalizedText>
+            <MaterialIcons name={editingId ? 'save' : 'add'} size={20} color={theme.onTint} />
+            <LocalizedText style={[styles.addButtonText, { color: theme.onTint }]}>{editingId ? 'ذخیره تغییرات' : 'افزودن نعت'}</LocalizedText>
           </Pressable>
           {editingId && (
             <Pressable

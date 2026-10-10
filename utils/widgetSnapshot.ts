@@ -1,6 +1,7 @@
 import { addDaysToDateKey, getDateKeyInTimezone, nextLocalMidnightMs } from '@/utils/prayerTimezone';
 import { formatGregorianDateCompact, formatShamsiSlash, WEEKDAYS_DARI, WEEKDAYS_ENGLISH, WEEKDAYS_PASHTO } from '@/utils/calendarDisplay';
 import { getCalendarTruth } from '@/utils/calendarTruth';
+import { clampHijriOffsetDays, getUserHijriOffsetDays } from '@/utils/hijriOffset';
 import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
 import { formatHijriDate } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
@@ -57,6 +58,8 @@ export interface WidgetSnapshot {
   calculationMethod: string;
   asrMethod: 'Standard' | 'Hanafi';
   maghribOffsetMinutes: number;
+  /** User moon-sighting correction, −2…+2. Widgets must read this field. */
+  hijriOffsetDays: number;
   fixedDhuhrLocalTime: string | null;
   sourceLabel?: string;
   days: WidgetDaySnapshot[];
@@ -92,11 +95,11 @@ function formatGregorianDisplay(gregorianDate: Date): string {
   return formatGregorianDateCompact(gregorianDate);
 }
 
-function refreshDayCalendarDisplays(day: WidgetDaySnapshot): WidgetDaySnapshot {
+function refreshDayCalendarDisplays(day: WidgetDaySnapshot, hijriOffsetDays: number): WidgetDaySnapshot {
   const date = new Date(`${day.dateKey}T12:00:00+04:30`);
   if (!Number.isFinite(date.getTime())) return day;
 
-  const truth = getCalendarTruth(date);
+  const truth = getCalendarTruth(date, hijriOffsetDays);
   return {
     ...day,
     weekdayDari: WEEKDAYS_DARI[truth.weekday],
@@ -135,8 +138,9 @@ function buildDaySnapshot(
   noonAnchor: Date,
   language: DailyHadithLanguage = 'dari',
   maghribOffsetMinutes = 0,
+  hijriOffsetDays: number = getUserHijriOffsetDays(),
 ): WidgetDaySnapshot {
-  const truth = getCalendarTruth(noonAnchor);
+  const truth = getCalendarTruth(noonAnchor, hijriOffsetDays);
   return {
     dateKey,
     weekdayDari: WEEKDAYS_DARI[truth.weekday],
@@ -258,6 +262,7 @@ export function buildWidgetSnapshot(
   const appLanguage = options?.appLanguage || 'dari';
   const maghribOffsetMinutes =
     options?.maghribOffsetMinutes ?? MAGHRIB_OFFSET_MINUTES;
+  const hijriOffsetDays = getUserHijriOffsetDays();
   const todayKey = getDateKeyInTimezone(now, timezone);
 
   const days: WidgetDaySnapshot[] =
@@ -270,6 +275,7 @@ export function buildWidgetSnapshot(
             day.noonAnchor,
             appLanguage,
             maghribOffsetMinutes,
+            hijriOffsetDays,
           ),
         )
       : [buildDaySnapshot(
@@ -279,6 +285,7 @@ export function buildWidgetSnapshot(
           now,
           appLanguage,
           maghribOffsetMinutes,
+          hijriOffsetDays,
         )];
 
   const active = selectDay(days, now, timezone) || days[0];
@@ -300,6 +307,7 @@ export function buildWidgetSnapshot(
     calculationMethod: options?.calculationMethod || 'Karachi',
     asrMethod: options?.asrMethod || 'Hanafi',
     maghribOffsetMinutes,
+    hijriOffsetDays,
     fixedDhuhrLocalTime: options?.fixedDhuhrLocalTime ?? null,
     sourceLabel: options?.sourceLabel,
     days,
@@ -326,6 +334,7 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
   const cleanSnapshot = stripLegacyHadith(snapshot);
   const timezone = cleanSnapshot.timezone || 'Asia/Kabul';
   const appLanguage = cleanSnapshot.appLanguage || 'dari';
+  const hijriOffsetDays = clampHijriOffsetDays(cleanSnapshot.hijriOffsetDays ?? 0);
   const todayKey = getDateKeyInTimezone(now, timezone);
   const storedDays = Array.isArray(cleanSnapshot.days) && cleanSnapshot.days.length > 0
     ? cleanSnapshot.days.map((day) => stripLegacyHadith(day))
@@ -344,15 +353,16 @@ export function refreshWidgetSnapshot(snapshot: WidgetSnapshot, now: Date = new 
           prayers: cleanSnapshot.prayers,
         },
       ];
-  const days = storedDays.map(refreshDayCalendarDisplays);
+  const days = storedDays.map((day) => refreshDayCalendarDisplays(day, hijriOffsetDays));
 
   const activeDay = days.find((day) => day.dateKey === todayKey);
   const active = activeDay || days[0];
   const previous = findPreviousDay(days, active);
-  const truth = getCalendarTruth(now);
+  const truth = getCalendarTruth(now, hijriOffsetDays);
 
   return {
     ...cleanSnapshot,
+    hijriOffsetDays,
     version: 7,
     pashtoFont: cleanSnapshot.version < 7
       ? DEFAULT_PASHTO_FONT
@@ -402,6 +412,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       calculationMethod?: string;
       asrMethod?: 'Standard' | 'Hanafi';
       maghribOffsetMinutes?: number;
+      hijriOffsetDays?: number;
       fixedDhuhrLocalTime?: string | null;
       sourceLabel?: string;
       days?: WidgetDaySnapshot[];
@@ -455,6 +466,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
         calculationMethod: 'Karachi',
         asrMethod: 'Hanafi',
         maghribOffsetMinutes: MAGHRIB_OFFSET_MINUTES,
+        hijriOffsetDays: clampHijriOffsetDays(parsed.hijriOffsetDays ?? 0),
         fixedDhuhrLocalTime: null,
         days: [day],
         weekdayDari: day.weekdayDari,
@@ -527,6 +539,7 @@ export function parseWidgetSnapshot(raw: string | null | undefined): WidgetSnaps
       calculationMethod: parsed.calculationMethod || 'Karachi',
       asrMethod: parsed.asrMethod === 'Standard' ? 'Standard' : 'Hanafi',
       maghribOffsetMinutes: MAGHRIB_OFFSET_MINUTES,
+      hijriOffsetDays: clampHijriOffsetDays(parsed.hijriOffsetDays ?? 0),
       fixedDhuhrLocalTime: parsed.fixedDhuhrLocalTime ?? null,
       sourceLabel: parsed.sourceLabel,
       days,

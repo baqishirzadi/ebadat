@@ -166,17 +166,17 @@ export default function AdhkarScreen() {
       >
         <RtlView style={styles.duaCardRow}>
           <View style={styles.duaIconContainer}>
-            <MaterialIcons name="volunteer-activism" size={22} color="#fff" />
+            <MaterialIcons name="volunteer-activism" size={22} color={theme.onTint} />
             <UnreadCountBadge count={unreadCount} testID="adhkar-dua-unread-badge" />
           </View>
           <View style={styles.duaCardInfo}>
-            <RtlText align="center" style={[styles.duaCardTitle, { fontFamily }]}>{t('adhkar.dua.title')}</RtlText>
-            <RtlText align="center" style={[styles.duaCardSubtitle, { fontFamily }]}>
+            <RtlText align="center" style={[styles.duaCardTitle, { fontFamily, color: theme.onTint }]}>{t('adhkar.dua.title')}</RtlText>
+            <RtlText align="center" style={[styles.duaCardSubtitle, { fontFamily, color: theme.onTint }]}>
               {t('adhkar.dua.body')}
             </RtlText>
           </View>
           <View style={styles.duaActionSlot}>
-            <MaterialIcons name={chevron} size={24} color="rgba(255,255,255,0.85)" />
+            <MaterialIcons name={chevron} size={24} color={theme.onTint} />
           </View>
         </RtlView>
       </Pressable>

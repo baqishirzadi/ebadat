@@ -53,7 +53,7 @@ export function CategorySelector({ selectedCategory, onSelect }: CategorySelecto
             </CenteredText>
             {isSelected && (
               <View style={[styles.checkmark, { backgroundColor: theme.tint }]}>
-                <MaterialIcons name="check" size={16} color="#fff" />
+                <MaterialIcons name="check" size={16} color={theme.onTint} />
               </View>
             )}
           </Pressable>

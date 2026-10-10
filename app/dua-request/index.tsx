@@ -66,8 +66,8 @@ export default function DuaRequestsScreen() {
           pressed && styles.buttonPressed,
         ]}
       >
-        <MaterialIcons name="add" size={20} color="#fff" />
-        <CenteredText style={styles.newButtonText}>{t('dua.index.new')}</CenteredText>
+        <MaterialIcons name="add" size={20} color={theme.onTint} />
+        <CenteredText style={[styles.newButtonText, { color: theme.onTint }]}>{t('dua.index.new')}</CenteredText>
       </Pressable>
     </View>
   );
@@ -145,7 +145,7 @@ export default function DuaRequestsScreen() {
             pressed && styles.fabPressed,
           ]}
         >
-          <MaterialIcons name="add" size={28} color="#fff" />
+          <MaterialIcons name="add" size={28} color={theme.onTint} />
         </Pressable>
       )}
     </View>

@@ -36,7 +36,7 @@ export const TranslationBlock = memo(function TranslationBlock({
             {languageLabels[language].name}
           </CenteredText>
           <View style={[styles.languageBadge, { backgroundColor: theme.tint }]}>
-            <CenteredText style={styles.languageBadgeText}>
+            <CenteredText style={[styles.languageBadgeText, { color: theme.onTint }]}>
               {language === 'dari' ? 'DR' : 'PS'}
             </CenteredText>
           </View>

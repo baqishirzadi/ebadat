@@ -26,7 +26,7 @@ export function ScholarCard({ scholar }: ScholarCardProps) {
         </View>
       ) : (
         <View style={[styles.avatar, { backgroundColor: theme.tint }]}>
-          <MaterialIcons name="person" size={32} color="#fff" />
+          <MaterialIcons name="person" size={32} color={theme.onTint} />
         </View>
       )}
       <CenteredText style={[styles.name, { color: theme.text }]}>

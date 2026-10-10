@@ -48,7 +48,7 @@ export function CountdownChips() {
       cancelled = true;
       task.cancel();
     };
-  }, [truth.gregorianDate, language]);
+  }, [truth.gregorianDate, truth.hijri.year, truth.hijri.month, truth.hijri.day, language]);
 
   if (loading) {
     return (
@@ -71,9 +71,9 @@ export function CountdownChips() {
           key={chip.key}
           style={[styles.chip, { backgroundColor: theme.tint, borderColor: `${theme.tint}` }]}
         >
-          <MaterialIcons name={chip.icon} size={20} color="#fff" />
-          <RtlText align="center" style={styles.days}>{formatNumber(chip.days, language)} {t('calendar.countdown.days')}</RtlText>
-          <RtlText align="center" style={styles.label} numberOfLines={2}>
+          <MaterialIcons name={chip.icon} size={20} color={theme.onTint} />
+          <RtlText align="center" style={[styles.days, { color: theme.onTint }]}>{formatNumber(chip.days, language)} {t('calendar.countdown.days')}</RtlText>
+          <RtlText align="center" style={[styles.label, { color: theme.onTint }]} numberOfLines={2}>
             {chip.label}
           </RtlText>
         </View>

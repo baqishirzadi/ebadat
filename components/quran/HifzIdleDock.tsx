@@ -62,7 +62,7 @@ export function HifzIdleDock({ surahNumber, ayahNumber, onPlay }: Props) {
             pressed && styles.pressed,
           ]}
         >
-          <MaterialIcons name="play-arrow" size={22} color="#fff" />
+          <MaterialIcons name="play-arrow" size={22} color={theme.onTint} />
         </Pressable>
 
         <View style={styles.meta}>

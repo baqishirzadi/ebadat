@@ -206,11 +206,11 @@ export function QuranDownloadCard({
                     <MaterialIcons
                       name={choiceDone ? 'check-circle' : 'download'}
                       size={16}
-                      color={selected ? '#fff' : theme.tint}
+                      color={selected ? theme.onTint : theme.tint}
                     />
                     <CenteredText
                       numberOfLines={2}
-                      style={[styles.scopeChipText, { color: selected ? '#fff' : theme.text }]}
+                      style={[styles.scopeChipText, { color: selected ? theme.onTint : theme.text }]}
                     >
                       {choice.label}
                     </CenteredText>
@@ -271,11 +271,11 @@ export function QuranDownloadCard({
             ]}
           >
             {isDownloading ? (
-              <ActivityIndicator size="small" color="#fff" />
+              <ActivityIndicator size="small" color={theme.onTint} />
             ) : (
-              <MaterialIcons name={isComplete ? 'check-circle' : 'download'} size={19} color={isComplete ? theme.tint : '#fff'} />
+              <MaterialIcons name={isComplete ? 'check-circle' : 'download'} size={19} color={isComplete ? theme.tint : theme.onTint} />
             )}
-            <CenteredText style={[styles.primaryButtonText, { color: isComplete ? theme.tint : '#fff' }]}>
+            <CenteredText style={[styles.primaryButtonText, { color: isComplete ? theme.tint : theme.onTint }]}>
               {isComplete ? t('quran.downloaded') : primaryLabel}
             </CenteredText>
           </Pressable>

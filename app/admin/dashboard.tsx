@@ -248,7 +248,7 @@ export default function AdminDashboardScreen() {
               <CenteredText
                 style={[
                   styles.filterText,
-                  { color: isSelected ? '#fff' : theme.text },
+                  { color: isSelected ? theme.onTint : theme.text },
                 ]}
               >
                 {statusLabel}

@@ -39,6 +39,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { forwardChevronName } from '@/utils/i18n/direction';
 import { regionDisplayName } from '@/utils/regionNames';
+import { displayCityLabel } from '@/utils/turkishPlaces';
 
 const FEATURED_CATEGORIES = [
   'afghanistan',
@@ -152,7 +153,7 @@ export default function OnboardingLocationScreen() {
         const city = resolveCity(result.cityKey);
         setGpsDetected({
           key: result.cityKey as CityKey,
-          name: city?.name ?? result.cityName ?? 'نامشخص',
+          name: city ? displayCityLabel(city, language) : (result.cityName ?? 'نامشخص'),
           warning: result.warning ? result.error : undefined,
         });
         setPendingCityKey(result.cityKey as CityKey);
@@ -198,17 +199,17 @@ export default function OnboardingLocationScreen() {
           style={[styles.gpsCard, { backgroundColor: theme.tint, borderColor: theme.tint }]}
         >
           {gpsLoading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={theme.onTint} />
           ) : (
-            <MaterialIcons name="my-location" size={28} color="#fff" />
+            <MaterialIcons name="my-location" size={28} color={theme.onTint} />
           )}
           <RtlView style={styles.gpsTextWrap}>
-            <RtlText align="center" style={styles.gpsTitle}>{t('onboarding.location.gpsTitle')}</RtlText>
-            <RtlText align="center" style={styles.gpsSubtitle}>
+            <RtlText align="center" style={[styles.gpsTitle, { color: theme.onTint }]}>{t('onboarding.location.gpsTitle')}</RtlText>
+            <RtlText align="center" style={[styles.gpsSubtitle, { color: theme.onTint }]}>
               {t('onboarding.location.gpsSubtitle')}
             </RtlText>
           </RtlView>
-          <MaterialIcons name={forwardChevronName(language)} size={24} color="rgba(255,255,255,0.8)" />
+          <MaterialIcons name={forwardChevronName(language)} size={24} color={theme.onTint} />
         </Pressable>
 
         {gpsDetected ? (
@@ -228,7 +229,7 @@ export default function OnboardingLocationScreen() {
               onPress={() => finalizeCity(gpsDetected.key)}
               style={[styles.gpsConfirmBtn, { backgroundColor: theme.tint }]}
             >
-              <RtlText align="center" style={styles.gpsConfirmBtnText}>{t('onboarding.continue')}</RtlText>
+              <RtlText align="center" style={[styles.gpsConfirmBtnText, { color: theme.onTint }]}>{t('onboarding.continue')}</RtlText>
             </Pressable>
           </RtlView>
         ) : null}
@@ -254,7 +255,7 @@ export default function OnboardingLocationScreen() {
                   },
                 ]}
               >
-                <RtlText align="center" style={[styles.countryText, { color: active ? '#fff' : theme.text }]}>
+                <RtlText align="center" style={[styles.countryText, { color: active ? theme.onTint : theme.text }]}>
                   {regionDisplayName(cat.id, language, cat)}
                 </RtlText>
               </Pressable>
@@ -266,7 +267,7 @@ export default function OnboardingLocationScreen() {
           <RtlView style={[styles.selectedCard, { backgroundColor: `${theme.tint}15`, borderColor: theme.tint }]}>
             <MaterialIcons name="check-circle" size={22} color={theme.tint} />
             <RtlText align="center" style={[styles.selectedText, { color: theme.text }]}>
-              {selectedCategoryName} — {selectedPreview.name}
+              {selectedCategoryName} — {displayCityLabel(selectedPreview, language)}
             </RtlText>
           </RtlView>
         ) : null}
@@ -279,7 +280,7 @@ export default function OnboardingLocationScreen() {
             <RtlView style={styles.cityGrid}>
               {section.items.map(({ key, city }) => {
                 const active = pendingCityKey === key;
-                const subtitle = getCityDisplaySubtitle(key);
+                const subtitle = getCityDisplaySubtitle(key, language);
                 return (
                   <Pressable
                     key={key}
@@ -296,8 +297,8 @@ export default function OnboardingLocationScreen() {
                       },
                     ]}
                   >
-                    <RtlText align="center" style={[styles.cityName, { color: active ? '#fff' : theme.text }]}>
-                      {city.name}
+                    <RtlText align="center" style={[styles.cityName, { color: active ? theme.onTint : theme.text }]}>
+                      {displayCityLabel(city, language)}
                     </RtlText>
                     {subtitle ? (
                       <RtlText

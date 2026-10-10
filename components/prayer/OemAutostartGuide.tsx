@@ -22,7 +22,7 @@ export function OemAutostartGuide({ manufacturer }: OemAutostartGuideProps) {
       {steps.map((step, index) => (
         <RtlView key={`${oemKey}-${index}`} style={styles.stepRow}>
           <View style={[styles.badge, { backgroundColor: theme.tint }]}>
-            <RtlText align="center" style={styles.badgeText}>
+            <RtlText align="center" style={[styles.badgeText, { color: theme.onTint }]}>
               {(index + 1).toLocaleString(locale === 'ps' ? 'ps-AF' : 'fa-AF')}
             </RtlText>
           </View>

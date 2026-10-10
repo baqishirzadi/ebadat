@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AppState } from 'react-native';
 
+import { usePrayer } from '@/context/PrayerContext';
 import { getCalendarTruth, type CalendarTruth } from '@/utils/calendarTruth';
 
-/** Cached today's calendar — refreshes on foreground, at midnight, and every minute. */
+/** Cached today's calendar — refreshes on foreground, at midnight, every minute, and when the Hijri offset changes. */
 export function useTodayCalendar(): CalendarTruth {
+  const hijriOffsetDays = usePrayer().state.settings.hijriOffsetDays;
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -28,5 +30,5 @@ export function useTodayCalendar(): CalendarTruth {
     return () => clearTimeout(id);
   }, [tick]);
 
-  return useMemo(() => getCalendarTruth(), [tick]);
+  return useMemo(() => getCalendarTruth(new Date(), hijriOffsetDays), [tick, hijriOffsetDays]);
 }

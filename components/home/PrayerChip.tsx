@@ -16,7 +16,7 @@ interface PrayerChipProps {
 }
 
 export function PrayerChip({ label, time, active = false, tone = 'card', style }: PrayerChipProps) {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
   const { language } = useI18n();
   const isRtlHome = language !== 'english';
   const tint = theme.tint;
@@ -29,11 +29,11 @@ export function PrayerChip({ label, time, active = false, tone = 'card', style }
     ? 'transparent'
     : active ? tint : theme.cardBorder;
   const labelColor = onWidget
-    ? active ? tint : '#ffffff'
-    : active ? '#fff' : theme.text;
+    ? active ? (themeMode === 'night' ? theme.onTint : tint) : '#ffffff'
+    : active ? theme.onTint : theme.text;
   const timeColor = onWidget
-    ? active ? tint : '#ffffffd9'
-    : active ? '#fff' : theme.textSecondary;
+    ? active ? (themeMode === 'night' ? theme.onTint : tint) : '#ffffffd9'
+    : active ? theme.onTint : theme.textSecondary;
 
   return (
     <View

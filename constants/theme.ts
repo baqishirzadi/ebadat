@@ -19,6 +19,8 @@ export interface ThemeColors {
   background: string;
   backgroundSecondary: string;
   tint: string;
+  /** Label and icon color drawn on a filled tint surface. */
+  onTint: string;
   icon: string;
   tabIconDefault: string;
   tabIconSelected: string;
@@ -64,6 +66,7 @@ const lightTheme: ThemeColors = {
   background: '#f6f3ee',
   backgroundSecondary: '#efeae3',
   tint: NAAT_GREEN,
+  onTint: '#ffffff',
   icon: '#687076',
   tabIconDefault: '#687076',
   tabIconSelected: NAAT_GREEN,
@@ -89,38 +92,37 @@ const lightTheme: ThemeColors = {
   shadow: 'rgba(26, 77, 62, 0.12)',
 };
 
-// Night mode - neutral black/charcoal surfaces with a restrained green accent.
-// Keeping the layers distinct prevents the dark theme from becoming a flat block
-// while preserving the app's Naat-green identity.
+// Night mode is absolute black. Gold stays only on bookmarks.
 const nightTheme: ThemeColors = {
-  primary: '#2a9d84',
-  surface: '#17241f',
-  textPrimary: '#eef4f1',
+  primary: '#f2f2f2',
+  surface: '#141414',
+  textPrimary: '#f5f5f5',
   accent: '#d4af37',
-  text: '#eef4f1',
-  textSecondary: '#b7c7c0',
-  background: '#050807',
-  backgroundSecondary: '#101916',
-  tint: '#2a9d84',
-  icon: '#a8bab3',
-  tabIconDefault: '#93a79f',
-  tabIconSelected: '#2a9d84',
-  
-  arabicText: '#e7efeb',
-  translationText: '#c8d5cf',
-  ayahNumber: '#2a9d84',
-  surahHeader: '#12483a',
-  surahHeaderText: '#f1f7f4',
-  bismillah: '#62c2a5',
-  
-  card: '#17241f',
-  cardBorder: '#2f4a40',
-  divider: '#2a3d35',
+  text: '#f5f5f5',
+  textSecondary: '#b3b3b3',
+  background: '#000000',
+  backgroundSecondary: '#0c0c0c',
+  tint: '#f2f2f2',
+  onTint: '#111111',
+  icon: '#b3b3b3',
+  tabIconDefault: '#8a8a8a',
+  tabIconSelected: '#f2f2f2',
+
+  arabicText: '#f5f5f5',
+  translationText: '#c8c8c8',
+  ayahNumber: '#f2f2f2',
+  surahHeader: '#141414',
+  surahHeaderText: '#f5f5f5',
+  bismillah: '#f2f2f2',
+
+  card: '#141414',
+  cardBorder: '#2a2a2a',
+  divider: '#2a2a2a',
   bookmark: '#d4af37',
-  playing: '#2a9d84',
-  
-  tabBar: '#080c0a',
-  tabBarBorder: '#1a2b23',
+  playing: '#f2f2f2',
+
+  tabBar: '#000000',
+  tabBarBorder: '#2a2a2a',
 
   warning: '#f59e0b',
   warningSurface: '#1a1408',
@@ -138,6 +140,7 @@ const sapphireTheme: ThemeColors = {
   background: '#f3f5f8',
   backgroundSecondary: '#e7ebf1',
   tint: '#1e3a5f',
+  onTint: '#ffffff',
   icon: '#6a7888',
   tabIconDefault: '#6a7888',
   tabIconSelected: '#1e3a5f',
@@ -174,6 +177,7 @@ const burgundyTheme: ThemeColors = {
   background: '#faf6f2',
   backgroundSecondary: '#f3ebe4',
   tint: '#6b2d3c',
+  onTint: '#ffffff',
   icon: '#8a756c',
   tabIconDefault: '#8a756c',
   tabIconSelected: '#6b2d3c',
@@ -221,7 +225,7 @@ export function resolveThemeMode(value: unknown): ThemeMode {
 /** Naat header gradient colors - use for headers across the app */
 export const NAAT_GRADIENT: Record<ThemeMode, [string, string, string]> = {
   light: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
-  night: ['#050807', '#0b1712', '#10382c'],
+  night: ['#000000', '#0a0a0a', '#141414'],
   sapphire: ['#152a45', '#1e3a5f', '#2f5580'],
   burgundy: ['#4a1e28', '#6b2d3c', '#8f4554'],
 };

@@ -30,7 +30,7 @@ import Reanimated, {
 import Svg, { Circle, Ellipse, G, Path, Rect } from 'react-native-svg';
 
 import { BorderRadius, Spacing } from '@/constants/theme';
-import { useAppLanguage, useBookmarks, useLocalizedFontPreferences, useReadingPosition } from '@/context/AppContext';
+import { useApp, useAppLanguage, useBookmarks, useLocalizedFontPreferences, useReadingPosition } from '@/context/AppContext';
 import { getSurah, SURAH_NAMES } from '@/data/surahNames';
 import { getArabicBoldFontFamily, getArabicFontFamily, getDariFontFamily, getPashtoBoldFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
 import { getPortraitWindowSize } from '@/hooks/usePortraitLock';
@@ -2574,6 +2574,7 @@ export const Hifz16View = memo(function Hifz16View({
   // Dimensions.get('window').width while the activity is still measuring; a
   // module-level width then makes every horizontal page zero-width forever.
   const viewport = useWindowDimensions();
+  const { theme } = useApp();
   const { tokens: readerTokens } = useQuranReaderSettings();
   const { position, updatePosition } = useReadingPosition();
   const { addBookmark, getBookmark, isBookmarked, removeBookmark } = useBookmarks();
@@ -3396,7 +3397,7 @@ export const Hifz16View = memo(function Hifz16View({
                     onPress={() => { setNavigatorTab(kind); setNavigatorError(null); }}
                     style={[styles.navigatorTab, selected && { backgroundColor: readerTokens.accent }]}
                   >
-                    <Text style={[styles.navigatorTabText, { color: selected ? '#fff' : readerTokens.textSecondary }]}>
+                    <Text style={[styles.navigatorTabText, { color: selected ? (readerTokens.accent === theme.tint ? theme.onTint : '#fff') : readerTokens.textSecondary }]}>
                       {t(`quran.hifz.navigator.${kind}`)}
                     </Text>
                   </Pressable>

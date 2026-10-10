@@ -50,7 +50,7 @@ export function NaatMiniPlayer({ naat, isPlaying, progress, onPlayPause, onOpen 
           }}
           style={[styles.playButton, { backgroundColor: theme.tint }]}
         >
-          <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={22} color="#fff" />
+          <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={22} color={theme.onTint} />
         </Pressable>
       </View>
     </Pressable>

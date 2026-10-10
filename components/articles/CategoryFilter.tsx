@@ -49,7 +49,7 @@ export function CategoryFilter({ selectedCategory, onSelectCategory, counts }: C
         onPress={() => onSelectCategory(null)}
         style={({ pressed }) => [chip(selectedCategory === null), pressed && styles.pressed]}
       >
-        <LocalizedText style={[styles.chipText, { color: selectedCategory === null ? '#fff' : theme.text }]}>
+        <LocalizedText style={[styles.chipText, { color: selectedCategory === null ? theme.onTint : theme.text }]}>
           {t('articles.all')}
         </LocalizedText>
       </Pressable>
@@ -66,9 +66,9 @@ export function CategoryFilter({ selectedCategory, onSelectCategory, counts }: C
             <MaterialIcons
               name={category.icon as any}
               size={15}
-              color={selected ? '#fff' : isDark ? palette.accent : palette.primary}
+              color={selected ? theme.onTint : isDark ? palette.accent : palette.primary}
             />
-            <LocalizedText style={[styles.chipText, { color: selected ? '#fff' : theme.text }]}>
+            <LocalizedText style={[styles.chipText, { color: selected ? theme.onTint : theme.text }]}>
               {categoryName(category.id, language)}
             </LocalizedText>
           </Pressable>

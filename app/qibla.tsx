@@ -210,6 +210,7 @@ export default function QiblaScreen() {
     : sensorStatus === 'calibrating' || isDegraded
       ? '#D97706'
       : theme.tint;
+  const statusForeground = statusColor === theme.tint ? theme.onTint : '#fff';
 
   const statusText = !hasLiveCompass
     ? t('qibla.status.cityOnly')
@@ -282,11 +283,11 @@ export default function QiblaScreen() {
             ]}
           >
             {isResolvingLocation ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={theme.onTint} />
             ) : (
               <RtlView style={styles.actionRow}>
-                <MaterialIcons name="my-location" size={22} color="#fff" />
-                <CenteredText style={styles.primaryActionText}>{t('qibla.useMyLocation')}</CenteredText>
+                <MaterialIcons name="my-location" size={22} color={theme.onTint} />
+                <CenteredText style={[styles.primaryActionText, { color: theme.onTint }]}>{t('qibla.useMyLocation')}</CenteredText>
               </RtlView>
             )}
           </Pressable>
@@ -385,9 +386,9 @@ export default function QiblaScreen() {
         <MaterialIcons
           name={isAligned ? 'check-circle' : sensorStatus === 'calibrating' ? 'sync' : 'explore'}
           size={24}
-          color="#fff"
+          color={statusForeground}
         />
-        <CenteredText style={styles.statusText}>{statusText}</CenteredText>
+        <CenteredText style={[styles.statusText, { color: statusForeground }]}>{statusText}</CenteredText>
       </RtlView>
 
       <RtlView style={styles.degreeInfo}>

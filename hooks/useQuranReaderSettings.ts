@@ -141,11 +141,13 @@ export function useQuranReaderSettings() {
 
     return {
       ...colors,
-      accent: settings.pageTone === 'dark' || (settings.pageTone === 'auto' && themeMode === 'night')
-        ? '#77D5AB'
-        : settings.pageTone === 'light' || settings.pageTone === 'sepia'
-          ? '#0E6B4F'
-          : theme.tint,
+      accent: settings.pageTone === 'auto'
+        ? theme.tint
+        : settings.pageTone === 'dark'
+          ? '#77D5AB'
+          : settings.pageTone === 'light' || settings.pageTone === 'sepia'
+            ? '#0E6B4F'
+            : theme.tint,
       lineHeightRatio: LINE_HEIGHTS[settings.lineSpacing],
     };
   }, [settings, theme, themeMode]);

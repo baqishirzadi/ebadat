@@ -7,7 +7,8 @@ import {
   getKabulNoon,
   getKabulWeekdayIndex,
 } from '@/utils/afghanistanCalendar';
-import { gregorianToHijri, HijriDate } from '@/utils/islamicCalendar';
+import { gregorianToDisplayHijri, getUserHijriOffsetDays } from '@/utils/hijriOffset';
+import { HijriDate } from '@/utils/islamicCalendar';
 
 export interface CalendarTruth {
   gregorianDate: Date;
@@ -17,14 +18,17 @@ export interface CalendarTruth {
   shamsi: AfghanSolarHijriDate;
 }
 
-export function getCalendarTruth(date: Date = new Date()): CalendarTruth {
+export function getCalendarTruth(
+  date: Date = new Date(),
+  hijriOffsetDays: number = getUserHijriOffsetDays(),
+): CalendarTruth {
   const gregorianDate = getKabulNoon(date);
 
   return {
     gregorianDate,
     dateKey: getKabulDateKey(gregorianDate),
     weekday: getKabulWeekdayIndex(gregorianDate),
-    hijri: gregorianToHijri(gregorianDate),
+    hijri: gregorianToDisplayHijri(gregorianDate, hijriOffsetDays),
     shamsi: gregorianToAfghanSolarHijri(gregorianDate),
   };
 }

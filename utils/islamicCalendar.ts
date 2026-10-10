@@ -11,6 +11,7 @@ import {
   getVerifiedAfghanistanGregorianDate,
   getVerifiedAfghanistanHijriDate,
 } from '@/utils/ahadith/officialAfghanistanCalendar';
+import { getUserHijriOffsetDays } from '@/utils/hijriOffset';
 
 /**
  * Afghan fallback correction: two civil days before Umm al-Qura. The additional
@@ -636,7 +637,8 @@ export function getNextSpecialDay(hijriDate: HijriDate): SpecialDay | null {
 
 // Check if today is a recommended fasting day
 export function isFastingDay(date: Date): { isFasting: boolean; reason?: string; reasonDari?: string; reasonPashto?: string } {
-  const hijri = gregorianToHijri(date);
+  const offset = getUserHijriOffsetDays();
+  const hijri = gregorianToHijri(offset === 0 ? date : addDaysToKabulDate(date, offset));
   const dayOfWeek = getKabulWeekdayIndex(date); // 0 = Sunday, 1 = Monday, 4 = Thursday
 
   // Check special days

@@ -6,7 +6,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
 import { getCalendarTruth } from './calendarTruth';
-import { hijriToGregorian } from './islamicCalendar';
+import { displayHijriToGregorian } from './hijriOffset';
 import { SPECIAL_DAYS } from './islamicCalendar';
 import { IOS_CALENDAR_MAX_EVENTS } from './notificationBudget';
 
@@ -140,7 +140,7 @@ export async function scheduleCalendarNotifications(
 
     for (const hijriYear of years) {
       for (const specialDay of SPECIAL_DAYS) {
-        const gregDate = hijriToGregorian(hijriYear, specialDay.month, specialDay.day);
+        const gregDate = displayHijriToGregorian(hijriYear, specialDay.month, specialDay.day);
         if (!gregDate) continue;
 
         gregDate.setHours(0, 0, 0, 0);

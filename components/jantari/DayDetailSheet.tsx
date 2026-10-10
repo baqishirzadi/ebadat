@@ -5,9 +5,11 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { formatGregorianDateCompact, formatShamsiSlash } from '@/utils/calendarDisplay';
+import { formatGregorianDateCompact, formatShamsiSlash, formatTurkishMiladiDate } from '@/utils/calendarDisplay';
 import { gregorianToAfghanSolarHijri } from '@/utils/afghanSolarHijri';
-import { gregorianToHijri, hijriMonthName } from '@/utils/islamicCalendar';
+import { gregorianToDisplayDiyanetHijri } from '@/utils/diyanetHijri';
+import { gregorianToDisplayHijri } from '@/utils/hijriOffset';
+import { hijriMonthName } from '@/utils/islamicCalendar';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 interface DayDetailSheetProps {
@@ -22,8 +24,13 @@ export function DayDetailSheet({ visible, date, onClose }: DayDetailSheetProps) 
 
   if (!date) return null;
 
+  const isTurkish = language === 'turkish';
+  const hijriPrimary = language === 'english' || isTurkish || language === 'arabic';
   const shamsi = gregorianToAfghanSolarHijri(date);
-  const hijri = gregorianToHijri(date);
+  const hijri = isTurkish ? gregorianToDisplayDiyanetHijri(date) : gregorianToDisplayHijri(date);
+  const hijriText = `${n(hijri.day)} ${hijriMonthName(hijri, language)} ${n(hijri.year)}`;
+  const shamsiText = formatShamsiSlash(shamsi, language);
+  const gregorianText = isTurkish ? formatTurkishMiladiDate(date, String) : formatGregorianDateCompact(date);
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -33,28 +40,40 @@ export function DayDetailSheet({ visible, date, onClose }: DayDetailSheetProps) 
           <RtlText align="center" style={[styles.title, { color: theme.text }]}>{t('calendar.detail.title')}</RtlText>
 
           <RtlView style={styles.dates}>
-            <RtlView style={styles.dateRow}>
-              <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.shamsi')}</RtlText>
-              <RtlText align="center" style={[styles.dateValue, { color: theme.tint }]}>
-                {formatShamsiSlash(shamsi, language)}
-              </RtlText>
-            </RtlView>
-            <RtlView style={styles.dateRow}>
-              <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.hijri')}</RtlText>
-              <RtlText align="center" style={[styles.dateValue, { color: theme.text }]}>
-                {n(hijri.day)} {hijriMonthName(hijri, language)} {n(hijri.year)}
-              </RtlText>
-            </RtlView>
+            {hijriPrimary ? (
+              <RtlView style={styles.dateRow}>
+                <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.hijri')}</RtlText>
+                <RtlText align="center" style={[styles.dateValue, { color: theme.tint }]}>
+                  {hijriText}
+                </RtlText>
+              </RtlView>
+            ) : null}
+            {isTurkish ? null : (
+              <RtlView style={styles.dateRow}>
+                <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.shamsi')}</RtlText>
+                <RtlText align="center" style={[styles.dateValue, { color: hijriPrimary ? theme.text : theme.tint }]}>
+                  {shamsiText}
+                </RtlText>
+              </RtlView>
+            )}
+            {hijriPrimary ? null : (
+              <RtlView style={styles.dateRow}>
+                <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.hijri')}</RtlText>
+                <RtlText align="center" style={[styles.dateValue, { color: theme.text }]}>
+                  {hijriText}
+                </RtlText>
+              </RtlView>
+            )}
             <RtlView style={styles.dateRow}>
               <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.gregorian')}</RtlText>
               <RtlText align="center" style={[styles.dateValue, { color: theme.text }]}>
-                {formatGregorianDateCompact(date)}
+                {gregorianText}
               </RtlText>
             </RtlView>
           </RtlView>
 
           <Pressable onPress={onClose} style={[styles.closeBtn, { backgroundColor: theme.tint }]}>
-            <RtlText align="center" style={styles.closeText}>{t('common.close')}</RtlText>
+            <RtlText align="center" style={[styles.closeText, { color: theme.onTint }]}>{t('common.close')}</RtlText>
           </Pressable>
         </Pressable>
       </Pressable>

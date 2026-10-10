@@ -46,10 +46,10 @@ function englishHijriDate(hijriDisplay: string): string {
   return [day, monthShort, hasYear ? toLatinNumeralsString(yearMaybe) : ''].filter(Boolean).join(' ');
 }
 
-/** English hero: weekday and Shamsi display, matching the iOS widget. */
-function englishHeaderTitle(weekday: string, shamsiDisplay: string): string {
+/** Latin hero: short weekday plus the primary calendar date. */
+function englishHeaderTitle(weekday: string, dateDisplay: string): string {
   const shortDay = WEEKDAY_SHORT_EN[weekday] || weekday.slice(0, 3);
-  return [shortDay, toLatinNumeralsString(shamsiDisplay)].filter(Boolean).join(', ');
+  return [shortDay, toLatinNumeralsString(dateDisplay)].filter(Boolean).join(', ');
 }
 
 /** Gregorian day and English month code, omitting the year. Latin digits in every language. */
@@ -69,7 +69,7 @@ interface PrayerTimesWidgetProps {
 }
 
 type WidgetDateCell = {
-  key: 'gregorian' | 'sunrise' | 'hijri';
+  key: 'gregorian' | 'sunrise' | 'hijri' | 'shamsi';
   text: string;
   color: `#${string}`;
 };
@@ -249,20 +249,26 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
           : 'طلوع';
 
   const solarDisplay = shamsiLabel || snapshot.shamsiDisplay || '';
-  const headerTitleText = isLatin
-    ? englishHeaderTitle(weekdayLabel || '', solarDisplay)
-    : [weekdayLabel, solarDisplay].filter(Boolean).join('، ');
   const gregorianText = gregorianCell(snapshot.gregorianDisplay || '');
   const hijriText = isLatin ? englishHijriDate(hijriLabel || '') : (hijriLabel || '');
+  const shamsiText = isLatin ? toLatinNumeralsString(solarDisplay) : solarDisplay;
+  const hijriPrimary = isLatin || isArabic;
+  const headerSubject = hijriPrimary ? hijriText : solarDisplay;
+  const headerTitleText = isLatin
+    ? englishHeaderTitle(weekdayLabel || '', headerSubject)
+    : [weekdayLabel, headerSubject].filter(Boolean).join('، ');
   const sunriseCell = `${sunriseCaption}${sunriseTimeOnly ? ` ${sunriseTimeOnly}` : ''}`.trim();
+  const calendarCell: WidgetDateCell = hijriPrimary
+    ? { key: 'shamsi', text: shamsiText, color: TEXT_PRIMARY }
+    : { key: 'hijri', text: hijriText, color: TEXT_PRIMARY };
   const dateCells: WidgetDateCell[] = isLatin
     ? [
         { key: 'gregorian', text: gregorianText, color: TEXT_SECONDARY },
         { key: 'sunrise', text: sunriseCell, color: ACCENT },
-        { key: 'hijri', text: hijriText, color: TEXT_PRIMARY },
+        calendarCell,
       ]
     : [
-        { key: 'hijri', text: hijriText, color: TEXT_PRIMARY },
+        calendarCell,
         { key: 'sunrise', text: sunriseCell, color: ACCENT },
         { key: 'gregorian', text: gregorianText, color: TEXT_SECONDARY },
       ];
@@ -279,7 +285,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       .pop() ??
     null;
 
-  // Title + Gregorian / sunrise / Hijri row, in each language's reading order.
+  // Title plus the secondary date row, in each language's reading order.
   // Keep each cell as FlexWidget > TextWidget — no LTR isolates and
   // no flex on TextWidget itself (those produced Null RemoteViews on One UI).
   const sharedHeader = (

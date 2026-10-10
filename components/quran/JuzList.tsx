@@ -130,7 +130,7 @@ export function JuzList({ juzItems, currentPosition, onPressJuz }: JuzListProps)
 
             {isCurrent ? (
               <View style={[styles.currentMark, { backgroundColor: theme.playing }]}>
-                <MaterialIcons name="play-arrow" size={14} color="#fff" />
+                <MaterialIcons name="play-arrow" size={14} color={theme.onTint} />
               </View>
             ) : null}
           </Pressable>

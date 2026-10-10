@@ -18,7 +18,6 @@ import { useI18n } from '@/utils/i18n/useI18n';
 
 export type HealthVisualStatus = 'healthy' | 'warning' | 'critical';
 
-const PASS_COLOR = '#1b7f4d';
 const FAIL_COLOR = '#c0392b';
 
 export function healthStatusFromReport(
@@ -54,7 +53,7 @@ export function healthChipLabel(status: HealthVisualStatus, locale: AdhanPermiss
 function statusColor(status: HealthVisualStatus, theme: ReturnType<typeof useApp>['theme']): string {
   switch (status) {
     case 'healthy':
-      return PASS_COLOR;
+      return theme.tint;
     case 'warning':
       return theme.warning;
     default:
@@ -128,17 +127,17 @@ export function AdhanHealthActionRow({
         },
       ]}
     >
-      <MaterialIcons name={icon} size={20} color={isPrimary ? '#fff' : theme.tint} />
+      <MaterialIcons name={icon} size={20} color={isPrimary ? theme.onTint : theme.tint} />
       <RtlText
         align="center"
-        style={[styles.actionLabel, { color: isPrimary ? '#fff' : theme.text }]}
+        style={[styles.actionLabel, { color: isPrimary ? theme.onTint : theme.text }]}
       >
         {label}
       </RtlText>
       <MaterialIcons
         name={forwardChevronName(language)}
         size={22}
-        color={isPrimary ? '#fff' : theme.textSecondary}
+        color={isPrimary ? theme.onTint : theme.textSecondary}
       />
     </Pressable>
   );

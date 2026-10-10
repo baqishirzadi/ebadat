@@ -189,8 +189,8 @@ export default function CounterScreen() {
             pressed && styles.tapAreaPressed,
           ]}
         >
-          <MaterialIcons name="touch-app" size={64} color="#fff" />
-          <CenteredText style={styles.tapText}>{t('tasbih.tap')}</CenteredText>
+          <MaterialIcons name="touch-app" size={64} color={theme.onTint} />
+          <CenteredText style={[styles.tapText, { color: theme.onTint }]}>{t('tasbih.tap')}</CenteredText>
         </Pressable>
       </Animated.View>
 

@@ -16,7 +16,7 @@ import {
 } from '@/constants/persianTextLayout';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
-import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
+import { formatPrayerTimeForLanguage } from '@/utils/formatPrayerTime';
 import { getPrayerProgress } from '@/utils/prayerDisplay';
 import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { getNextPrayer, PrayerTimes } from '@/utils/prayerTimes';
@@ -116,7 +116,7 @@ const CountdownBlock = memo(function CountdownBlock({
 }) {
   const [now, setNow] = useState(() => new Date());
   const { fontFamily, language } = useI18n();
-  const compactMetrics = language !== 'english'
+  const compactMetrics = language !== 'english' && language !== 'turkish'
     ? fontFamily === 'NotoNastaliqUrdu'
       ? pashtoCompactMetrics.nastaliq
       : pashtoCompactMetrics.amiri
@@ -173,7 +173,7 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
   const { state } = usePrayer();
   const gradient = NAAT_GRADIENT[themeMode] ?? NAAT_GRADIENT.light;
   const isCompact = variant === 'compact';
-  const compactMetrics = language !== 'english'
+  const compactMetrics = language !== 'english' && language !== 'turkish'
     ? fontFamily === 'NotoNastaliqUrdu'
       ? pashtoCompactMetrics.nastaliq
       : pashtoCompactMetrics.amiri
@@ -209,7 +209,7 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
 
   const compactContent = (
     <RtlView style={[styles.compactContainer, compactMetrics?.container]}>
-      {language !== 'english' ? (
+      {language !== 'english' && language !== 'turkish' ? (
         <View style={styles.pashtoCompactLabelWrap}>
           <LocalizedText style={[styles.pashtoCompactLabel, { fontFamily }]}>
             {t('home.nextPrayer')}
@@ -221,11 +221,11 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
       <RtlView style={styles.compactNameBlock}>
         <RtlText testID="home-next-prayer-name" align="center" wrap={false} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} style={[styles.compactPrayerName, compactMetrics?.prayerName]}>{nextName}</RtlText>
         <RtlText testID="home-next-prayer-time" align="center" wrap={false} numberOfLines={1} style={[styles.compactTime, compactMetrics?.time, { color: theme.bookmark }]}>
-          {formatPrayerTime12h(next.time, timeZone)}
+          {formatPrayerTimeForLanguage(next.time, timeZone, language)}
         </RtlText>
       </RtlView>
       <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} compact />
-      <RtlText align="center" style={[styles.compactHint, compactMetrics?.hint, language !== 'english' && styles.compactHintPashto]}>
+      <RtlText align="center" style={[styles.compactHint, compactMetrics?.hint, language !== 'english' && language !== 'turkish' && styles.compactHintPashto]}>
         {t(adhanOn ? 'home.adhan.enabled' : 'home.adhan.disabled')}
       </RtlText>
     </RtlView>
@@ -236,7 +236,7 @@ function NextPrayerCardInner({ prayerTimes, variant = 'full', embedded = false }
       <RtlText align="center" style={[styles.label, { fontFamily }]}>{t('home.nextPrayer')}</RtlText>
       <RtlText align="center" style={styles.prayerName}>{nextName}</RtlText>
       <RtlText align="center" style={[styles.time, { color: theme.bookmark }]}>
-        {formatPrayerTime12h(next.time, timeZone)}
+        {formatPrayerTimeForLanguage(next.time, timeZone, language)}
       </RtlText>
       <CountdownBlock prayerTimes={prayerTimes} ringColor={theme.bookmark} />
       <RtlText align="center" style={styles.hint}>

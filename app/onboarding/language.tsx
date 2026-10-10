@@ -85,7 +85,7 @@ export default function OnboardingLanguageScreen() {
               </Text>
               {active ? (
                 <View style={[styles.check, { backgroundColor: theme.tint }]}>
-                  <MaterialIcons name="check" size={16} color="#fff" />
+                  <MaterialIcons name="check" size={16} color={theme.onTint} />
                 </View>
               ) : (
                 <View style={[styles.checkPlaceholder, { borderColor: theme.cardBorder }]} />

@@ -5,8 +5,11 @@ import { AFGHAN_HOLIDAYS } from '@/utils/afghanHolidays';
 import { formatShamsiSlash } from '@/utils/calendarDisplay';
 import { debugLog } from '@/utils/debugLog';
 import {
-  gregorianToHijri,
-  hijriToGregorian,
+  displayHijriToGregorian,
+  getUserHijriOffsetDays,
+  gregorianToDisplayHijri,
+} from '@/utils/hijriOffset';
+import {
   HIJRI_MONTHS,
   SPECIAL_DAYS,
   type HijriDate,
@@ -44,7 +47,7 @@ export function isEventOnOrAfterToday(eventDate: Date, today: Date = new Date())
 }
 
 function resolveIslamicEvent(hijriYear: number, month: number, day: number): Date | null {
-  return hijriToGregorian(hijriYear, month, day);
+  return displayHijriToGregorian(hijriYear, month, day);
 }
 
 function resolveAfghanEvent(shamsiYear: number, month: number, day: number): Date | null {
@@ -99,9 +102,10 @@ let cachedEventsKey = '';
 let cachedEvents: CalendarEvent[] = [];
 
 export function getAllCalendarEvents(from: Date = new Date()): CalendarEvent[] {
-  const hijri = gregorianToHijri(from);
+  const offset = getUserHijriOffsetDays();
+  const hijri = gregorianToDisplayHijri(from, offset);
   const shamsi = gregorianToAfghanSolarHijri(from);
-  const key = `${hijri.year}-${shamsi.year}-${getKabulDateParts(from).dateKey}`;
+  const key = `${offset}:${hijri.year}-${shamsi.year}-${getKabulDateParts(from).dateKey}`;
 
   if (cachedEventsKey === key) {
     // #region agent log
@@ -225,7 +229,7 @@ const AFGHAN_DAY_SET = new Set(
 );
 
 export function getDayEventType(gregorianDate: Date): DayEventType | null {
-  const hijri = gregorianToHijri(gregorianDate);
+  const hijri = gregorianToDisplayHijri(gregorianDate);
   const shamsi = gregorianToAfghanSolarHijri(gregorianDate);
   return getDayEventTypeFromParts(hijri.month, hijri.day, shamsi.month, shamsi.day);
 }

@@ -24,11 +24,12 @@ export const CalendarModeTabs = React.memo(function CalendarModeTabs({
   onModeChange,
 }: CalendarModeTabsProps) {
   const { theme } = useApp();
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const modes = language === 'turkish' ? MODES.filter((item) => item.key !== 'shamsi') : MODES;
 
   return (
     <RtlView style={[styles.segment, { backgroundColor: theme.backgroundSecondary }]}>
-      {MODES.map((item) => (
+      {modes.map((item) => (
         <Pressable
           key={item.key}
           onPress={() => onModeChange(item.key)}
@@ -37,7 +38,7 @@ export const CalendarModeTabs = React.memo(function CalendarModeTabs({
           <RtlText
             align="center"
             style={{
-              color: mode === item.key ? '#fff' : theme.textSecondary,
+              color: mode === item.key ? theme.onTint : theme.textSecondary,
               fontFamily: 'Vazirmatn-Bold',
               fontSize: 12,
             }}

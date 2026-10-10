@@ -18,7 +18,7 @@ export function Button({ label, onPress, variant = 'primary', disabled = false, 
 
   const backgroundColor =
     variant === 'primary' ? theme.tint : variant === 'secondary' ? theme.backgroundSecondary : 'transparent';
-  const textColor = variant === 'primary' ? '#fff' : theme.text;
+  const textColor = variant === 'primary' ? theme.onTint : theme.text;
   const borderColor = variant === 'secondary' ? theme.cardBorder : 'transparent';
 
   return (

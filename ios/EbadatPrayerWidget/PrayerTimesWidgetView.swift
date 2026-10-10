@@ -18,6 +18,7 @@ struct PrayerTimesWidgetView: View {
   private var isArabic: Bool { snapshot?.appLanguage == "arabic" }
   private var isLatin: Bool { isEnglish || isTurkish }
   private var isDari: Bool { !isLatin && !isPashto && !isArabic }
+  private var hijriPrimary: Bool { isEnglish || isTurkish || isArabic }
   private var uiFontRegular: String {
     if isLatin { return "Vazirmatn" }
     if isArabic { return "NotoNaskhArabic-Regular" }
@@ -134,25 +135,31 @@ struct PrayerTimesWidgetView: View {
   private func headerTitle(_ value: WidgetSnapshot) -> String {
     if isTurkish {
       let day = Self.weekdayTurkish[value.weekdayDari] ?? ""
-      let solar = englishDate(value.shamsiDisplay, months: Self.solarMonthTurkish)
-      return [day, solar].filter { !$0.isEmpty }.joined(separator: ", ")
+      return [day, hijriCell(value)].filter { !$0.isEmpty }.joined(separator: ", ")
     }
     if isEnglish {
       let day = Self.weekdayEnglish[value.weekdayDari] ?? ""
-      let solar = englishDate(value.shamsiDisplay, months: Self.solarMonthEnglish)
-      return [day, solar].filter { !$0.isEmpty }.joined(separator: ", ")
+      return [day, hijriCell(value)].filter { !$0.isEmpty }.joined(separator: ", ")
     }
     if isArabic {
       let day = Self.weekdayArabic[value.weekdayDari] ?? value.weekdayDari
-      let arabicSolar = tokens(value.shamsiDisplay).map { part in
-        if Int(latinDigits(part)) != nil { return easternDigits(latinDigits(part)) }
-        return Self.solarMonthArabic[part] ?? part
-      }.joined(separator: " ")
-      return [day, arabicSolar].filter { !$0.isEmpty }.joined(separator: "، ")
+      return [day, hijriCell(value)].filter { !$0.isEmpty }.joined(separator: "، ")
     }
     let weekday = isPashto ? (value.weekdayPashto ?? value.weekdayDari) : value.weekdayDari
     let solar = isPashto ? (value.shamsiDisplayPashto ?? value.shamsiDisplay) : value.shamsiDisplay
     return [weekday, solar].filter { !$0.isEmpty }.joined(separator: "، ")
+  }
+
+  private func solarCell(_ value: WidgetSnapshot) -> String {
+    if isTurkish { return englishDate(value.shamsiDisplay, months: Self.solarMonthTurkish) }
+    if isEnglish { return englishDate(value.shamsiDisplay, months: Self.solarMonthEnglish) }
+    if isArabic {
+      return tokens(value.shamsiDisplay).map { part in
+        if Int(latinDigits(part)) != nil { return easternDigits(latinDigits(part)) }
+        return Self.solarMonthArabic[part] ?? part
+      }.joined(separator: " ")
+    }
+    return isPashto ? (value.shamsiDisplayPashto ?? value.shamsiDisplay) : value.shamsiDisplay
   }
 
   /// Day and month, without the year, so the cell fits one line.
@@ -257,7 +264,7 @@ struct PrayerTimesWidgetView: View {
           HStack(spacing: 4) {
             LockedLine(text: gregorianCell(snapshot), font: uiFontBold, size: 15 * s, color: .white.opacity(0.85))
             LockedLine(text: sunriseCell(snapshot), font: uiFontBold, size: 15 * s, color: accent)
-            LockedLine(text: hijriCell(snapshot), font: uiFontBold, size: 15 * s, color: .white)
+            LockedLine(text: hijriPrimary ? solarCell(snapshot) : hijriCell(snapshot), font: uiFontBold, size: 15 * s, color: .white)
           }
           .frame(maxWidth: .infinity)
 

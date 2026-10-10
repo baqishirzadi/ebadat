@@ -27,11 +27,13 @@ import {
 } from '@/components/home';
 import { RtlView } from '@/components/ui/RtlView';
 import { Spacing } from '@/constants/theme';
+import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { CityKey, getCity } from '@/utils/cities';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 function HomeDashboardScreen() {
+  const { theme } = useApp();
   const { state, setCustomLocation } = usePrayer();
   const { t } = useI18n();
   const scrollRef = useRef<ScrollView>(null);
@@ -122,11 +124,11 @@ function HomeDashboardScreen() {
     <>
       <View
         testID="ios-home-dashboard-ready"
-        style={styles.flex}
+        style={[styles.flex, { backgroundColor: theme.background }]}
       >
         <ScrollView
           ref={scrollRef}
-          style={styles.scroll}
+          style={[styles.scroll, { backgroundColor: theme.background }]}
           contentContainerStyle={[
             styles.content,
             keyboardContentPadding > 0 && { paddingBottom: keyboardContentPadding },

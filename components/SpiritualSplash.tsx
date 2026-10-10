@@ -81,6 +81,22 @@ interface SpiritualSplashProps {
 
 const DARI_CREATOR_LINE = 'سازنده : شرکت نرم افزار www.afghan.dev';
 
+function TurkishSplashCredit() {
+  return (
+    <View style={styles.creditContainer}>
+      <Pressable
+        accessibilityRole="link"
+        onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
+        style={styles.turkishCreditCard}
+      >
+        <CenteredText style={styles.turkishCreditKicker}>Geliştiren</CenteredText>
+        <CenteredText style={styles.turkishCreditTitle}>Yazılım şirketi</CenteredText>
+        <CenteredText style={styles.turkishCreditLink}>afghan.dev</CenteredText>
+      </Pressable>
+    </View>
+  );
+}
+
 function SplashCredit({ line }: { line: string }) {
   return (
     <View style={styles.creditContainer}>
@@ -214,7 +230,7 @@ export function SpiritualSplash({
               resizeMode="contain"
               accessibilityIgnoresInvertColors
             />
-            <LocalizedText style={styles.appName}>{t('app.brandName')}</LocalizedText>
+            <LocalizedText style={[styles.appName, language === 'turkish' && styles.appNameLatin]}>{t('app.brandName')}</LocalizedText>
             <CenteredText style={styles.appSubtitle}>{t('app.splash.subtitle')}</CenteredText>
           </View>
 
@@ -247,7 +263,7 @@ export function SpiritualSplash({
             </View>
           </View>
 
-          <SplashCredit line={creatorLine} />
+          {language === 'turkish' ? <TurkishSplashCredit /> : <SplashCredit line={creatorLine} />}
         </>
       ) : (
         <>
@@ -258,11 +274,11 @@ export function SpiritualSplash({
               resizeMode="contain"
               accessibilityIgnoresInvertColors
             />
-            <LocalizedText style={styles.appName}>{t('app.brandName')}</LocalizedText>
+            <LocalizedText style={[styles.appName, language === 'turkish' && styles.appNameLatin]}>{t('app.brandName')}</LocalizedText>
             <Animated.View style={[styles.loadingRing, ringStyle]} />
             <CenteredText style={styles.loadingText}>{t('common.loading')}</CenteredText>
           </View>
-          <SplashCredit line={creatorLine} />
+          {language === 'turkish' ? <TurkishSplashCredit /> : <SplashCredit line={creatorLine} />}
         </>
       )}
     </Animated.View>
@@ -405,6 +421,41 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: 'center',
     width: '100%',
+  },
+  appNameLatin: {
+    writingDirection: 'ltr',
+    fontFamily: undefined,
+  },
+  turkishCreditCard: {
+    backgroundColor: 'rgba(13, 41, 32, 0.92)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: `${GOLD}66`,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    width: '100%',
+    gap: 2,
+  },
+  turkishCreditKicker: {
+    fontSize: 12,
+    letterSpacing: 1.2,
+    color: GOLD,
+    textAlign: 'center',
+  },
+  turkishCreditTitle: {
+    fontSize: 18,
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  turkishCreditLink: {
+    fontSize: 14,
+    color: GOLD_LIGHT,
+    textAlign: 'center',
+    marginTop: 4,
+    letterSpacing: 0.4,
   },
   creditDeveloper: {
     width: '100%',

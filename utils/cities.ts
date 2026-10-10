@@ -5,6 +5,7 @@
  */
 
 import type { AppLanguage } from '@/types/quran';
+import { formatTurkishPlaceName } from '@/utils/turkishPlaces';
 
 export interface City {
   lat: number;
@@ -394,5 +395,7 @@ const CITY_NAME_TO_ENGLISH: Map<string, string> = (() => {
 export function localizeCityName(name: string | null | undefined, language: AppLanguage): string {
   if (!name) return '';
   if (language !== 'english' && language !== 'turkish') return name;
-  return CITY_NAME_TO_ENGLISH.get(name) ?? name;
+  const english = CITY_NAME_TO_ENGLISH.get(name) ?? name;
+  if (language === 'turkish') return formatTurkishPlaceName(english);
+  return english;
 }

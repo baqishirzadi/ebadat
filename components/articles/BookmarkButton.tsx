@@ -32,7 +32,7 @@ export function BookmarkButton({ isBookmarked, onToggle }: BookmarkButtonProps) 
       <MaterialIcons
         name={isBookmarked ? 'bookmark' : 'bookmark-border'}
         size={24}
-        color={isBookmarked ? '#fff' : theme.text}
+        color={isBookmarked ? theme.onTint : theme.text}
       />
     </Pressable>
   );

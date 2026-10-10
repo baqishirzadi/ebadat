@@ -18,6 +18,7 @@ import {
   fetchDiyanetMonth,
   resolveDiyanetDistrictId,
 } from '@/utils/diyanetClient';
+import { rememberDiyanetHijriDays } from '@/utils/diyanetHijri';
 import {
   PRAYER_POLICY_VERSION,
   PrayerCalculationPolicy,
@@ -379,6 +380,7 @@ async function fetchDiyanetMonthCached(
     parseInt(yearStr, 10),
     parseInt(monthStr, 10),
   );
+  rememberDiyanetHijriDays(days);
   return days.map((day) => ({
     date: day.date,
     timings: day.timings,

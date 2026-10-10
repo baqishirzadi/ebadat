@@ -7,14 +7,17 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
+import { useDiyanetHijriDate } from '@/hooks/useDiyanetHijri';
 import { useTodayCalendar } from '@/hooks/useTodayCalendar';
 import {
   formatGregorianDateCompact,
   formatShamsiSlash,
+  formatTurkishMiladiDate,
   weekdayName,
 } from '@/utils/calendarDisplay';
-import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
+import { formatPrayerTimeForLanguage } from '@/utils/formatPrayerTime';
 import { hijriMonthName } from '@/utils/islamicCalendar';
+import { getIstanbulDateParts } from '@/utils/istanbulCalendar';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 const pashtoDateMetrics = {
@@ -43,26 +46,42 @@ function TodayDateCardInner() {
   const { language, fontFamily, t, n, isLatin } = useI18n();
   const { state } = usePrayer();
   const truth = useTodayCalendar();
+  const isTurkish = language === 'turkish';
+  const diyanetHijri = useDiyanetHijriDate(isTurkish);
   const { width } = useWindowDimensions();
-  const isEnglish = isLatin;
-  const isDari = language === 'dari' || language === 'arabic';
+  const isEnglish = language === 'english';
+  const isArabic = language === 'arabic';
+  const isLatinLayout = isLatin;
+  const isDari = language === 'dari' || isArabic;
+  const hijriPrimary = isEnglish || isTurkish || isArabic;
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
-  const isRtlHome = !isEnglish;
+  const isRtlHome = !isLatinLayout;
   const narrowPashto = isRtlHome && width < 360;
   const pashtoFontMetrics = isRtlHome
     ? isNastaliq ? pashtoDateMetrics.nastaliq : pashtoDateMetrics.amiri
     : null;
   const sunrise = state.prayerTimes?.sunrise;
   const sunriseDisplay = sunrise
-    ? formatPrayerTime12h(sunrise, state.location?.timezone)
+    ? formatPrayerTimeForLanguage(sunrise, state.location?.timezone, language)
     : '--:--';
-  const hijriDisplay = `${n(truth.hijri.day)} ${hijriMonthName(truth.hijri, language)} ${n(truth.hijri.year)}`;
+  const shownHijri = isTurkish ? diyanetHijri : truth.hijri;
+  const hijriDisplay = `${n(shownHijri.day)} ${hijriMonthName(shownHijri, language)} ${n(shownHijri.year)}`;
   const shamsiDisplay = formatShamsiSlash(truth.shamsi, language);
-  const primaryDate = isEnglish ? hijriDisplay : shamsiDisplay;
-  const primaryTestId = isEnglish ? 'home-today-hijri-date' : 'home-today-shamsi-date';
-  const secondaryLeftLabel = isEnglish ? t('calendar.label.shamsi') : t('calendar.label.hijri');
-  const secondaryLeftValue = isEnglish ? shamsiDisplay : hijriDisplay;
-  const weekday = weekdayName(truth.weekday, language);
+  const istanbulToday = isTurkish ? getIstanbulDateParts() : null;
+  const miladiDisplay = formatTurkishMiladiDate(new Date(), String);
+  const primaryDate = hijriPrimary ? hijriDisplay : shamsiDisplay;
+  const primaryTestId = hijriPrimary ? 'home-today-hijri-date' : 'home-today-shamsi-date';
+  const secondaryLeftLabel = isTurkish
+    ? t('calendar.label.gregorian')
+    : hijriPrimary
+      ? t('calendar.label.shamsi')
+      : t('calendar.label.hijri');
+  const secondaryLeftValue = isTurkish
+    ? miladiDisplay
+    : hijriPrimary
+      ? shamsiDisplay
+      : hijriDisplay;
+  const weekday = weekdayName(istanbulToday?.weekday ?? truth.weekday, language);
 
   return (
     <Pressable
@@ -151,13 +170,17 @@ function TodayDateCardInner() {
             {sunriseDisplay}
           </RtlText>
         </View>
-        <View style={[styles.secondaryDivider, isRtlHome && styles.secondaryDividerPashto, { backgroundColor: theme.divider }]} />
-        <View style={[styles.secondaryItem, isRtlHome && styles.gregItemPashto]}>
-          <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{t('calendar.label.gregorian')}</RtlText>
-          <RtlText testID="home-today-gregorian-date" align="center" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.gregValue, pashtoFontMetrics?.gregorianValue, { color: theme.text }]}>
-            {formatGregorianDateCompact(truth.gregorianDate, isEnglish ? String : n, language)}
-          </RtlText>
-        </View>
+        {isTurkish ? null : (
+          <>
+            <View style={[styles.secondaryDivider, isRtlHome && styles.secondaryDividerPashto, { backgroundColor: theme.divider }]} />
+            <View style={[styles.secondaryItem, isRtlHome && styles.gregItemPashto]}>
+              <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{t('calendar.label.gregorian')}</RtlText>
+              <RtlText testID="home-today-gregorian-date" align="center" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.gregValue, pashtoFontMetrics?.gregorianValue, { color: theme.text }]}>
+                {formatGregorianDateCompact(truth.gregorianDate, isLatinLayout ? String : n, language)}
+              </RtlText>
+            </View>
+          </>
+        )}
       </RtlView>
     </Pressable>
   );

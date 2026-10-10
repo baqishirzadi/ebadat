@@ -9,7 +9,7 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
-import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
+import { formatPrayerTimeForLanguage } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
 import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { prayerLabel } from '@/utils/prayerTimes';
@@ -48,7 +48,7 @@ function TodayPrayerTimesCardInner() {
               state.settings.selectedCity,
               state.location,
             )}
-            time={formatPrayerTime12h(prayerTimes[key], state.location?.timezone)}
+            time={formatPrayerTimeForLanguage(prayerTimes[key], state.location?.timezone, language)}
             active={current === key}
           />
         ))}

@@ -348,11 +348,11 @@ export default function AdminRequestResponseScreen() {
           ]}
         >
           {submitting ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={theme.onTint} />
           ) : (
             <>
-              <MaterialIcons name="send" size={20} color="#fff" />
-              <CenteredText style={styles.submitButtonText}>ثبت پاسخ</CenteredText>
+              <MaterialIcons name="send" size={20} color={theme.onTint} />
+              <CenteredText style={[styles.submitButtonText, { color: theme.onTint }]}>ثبت پاسخ</CenteredText>
             </>
           )}
         </Pressable>

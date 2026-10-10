@@ -49,7 +49,7 @@ export function SearchButton() {
         animatedStyle,
       ]}
     >
-      <MaterialIcons name="search" size={28} color="#fff" />
+      <MaterialIcons name="search" size={28} color={theme.onTint} />
     </AnimatedPressable>
   );
 }

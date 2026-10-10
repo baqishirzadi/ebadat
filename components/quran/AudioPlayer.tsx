@@ -74,6 +74,7 @@ export function AudioPlayer({
   const [showSpeedModal, setShowSpeedModal] = useState(false);
   const [playback, setPlayback] = useState<QuranPlaybackSnapshot>(() => audioManager.getPlaybackSnapshot());
   const [playbackRate, setPlaybackRate] = useState<QuranPlaybackRate>(() => audioManager.getPlaybackRate());
+  const onAccent = (readerTokens?.accent ?? theme.tint) === theme.tint ? theme.onTint : '#fff';
   const palette = readerTokens ?? {
     page: theme.background,
     surface: theme.backgroundSecondary,
@@ -180,9 +181,9 @@ export function AudioPlayer({
               ]}
             >
               {isPreparing ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator size="small" color={onAccent} />
               ) : (
-                <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={22} color="#fff" />
+                <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={22} color={onAccent} />
               )}
             </Pressable>
 
@@ -295,9 +296,9 @@ export function AudioPlayer({
                   ]}
                 >
                   {isPreparing ? (
-                    <ActivityIndicator size="small" color="#fff" />
+                    <ActivityIndicator size="small" color={onAccent} />
                   ) : (
-                    <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={26} color="#fff" />
+                    <MaterialIcons name={isPlaying ? 'pause' : 'play-arrow'} size={26} color={onAccent} />
                   )}
                 </Pressable>
 

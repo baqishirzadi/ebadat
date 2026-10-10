@@ -55,7 +55,7 @@ export function NaatQueueSheet({ visible, items, currentId, onClose, onSelect }:
                 ]}
               >
                 <View style={[styles.indexBubble, { backgroundColor: isActive ? theme.tint : theme.card }]}>
-                  <RtlText align="center" wrap={false} style={[styles.indexText, { color: isActive ? '#fff' : theme.textSecondary }]}>
+                  <RtlText align="center" wrap={false} style={[styles.indexText, { color: isActive ? theme.onTint : theme.textSecondary }]}>
                     {index + 1}
                   </RtlText>
                 </View>

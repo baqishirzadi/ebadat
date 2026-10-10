@@ -265,9 +265,9 @@ export function AhadithScreen() {
                 style={[styles.pinConfirmButton, { backgroundColor: theme.primary }]}
               >
                 {submittingAdminPin ? (
-                  <ActivityIndicator size="small" color="#ffffff" />
+                  <ActivityIndicator size="small" color={theme.onTint} />
                 ) : (
-                  <CenteredText style={[styles.pinConfirmText, { color: '#ffffff' }]}>
+                  <CenteredText style={[styles.pinConfirmText, { color: theme.onTint }]}>
                     {t('hadith.confirm')}
                   </CenteredText>
                 )}

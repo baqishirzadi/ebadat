@@ -35,10 +35,12 @@ function tone(hex: string, amount: number): string {
 }
 
 export function deriveDailyCardGradient(theme: ThemeColors, themeMode: ThemeMode): [string, string, string] {
-  const isDark = themeMode === 'night';
-  const start = isDark ? tone(theme.primary, -24) : tone(theme.primary, -16);
-  const middle = isDark ? tone(theme.primary, -10) : tone(theme.primary, -4);
-  const end = isDark ? tone(theme.primary, 4) : tone(theme.primary, 14);
+  if (themeMode === 'night') {
+    return ['#000000', '#141414', '#1c1c1c'];
+  }
+  const start = tone(theme.primary, -16);
+  const middle = tone(theme.primary, -4);
+  const end = tone(theme.primary, 14);
   return [start, middle, end];
 }
 

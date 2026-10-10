@@ -20,13 +20,12 @@ import { adhanPermissionLocale } from '@/utils/i18n/adhanPermissions';
 import { forwardChevronName } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 
-const PASS_COLOR = '#1b7f4d';
 const FAIL_COLOR = '#c0392b';
 
 function borderColorForStatus(status: HealthVisualStatus, theme: ReturnType<typeof useApp>['theme']): string {
   switch (status) {
     case 'healthy':
-      return PASS_COLOR;
+      return theme.tint;
     case 'warning':
       return theme.warning;
     default:

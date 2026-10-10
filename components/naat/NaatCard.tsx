@@ -120,8 +120,8 @@ export function NaatCard({
           ]}
         >
           <View style={styles.actionButtonContent}>
-            <MaterialIcons name={isActive && isPlaying ? 'pause' : 'play-arrow'} size={24} color="#fff" />
-            <RtlText align="center" wrap={false} style={styles.primaryActionText}>{playLabel}</RtlText>
+            <MaterialIcons name={isActive && isPlaying ? 'pause' : 'play-arrow'} size={24} color={theme.onTint} />
+            <RtlText align="center" wrap={false} style={[styles.primaryActionText, { color: theme.onTint }]}>{playLabel}</RtlText>
           </View>
         </Pressable>
         <Pressable

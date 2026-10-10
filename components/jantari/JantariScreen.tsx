@@ -14,7 +14,9 @@ import { SectionHeader } from '@/components/home/SectionHeader';
 import { AdhanHealthBanner } from '@/components/prayer/AdhanHealthBanner';
 import { RtlView } from '@/components/ui/RtlView';
 import { Spacing } from '@/constants/theme';
+import { useApp } from '@/context/AppContext';
 import type { CalendarGridMode } from '@/utils/calendarMonthGrid';
+import { useI18n } from '@/utils/i18n/useI18n';
 import { warmCalendarEventsCache } from '@/utils/calendarEvents';
 import { debugLog } from '@/utils/debugLog';
 
@@ -23,9 +25,15 @@ type DeferredSection = 'grid' | 'events' | 'extras' | 'banner';
 const SECTION_STAGGER_MS = 280;
 
 export function JantariScreen() {
-  const [gridMode, setGridMode] = useState<CalendarGridMode>('shamsi');
+  const { theme } = useApp();
+  const { language } = useI18n();
+  const [gridMode, setGridMode] = useState<CalendarGridMode>(language === 'turkish' ? 'gregorian' : 'shamsi');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [deferred, setDeferred] = useState<Set<DeferredSection>>(new Set());
+
+  useEffect(() => {
+    if (language === 'turkish' && gridMode === 'shamsi') setGridMode('gregorian');
+  }, [gridMode, language]);
 
   useEffect(() => {
     const screenMount = Date.now();
@@ -91,7 +99,7 @@ export function JantariScreen() {
   return (
     <>
       <ScrollView
-        style={{ flex: 1 }}
+        style={{ flex: 1, backgroundColor: theme.background }}
         contentContainerStyle={{ paddingBottom: Spacing.xxl }}
         removeClippedSubviews={Platform.OS === 'android'}
       >

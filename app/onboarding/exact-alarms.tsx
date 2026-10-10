@@ -85,7 +85,7 @@ export default function OnboardingExactAlarmsScreen() {
         <View style={[styles.iconCircle, { backgroundColor: `${theme.warning}18` }]}>
           <MaterialIcons name="alarm" size={48} color={theme.warning} />
         </View>
-        <RtlText align="center" style={[styles.status, { color: granted ? '#1b7f4d' : theme.warning }]}>
+        <RtlText align="center" style={[styles.status, { color: granted ? theme.tint : theme.warning }]}>
           {granted
             ? `${tAdhanPermission('adhanPermissions.exactAlarm.granted', locale)} ✅`
             : `${tAdhanPermission('adhanPermissions.exactAlarm.denied', locale)} ⚠️`}

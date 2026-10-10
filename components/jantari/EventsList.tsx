@@ -41,7 +41,9 @@ export function EventsList() {
 
     const task = InteractionManager.runAfterInteractions(() => {
       const start = Date.now();
-      const rows = getUpcomingEvents(truth.gregorianDate, 5).map((event) => ({
+      const rows = getUpcomingEvents(truth.gregorianDate, 5)
+        .filter((event) => language !== 'turkish' || event.category !== 'afghan')
+        .map((event) => ({
         ...event,
         color: getEventCategoryColor(event.category, theme),
         dateLabel: formatEventDateLabel(event, language),
@@ -71,7 +73,7 @@ export function EventsList() {
       cancelled = true;
       task.cancel();
     };
-  }, [language, theme, truth.gregorianDate]);
+  }, [language, theme, truth.gregorianDate, truth.hijri.year, truth.hijri.month, truth.hijri.day]);
 
   if (loading) {
     return (

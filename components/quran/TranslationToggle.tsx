@@ -80,7 +80,7 @@ export const TranslationToggle = memo(function TranslationToggle({ readerTokens 
               <CenteredText
                 style={[
                   styles.segmentText,
-                  { color: active ? '#fff' : readerTokens?.text ?? theme.text },
+                  { color: active ? ((readerTokens?.accent ?? theme.tint) === theme.tint ? theme.onTint : '#fff') : readerTokens?.text ?? theme.text },
                 ]}
                 numberOfLines={1}
                 adjustsFontSizeToFit

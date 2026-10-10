@@ -96,7 +96,7 @@ export default function OnboardingBatteryScreen() {
         <View style={[styles.iconCircle, { backgroundColor: `${theme.warning}18` }]}>
           <MaterialIcons name="battery-alert" size={48} color={theme.warning} />
         </View>
-        <RtlText align="center" style={[styles.status, { color: exempt ? '#1b7f4d' : theme.textSecondary }]}>
+        <RtlText align="center" style={[styles.status, { color: exempt ? theme.tint : theme.textSecondary }]}>
           {exempt ? t('onboarding.battery.exempt') : t('onboarding.battery.optional')}
         </RtlText>
       </RtlView>

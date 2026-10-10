@@ -38,7 +38,8 @@ export function HomeComposerRow({
   isStreaming,
   isConfigured,
 }: HomeComposerRowProps) {
-  const { theme } = useApp();
+  const { theme, themeMode } = useApp();
+  const sendColor = themeMode === 'night' ? theme.onTint : theme.tint;
   const { fontFamily, isLatin } = useI18n();
   const isEnglish = isLatin;
   const isRtlHome = !isEnglish;
@@ -67,9 +68,9 @@ export function HomeComposerRow({
       style={[styles.sendButton, isRtlHome && styles.sendButtonPashto, disabled && styles.sendButtonDisabled]}
     >
       {isStreaming ? (
-        <ActivityIndicator color={theme.tint} size="small" />
+        <ActivityIndicator color={sendColor} size="small" />
       ) : (
-        <MaterialIcons name="send" size={20} color={theme.tint} />
+        <MaterialIcons name="send" size={20} color={sendColor} />
       )}
     </Pressable>
   );

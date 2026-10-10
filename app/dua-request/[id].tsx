@@ -239,7 +239,7 @@ export default function DuaRequestDetailScreen() {
         {request.status === 'answered' && request.response && (
           <View testID="dua-reply-bubble" style={[styles.replyThread, direction]}>
             <View style={[styles.replyAvatar, { backgroundColor: theme.tint }]}>
-              <MaterialIcons name="person" size={20} color="#fff" />
+              <MaterialIcons name="person" size={20} color={theme.onTint} />
             </View>
             <View
               style={[

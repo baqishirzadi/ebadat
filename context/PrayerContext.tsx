@@ -49,6 +49,7 @@ import { getCalendarTruth } from '@/utils/calendarTruth';
 import { getCity, isAfghanCityKey, normalizeCityKey } from '@/utils/cities';
 import { preloadRegionForCityKey } from '@/utils/cityDatabase';
 import { detectLocationAndFindCity } from '@/utils/gpsLocation';
+import { clampHijriOffsetDays, setUserHijriOffsetDays } from '@/utils/hijriOffset';
 import { HijriDate } from '@/utils/islamicCalendar';
 import {
   AFGHAN_CITIES,
@@ -1308,9 +1309,12 @@ async function configureAndroidNotificationChannels(
         AsyncStorage.getItem(STORAGE_KEYS.LAST_ADHAN_DELAY_SECONDS),
       ]);
 
-      const settings = settingsJson ? { ...DEFAULT_SETTINGS, ...JSON.parse(settingsJson) } : DEFAULT_SETTINGS;
-      let effectiveSettings = { ...settings, hijriOffsetDays: 0 };
-      let shouldPersistSettings = false;
+      const parsedSettings = settingsJson ? { ...DEFAULT_SETTINGS, ...JSON.parse(settingsJson) } : DEFAULT_SETTINGS;
+      const hijriOffsetDays = clampHijriOffsetDays(parsedSettings.hijriOffsetDays);
+      const settings = { ...parsedSettings, hijriOffsetDays };
+      setUserHijriOffsetDays(hijriOffsetDays);
+      let effectiveSettings = settings;
+      let shouldPersistSettings = parsedSettings.hijriOffsetDays !== hijriOffsetDays;
 
       let location = DEFAULT_LOCATION;
       let name = 'کابل';
@@ -1338,7 +1342,7 @@ async function configureAndroidNotificationChannels(
           name = selected.name;
 
           if (settings.selectedCity !== resolvedCityKey) {
-            effectiveSettings = { ...settings, selectedCity: resolvedCityKey };
+            effectiveSettings = { ...effectiveSettings, selectedCity: resolvedCityKey };
             shouldPersistSettings = true;
           }
         }
@@ -1370,6 +1374,7 @@ async function configureAndroidNotificationChannels(
         ...DEFAULT_SETTINGS,
         selectedCity: 'afghanistan_kabul',
       };
+      setUserHijriOffsetDays(0);
       prayerPrefsHydratedRef.current = true;
       dispatch({
         type: 'INITIALIZE',
@@ -1789,18 +1794,94 @@ async function configureAndroidNotificationChannels(
     );
   }, [state.settings]);
 
+  const turkishDefaultCityRef = useRef(false);
+  useEffect(() => {
+    if (state.isLoading || appState.preferences.appLanguage !== 'turkish') return;
+    if (turkishDefaultCityRef.current) return;
+    const selected = state.settings.selectedCity;
+    const factoryCity = !selected || selected === 'afghanistan_kabul' || selected === 'kabul';
+    const factoryName = !state.locationName || state.locationName === 'کابل' || state.locationName === 'Kabul';
+    if (!factoryCity || !factoryName) {
+      turkishDefaultCityRef.current = true;
+      return;
+    }
+    turkishDefaultCityRef.current = true;
+    void (async () => {
+      try {
+        await preloadRegionForCityKey('turkey_province_istanbul');
+        const city = getCity('turkey_province_istanbul');
+        if (!city) {
+          turkishDefaultCityRef.current = false;
+          return;
+        }
+        const location: LocationType = {
+          latitude: city.lat,
+          longitude: city.lon,
+          altitude: city.altitude || 0,
+          timezone: city.timezone,
+          countryCode: city.country,
+        };
+        await setCustomLocation(location, 'İstanbul', city.key);
+      } catch (error) {
+        console.warn('Turkish default city switch failed:', error);
+        turkishDefaultCityRef.current = false;
+      }
+    })();
+  }, [
+    appState.preferences.appLanguage,
+    setCustomLocation,
+    state.isLoading,
+    state.locationName,
+    state.settings.selectedCity,
+  ]);
+
   const updateSettings = useCallback(async (settings: Partial<PrayerSettings>) => {
+    let nextSettings = settings;
+    let hijriOffsetChanged = false;
     if (settings.hijriOffsetDays !== undefined) {
-      // Manual Hijri offset removed — built-in Afghan -1 day correction is always applied.
-      const { hijriOffsetDays: _ignored, ...rest } = settings;
-      settings = rest;
+      const hijriOffsetDays = clampHijriOffsetDays(settings.hijriOffsetDays);
+      if (hijriOffsetDays === state.settings.hijriOffsetDays && Object.keys(settings).length === 1) {
+        return;
+      }
+      setUserHijriOffsetDays(hijriOffsetDays);
+      nextSettings = { ...settings, hijriOffsetDays };
+      hijriOffsetChanged = hijriOffsetDays !== state.settings.hijriOffsetDays;
     }
 
-    dispatch({ type: 'SET_SETTINGS', payload: settings });
+    dispatch({ type: 'SET_SETTINGS', payload: nextSettings });
 
-    const newSettings = { ...state.settings, ...settings };
+    const newSettings = { ...state.settings, ...nextSettings };
     await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(newSettings));
-  }, [state.settings]);
+
+    if (!hijriOffsetChanged) return;
+
+    dispatch({ type: 'SET_HIJRI_DATE', payload: getCalendarTruth().hijri });
+    if (state.prayerTimes) {
+      void pushWidgetSnapshot(state.prayerTimes, state.locationName, {
+        force: true,
+        cityKey: toCityKey(newSettings.selectedCity),
+        location: state.location,
+        timezone: state.location.timezone,
+        appLanguage: appState.preferences.appLanguage,
+        dariFont: appState.preferences.dariFont,
+        pashtoFont: appState.preferences.pashtoFont,
+        horizonDays: 30,
+      });
+    }
+    loadCalendarNotificationPreferences().then((prefs) => {
+      scheduleCalendarNotifications(prefs.enabled).catch((err) => {
+        if (__DEV__) console.warn('Calendar notification schedule:', err);
+      });
+    });
+  }, [
+    appState.preferences.appLanguage,
+    appState.preferences.dariFont,
+    appState.preferences.pashtoFont,
+    state.location,
+    state.locationName,
+    state.prayerTimes,
+    state.settings,
+  ]);
 
   const updateAdhanPreferences = useCallback(async (preferences: Partial<AdhanPreferences>) => {
     const newPreferences = { ...state.adhanPreferences, ...preferences };

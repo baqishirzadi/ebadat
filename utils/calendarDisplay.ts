@@ -1,5 +1,6 @@
 import type { AppLanguage } from '@/types/quran';
 import { getKabulDateParts } from '@/utils/afghanistanCalendar';
+import { getIstanbulDateParts } from '@/utils/istanbulCalendar';
 import { formatAfghanSolarHijriDateWithPersianNumerals, type AfghanSolarHijriDate } from '@/utils/afghanSolarHijri';
 import type { HijriDate } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
@@ -86,7 +87,7 @@ const WEEKDAY_GRID_HEADERS: Record<AppLanguage, string[]> = {
   dari: ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
   pashto: ['ش', 'ی', 'د', 'س', 'چ', 'پ', 'ج'],
   arabic: ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'],
-  turkish: ['Ct', 'Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu'],
+  turkish: ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pz'],
   english: ['Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr'],
 };
 
@@ -111,8 +112,8 @@ const GREG_MONTHS_PASHTO = [
 ];
 
 const GREG_MONTHS_TURKISH = [
-  'Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz',
-  'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara',
+  'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+  'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık',
 ];
 
 const GREG_MONTHS_ARABIC = [
@@ -136,6 +137,20 @@ export function formatGregorianDateCompact(
   const parts = getKabulDateParts(gregorianDate);
   const month = (GREG_MONTHS_BY_LANGUAGE[language] ?? GREG_MONTHS_EN)[parts.month - 1];
   return `${formatNumber(parts.day)} ${month} ${formatNumber(parts.year)}`;
+}
+
+/** Miladi date for the Turkish UI, using the Istanbul civil day and full month names. */
+export function formatTurkishMiladiDate(
+  gregorianDate: Date = new Date(),
+  formatNumber: (value: number) => string = String,
+): string {
+  const parts = getIstanbulDateParts(gregorianDate);
+  const month = GREG_MONTHS_TURKISH[parts.month - 1] ?? '';
+  return `${formatNumber(parts.day)} ${month} ${formatNumber(parts.year)}`;
+}
+
+export function turkishGregorianMonthName(month: number): string {
+  return GREG_MONTHS_TURKISH[month - 1] ?? '';
 }
 
 export function formatGregorianDateTimeCompact(

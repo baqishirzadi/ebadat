@@ -844,7 +844,7 @@ export const MushafView = React.memo(function MushafView({
                 pressed && { opacity: 0.9 },
               ]}
             >
-              <CenteredText style={styles.jumpRetryButtonText}>تلاش دوباره</CenteredText>
+              <CenteredText style={[styles.jumpRetryButtonText, { color: theme.onTint }]}>تلاش دوباره</CenteredText>
             </Pressable>
           </View>
         )}
@@ -861,7 +861,7 @@ export const MushafView = React.memo(function MushafView({
                 pressed && { opacity: 0.9 },
               ]}
             >
-              <CenteredText style={styles.jumpRetryButtonText}>تلاش دوباره</CenteredText>
+              <CenteredText style={[styles.jumpRetryButtonText, { color: theme.onTint }]}>تلاش دوباره</CenteredText>
             </Pressable>
           </View>
         )}

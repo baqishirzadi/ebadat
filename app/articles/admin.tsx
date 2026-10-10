@@ -300,8 +300,8 @@ export default function ArticleAdminScreen() {
             onPress={openComposerForCreate}
             style={[styles.primaryAction, { backgroundColor: theme.tint }]}
           >
-            <MaterialIcons name="add" size={18} color="#fff" />
-            <CenteredText style={styles.primaryActionText}>مقاله جدید</CenteredText>
+            <MaterialIcons name="add" size={18} color={theme.onTint} />
+            <CenteredText style={[styles.primaryActionText, { color: theme.onTint }]}>مقاله جدید</CenteredText>
           </Pressable>
 
           <Pressable

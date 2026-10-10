@@ -122,11 +122,11 @@ export default function AdminLoginScreen() {
           ]}
         >
           {isLoading ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={theme.onTint} />
           ) : (
             <>
-              <MaterialIcons name="login" size={20} color="#fff" />
-              <CenteredText style={styles.loginButtonText}>ورود</CenteredText>
+              <MaterialIcons name="login" size={20} color={theme.onTint} />
+              <CenteredText style={[styles.loginButtonText, { color: theme.onTint }]}>ورود</CenteredText>
             </>
           )}
         </Pressable>

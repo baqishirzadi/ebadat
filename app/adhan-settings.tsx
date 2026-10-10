@@ -199,13 +199,13 @@ export default function AdhanSettingsScreen() {
               >
                 {isTestingVoice === settings.selectedVoice ? (
                   <>
-                    <ActivityIndicator size="small" color="#fff" />
-                    <LocalizedText style={styles.testButtonText}>{t('adhanSettings.playing')}</LocalizedText>
+                    <ActivityIndicator size="small" color={theme.onTint} />
+                    <LocalizedText style={[styles.testButtonText, { color: theme.onTint }]}>{t('adhanSettings.playing')}</LocalizedText>
                   </>
                 ) : (
                   <>
-                    <MaterialIcons name="play-arrow" size={20} color="#fff" />
-                    <LocalizedText style={styles.testButtonText}>{t('adhanSettings.testSound')}</LocalizedText>
+                    <MaterialIcons name="play-arrow" size={20} color={theme.onTint} />
+                    <LocalizedText style={[styles.testButtonText, { color: theme.onTint }]}>{t('adhanSettings.testSound')}</LocalizedText>
                   </>
                 )}
               </Pressable>
@@ -287,8 +287,8 @@ export default function AdhanSettingsScreen() {
               onPress={handleSystemAdhanTest}
               style={[styles.exactAlarmButton, { backgroundColor: theme.tint }]}
             >
-              <MaterialIcons name="notifications-active" size={20} color="#fff" />
-              <LocalizedText style={styles.exactAlarmButtonText}>{t('adhanSettings.systemTestButton')}</LocalizedText>
+              <MaterialIcons name="notifications-active" size={20} color={theme.onTint} />
+              <LocalizedText style={[styles.exactAlarmButtonText, { color: theme.onTint }]}>{t('adhanSettings.systemTestButton')}</LocalizedText>
             </Pressable>
             <LocalizedText
               testID="adhan-system-test-status"
@@ -357,8 +357,8 @@ export default function AdhanSettingsScreen() {
                 onPress={openNotificationSettings}
                 style={[styles.openSettingsButton, { backgroundColor: theme.tint }]}
               >
-                <MaterialIcons name="settings" size={20} color="#fff" />
-                <LocalizedText style={styles.openSettingsButtonText}>
+                <MaterialIcons name="settings" size={20} color={theme.onTint} />
+                <LocalizedText style={[styles.openSettingsButtonText, { color: theme.onTint }]}>
                   {t('adhanSettings.openSettings')}
                 </LocalizedText>
               </Pressable>

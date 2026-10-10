@@ -20,12 +20,15 @@ import {
 } from '@/components/more';
 import { BorderRadius, NAAT_GRADIENT, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { useDiyanetHijriDate } from '@/hooks/useDiyanetHijri';
 import { useDua } from '@/context/DuaContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { useStats } from '@/context/StatsContext';
 import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSolarHijri';
 import { getKabulDateKey, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
-import { formatGregorianDateCompact, weekdayName } from '@/utils/calendarDisplay';
+import { localizeCityName } from '@/utils/cities';
+import { getIstanbulDateParts } from '@/utils/istanbulCalendar';
+import { formatGregorianDateCompact, formatTurkishMiladiDate, weekdayName } from '@/utils/calendarDisplay';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import {
   formatEventDateLabel,
@@ -60,9 +63,19 @@ function formatGregorianDate(date: Date, language: AppLanguage): string {
     : formatGregorianDateCompact(date, toArabicNumerals);
 }
 
+function chunkPairs<T>(items: readonly T[]): T[][] {
+  const rows: T[][] = [];
+  for (let i = 0; i < items.length; i += 2) {
+    rows.push(items.slice(i, i + 2));
+  }
+  return rows;
+}
+
 export default function MoreScreen() {
   const { theme, themeMode, state } = useApp();
   const language = state.preferences.appLanguage;
+  const isTurkish = language === 'turkish';
+  const diyanetHijri = useDiyanetHijriDate(isTurkish);
   const directionalRow = rowStyle(language);
   const { dashboardSnapshot } = useStats();
   const { state: prayer } = usePrayer();
@@ -73,11 +86,17 @@ export default function MoreScreen() {
   const [upcomingCards, setUpcomingCards] = useState<UpcomingDayCard[]>([]);
 
   const kabulDayKey = getKabulDateKey(new Date());
-  const truth = useMemo(() => getCalendarTruth(new Date()), [kabulDayKey]);
-  const weekdayLabel = weekdayName(truth.weekday, language);
+  const truth = useMemo(
+    () => getCalendarTruth(new Date(), prayer.settings.hijriOffsetDays),
+    [kabulDayKey, prayer.settings.hijriOffsetDays],
+  );
+  const weekdayLabel = weekdayName(
+    isTurkish ? getIstanbulDateParts().weekday : truth.weekday,
+    language,
+  );
   const locationLabel = useMemo(
-    () => prayer.locationName?.trim() || 'کابل',
-    [prayer.locationName],
+    () => localizeCityName(prayer.locationName?.trim() || (isTurkish ? 'İstanbul' : 'کابل'), language),
+    [isTurkish, language, prayer.locationName],
   );
   const scheduleModeLabel = useMemo(() => {
     const mode = prayer.scheduleAudit?.scheduleMode;
@@ -109,7 +128,9 @@ export default function MoreScreen() {
 
     let cancelled = false;
     const task = InteractionManager.runAfterInteractions(() => {
-      const cards = getUpcomingEvents(truth.gregorianDate, 5).map((event) => {
+      const cards = getUpcomingEvents(truth.gregorianDate, 5)
+        .filter((event) => language !== 'turkish' || event.category !== 'afghan')
+        .map((event) => {
         const dateParts = formatEventDateParts(event, language);
         return {
           key: event.id,
@@ -120,7 +141,12 @@ export default function MoreScreen() {
           dateLabel: formatEventDateLabel(event, language),
           dateDay: dateParts.day,
           dateMonth: dateParts.month,
-          weekdayLabel: weekdayName(getKabulWeekdayIndex(event.gregorianDate), language),
+          weekdayLabel: weekdayName(
+            language === 'turkish'
+              ? getIstanbulDateParts(event.gregorianDate).weekday
+              : getKabulWeekdayIndex(event.gregorianDate),
+            language,
+          ),
           badgeColor: getEventCategoryColor(event.category, theme),
         };
       });
@@ -134,7 +160,7 @@ export default function MoreScreen() {
       cancelled = true;
       task.cancel();
     };
-  }, [language, showDeferredSections, truth.gregorianDate, theme.tint, theme.bookmark]);
+  }, [language, showDeferredSections, truth.gregorianDate, truth.hijri.year, truth.hijri.month, truth.hijri.day, theme.tint, theme.bookmark]);
 
   const worshipActions = useMemo(() => [
     { icon: 'auto-awesome' as const, label: 'اذکار', subtitle: 'اذکار روزانه', route: '/(tabs)/adhkar' },
@@ -252,16 +278,26 @@ export default function MoreScreen() {
 
           <CenteredText style={[styles.heroLead, { color: theme.textSecondary }]}>امروز در یک نگاه</CenteredText>
           <CenteredText style={[styles.heroHijri, { color: theme.text }]}>
-            {language === 'pashto'
-              ? localizeDigits(formatHijriDate(truth.hijri, language), language)
-              : formatHijriDate(truth.hijri, language)}
+            {isTurkish
+              ? formatTurkishMiladiDate(new Date(), String)
+              : language === 'pashto'
+                ? localizeDigits(formatHijriDate(truth.hijri, language), language)
+                : formatHijriDate(truth.hijri, language)}
           </CenteredText>
-          <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
-            {formatAfghanSolarHijriDateWithPersianNumerals(truth.shamsi, language)}
-          </CenteredText>
-          <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
-            {formatGregorianDate(truth.gregorianDate, language)}
-          </CenteredText>
+          {isTurkish ? (
+            <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
+              {formatHijriDate(diyanetHijri, language)}
+            </CenteredText>
+          ) : (
+            <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
+              {formatAfghanSolarHijriDateWithPersianNumerals(truth.shamsi, language)}
+            </CenteredText>
+          )}
+          {isTurkish ? null : (
+            <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
+              {formatGregorianDate(truth.gregorianDate, language)}
+            </CenteredText>
+          )}
         </View>
 
         {([
@@ -272,16 +308,23 @@ export default function MoreScreen() {
           <View key={group.title} style={styles.section}>
             <MoreSectionTitle title={group.title} />
             <View style={styles.quickGrid}>
-              {group.actions.map((item) => (
-                <MoreHubTile
-                  key={item.route}
-                  icon={item.icon}
-                  label={item.label}
-                  subtitle={item.subtitle}
-                  badgeCount={item.route === '/dua-request' ? unreadCount : 0}
-                  testID={item.route === '/(tabs)/ahadith' ? 'ios-open-ahadith' : undefined}
-                  onPress={() => router.push(item.route as any)}
-                />
+              {chunkPairs(group.actions).map((row) => (
+                <View
+                  key={row.map((item) => item.route).join('|')}
+                  style={[styles.quickRow, row.length === 1 && styles.quickRowSingle]}
+                >
+                  {row.map((item) => (
+                    <MoreHubTile
+                      key={item.route}
+                      icon={item.icon}
+                      label={item.label}
+                      subtitle={item.subtitle}
+                      badgeCount={item.route === '/dua-request' ? unreadCount : 0}
+                      testID={item.route === '/(tabs)/ahadith' ? 'ios-open-ahadith' : undefined}
+                      onPress={() => router.push(item.route as any)}
+                    />
+                  ))}
+                </View>
               ))}
             </View>
           </View>
@@ -297,6 +340,8 @@ export default function MoreScreen() {
       scheduleModeLabel,
       truth.hijri,
       truth.shamsi,
+      diyanetHijri,
+      isTurkish,
       truth.gregorianDate,
       worshipActions,
       studyActions,
@@ -562,9 +607,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
   },
   quickGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: Spacing.sm,
+  },
+  quickRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  quickRowSingle: {
+    justifyContent: 'center',
   },
   summaryGrid: {
     flexDirection: 'row',

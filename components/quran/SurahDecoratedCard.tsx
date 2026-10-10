@@ -107,7 +107,7 @@ export function SurahDecoratedCard({
 
       {isHighlighted && (
         <View style={[styles.playingBadge, { backgroundColor: theme.playing }]}>
-          <MaterialIcons name="play-arrow" size={14} color="#fff" />
+          <MaterialIcons name="play-arrow" size={14} color={theme.onTint} />
         </View>
       )}
     </Pressable>

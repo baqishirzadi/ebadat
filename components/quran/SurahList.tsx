@@ -106,7 +106,7 @@ const SurahItem = React.memo(function SurahItem({
       {/* Continue Reading Badge - absolute */}
       {isLastRead && (
         <View style={[styles.continueReading, { backgroundColor: theme.playing }]}>
-          <MaterialIcons name="play-arrow" size={14} color="#fff" />
+          <MaterialIcons name="play-arrow" size={14} color={theme.onTint} />
         </View>
       )}
     </Pressable>
@@ -624,12 +624,12 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
   },
   glassButtonActive: {
-    borderColor: 'rgba(190,255,220,0.75)',
-    backgroundColor: 'rgba(52,178,122,0.55)',
+    borderColor: 'rgba(255,255,255,0.75)',
+    backgroundColor: 'rgba(255,255,255,0.34)',
   },
   glassButtonShadowActive: {
-    backgroundColor: 'rgba(14,107,79,0.015)',
-    shadowColor: '#155E43',
+    backgroundColor: 'transparent',
+    shadowColor: '#000000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.18,
     shadowRadius: 4,

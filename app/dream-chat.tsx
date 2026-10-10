@@ -86,11 +86,11 @@ function ChatBubble({ isUser, text, theme, isEnglish, onCopied }: ChatBubbleProp
         style={[
           styles.bubbleText,
           isEnglish ? styles.bubbleTextLtr : null,
-          { color: isUser ? '#fff' : theme.text },
+          { color: isUser ? theme.onTint : theme.text },
           Platform.OS === 'android' ? { includeFontPadding: false } : null,
         ]}
-        boldStyle={{ color: isUser ? '#fff' : theme.text }}
-        headingStyle={{ color: isUser ? '#fff' : theme.text }}
+        boldStyle={{ color: isUser ? theme.onTint : theme.text }}
+        headingStyle={{ color: isUser ? theme.onTint : theme.text }}
         onLongPress={!isUser ? () => void handleCopy() : undefined}
         testID={!isUser ? 'dream-assistant-message' : undefined}
       >{displayText}</MarkdownText>
@@ -438,9 +438,9 @@ export default function DreamChatScreen() {
           ]}
         >
           {isStreaming ? (
-            <ActivityIndicator color="#fff" size="small" />
+            <ActivityIndicator color={theme.onTint} size="small" />
           ) : (
-            <MaterialIcons name="send" size={22} color="#fff" />
+            <MaterialIcons name="send" size={22} color={theme.onTint} />
           )}
         </Pressable>
         {isEnglish ? null : (

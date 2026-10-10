@@ -180,7 +180,7 @@ export function OnboardingShell({
         >
           <RtlText
             align="center"
-            style={[styles.primaryLabel, isEnglish && styles.primaryLabelEnglish]}
+            style={[styles.primaryLabel, isEnglish && styles.primaryLabelEnglish, { color: theme.onTint }]}
           >
             {primaryLabel}
           </RtlText>

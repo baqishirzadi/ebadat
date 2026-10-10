@@ -3,6 +3,9 @@
  * Afghanistan stays in utils/cities.ts for fast onboarding.
  */
 
+import type { AppLanguage } from '@/types/quran';
+import { formatTurkishPlaceName, turkishCountryLabel } from '@/utils/turkishPlaces';
+
 import type { City } from './cities';
 import {
   AFGHANISTAN_FEATURED_CITY_KEYS,
@@ -105,7 +108,8 @@ function worldCityToLegacy(city: WorldCity, category: string): City & { category
   };
 }
 
-export function getCitySubtitle(city: WorldCity): string {
+export function getCitySubtitle(city: WorldCity, language?: AppLanguage): string {
+  const turkish = language === 'turkish';
   const parts: string[] = [];
   const provinceLabel = city.admin1Name || city.admin1NameEn;
   const cityLabel = city.name || city.nameEn;
@@ -115,9 +119,19 @@ export function getCitySubtitle(city: WorldCity): string {
       (Boolean(cityLabel) &&
         normalizeAdminName(provinceLabel!) !== normalizeAdminName(cityLabel!)));
   if (showProvince && provinceLabel) {
-    parts.push(provinceLabel);
+    parts.push(
+      turkish
+        ? formatTurkishPlaceName(provinceLabel, city.admin1NameEn)
+        : provinceLabel,
+    );
   }
-  if (city.countryName) parts.push(city.countryName);
+  if (turkish) {
+    const country = turkishCountryLabel(city.country, city.countryName);
+    if (country) parts.push(country);
+    else if (city.countryName) parts.push(formatTurkishPlaceName(city.countryName));
+  } else if (city.countryName) {
+    parts.push(city.countryName);
+  }
   return parts.join(' • ');
 }
 
@@ -288,9 +302,9 @@ export function getFeaturedCitiesForRegion(regionId: string): Array<{ key: strin
     .map(({ key, city }) => ({ key, city: worldCityToLegacy(city, regionId) }));
 }
 
-export function getCityDisplaySubtitle(cityKey: string): string {
+export function getCityDisplaySubtitle(cityKey: string, language?: AppLanguage): string {
   const world = worldCityMap.get(cityKey);
-  if (world) return getCitySubtitle(world);
+  if (world) return getCitySubtitle(world, language);
   const bundled = ALL_CITIES[cityKey];
   if (bundled?.admin1) return bundled.admin1;
   return '';

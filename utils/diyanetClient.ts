@@ -17,9 +17,16 @@ export type DiyanetTimings = {
   isha: string;
 };
 
+export type DiyanetHijriDate = {
+  year: number;
+  month: number;
+  day: number;
+};
+
 export type DiyanetDay = {
   date: string; // YYYY-MM-DD
   timings: DiyanetTimings;
+  hijri?: DiyanetHijriDate;
 };
 
 type DistrictCache = Record<string, string>;
@@ -150,6 +157,17 @@ function parseDiyanetDate(raw: string): string {
   return raw.slice(0, 10);
 }
 
+function mapHijri(raw: unknown): DiyanetHijriDate | undefined {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const record = raw as Record<string, unknown>;
+  const day = Number(record.day);
+  const month = Number(record.month);
+  const year = Number(record.year);
+  if (!Number.isFinite(day) || !Number.isFinite(month) || !Number.isFinite(year)) return undefined;
+  if (month < 1 || month > 12 || day < 1 || day > 30 || year < 1) return undefined;
+  return { year, month, day };
+}
+
 function mapTimes(times: Record<string, string> | undefined): DiyanetTimings | null {
   if (!times) return null;
   const fajr = times.imsak || times.Imsak;
@@ -180,7 +198,7 @@ export async function fetchDiyanetMonth(
     const date = parseDiyanetDate(String(row.date || ''));
     const timings = mapTimes(row.times);
     if (!date || !timings) continue;
-    days.push({ date, timings });
+    days.push({ date, timings, hijri: mapHijri(row.hijri_date) });
   }
   return days;
 }

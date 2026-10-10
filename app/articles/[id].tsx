@@ -111,7 +111,7 @@ export default function ArticleReadingScreen() {
           <>
             <CenteredText style={[styles.message, { color: theme.text }]}>{t('articles.notFound')}</CenteredText>
             <Pressable onPress={goBack} style={[styles.notFoundBack, { backgroundColor: theme.tint }]}>
-              <LocalizedText style={styles.notFoundBackText}>{t('common.back')}</LocalizedText>
+              <LocalizedText style={[styles.notFoundBackText, { color: theme.onTint }]}>{t('common.back')}</LocalizedText>
             </Pressable>
           </>
         )}

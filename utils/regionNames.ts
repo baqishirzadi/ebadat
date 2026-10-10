@@ -22,7 +22,7 @@ const REGION_NAMES: Record<string, RegionCopy> = {
     dari: 'ترکیه',
     pashto: 'ترکیه',
     english: 'Turkiye',
-    turkish: 'Turkiye',
+    turkish: 'Türkiye',
     arabic: 'تركيا',
   },
   pakistan: {
@@ -126,7 +126,8 @@ export function regionDisplayName(
   const named = REGION_NAMES[id]?.[language];
   if (named) return named;
   if (language === 'english' || language === 'turkish') {
-    return id === 'turkey' ? 'Turkiye' : fallback.nameEn;
+    if (id === 'turkey') return language === 'turkish' ? 'Türkiye' : 'Turkiye';
+    return fallback.nameEn;
   }
   return fallback.name;
 }

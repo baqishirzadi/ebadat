@@ -531,7 +531,7 @@ export default function ArticlesFeed() {
               }}
               style={[styles.emptyButton, { backgroundColor: theme.tint }]}
             >
-              <LocalizedText style={styles.emptyButtonText}>{t('articles.clearFilter')}</LocalizedText>
+              <LocalizedText style={[styles.emptyButtonText, { color: theme.onTint }]}>{t('articles.clearFilter')}</LocalizedText>
             </Pressable>
           ) : null}
         </>
@@ -605,9 +605,9 @@ export default function ArticlesFeed() {
                 style={[styles.pinConfirmButton, { backgroundColor: theme.tint }]}
               >
                 {submittingAdminPin ? (
-                  <ActivityIndicator size="small" color="#fff" />
+                  <ActivityIndicator size="small" color={theme.onTint} />
                 ) : (
-                  <CenteredText style={styles.pinConfirmText}>{t('articles.admin.confirm')}</CenteredText>
+                  <CenteredText style={[styles.pinConfirmText, { color: theme.onTint }]}>{t('articles.admin.confirm')}</CenteredText>
                 )}
               </Pressable>
               <Pressable

@@ -109,7 +109,7 @@ enum WidgetPrayerCalculator {
     calendar.timeZone = timezone
     let times = calculate(snapshot: snapshot, date: date)
     let dateKey = dateKey(for: date, timezone: timezone)
-    let labels = calendarLabels(date: date, timezone: timezone)
+    let labels = calendarLabels(date: date, timezone: timezone, hijriOffsetDays: snapshot.hijriOffsetDays)
     let prayers: [WidgetPrayerEntry] = [
       ("fajr", "صبح", times.fajr),
       ("dhuhr", "ظهر", times.dhuhr),
@@ -140,7 +140,7 @@ enum WidgetPrayerCalculator {
     )
   }
 
-  static func calendarLabels(date: Date, timezone: TimeZone) -> (
+  static func calendarLabels(date: Date, timezone: TimeZone, hijriOffsetDays: Int = 0) -> (
     weekdayDari: String,
     weekdayPashto: String,
     shamsiDisplay: String,
@@ -157,8 +157,8 @@ enum WidgetPrayerCalculator {
       weekdayPashto: weekdaysPashto[max(0, min(6, (parts.weekday ?? 1) - 1))],
       shamsiDisplay: solarDisplay(date: date, timezone: timezone),
       shamsiDisplayPashto: solarDisplay(date: date, timezone: timezone, pashto: true),
-      hijriDisplay: hijriDisplay(date: date, timezone: timezone),
-      hijriDisplayPashto: hijriDisplay(date: date, timezone: timezone, pashto: true),
+      hijriDisplay: hijriDisplay(date: date, timezone: timezone, offsetDays: hijriOffsetDays),
+      hijriDisplayPashto: hijriDisplay(date: date, timezone: timezone, pashto: true, offsetDays: hijriOffsetDays),
       gregorianDisplay: gregorianDisplay(date: date, calendar: calendar)
     )
   }
@@ -257,11 +257,16 @@ enum WidgetPrayerCalculator {
     return "\(persianDigits(String(parts.day ?? 1))) \(monthName) \(persianDigits(String(parts.year ?? 0)))"
   }
 
-  private static func hijriDisplay(date: Date, timezone: TimeZone, pashto: Bool = false) -> String {
+  private static func hijriDisplay(date: Date, timezone: TimeZone, pashto: Bool = false, offsetDays: Int = 0) -> String {
     var calendar = Calendar(identifier: .islamicUmmAlQura)
     let kabulTimezone = TimeZone(identifier: "Asia/Kabul") ?? timezone
     calendar.timeZone = kabulTimezone
-    let kabulDateKey = dateKey(for: date, timezone: kabulTimezone)
+    var gregorian = Calendar(identifier: .gregorian)
+    gregorian.timeZone = kabulTimezone
+    let adjustedDate = offsetDays == 0
+      ? date
+      : (gregorian.date(byAdding: .day, value: offsetDays, to: date) ?? date)
+    let kabulDateKey = dateKey(for: adjustedDate, timezone: kabulTimezone)
     let parts: HijriDateParts
     if let verified = verifiedAfghanHijriDate(dateKey: kabulDateKey) {
       parts = verified
@@ -271,7 +276,7 @@ enum WidgetPrayerCalculator {
       let correction = afghanHijriCorrectionRanges.first(where: {
         kabulDateKey >= $0.startDateKey && kabulDateKey <= $0.endDateKey
       })?.shiftDays ?? 0
-      let shifted = calendar.date(byAdding: .day, value: -2 + correction, to: date) ?? date
+      let shifted = calendar.date(byAdding: .day, value: -2 + correction, to: adjustedDate) ?? adjustedDate
       let components = calendar.dateComponents([.year, .month, .day], from: shifted)
       parts = HijriDateParts(
         year: components.year ?? 0,

@@ -165,8 +165,8 @@ export default function ScholarDashboardScreen() {
             pressed && styles.buttonPressed,
           ]}
         >
-          <MaterialIcons name="add-circle" size={24} color="#fff" />
-          <CenteredText style={styles.actionButtonText}>مقاله جدید</CenteredText>
+          <MaterialIcons name="add-circle" size={24} color={theme.onTint} />
+          <CenteredText style={[styles.actionButtonText, { color: theme.onTint }]}>مقاله جدید</CenteredText>
         </Pressable>
         <Pressable
           onPress={() => router.push('/scholar/analytics')}

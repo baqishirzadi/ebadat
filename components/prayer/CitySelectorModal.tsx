@@ -29,6 +29,7 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { regionDisplayName } from '@/utils/regionNames';
+import { displayCityLabel } from '@/utils/turkishPlaces';
 
 interface CitySelectorModalProps {
   visible: boolean;
@@ -103,7 +104,9 @@ export function CitySelectorModal({
       const result = await detectLocationAndFindCity();
       if (result.success && result.cityKey) {
         const city = getCity(result.cityKey);
-        const cityName = city?.name || result.cityName || t('onboarding.location.unknownCity');
+        const cityName = city
+          ? displayCityLabel(city, language)
+          : (result.cityName || t('onboarding.location.unknownCity'));
         const warning = result.warning ? `\n\n${result.error}` : '';
         Alert.alert(
           t('onboarding.location.gpsFound'),
@@ -132,7 +135,7 @@ export function CitySelectorModal({
     } finally {
       setGpsLoading(false);
     }
-  }, [onSelectCity, t]);
+  }, [language, onSelectCity, t]);
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -165,7 +168,7 @@ export function CitySelectorModal({
   const renderCity = useCallback(
     ({ item }: { item: CityRow }) => {
       const isSelected = selectedCity === item.key;
-      const subtitle = getCityDisplaySubtitle(item.key);
+      const subtitle = getCityDisplaySubtitle(item.key, language);
       return (
         <Pressable
           onPress={() => {
@@ -182,24 +185,24 @@ export function CitySelectorModal({
           ]}
         >
           <RtlView style={styles.cityTextWrap}>
-            <RtlText align="center" style={[styles.cityItemText, { color: isSelected ? '#fff' : theme.text }]}>
-              {item.city.name}
+            <RtlText align="center" style={[styles.cityItemText, { color: isSelected ? theme.onTint : theme.text }]}>
+              {displayCityLabel(item.city, language)}
             </RtlText>
             {subtitle ? (
               <RtlText
                 align="center"
-                style={[styles.citySubtitle, { color: isSelected ? 'rgba(255,255,255,0.85)' : theme.textSecondary }]}
+                style={[styles.citySubtitle, { color: isSelected ? theme.onTint : theme.textSecondary }]}
                 numberOfLines={1}
               >
                 {subtitle}
               </RtlText>
             ) : null}
           </RtlView>
-          {isSelected && <MaterialIcons name="check-circle" size={20} color="#fff" />}
+          {isSelected && <MaterialIcons name="check-circle" size={20} color={theme.onTint} />}
         </Pressable>
       );
     },
-    [selectedCity, theme, onSelectCity, onClose],
+    [language, selectedCity, theme, onSelectCity, onClose],
   );
 
   return (
@@ -283,7 +286,7 @@ export function CitySelectorModal({
                     style={[
                       styles.categoryTabText,
                       {
-                        color: selectedCategory === category.id ? '#fff' : theme.text,
+                        color: selectedCategory === category.id ? theme.onTint : theme.text,
                         fontWeight: selectedCategory === category.id ? '700' : '600',
                       },
                     ]}

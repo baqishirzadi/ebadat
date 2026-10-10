@@ -310,7 +310,7 @@ export default function NaatScreen() {
                       }}
                       style={[styles.syncBannerButton, { backgroundColor: theme.tint }]}
                     >
-                      <RtlText align="center" wrap={false} style={styles.syncBannerButtonText}>{tUi('تلاش دوباره', state.preferences.appLanguage)}</RtlText>
+                      <RtlText align="center" wrap={false} style={[styles.syncBannerButtonText, { color: theme.onTint }]}>{tUi('تلاش دوباره', state.preferences.appLanguage)}</RtlText>
                     </Pressable>
                   </View>
                 )}
@@ -350,7 +350,7 @@ export default function NaatScreen() {
                         },
                       ]}
                     >
-                      <RtlText align="center" wrap={false} style={[styles.reciterText, { color: selectedReciter === reciter ? '#fff' : theme.text }]}>
+                      <RtlText align="center" wrap={false} style={[styles.reciterText, { color: selectedReciter === reciter ? theme.onTint : theme.text }]}>
                         {reciter === ALL_RECITER_FILTER ? tUi('همه', language) : reciter}
                       </RtlText>
                     </Pressable>
@@ -424,7 +424,7 @@ export default function NaatScreen() {
                 onPress={handleNaatAdminPinSubmit}
                 style={[styles.pinModalButton, styles.pinModalButtonPrimary, { backgroundColor: theme.tint }]}
               >
-                <RtlText style={styles.pinModalButtonText}>{tUi('تأیید', language)}</RtlText>
+                <RtlText style={[styles.pinModalButtonText, { color: theme.onTint }]}>{tUi('تأیید', language)}</RtlText>
               </Pressable>
               <Pressable
                 onPress={closeNaatAdminPinModal}
@@ -543,7 +543,7 @@ const NaatPlayerDock = React.memo(function NaatPlayerDock({
             }}
             style={[styles.playerPlayButton, { backgroundColor: theme.tint }]}
           >
-            <MaterialIcons name={player.isPlaying ? 'pause' : 'play-arrow'} size={28} color="#fff" />
+            <MaterialIcons name={player.isPlaying ? 'pause' : 'play-arrow'} size={28} color={theme.onTint} />
           </Pressable>
           <Pressable
             testID="naat-player-previous-button"

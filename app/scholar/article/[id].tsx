@@ -190,12 +190,12 @@ export default function EditArticleScreen() {
                 <MaterialIcons
                   name={cat.icon as any}
                   size={16}
-                  color={category === cat.id ? '#fff' : cat.color}
+                  color={category === cat.id ? theme.onTint : cat.color}
                 />
                 <CenteredText
                   style={[
                     styles.categoryText,
-                    { color: category === cat.id ? '#fff' : theme.text },
+                    { color: category === cat.id ? theme.onTint : theme.text },
                   ]}
                 >
                   {cat.nameDari}
@@ -231,7 +231,7 @@ export default function EditArticleScreen() {
                 <CenteredText
                   style={[
                     styles.languageText,
-                    { color: language === id ? '#fff' : theme.text },
+                    { color: language === id ? theme.onTint : theme.text },
                   ]}
                 >
                   {label}
@@ -325,11 +325,11 @@ export default function EditArticleScreen() {
               ]}
             >
               {publishing ? (
-                <ActivityIndicator size="small" color="#fff" />
+                <ActivityIndicator size="small" color={theme.onTint} />
               ) : (
                 <>
-                  <MaterialIcons name="publish" size={20} color="#fff" />
-                  <CenteredText style={styles.publishButtonText}>انتشار</CenteredText>
+                  <MaterialIcons name="publish" size={20} color={theme.onTint} />
+                  <CenteredText style={[styles.publishButtonText, { color: theme.onTint }]}>انتشار</CenteredText>
                 </>
               )}
             </Pressable>

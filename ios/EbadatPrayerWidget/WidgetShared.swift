@@ -52,6 +52,7 @@ enum WidgetShared {
         calculationMethod: stored.calculationMethod,
         asrMethod: stored.asrMethod,
         maghribOffsetMinutes: stored.maghribOffsetMinutes,
+        hijriOffsetDays: stored.hijriOffsetDays,
         fixedDhuhrLocalTime: stored.fixedDhuhrLocalTime,
         days: nil,
         weekdayDari: calculated.weekdayDari,
@@ -127,6 +128,7 @@ enum WidgetShared {
       calculationMethod: stored.calculationMethod,
       asrMethod: stored.asrMethod,
       maghribOffsetMinutes: stored.maghribOffsetMinutes,
+      hijriOffsetDays: stored.hijriOffsetDays,
       fixedDhuhrLocalTime: stored.fixedDhuhrLocalTime,
       days: stored.days,
       weekdayDari: day.weekdayDari,
@@ -148,7 +150,7 @@ enum WidgetShared {
     let timezone = TimeZone(identifier: snapshot.timezone.isEmpty ? "Asia/Kabul" : snapshot.timezone) ?? .current
     let key = WidgetPrayerCalculator.dateKey(for: date, timezone: timezone)
     if let storedDay = snapshot.days?.first(where: { $0.dateKey == key }) {
-      let refreshedDate = WidgetPrayerCalculator.calendarLabels(date: date, timezone: timezone)
+      let refreshedDate = WidgetPrayerCalculator.calendarLabels(date: date, timezone: timezone, hijriOffsetDays: snapshot.hijriOffsetDays)
       var prayers = storedDay.prayers
       if (snapshot.policyVersion ?? 0) < currentPrayerPolicyVersion {
         let missingMinutes = max(0, globalMaghribOffsetMinutes - snapshot.maghribOffsetMinutes)
@@ -341,6 +343,7 @@ struct WidgetSnapshot: Codable {
   let calculationMethod: String
   let asrMethod: String
   let maghribOffsetMinutes: Int
+  let hijriOffsetDays: Int
   let fixedDhuhrLocalTime: String?
   let days: [WidgetDaySnapshot]?
   let weekdayDari: String
@@ -358,7 +361,7 @@ struct WidgetSnapshot: Codable {
 
   enum CodingKeys: String, CodingKey {
     case version, appLanguage, dariFont, pashtoFont, updatedAt, cityName, timezone, policyVersion, sourceLabel, latitude, longitude, altitude
-    case calculationMethod, asrMethod, maghribOffsetMinutes, fixedDhuhrLocalTime, days
+    case calculationMethod, asrMethod, maghribOffsetMinutes, hijriOffsetDays, fixedDhuhrLocalTime, days
     case weekdayDari, weekdayPashto, shamsiDisplay, shamsiDisplayPashto, hijriDisplay, hijriDisplayPashto, gregorianDisplay, sunriseDisplay, sunriseDisplayPashto
     case currentPrayer, prayers, nextRefreshAtMs
   }
@@ -379,6 +382,7 @@ struct WidgetSnapshot: Codable {
     calculationMethod: String = "Karachi",
     asrMethod: String = "Hanafi",
     maghribOffsetMinutes: Int = 0,
+    hijriOffsetDays: Int = 0,
     fixedDhuhrLocalTime: String? = nil,
     days: [WidgetDaySnapshot]? = nil,
     weekdayDari: String,
@@ -409,6 +413,7 @@ struct WidgetSnapshot: Codable {
     self.calculationMethod = calculationMethod
     self.asrMethod = asrMethod
     self.maghribOffsetMinutes = maghribOffsetMinutes
+    self.hijriOffsetDays = hijriOffsetDays
     self.fixedDhuhrLocalTime = fixedDhuhrLocalTime
     self.days = days
     self.weekdayDari = weekdayDari
@@ -443,6 +448,7 @@ struct WidgetSnapshot: Codable {
     calculationMethod = try container.decodeIfPresent(String.self, forKey: .calculationMethod) ?? "Karachi"
     asrMethod = try container.decodeIfPresent(String.self, forKey: .asrMethod) ?? "Hanafi"
     maghribOffsetMinutes = try container.decodeIfPresent(Int.self, forKey: .maghribOffsetMinutes) ?? 0
+    hijriOffsetDays = min(2, max(-2, try container.decodeIfPresent(Int.self, forKey: .hijriOffsetDays) ?? 0))
     fixedDhuhrLocalTime = try container.decodeIfPresent(String.self, forKey: .fixedDhuhrLocalTime)
     days = try container.decodeIfPresent([WidgetDaySnapshot].self, forKey: .days)
     weekdayDari = try container.decode(String.self, forKey: .weekdayDari)

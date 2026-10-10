@@ -22,6 +22,10 @@ import { useApp, useLocalizedFontPreferences } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { CalculationMethods } from '@/utils/prayerTimes';
+import { gregorianToDisplayDiyanetHijri } from '@/utils/diyanetHijri';
+import { gregorianToDisplayHijri } from '@/utils/hijriOffset';
+import { hijriMonthName } from '@/utils/islamicCalendar';
+import { formatNumber } from '@/utils/numbers';
 import { translateUi, type UiMessageKey } from '@/utils/i18n/catalog';
 import { APP_LANGUAGES, APP_LANGUAGE_ORDER } from '@/utils/i18n/languages';
 import { languageChoiceStyle } from '@/utils/i18n/languageChoiceStyle';
@@ -146,6 +150,22 @@ export default function SettingsScreen() {
   const toggleSection = useCallback((section: string) => {
     setExpandedSection((current) => (current === section ? null : section));
   }, []);
+
+  const hijriOffsetDays = prayerState.settings.hijriOffsetDays ?? 0;
+  const previewHijri = uiLanguage === 'turkish'
+    ? gregorianToDisplayDiyanetHijri(new Date(), hijriOffsetDays)
+    : gregorianToDisplayHijri(new Date(), hijriOffsetDays);
+  const hijriPreview = `${formatNumber(previewHijri.day, uiLanguage)} ${hijriMonthName(previewHijri, uiLanguage)} ${formatNumber(previewHijri.year, uiLanguage)}`;
+  const hijriOffsetLabelKey: UiMessageKey =
+    hijriOffsetDays === -2
+      ? 'settings.hijriOffset.minus2'
+      : hijriOffsetDays === -1
+        ? 'settings.hijriOffset.minus1'
+        : hijriOffsetDays === 1
+          ? 'settings.hijriOffset.plus1'
+          : hijriOffsetDays === 2
+            ? 'settings.hijriOffset.plus2'
+            : 'settings.hijriOffset.zero';
 
   return (
     <>
@@ -689,6 +709,49 @@ export default function SettingsScreen() {
             </View>
           )}
 
+          <View style={[styles.hijriOffsetCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
+            <LocalizedText style={[styles.hijriOffsetTitle, { color: theme.text }]}>
+              {translateUi('settings.hijriOffset.title', uiLanguage)}
+            </LocalizedText>
+            <LocalizedText style={[styles.hijriOffsetHint, { color: theme.textSecondary }]}>
+              {translateUi('settings.hijriOffset.hint', uiLanguage)}
+            </LocalizedText>
+            <View style={styles.hijriStepper}>
+              <Pressable
+                accessibilityRole="button"
+                disabled={hijriOffsetDays <= -2}
+                onPress={() => updateSettings({ hijriOffsetDays: hijriOffsetDays - 1 })}
+                style={[
+                  styles.hijriStepButton,
+                  { backgroundColor: theme.backgroundSecondary },
+                  hijriOffsetDays <= -2 && styles.hijriStepButtonDisabled,
+                ]}
+              >
+                <MaterialIcons name="remove" size={22} color={theme.text} />
+              </Pressable>
+              <View style={styles.hijriOffsetValue}>
+                <LocalizedText style={[styles.hijriOffsetStatus, { color: theme.tint }]}>
+                  {translateUi(hijriOffsetLabelKey, uiLanguage)}
+                </LocalizedText>
+                <LocalizedText style={[styles.hijriOffsetPreview, { color: theme.text }]}>
+                  {hijriPreview}
+                </LocalizedText>
+              </View>
+              <Pressable
+                accessibilityRole="button"
+                disabled={hijriOffsetDays >= 2}
+                onPress={() => updateSettings({ hijriOffsetDays: hijriOffsetDays + 1 })}
+                style={[
+                  styles.hijriStepButton,
+                  { backgroundColor: theme.backgroundSecondary },
+                  hijriOffsetDays >= 2 && styles.hijriStepButtonDisabled,
+                ]}
+              >
+                <MaterialIcons name="add" size={22} color={theme.text} />
+              </Pressable>
+            </View>
+          </View>
+
           {/* Adhan Settings Link */}
           <Pressable
             onPress={() => router.push('/adhan-settings')}
@@ -896,6 +959,64 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     textAlign: 'center',
     fontFamily: 'Vazirmatn',
+  },
+  hijriOffsetCard: {
+    marginHorizontal: Spacing.md,
+    marginTop: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  hijriOffsetTitle: {
+    width: '100%',
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn-Bold',
+    textAlign: 'center',
+  },
+  hijriOffsetHint: {
+    width: '100%',
+    fontSize: Typography.ui.caption,
+    lineHeight: 22,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
+  },
+  hijriStepper: {
+    flexDirection: 'row',
+    direction: 'ltr',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
+  },
+  hijriStepButton: {
+    width: 40,
+    height: 40,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hijriStepButtonDisabled: {
+    opacity: 0.35,
+  },
+  hijriOffsetValue: {
+    flex: 1,
+    minWidth: 0,
+    alignItems: 'center',
+  },
+  hijriOffsetStatus: {
+    width: '100%',
+    fontSize: Typography.ui.body,
+    fontFamily: 'Vazirmatn-Bold',
+    textAlign: 'center',
+  },
+  hijriOffsetPreview: {
+    width: '100%',
+    fontSize: Typography.ui.caption,
+    lineHeight: 22,
+    fontFamily: 'Vazirmatn',
+    textAlign: 'center',
   },
   adhanSettingsLink: {
     alignItems: 'center',

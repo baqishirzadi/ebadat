@@ -214,7 +214,7 @@ export function ArticleComposer({
                   },
                 ]}
               >
-                <LocalizedText style={[styles.chipText, { color: selected ? '#fff' : theme.text }]} numberOfLines={1}>
+                <LocalizedText style={[styles.chipText, { color: selected ? theme.onTint : theme.text }]} numberOfLines={1}>
                   {scholar.fullName}
                 </LocalizedText>
               </Pressable>
@@ -245,7 +245,7 @@ export function ArticleComposer({
                 },
               ]}
             >
-              <LocalizedText style={[styles.languageText, { color: language === id ? '#fff' : theme.text }]}>{label}</LocalizedText>
+              <LocalizedText style={[styles.languageText, { color: language === id ? theme.onTint : theme.text }]}>{label}</LocalizedText>
             </Pressable>
           ))}
         </View>
@@ -269,8 +269,8 @@ export function ArticleComposer({
                   },
                 ]}
               >
-                <MaterialIcons name={item.icon as never} size={14} color={selected ? '#fff' : item.color} />
-                <LocalizedText style={[styles.categoryText, { color: selected ? '#fff' : theme.text }]}>
+                <MaterialIcons name={item.icon as never} size={14} color={selected ? theme.onTint : item.color} />
+                <LocalizedText style={[styles.categoryText, { color: selected ? theme.onTint : theme.text }]}>
                   {item.nameDari}
                 </LocalizedText>
               </Pressable>
@@ -388,9 +388,9 @@ export function ArticleComposer({
           style={[styles.actionPrimary, { backgroundColor: theme.tint }]}
         >
           {isPublishing ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={theme.onTint} />
           ) : (
-            <LocalizedText style={styles.actionPrimaryText}>انتشار</LocalizedText>
+            <LocalizedText style={[styles.actionPrimaryText, { color: theme.onTint }]}>انتشار</LocalizedText>
           )}
         </Pressable>
       </View>

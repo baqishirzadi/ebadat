@@ -262,11 +262,11 @@ export default function NewDuaRequestScreen() {
           ]}
         >
           {isSubmitting ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size="small" color={theme.onTint} />
           ) : (
             <>
-              <MaterialIcons name="send" size={20} color="#fff" />
-              <CenteredText style={styles.submitButtonText}>{t('dua.new.submit')}</CenteredText>
+              <MaterialIcons name="send" size={20} color={theme.onTint} />
+              <CenteredText style={[styles.submitButtonText, { color: theme.onTint }]}>{t('dua.new.submit')}</CenteredText>
             </>
           )}
         </Pressable>

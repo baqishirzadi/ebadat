@@ -246,7 +246,7 @@ export const AyahRow = memo(function AyahRow({
 
       {ayah.sajda && (
         <View style={[styles.sajdaIndicator, { backgroundColor: readerTokens?.accent ?? theme.tint }]}>
-          <Text style={styles.sajdaText}>سجده</Text>
+          <Text style={[styles.sajdaText, { color: (readerTokens?.accent ?? theme.tint) === theme.tint ? theme.onTint : '#fff' }]}>سجده</Text>
         </View>
       )}
     </Pressable>

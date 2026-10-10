@@ -339,7 +339,7 @@ export default function SearchScreen() {
             <View style={styles.headerBadges}>
               {!!item.matchedLanguage && (
                 <View style={[styles.langBadge, { backgroundColor: theme.tint }]}>
-                  <CenteredText style={styles.langBadgeText}>
+                  <CenteredText style={[styles.langBadgeText, { color: theme.onTint }]}>
                     {languageLabel(item.matchedLanguage)}
                   </CenteredText>
                 </View>
@@ -482,7 +482,7 @@ export default function SearchScreen() {
             onPress={() => runSearch(query, 0, false)}
             style={[styles.retryButton, { backgroundColor: theme.tint }]}
           >
-            <CenteredText style={styles.retryButtonText}>{t('common.retry')}</CenteredText>
+            <CenteredText style={[styles.retryButtonText, { color: theme.onTint }]}>{t('common.retry')}</CenteredText>
           </Pressable>
         </View>
       ) : isSearching && results.length === 0 ? (
