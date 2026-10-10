@@ -784,12 +784,14 @@ const FloralOpeningBorder = memo(function FloralOpeningBorder({
 const OpeningMetaBand = memo(function OpeningMetaBand({
   pageNumber,
   juz,
+  onDarkPage = false,
 }: {
   pageNumber: number;
   juz: number;
+  onDarkPage?: boolean;
 }) {
   return (
-    <View style={styles.openingMetaBand}>
+    <View style={[styles.openingMetaBand, onDarkPage && styles.illumPlaque]}>
       <Text style={[styles.openingMetaText, androidFontPad]}>
         {toArabicNumerals(pageNumber)}
       </Text>
@@ -936,12 +938,14 @@ const SurahFloralHeader = memo(function SurahFloralHeader({
   surahNumber,
   fontSize,
   lineHeight,
+  onDarkPage = false,
 }: {
   title?: string;
   basmallahText?: string | null;
   surahNumber?: number;
   fontSize: number;
   lineHeight: number;
+  onDarkPage?: boolean;
 }) {
   // Pages 1–2: double-framed plaque with the mushaf side notes and Bismillah.
   if (surahNumber === 1 || surahNumber === 2) {
@@ -977,14 +981,14 @@ const SurahFloralHeader = memo(function SurahFloralHeader({
           </View>
         ) : null}
         {basmallahText != null ? (
-          <BasmallahText text={basmallahText || BISMILLAH} fontSize={fontSize + 2} ornate />
+          <BasmallahText text={basmallahText || BISMILLAH} fontSize={fontSize + 2} ornate onDarkPage={onDarkPage} />
         ) : null}
       </View>
     );
   }
 
   return (
-    <View style={styles.surahHeader}>
+    <View style={[styles.surahHeader, onDarkPage && styles.illumPlaque]}>
       {title ? (
         <View style={styles.surahHeaderTitleRow}>
           <MiniFloral size={14} />
@@ -1041,12 +1045,14 @@ const BasmallahText = memo(function BasmallahText({
   fontSize,
   ornate = false,
   compact = false,
+  onDarkPage = false,
 }: {
   text?: string;
   fontSize: number;
   ornate?: boolean;
   /** Retained for non-header callers that need a compact ornament. */
   compact?: boolean;
+  onDarkPage?: boolean;
 }) {
   const size = compact ? Math.max(13, fontSize - 2) : fontSize + 1;
   const ratio = compact ? 2 : BASMALLAH_LINE_HEIGHT_RATIO;
@@ -1069,11 +1075,11 @@ const BasmallahText = memo(function BasmallahText({
   );
 
   if (!ornate) {
-    return <View style={styles.basmallahRow}>{body}</View>;
+    return <View style={[styles.basmallahRow, onDarkPage && styles.illumPlaque]}>{body}</View>;
   }
 
   return (
-    <View style={[styles.basmallahOrnateRow, compact && styles.basmallahOrnateRowCompact]}>
+    <View style={[styles.basmallahOrnateRow, compact && styles.basmallahOrnateRowCompact, onDarkPage && styles.illumPlaque]}>
       <View style={styles.basmallahRuleSide}>
         <MiniFloral size={compact ? 12 : 14} />
         <View style={styles.basmallahRule} />
@@ -3181,6 +3187,7 @@ export const Hifz16View = memo(function Hifz16View({
               page={page}
               background={readerTokens.page}
               ink={readerTokens.arabic}
+              onDarkPage={readerTokens.isDark}
               contentPaddingTop={contentPaddingTop}
               contentPaddingBottom={contentPaddingBottom}
               pageHeight={pageHeight}
@@ -3204,6 +3211,7 @@ export const Hifz16View = memo(function Hifz16View({
       pageHeight,
       readerTokens.accent,
       readerTokens.arabic,
+      readerTokens.isDark,
       readerTokens.page,
       readerTokens.text,
     ]
@@ -3456,6 +3464,7 @@ const HifzPageCard = memo(function HifzPageCard({
   page,
   background,
   ink,
+  onDarkPage = false,
   contentPaddingTop,
   contentPaddingBottom,
   pageHeight,
@@ -3468,6 +3477,7 @@ const HifzPageCard = memo(function HifzPageCard({
   page: HifzPage;
   background: string;
   ink: string;
+  onDarkPage?: boolean;
   contentPaddingTop: number;
   contentPaddingBottom: number;
   pageHeight: number;
@@ -3522,11 +3532,11 @@ const HifzPageCard = memo(function HifzPageCard({
           <View style={styles.openingFrame}>
             <FloralOpeningBorder width={frameSize.width} height={frameSize.height} sparse />
             <View style={styles.openingInner}>
-              <OpeningMetaBand pageNumber={page.page} juz={page.juz} />
+              <OpeningMetaBand pageNumber={page.page} juz={page.juz} onDarkPage={onDarkPage} />
               <OpeningGarden />
               <SurahCartouche title={surahLine?.text} />
               {surahInfo ? (
-                <View style={styles.openingFacts}>
+                <View style={[styles.openingFacts, onDarkPage && styles.illumPlaque]}>
                   <Text style={[styles.openingFactText, androidFontPad]}>
                     {surahInfo.revelationType}
                   </Text>
@@ -3539,7 +3549,7 @@ const HifzPageCard = memo(function HifzPageCard({
 
               <View style={styles.openingTextArea}>
                 {basmallahLine ? (
-                  <BasmallahText text={basmallahLine.text} fontSize={fontSize} ornate />
+                  <BasmallahText text={basmallahLine.text} fontSize={fontSize} ornate onDarkPage={onDarkPage} />
                 ) : null}
 
                 <View style={styles.openingAyahBlock}>
@@ -3667,7 +3677,7 @@ const HifzPageCard = memo(function HifzPageCard({
                           }
                         />
                       ) : line.type === 'basmallah' ? (
-                        <BasmallahText text={line.text} fontSize={fontSize} ornate />
+                        <BasmallahText text={line.text} fontSize={fontSize} ornate onDarkPage={onDarkPage} />
                       ) : line.type === 'surah_name' ? (
                         <SurahFloralHeader
                           title={line.text}
@@ -3675,24 +3685,27 @@ const HifzPageCard = memo(function HifzPageCard({
                           surahNumber={line.surahNumber}
                           fontSize={fontSize}
                           lineHeight={lineHeight}
+                          onDarkPage={onDarkPage}
                         />
                       ) : (
-                        <Text
-                          numberOfLines={1}
-                          ellipsizeMode="clip"
-                          style={[
-                            styles.lineText,
-                            styles.lineCentered,
-                            {
-                              color: ILLUM.greenDark,
-                              fontSize,
-                              lineHeight,
-                            },
-                            androidFontPad,
-                          ]}
-                        >
-                          {line.text}
-                        </Text>
+                        <View style={onDarkPage ? styles.illumPlaque : undefined}>
+                          <Text
+                            numberOfLines={1}
+                            ellipsizeMode="clip"
+                            style={[
+                              styles.lineText,
+                              styles.lineCentered,
+                              {
+                                color: ILLUM.greenDark,
+                                fontSize,
+                                lineHeight,
+                              },
+                              androidFontPad,
+                            ]}
+                          >
+                            {line.text}
+                          </Text>
+                        </View>
                       )}
                     </View>
                   );
@@ -4170,6 +4183,12 @@ const styles = StyleSheet.create({
   creditsClosing: {
     marginTop: 4,
     paddingVertical: 4,
+  },
+  illumPlaque: {
+    backgroundColor: '#F3FAF7',
+    borderColor: ILLUM.gold,
+    borderWidth: 1,
+    borderRadius: 8,
   },
   openingMetaBand: {
     flexDirection: 'row',

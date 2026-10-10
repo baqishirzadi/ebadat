@@ -15,6 +15,7 @@ import {
   QuranFonts,
   Spacing,
   ThemeMode,
+  Themes,
   Typography,
 } from '@/constants/theme';
 import { useApp, useLocalizedFontPreferences } from '@/context/AppContext';
@@ -36,6 +37,7 @@ import { forwardChevronName, rowStyle } from '@/utils/i18n/direction';
 export default function SettingsScreen() {
   const {
     theme,
+    themeMode,
     state,
     setTheme,
     setAppLanguage,
@@ -62,8 +64,8 @@ export default function SettingsScreen() {
     () => [
       { id: 'light', name: 'روشن', icon: 'light-mode' },
       { id: 'night', name: 'شب (سیاه)', icon: 'dark-mode' },
-      { id: 'turquoise', name: 'فیروزه‌ای', icon: 'palette' },
-      { id: 'olive', name: 'زیتونی', icon: 'eco' },
+      { id: 'sapphire', name: 'سرمه‌ای', icon: 'water' },
+      { id: 'burgundy', name: 'عنابی', icon: 'menu-book' },
     ],
     [],
   );
@@ -170,7 +172,7 @@ export default function SettingsScreen() {
             <View style={styles.sectionInfo}>
               <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>{tUi('ظاهر برنامه', uiLanguage)}</LocalizedText>
               <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
-                {tUi(themes.find((t) => t.id === state.preferences.theme)?.name ?? '', uiLanguage)}
+                {tUi(themes.find((t) => t.id === themeMode)?.name ?? '', uiLanguage)}
               </LocalizedText>
             </View>
             <MaterialIcons
@@ -189,23 +191,34 @@ export default function SettingsScreen() {
                     styles.optionItem,
                     directionalRow,
                     { borderBottomColor: theme.divider },
-                    state.preferences.theme === t.id && { backgroundColor: theme.backgroundSecondary },
+                    themeMode === t.id && { backgroundColor: theme.backgroundSecondary },
                   ]}
                 >
+                  <View
+                    style={[
+                      styles.themeSwatch,
+                      {
+                        backgroundColor: Themes[t.id].background,
+                        borderColor: Themes[t.id].cardBorder,
+                      },
+                    ]}
+                  >
+                    <View style={[styles.themeSwatchBar, { backgroundColor: Themes[t.id].tint }]} />
+                  </View>
                   <MaterialIcons
                     name={t.icon as keyof typeof MaterialIcons.glyphMap}
                     size={20}
-                    color={state.preferences.theme === t.id ? theme.tint : theme.icon}
+                    color={themeMode === t.id ? theme.tint : theme.icon}
                   />
                   <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78}
                     style={[
                       styles.optionText,
-                      { color: state.preferences.theme === t.id ? theme.tint : theme.text },
+                      { color: themeMode === t.id ? theme.tint : theme.text },
                     ]}
                   >
                     {tUi(t.name, uiLanguage)}
                   </LocalizedText>
-                  {state.preferences.theme === t.id && (
+                  {themeMode === t.id && (
                     <MaterialIcons name="check" size={20} color={theme.tint} />
                   )}
                 </Pressable>
@@ -810,6 +823,17 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.md,
     borderRadius: BorderRadius.md,
     overflow: 'hidden',
+  },
+  themeSwatch: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    borderWidth: 1,
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
+  },
+  themeSwatchBar: {
+    height: 8,
   },
   optionItem: {
     alignItems: 'center',

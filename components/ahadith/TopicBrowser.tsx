@@ -62,7 +62,7 @@ export function TopicBrowser({
         numberOfLines={1}
         style={[
           styles.topicChipText,
-          { color: selected ? theme.surface : theme.textSecondary, lineHeight: nastaliq ? 30 : 20 },
+          { color: selected ? '#ffffff' : theme.textSecondary, lineHeight: nastaliq ? 30 : 20 },
         ]}
       >
         {label}

@@ -1,12 +1,12 @@
 /**
  * Theme system for Ebadat Quran App
- * Supports: Light, Dark (Night), Turquoise Blue, Light Olive Green
+ * Supports: Light (Naat green), Night, Sapphire, Burgundy
  * With proper RTL font support for Arabic, Dari, and Pashto
  */
 
 import { Platform } from 'react-native';
 
-export type ThemeMode = 'light' | 'night' | 'turquoise' | 'olive';
+export type ThemeMode = 'light' | 'night' | 'sapphire' | 'burgundy';
 
 export interface ThemeColors {
   // Core colors
@@ -61,8 +61,8 @@ const lightTheme: ThemeColors = {
   accent: '#d4af37',
   text: '#1a1a1a',
   textSecondary: '#666666',
-  background: '#fefefe',
-  backgroundSecondary: '#f8f5f0',
+  background: '#f6f3ee',
+  backgroundSecondary: '#efeae3',
   tint: NAAT_GREEN,
   icon: '#687076',
   tabIconDefault: '#687076',
@@ -94,28 +94,28 @@ const lightTheme: ThemeColors = {
 // while preserving the app's Naat-green identity.
 const nightTheme: ThemeColors = {
   primary: '#2a9d84',
-  surface: '#121816',
+  surface: '#17241f',
   textPrimary: '#eef4f1',
   accent: '#d4af37',
   text: '#eef4f1',
-  textSecondary: '#a0b2ab',
+  textSecondary: '#b7c7c0',
   background: '#050807',
-  backgroundSecondary: '#0d1411',
+  backgroundSecondary: '#101916',
   tint: '#2a9d84',
-  icon: '#8a9c95',
-  tabIconDefault: '#6e8079',
+  icon: '#a8bab3',
+  tabIconDefault: '#93a79f',
   tabIconSelected: '#2a9d84',
   
   arabicText: '#e7efeb',
-  translationText: '#b6c6bf',
+  translationText: '#c8d5cf',
   ayahNumber: '#2a9d84',
   surahHeader: '#12483a',
   surahHeaderText: '#f1f7f4',
   bismillah: '#62c2a5',
   
-  card: '#111a17',
-  cardBorder: '#24372f',
-  divider: '#1d2a25',
+  card: '#17241f',
+  cardBorder: '#2f4a40',
+  divider: '#2a3d35',
   bookmark: '#d4af37',
   playing: '#2a9d84',
   
@@ -127,92 +127,103 @@ const nightTheme: ThemeColors = {
   shadow: 'rgba(0, 0, 0, 0.55)',
 };
 
-// Turquoise - neutral page canvas with turquoise reserved for app surfaces and accents.
-// The previous palette tinted the entire page through background/backgroundSecondary.
-const turquoiseTheme: ThemeColors = {
-  primary: '#0b7f7a',
+// Sapphire — cool ivory page, navy ink, gold kept for bookmarks.
+const sapphireTheme: ThemeColors = {
+  primary: '#1e3a5f',
   surface: '#ffffff',
-  textPrimary: '#123b3a',
-  accent: '#d4af37',
-  text: '#123b3a',
-  textSecondary: '#54706e',
-  background: '#f7faf9',
-  backgroundSecondary: '#eef4f2',
-  tint: '#0b7f7a',
-  icon: '#68817e',
-  tabIconDefault: '#68817e',
-  tabIconSelected: '#0b7f7a',
-  
-  arabicText: '#102e2d',
-  translationText: '#31514f',
-  ayahNumber: '#0b7f7a',
-  surahHeader: '#0b7f7a',
+  textPrimary: '#1a2332',
+  accent: '#c6a15b',
+  text: '#1a2332',
+  textSecondary: '#5c6b7a',
+  background: '#f3f5f8',
+  backgroundSecondary: '#e7ebf1',
+  tint: '#1e3a5f',
+  icon: '#6a7888',
+  tabIconDefault: '#6a7888',
+  tabIconSelected: '#1e3a5f',
+
+  arabicText: '#121a26',
+  translationText: '#3d4c5e',
+  ayahNumber: '#1e3a5f',
+  surahHeader: '#1e3a5f',
   surahHeaderText: '#ffffff',
-  bismillah: '#07635f',
-  
+  bismillah: '#16304f',
+
   card: '#ffffff',
-  cardBorder: '#d8e3e0',
-  divider: '#e3ebe8',
-  bookmark: '#d4af37',
-  playing: '#0b7f7a',
-  
+  cardBorder: '#d5dde6',
+  divider: '#e1e7ee',
+  bookmark: '#c6a15b',
+  playing: '#1e3a5f',
+
   tabBar: '#ffffff',
-  tabBarBorder: '#d8e3e0',
+  tabBarBorder: '#d5dde6',
 
   warning: '#b45309',
   warningSurface: '#fff7ed',
-  shadow: 'rgba(11, 127, 122, 0.14)',
+  shadow: 'rgba(30, 58, 95, 0.14)',
 };
 
-// Olive - Naat green primary (unified with Naat header)
-const oliveTheme: ThemeColors = {
-  primary: '#6b8e23',
-  surface: '#fafcf5',
-  textPrimary: '#2a3a2a',
-  accent: '#d4af37',
-  text: '#2a3a2a',
-  textSecondary: '#5a6a5a',
-  background: '#f5f8f0',
-  backgroundSecondary: '#e8ede0',
-  tint: '#6b8e23',
-  icon: '#7a8a6a',
-  tabIconDefault: '#7a8a6a',
-  tabIconSelected: '#6b8e23',
-  
-  arabicText: '#1a2a1a',
-  translationText: '#3a4a3a',
-  ayahNumber: '#6b8e23',
-  surahHeader: '#6b8e23',
+// Burgundy — warm ivory page, wine accent, manuscript gold.
+const burgundyTheme: ThemeColors = {
+  primary: '#6b2d3c',
+  surface: '#fffdfb',
+  textPrimary: '#2c1810',
+  accent: '#c4a574',
+  text: '#2c1810',
+  textSecondary: '#7a655c',
+  background: '#faf6f2',
+  backgroundSecondary: '#f3ebe4',
+  tint: '#6b2d3c',
+  icon: '#8a756c',
+  tabIconDefault: '#8a756c',
+  tabIconSelected: '#6b2d3c',
+
+  arabicText: '#24140f',
+  translationText: '#4a342c',
+  ayahNumber: '#6b2d3c',
+  surahHeader: '#6b2d3c',
   surahHeaderText: '#ffffff',
-  bismillah: '#556b2f',
-  
-  card: '#fafcf5',
-  cardBorder: '#d0dab8',
-  divider: '#dce6c8',
-  bookmark: '#d4af37',
-  playing: '#6b8e23',
-  
-  tabBar: '#f0f5e8',
-  tabBarBorder: '#d0dab8',
+  bismillah: '#5a2432',
+
+  card: '#fffdfb',
+  cardBorder: '#eadfd6',
+  divider: '#f0e6de',
+  bookmark: '#c4a574',
+  playing: '#6b2d3c',
+
+  tabBar: '#fffdfb',
+  tabBarBorder: '#eadfd6',
 
   warning: '#b45309',
   warningSurface: '#fff7ed',
-  shadow: 'rgba(107, 142, 35, 0.12)',
+  shadow: 'rgba(107, 45, 60, 0.14)',
 };
 
 export const Themes: Record<ThemeMode, ThemeColors> = {
   light: lightTheme,
   night: nightTheme,
-  turquoise: turquoiseTheme,
-  olive: oliveTheme,
+  sapphire: sapphireTheme,
+  burgundy: burgundyTheme,
 };
+
+const THEME_MODES: readonly ThemeMode[] = ['light', 'night', 'sapphire', 'burgundy'];
+
+/** Map a saved theme id onto the current set. Retired turquoise and olive become the new accents. */
+export function resolveThemeMode(value: unknown): ThemeMode {
+  if (value === 'turquoise') return 'sapphire';
+  if (value === 'olive') return 'burgundy';
+  if (typeof value === 'string' && (THEME_MODES as readonly string[]).includes(value)) {
+    return value as ThemeMode;
+  }
+  return 'light';
+}
 
 /** Naat header gradient colors - use for headers across the app */
 export const NAAT_GRADIENT: Record<ThemeMode, [string, string, string]> = {
   light: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
   night: ['#050807', '#0b1712', '#10382c'],
-  turquoise: ['#075e5b', '#0b7f7a', '#19a69f'],
-  olive: ['#556b2f', '#6b8e23', '#88a946'],
+  sapphire: ['#152a45', '#1e3a5f', '#2f5580'],
+  burgundy: ['#4a1e28', '#6b2d3c', '#8f4554'],
 };
 
 // Legacy Colors export for backwards compatibility

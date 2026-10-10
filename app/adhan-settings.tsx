@@ -345,10 +345,10 @@ export default function AdhanSettingsScreen() {
 
         {/* Error Message with Open Settings Button */}
         {state.error && (
-          <View style={[styles.errorCard, { backgroundColor: '#ffebee', borderColor: '#f44336' }]}>
+          <View style={[styles.errorCard, { backgroundColor: theme.warningSurface, borderColor: theme.warning }]}>
             <View style={styles.errorContent}>
-              <MaterialIcons name="error-outline" size={24} color="#f44336" />
-              <LocalizedText style={[styles.errorText, { color: '#c62828' }]}>
+              <MaterialIcons name="error-outline" size={24} color={theme.warning} />
+              <LocalizedText style={[styles.errorText, { color: theme.warning }]}>
                 {state.error}
               </LocalizedText>
             </View>

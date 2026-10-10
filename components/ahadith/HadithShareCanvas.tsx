@@ -31,7 +31,7 @@ export const HadithShareCanvas = forwardRef<View, HadithShareCanvasProps>(({ had
           style={[
             styles.arabic,
             {
-              color: theme.surface,
+              color: '#ffffff',
               fontFamily: getQuranFontFamily(state.preferences.quranFont),
             },
           ]}

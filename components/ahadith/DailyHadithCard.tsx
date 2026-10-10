@@ -114,7 +114,7 @@ export function DailyHadithCard({
   const gradeLabel = hadith.is_muttafaq
     ? getMuttafaqBadgeLabel(language)
     : getAuthenticityGradeLabel(hadith.authenticity_grade, language);
-  const onPanel = theme.surface;
+  const onPanel = '#ffffff';
   const chipStyle = { backgroundColor: alphaColor(onPanel, 0.14), borderColor: alphaColor(onPanel, 0.3) };
 
   return (

@@ -5,6 +5,7 @@ import { ActivityIndicator, Platform, Pressable, StyleSheet } from 'react-native
 import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { useApp } from '@/context/AppContext';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 interface HomeComposerRowProps {
@@ -37,6 +38,7 @@ export function HomeComposerRow({
   isStreaming,
   isConfigured,
 }: HomeComposerRowProps) {
+  const { theme } = useApp();
   const { fontFamily, isLatin } = useI18n();
   const isEnglish = isLatin;
   const isRtlHome = !isEnglish;
@@ -65,9 +67,9 @@ export function HomeComposerRow({
       style={[styles.sendButton, isRtlHome && styles.sendButtonPashto, disabled && styles.sendButtonDisabled]}
     >
       {isStreaming ? (
-        <ActivityIndicator color="#1a4d3e" size="small" />
+        <ActivityIndicator color={theme.tint} size="small" />
       ) : (
-        <MaterialIcons name="send" size={20} color="#1a4d3e" />
+        <MaterialIcons name="send" size={20} color={theme.tint} />
       )}
     </Pressable>
   );

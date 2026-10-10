@@ -5,7 +5,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useRef, useState, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts, PashtoFonts, DEFAULT_PASHTO_FONT } from '@/constants/theme';
+import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, Themes, ThemeColors, QuranFonts, PashtoFonts, DEFAULT_PASHTO_FONT, resolveThemeMode } from '@/constants/theme';
 import {
   Bookmark,
   ReadingPosition,
@@ -468,6 +468,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
         preferencesNormalized = true;
       }
 
+      const resolvedTheme = resolveThemeMode(preferences.theme);
+      if (preferences.theme !== resolvedTheme) {
+        preferences = {
+          ...preferences,
+          theme: resolvedTheme,
+        };
+        preferencesNormalized = true;
+      }
+
       const bookmarks = bookmarksJson ? JSON.parse(bookmarksJson) : [];
       const lastPosition = positionJson ? JSON.parse(positionJson) : DEFAULT_POSITION;
 
@@ -500,8 +509,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // Get current theme colors
-  const theme = Themes[state.preferences.theme];
+  // Get current theme colors. Unknown or retired ids fall back to light.
+  const themeMode = resolveThemeMode(state.preferences.theme);
+  const theme = Themes[themeMode];
 
   // Action handlers
   const setTheme = (newTheme: ThemeMode) => {
@@ -595,7 +605,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const contextValue: AppContextType = {
     state,
     theme,
-    themeMode: state.preferences.theme,
+    themeMode,
     layoutRestartPending,
     setTheme,
     setAppLanguage,
@@ -644,7 +654,7 @@ export function useLocalizedFontPreferences(): Pick<UserPreferences, 'dariFont' 
 // Convenience hooks
 export function useTheme() {
   const { theme, state, setTheme } = useApp();
-  return { theme, currentTheme: state.preferences.theme, setTheme };
+  return { theme, currentTheme: resolveThemeMode(state.preferences.theme), setTheme };
 }
 
 export function useQuranFont() {

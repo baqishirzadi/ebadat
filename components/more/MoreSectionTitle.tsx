@@ -24,6 +24,5 @@ const styles = StyleSheet.create({
     fontSize: Typography.ui.caption,
     fontWeight: '700',
     marginBottom: Spacing.md,
-    textTransform: 'uppercase',
   },
 });

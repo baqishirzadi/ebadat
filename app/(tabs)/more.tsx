@@ -5,6 +5,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, Pressable, InteractionManager, SectionList, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -38,7 +39,7 @@ import { formatHijriDate } from '@/utils/islamicCalendar';
 import { localizeDigits, toArabicNumerals } from '@/utils/numbers';
 import type { AppLanguage } from '@/types/quran';
 
-type DeferredSectionKey = 'summary' | 'today' | 'upcoming' | 'support' | 'creatorMessage' | 'creatorCompany';
+type DeferredSectionKey = 'progress' | 'upcoming' | 'app' | 'creatorMessage' | 'creatorCompany';
 
 interface UpcomingDayCard {
   key: string;
@@ -67,6 +68,7 @@ export default function MoreScreen() {
   const { state: prayer } = usePrayer();
   const { unreadCount } = useDua();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [showDeferredSections, setShowDeferredSections] = useState(false);
   const [upcomingCards, setUpcomingCards] = useState<UpcomingDayCard[]>([]);
 
@@ -134,23 +136,29 @@ export default function MoreScreen() {
     };
   }, [language, showDeferredSections, truth.gregorianDate, theme.tint, theme.bookmark]);
 
-  const quickActions = useMemo(() => [
-    { icon: 'menu-book' as const, label: 'مفتی هوشمند حنفی', subtitle: 'سوال دینی و فقهی', route: '/mufti-chat' },
-    { icon: 'nights-stay' as const, label: 'تعبیر خواب اسلامی', subtitle: 'بر اساس قرآن و حدیث', route: '/dream-chat' },
+  const worshipActions = useMemo(() => [
     { icon: 'auto-awesome' as const, label: 'اذکار', subtitle: 'اذکار روزانه', route: '/(tabs)/adhkar' },
-    { icon: 'format-quote' as const, label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith' },
-    { icon: 'article' as const, label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles' },
-    { icon: 'calendar-today' as const, label: 'جنتری', subtitle: 'تقویم اسلامی', route: '/(tabs)/jantari' },
-    { icon: 'explore' as const, label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla' },
     { icon: 'school' as const, label: 'آموزش نماز', subtitle: 'فقه و راهنما', route: '/(tabs)/prayer-learning' },
+    { icon: 'explore' as const, label: 'قبله‌نما', subtitle: 'جهت قبله', route: '/qibla' },
     { icon: 'favorite' as const, label: 'دعای خیر', subtitle: 'ارسال درخواست دعا', route: '/dua-request' },
     { icon: 'bookmark' as const, label: 'نشانه‌های من', subtitle: 'موارد ذخیره‌شده', route: '/(tabs)/bookmarks' },
   ], []);
 
-  const secondaryActions = useMemo(() => [
+  const studyActions = useMemo(() => [
+    { icon: 'format-quote' as const, label: 'احادیث', subtitle: 'حدیث روز و جستجو', route: '/(tabs)/ahadith' },
+    { icon: 'article' as const, label: 'مقالات', subtitle: 'مطالعه و مدیریت', route: '/(tabs)/articles' },
+    { icon: 'calendar-today' as const, label: 'جنتری', subtitle: 'تقویم اسلامی', route: '/(tabs)/jantari' },
+  ], []);
+
+  const questionActions = useMemo(() => [
+    { icon: 'menu-book' as const, label: 'مفتی هوشمند حنفی', subtitle: 'سوال دینی و فقهی', route: '/mufti-chat' },
+    { icon: 'nights-stay' as const, label: 'تعبیر خواب اسلامی', subtitle: 'بر اساس قرآن و حدیث', route: '/dream-chat' },
+  ], []);
+
+  const appActions = useMemo(() => [
+    { icon: 'settings' as const, label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/settings' },
     { icon: 'access-alarm' as const, label: 'تنظیمات اذان', subtitle: 'زمان‌بندی و صدا', route: '/adhan-settings' },
     { icon: 'admin-panel-settings' as const, label: 'پنل مدیریت', subtitle: 'بخش مدیریتی', route: '/admin/login' },
-    { icon: 'settings' as const, label: 'تنظیمات', subtitle: 'تم و ترجمه', route: '/settings' },
   ], []);
 
   const summaryCards = useMemo(() => [
@@ -195,11 +203,11 @@ export default function MoreScreen() {
       return [] as { key: string; data: DeferredSectionKey[] }[];
     }
 
-    const items: DeferredSectionKey[] = ['summary', 'today'];
+    const items: DeferredSectionKey[] = ['progress'];
     if (upcomingCards.length > 0) {
       items.push('upcoming');
     }
-    items.push('support', 'creatorMessage', 'creatorCompany');
+    items.push('app', 'creatorMessage', 'creatorCompany');
 
     return [{ key: 'dashboard', data: items }];
   }, [showDeferredSections, upcomingCards.length]);
@@ -209,13 +217,9 @@ export default function MoreScreen() {
       <View pointerEvents="box-none">
         <LinearGradient
           colors={NAAT_GRADIENT[themeMode] || NAAT_GRADIENT.light}
-          style={styles.header}
+          style={[styles.header, { paddingTop: insets.top + 12 }]}
           pointerEvents="none"
         >
-          <View style={[styles.headerBadge, directionalRow]}>
-            <MaterialIcons name="dashboard" size={16} color="#fff" />
-            <CenteredText style={styles.headerBadgeText}>مرکز امکانات</CenteredText>
-          </View>
           <CenteredText style={styles.headerTitle}>بیشتر</CenteredText>
           <CenteredText style={styles.headerSubtitle}>میان‌بُرهای مهم، پیگیری پیشرفت و همراه همیشگی عبادت</CenteredText>
         </LinearGradient>
@@ -258,55 +262,45 @@ export default function MoreScreen() {
           <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
             {formatGregorianDate(truth.gregorianDate, language)}
           </CenteredText>
-
-          <View style={styles.heroMetricsRow}>
-            {heroMetrics.map((metric) => (
-              <View
-                key={metric.label}
-                style={[styles.heroMetric, { backgroundColor: theme.backgroundSecondary, borderColor: theme.cardBorder }]}
-              >
-                <CenteredText style={[styles.heroMetricValue, { color: metric.color }]}>
-                  {metric.value}
-                </CenteredText>
-                <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>{metric.label}</CenteredText>
-              </View>
-            ))}
-          </View>
         </View>
 
-        <View style={styles.section}>
-          <MoreSectionTitle title="میان‌بُرهای اصلی" />
-          <View style={styles.quickGrid}>
-            {quickActions.map((item) => (
-              <MoreHubTile
-                key={item.label}
-                icon={item.icon}
-                label={item.label}
-                subtitle={item.subtitle}
-                badgeCount={item.route === '/dua-request' ? unreadCount : 0}
-                testID={
-                  item.route === '/(tabs)/ahadith'
-                    ? 'ios-open-ahadith'
-                    : undefined
-                }
-                onPress={() => router.push(item.route as any)}
-              />
-            ))}
+        {([
+          { title: 'عبادت', actions: worshipActions },
+          { title: 'مطالعه', actions: studyActions },
+          { title: 'پرسش', actions: questionActions },
+        ] as const).map((group) => (
+          <View key={group.title} style={styles.section}>
+            <MoreSectionTitle title={group.title} />
+            <View style={styles.quickGrid}>
+              {group.actions.map((item) => (
+                <MoreHubTile
+                  key={item.route}
+                  icon={item.icon}
+                  label={item.label}
+                  subtitle={item.subtitle}
+                  badgeCount={item.route === '/dua-request' ? unreadCount : 0}
+                  testID={item.route === '/(tabs)/ahadith' ? 'ios-open-ahadith' : undefined}
+                  onPress={() => router.push(item.route as any)}
+                />
+              ))}
+            </View>
           </View>
-        </View>
+        ))}
       </View>
     ),
     [
       theme,
       themeMode,
+      insets.top,
       weekdayLabel,
       locationLabel,
       scheduleModeLabel,
-      heroMetrics,
       truth.hijri,
       truth.shamsi,
       truth.gregorianDate,
-      quickActions,
+      worshipActions,
+      studyActions,
+      questionActions,
       language,
       directionalRow,
       router,
@@ -315,10 +309,23 @@ export default function MoreScreen() {
   );
 
   const renderDeferredSection = ({ item }: { item: DeferredSectionKey }) => {
-    if (item === 'summary') {
+    if (item === 'progress') {
       return (
         <View style={styles.section}>
-          <MoreSectionTitle title="خلاصه پیشرفت" />
+          <MoreSectionTitle title="پیشرفت" />
+          <View style={styles.heroMetricsRow}>
+            {heroMetrics.map((metric) => (
+              <View
+                key={metric.label}
+                style={[styles.heroMetric, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+              >
+                <CenteredText style={[styles.heroMetricValue, { color: metric.color }]}>
+                  {metric.value}
+                </CenteredText>
+                <CenteredText style={[styles.heroMetricLabel, { color: theme.textSecondary }]}>{metric.label}</CenteredText>
+              </View>
+            ))}
+          </View>
           <View style={styles.summaryGrid}>
             {summaryCards.map((card) => (
               <View
@@ -333,14 +340,6 @@ export default function MoreScreen() {
               </View>
             ))}
           </View>
-        </View>
-      );
-    }
-
-    if (item === 'today') {
-      return (
-        <View style={styles.section}>
-          <MoreSectionTitle title="مرور امروز" />
           <View style={[styles.todayCard, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}>
             {todayRows.map((row, index) => (
               <View key={row.label}>
@@ -403,14 +402,14 @@ export default function MoreScreen() {
       );
     }
 
-    if (item === 'support') {
+    if (item === 'app') {
       return (
         <View style={styles.section}>
-          <MoreSectionTitle title="راهنما و پشتیبانی" />
+          <MoreSectionTitle title="برنامه" />
           <View style={styles.secondaryList}>
-            {secondaryActions.map((action) => (
+            {appActions.map((action) => (
               <MoreHubRow
-                key={action.label}
+                key={action.route}
                 icon={action.icon}
                 label={action.label}
                 subtitle={action.subtitle}
@@ -473,31 +472,17 @@ const styles = StyleSheet.create({
     height: 48,
   },
   header: {
-    paddingTop: 60,
-    paddingBottom: 108,
+    paddingBottom: 72,
     paddingHorizontal: Spacing.lg,
     alignItems: 'center',
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
     overflow: 'hidden',
   },
-  headerBadge: {
-    alignItems: 'center',
-    gap: Spacing.xs,
-    paddingHorizontal: Spacing.md,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-  },
-  headerBadgeText: {
-    fontSize: Typography.ui.caption,
-    color: '#fff',
-  },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
     color: '#fff',
-    marginTop: Spacing.md,
   },
   headerSubtitle: {
     fontSize: Typography.ui.body,
@@ -555,7 +540,6 @@ const styles = StyleSheet.create({
   heroMetricsRow: {
     flexDirection: 'row',
     gap: Spacing.sm,
-    marginTop: Spacing.lg,
   },
   heroMetric: {
     flex: 1,
@@ -586,6 +570,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: Spacing.sm,
+    marginTop: Spacing.sm,
   },
   summaryCard: {
     width: '48%',
@@ -613,6 +598,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   todayCard: {
+    marginTop: Spacing.sm,
     borderRadius: BorderRadius.xl,
     borderWidth: 1,
     overflow: 'hidden',

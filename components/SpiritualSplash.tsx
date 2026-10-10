@@ -79,18 +79,25 @@ interface SpiritualSplashProps {
   dismiss?: boolean;
 }
 
-function SplashCredit({ creatorLabel }: { creatorLabel: string }) {
+const DARI_CREATOR_LINE = 'سازنده : شرکت نرم افزار www.afghan.dev';
+
+function SplashCredit({ line }: { line: string }) {
   return (
     <View style={styles.creditContainer}>
-      <View style={styles.creditCard}>
-        <CenteredText style={styles.creditDeveloper}>{creatorLabel}</CenteredText>
-        <Pressable
-          onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
-          style={styles.creditLinkButton}
+      <Pressable
+        accessibilityRole="link"
+        onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
+        style={styles.creditCard}
+      >
+        <CenteredText
+          numberOfLines={1}
+          adjustsFontSizeToFit
+          minimumFontScale={0.65}
+          style={styles.creditDeveloper}
         >
-          <CenteredText style={styles.creditLink}>WWW.AFGHAN.DEV</CenteredText>
-        </Pressable>
-      </View>
+          {line}
+        </CenteredText>
+      </Pressable>
     </View>
   );
 }
@@ -169,7 +176,9 @@ export function SpiritualSplash({
     transform: [{ rotate: `${spin.value}deg` }],
   }));
 
-  const creatorLabel = t('app.splash.creator');
+  const creatorLine = language === 'dari'
+    ? DARI_CREATOR_LINE
+    : `${t('app.splash.creator')} www.afghan.dev`;
   const translation = language === 'arabic' ? null : SPLASH_PHRASE[language];
   const latin = language === 'english' || language === 'turkish';
   const translationFont = language === 'pashto'
@@ -238,7 +247,7 @@ export function SpiritualSplash({
             </View>
           </View>
 
-          <SplashCredit creatorLabel={creatorLabel} />
+          <SplashCredit line={creatorLine} />
         </>
       ) : (
         <>
@@ -253,7 +262,7 @@ export function SpiritualSplash({
             <Animated.View style={[styles.loadingRing, ringStyle]} />
             <CenteredText style={styles.loadingText}>{t('common.loading')}</CenteredText>
           </View>
-          <SplashCredit creatorLabel={creatorLabel} />
+          <SplashCredit line={creatorLine} />
         </>
       )}
     </Animated.View>
@@ -382,9 +391,9 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   creditContainer: {
+    alignSelf: 'stretch',
     marginHorizontal: 20,
     marginTop: 8,
-    alignItems: 'center',
     flexShrink: 0,
   },
   creditCard: {
@@ -393,31 +402,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: `${GOLD}40`,
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     alignItems: 'center',
     width: '100%',
   },
   creditDeveloper: {
+    width: '100%',
     fontSize: 14,
     color: GOLD_LIGHT,
     lineHeight: 28,
-    fontFamily: 'Amiri',
+    fontFamily: 'Vazirmatn',
     fontWeight: '600',
-    writingDirection: 'rtl',
     textAlign: 'center',
     includeFontPadding: true,
     paddingVertical: 2,
-  },
-  creditLinkButton: {
-    marginTop: 2,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-  },
-  creditLink: {
-    fontSize: 13,
-    color: GOLD,
-    lineHeight: 18,
-    fontFamily: 'Amiri-Bold',
-    textAlign: 'center',
   },
 });

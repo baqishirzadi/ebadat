@@ -44,7 +44,7 @@ export function HadithSectionTabs({ activeSection, onChange }: HadithSectionTabs
     >
       {SECTIONS.map(({ id, icon }) => {
         const selected = id === activeSection;
-        const color = selected ? theme.surface : theme.textSecondary;
+        const color = selected ? '#ffffff' : theme.textSecondary;
         return (
           <Pressable
             key={id}
@@ -58,7 +58,7 @@ export function HadithSectionTabs({ activeSection, onChange }: HadithSectionTabs
             accessibilityState={{ selected }}
             accessibilityLabel={labels[id]}
           >
-            <MaterialIcons name={icon} size={20} color={selected ? theme.surface : theme.primary} />
+            <MaterialIcons name={icon} size={20} color={selected ? '#ffffff' : theme.primary} />
             <CenteredText
               numberOfLines={2}
               adjustsFontSizeToFit
