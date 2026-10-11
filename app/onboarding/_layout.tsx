@@ -1,12 +1,15 @@
 import { Stack } from 'expo-router';
-import { I18nManager } from 'react-native';
+
+import { useAppLanguage } from '@/context/AppContext';
+import { isRtlLanguage } from '@/utils/i18n/languages';
 
 export default function OnboardingLayout() {
+  const language = useAppLanguage();
   return (
     <Stack
       screenOptions={{
         headerShown: false,
-        animation: I18nManager.isRTL ? 'slide_from_right' : 'slide_from_left',
+        animation: isRtlLanguage(language) ? 'slide_from_right' : 'slide_from_left',
       }}
     >
       <Stack.Screen name="index" />

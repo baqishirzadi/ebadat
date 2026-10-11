@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AhadithNotificationPreferences } from '@/types/hadith';
 import { useApp } from '@/context/AppContext';
@@ -36,7 +36,7 @@ export function HadithNotificationTimePicker({
   onSaveTime,
 }: HadithNotificationTimePickerProps) {
   const { theme } = useApp();
-  const { t, digits } = useI18n();
+  const { t, digits, isRtl } = useI18n();
   const getMeridiemLabel = (value: Meridiem) => t(value === 'am' ? 'ahadith.time.am' : 'ahadith.time.pm');
   const initial = to12Hour(prefs.hour);
   const [hour12, setHour12] = useState(initial.hour12);
@@ -204,9 +204,9 @@ export function HadithNotificationTimePicker({
           </CenteredText>
 
           <View style={styles.timeControlRow}>
-            {I18nManager.isRTL ? minuteColumn : hourColumn}
+            {isRtl ? minuteColumn : hourColumn}
             <CenteredText style={[styles.separator, { color: theme.textSecondary }]}>:</CenteredText>
-            {I18nManager.isRTL ? hourColumn : minuteColumn}
+            {isRtl ? hourColumn : minuteColumn}
           </View>
 
           <View style={styles.meridiemRow}>

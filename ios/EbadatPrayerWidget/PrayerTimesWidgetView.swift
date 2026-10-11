@@ -294,7 +294,8 @@ struct PrayerTimesWidgetView: View {
                 boldFont: uiFontBold,
                 chipText: palette.chipText,
                 scale: s,
-                glyphScale: pashtoGlyphScale
+                glyphScale: pashtoGlyphScale,
+                timeGlyphScale: isPashto ? 1.12 : pashtoGlyphScale
               )
             }
           }
@@ -466,6 +467,8 @@ private struct PrayerChipView: View {
   let chipText: Color
   var scale: CGFloat = 1
   var glyphScale: CGFloat = 1
+  /// Draws the clock larger inside the same line box. Width overflow shrinks back.
+  var timeGlyphScale: CGFloat = 1
 
   private var tint: Color { chipText }
 
@@ -485,7 +488,7 @@ private struct PrayerChipView: View {
         size: 15 * scale,
         color: active ? tint.opacity(0.85) : .white.opacity(0.85),
         minimumScale: 0.7,
-        glyphScale: glyphScale
+        glyphScale: timeGlyphScale
       )
     }
     .frame(maxWidth: .infinity)

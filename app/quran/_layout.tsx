@@ -3,18 +3,20 @@
  */
 
 import { Stack } from 'expo-router';
-import { I18nManager } from 'react-native';
 
+import { useAppLanguage } from '@/context/AppContext';
 import { usePortraitLock } from '@/hooks/usePortraitLock';
+import { isRtlLanguage } from '@/utils/i18n/languages';
 
 export default function QuranLayout() {
+  const language = useAppLanguage();
   // Covers the reader in translation and 16-line mode, and the juz page.
   usePortraitLock();
   return (
     <Stack
       screenOptions={{
         headerShown: true,
-        animation: I18nManager.isRTL ? 'slide_from_right' : 'slide_from_left',
+        animation: isRtlLanguage(language) ? 'slide_from_right' : 'slide_from_left',
       }}
     >
       <Stack.Screen name="[surah]" options={{ headerShown: false }} />

@@ -343,11 +343,13 @@ class Hifz16PageView(context: Context) : View(context) {
   ) {
     val drop = opticalDrop(bottom - top)
     val ruleGap = 1.5f * density
+    // Extra room under the bismillah so yeh and meem do not sit on the stroke.
+    val bandBottom = min(bottom - ruleGap + drop + 4f * density, frameBottom - ruleGap)
     val band = RectF(
       textLeft,
       top + ruleGap + drop,
       textRight,
-      min(bottom - ruleGap + drop, frameBottom - ruleGap),
+      bandBottom,
     )
     val radius = 7f * density
     highlightPaint.style = Paint.Style.FILL

@@ -5,6 +5,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect, useRef, useState, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { I18nManager } from 'react-native';
 import { ThemeMode, QuranFontFamily, DariFontFamily, PashtoFontFamily, HifzFontFamily, Themes, ThemeColors, QuranFonts, HifzFonts, PashtoFonts, DEFAULT_PASHTO_FONT, resolveThemeMode } from '@/constants/theme';
 import {
   Bookmark,
@@ -15,7 +16,7 @@ import {
   TranslationLanguage,
 } from '@/types/quran';
 import { applyNativeLayoutDirection } from '@/utils/i18n/direction';
-import { DEFAULT_APP_LANGUAGE, isAppLanguage } from '@/utils/i18n/languages';
+import { DEFAULT_APP_LANGUAGE, isAppLanguage, isRtlLanguage } from '@/utils/i18n/languages';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -299,6 +300,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState);
   const positionPersistTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [layoutRestartPending, setLayoutRestartPending] = useState(false);
+  // I18nManager.isRTL stays at the value from process start until a cold launch.
+  const launchedRtlRef = useRef(I18nManager.isRTL);
 
   // Load persisted state on mount
   useEffect(() => {
@@ -311,9 +314,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   // current session.
   useEffect(() => {
     if (!state.isInitialized) return;
-    if (applyNativeLayoutDirection(state.preferences.appLanguage)) {
-      setLayoutRestartPending(true);
-    }
+    applyNativeLayoutDirection(state.preferences.appLanguage);
+    setLayoutRestartPending(
+      isRtlLanguage(state.preferences.appLanguage) !== launchedRtlRef.current,
+    );
   }, [state.isInitialized, state.preferences.appLanguage]);
 
   // Persist preferences whenever they change

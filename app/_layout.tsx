@@ -7,7 +7,7 @@
 import { SplashScreen, Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { AppState, I18nManager, InteractionManager, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
+import { AppState, InteractionManager, LogBox, Platform, StyleSheet, Text, View } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -28,6 +28,7 @@ import { StatsProvider } from '@/context/StatsContext';
 import { preloadPopularSurahs } from '@/hooks/useSurahData';
 import '@/utils/cityDatabase';
 import { getSavedPrayerCityKey, isFirstOpenAdhanSetupDone, runPermissionOnboardingGrandfatherMigration } from '@/utils/prayerOnboarding';
+import { isRtlLanguage } from '@/utils/i18n/languages';
 import { ensurePushRegistrationOnFirstOpen } from '@/utils/pushRegistry';
 
 const STARTUP_EPOCH_MS = Date.now();
@@ -382,7 +383,7 @@ function RootLayoutNav() {
           headerShown: false,
           headerBackButtonDisplayMode: 'minimal',
           contentStyle: { backgroundColor: theme.background },
-          animation: I18nManager.isRTL ? 'slide_from_right' : 'slide_from_left',
+          animation: isRtlLanguage(state.preferences.appLanguage) ? 'slide_from_right' : 'slide_from_left',
         }}
       >
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />

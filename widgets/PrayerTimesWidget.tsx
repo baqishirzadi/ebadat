@@ -175,7 +175,8 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
 
   // Naskh and Amiri line boxes are taller than Dari's Vazirmatn. At Dari's
   // font size the prayer-time line is pushed out of this one-cell widget.
-  // These scales keep the name and the time inside the same chip.
+  // Names stay on the smaller scale. Pashto times sit a step larger, still
+  // under Dari's size, and that extra line is counted in contentUnits.
   const glyphScale = isArabic
     ? 0.84
     : !isPashto
@@ -183,6 +184,11 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
       : snapshot?.pashtoFont === 'amiri'
         ? 0.62
         : 0.8;
+  const timeGlyphScale = !isPashto
+    ? glyphScale
+    : snapshot?.pashtoFont === 'amiri'
+      ? 0.74
+      : 0.92;
   const lineBox = 1.4;
   // One home-screen row. These units match the padding and line boxes below,
   // so the three rows fit the real cell instead of a fixed two-row card.
@@ -191,24 +197,25 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
     3 +
     4 +
     4 +
-    (20 + 15 + 13 + 15) * glyphScale * lineBox;
+    (20 + 15 + 13) * glyphScale * lineBox +
+    15 * timeGlyphScale * lineBox;
   const scale = Math.min(0.88, Math.max(0.52, height / contentUnits));
   const typeScale = scale * glyphScale;
   // Bold Naskh strokes read thin at widget size. A tight shadow in the text
-  // color thickens Arabic without changing the line box.
-  const pashtoWeight = (color: `#${string}`) =>
-    isArabic
-      ? {
-          fontWeight: '700' as const,
-          textShadowColor: color,
-          textShadowRadius: 1.2,
-          textShadowOffset: { width: 0, height: 0 },
-        }
-      : null;
+  // color thickens the strokes without changing the line box.
+  const naskhStroke = (color: `#${string}`) => ({
+    fontWeight: '700' as const,
+    textShadowColor: color,
+    textShadowRadius: 1.2,
+    textShadowOffset: { width: 0, height: 0 },
+  });
+  const pashtoWeight = (color: `#${string}`) => (isArabic ? naskhStroke(color) : null);
+  const pashtoTimeWeight = (color: `#${string}`) =>
+    isArabic || isPashto ? naskhStroke(color) : null;
   const rootPaddingVertical = 5 * scale;
   const rootPaddingHorizontal = 6 * scale;
   const prayerLabelSize = 13 * typeScale;
-  const prayerTimeSize = 15 * typeScale;
+  const prayerTimeSize = 15 * scale * timeGlyphScale;
   const prayerChipPaddingVertical = 2 * scale;
   const prayerTimeMarginTop = 0;
   const headerTitleSize = 20 * typeScale;
@@ -496,7 +503,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                   style={{
                     fontSize: prayerTimeSize,
                     fontFamily: boldFontFamily,
-                    ...pashtoWeight(active ? palette.chipText : TEXT_SECONDARY),
+                    ...pashtoTimeWeight(active ? palette.chipText : TEXT_SECONDARY),
                     color: active ? palette.chipText : TEXT_SECONDARY,
                     marginTop: prayerTimeMarginTop,
                     adjustsFontSizeToFit: true,

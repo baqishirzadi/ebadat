@@ -9,7 +9,6 @@ import {
   StyleSheet,
   FlatList,
   Pressable,
-  I18nManager,
   Animated,
 } from 'react-native';
 import { useLocalSearchParams, Stack, useNavigation, useRouter } from 'expo-router';
@@ -22,7 +21,7 @@ import { getQuranFontFamily } from '@/hooks/useFonts';
 import adhkarData from '@/data/adhkar.json';
 import CenteredText from '@/components/CenteredText';
 import { useI18n } from '@/utils/i18n/useI18n';
-import { backIconName } from '@/utils/i18n/direction';
+import { backIconName, rowStyle } from '@/utils/i18n/direction';
 
 interface Dhikr {
   id: string;
@@ -190,7 +189,7 @@ export default function AdhkarDetailScreen() {
         </CenteredText>
         ) : null}
 
-        <View style={styles.metaRow}>
+        <View style={[styles.metaRow, rowStyle(language)]}>
           <MaterialIcons name="menu-book" size={14} color={theme.textSecondary} />
           <CenteredText style={[styles.reference, { color: theme.textSecondary }]}>
             {item.reference}
@@ -354,7 +353,6 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
   },
   metaRow: {
-    flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.xs,
