@@ -11,6 +11,7 @@ export default function OnboardingLayout() {
     >
       <Stack.Screen name="index" />
       <Stack.Screen name="language" />
+      <Stack.Screen name="madhhab" />
       <Stack.Screen name="location" />
       <Stack.Screen name="notifications" />
       <Stack.Screen name="exact-alarms" />

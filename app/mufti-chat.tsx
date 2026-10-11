@@ -12,6 +12,7 @@ import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { CopiedNotice, useCopiedNotice } from '@/components/ui/CopiedNotice';
+import { MadhhabSheet } from '@/components/madhhab/MadhhabPicker';
 import { MarkdownText, normalizeMarkdownForClipboard } from '@/components/MarkdownText';
 import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
@@ -23,8 +24,11 @@ import {
 } from '@/constants/persianTextLayout';
 import { useApp } from '@/context/AppContext';
 import { useHanafiMufti } from '@/hooks/useHanafiMufti';
+import { useMadhhab } from '@/hooks/useMadhhab';
 import { useI18n } from '@/utils/i18n/useI18n';
 import { isLatinLanguage } from '@/utils/i18n/languages';
+import { isHanafiMadhhab, madhhabLabel, nonHanafiMuftiTitle } from '@/utils/madhhab';
+import { persistMadhhab } from '@/utils/madhhabStorage';
 import type { StoredHanafiMuftiMessage } from '@/utils/hanafiMuftiStorage';
 
 /** Android can flip Persian paragraphs LTR; RLM forces RTL direction. */
@@ -119,8 +123,9 @@ interface StarterChipsProps {
   onSelect: (question: string) => void;
 }
 
-function StarterChips({ theme, disabled, onSelect, t }: StarterChipsProps & {
+function StarterChips({ theme, disabled, onSelect, t, disclaimer }: StarterChipsProps & {
   t: (key: (typeof MUFTI_STARTER_KEYS)[number] | 'mufti.disclaimer' | 'mufti.duaHint') => string;
+  disclaimer: string;
 }) {
   const router = useRouter();
 
@@ -151,7 +156,7 @@ function StarterChips({ theme, disabled, onSelect, t }: StarterChipsProps & {
         })}
       </RtlView>
       <RtlText align="center" style={[styles.emptyDisclaimer, { color: theme.textSecondary }]}>
-        {t('mufti.disclaimer')}
+        {disclaimer}
       </RtlText>
       <Pressable
         onPress={() => router.push('/dua-request' as never)}
@@ -169,6 +174,8 @@ export default function MuftiChatScreen() {
   const { theme } = useApp();
   const { t, fontFamily, language } = useI18n();
   const { copiedVisible, showCopied } = useCopiedNotice();
+  const madhhab = useMadhhab();
+  const [madhhabSheetOpen, setMadhhabSheetOpen] = useState(false);
   const isEnglish = isLatinLanguage(language);
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<ChatRow>>(null);
@@ -185,6 +192,10 @@ export default function MuftiChatScreen() {
     clearConversation,
     dismissError,
   } = useHanafiMufti();
+
+  const schoolTitle = nonHanafiMuftiTitle(madhhab, language) ?? t('home.mufti.title');
+  const schoolSubtitle = isHanafiMadhhab(madhhab) ? t('mufti.subtitle') : t('mufti.subtitle.other');
+  const disclaimer = isHanafiMadhhab(madhhab) ? t('mufti.disclaimer') : t('mufti.disclaimer.other');
 
   const rows = useMemo<ChatRow[]>(() => {
     const items: ChatRow[] = messages.map((message) => ({
@@ -364,6 +375,7 @@ export default function MuftiChatScreen() {
                 disabled={isStreaming || !isConfigured}
                 onSelect={handleStarterSelect}
                 t={t}
+                disclaimer={disclaimer}
               />
             }
             ListFooterComponent={
@@ -480,8 +492,8 @@ export default function MuftiChatScreen() {
       <Stack.Screen options={{ headerShown: false }} />
       <RtlView style={[styles.screen, RTL_CONTAINER, { backgroundColor: theme.background }]}>
         <ScreenHeader
-          title={t('home.mufti.title')}
-          subtitle={t('mufti.subtitle')}
+          title={schoolTitle}
+          subtitle={schoolSubtitle}
           rightAction={
             <Pressable
               onPress={handleClear}
@@ -497,10 +509,30 @@ export default function MuftiChatScreen() {
           }
         />
 
+        <Pressable
+          onPress={() => setMadhhabSheetOpen(true)}
+          accessibilityRole="button"
+          accessibilityLabel={t('settings.madhhab.title')}
+          testID="mufti-madhhab-pill"
+          style={[styles.madhhabPill, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+        >
+          <RtlText wrap={false} style={[styles.madhhabPillText, { color: theme.tint }]}>
+            {madhhabLabel(madhhab, language)}
+          </RtlText>
+        </Pressable>
+
         <View style={[styles.flex, keyboardHeight > 0 && { paddingBottom: keyboardHeight }]}>
           {chatBody}
         </View>
         <CopiedNotice visible={copiedVisible} label={t('common.copy')} />
+        <MadhhabSheet
+          visible={madhhabSheetOpen}
+          selected={madhhab}
+          onClose={() => setMadhhabSheetOpen(false)}
+          onSelect={(key) => {
+            void persistMadhhab(key);
+          }}
+        />
       </RtlView>
     </>
   );
@@ -509,6 +541,19 @@ export default function MuftiChatScreen() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+  },
+  madhhabPill: {
+    alignSelf: 'center',
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.xs,
+    borderWidth: 1,
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 4,
+  },
+  madhhabPillText: {
+    fontFamily: 'Vazirmatn-Bold',
+    fontSize: Typography.ui.caption,
   },
   flex: {
     flex: 1,

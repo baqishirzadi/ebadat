@@ -127,6 +127,41 @@ const displayTime = adjustedApiTimes.maghrib;
 assert.strictEqual(formatPrayerTime12h(apiTime, 'Asia/Kabul'), '٥:٥٢');
 assert.strictEqual(formatPrayerTime12h(displayTime, 'Asia/Kabul'), '٥:٥٧');
 
+const { setActiveMadhhab } = require('../utils/madhhab.ts');
+const hanafiPolicy = resolvePrayerCalculationPolicy('afghanistan_kabul', {
+  latitude: 34.5553,
+  longitude: 69.2075,
+  timezone: 'Asia/Kabul',
+  countryCode: 'AF',
+});
+assert.strictEqual(hanafiPolicy.aladhanSchool, 1);
+assert.strictEqual(hanafiPolicy.madhab, 'Hanafi');
+assert.strictEqual(hanafiPolicy.sourceLabel, 'Karachi+AF');
+assert.strictEqual(hanafiPolicy.aladhanMethod, 1);
+setActiveMadhhab('shafii');
+const shafiPolicy = resolvePrayerCalculationPolicy('afghanistan_kabul', {
+  latitude: 34.5553,
+  longitude: 69.2075,
+  timezone: 'Asia/Kabul',
+  countryCode: 'AF',
+});
+assert.strictEqual(shafiPolicy.aladhanSchool, 0);
+assert.strictEqual(shafiPolicy.madhab, 'Shafi');
+assert.strictEqual(shafiPolicy.aladhanMethod, 1, 'non-Hanafi keeps the country method');
+assert.strictEqual(shafiPolicy.fixedDhuhrLocalTime, '12:30');
+assert.strictEqual(shafiPolicy.maghribOffsetMinutes, 5);
+assert.strictEqual(shafiPolicy.sourceLabel, 'Karachi+AF+Std');
+setActiveMadhhab('hanafi');
+const restored = resolvePrayerCalculationPolicy('afghanistan_kabul', {
+  latitude: 34.5553,
+  longitude: 69.2075,
+  timezone: 'Asia/Kabul',
+  countryCode: 'AF',
+});
+assert.strictEqual(restored.aladhanSchool, 1);
+assert.strictEqual(restored.sourceLabel, 'Karachi+AF');
+assert.strictEqual(restored.madhab, 'Hanafi');
+
 function addDays(dateKey, days) {
   const date = new Date(`${dateKey}T12:00:00Z`);
   date.setUTCDate(date.getUTCDate() + days);

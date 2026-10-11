@@ -12,7 +12,9 @@ import {
   persianCenterSubtitleText,
 } from '@/constants/persianTextLayout';
 import { useHanafiMufti } from '@/hooks/useHanafiMufti';
+import { useMadhhab } from '@/hooks/useMadhhab';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { nonHanafiMuftiTitle } from '@/utils/madhhab';
 
 interface HanafiMuftiWidgetProps {
   onInputFocus?: () => void;
@@ -20,7 +22,9 @@ interface HanafiMuftiWidgetProps {
 
 function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
   const { isStreaming, error, isConfigured, sendMessage, dismissError } = useHanafiMufti();
+  const madhhab = useMadhhab();
   const { t, fontFamily, language, isLatin, isPashto } = useI18n();
+  const title = nonHanafiMuftiTitle(madhhab, language) ?? t('home.mufti.title');
   const isEnglish = isLatin;
   const isRtlHome = !isEnglish;
   const isNastaliq = fontFamily === 'NotoNastaliqUrdu';
@@ -50,7 +54,7 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
             minimumFontScale={0.85}
             style={[styles.title, styles.titleEnglish, styles.englishHeaderTitle]}
           >
-            {t('home.mufti.title')}
+            {title}
           </RtlText>
           <Pressable
             onPress={openFullChat}
@@ -80,7 +84,7 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
                 paddingBottom: isNastaliq ? undefined : 2,
               }]}
             >
-              {t('home.mufti.title')}
+              {title}
             </RtlText>
             <MaterialIcons name="menu-book" size={18} color="rgba(255,255,255,0.9)" />
           </View>

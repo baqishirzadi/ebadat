@@ -11,6 +11,7 @@ export const SELECTED_CITY_STORAGE_KEY = 'selected_city';
 
 export type PermissionOnboardingStep =
   | 'language'
+  | 'madhhab'
   | 'location'
   | 'notifications'
   | 'exact-alarms'
@@ -87,10 +88,10 @@ export async function getAndroidPermissionStepCount(): Promise<number> {
   return Number(Platform.Version) >= 31 ? 3 : 2;
 }
 
-/** Language + city before any permission screens. */
-export const ONBOARDING_BASE_STEPS = 2;
+/** Language, school, and city before any permission screens. */
+export const ONBOARDING_BASE_STEPS = 3;
 
-/** Total dots for the current platform (language, city, then permissions). */
+/** Total dots for the current platform (language, school, city, then permissions). */
 export async function getOnboardingTotalSteps(): Promise<number> {
   if (Platform.OS === 'android') {
     return ONBOARDING_BASE_STEPS + (await getAndroidPermissionStepCount());
@@ -101,6 +102,7 @@ export async function getOnboardingTotalSteps(): Promise<number> {
 
 export type OnboardingUiStep =
   | 'language'
+  | 'madhhab'
   | 'location'
   | 'notifications'
   | 'exact-alarms'
@@ -110,14 +112,16 @@ export function getOnboardingStepIndex(step: OnboardingUiStep): number {
   switch (step) {
     case 'language':
       return 1;
-    case 'location':
+    case 'madhhab':
       return 2;
-    case 'notifications':
+    case 'location':
       return 3;
-    case 'exact-alarms':
+    case 'notifications':
       return 4;
+    case 'exact-alarms':
+      return 5;
     case 'battery':
-      return Number(Platform.Version) >= 31 ? 5 : 4;
+      return Number(Platform.Version) >= 31 ? 6 : 5;
     default:
       return 1;
   }
@@ -127,6 +131,9 @@ export async function getOnboardingResumeRoute(): Promise<string> {
   const progress = await getPermissionOnboardingProgress();
   if (!progress || progress === 'language' || progress === 'location') {
     return '/onboarding/notifications';
+  }
+  if (progress === 'madhhab') {
+    return '/onboarding/madhhab';
   }
   if (progress === 'complete') {
     return '/(tabs)';

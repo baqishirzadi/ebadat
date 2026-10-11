@@ -20,8 +20,11 @@ import {
 } from '@/constants/theme';
 import { useApp, useLocalizedFontPreferences } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
+import { useMadhhab } from '@/hooks/useMadhhab';
 import { getQuranFontFamily } from '@/hooks/useFonts';
 import { CalculationMethods } from '@/utils/prayerTimes';
+import { isHanafiMadhhab, madhhabLabel } from '@/utils/madhhab';
+import { persistMadhhab } from '@/utils/madhhabStorage';
 import { gregorianToDisplayDiyanetHijri } from '@/utils/diyanetHijri';
 import { gregorianToDisplayHijri } from '@/utils/hijriOffset';
 import { hijriMonthName } from '@/utils/islamicCalendar';
@@ -54,6 +57,7 @@ export default function SettingsScreen() {
     layoutRestartPending,
   } = useApp();
   const { updateSettings, state: prayerState } = usePrayer();
+  const madhhab = useMadhhab();
   const uiLanguage = state.preferences.appLanguage;
   const fonts = useLocalizedFontPreferences();
   const directionalRow = rowStyle(uiLanguage);
@@ -661,6 +665,57 @@ export default function SettingsScreen() {
             {translateUi('settings.group.prayer', uiLanguage)}
           </LocalizedText>
 
+          <Pressable
+            onPress={() => toggleSection('madhhab')}
+            style={[styles.sectionHeader, directionalRow, { backgroundColor: theme.card, borderColor: theme.cardBorder }]}
+          >
+            <MaterialIcons name="menu-book" size={24} color={theme.tint} />
+            <View style={styles.sectionInfo}>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionTitle, { color: theme.text }]}>
+                {translateUi('settings.madhhab.title', uiLanguage)}
+              </LocalizedText>
+              <LocalizedText numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.78} style={[styles.sectionValue, { color: theme.textSecondary }]}>
+                {madhhabLabel(madhhab, uiLanguage)}
+              </LocalizedText>
+            </View>
+            <MaterialIcons
+              name={expandedSection === 'madhhab' ? 'expand-less' : 'expand-more'}
+              size={24}
+              color={theme.icon}
+            />
+          </Pressable>
+          {expandedSection === 'madhhab' && (
+            <View style={[styles.optionsList, { backgroundColor: theme.card }]}>
+              {(['hanafi', 'shafii', 'maliki', 'hanbali', 'ahl_hadith'] as const).map((key) => (
+                <Pressable
+                  key={key}
+                  onPress={() => {
+                    void persistMadhhab(key);
+                  }}
+                  style={[
+                    styles.optionItem,
+                    directionalRow,
+                    { borderBottomColor: theme.divider },
+                    madhhab === key && { backgroundColor: theme.backgroundSecondary },
+                  ]}
+                >
+                  <LocalizedText
+                    numberOfLines={1}
+                    adjustsFontSizeToFit
+                    minimumFontScale={0.78}
+                    style={[styles.optionText, { color: madhhab === key ? theme.tint : theme.text }]}
+                  >
+                    {madhhabLabel(key, uiLanguage)}
+                    {key === 'hanafi' ? ` · ${translateUi('onboarding.madhhab.recommended', uiLanguage)}` : ''}
+                  </LocalizedText>
+                  {madhhab === key && (
+                    <MaterialIcons name="check" size={20} color={theme.tint} />
+                  )}
+                </Pressable>
+              ))}
+            </View>
+          )}
+
           {/* Prayer Calculation Method */}
           <Pressable
             onPress={() => toggleSection('prayerMethod')}
@@ -778,7 +833,10 @@ export default function SettingsScreen() {
           >
             <MaterialIcons name="info" size={20} color={theme.tint} />
             <LocalizedText style={[styles.noticeText, { color: theme.textSecondary }]}>
-              {translateUi('settings.asrNotice', uiLanguage)}
+              {translateUi(
+                isHanafiMadhhab(madhhab) ? 'settings.asrNotice' : 'prayer.jumhurAsrNote',
+                uiLanguage,
+              )}
             </LocalizedText>
           </View>
 

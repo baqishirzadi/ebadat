@@ -5,6 +5,7 @@ import { ahadithMessages } from './messages/ahadith';
 import { articlesMessages } from './messages/articles';
 import { mediaMessages } from './messages/media';
 import { miscMessages } from './messages/misc';
+import { madhhabMessages } from './messages/madhhab';
 import { prayerMessages } from './messages/prayer';
 import { quranMessages } from './messages/quran';
 import type { UiMessage } from './messageType';
@@ -1096,6 +1097,7 @@ export const UI_MESSAGES = {
   ...articlesMessages,
   ...mediaMessages,
   ...miscMessages,
+  ...madhhabMessages,
   ...prayerMessages,
   ...quranMessages,
 } as const satisfies Record<string, UiMessage>;

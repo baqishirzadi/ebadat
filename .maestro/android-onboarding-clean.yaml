@@ -23,6 +23,12 @@ appId: com.afghandev.ebadat
     text: "ادامه"
 - extendedWaitUntil:
     visible:
+      text: "مذهب فقهی خود را انتخاب کنید"
+    timeout: 15000
+- tapOn:
+    text: "ادامه"
+- extendedWaitUntil:
+    visible:
       text: "انتخاب کشور و شهر"
     timeout: 15000
 - tapOn:

@@ -442,6 +442,18 @@ function finalizeTimes(
   return applyPrayerTimeOffsets(times, cityKey, location);
 }
 
+/** Diyanet publishes one Asr. Other schools keep those times and replace only Asr. */
+function replaceDiyanetAsrForStandardMadhab(
+  times: PrayerTimes,
+  policy: PrayerCalculationPolicy,
+  location: LocationType,
+  date: Date,
+): PrayerTimes {
+  if (policy.madhab === 'Hanafi' || policy.onlineSource !== 'diyanet') return times;
+  const local = calculateWithPolicy(location, date, policy);
+  return { ...times, asr: local.asr };
+}
+
 async function ensureCache(
   cityKey: string,
   city: City & { key?: string },
@@ -570,7 +582,12 @@ export async function getPrayerTimesForDate(params: {
   if (cachedDay && validated) {
     const tz = cachedDay.timezone || timezone;
     const raw = timingsToPrayerTimes(cachedDay.timings, dateKey, tz);
-    const times = finalizeTimes(raw, cityKey, location);
+    const times = replaceDiyanetAsrForStandardMadhab(
+      finalizeTimes(raw, cityKey, location),
+      policy,
+      location,
+      localDateForDateKey(dateKey, tz),
+    );
     return {
       dateKey,
       cityKey,
@@ -586,7 +603,12 @@ export async function getPrayerTimesForDate(params: {
 
   const calcDate = localDateForDateKey(dateKey, timezone);
   const raw = calculateWithPolicy(location, calcDate, policy);
-  const times = finalizeTimes(raw, cityKey, location);
+  const times = replaceDiyanetAsrForStandardMadhab(
+    finalizeTimes(raw, cityKey, location),
+    policy,
+    location,
+    calcDate,
+  );
 
   return {
     dateKey,
@@ -622,7 +644,8 @@ export async function getPrayerTimesForDateRange(params: {
   const startKey = getDateKeyInTimezone(start, timezone);
   const allowNetwork = params.allowNetwork !== false;
   const policy = resolvePrayerCalculationPolicy(params.cityKey, location);
-  const cacheKey = `p${policy.policyVersion}_m${policy.maghribOffsetMinutes}|${params.cityKey || ''}|${location.latitude},${location.longitude}|${startKey}|${days}|net=${allowNetwork ? 1 : 0}`;
+  const asrTag = policy.madhab === 'Hanafi' ? '' : '|asr=std';
+  const cacheKey = `p${policy.policyVersion}_m${policy.maghribOffsetMinutes}${asrTag}|${params.cityKey || ''}|${location.latitude},${location.longitude}|${startKey}|${days}|net=${allowNetwork ? 1 : 0}`;
 
   if (
     !allowNetwork &&

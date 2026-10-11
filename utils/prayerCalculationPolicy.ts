@@ -5,6 +5,7 @@
  */
 
 import { getCity, isAfghanCityKey, normalizeCityKey } from '@/utils/cities';
+import { getActiveMadhhab, isHanafiMadhhab } from '@/utils/madhhab';
 import type { Location as LocationType } from '@/utils/prayerTimes';
 import { MAGHRIB_OFFSET_MINUTES } from '@/utils/adhanSchedulePolicy';
 
@@ -182,13 +183,21 @@ export function resolvePrayerCalculationPolicy(
     ...DEFAULT_POLICY,
     countryCode,
   };
-  return {
+  const resolved: PrayerCalculationPolicy = {
     ...base,
     // Maghrib is intentionally delayed worldwide, even when country lookup
     // falls through to the generic policy. Regional calculation settings are
     // still selected above and remain unchanged.
     maghribOffsetMinutes: MAGHRIB_OFFSET_MINUTES,
     policyVersion: PRAYER_POLICY_VERSION,
+  };
+  // Hanafi (the default, including a missing key) returns this object unchanged.
+  if (isHanafiMadhhab(getActiveMadhhab())) return resolved;
+  return {
+    ...resolved,
+    aladhanSchool: 0,
+    madhab: 'Shafi',
+    sourceLabel: `${resolved.sourceLabel}+Std`,
   };
 }
 

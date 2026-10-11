@@ -24,7 +24,8 @@ assert(!fs.existsSync(path.join(root, 'app/onboarding/autostart.tsx')), 'autosta
 assert(!layout.includes('name="autostart"'), 'autostart is still registered in onboarding layout');
 assert(/return Number\(Platform\.Version\) >= 31 \? 3 : 2/.test(onboarding), 'Android permission step count does not match API-level flow');
 assert(onboarding.includes('getOnboardingTotalSteps') && onboarding.includes('ONBOARDING_BASE_STEPS'), 'Shared onboarding step counter is missing');
-assert(read('app/onboarding/language.tsx').includes("/onboarding/location"), 'Language screen must continue to city selection');
+assert(read('app/onboarding/language.tsx').includes("/onboarding/madhhab"), 'Language screen must continue to the school step');
+assert(read('app/onboarding/madhhab.tsx').includes("/onboarding/location"), 'School screen must continue to city selection');
 assert(read('app/onboarding/index.tsx').includes('/onboarding/language'), 'Welcome index must redirect to language');
 assert(/if \(current === 'battery'\) \{\s*return 'complete';/.test(onboarding), 'battery still routes to an OEM onboarding step');
 assert(!/showAutostart\s*\?\s*'autostart'/.test(onboarding), 'first-install flow still conditionally routes to autostart');

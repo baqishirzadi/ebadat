@@ -12,10 +12,20 @@ import { detectMuftiMessageLanguage } from '@/utils/i18n/languageDetection';
 import { askHanafiMufti, isHanafiMuftiConfigured } from '@/utils/hanafiMufti';
 import {
   clearHanafiMuftiMessages,
+  clearScopedMuftiMessages,
   loadHanafiMuftiMessages,
+  loadScopedMuftiMessages,
   saveHanafiMuftiMessages,
+  saveScopedMuftiMessages,
   type StoredHanafiMuftiMessage,
 } from '@/utils/hanafiMuftiStorage';
+import {
+  getActiveMadhhab,
+  isHanafiMadhhab,
+  subscribeActiveMadhhab,
+  type MadhhabKey,
+} from '@/utils/madhhab';
+import { hydrateMadhhab } from '@/utils/madhhabStorage';
 
 interface HanafiMuftiStore {
   messages: StoredHanafiMuftiMessage[];
@@ -51,6 +61,10 @@ function resolveMuftiError(code: HanafiMuftiErrorCode, language: AppLanguage): s
 let store: HanafiMuftiStore = { ...INITIAL_STORE };
 const listeners = new Set<() => void>();
 let loadPromise: Promise<void> | null = null;
+let threadMadhhab: MadhhabKey = 'hanafi';
+let pendingNewSession = false;
+let activeAbort: AbortController | null = null;
+let threadReady = false;
 
 function emit(): void {
   listeners.forEach((listener) => listener());
@@ -70,18 +84,48 @@ function getSnapshot(): HanafiMuftiStore {
   return store;
 }
 
+async function loadThread(madhhab: MadhhabKey): Promise<StoredHanafiMuftiMessage[]> {
+  if (isHanafiMadhhab(madhhab)) return loadHanafiMuftiMessages();
+  return loadScopedMuftiMessages(madhhab);
+}
+
 async function ensureLoaded(): Promise<void> {
   if (!loadPromise) {
     loadPromise = (async () => {
-      const messages = await loadHanafiMuftiMessages();
+      const madhhab = await hydrateMadhhab();
+      threadMadhhab = madhhab;
+      const messages = await loadThread(madhhab);
       setStore({ messages, isLoading: false });
+      threadReady = true;
     })();
   }
   await loadPromise;
 }
 
+async function adoptMadhhabThread(next: MadhhabKey): Promise<void> {
+  const switching = threadReady && next !== threadMadhhab;
+  if (next === threadMadhhab && !store.isLoading) return;
+  activeAbort?.abort();
+  activeAbort = null;
+  threadMadhhab = next;
+  if (switching) pendingNewSession = !isHanafiMadhhab(next);
+  const messages = await loadThread(next);
+  if (threadMadhhab !== next) return;
+  setStore({
+    messages,
+    isStreaming: false,
+    streamingContent: '',
+    error: null,
+    isLoading: false,
+  });
+}
+
 async function persistMessages(messages: StoredHanafiMuftiMessage[]): Promise<void> {
-  await saveHanafiMuftiMessages(messages);
+  if (isHanafiMadhhab(threadMadhhab)) {
+    await saveHanafiMuftiMessages(messages);
+    return;
+  }
+  await saveScopedMuftiMessages(threadMadhhab, messages);
 }
 
 export function useHanafiMufti() {
@@ -91,7 +135,11 @@ export function useHanafiMufti() {
 
   useEffect(() => {
     void ensureLoaded();
+    const unsubscribe = subscribeActiveMadhhab(() => {
+      void adoptMadhhabThread(getActiveMadhhab());
+    });
     return () => {
+      unsubscribe();
       abortRef.current?.abort();
       abortRef.current = null;
     };
@@ -126,6 +174,7 @@ export function useHanafiMufti() {
     abortRef.current?.abort();
     const controller = new AbortController();
     abortRef.current = controller;
+    activeAbort = controller;
 
     const apiMessages = nextMessages.map((m) => ({
       role: m.role,
@@ -134,16 +183,23 @@ export function useHanafiMufti() {
 
     let assistantText = '';
     const preferredLanguage = detectMuftiMessageLanguage(trimmed, appLanguage);
+    const school = threadMadhhab;
+    const sendAsNewSession = pendingNewSession && !isHanafiMadhhab(school);
 
     await askHanafiMufti(apiMessages, {
       signal: controller.signal,
       preferredLanguage,
+      ...(isHanafiMadhhab(school)
+        ? {}
+        : { madhhab: school, ...(sendAsNewSession ? { sessionState: 'new' as const } : {}) }),
       onDelta: (chunk) => {
+        if (threadMadhhab !== school) return;
         assistantText += chunk;
         setStore({ streamingContent: assistantText });
       },
       onDone: () => {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || threadMadhhab !== school) return;
+        if (sendAsNewSession) pendingNewSession = false;
 
         const assistantMessage: StoredHanafiMuftiMessage = {
           role: 'assistant',
@@ -161,7 +217,7 @@ export function useHanafiMufti() {
         void persistMessages(finalMessages);
       },
       onError: (code) => {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || threadMadhhab !== school) return;
         setStore({
           isStreaming: false,
           streamingContent: '',
@@ -176,7 +232,13 @@ export function useHanafiMufti() {
   const clearConversation = useCallback(async () => {
     abortRef.current?.abort();
     abortRef.current = null;
-    await clearHanafiMuftiMessages();
+    activeAbort = null;
+    if (isHanafiMadhhab(threadMadhhab)) {
+      await clearHanafiMuftiMessages();
+    } else {
+      await clearScopedMuftiMessages(threadMadhhab);
+      pendingNewSession = true;
+    }
     setStore({
       messages: [],
       isStreaming: false,

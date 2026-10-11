@@ -9,8 +9,10 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { useDua } from '@/context/DuaContext';
+import { useMadhhab } from '@/hooks/useMadhhab';
 import type { UiMessageKey } from '@/utils/i18n/catalog';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { nonHanafiMuftiTitle } from '@/utils/madhhab';
 
 const ACTIONS: Array<{
   icon: keyof typeof MaterialIcons.glyphMap;
@@ -28,9 +30,11 @@ const ACTIONS: Array<{
 
 export function QuickActions() {
   const { theme } = useApp();
-  const { t, isLatin } = useI18n();
+  const { t, isLatin, language } = useI18n();
+  const madhhab = useMadhhab();
   const { unreadCount } = useDua();
   const isEnglish = isLatin;
+  const muftiTitle = nonHanafiMuftiTitle(madhhab, language);
 
   return (
     <RtlView style={styles.grid}>
@@ -53,7 +57,7 @@ export function QuickActions() {
             style={[styles.label, isEnglish && styles.labelEnglish, { color: theme.text }]}
             numberOfLines={2}
           >
-            {t(action.labelKey)}
+            {action.labelKey === 'home.mufti.title' && muftiTitle ? muftiTitle : t(action.labelKey)}
           </RtlText>
         </Pressable>
       ))}

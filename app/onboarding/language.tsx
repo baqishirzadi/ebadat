@@ -47,7 +47,7 @@ export default function OnboardingLanguageScreen() {
 
   const handleContinue = () => {
     setAppLanguage(selected);
-    router.push('/onboarding/location' as never);
+    router.push('/onboarding/madhhab' as never);
   };
 
   return (

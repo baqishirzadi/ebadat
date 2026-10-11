@@ -55,3 +55,29 @@ export async function saveHanafiMuftiMessages(messages: StoredHanafiMuftiMessage
 export async function clearHanafiMuftiMessages(): Promise<void> {
   await AsyncStorage.removeItem(STORAGE_KEY);
 }
+
+function scopedStorageKey(madhhab: string): string {
+  return `@ebadat/mufti_messages_${madhhab}`;
+}
+
+export async function loadScopedMuftiMessages(madhhab: string): Promise<StoredHanafiMuftiMessage[]> {
+  try {
+    const raw = await AsyncStorage.getItem(scopedStorageKey(madhhab));
+    if (!raw) return [];
+    return normalizeMessages(JSON.parse(raw));
+  } catch {
+    return [];
+  }
+}
+
+export async function saveScopedMuftiMessages(
+  madhhab: string,
+  messages: StoredHanafiMuftiMessage[],
+): Promise<void> {
+  const normalized = normalizeMessages(messages);
+  await AsyncStorage.setItem(scopedStorageKey(madhhab), JSON.stringify(normalized));
+}
+
+export async function clearScopedMuftiMessages(madhhab: string): Promise<void> {
+  await AsyncStorage.removeItem(scopedStorageKey(madhhab));
+}

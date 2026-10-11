@@ -9,10 +9,12 @@ import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
 import { usePrayer } from '@/context/PrayerContext';
+import { useMadhhab } from '@/hooks/useMadhhab';
 import { formatPrayerTimeForLanguage } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
 import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { prayerLabel } from '@/utils/prayerTimes';
+import { isHanafiMadhhab } from '@/utils/madhhab';
 import { useI18n } from '@/utils/i18n/useI18n';
 
 const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
@@ -20,6 +22,7 @@ const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 function TodayPrayerTimesCardInner() {
   const { theme } = useApp();
   const { language, t } = useI18n();
+  const madhhab = useMadhhab();
   const { state } = usePrayer();
   const prayerTimes = state.prayerTimes;
   const [now, setNow] = useState(() => new Date());
@@ -58,6 +61,11 @@ function TodayPrayerTimesCardInner() {
           {t('calendar.prayerSettings')}
         </RtlText>
       </Pressable>
+      {isHanafiMadhhab(madhhab) ? null : (
+        <RtlText align="center" style={[styles.note, { color: theme.textSecondary }]}>
+          {t('prayer.jumhurAsrNote')}
+        </RtlText>
+      )}
     </RtlView>
   );
 }
@@ -84,5 +92,10 @@ const styles = StyleSheet.create({
   link: {
     marginTop: Spacing.xs,
     alignItems: 'center',
+  },
+  note: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    lineHeight: 20,
   },
 });

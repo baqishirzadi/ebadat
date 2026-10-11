@@ -64,6 +64,8 @@ import {
 import { getPrayerTimesForDate, getPrayerTimesForDateRange } from '@/utils/prayerTimesAgent';
 import { applyPrayerTimeOffsets } from '@/utils/prayerOffsets';
 import { resolvePrayerCalculationPolicy } from '@/utils/prayerCalculationPolicy';
+import { getActiveMadhhab, isHanafiMadhhab, subscribeActiveMadhhab } from '@/utils/madhhab';
+import { hydrateMadhhab } from '@/utils/madhhabStorage';
 import { addDaysToDateKey, buildDateFromLocalTimeInTimezone as buildZonedLocalTime, getDateKeyInTimezone } from '@/utils/prayerTimezone';
 import { isFirstOpenAdhanSetupDone } from '@/utils/prayerOnboarding';
 import { pushWidgetSnapshot } from '@/utils/pushWidgetSnapshot';
@@ -1288,7 +1290,7 @@ async function configureAndroidNotificationChannels(
         new Date(),
         location,
         settings.calculationMethod,
-        settings.asrMethod
+        isHanafiMadhhab(getActiveMadhhab()) ? settings.asrMethod : 'Standard',
       );
       const fallback = applyPrayerTimeOffsets(
         fallbackBase,
@@ -1514,6 +1516,20 @@ async function configureAndroidNotificationChannels(
     });
     updateHijriDate();
   }, [updatePrayerTimes]);
+
+  const updatePrayerTimesRef = useRef(updatePrayerTimes);
+  updatePrayerTimesRef.current = updatePrayerTimes;
+
+  useEffect(() => {
+    const unsubscribe = subscribeActiveMadhhab(() => {
+      updatePrayerTimesRef.current().catch((error) => {
+        console.warn('updatePrayerTimes failed:', error);
+      });
+      void requestPrayerScheduleRef.current('madhhab');
+    });
+    void hydrateMadhhab();
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
     if (!isInteractiveReady || !state.prayerTimes) return;
@@ -2091,7 +2107,7 @@ async function configureAndroidNotificationChannels(
           targetDate,
           state.location,
           state.settings.calculationMethod,
-          state.settings.asrMethod
+          isHanafiMadhhab(getActiveMadhhab()) ? state.settings.asrMethod : 'Standard',
         );
         dayTimes = applyPrayerTimeOffsets(fallbackTimes, cityKey, state.location);
       }
@@ -2101,7 +2117,7 @@ async function configureAndroidNotificationChannels(
           targetDate,
           state.location,
           state.settings.calculationMethod,
-          state.settings.asrMethod
+          isHanafiMadhhab(getActiveMadhhab()) ? state.settings.asrMethod : 'Standard',
         );
         dayTimes = applyPrayerTimeOffsets(fallbackTimes, cityKey, state.location);
       }

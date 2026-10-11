@@ -40,7 +40,9 @@ import { pickContent } from '@/utils/i18n/content';
 import { rowStyle } from '@/utils/i18n/direction';
 import { formatHijriDate } from '@/utils/islamicCalendar';
 import { localizeDigits } from '@/utils/numbers';
+import { useMadhhab } from '@/hooks/useMadhhab';
 import { useI18n } from '@/utils/i18n/useI18n';
+import { nonHanafiMuftiTitle } from '@/utils/madhhab';
 import type { AppLanguage } from '@/types/quran';
 
 type DeferredSectionKey = 'progress' | 'upcoming' | 'app' | 'creatorMessage' | 'creatorCompany';
@@ -81,6 +83,8 @@ function chunkPairs<T>(items: readonly T[]): T[][] {
 export default function MoreScreen() {
   const { theme, themeMode, state } = useApp();
   const { t, n, digits, language } = useI18n();
+  const madhhab = useMadhhab();
+  const muftiTitle = nonHanafiMuftiTitle(madhhab, language) ?? t('home.mufti.title');
   const isTurkish = language === 'turkish';
   const diyanetHijri = useDiyanetHijriDate(isTurkish);
   const directionalRow = rowStyle(language);
@@ -184,9 +188,9 @@ export default function MoreScreen() {
   ], [t]);
 
   const questionActions = useMemo(() => [
-    { icon: 'menu-book' as const, label: t('home.mufti.title'), subtitle: t('more.tile.mufti.sub'), route: '/mufti-chat' },
+    { icon: 'menu-book' as const, label: muftiTitle, subtitle: t('more.tile.mufti.sub'), route: '/mufti-chat' },
     { icon: 'nights-stay' as const, label: t('chat.dream.title'), subtitle: t('more.tile.dream.sub'), route: '/dream-chat' },
-  ], [t]);
+  ], [muftiTitle, t]);
 
   const appActions = useMemo(() => [
     { icon: 'settings' as const, label: t('settings.title'), subtitle: t('more.tile.settings.sub'), route: '/settings' },

@@ -38,6 +38,13 @@ export interface AskHanafiMuftiOptions {
   /** Set only for Dua/admin persona requests; normal Mufti chat omits it. */
   responderId?: string;
   preferredLanguage?: HanafiMuftiLanguage;
+  /**
+   * Omitted for Hanafi so the request body stays identical to older builds.
+   * The server treats a missing madhhab as Hanafi.
+   */
+  madhhab?: string;
+  /** Sent only with a non-Hanafi madhhab, and only on the first message after a switch. */
+  sessionState?: 'new';
 }
 
 const DEFAULT_MUFTI_URL =
@@ -201,11 +208,21 @@ export async function askHanafiMufti(
     return;
   }
 
-  const payload = {
+  const payload: {
+    messages: HanafiMuftiMessage[];
+    preferred_language: HanafiMuftiLanguage;
+    responder_id?: string;
+    madhhab?: string;
+    sessionState?: 'new';
+  } = {
     messages: sanitizeMessages(messages),
     preferred_language: options.preferredLanguage || 'dari',
     ...(options.responderId ? { responder_id: options.responderId } : {}),
   };
+  if (options.madhhab && options.madhhab !== 'hanafi') {
+    payload.madhhab = options.madhhab;
+    if (options.sessionState === 'new') payload.sessionState = 'new';
+  }
   if (payload.messages.length === 0) {
     onError('invalid_request');
     return;
