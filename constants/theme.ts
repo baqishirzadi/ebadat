@@ -1,6 +1,6 @@
 /**
  * Theme system for Ebadat Quran App
- * Supports: Light (Naat green), Night, Sapphire, Burgundy
+ * Supports: Light (Naat green), Night, Sapphire, Crimson
  * With proper RTL font support for Arabic, Dari, and Pashto
  */
 
@@ -166,9 +166,9 @@ const sapphireTheme: ThemeColors = {
   shadow: 'rgba(30, 58, 95, 0.14)',
 };
 
-// Burgundy — warm ivory page, wine accent, manuscript gold.
+// Crimson — warm ivory page, jigari accent, manuscript gold.
 const burgundyTheme: ThemeColors = {
-  primary: '#6b2d3c',
+  primary: '#9B1530',
   surface: '#fffdfb',
   textPrimary: '#2c1810',
   accent: '#c4a574',
@@ -176,31 +176,31 @@ const burgundyTheme: ThemeColors = {
   textSecondary: '#7a655c',
   background: '#faf6f2',
   backgroundSecondary: '#f3ebe4',
-  tint: '#6b2d3c',
+  tint: '#9B1530',
   onTint: '#ffffff',
   icon: '#8a756c',
   tabIconDefault: '#8a756c',
-  tabIconSelected: '#6b2d3c',
+  tabIconSelected: '#9B1530',
 
   arabicText: '#24140f',
   translationText: '#4a342c',
-  ayahNumber: '#6b2d3c',
-  surahHeader: '#6b2d3c',
+  ayahNumber: '#9B1530',
+  surahHeader: '#9B1530',
   surahHeaderText: '#ffffff',
-  bismillah: '#5a2432',
+  bismillah: '#7A1024',
 
   card: '#fffdfb',
   cardBorder: '#eadfd6',
   divider: '#f0e6de',
   bookmark: '#c4a574',
-  playing: '#6b2d3c',
+  playing: '#9B1530',
 
   tabBar: '#fffdfb',
   tabBarBorder: '#eadfd6',
 
   warning: '#b45309',
   warningSurface: '#fff7ed',
-  shadow: 'rgba(107, 45, 60, 0.14)',
+  shadow: 'rgba(155, 21, 48, 0.14)',
 };
 
 export const Themes: Record<ThemeMode, ThemeColors> = {
@@ -227,7 +227,7 @@ export const NAAT_GRADIENT: Record<ThemeMode, [string, string, string]> = {
   light: [NAAT_GREEN_DARK, NAAT_GREEN, NAAT_GREEN_LIGHT],
   night: ['#000000', '#0a0a0a', '#141414'],
   sapphire: ['#152a45', '#1e3a5f', '#2f5580'],
-  burgundy: ['#4a1e28', '#6b2d3c', '#8f4554'],
+  burgundy: ['#5A0C1C', '#9B1530', '#C42A45'],
 };
 
 // Legacy Colors export for backwards compatibility

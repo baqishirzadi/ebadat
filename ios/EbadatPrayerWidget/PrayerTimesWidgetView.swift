@@ -444,10 +444,10 @@ private func widgetPalette(for mode: String?) -> WidgetPalette {
     )
   case "burgundy":
     return WidgetPalette(
-      gradientStart: Color(red: 0.290, green: 0.118, blue: 0.157),
-      gradientEnd: Color(red: 0.420, green: 0.176, blue: 0.235),
+      gradientStart: Color(red: 0.353, green: 0.047, blue: 0.110),
+      gradientEnd: Color(red: 0.608, green: 0.082, blue: 0.188),
       accent: Color(red: 0.965, green: 0.835, blue: 0.863),
-      chipText: Color(red: 0.420, green: 0.176, blue: 0.235)
+      chipText: Color(red: 0.608, green: 0.082, blue: 0.188)
     )
   default:
     return WidgetPalette(

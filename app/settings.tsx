@@ -73,7 +73,7 @@ export default function SettingsScreen() {
       { id: 'light', name: 'روشن', icon: 'light-mode' },
       { id: 'night', name: 'شب (سیاه)', icon: 'dark-mode' },
       { id: 'sapphire', name: 'سرمه‌ای', icon: 'water' },
-      { id: 'burgundy', name: 'عنابی', icon: 'menu-book' },
+      { id: 'burgundy', name: 'زرشکی', icon: 'menu-book' },
     ],
     [],
   );

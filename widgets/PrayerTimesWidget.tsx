@@ -34,10 +34,10 @@ function widgetPalette(themeMode: string | undefined): WidgetPalette {
       };
     case 'burgundy':
       return {
-        gradientFrom: '#4a1e28',
-        gradientTo: '#6b2d3c',
+        gradientFrom: '#5A0C1C',
+        gradientTo: '#9B1530',
         accent: '#f6d5dc',
-        chipText: '#6b2d3c',
+        chipText: '#9B1530',
       };
     default:
       return {
