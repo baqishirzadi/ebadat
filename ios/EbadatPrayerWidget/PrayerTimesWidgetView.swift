@@ -231,13 +231,7 @@ struct PrayerTimesWidgetView: View {
       let date = Date(timeIntervalSince1970: value.atMs / 1000)
       let parts = Calendar.current.dateComponents([.hour, .minute], from: date)
       let minute = String(format: "%02d", parts.minute ?? 0)
-      if isTurkish {
-        return String(format: "%02d:%@", parts.hour ?? 0, minute)
-      }
-      let hour24 = parts.hour ?? 0
-      let suffix = hour24 >= 12 ? "PM" : "AM"
-      let hour12 = hour24 % 12 == 0 ? 12 : hour24 % 12
-      return "\(hour12):\(minute) \(suffix)"
+      return String(format: "%02d:%@", parts.hour ?? 0, minute)
     }
     return value.time12h
   }

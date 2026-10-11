@@ -10,9 +10,11 @@ import { usePrayer } from '@/context/PrayerContext';
 import { useDiyanetHijriDate } from '@/hooks/useDiyanetHijri';
 import { useTodayCalendar } from '@/hooks/useTodayCalendar';
 import {
+  formatEnglishCivilDate,
   formatGregorianDateCompact,
   formatShamsiSlash,
   formatTurkishMiladiDate,
+  getCivilDateParts,
   weekdayName,
 } from '@/utils/calendarDisplay';
 import { formatPrayerTimeForLanguage } from '@/utils/formatPrayerTime';
@@ -68,20 +70,26 @@ function TodayDateCardInner() {
   const hijriDisplay = `${n(shownHijri.day)} ${hijriMonthName(shownHijri, language)} ${n(shownHijri.year)}`;
   const shamsiDisplay = formatShamsiSlash(truth.shamsi, language);
   const istanbulToday = isTurkish ? getIstanbulDateParts() : null;
-  const miladiDisplay = formatTurkishMiladiDate(new Date(), String);
+  const englishToday = isEnglish ? getCivilDateParts(new Date(), state.location?.timezone) : null;
+  const miladiDisplay = isTurkish
+    ? formatTurkishMiladiDate(new Date(), String)
+    : isEnglish
+      ? formatEnglishCivilDate(new Date(), state.location?.timezone)
+      : '';
+  const civilDatePair = isTurkish || isEnglish;
   const primaryDate = hijriPrimary ? hijriDisplay : shamsiDisplay;
   const primaryTestId = hijriPrimary ? 'home-today-hijri-date' : 'home-today-shamsi-date';
-  const secondaryLeftLabel = isTurkish
+  const secondaryLeftLabel = civilDatePair
     ? t('calendar.label.gregorian')
     : hijriPrimary
       ? t('calendar.label.shamsi')
       : t('calendar.label.hijri');
-  const secondaryLeftValue = isTurkish
+  const secondaryLeftValue = civilDatePair
     ? miladiDisplay
     : hijriPrimary
       ? shamsiDisplay
       : hijriDisplay;
-  const weekday = weekdayName(istanbulToday?.weekday ?? truth.weekday, language);
+  const weekday = weekdayName(istanbulToday?.weekday ?? englishToday?.weekday ?? truth.weekday, language);
 
   return (
     <Pressable
@@ -159,7 +167,7 @@ function TodayDateCardInner() {
       <RtlView style={[styles.secondaryRow, isRtlHome && styles.secondaryRowPashto, { borderTopColor: theme.divider }]}>
         <View style={[styles.secondaryItem, isRtlHome && styles.hijriItemPashto]}>
           <RtlText align="center" style={[styles.secondaryLabel, pashtoFontMetrics?.secondaryLabel, { color: theme.textSecondary }]}>{secondaryLeftLabel}</RtlText>
-          <RtlText align="center" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.qamariValue, pashtoFontMetrics?.secondaryValue, { color: theme.text }]}>
+          <RtlText testID={civilDatePair ? 'home-today-gregorian-date' : undefined} align="center" numberOfLines={2} adjustsFontSizeToFit minimumFontScale={0.95} style={[styles.qamariValue, pashtoFontMetrics?.secondaryValue, { color: theme.text }]}>
             {secondaryLeftValue}
           </RtlText>
         </View>
@@ -170,7 +178,7 @@ function TodayDateCardInner() {
             {sunriseDisplay}
           </RtlText>
         </View>
-        {isTurkish ? null : (
+        {civilDatePair ? null : (
           <>
             <View style={[styles.secondaryDivider, isRtlHome && styles.secondaryDividerPashto, { backgroundColor: theme.divider }]} />
             <View style={[styles.secondaryItem, isRtlHome && styles.gregItemPashto]}>

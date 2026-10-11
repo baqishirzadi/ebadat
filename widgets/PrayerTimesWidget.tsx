@@ -121,12 +121,7 @@ function widgetPrayerClock(
   if ((language === 'turkish' || language === 'english') && prayer.atMs) {
     const date = new Date(prayer.atMs);
     const minutes = String(date.getMinutes()).padStart(2, '0');
-    if (language === 'turkish') {
-      return `${String(date.getHours()).padStart(2, '0')}:${minutes}`;
-    }
-    const suffix = date.getHours() >= 12 ? 'PM' : 'AM';
-    const hours12 = date.getHours() % 12 || 12;
-    return `${hours12}:${minutes} ${suffix}`;
+    return `${String(date.getHours()).padStart(2, '0')}:${minutes}`;
   }
   return language === 'english' || language === 'turkish'
     ? toLatinNumeralsString(prayer.time12h)
@@ -242,7 +237,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
         clickAction="OPEN_APP"
       >
         <TextWidget
-          text={isLatin ? 'Ibadet' : 'عبادت'}
+          text={isLatin ? 'İbadet' : 'عبادت'}
           style={{ fontSize: 18 * typeScale, fontFamily: boldFontFamily, color: TEXT_PRIMARY, ...pashtoWeight(TEXT_PRIMARY) }}
         />
         <TextWidget

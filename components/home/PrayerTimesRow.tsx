@@ -5,17 +5,13 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { PrayerChip } from '@/components/home/PrayerChip';
 import { RtlView } from '@/components/ui/RtlView';
-import { BorderRadius, Spacing, Typography } from '@/constants/theme';
+import { BorderRadius, Spacing } from '@/constants/theme';
 import { usePrayer } from '@/context/PrayerContext';
-import { useMadhhab } from '@/hooks/useMadhhab';
 import { formatPrayerTimeForLanguage } from '@/utils/formatPrayerTime';
 import { getCurrentPrayerKey } from '@/utils/prayerDisplay';
 import { displayPrayerLabel } from '@/utils/prayerCalculationPolicy';
 import { PRAYER_LABELS_DARI, prayerLabel, PrayerTimes } from '@/utils/prayerTimes';
 import { useApp } from '@/context/AppContext';
-import { isHanafiMadhhab } from '@/utils/madhhab';
-import { useI18n } from '@/utils/i18n/useI18n';
-import { RtlText } from '@/components/ui/RtlText';
 
 const PRAYERS = [
   { key: 'fajr' as const, label: PRAYER_LABELS_DARI.fajr },
@@ -32,9 +28,6 @@ interface PrayerTimesRowProps {
 export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
   const { theme, state: appState } = useApp();
   const { state } = usePrayer();
-  const madhhab = useMadhhab();
-  const { t } = useI18n();
-  const showJumhurAsr = !isHanafiMadhhab(madhhab);
   const [now, setNow] = useState(() => new Date());
   const current = prayerTimes ? getCurrentPrayerKey(prayerTimes, now) : null;
   const timeZone = state.location?.timezone;
@@ -52,7 +45,6 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
       <RtlView
         style={[
           styles.card,
-          showJumhurAsr && styles.cardWithNote,
           { backgroundColor: theme.card, borderColor: theme.cardBorder },
         ]}
       >
@@ -74,11 +66,6 @@ export function PrayerTimesRow({ prayerTimes }: PrayerTimesRowProps) {
           );
         })}
       </RtlView>
-      {showJumhurAsr ? (
-        <RtlText align="center" style={[styles.note, { color: theme.textSecondary }]}>
-          {t('prayer.jumhurAsrNote')}
-        </RtlText>
-      ) : null}
     </Pressable>
   );
 }
@@ -93,15 +80,5 @@ const styles = StyleSheet.create({
     padding: Spacing.md,
     gap: 4,
     alignItems: 'center',
-  },
-  cardWithNote: {
-    marginBottom: Spacing.xs,
-  },
-  note: {
-    marginHorizontal: Spacing.lg,
-    marginBottom: Spacing.md,
-    fontFamily: 'Vazirmatn',
-    fontSize: Typography.ui.caption,
-    lineHeight: 20,
   },
 });

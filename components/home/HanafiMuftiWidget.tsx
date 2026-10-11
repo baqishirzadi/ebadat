@@ -45,14 +45,14 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
   return (
     <RtlView style={[styles.container, isRtlHome && styles.containerPashto]}>
       {isEnglish ? (
-        <View style={styles.englishHeader}>
+        <RtlView style={styles.header}>
           <MaterialIcons name="menu-book" size={18} color="rgba(255,255,255,0.9)" />
           <RtlText
             wrap={false}
             numberOfLines={1}
             adjustsFontSizeToFit
             minimumFontScale={0.85}
-            style={[styles.title, styles.titleEnglish, styles.englishHeaderTitle]}
+            style={[styles.title, styles.headerTitle, styles.titleEnglish]}
           >
             {title}
           </RtlText>
@@ -62,53 +62,34 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
             accessibilityRole="button"
             accessibilityLabel={t('home.viewConversation')}
             testID="home-mufti-view-conversation"
-            style={styles.englishHeaderLink}
+            style={styles.headerLink}
           >
             <RtlText wrap={false} numberOfLines={1} style={[styles.viewConversationText, styles.viewConversationTextEnglish]}>
               {t('home.viewConversation')}
             </RtlText>
           </Pressable>
-        </View>
+        </RtlView>
       ) : (
-        <View style={styles.titlePress}>
-          <View style={styles.titleRow}>
-            <RtlText
-              align="center"
-              wrap={false}
-              numberOfLines={1}
-              style={[styles.title, {
-                fontFamily,
-                fontSize: isPashto ? Typography.ui.body : Typography.ui.subtitle,
-                lineHeight: isNastaliq ? 34 : 26,
-                includeFontPadding: true,
-                paddingBottom: isNastaliq ? undefined : 2,
-              }]}
-            >
-              {title}
-            </RtlText>
-            <MaterialIcons name="menu-book" size={18} color="rgba(255,255,255,0.9)" />
-          </View>
+        <View style={[styles.header, styles.headerPhysical]}>
           <Pressable
             onPress={openFullChat}
-            hitSlop={8}
+            hitSlop={10}
             accessibilityRole="button"
             accessibilityLabel={t('home.viewConversation')}
             testID="home-mufti-view-conversation"
-            style={[styles.viewConversationButton, styles.viewConversationButtonPashto]}
+            style={styles.headerLink}
           >
             <View style={language === 'pashto' ? styles.viewConversationUnderlinePashto : undefined}>
               <RtlText
-                align="center"
                 wrap={false}
+                numberOfLines={1}
                 style={[
                   styles.viewConversationText,
                   styles.viewConversationTextPashto,
                   language === 'pashto' && styles.viewConversationTextBorderUnderlined,
                   {
-                    fontFamily,
                     lineHeight: isNastaliq ? 28 : 26,
                     includeFontPadding: true,
-                    paddingTop: 2,
                   },
                 ]}
               >
@@ -116,6 +97,26 @@ function HanafiMuftiWidgetInner({ onInputFocus }: HanafiMuftiWidgetProps) {
               </RtlText>
             </View>
           </Pressable>
+          <View style={styles.headerTitleCluster}>
+            <MaterialIcons name="menu-book" size={18} color="rgba(255,255,255,0.9)" />
+            <RtlText
+              wrap={false}
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.85}
+              style={[
+                styles.title,
+                styles.headerTitleRtl,
+                {
+                  fontSize: isPashto ? Typography.ui.body : Typography.ui.subtitle,
+                  lineHeight: isNastaliq ? 34 : 26,
+                  includeFontPadding: true,
+                },
+              ]}
+            >
+              {title}
+            </RtlText>
+          </View>
         </View>
       )}
 
@@ -168,32 +169,37 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     gap: 4,
   },
-  titlePress: {
-    alignSelf: 'stretch',
-    alignItems: 'center',
-    gap: 0,
-  },
-  titleRow: {
-    flexDirection: 'row-reverse',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    alignSelf: 'center',
-  },
-  englishHeader: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'stretch',
     gap: 6,
   },
-  englishHeaderTitle: {
+  headerPhysical: {
+    direction: 'ltr',
+  },
+  headerTitle: {
     flex: 1,
     flexShrink: 1,
-    textAlign: 'left',
+    minWidth: 0,
   },
-  englishHeaderLink: {
+  headerTitleCluster: {
+    flex: 1,
+    minWidth: 0,
+    flexDirection: 'row',
+    direction: 'ltr',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    gap: 6,
+  },
+  headerTitleRtl: {
+    flexShrink: 1,
+    minWidth: 0,
+    fontFamily: 'Vazirmatn-Bold',
+  },
+  headerLink: {
+    flexShrink: 0,
     paddingVertical: 4,
-    paddingLeft: Spacing.xs,
   },
   title: {
     ...persianCenterSubtitleText,
@@ -204,15 +210,6 @@ const styles = StyleSheet.create({
     fontFamily: undefined,
     fontWeight: '700',
     fontSize: Typography.ui.subtitle,
-  },
-  viewConversationButton: {
-    minHeight: 44,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.sm,
-  },
-  viewConversationButtonPashto: {
-    minHeight: 28,
-    paddingVertical: 0,
   },
   viewConversationText: {
     fontSize: 10,

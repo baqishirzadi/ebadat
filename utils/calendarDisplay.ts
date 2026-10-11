@@ -4,6 +4,7 @@ import { getIstanbulDateParts } from '@/utils/istanbulCalendar';
 import { formatAfghanSolarHijriDateWithPersianNumerals, type AfghanSolarHijriDate } from '@/utils/afghanSolarHijri';
 import type { HijriDate } from '@/utils/islamicCalendar';
 import { toArabicNumerals } from '@/utils/numbers';
+import { getDateKeyInTimezone, parseDateKey, weekdayInTimezone } from '@/utils/prayerTimezone';
 
 export const WEEKDAYS_DARI = [
   'یکشنبه',
@@ -88,17 +89,23 @@ const WEEKDAY_GRID_HEADERS: Record<AppLanguage, string[]> = {
   pashto: ['ش', 'ی', 'د', 'س', 'څ', 'پ', 'ج'],
   arabic: ['س', 'ح', 'ن', 'ث', 'ر', 'خ', 'ج'],
   turkish: ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'],
-  english: ['Sa', 'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr'],
+  english: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
 };
 
 export function weekdayGridHeaders(language: AppLanguage): string[] {
   return WEEKDAY_GRID_HEADERS[language] ?? WEEKDAY_GRID_HEADERS.dari;
 }
 
-/** Compact Gregorian month labels used consistently in app and widget dates. */
+/** Compact Gregorian month labels used by widgets and non-English fallbacks. */
 export const GREG_MONTHS_EN = [
   'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
   'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
+];
+
+/** Full English month names for the English app UI. Widgets keep the compact codes. */
+export const GREG_MONTHS_EN_FULL = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
 const GREG_MONTHS_DARI = [
@@ -153,15 +160,52 @@ export function turkishGregorianMonthName(month: number): string {
   return GREG_MONTHS_TURKISH[month - 1] ?? '';
 }
 
+export function englishGregorianMonthName(month: number): string {
+  return GREG_MONTHS_EN_FULL[month - 1] ?? '';
+}
+
+export interface CivilDateParts {
+  year: number;
+  month: number;
+  day: number;
+  weekday: number;
+  dateKey: string;
+}
+
+/** Civil day in the selected city timezone, or on the device when no timezone is set. */
+export function getCivilDateParts(date: Date = new Date(), timeZone?: string): CivilDateParts {
+  const dateKey = getDateKeyInTimezone(date, timeZone);
+  const { year, month, day } = parseDateKey(dateKey);
+  return {
+    year,
+    month,
+    day,
+    weekday: weekdayInTimezone(date, timeZone),
+    dateKey,
+  };
+}
+
+/** English civil date, for example "11 October 2026". */
+export function formatEnglishCivilDate(date: Date = new Date(), timeZone?: string): string {
+  const parts = getCivilDateParts(date, timeZone);
+  return `${parts.day} ${englishGregorianMonthName(parts.month)} ${parts.year}`;
+}
+
+/** English label for a calendar cell whose civil day is already the Kabul day of `date`. */
+export function formatEnglishKabulDate(date: Date): string {
+  const parts = getKabulDateParts(date);
+  return `${parts.day} ${englishGregorianMonthName(parts.month)} ${parts.year}`;
+}
+
 export function formatGregorianDateTimeCompact(
   gregorianDate: Date,
   formatNumber: (value: number) => string = String,
   timeLocale = 'fa-AF',
 ): string {
   const time = new Intl.DateTimeFormat(timeLocale, {
-    hour: 'numeric',
+    hour: '2-digit',
     minute: '2-digit',
-    hour12: true,
+    hour12: timeLocale !== 'en-US',
     timeZone: 'Asia/Kabul',
   }).format(gregorianDate);
   return `${formatGregorianDateCompact(gregorianDate, formatNumber)} · ${time}`;

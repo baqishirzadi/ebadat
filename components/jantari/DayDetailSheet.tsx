@@ -5,7 +5,7 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
-import { formatGregorianDateCompact, formatShamsiSlash, formatTurkishMiladiDate } from '@/utils/calendarDisplay';
+import { formatEnglishKabulDate, formatGregorianDateCompact, formatShamsiSlash, formatTurkishMiladiDate } from '@/utils/calendarDisplay';
 import { gregorianToAfghanSolarHijri } from '@/utils/afghanSolarHijri';
 import { gregorianToDisplayDiyanetHijri } from '@/utils/diyanetHijri';
 import { gregorianToDisplayHijri } from '@/utils/hijriOffset';
@@ -25,12 +25,18 @@ export function DayDetailSheet({ visible, date, onClose }: DayDetailSheetProps) 
   if (!date) return null;
 
   const isTurkish = language === 'turkish';
-  const hijriPrimary = language === 'english' || isTurkish || language === 'arabic';
+  const isEnglish = language === 'english';
+  const hideShamsi = isTurkish || isEnglish;
+  const hijriPrimary = isEnglish || isTurkish || language === 'arabic';
   const shamsi = gregorianToAfghanSolarHijri(date);
   const hijri = isTurkish ? gregorianToDisplayDiyanetHijri(date) : gregorianToDisplayHijri(date);
   const hijriText = `${n(hijri.day)} ${hijriMonthName(hijri, language)} ${n(hijri.year)}`;
   const shamsiText = formatShamsiSlash(shamsi, language);
-  const gregorianText = isTurkish ? formatTurkishMiladiDate(date, String) : formatGregorianDateCompact(date);
+  const gregorianText = isTurkish
+    ? formatTurkishMiladiDate(date, String)
+    : isEnglish
+      ? formatEnglishKabulDate(date)
+      : formatGregorianDateCompact(date);
 
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
@@ -48,7 +54,7 @@ export function DayDetailSheet({ visible, date, onClose }: DayDetailSheetProps) 
                 </RtlText>
               </RtlView>
             ) : null}
-            {isTurkish ? null : (
+            {hideShamsi ? null : (
               <RtlView style={styles.dateRow}>
                 <RtlText align="center" style={[styles.dateLabel, { color: theme.textSecondary }]}>{t('calendar.label.shamsi')}</RtlText>
                 <RtlText align="center" style={[styles.dateValue, { color: hijriPrimary ? theme.text : theme.tint }]}>

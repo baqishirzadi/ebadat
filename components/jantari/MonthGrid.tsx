@@ -8,6 +8,7 @@ import { RtlText } from '@/components/ui/RtlText';
 import { RtlView } from '@/components/ui/RtlView';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { usePrayer } from '@/context/PrayerContext';
 import { useDiyanetHijriDate } from '@/hooks/useDiyanetHijri';
 import { useTodayCalendar } from '@/hooks/useTodayCalendar';
 import { AFGHAN_SOLAR_MONTHS } from '@/utils/afghanSolarHijri';
@@ -19,7 +20,7 @@ import { debugLog } from '@/utils/debugLog';
 import { displayHijriToGregorian, getUserHijriOffsetDays, gregorianToDisplayHijri } from '@/utils/hijriOffset';
 import { HIJRI_MONTHS } from '@/utils/islamicCalendar';
 import { shamsiToGregorian } from '@/utils/afghanSolarHijri';
-import { GREG_MONTHS_EN, turkishGregorianMonthName, weekdayGridHeaders } from '@/utils/calendarDisplay';
+import { GREG_MONTHS_EN, englishGregorianMonthName, getCivilDateParts, turkishGregorianMonthName, weekdayGridHeaders } from '@/utils/calendarDisplay';
 import {
   diyanetHijriToGregorian,
   ensureDiyanetHijriMonth,
@@ -61,18 +62,22 @@ function appendDayCell(
   startGreg: Date,
   todayKey: { shamsi: string; hijri: string; greg: string },
   turkish: boolean,
+  english: boolean,
+  displayYear: number,
+  displayMonth: number,
 ): void {
   const greg = addDaysToKabulDate(startGreg, day - 1);
   const hijri = turkish ? gregorianToDisplayDiyanetHijri(greg) : gregorianToDisplayHijri(greg);
   const shamsi = gregorianToAfghanSolarHijri(greg);
   let isToday = false;
   let secondary: string | undefined;
-  const digits = (value: number) => (turkish ? String(value) : toArabicNumerals(value));
+  const latinDigits = turkish || english;
+  const digits = (value: number) => (latinDigits ? String(value) : toArabicNumerals(value));
   const eventType = getDayEventTypeFromParts(
     hijri.month,
     hijri.day,
-    turkish ? 0 : shamsi.month,
-    turkish ? 0 : shamsi.day,
+    turkish || english ? 0 : shamsi.month,
+    turkish || english ? 0 : shamsi.day,
   );
 
   if (mode === 'shamsi') {
@@ -80,7 +85,14 @@ function appendDayCell(
     secondary = digits(hijri.day);
   } else if (mode === 'qamari') {
     isToday = `${hijri.year}-${hijri.month}-${hijri.day}` === todayKey.hijri;
-    secondary = turkish ? String(getIstanbulDateParts(greg).day) : digits(shamsi.day);
+    secondary = turkish
+      ? String(getIstanbulDateParts(greg).day)
+      : english
+        ? String(getKabulDateParts(greg).day)
+        : digits(shamsi.day);
+  } else if (english) {
+    isToday = `${displayYear}-${displayMonth}-${day}` === todayKey.greg;
+    secondary = digits(hijri.day);
   } else {
     const parts = turkish ? getIstanbulDateParts(greg) : getKabulDateParts(greg);
     isToday = parts.dateKey === todayKey.greg;
@@ -97,8 +109,10 @@ function scheduleBuildCells(
   todayKey: { shamsi: string; hijri: string; greg: string },
   onComplete: (cells: DayCellData[]) => void,
   turkish = false,
+  english = false,
 ): () => void {
-  const cacheKey = `${mode}:${year}:${month}:${todayKey.shamsi}:${todayKey.hijri}:${todayKey.greg}:${getUserHijriOffsetDays()}:${turkish ? 'tr' : 'af'}`;
+  const script = turkish ? 'tr' : english ? 'en' : 'af';
+  const cacheKey = `${mode}:${year}:${month}:${todayKey.shamsi}:${todayKey.hijri}:${todayKey.greg}:${getUserHijriOffsetDays()}:${script}`;
   const cached = CELL_CACHE.get(cacheKey);
   if (cached) {
     onComplete(cached);
@@ -111,7 +125,7 @@ function scheduleBuildCells(
         daysInMonth: getDiyanetHijriMonthLength(year, month),
         firstDayOffset: diyanetQamariStart ? istanbulMondayColumn(diyanetQamariStart) : 0,
       }
-    : getCalendarMonthGridMeta(mode, year, month, turkish ? 'monday' : 'saturday');
+    : getCalendarMonthGridMeta(mode, year, month, turkish || english ? 'monday' : 'saturday');
   const startGreg = turkish && mode === 'qamari' ? diyanetQamariStart : monthStartGreg(mode, year, month);
   const items: DayCellData[] = [];
   for (let i = 0; i < meta.firstDayOffset; i++) items.push(null);
@@ -138,7 +152,7 @@ function scheduleBuildCells(
 
     const chunkEnd = Math.min(day + 6, meta.daysInMonth);
     for (; day <= chunkEnd; day++) {
-      appendDayCell(items, mode, day, startGreg, todayKey, turkish);
+      appendDayCell(items, mode, day, startGreg, todayKey, turkish, english, year, month);
     }
 
     if (day <= meta.daysInMonth) {
@@ -183,7 +197,9 @@ function eventCellBackground(
 const GridDayCell = memo(function GridDayCell({ cell, column, colWidth, theme, onPress, fridayColumn }: GridDayCellProps & { fridayColumn: number }) {
   const { language } = useI18n();
   const isFriday = column === fridayColumn;
-  const dayLabel = language === 'turkish' ? String(cell?.day ?? '') : cell ? toArabicNumerals(cell.day) : '';
+  const dayLabel = language === 'turkish' || language === 'english'
+    ? String(cell?.day ?? '')
+    : cell ? toArabicNumerals(cell.day) : '';
 
   const eventBg = !cell?.isToday && cell?.eventType ? eventCellBackground(cell.eventType, theme) : undefined;
   const eventColor = cell?.eventType ? eventAccentColor(cell.eventType, theme) : undefined;
@@ -243,11 +259,15 @@ interface MonthGridProps {
 
 export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
   const { theme, state } = useApp();
+  const { state: prayerState } = usePrayer();
   const { t, language } = useI18n();
   const isTurkish = language === 'turkish';
+  const isEnglish = language === 'english';
+  const mondayWeek = isTurkish || isEnglish;
   const truth = useTodayCalendar();
   const diyanetToday = useDiyanetHijriDate(isTurkish);
-  const fridayColumn = isTurkish ? 4 : FRIDAY_COLUMN;
+  const englishToday = isEnglish ? getCivilDateParts(truth.gregorianDate, prayerState.location?.timezone) : null;
+  const fridayColumn = mondayWeek ? 4 : FRIDAY_COLUMN;
   const [deferredMode, setDeferredMode] = useState(mode);
   const [isBuilding, setIsBuilding] = useState(false);
   const [monthOffset, setMonthOffset] = useState(0);
@@ -281,9 +301,11 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
         : `${truth.hijri.year}-${truth.hijri.month}-${truth.hijri.day}`,
       greg: isTurkish
         ? getIstanbulDateParts(truth.gregorianDate).dateKey
-        : getKabulDateParts(truth.gregorianDate).dateKey,
+        : isEnglish && englishToday
+          ? `${englishToday.year}-${englishToday.month}-${englishToday.day}`
+          : getKabulDateParts(truth.gregorianDate).dateKey,
     }),
-    [diyanetToday.day, diyanetToday.month, diyanetToday.year, isTurkish, truth],
+    [diyanetToday.day, diyanetToday.month, diyanetToday.year, englishToday?.day, englishToday?.month, englishToday?.year, isEnglish, isTurkish, truth],
   );
 
   useEffect(() => {
@@ -295,7 +317,9 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
     } else if (deferredMode === 'gregorian') {
       const parts = isTurkish
         ? getIstanbulDateParts(truth.gregorianDate)
-        : getKabulDateParts(truth.gregorianDate);
+        : isEnglish && englishToday
+          ? englishToday
+          : getKabulDateParts(truth.gregorianDate);
       baseYear = parts.year;
       baseMonth = parts.month;
     }
@@ -324,7 +348,9 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
           ? `${AFGHAN_SOLAR_MONTHS[m - 1]?.[language] ?? ''} ${year}`
           : isTurkish
             ? `${turkishGregorianMonthName(m)} ${year}`
-            : `${GREG_MONTHS_EN[m - 1]} ${year}`;
+            : isEnglish
+              ? `${englishGregorianMonthName(m)} ${year}`
+              : `${GREG_MONTHS_EN[m - 1]} ${year}`;
 
     setGridMeta({ year: y, month: m, monthTitle: title });
     setIsBuilding(true);
@@ -350,13 +376,13 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
         setCells(built);
         setIsBuilding(false);
       }
-    }, isTurkish);
+    }, isTurkish, isEnglish);
 
     return () => {
       cancelled = true;
       cancelBuild();
     };
-  }, [deferredMode, diyanetToday.month, diyanetToday.year, isTurkish, monthOffset, todayKey, truth.gregorianDate, truth.hijri.month, truth.hijri.year, truth.shamsi.month, truth.shamsi.year, language]);
+  }, [deferredMode, diyanetToday.month, diyanetToday.year, englishToday?.day, englishToday?.month, englishToday?.year, isEnglish, isTurkish, monthOffset, todayKey, truth.gregorianDate, truth.hijri.month, truth.hijri.year, truth.shamsi.month, truth.shamsi.year, language]);
 
   const { year, month, monthTitle } = gridMeta;
 
@@ -368,7 +394,7 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
           hitSlop={8}
           style={[styles.navBtn, { backgroundColor: theme.backgroundSecondary }]}
         >
-          <MaterialIcons name={isTurkish ? 'chevron-left' : 'chevron-right'} size={22} color={theme.text} />
+          <MaterialIcons name={mondayWeek ? 'chevron-left' : 'chevron-right'} size={22} color={theme.text} />
         </Pressable>
         <RtlText align="center" style={[styles.monthTitle, { color: theme.text }]}>
           {monthTitle}
@@ -378,7 +404,7 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
           hitSlop={8}
           style={[styles.navBtn, { backgroundColor: theme.backgroundSecondary }]}
         >
-          <MaterialIcons name={isTurkish ? 'chevron-right' : 'chevron-left'} size={22} color={theme.text} />
+          <MaterialIcons name={mondayWeek ? 'chevron-right' : 'chevron-left'} size={22} color={theme.text} />
         </Pressable>
       </RtlView>
 
@@ -392,7 +418,7 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
               <LocalizedText
                 style={[
                   styles.weekday,
-                  { color: i === FRIDAY_COLUMN ? theme.textSecondary : theme.textSecondary },
+                  { color: i === fridayColumn ? theme.textSecondary : theme.textSecondary },
                 ]}
               >
                 {d}
@@ -427,7 +453,7 @@ export function MonthGrid({ mode, onDayPress }: MonthGridProps) {
           <View style={[styles.legendSwatch, { backgroundColor: `${theme.tint}18`, borderColor: theme.tint }]} />
           <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>{t('calendar.legend.islamic')}</RtlText>
         </View>
-        {isTurkish ? null : (
+        {mondayWeek ? null : (
           <View style={styles.legendItem}>
             <View style={[styles.legendSwatch, { backgroundColor: `${theme.bookmark}22`, borderColor: theme.bookmark }]} />
             <RtlText align="center" style={[styles.legendText, { color: theme.textSecondary }]}>{t('calendar.legend.cultural')}</RtlText>

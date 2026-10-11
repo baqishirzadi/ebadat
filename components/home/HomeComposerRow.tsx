@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
-import { ActivityIndicator, Platform, Pressable, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import { LocalizedTextInput } from '@/components/ui/LocalizedText';
 import { RtlView } from '@/components/ui/RtlView';
@@ -99,21 +99,18 @@ export function HomeComposerRow({
     />
   );
 
-  return (
-    <RtlView style={styles.row}>
-      {isEnglish ? (
-        <>
-          {input}
-          {sendButton}
-        </>
-      ) : (
-        <>
-          {sendButton}
-          {input}
-        </>
-      )}
-    </RtlView>
+  const row = (
+    <>
+      {input}
+      {sendButton}
+    </>
   );
+
+  if (isRtlHome) {
+    return <View style={[styles.row, styles.rowPhysical]}>{row}</View>;
+  }
+
+  return <RtlView style={styles.row}>{row}</RtlView>;
 }
 
 const styles = StyleSheet.create({
@@ -122,6 +119,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.xs,
     alignSelf: 'stretch',
+  },
+  rowPhysical: {
+    direction: 'ltr',
   },
   input: {
     flex: 1,

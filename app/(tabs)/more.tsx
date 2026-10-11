@@ -28,7 +28,7 @@ import { formatAfghanSolarHijriDateWithPersianNumerals } from '@/utils/afghanSol
 import { getKabulDateKey, getKabulWeekdayIndex } from '@/utils/afghanistanCalendar';
 import { localizeCityName } from '@/utils/cities';
 import { getIstanbulDateParts } from '@/utils/istanbulCalendar';
-import { formatGregorianDateCompact, formatTurkishMiladiDate, weekdayName } from '@/utils/calendarDisplay';
+import { formatEnglishCivilDate, formatGregorianDateCompact, formatTurkishMiladiDate, getCivilDateParts, weekdayName } from '@/utils/calendarDisplay';
 import { getCalendarTruth } from '@/utils/calendarTruth';
 import {
   formatEventDateLabel,
@@ -60,8 +60,14 @@ interface UpcomingDayCard {
   badgeColor: string;
 }
 
-function formatGregorianDate(date: Date, language: AppLanguage, digits: (value: string) => string): string {
-  const monthLanguage = language === 'pashto' ? 'pashto' : language === 'turkish' ? 'turkish' : language === 'arabic' ? 'arabic' : language === 'english' ? 'english' : 'dari';
+function formatGregorianDate(
+  date: Date,
+  language: AppLanguage,
+  digits: (value: string) => string,
+  timeZone?: string,
+): string {
+  if (language === 'english') return formatEnglishCivilDate(date, timeZone);
+  const monthLanguage = language === 'pashto' ? 'pashto' : language === 'turkish' ? 'turkish' : language === 'arabic' ? 'arabic' : 'dari';
   return digits(formatGregorianDateCompact(date, (value) => String(value), monthLanguage));
 }
 
@@ -102,7 +108,11 @@ export default function MoreScreen() {
     [kabulDayKey, prayer.settings.hijriOffsetDays],
   );
   const weekdayLabel = weekdayName(
-    isTurkish ? getIstanbulDateParts().weekday : truth.weekday,
+    isTurkish
+      ? getIstanbulDateParts().weekday
+      : language === 'english'
+        ? getCivilDateParts(new Date(), prayer.location?.timezone).weekday
+        : truth.weekday,
     language,
   );
   const locationLabel = useMemo(
@@ -311,7 +321,7 @@ export default function MoreScreen() {
           )}
           {isTurkish ? null : (
             <CenteredText style={[styles.heroDateLine, { color: theme.textSecondary }]}>
-              {formatGregorianDate(truth.gregorianDate, language, digits)}
+              {formatGregorianDate(truth.gregorianDate, language, digits, prayer.location?.timezone)}
             </CenteredText>
           )}
         </View>

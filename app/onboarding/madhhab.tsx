@@ -42,8 +42,9 @@ export default function OnboardingMadhhabScreen() {
       primaryLabel={t('onboarding.continue')}
       onPrimary={handleContinue}
       scrollable
+      contentAlign="center"
     >
-      <MadhhabOptionList selected={selected} onSelect={setSelected} />
+      <MadhhabOptionList centered selected={selected} onSelect={setSelected} />
     </OnboardingShell>
   );
 }

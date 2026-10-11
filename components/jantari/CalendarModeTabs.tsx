@@ -25,7 +25,9 @@ export const CalendarModeTabs = React.memo(function CalendarModeTabs({
 }: CalendarModeTabsProps) {
   const { theme } = useApp();
   const { t, language } = useI18n();
-  const modes = language === 'turkish' ? MODES.filter((item) => item.key !== 'shamsi') : MODES;
+  const modes = language === 'turkish' || language === 'english'
+    ? MODES.filter((item) => item.key !== 'shamsi')
+    : MODES;
 
   return (
     <RtlView style={[styles.segment, { backgroundColor: theme.backgroundSecondary }]}>

@@ -1,4 +1,5 @@
-import { formatPrayerTime12h } from '@/utils/formatPrayerTime';
+import type { AppLanguage } from '@/types/quran';
+import { formatPrayerTime12h, formatPrayerTime24h } from '@/utils/formatPrayerTime';
 import { getNextPrayer, type PrayerTimes } from '@/utils/prayerTimes';
 
 const PRAYER_ORDER = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
@@ -47,6 +48,7 @@ export function getPrayerProgress(prayerTimes: PrayerTimes, now: Date = new Date
   return Math.min(1, Math.max(0, elapsed / total));
 }
 
-export function formatLiveClock(date: Date): string {
+export function formatLiveClock(date: Date, language?: AppLanguage): string {
+  if (language === 'english') return formatPrayerTime24h(date);
   return formatPrayerTime12h(date);
 }

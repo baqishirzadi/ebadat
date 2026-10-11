@@ -92,7 +92,7 @@ const requiredKeys = [
   'dua.new.messagePlaceholder', 'dua.new.failure', 'dua.index.description',
   'dua.detail.pending', 'calendar.mode.shamsi', 'calendar.legend.islamic',
   'home.date.today', 'common.send', 'quran.juzTitle', 'quran.pageRange', 'quran.surahAyahRange',
-  'app.splash.subtitle', 'app.splash.creator',
+  'app.splash.subtitle',
 ];
 requiredKeys.forEach((key) => assert(keys.has(key), `required semantic message is missing: ${key}`));
 

@@ -162,6 +162,8 @@ function GlassSegment({ options, direction }: { options: GlassOption[]; directio
             />
             <CenteredText
               numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.72}
               style={[styles.glassButtonText, option.active && styles.glassButtonTextActive]}
             >
               {option.label}
@@ -494,6 +496,12 @@ export function SurahList() {
   );
 }
 
+/** One frosted recipe for every language and every header theme. */
+const GLASS_IDLE_BORDER = 'rgba(255,255,255,0.16)';
+const GLASS_IDLE_FILL = 'rgba(255,255,255,0.05)';
+const GLASS_ACTIVE_BORDER = 'rgba(190,255,220,0.75)';
+const GLASS_ACTIVE_FILL = 'rgba(52,178,122,0.42)';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -596,8 +604,8 @@ const styles = StyleSheet.create({
     minHeight: 48,
     borderRadius: BorderRadius.lg + 4,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.28)',
-    backgroundColor: 'rgba(255,255,255,0.12)',
+    borderColor: GLASS_IDLE_BORDER,
+    backgroundColor: GLASS_IDLE_FILL,
   },
   glassSearchInput: {
     color: '#fff',
@@ -615,32 +623,32 @@ const styles = StyleSheet.create({
   },
   glassButton: {
     flex: 1,
-    minHeight: 46,
+    height: 46,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
+    paddingHorizontal: Spacing.sm,
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.16)',
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderColor: GLASS_IDLE_BORDER,
+    backgroundColor: GLASS_IDLE_FILL,
     overflow: 'hidden',
   },
   glassButtonShadow: {
     flex: 1,
-    minHeight: 46,
+    height: 46,
     borderRadius: BorderRadius.lg,
   },
   glassButtonActive: {
-    borderColor: 'rgba(190,255,220,0.75)',
-    backgroundColor: 'rgba(52,178,122,0.55)',
+    borderColor: GLASS_ACTIVE_BORDER,
+    backgroundColor: GLASS_ACTIVE_FILL,
   },
   glassButtonShadowActive: {
-    backgroundColor: 'rgba(52,178,122,0.55)',
     shadowColor: '#3DDC97',
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.45,
-    shadowRadius: 10,
-    elevation: Platform.OS === 'android' ? 4 : 0,
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 0,
   },
   glassButtonPressed: {
     opacity: 0.85,
@@ -665,7 +673,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   glassButtonText: {
+    flexShrink: 1,
+    minWidth: 0,
     fontSize: Typography.ui.subtitle,
+    lineHeight: 22,
     fontFamily: 'Vazirmatn',
     fontWeight: '600',
     color: 'rgba(255,255,255,0.82)',

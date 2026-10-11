@@ -35,13 +35,15 @@ export function HomeHeader({ onCityPress }: HomeHeaderProps) {
   const isEnglish = isLatin;
   const { state } = usePrayer();
   const insets = useSafeAreaInsets();
-  const [clock, setClock] = useState(() => formatLiveClock(new Date()));
+  const [clock, setClock] = useState(() => formatLiveClock(new Date(), language));
 
   useFocusEffect(
     useCallback(() => {
-      const timer = setInterval(() => setClock(formatLiveClock(new Date())), 30000);
+      const tick = () => setClock(formatLiveClock(new Date(), language));
+      tick();
+      const timer = setInterval(tick, 30000);
       return () => clearInterval(timer);
-    }, []),
+    }, [language]),
   );
 
   return (

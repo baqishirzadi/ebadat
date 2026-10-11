@@ -1,13 +1,12 @@
 /**
  * Spiritual Splash Screen
  * Calm opening: greeting phase then loading until app is interactive.
- * The ayah stays in Arabic. The line under it is the saved app language only.
+ * The ayah stays in Arabic. Every other line follows the saved app language.
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { View, StyleSheet, Text, Dimensions, Linking, Pressable, Image } from 'react-native';
+import { View, StyleSheet, Text, Dimensions, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import CenteredText from '@/components/CenteredText';
 import Animated, {
   Easing,
   runOnJS,
@@ -19,10 +18,16 @@ import Animated, {
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { Spacing } from '@/constants/theme';
-import { useLocalizedFontPreferences } from '@/context/AppContext';
-import { getDariFontFamily, getPashtoFontFamily } from '@/hooks/useFonts';
-import { LocalizedText } from '@/components/ui/LocalizedText';
-import { useI18n } from '@/utils/i18n/useI18n';
+import {
+  getArabicBoldFontFamily,
+  getArabicFontFamily,
+  getDariFontFamily,
+  getPashtoBoldFontFamily,
+  getPashtoFontFamily,
+} from '@/hooks/useFonts';
+import { translateUi } from '@/utils/i18n/catalog';
+import { isLatinLanguage, readPersistedAppLanguage } from '@/utils/i18n/languages';
+import type { AppLanguage } from '@/types/quran';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const BRAND_MARK = require('@/assets/images/splash-icon.png');
@@ -44,13 +49,6 @@ const PHRASES = [
     turkish: 'Hamd, âlemlerin Rabbi olan Allah’a mahsustur',
   },
   {
-    arabic: 'لَا إِلَٰهَ إِلَّا اللَّهُ',
-    dari: 'معبودی جز خدا نیست',
-    pashto: 'هیڅ معبود نشته مګر الله',
-    english: 'There is no god but Allah',
-    turkish: 'Allah’tan başka ilah yoktur',
-  },
-  {
     arabic: 'سُبْحَانَ اللَّهِ وَبِحَمْدِهِ',
     dari: 'پاک است خدا و ستایش او را',
     pashto: 'الله پاک دی او ستاینه یې ده',
@@ -66,7 +64,14 @@ const PHRASES = [
   },
 ] as const;
 
-const SPLASH_PHRASE = PHRASES[Math.floor(Math.random() * PHRASES.length)];
+/** Morning: basmala. Day: hamd. Evening: tasbih. Night: salawat. */
+function phraseForHour(hour: number) {
+  if (hour >= 5 && hour < 11) return PHRASES[0];
+  if (hour >= 11 && hour < 16) return PHRASES[1];
+  if (hour >= 16 && hour < 20) return PHRASES[2];
+  return PHRASES[3];
+}
+
 const SPLASH_VISIBLE_MS = 2800;
 const SPLASH_FADE_MS = 400;
 
@@ -79,41 +84,59 @@ interface SpiritualSplashProps {
   dismiss?: boolean;
 }
 
-const DARI_CREATOR_LINE = 'سازنده : شرکت نرم افزار www.afghan.dev';
+type Dedication = { label: string; name: string };
 
-function TurkishSplashCredit() {
-  return (
-    <View style={styles.creditContainer}>
-      <Pressable
-        accessibilityRole="link"
-        onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
-        style={styles.turkishCreditCard}
-      >
-        <CenteredText style={styles.turkishCreditKicker}>Geliştiren</CenteredText>
-        <CenteredText style={styles.turkishCreditTitle}>Yazılım şirketi</CenteredText>
-        <CenteredText style={styles.turkishCreditLink}>afghan.dev</CenteredText>
-      </Pressable>
-    </View>
-  );
+const DEDICATION: Record<AppLanguage, Dedication> = {
+  dari: { label: 'تقدیم', name: 'خلافت شیرزاد' },
+  pashto: { label: 'تقدیم', name: 'خلافت شیرزاد' },
+  arabic: { label: 'تقديم', name: 'خلافت شیرزاد' },
+  english: { label: 'Presented by', name: 'Shirzad Caliphate' },
+  turkish: { label: 'Takdim', name: 'Halafet Şirzad' },
+};
+
+function splashFontFamily(language: AppLanguage): string | undefined {
+  if (language === 'pashto') return getPashtoFontFamily(undefined);
+  if (language === 'arabic') return getArabicFontFamily();
+  if (language === 'dari') return getDariFontFamily('vazirmatn');
+  return undefined;
 }
 
-function SplashCredit({ line }: { line: string }) {
+function splashBoldFontFamily(language: AppLanguage): string | undefined {
+  if (language === 'pashto') return getPashtoBoldFontFamily(undefined);
+  if (language === 'arabic') return getArabicBoldFontFamily();
+  if (language === 'dari') return 'Vazirmatn-Bold';
+  return undefined;
+}
+
+function DedicationCard({ language }: { language: AppLanguage }) {
+  const dedication = DEDICATION[language];
+  const latin = isLatinLanguage(language);
+  const fontFamily = splashFontFamily(language);
+
   return (
     <View style={styles.creditContainer}>
-      <Pressable
-        accessibilityRole="link"
-        onPress={() => Linking.openURL('https://www.afghan.dev').catch(() => {})}
-        style={styles.creditCard}
-      >
-        <CenteredText
-          numberOfLines={1}
-          adjustsFontSizeToFit
-          minimumFontScale={0.65}
-          style={styles.creditDeveloper}
+      <View style={styles.creditCard}>
+        <Text
+          style={[
+            styles.dedicationLabel,
+            {
+              fontFamily,
+              writingDirection: latin ? 'ltr' : 'rtl',
+            },
+          ]}
         >
-          {line}
-        </CenteredText>
-      </Pressable>
+          {dedication.label}
+        </Text>
+        <Text
+          style={[
+            styles.dedicationName,
+            latin ? styles.dedicationNameLatin : { fontFamily: splashBoldFontFamily(language) },
+            { writingDirection: latin ? 'ltr' : 'rtl' },
+          ]}
+        >
+          {dedication.name}
+        </Text>
+      </View>
     </View>
   );
 }
@@ -124,9 +147,9 @@ export function SpiritualSplash({
   onGreetingComplete,
   dismiss = false,
 }: SpiritualSplashProps) {
-  const { t, language } = useI18n();
-  const fonts = useLocalizedFontPreferences();
   const insets = useSafeAreaInsets();
+  const [language, setLanguage] = useState<AppLanguage | null>(null);
+  const [phrase] = useState(() => phraseForHour(new Date().getHours()));
   const [screenPhase, setScreenPhase] = useState<SplashScreenPhase>('greeting');
   const [isExiting, setIsExiting] = useState(false);
   const [hasReady, setHasReady] = useState(false);
@@ -161,7 +184,17 @@ export function SpiritualSplash({
   }, [onReady]);
 
   useEffect(() => {
-    if (!hasReady) return;
+    let cancelled = false;
+    readPersistedAppLanguage().then((saved) => {
+      if (!cancelled) setLanguage(saved);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!hasReady || !language) return;
 
     const exitTimeout = setTimeout(() => {
       if (greetingDoneRef.current) return;
@@ -171,7 +204,7 @@ export function SpiritualSplash({
     }, SPLASH_VISIBLE_MS);
 
     return () => clearTimeout(exitTimeout);
-  }, [hasReady, onGreetingComplete]);
+  }, [hasReady, language, onGreetingComplete]);
 
   useEffect(() => {
     if (screenPhase !== 'loading') return;
@@ -192,16 +225,9 @@ export function SpiritualSplash({
     transform: [{ rotate: `${spin.value}deg` }],
   }));
 
-  const creatorLine = language === 'dari'
-    ? DARI_CREATOR_LINE
-    : `${t('app.splash.creator')} www.afghan.dev`;
-  const translation = language === 'arabic' ? null : SPLASH_PHRASE[language];
-  const latin = language === 'english' || language === 'turkish';
-  const translationFont = language === 'pashto'
-    ? getPashtoFontFamily(fonts?.pashtoFont)
-    : language === 'dari'
-      ? getDariFontFamily(fonts?.dariFont ?? 'vazirmatn')
-      : undefined;
+  const latin = language ? isLatinLanguage(language) : false;
+  const uiFont = language ? splashFontFamily(language) : undefined;
+  const translation = language && language !== 'arabic' ? phrase[language] : null;
 
   return (
     <Animated.View
@@ -221,7 +247,7 @@ export function SpiritualSplash({
         end={{ x: 1, y: 1 }}
       />
 
-      {screenPhase === 'greeting' ? (
+      {language && screenPhase === 'greeting' ? (
         <>
           <View style={styles.appNameSection}>
             <Image
@@ -230,14 +256,32 @@ export function SpiritualSplash({
               resizeMode="contain"
               accessibilityIgnoresInvertColors
             />
-            <LocalizedText style={[styles.appName, language === 'turkish' && styles.appNameLatin]}>{t('app.brandName')}</LocalizedText>
-            <CenteredText style={styles.appSubtitle}>{t('app.splash.subtitle')}</CenteredText>
+            <Text
+              style={[
+                styles.appName,
+                latin ? styles.appNameLatin : { fontFamily: splashBoldFontFamily(language) },
+              ]}
+            >
+              {translateUi('app.brandName', language)}
+            </Text>
+            <Text
+              style={[
+                styles.appSubtitle,
+                {
+                  fontFamily: uiFont,
+                  writingDirection: latin ? 'ltr' : 'rtl',
+                  lineHeight: language === 'pashto' ? 36 : 28,
+                },
+              ]}
+            >
+              {translateUi('app.splash.subtitle', language)}
+            </Text>
           </View>
 
           <View style={styles.frameContainer}>
             <View style={styles.frame}>
               <View style={styles.frameContent}>
-                <Text style={styles.arabicText}>{SPLASH_PHRASE.arabic}</Text>
+                <Text style={styles.arabicText}>{phrase.arabic}</Text>
 
                 {translation ? (
                   <>
@@ -249,7 +293,7 @@ export function SpiritualSplash({
                       style={[
                         styles.translationText,
                         {
-                          fontFamily: translationFont,
+                          fontFamily: uiFont,
                           writingDirection: latin ? 'ltr' : 'rtl',
                           lineHeight: language === 'pashto' ? 40 : latin ? 24 : 30,
                         },
@@ -263,9 +307,11 @@ export function SpiritualSplash({
             </View>
           </View>
 
-          {language === 'turkish' ? <TurkishSplashCredit /> : <SplashCredit line={creatorLine} />}
+          <DedicationCard language={language} />
         </>
-      ) : (
+      ) : null}
+
+      {language && screenPhase === 'loading' ? (
         <>
           <View style={styles.loadingSection}>
             <Image
@@ -274,13 +320,26 @@ export function SpiritualSplash({
               resizeMode="contain"
               accessibilityIgnoresInvertColors
             />
-            <LocalizedText style={[styles.appName, language === 'turkish' && styles.appNameLatin]}>{t('app.brandName')}</LocalizedText>
+            <Text style={[styles.appName, latin ? styles.appNameLatin : { fontFamily: splashBoldFontFamily(language) }]}>
+              {translateUi('app.brandName', language)}
+            </Text>
             <Animated.View style={[styles.loadingRing, ringStyle]} />
-            <CenteredText style={styles.loadingText}>{t('common.loading')}</CenteredText>
+            <Text
+              style={[
+                styles.loadingText,
+                {
+                  fontFamily: uiFont,
+                  writingDirection: latin ? 'ltr' : 'rtl',
+                  lineHeight: language === 'pashto' ? 36 : 28,
+                },
+              ]}
+            >
+              {translateUi('common.loading', language)}
+            </Text>
           </View>
-          {language === 'turkish' ? <TurkishSplashCredit /> : <SplashCredit line={creatorLine} />}
+          <DedicationCard language={language} />
         </>
-      )}
+      ) : null}
     </Animated.View>
   );
 }
@@ -316,7 +375,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: GOLD_LIGHT,
     textAlign: 'center',
-    lineHeight: 28,
     includeFontPadding: true,
   },
   frameContainer: {
@@ -397,75 +455,52 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     writingDirection: 'rtl',
   },
+  appNameLatin: {
+    writingDirection: 'ltr',
+    fontFamily: undefined,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+  },
   appSubtitle: {
     fontSize: 16,
     color: GOLD_LIGHT,
     marginTop: 8,
     letterSpacing: 0.5,
     opacity: 0.95,
+    textAlign: 'center',
     includeFontPadding: true,
-    lineHeight: 28,
   },
   creditContainer: {
     alignSelf: 'stretch',
-    marginHorizontal: 20,
-    marginTop: 8,
+    marginHorizontal: 48,
+    marginTop: 4,
     flexShrink: 0,
   },
   creditCard: {
-    backgroundColor: 'rgba(13, 41, 32, 0.9)',
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: `${GOLD}40`,
-    paddingVertical: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(212, 175, 55, 0.55)',
+    paddingVertical: 10,
     paddingHorizontal: 16,
     alignItems: 'center',
-    width: '100%',
-  },
-  appNameLatin: {
-    writingDirection: 'ltr',
-    fontFamily: undefined,
-  },
-  turkishCreditCard: {
-    backgroundColor: 'rgba(13, 41, 32, 0.92)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: `${GOLD}66`,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-    width: '100%',
     gap: 2,
-  },
-  turkishCreditKicker: {
-    fontSize: 12,
-    letterSpacing: 1.2,
-    color: GOLD,
-    textAlign: 'center',
-  },
-  turkishCreditTitle: {
-    fontSize: 18,
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: '700',
-    marginTop: 2,
-  },
-  turkishCreditLink: {
-    fontSize: 14,
-    color: GOLD_LIGHT,
-    textAlign: 'center',
-    marginTop: 4,
-    letterSpacing: 0.4,
-  },
-  creditDeveloper: {
     width: '100%',
-    fontSize: 14,
-    color: GOLD_LIGHT,
-    lineHeight: 28,
-    fontFamily: 'Vazirmatn',
-    fontWeight: '600',
+  },
+  dedicationLabel: {
+    width: '100%',
+    fontSize: 12,
+    color: 'rgba(232, 212, 138, 0.72)',
     textAlign: 'center',
     includeFontPadding: true,
-    paddingVertical: 2,
+  },
+  dedicationName: {
+    width: '100%',
+    color: GOLD,
+    fontSize: 18,
+    textAlign: 'center',
+    includeFontPadding: true,
+  },
+  dedicationNameLatin: {
+    fontWeight: '700',
   },
 });

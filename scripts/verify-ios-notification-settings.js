@@ -6,9 +6,11 @@ const path = require('path');
 const swiftPath = path.join(__dirname, '..', 'ios', 'abadt', 'WidgetDataModule.swift');
 const helperPath = path.join(__dirname, '..', 'utils', 'adhanHealth.ts');
 const cardPath = path.join(__dirname, '..', 'components', 'home', 'AdhanStatusCard.tsx');
+const copyPath = path.join(__dirname, '..', 'utils', 'i18n', 'messages', 'prayer.ts');
 const swift = fs.readFileSync(swiftPath, 'utf8');
 const helper = fs.readFileSync(helperPath, 'utf8');
 const card = fs.readFileSync(cardPath, 'utf8');
+const copy = fs.readFileSync(copyPath, 'utf8');
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -34,6 +36,7 @@ const iosBranch = iosHelper.slice(0, iosHelper.indexOf('\n  }\n\n  try'));
 assert(/if \(Platform\.OS === 'ios'\)/.test(iosHelper), 'JavaScript keeps an explicit iOS branch');
 assert(!iosBranch.includes('Linking.openSettings()'), 'iOS branch never opens generic Settings');
 assert(/return false/.test(iosHelper), 'bridge failure is returned as a recoverable result');
-assert(/Settings → Apps → Ebadat → Notifications/.test(card), 'card contains manual recovery guidance');
+assert(card.includes("t('home.adhan.notificationsAccessBody')"), 'card contains manual recovery guidance');
+assert(/Settings → Apps → İbadet → Notifications/.test(copy), 'recovery guidance names the app İbadet');
 
 console.log('[verify:ios-notification-settings] OK');

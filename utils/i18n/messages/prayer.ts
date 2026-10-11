@@ -108,7 +108,7 @@ export const prayerMessages = {
   'home.adhan.summary.healthy': {
     dari: 'اذان آماده است و زمان‌بندی فعال است',
     pashto: 'اذان چمتو دی او مهالوېش فعال دی',
-    english: 'The adhan is ready and scheduling is active',
+    english: 'Adhan is ready and the schedule is on',
     turkish: 'Ezan hazır ve zamanlama etkin',
     arabic: 'الأذان جاهز والجدولة مفعّلة',
   },
@@ -122,7 +122,7 @@ export const prayerMessages = {
   'home.adhan.summary.critical': {
     dari: 'برای پخش به‌موقع اذان، تنظیمات را اصلاح کنید',
     pashto: 'د اذان د پر وخت غږولو لپاره امستنې سمې کړئ',
-    english: 'Fix your settings so the adhan plays on time',
+    english: 'Fix settings so Adhan plays on time',
     turkish: 'Ezanın zamanında çalması için ayarlarınızı düzeltin',
     arabic: 'صحّح الإعدادات ليُبَثّ الأذان في وقته',
   },
@@ -134,9 +134,9 @@ export const prayerMessages = {
     arabic: 'الوصول إلى الإشعارات',
   },
   'home.adhan.notificationsAccessBody': {
-    dari: 'برای فعال‌کردن اعلان‌های اذان، به Settings → Apps → Ibadet → Notifications بروید و Allow Notifications را روشن کنید.',
-    pashto: 'د اذان خبرتیاوو د فعالولو لپاره Settings → Apps → Ibadet → Notifications ته لاړ شئ او Allow Notifications روښانه کړئ.',
-    english: 'To enable Adhan notifications, go to Settings → Apps → Ebadat → Notifications and turn on Allow Notifications.',
+    dari: 'برای فعال‌کردن اعلان‌های اذان، به Settings → Apps → İbadet → Notifications بروید و Allow Notifications را روشن کنید.',
+    pashto: 'د اذان خبرتیاوو د فعالولو لپاره Settings → Apps → İbadet → Notifications ته لاړ شئ او Allow Notifications روښانه کړئ.',
+    english: 'To enable Adhan notifications, go to Settings → Apps → İbadet → Notifications and turn on Allow Notifications.',
     turkish: 'Ezan bildirimlerini açmak için Ayarlar → Uygulamalar → İbadet → Bildirimler yoluna gidin ve Bildirimlere izin ver seçeneğini açın.',
     arabic: 'لتفعيل إشعارات الأذان، انتقل إلى الإعدادات ← التطبيقات ← عبادة ← الإشعارات وفعّل السماح بالإشعارات.',
   },

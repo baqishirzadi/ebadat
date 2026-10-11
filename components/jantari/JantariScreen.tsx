@@ -27,13 +27,14 @@ const SECTION_STAGGER_MS = 280;
 export function JantariScreen() {
   const { theme } = useApp();
   const { language } = useI18n();
-  const [gridMode, setGridMode] = useState<CalendarGridMode>(language === 'turkish' ? 'gregorian' : 'shamsi');
+  const hideShamsi = language === 'turkish' || language === 'english';
+  const [gridMode, setGridMode] = useState<CalendarGridMode>(hideShamsi ? 'gregorian' : 'shamsi');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [deferred, setDeferred] = useState<Set<DeferredSection>>(new Set());
 
   useEffect(() => {
-    if (language === 'turkish' && gridMode === 'shamsi') setGridMode('gregorian');
-  }, [gridMode, language]);
+    if (hideShamsi && gridMode === 'shamsi') setGridMode('gregorian');
+  }, [gridMode, hideShamsi]);
 
   useEffect(() => {
     const screenMount = Date.now();

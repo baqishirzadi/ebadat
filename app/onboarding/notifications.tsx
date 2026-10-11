@@ -35,7 +35,9 @@ const THEME_GRADIENT: [string, string, string] = ['#0F1F14', '#1a4d3e', '#2d6a4f
 export default function OnboardingNotificationsScreen() {
   const { theme, state: appState } = useApp();
   const locale = adhanPermissionLocale(appState.preferences.appLanguage);
-  const { t } = useI18n();
+  const { t, fontFamily, isLatin } = useI18n();
+  const textFont = isLatin ? undefined : fontFamily;
+  const boldFont = isLatin ? undefined : 'Vazirmatn-Bold';
   const { state, requestPrayerSchedule } = usePrayer();
   const [busy, setBusy] = useState(false);
   const [totalSteps, setTotalSteps] = useState(4);
@@ -127,7 +129,10 @@ export default function OnboardingNotificationsScreen() {
         <View style={[styles.previewShell, styles.shadow]}>
           <LinearGradient colors={THEME_GRADIENT} style={styles.previewHeader}>
             <MaterialIcons name="schedule" size={18} color="rgba(255,255,255,0.9)" />
-            <RtlText align="center" style={styles.previewHeaderText}>
+            <RtlText
+              align="center"
+              style={[styles.previewHeaderText, { fontFamily: boldFont }, isLatin && styles.latinBold]}
+            >
               {t('onboarding.notifications.todayPrayers')}
             </RtlText>
           </LinearGradient>
@@ -136,7 +141,7 @@ export default function OnboardingNotificationsScreen() {
             {PRAYER_PREVIEW.map((item, index) => {
               const isNext = item.key === nextKey;
               return (
-                <RtlView
+                <View
                   key={item.key}
                   style={[
                     styles.previewRow,
@@ -147,17 +152,19 @@ export default function OnboardingNotificationsScreen() {
                     },
                   ]}
                 >
-                  <MaterialIcons
-                    name={item.icon}
-                    size={20}
-                    color={isNext ? theme.bookmark : theme.textSecondary}
-                  />
+                  <View style={styles.previewSide}>
+                    <MaterialIcons
+                      name={item.icon}
+                      size={20}
+                      color={isNext ? theme.bookmark : theme.textSecondary}
+                    />
+                  </View>
                   <RtlText
                     align="center"
                     style={[
                       styles.previewLabel,
-                      { color: isNext ? theme.tint : theme.text },
-                      isNext && styles.previewLabelNext,
+                      { color: isNext ? theme.tint : theme.text, fontFamily: isNext ? boldFont : textFont },
+                      isNext && isLatin && styles.latinBold,
                     ]}
                   >
                     {prayerLabel(item.key as 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha', appState.preferences.appLanguage)}
@@ -166,12 +173,13 @@ export default function OnboardingNotificationsScreen() {
                     align="center"
                     style={[
                       styles.previewTime,
-                      { color: isNext ? theme.bookmark : theme.tint },
+                      { color: isNext ? theme.bookmark : theme.tint, fontFamily: boldFont },
+                      isLatin && styles.latinBold,
                     ]}
                   >
                     {renderTime(item.key as keyof PrayerTimes)}
                   </RtlText>
-                </RtlView>
+                </View>
               );
             })}
           </RtlView>
@@ -210,6 +218,7 @@ const styles = StyleSheet.create({
   },
   previewHeader: {
     flexDirection: 'row',
+    direction: 'ltr',
     alignItems: 'center',
     justifyContent: 'center',
     gap: Spacing.xs,
@@ -217,9 +226,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.md,
   },
   previewHeaderText: {
-    fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
     color: '#fff',
+  },
+  latinBold: {
+    fontWeight: '700',
   },
   previewBody: {
     borderWidth: 1,
@@ -229,26 +240,25 @@ const styles = StyleSheet.create({
   },
   previewRow: {
     flexDirection: 'row',
+    direction: 'ltr',
     alignItems: 'center',
-    justifyContent: 'space-between',
     paddingVertical: 4,
     paddingHorizontal: Spacing.xs,
     borderRadius: BorderRadius.sm,
-    gap: Spacing.xs,
+  },
+  previewSide: {
+    width: 72,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   previewLabel: {
-    fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.caption,
     flex: 1,
     textAlign: 'center',
   },
-  previewLabelNext: {
-    fontFamily: 'Vazirmatn-Bold',
-  },
   previewTime: {
-    fontFamily: 'Vazirmatn-Bold',
+    width: 72,
     fontSize: Typography.ui.caption,
-    minWidth: 64,
     textAlign: 'center',
   },
 });
