@@ -201,16 +201,15 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
     15 * timeGlyphScale * lineBox;
   const scale = Math.min(0.88, Math.max(0.52, height / contentUnits));
   const typeScale = scale * glyphScale;
-  // Bold Naskh strokes read thin at widget size. A tight shadow in the text
-  // color thickens the strokes without changing the line box.
+  // Bold Naskh strokes read thin at widget size. A zero-offset shadow
+  // thickens Pashto and Arabic without changing the font size or line box.
   const naskhStroke = (color: `#${string}`) => ({
     fontWeight: '700' as const,
     textShadowColor: color,
-    textShadowRadius: 1.2,
+    textShadowRadius: 2.4,
     textShadowOffset: { width: 0, height: 0 },
   });
-  const pashtoWeight = (color: `#${string}`) => (isArabic ? naskhStroke(color) : null);
-  const pashtoTimeWeight = (color: `#${string}`) =>
+  const pashtoWeight = (color: `#${string}`) =>
     isArabic || isPashto ? naskhStroke(color) : null;
   const rootPaddingVertical = 5 * scale;
   const rootPaddingHorizontal = 6 * scale;
@@ -259,7 +258,13 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                     ? 'اپ پرانیزئ'
                     : 'اپ را باز کنید'
           }
-          style={{ fontSize: 12 * typeScale, fontFamily: regularFontFamily, color: TEXT_SECONDARY, marginTop: 4 * scale }}
+          style={{
+            fontSize: 12 * typeScale,
+            fontFamily: isArabic || isPashto ? boldFontFamily : regularFontFamily,
+            color: TEXT_SECONDARY,
+            marginTop: 4 * scale,
+            ...pashtoWeight(TEXT_SECONDARY),
+          }}
         />
       </FlexWidget>
     );
@@ -502,8 +507,7 @@ export function PrayerTimesWidget({ snapshot, width = 320, height = 110 }: Praye
                   allowFontScaling={false}
                   style={{
                     fontSize: prayerTimeSize,
-                    fontFamily: boldFontFamily,
-                    ...pashtoTimeWeight(active ? palette.chipText : TEXT_SECONDARY),
+                    fontFamily: isPashto || isArabic ? 'Vazirmatn-Bold' : boldFontFamily,
                     color: active ? palette.chipText : TEXT_SECONDARY,
                     marginTop: prayerTimeMarginTop,
                     adjustsFontSizeToFit: true,
