@@ -5,6 +5,7 @@ import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { RtlText } from '@/components/ui/RtlText';
 import { BorderRadius, Spacing, Typography } from '@/constants/theme';
 import { useApp } from '@/context/AppContext';
+import { directionStyle } from '@/utils/i18n/direction';
 import { useI18n } from '@/utils/i18n/useI18n';
 import {
   MADHHAB_KEYS,
@@ -12,10 +13,18 @@ import {
   type MadhhabKey,
 } from '@/utils/madhhab';
 
+const NOTE_KEYS = {
+  hanafi: 'onboarding.madhhab.note.hanafi',
+  shafii: 'onboarding.madhhab.note.shafii',
+  maliki: 'onboarding.madhhab.note.maliki',
+  hanbali: 'onboarding.madhhab.note.hanbali',
+  ahl_hadith: 'onboarding.madhhab.note.ahl_hadith',
+} as const;
+
 interface MadhhabOptionListProps {
   selected: MadhhabKey;
   onSelect: (madhhab: MadhhabKey) => void;
-  /** Setup screen stacks each name in the middle. Settings keeps the side-by-side row. */
+  /** Setup cards show the Asr note. Settings keeps the short row. */
   centered?: boolean;
 }
 
@@ -29,8 +38,9 @@ export function MadhhabOptionList({ selected, onSelect, centered = false }: Madh
         const active = selected === key;
         const label = (
           <RtlText
-            align={centered ? 'center' : 'right'}
-            style={[styles.label, { color: active ? theme.tint : theme.text }]}
+            align="right"
+            wrap={!centered}
+            style={[styles.label, centered && styles.labelSetup, { color: active ? theme.tint : theme.text }]}
           >
             {madhhabLabel(key, language)}
           </RtlText>
@@ -38,11 +48,20 @@ export function MadhhabOptionList({ selected, onSelect, centered = false }: Madh
         const badge = key === 'hanafi' ? (
           <RtlText
             align={centered ? 'center' : 'right'}
-            style={[styles.badge, { color: theme.textSecondary }]}
+            wrap={!centered}
+            style={[
+              centered ? styles.recommendPillText : styles.badge,
+              { color: centered ? theme.tint : theme.textSecondary },
+            ]}
           >
             {t('onboarding.madhhab.recommended')}
           </RtlText>
         ) : null;
+        const check = active ? (
+          <MaterialIcons name="check" size={22} color={theme.tint} />
+        ) : (
+          <View style={[styles.checkPlaceholder, { borderColor: theme.cardBorder }]} />
+        );
 
         return (
           <Pressable
@@ -53,7 +72,8 @@ export function MadhhabOptionList({ selected, onSelect, centered = false }: Madh
             testID={`madhhab-option-${key}`}
             style={[
               styles.option,
-              centered && styles.optionCentered,
+              centered && styles.optionSetup,
+              centered && directionStyle(language),
               {
                 backgroundColor: active ? `${theme.tint}14` : theme.card,
                 borderColor: active ? theme.tint : theme.cardBorder,
@@ -62,11 +82,20 @@ export function MadhhabOptionList({ selected, onSelect, centered = false }: Madh
           >
             {centered ? (
               <>
-                {label}
-                {badge}
-                <View style={styles.centeredCheckSlot}>
-                  {active ? <MaterialIcons name="check" size={18} color={theme.tint} /> : null}
+                <View style={styles.optionText}>
+                  <View style={[styles.nameRow, directionStyle(language)]}>
+                    {label}
+                    {badge ? (
+                      <View style={[styles.recommendPill, { backgroundColor: `${theme.tint}18` }]}>
+                        {badge}
+                      </View>
+                    ) : null}
+                  </View>
+                  <RtlText align="right" style={[styles.note, { color: theme.textSecondary }]}>
+                    {t(NOTE_KEYS[key])}
+                  </RtlText>
                 </View>
+                {check}
               </>
             ) : (
               <>
@@ -74,11 +103,7 @@ export function MadhhabOptionList({ selected, onSelect, centered = false }: Madh
                   {label}
                   {badge}
                 </View>
-                {active ? (
-                  <MaterialIcons name="check" size={22} color={theme.tint} />
-                ) : (
-                  <View style={[styles.checkPlaceholder, { borderColor: theme.cardBorder }]} />
-                )}
+                {check}
               </>
             )}
           </Pressable>
@@ -127,6 +152,7 @@ const styles = StyleSheet.create({
   listCentered: {
     flexGrow: 1,
     justifyContent: 'center',
+    gap: Spacing.md,
   },
   option: {
     borderWidth: 2,
@@ -138,23 +164,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  optionCentered: {
-    flexDirection: 'column',
-    justifyContent: 'center',
+  optionSetup: {
+    borderRadius: BorderRadius.xl,
+    paddingVertical: Spacing.md,
+    alignItems: 'center',
   },
   optionText: {
     flex: 1,
     minWidth: 0,
   },
-  centeredCheckSlot: {
-    height: 22,
+  nameRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 2,
+    flexWrap: 'wrap',
+    gap: Spacing.xs,
   },
   label: {
     fontFamily: 'Vazirmatn-Bold',
     fontSize: Typography.ui.body,
+  },
+  labelSetup: {
+    width: undefined,
+    alignSelf: 'flex-start',
+  },
+  note: {
+    fontFamily: 'Vazirmatn',
+    fontSize: Typography.ui.caption,
+    lineHeight: 20,
+    marginTop: 4,
+  },
+  recommendPill: {
+    borderRadius: BorderRadius.full,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+  },
+  recommendPillText: {
+    fontFamily: 'Vazirmatn',
+    fontSize: 11,
   },
   badge: {
     fontFamily: 'Vazirmatn',
