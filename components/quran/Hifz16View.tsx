@@ -12,8 +12,9 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-    Text,
+  Text,
   TextInput,
+  Keyboard,
   View,
   useWindowDimensions,
     type LayoutChangeEvent,
@@ -3089,6 +3090,7 @@ export const Hifz16View = memo(function Hifz16View({
   }, [navigatorSurah]);
 
   const navigateFromReader = useCallback((kind: 'page' | 'juz' | 'surah', valueOverride?: string) => {
+    Keyboard.dismiss();
     const raw = valueOverride ?? (kind === 'page' ? navigatorPage : kind === 'juz' ? navigatorJuz : navigatorSurah);
     const normalizedRaw = toLatinNumeralsString(raw.trim());
     let value = /^\d+$/.test(normalizedRaw) ? Number.parseInt(normalizedRaw, 10) : Number.NaN;

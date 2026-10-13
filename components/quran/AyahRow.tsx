@@ -112,9 +112,12 @@ export const AyahRow = memo(function AyahRow({
       ? stripPashtoAyahReference(text, surahNumber, ayah.number)
       : text;
     return (
-      <View style={styles.translationContainer}>
+      <View
+        accessible
+        testID={lang === 'pashto' ? `quran-pashto-translation-${surahNumber}-${ayah.number}` : undefined}
+        style={styles.translationContainer}
+      >
         <QuranText
-          testID={lang === 'pashto' ? `quran-pashto-translation-${surahNumber}-${ayah.number}` : undefined}
           style={[
             styles.translationText,
             latin && styles.translationTextEnglish,
@@ -135,7 +138,7 @@ export const AyahRow = memo(function AyahRow({
 
   return (
     <Pressable
-      testID={`quran-ayah-row-${surahNumber}-${ayah.number}`}
+      accessible={false}
       onPress={onPress}
       onLongPress={onLongPress}
       style={({ pressed }) => [
@@ -150,7 +153,11 @@ export const AyahRow = memo(function AyahRow({
         },
       ]}
     >
-      <View style={styles.arabicContainer}>
+      <View
+        accessible
+        testID={`quran-ayah-row-${surahNumber}-${ayah.number}`}
+        style={styles.arabicContainer}
+      >
         <QuranAyahArabic
           text={stripBismillah(keepWaqfMarks(ayah.text), surahNumber, ayah.number)}
           marker={ayahEndMarker(state.preferences.quranFont, ayah.number)}
