@@ -61,12 +61,14 @@ export function ayahEndMarker(font: QuranFontFamily, ayahNumber: number): string
 function PauseMarks({
   marks,
   fontSize,
+  lineHeight,
   color,
   fontFamily,
   lift,
 }: {
   marks: string;
   fontSize: number;
+  lineHeight: number;
   color: string;
   fontFamily: string;
   lift: number;
@@ -79,11 +81,17 @@ function PauseMarks({
   if (Platform.OS === 'ios') {
     const label = iosPauseLabel(marks);
     if (!label) return null;
-    const signSize = Math.max(8, Math.round(fontSize * 0.32));
-    const slot = Math.max(8, Math.round(fontSize * 0.38));
-    const boxHeight = Math.round(fontSize * 1.35);
     const units = Math.max(1, Array.from(label).filter((ch) => ch !== '\u2009').length);
-    const labelWidth = Math.ceil(signSize * units * 1.05);
+    // Wide signs (صلى، قلى) stay inside their own slot so they cannot cover the next letter.
+    const wide = units >= 3;
+    const signSize = Math.max(8, Math.round(fontSize * (wide ? 0.28 : units === 2 ? 0.3 : 0.34)));
+    const labelWidth = Math.ceil(signSize * units * (wide ? 0.78 : 0.9));
+    const pad = Math.max(1, Math.round(fontSize * 0.04));
+    const slot = wide || units === 2
+      ? labelWidth + pad * 2
+      : Math.max(labelWidth + pad, Math.round(fontSize * 0.36));
+    const signLine = Math.round(signSize * 1.15);
+    const boxHeight = Math.min(Math.round(fontSize * 1.55), Math.max(signLine + 2, Math.round(lineHeight * 0.9)));
     return (
       <View
         style={{
@@ -96,15 +104,16 @@ function PauseMarks({
         <Text
           allowFontScaling={false}
           numberOfLines={1}
+          ellipsizeMode="clip"
           style={{
             position: 'absolute',
             top: 0,
-            left: (slot - labelWidth) / 2,
+            left: Math.round((slot - labelWidth) / 2),
             width: labelWidth,
             fontFamily,
             color,
             fontSize: signSize,
-            lineHeight: Math.round(signSize * 1.25),
+            lineHeight: signLine,
             textAlign: 'center',
             writingDirection: 'rtl',
           }}
@@ -163,7 +172,7 @@ export function QuranAyahArabic({
 }) {
   const pieces = Platform.OS === 'ios' ? tightenPauseGaps(splitPausePieces(text)) : splitPausePieces(text);
   const lift = PAUSE_LIFT[fontKey] ?? PAUSE_LIFT.scheherazade;
-  const iosHeadroom = Platform.OS === 'ios' ? Math.round(fontSize * 0.12) : 0;
+  const iosHeadroom = Platform.OS === 'ios' ? Math.round(fontSize * 0.18) : 0;
   const textStyle: TextStyle = {
     fontFamily,
     color,
@@ -188,6 +197,7 @@ export function QuranAyahArabic({
             key={`p-${index}`}
             marks={piece.marks}
             fontSize={fontSize}
+            lineHeight={lineHeight}
             color={color}
             fontFamily={fontFamily}
             lift={lift}
