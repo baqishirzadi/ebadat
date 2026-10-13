@@ -292,7 +292,12 @@ function pickSpreadSlots(slots: Slot[], letterCount: number): Slot[] {
 export function applyKashida(
   text: string,
   count: number,
-  maxPerSlot = MAX_TATWEEL_PER_LETTER
+  maxPerSlot = MAX_TATWEEL_PER_LETTER,
+  /**
+   * `words` keeps one join per word (Android's look). `joins` uses every
+   * legal join so iOS Core Text, which drops stacked tatweel, still grows.
+   */
+  spread: 'words' | 'joins' = 'words',
 ): string {
   if (!text) return text;
   const slots = scoredSlots(text);
@@ -302,7 +307,9 @@ export function applyKashida(
   }
 
   const cap = Math.max(1, Math.min(12, Math.floor(maxPerSlot)));
-  const chosen = pickSpreadSlots(slots, Math.min(MAX_STRETCH_LETTERS, Math.max(slots.length, 1)));
+  const chosen = spread === 'joins'
+    ? [...slots].sort((a, b) => b.score - a.score).slice(0, MAX_STRETCH_LETTERS)
+    : pickSpreadSlots(slots, Math.min(MAX_STRETCH_LETTERS, Math.max(slots.length, 1)));
   const insertAts = new Set(chosen.map((slot) => slot.insertAt));
   for (const insertAt of required) insertAts.add(insertAt);
   const ordered = [...insertAts].sort((a, b) => a - b);

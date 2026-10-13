@@ -125,8 +125,34 @@ type GlassOption = {
   onPress: () => void;
 };
 
-/** Two-option green glass switch used for every choice row in the Quran tab header. */
-function GlassSegment({ options, direction }: { options: GlassOption[]; direction: object }) {
+function rgbOf(hex: string): { r: number; g: number; b: number } {
+  let h = hex.trim().replace('#', '');
+  if (h.length === 3) h = h.split('').map((channel) => channel + channel).join('');
+  const n = Number.parseInt(h, 16);
+  if (!Number.isFinite(n) || h.length !== 6) return { r: 26, g: 77, b: 62 };
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 };
+}
+
+/** Selected chip follows the active theme, lifted so it stays readable on the header. */
+function themeGlassFill(tint: string): string {
+  const { r, g, b } = rgbOf(tint);
+  const lift = (channel: number) => Math.round(channel + (255 - channel) * 0.42);
+  return `rgba(${lift(r)}, ${lift(g)}, ${lift(b)}, 0.94)`;
+}
+
+/** Juz / surah / 16-line / translation. The selected side uses the theme tint. */
+function GlassSegment({
+  options,
+  direction,
+  tint,
+  onTint,
+}: {
+  options: GlassOption[];
+  direction: object;
+  tint: string;
+  onTint: string;
+}) {
+  const activeFill = themeGlassFill(tint);
   return (
     <View style={[styles.glassToggle, direction]} accessibilityRole="tablist">
       {options.map((option) => (
@@ -134,7 +160,13 @@ function GlassSegment({ options, direction }: { options: GlassOption[]; directio
           key={option.key}
           style={[
             styles.glassButtonShadow,
-            option.active && styles.glassButtonShadowActive,
+            option.active && {
+              shadowColor: tint,
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.35,
+              shadowRadius: 8,
+              elevation: 0,
+            },
           ]}
         >
           <Pressable
@@ -146,7 +178,10 @@ function GlassSegment({ options, direction }: { options: GlassOption[]; directio
             style={({ pressed }) => [
               styles.glassButton,
               direction,
-              option.active && styles.glassButtonActive,
+              option.active && {
+                borderColor: 'rgba(255,255,255,0.85)',
+                backgroundColor: activeFill,
+              },
               pressed && styles.glassButtonPressed,
             ]}
           >
@@ -158,13 +193,13 @@ function GlassSegment({ options, direction }: { options: GlassOption[]; directio
             <MaterialIcons
               name={option.active ? 'check-circle' : option.icon}
               size={18}
-              color={option.active ? '#fff' : 'rgba(255,255,255,0.78)'}
+              color={option.active ? onTint : 'rgba(255,255,255,0.78)'}
             />
             <CenteredText
               numberOfLines={1}
               adjustsFontSizeToFit
               minimumFontScale={0.72}
-              style={[styles.glassButtonText, option.active && styles.glassButtonTextActive]}
+              style={[styles.glassButtonText, option.active && { color: onTint, fontWeight: '700' }]}
             >
               {option.label}
             </CenteredText>
@@ -368,6 +403,8 @@ export function SurahList() {
 
       <GlassSegment
         direction={directionalRow}
+        tint={theme.tint}
+        onTint={theme.onTint}
         options={[
           {
             key: 'translation',
@@ -392,6 +429,8 @@ export function SurahList() {
 
       <GlassSegment
         direction={directionalRow}
+        tint={theme.tint}
+        onTint={theme.onTint}
         options={[
           {
             key: 'surah',
@@ -499,8 +538,6 @@ export function SurahList() {
 /** One frosted recipe for every language and every header theme. */
 const GLASS_IDLE_BORDER = 'rgba(255,255,255,0.16)';
 const GLASS_IDLE_FILL = 'rgba(255,255,255,0.05)';
-const GLASS_ACTIVE_BORDER = 'rgba(190,255,220,0.75)';
-const GLASS_ACTIVE_FILL = 'rgba(52,178,122,0.42)';
 
 const styles = StyleSheet.create({
   container: {
@@ -639,17 +676,6 @@ const styles = StyleSheet.create({
     height: 46,
     borderRadius: BorderRadius.lg,
   },
-  glassButtonActive: {
-    borderColor: GLASS_ACTIVE_BORDER,
-    backgroundColor: GLASS_ACTIVE_FILL,
-  },
-  glassButtonShadowActive: {
-    shadowColor: '#3DDC97',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.35,
-    shadowRadius: 8,
-    elevation: 0,
-  },
   glassButtonPressed: {
     opacity: 0.85,
     transform: [{ scale: 0.98 }],
@@ -681,10 +707,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'rgba(255,255,255,0.82)',
     includeFontPadding: false,
-  },
-  glassButtonTextActive: {
-    color: '#fff',
-    fontWeight: '700',
   },
   list: {
     flex: 1,

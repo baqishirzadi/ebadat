@@ -93,9 +93,9 @@ function useHifzMushafFont(): HifzMushafFontValue {
   return React.useContext(HifzMushafFontContext);
 }
 const { width: PAGE_WIDTH } = getPortraitWindowSize();
-/** Android's non-numbered dedication leaf immediately before Quran page 1. */
+/** Non-numbered dedication leaf immediately before Quran page 1. */
 const HIFZ_DEDICATION_PAGE = 0;
-const HAS_HIFZ_DEDICATION = Platform.OS === 'android';
+const HAS_HIFZ_DEDICATION = true;
 /** Dua khatm leaf immediately after the last mushaf page. Not a numbered page. */
 const HIFZ_KHATM_PAGE = HIFZ16_PAGE_COUNT + 1;
 /** Prayer-request leaf immediately after the khatm dua. Not a numbered page. */
@@ -261,7 +261,7 @@ function kashidaCacheKey(
   fontId: HifzFontFamily = 'amiriQuran',
 ): string {
   // Face is part of the key so a switch does not reuse the other face's stretch.
-  return `v39:${fontId}:${pageNumber}:${lineNumber}:${contentWidth}:${fontSize}:${markerWidth}:${bodySlot}:r${gapReserve}:p${padTotal}`;
+  return `v40:${fontId}:${pageNumber}:${lineNumber}:${contentWidth}:${fontSize}:${markerWidth}:${bodySlot}:r${gapReserve}:p${padTotal}`;
 }
 
 /**
@@ -300,7 +300,13 @@ function estimateSeedKashida(
  * path only runs if a caller still asks for a taller cap.
  */
 function applyKashidaWithSlotCap(text: string, count: number, maxPerSlot: number): string {
-  return applyKashida(text, count, maxPerSlot);
+  // iOS drops stacked tatweel, so one short stroke is spread across every join.
+  return applyKashida(
+    text,
+    count,
+    Platform.OS === 'ios' ? Math.min(maxPerSlot, 2) : maxPerSlot,
+    Platform.OS === 'ios' ? 'joins' : 'words',
+  );
 }
 
 /** Fixed miniature palette (independent of app theme). */
@@ -1274,10 +1280,19 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   const [lineFit, setLineFit] = useState<LineFit>(
     () => lineFitCache.get(fitKey) ?? LINE_FIT_DEFAULT,
   );
+  const wideCentered =
+    Boolean(centered) &&
+    fitWidth > 0 &&
+    visibleLength(text) * baseFontSize * metrics.charWidthRatio >= fitWidth * 0.55;
+  const [promoteJustify, setPromoteJustify] = useState(wideCentered);
   useEffect(() => {
     setLineFit(lineFitCache.get(fitKey) ?? LINE_FIT_DEFAULT);
-  }, [fitKey, text]);
-  const stretch = justify && !centered;
+    setPromoteJustify(wideCentered);
+  }, [fitKey, text, wideCentered]);
+  // A source-centered line stays centered only while it is short.
+  // At 55% of the column it justifies, matching the Android mushaf.
+  const treatCentered = Boolean(centered) && !promoteJustify;
+  const stretch = !treatCentered && (Boolean(justify) || promoteJustify);
   const fontSize = Math.round(baseFontSize * lineFit.scale * 100) / 100;
   const wawGap = lineFit.gap;
   const wawCountRef = useRef(wawCount);
@@ -1620,6 +1635,10 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
       const lines = event.nativeEvent.lines;
       if (!lines.length || centerAvail <= 0) return;
       const painted = Math.ceil((lines[0]?.width ?? 0) * PROBE_WIDTH_BIAS);
+      if (centered && painted >= centerAvail * 0.55) {
+        setPromoteJustify(true);
+        return;
+      }
       const fit = lineFitRef.current;
       const gaps = wawCountRef.current;
       const total = painted + gaps * fit.gap;
@@ -1649,7 +1668,7 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
       }
       setCenterChecked(centerKey);
     },
-    [centerAvail, centerKey],
+    [centerAvail, centerKey, centered],
   );
 
   const markerAyah = useMemo(() => {
@@ -1661,12 +1680,12 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
   const lineStyle = useMemo(
     () => [
       styles.lineText,
-      centered ? styles.lineCentered : styles.lineArabic,
+      treatCentered ? styles.lineCentered : styles.lineArabic,
       { color, fontFamily: family, fontSize, lineHeight },
       styles.lineInkPad,
       androidFontPad,
     ],
-    [centered, color, family, fontSize, lineHeight],
+    [color, family, fontSize, lineHeight, treatCentered],
   );
 
   const probeStyle = useMemo(
@@ -1703,7 +1722,7 @@ const JustifiedAyahText = memo(function JustifiedAyahText({
     [color, fontSize, highlightAyah, onAyahPress],
   );
 
-  if (centered || !stretch) {
+  if (treatCentered || !stretch) {
     const source = text;
     const fullSpans =
       ayahStart == null || ayahEnd == null
@@ -1901,80 +1920,6 @@ function getHifzPageLayout(page: HifzPage, contentWidth: number, fontId: HifzFon
   pageLayoutCache.set(cacheKey, layout);
   return layout;
 }
-
-const StaticHifzAyahText = memo(function StaticHifzAyahText({
-  text,
-  fontSize,
-  lineHeight,
-  color,
-  contentWidth,
-  centered,
-  justify = false,
-  ayahStart,
-  ayahEnd,
-  highlightAyah,
-  longestChars,
-  onAyahPress,
-}: {
-  text: string;
-  fontSize: number;
-  lineHeight: number;
-  color: string;
-  contentWidth: number;
-  centered?: boolean;
-  justify?: boolean;
-  ayahStart?: number;
-  ayahEnd?: number;
-  highlightAyah?: number | null;
-  longestChars: number;
-  onAyahPress?: (ayah: number) => void;
-}) {
-  const { family, metrics } = useHifzMushafFont();
-  const displayText = useMemo(() => {
-    if (!justify || centered) return text;
-    const { body, markers } = splitLineBodyAndMarkers(text);
-    const pauseReserve = pauseColumnCount(body) * fontSize * PAUSE_COLUMN_WIDTH_RATIO;
-    const target = Math.max(1, contentWidth - AYAH_PAD_TOTAL - (markers ? 28 : 0) - pauseReserve);
-    const count = estimateSeedKashida(body, longestChars, target, fontSize, metrics);
-    return `${applyKashidaWithSlotCap(body, count, metrics.maxTatweelPerLetter)}${markers}`;
-  }, [centered, contentWidth, fontSize, justify, longestChars, metrics, text]);
-
-  const spans = useMemo(
-    () =>
-      ayahStart == null || ayahEnd == null
-        ? [{ text: displayText, ayah: -1 }]
-        : splitAyahSpans(displayText, ayahStart, ayahEnd),
-    [ayahEnd, ayahStart, displayText],
-  );
-
-  return (
-    <Text
-      numberOfLines={1}
-      ellipsizeMode="clip"
-      style={[
-        styles.lineText,
-        centered ? styles.lineCentered : styles.lineArabic,
-        styles.lineInkPad,
-        { color, fontFamily: family, fontSize, lineHeight },
-        androidFontPad,
-      ]}
-    >
-      {spans.map((span, index) => {
-        const active = highlightAyah != null && span.ayah === highlightAyah && span.ayah > 0;
-        return (
-          <Text
-            key={`${span.ayah}-${index}`}
-            style={active ? styles.ayahHighlight : undefined}
-            onPress={onAyahPress && span.ayah > 0 ? () => onAyahPress(span.ayah) : undefined}
-            suppressHighlighting
-          >
-            <MushafRun text={span.text} fontSize={fontSize} color={color} />
-          </Text>
-        );
-      })}
-    </Text>
-  );
-});
 
 const DEDICATION_BISMILLAH = 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ';
 const DEDICATION_HAMD_AR =
@@ -3272,7 +3217,7 @@ export const Hifz16View = memo(function Hifz16View({
       }
       return (
         <View testID={`hifz16-page-${page.page}`} collapsable={false} style={{ flex: 1, backgroundColor: readerTokens.page }}>
-          {Platform.OS === 'android' ? (
+          {Platform.OS === 'android' || Platform.OS === 'ios' ? (
             <NativeHifz16Page
               page={page}
               paperColor={readerTokens.page}
@@ -3287,7 +3232,7 @@ export const Hifz16View = memo(function Hifz16View({
               onPagePress={() => setControlsVisible((visible) => !visible)}
             />
           ) : null}
-          {Platform.OS === 'android' && page.page <= 2 ? (
+          {(Platform.OS === 'android' || Platform.OS === 'ios') && page.page <= 2 ? (
             <HifzOpeningOrnament
               pageWidth={layoutWidth}
               pageHeight={pageHeight}
@@ -3295,7 +3240,7 @@ export const Hifz16View = memo(function Hifz16View({
               contentPaddingBottom={contentPaddingBottom}
             />
           ) : null}
-          {Platform.OS === 'android' ? null : <HifzPageCard
+          {Platform.OS === 'android' || Platform.OS === 'ios' ? null : <HifzPageCard
               page={page}
               background={readerTokens.page}
               ink={readerTokens.arabic}
@@ -3685,13 +3630,15 @@ const HifzPageCard = memo(function HifzPageCard({
                     return (
                       <View key={`${page.page}-${line.line}`} style={styles.openingLineRow}>
                         {ribbonLines.has(line.line) ? <BookmarkRibbon /> : null}
-                        <StaticHifzAyahText
+                        <JustifiedAyahText
                           text={line.text}
                           fontSize={fontSize}
                           lineHeight={lineHeight}
                           color={ink}
                           contentWidth={contentWidth}
                           centered
+                          pageNumber={page.page}
+                          lineNumber={line.line}
                           ayahStart={line.ayahStart}
                           ayahEnd={line.ayahEnd}
                           highlightAyah={highlightAyah}
@@ -3741,7 +3688,7 @@ const HifzPageCard = memo(function HifzPageCard({
                   const centered =
                     line.type === 'surah_name' ||
                     line.type === 'basmallah' ||
-                    (Boolean(line.centered) && !(openingFill && playable));
+                    Boolean(line.centered);
                   const highlightAyah =
                     playable && line.surahNumber === activePlayingSurah
                       ? activePlayingAyah
@@ -3783,7 +3730,7 @@ const HifzPageCard = memo(function HifzPageCard({
                       {isSpacer ? (
                         <View style={styles.spacer} />
                       ) : line.type === 'ayah' ? (
-                        <StaticHifzAyahText
+                        <JustifiedAyahText
                           text={line.text}
                           fontSize={fontSize}
                           lineHeight={lineHeight}
@@ -3791,6 +3738,8 @@ const HifzPageCard = memo(function HifzPageCard({
                           contentWidth={contentWidth}
                           centered={centered}
                           justify={!centered}
+                          pageNumber={page.page}
+                          lineNumber={line.line}
                           ayahStart={line.ayahStart}
                           ayahEnd={line.ayahEnd}
                           highlightAyah={highlightAyah}
@@ -4718,13 +4667,17 @@ const styles = StyleSheet.create({
     writingDirection: 'rtl',
     textAlign: 'right',
   },
-  /** Off-screen shrink-wrap probe — wide so the run never wraps at the page column. */
+  /**
+   * Shrink-wrap probe. It stays on the page because iOS skips onTextLayout
+   * for a view laid out entirely off screen.
+   */
   ayahProbeHost: {
     position: 'absolute',
     opacity: 0,
-    left: -10000,
+    left: 0,
     top: 0,
     width: 4096,
+    overflow: 'hidden',
     zIndex: -1,
   },
   measureHost: {

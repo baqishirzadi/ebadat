@@ -904,7 +904,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
     borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(14,107,79,0.25)',
+    borderColor: 'transparent',
     padding: 1,
     gap: 1,
   },

@@ -15,7 +15,7 @@ import { SurahHeader } from './SurahHeader';
 import { Typography, Spacing, BorderRadius } from '@/constants/theme';
 import { Surah, Ayah } from '@/types/quran';
 import { keepWaqfMarks } from '@/utils/quranText';
-import { QuranText } from './QuranText';
+import { QuranAyahArabic, ayahEndMarker } from './QuranAyahArabic';
 import CenteredText from '@/components/CenteredText';
 import { toArabicNumerals } from '@/utils/numbers';
 import type { QuranReaderTokens } from '@/hooks/useQuranReaderSettings';
@@ -778,27 +778,15 @@ export const MushafView = React.memo(function MushafView({
                     pressed && { opacity: 0.8 },
                   ]}
                 >
-                  <QuranText
-                    allowFontScaling={false}
-                    textBreakStrategy="simple"
-                    lineBreakStrategyIOS="none"
-                    style={[
-                      styles.mushafAyahText,
-                      {
-                        fontFamily: quranFontFamily,
-                        color: readerTokens?.arabic ?? theme.arabicText,
-                        includeFontPadding: true,
-                        fontSize: Typography.arabic[arabicFontSize],
-                        lineHeight: Math.round(Typography.arabic[arabicFontSize] * 2.1),
-                        paddingBottom: Math.round(Typography.arabic[arabicFontSize] * 0.15),
-                      },
-                    ]}
-                  >
-                    {stripBismillah(keepWaqfMarks(ayah.text), surahNumber, ayah.number)}
-                    {state.preferences.quranFont === 'qpcHafs'
-                      ? ` ${toArabicNumerals(ayah.number)}`
-                      : ` ﴿${toArabicNumerals(ayah.number)}﴾`}
-                  </QuranText>
+                  <QuranAyahArabic
+                    text={stripBismillah(keepWaqfMarks(ayah.text), surahNumber, ayah.number)}
+                    marker={ayahEndMarker(state.preferences.quranFont, ayah.number)}
+                    fontFamily={quranFontFamily}
+                    fontKey={state.preferences.quranFont}
+                    fontSize={Typography.arabic[arabicFontSize]}
+                    lineHeight={Math.round(Typography.arabic[arabicFontSize] * 2.1)}
+                    color={readerTokens?.arabic ?? theme.arabicText}
+                  />
                 </Pressable>
               ))}
             </View>
@@ -992,11 +980,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     borderWidth: 0,
     borderColor: 'transparent',
-  },
-  mushafAyahText: {
-    textAlign: 'center',
-    writingDirection: 'rtl',
-    width: '100%',
+    overflow: 'visible',
   },
   ayahEndMark: {
     fontSize: 16,

@@ -46,6 +46,8 @@
 		W1D2G3E4XT009 /* WidgetPrayerCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3E4XFR008 /* WidgetPrayerCalculator.swift */; };
 		W1D2G3T4A5M6O7D8U9L0E1F2 /* WidgetDataModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */; };
 		W1D2G3T4A5M6O7D8U9L0E1M3 /* WidgetDataModule.m in Sources */ = {isa = PBXBuildFile; fileRef = W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */; };
+		HIFZ16BF0000000000000001 /* Hifz16PageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HIFZ16FR0000000000000001 /* Hifz16PageView.swift */; };
+		HIFZ16BF0000000000000002 /* Hifz16PageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = HIFZ16FR0000000000000002 /* Hifz16PageManager.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,6 +116,8 @@
 		W1D2G3E4XPRD01 /* EbadatPrayerWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = EbadatPrayerWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = WidgetDataModule.m; path = abadt/WidgetDataModule.m; sourceTree = "<group>"; };
 		W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WidgetDataModule.swift; path = abadt/WidgetDataModule.swift; sourceTree = "<group>"; };
+		HIFZ16FR0000000000000001 /* Hifz16PageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Hifz16PageView.swift; path = abadt/Hifz16PageView.swift; sourceTree = "<group>"; };
+		HIFZ16FR0000000000000002 /* Hifz16PageManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = Hifz16PageManager.m; path = abadt/Hifz16PageManager.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,6 +145,8 @@
 				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
 				W1D2G3T4A5M6O7D8U9L0E1S1 /* WidgetDataModule.swift */,
 				W1D2G3T4A5M6O7D8U9L0E1M1 /* WidgetDataModule.m */,
+				HIFZ16FR0000000000000001 /* Hifz16PageView.swift */,
+				HIFZ16FR0000000000000002 /* Hifz16PageManager.m */,
 				F11748442D0722820044C1D9 /* abadt-Bridging-Header.h */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -550,6 +556,8 @@
 				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
 				W1D2G3T4A5M6O7D8U9L0E1F2 /* WidgetDataModule.swift in Sources */,
 				W1D2G3T4A5M6O7D8U9L0E1M3 /* WidgetDataModule.m in Sources */,
+				HIFZ16BF0000000000000001 /* Hifz16PageView.swift in Sources */,
+				HIFZ16BF0000000000000002 /* Hifz16PageManager.m in Sources */,
 				B37A6A0FC4628FFA7ACA03C4 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

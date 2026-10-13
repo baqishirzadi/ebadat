@@ -18,7 +18,7 @@ import { Ayah } from '@/types/quran';
 import { keepWaqfMarks, stripPashtoAyahReference } from '@/utils/quranText';
 import { rowStyle } from '@/utils/i18n/direction';
 import { QuranText } from './QuranText';
-import { toArabicNumerals } from '@/utils/numbers';
+import { QuranAyahArabic, ayahEndMarker } from './QuranAyahArabic';
 import type { QuranReaderTokens } from '@/hooks/useQuranReaderSettings';
 import { useI18n } from '@/utils/i18n/useI18n';
 
@@ -151,38 +151,15 @@ export const AyahRow = memo(function AyahRow({
       ]}
     >
       <View style={styles.arabicContainer}>
-        <QuranText
-          allowFontScaling={false}
-          textBreakStrategy="simple"
-          lineBreakStrategyIOS="none"
-          style={[
-            styles.arabicText,
-            {
-              fontFamily: quranFontFamily,
-              color: arabicColor,
-              includeFontPadding: true,
-              fontSize: arabicSize,
-              lineHeight: arabicLineHeight,
-              paddingBottom: Math.round(arabicSize * 0.15),
-            },
-          ]}
-        >
-          {stripBismillah(keepWaqfMarks(ayah.text), surahNumber, ayah.number)}
-          <Text
-            style={[
-              styles.ayahMarker,
-              {
-                color: arabicColor,
-                fontFamily: quranFontFamily,
-                fontSize: Math.round(arabicSize * 0.72),
-              },
-            ]}
-          >
-            {state.preferences.quranFont === 'qpcHafs'
-              ? ` ${toArabicNumerals(ayah.number)}`
-              : ` ﴿${toArabicNumerals(ayah.number)}﴾`}
-          </Text>
-        </QuranText>
+        <QuranAyahArabic
+          text={stripBismillah(keepWaqfMarks(ayah.text), surahNumber, ayah.number)}
+          marker={ayahEndMarker(state.preferences.quranFont, ayah.number)}
+          fontFamily={quranFontFamily}
+          fontKey={state.preferences.quranFont}
+          fontSize={arabicSize}
+          lineHeight={arabicLineHeight}
+          color={arabicColor}
+        />
       </View>
 
       {showTranslation !== 'none' && showTranslation !== 'arabic' && (
@@ -266,14 +243,7 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xs,
     alignItems: 'stretch',
     width: '100%',
-  },
-  arabicText: {
-    textAlign: 'center',
-    writingDirection: 'rtl',
-    width: '100%',
-  },
-  ayahMarker: {
-    fontWeight: '600',
+    overflow: 'visible',
   },
   translationsWrapper: {
     paddingHorizontal: Spacing.xs,
