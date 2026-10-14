@@ -42,6 +42,61 @@ function iosPauseLabel(marks: string): string {
   return labels.join('\u2009');
 }
 
+/**
+ * Shaped advance of each substitute sign in Scheherazade New, in ems.
+ * The shared 0.78/0.9 guess is too wide for قلى and لا and too narrow for س.
+ */
+const SCHEHERAZADE_LABEL_EM: Record<string, number> = {
+  صلى: 1.836,
+  قلى: 1.284,
+  لا: 0.644,
+  ج: 0.746,
+  ط: 0.773,
+  م: 0.412,
+  س: 0.955,
+  '...': 0.996,
+};
+
+/**
+ * Ink center of Scheherazade's own zero-width mark, in ems of the body size.
+ * Positive moves the sign toward the previous word.
+ */
+const SCHEHERAZADE_MARK_SHIFT: Record<number, number> = {
+  0x06d6: 0.037,
+  0x06d7: -0.002,
+  0x06d8: -0.017,
+  0x06d9: -0.035,
+  0x06da: 0.017,
+  0x06db: -0.001,
+  0x06dc: -0.03,
+  0x0615: 0.209,
+};
+
+function scheherazadeLabelEm(label: string): number {
+  const parts = label.split('\u2009');
+  let em = 0;
+  parts.forEach((part, index) => {
+    if (index > 0) em += 0.2;
+    em += SCHEHERAZADE_LABEL_EM[part] ?? Math.max(1, Array.from(part).length) * 0.8;
+  });
+  return em;
+}
+
+function scheherazadeMarkShift(marks: string): number {
+  const code = marks.codePointAt(0);
+  if (code == null) return 0;
+  return SCHEHERAZADE_MARK_SHIFT[code] ?? 0;
+}
+
+/** A pause with letters on both sides, such as the small seen inside يبصط. */
+function pauseInsideWord(pieces: MushafPiece[], index: number): boolean {
+  const prev = pieces[index - 1];
+  const next = pieces[index + 1];
+  if (prev?.kind !== 'text' || next?.kind !== 'text') return false;
+  if (!prev.text || !next.text) return false;
+  return !/\s$/u.test(prev.text) && !/^\s/u.test(next.text);
+}
+
 /** Drop the spaces that only separated a pause mark, so the slot is the gap. */
 function tightenPauseGaps(pieces: MushafPiece[]): MushafPiece[] {
   return pieces.map((piece, index) => {
@@ -64,14 +119,18 @@ function PauseMarks({
   lineHeight,
   color,
   fontFamily,
+  fontKey,
   lift,
+  inWord,
 }: {
   marks: string;
   fontSize: number;
   lineHeight: number;
   color: string;
   fontFamily: string;
+  fontKey: QuranFontFamily;
   lift: number;
+  inWord: boolean;
 }) {
   const glyphs = Array.from(marks);
   const count = Math.max(1, glyphs.length);
@@ -85,11 +144,22 @@ function PauseMarks({
     // Wide signs (صلى، قلى) stay inside their own slot so they cannot cover the next letter.
     const wide = units >= 3;
     const signSize = Math.max(8, Math.round(fontSize * (wide ? 0.28 : units === 2 ? 0.3 : 0.34)));
-    const labelWidth = Math.ceil(signSize * units * (wide ? 0.78 : 0.9));
+    let labelWidth = Math.ceil(signSize * units * (wide ? 0.78 : 0.9));
     const pad = Math.max(1, Math.round(fontSize * 0.04));
-    const slot = wide || units === 2
+    let slot = wide || units === 2
       ? labelWidth + pad * 2
       : Math.max(labelWidth + pad, Math.round(fontSize * 0.36));
+    let left = Math.round((slot - labelWidth) / 2);
+    if (fontKey === 'scheherazade') {
+      labelWidth = Math.max(1, Math.ceil(signSize * scheherazadeLabelEm(label)));
+      const shift = Math.round(fontSize * scheherazadeMarkShift(marks));
+      slot = inWord ? Math.max(1, Math.round(fontSize * 0.04)) : labelWidth;
+      // Between words the sign hangs on the previous word. Inside a word it
+      // sits on the join, so a wide seen does not slide onto the next letter.
+      left = inWord
+        ? Math.round(slot + shift - labelWidth / 2)
+        : slot - labelWidth + shift;
+    }
     const signLine = Math.round(signSize * 1.15);
     const boxHeight = Math.min(Math.round(fontSize * 1.55), Math.max(signLine + 2, Math.round(lineHeight * 0.9)));
     return (
@@ -108,7 +178,7 @@ function PauseMarks({
           style={{
             position: 'absolute',
             top: 0,
-            left: Math.round((slot - labelWidth) / 2),
+            left,
             width: labelWidth,
             fontFamily,
             color,
@@ -170,7 +240,8 @@ export function QuranAyahArabic({
   lineHeight: number;
   color: string;
 }) {
-  const pieces = Platform.OS === 'ios' ? tightenPauseGaps(splitPausePieces(text)) : splitPausePieces(text);
+  const rawPieces = splitPausePieces(text);
+  const pieces = Platform.OS === 'ios' ? tightenPauseGaps(rawPieces) : rawPieces;
   const lift = PAUSE_LIFT[fontKey] ?? PAUSE_LIFT.scheherazade;
   const iosHeadroom = Platform.OS === 'ios' ? Math.round(fontSize * 0.18) : 0;
   const textStyle: TextStyle = {
@@ -200,7 +271,9 @@ export function QuranAyahArabic({
             lineHeight={lineHeight}
             color={color}
             fontFamily={fontFamily}
+            fontKey={fontKey}
             lift={lift}
+            inWord={pauseInsideWord(rawPieces, index)}
           />
         ),
       )}

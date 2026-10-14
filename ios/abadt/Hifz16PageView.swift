@@ -38,6 +38,7 @@ final class Hifz16PageView: UIView {
     let columns: [PauseColumn]
     let maddaAnchors: [Int]
     let smallMeemAnchors: [Int]
+    let highMeemAnchors: [Int]
   }
 
   private struct AyahSpan {
@@ -267,7 +268,7 @@ final class Hifz16PageView: UIView {
       let color = line.type == "ayah" ? inkColor : accentColor
       var prepared = line.type == "ayah"
         ? prepareAyahLine(line.text)
-        : PreparedAyah(text: line.text, columns: [], maddaAnchors: [], smallMeemAnchors: [])
+        : PreparedAyah(text: line.text, columns: [], maddaAnchors: [], smallMeemAnchors: [], highMeemAnchors: [])
       if line.type == "ayah" && !centered {
         prepared = stretchPrepared(prepared, font: font, width: textWidth)
       }
@@ -300,7 +301,10 @@ final class Hifz16PageView: UIView {
       drawRun(run)
       if line.type == "ayah" {
         drawRaisedMarks(run: run, anchors: prepared.maddaAnchors, glyph: "\u{0653}", riseEm: 1.0, glyphScale: 1, color: color)
-        drawRaisedMarks(run: run, anchors: prepared.smallMeemAnchors, glyph: "\u{06E2}", riseEm: 1.22, glyphScale: 0.72, color: color)
+        // Iqlab meem sits in the same band as sukoon. A small lift clears it
+        // without climbing into the line above.
+        drawRaisedMarks(run: run, anchors: prepared.smallMeemAnchors, glyph: "\u{06E2}", riseEm: 1.08, glyphScale: 1, color: color)
+        drawRaisedMarks(run: run, anchors: prepared.highMeemAnchors, glyph: "\u{06E2}", riseEm: 1.32, glyphScale: 0.72, color: color)
         drawPauseColumns(run: run, columns: prepared.columns, rowTop: top, color: color)
       }
     }
@@ -448,7 +452,8 @@ final class Hifz16PageView: UIView {
       text: stretched,
       columns: prepared.columns.map { PauseColumn(anchor: map($0.anchor), marks: $0.marks) },
       maddaAnchors: prepared.maddaAnchors.map(map),
-      smallMeemAnchors: prepared.smallMeemAnchors.map(map)
+      smallMeemAnchors: prepared.smallMeemAnchors.map(map),
+      highMeemAnchors: prepared.highMeemAnchors.map(map)
     )
   }
 
@@ -568,12 +573,13 @@ final class Hifz16PageView: UIView {
   private func prepareAyahLine(_ raw: String) -> PreparedAyah {
     let source = raw as NSString
     if source.length == 0 {
-      return PreparedAyah(text: raw, columns: [], maddaAnchors: [], smallMeemAnchors: [])
+      return PreparedAyah(text: raw, columns: [], maddaAnchors: [], smallMeemAnchors: [], highMeemAnchors: [])
     }
     let out = NSMutableString()
     var columns: [PauseColumn] = []
     var madda: [Int] = []
     var meem: [Int] = []
+    var highMeem: [Int] = []
     var cluster: [Int] = []
     func flushPause() {
       if cluster.isEmpty { return }
@@ -605,17 +611,20 @@ final class Hifz16PageView: UIView {
         index += markLen
       }
       let stackedMadda = marks.contains(0x0651) && marks.contains(0x0653)
-      let stackedMeem = marks.contains(0x0651) && marks.contains(0x06E2)
+      let hasSmallMeem = marks.contains(0x06E2)
+      // Shadda or dammatan already fills the band the meem wants.
+      let highStack = hasSmallMeem && (marks.contains(0x0651) || marks.contains(0x064C))
       if stackedMadda { madda.append(anchor) }
-      if stackedMeem { meem.append(anchor) }
+      if highStack { highMeem.append(anchor) }
+      else if hasSmallMeem { meem.append(anchor) }
       for mark in marks {
         if stackedMadda && mark == 0x0653 { continue }
-        if stackedMeem && mark == 0x06E2 { continue }
+        if hasSmallMeem && mark == 0x06E2 { continue }
         if let scalar = scalarValue(mark) { out.append(String(scalar)) }
       }
     }
     flushPause()
-    return PreparedAyah(text: out as String, columns: columns, maddaAnchors: madda, smallMeemAnchors: meem)
+    return PreparedAyah(text: out as String, columns: columns, maddaAnchors: madda, smallMeemAnchors: meem, highMeemAnchors: highMeem)
   }
 
   private func scalarValue(_ codePoint: Int) -> Unicode.Scalar? {
